@@ -1,52 +1,60 @@
-# 🌸 Shoug Fawaz Alomran 🌸 — Digital Garden & Interactive CV
+# 🌸 Shoug Fawaz Alomran — Digital Garden & Interactive CV 🌸
 
-Welcome to my **Digital Garden** — a living, evolving version of my CV.  
-Here I document my journey in **Cybersecurity**, **Software Engineering**, and **Education Technology**, along with reflections, projects, and resources that shaped my growth.
-
----
-
-## 💼 About Me
-
-I’m **Shoug Fawaz Alomran**, a **Software Engineering and Cybersecurity student** at *Prince Sultan University*.  
-I’m passionate about finding ways to **secure systems**, **develop meaningful applications**, and **empower others through knowledge**.
-
-- 🎓 **Major:** Software Engineering / Cybersecurity  
-- 🧩 **Focus Areas:** Penetration Testing, App Development, User Protection  
-- 🌿 **Values:** Curiosity, Ethics, and Continuous Learning  
+Welcome to my **Digital Garden**, a living space where I document my journey in **cybersecurity, software development, and personal growth**.  
+Built using [MkDocs Material](https://squidfunk.github.io/mkdocs-material/), this project serves as both an **interactive CV** and a **knowledge hub** — showcasing my projects, skills, and continuous learning path.
 
 ---
 
-## 🛠️ Technical Skills
-
-| Category | Skills |
-|-----------|--------|
-| **Cybersecurity** | Penetration testing |
-| **Programming** | Java |
-| **Tools & Labs** | TryHackMe, Hack The Box, Burp Suite |
-| **Version Control** | GitHub |
-| **Soft Skills** | Teaching, Writing, Mentoring, Communication |
+## 🌐 Live Site
+🔗 [Visit My Digital Garden](https://shoug-alomran.github.io/My-Garden/)
 
 ---
 
-## 📂 Featured Pages
+## 🧠 About
+I’m **Shoug Fawaz Alomran**, passionate about:
+- 🧩 **Penetration Testing** — exploring systems ethically to make them safer  
+- 💻 **Software Development** — building useful tools and apps for everyday life  
+- 🛡️ **Cybersecurity Awareness** — helping others protect themselves online  
 
+This site brings together my academic journey, projects, technical labs, volunteering, and research work — all in one evolving space.
+
+---
+
+## 🗂️ Structure
 | Section | Description |
-|----------|-------------|
-| 🧰 [Links](docs/links.md) | My curated list of resources, tools, and labs |
-| 👩‍💻 [Projects](docs/projects.md) | Security and development projects I’ve built |
-| 🌸 [About Me](docs/me.md) | My background, experience, and philosophy |
+|----------|--------------|
+| `Home` | Overview and introduction |
+| `Links` | Bookmark hub for cybersecurity platforms, tools, and guides |
+| `Me` | Personal portfolio, volunteering, and research experiences |
+| `Docs/` | Contains all Markdown pages used for the site content |
+| `mkdocs.yml` | Configuration file for MkDocs Material |
 
 ---
 
-## 🌱 Philosophy
-
-> “Growth is built on curiosity, kindness, and courage — the courage to keep learning, teaching, and building.”
+## 🧰 Built With
+- [**Python 3**](https://www.python.org/)  
+- [**MkDocs Material**](https://squidfunk.github.io/mkdocs-material/)  
+- [**GitHub Pages**](https://pages.github.com/) for hosting  
+- [**Visual Studio Code**](https://code.visualstudio.com/) for development  
 
 ---
 
-## 🌐 Visit My Live Site
-Once deployed via GitHub Pages:
-👉 [https://shoug-alomran.github.io/my-garden/](https://shoug-alomran.github.io/my-garden/)
+## 🚀 Local Setup
+To run locally:
+```bash
+# Clone this repository
+git clone https://github.com/Shoug-Alomran/My-Garden.git
+cd My-Garden
+
+# Create and activate virtual environment
+python3 -m venv venv
+source venv/bin/activate
+
+# Install dependencies
+pip install mkdocs-material
+
+# Serve locally
+mkdocs serve
 
 ---
 
