@@ -1,6 +1,6 @@
 # 🌸 Me 🌸
 
-I’m **Shoug Fawaz Alomran**, a **Software Engineering & Cybersecurity** student at *Prince Sultan University*.  
+I’m a **Software Engineering & Cybersecurity** student at *Prince Sultan University*.  
 My work sits at the intersection of **ethical penetration testing**, **personal app development**, and **practical user protection** — I look for ways systems can be improved and build tools that make those improvements real.
 
 ---
