@@ -1,4 +1,20 @@
 # 🔗 Link Dump 
+# 🔗 Link Dump 
+
+## 🔎 Search / Quick index
+- [Learning & Documentation](#learning--documentation)
+- [Editors & Dev Tools](#editors--dev-tools)
+- [Containers, VMs & Package Managers](#containers-vms--package-managers)
+- [Visualization & Problem-Solving](#visualization--problem-solving)
+- [Cybersecurity & OSINT Tools](#cybersecurity--osint-tools)
+- [Security Research & Offensive Tools](#security-research--offensive-tools-authorized-use-only)
+- [Web, HTTP & DevOps](#web-http--devops)
+- [Servers, Configs & Formats](#servers-configs--formats)
+- [Observability & Ops](#observability--ops)
+- [Banking & Local Resources](#banking--local-resources)
+- [Creative / Demoscene / Fun](#creative--demoscene--fun)
+
+---
 
 ## 🏷️ Tag Legend
 
