@@ -53,6 +53,7 @@ Security that protects people comes from finding the problems early and fixing t
 
 ---
 
+## 📝 CV
 Below is my interactive CV (embedded). You can also download it.
 
 <div style="display:flex; gap:12px; align-items:center; margin:8px 0 18px;">
