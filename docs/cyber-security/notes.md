@@ -1,3 +1,3 @@
-# Cyber Security – Notes
+# Cyber Security
 
 Coming soon.

@@ -1,3 +1,3 @@
-# Software Engineering – Notes
+# Software Engineering
 
 Coming soon.
