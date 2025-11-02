@@ -53,4 +53,22 @@ Security that protects people comes from finding the problems early and fixing t
 
 ---
 
+Below is my interactive CV (embedded). You can also download it.
+
+<div style="display:flex; gap:12px; align-items:center; margin:8px 0 18px;">
+  <a href="CV.html" target="_blank" rel="noopener" style="padding:8px 12px; border-radius:8px; background:#7c4dff; color:white; text-decoration:none;">
+    Open CV in new tab
+  </a>
+  <a href="CV.html" download style="padding:8px 12px; border-radius:8px; border:1px solid #7c4dff; color:#7c4dff; text-decoration:none;">
+    Download CV (HTML)
+  </a>
+</div>
+
+<iframe
+  src="CV.html"
+  width="100%"
+  height="1700px"
+  style="border:none; border-radius:10px; box-shadow:0 0 10px rgba(0,0,0,.08);">
+</iframe>
+
 > **Note:** I only practice security testing in legal contexts — on my own infrastructure, authorized engagements, or controlled labs. If you’d like to collaborate on a security assessment for your project, I can help set up an authorized testing plan and responsible disclosure process.
