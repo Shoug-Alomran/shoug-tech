@@ -201,6 +201,15 @@ A quick guide to what each tag means — click any to jump to its section 👇
 [MkDocs Material](https://squidfunk.github.io/mkdocs-material/) — docs theme.  
 `#docs` `#web`
 
+[Docusaurus](https://docusaurus.io) — modern static site generator by Meta, built for documentation and blogs.  
+`#docs` `#react` `#static-site` `#open-source`
+
+[Spring](https://spring.io) — enterprise-grade Java framework for building secure, scalable applications.  
+`#java` `#backend` `#framework` `#springboot`
+
+[VitePress](https://vitepress.dev) — lightning-fast static site generator powered by Vite & Vue.  
+`#docs` `#vue` `#vite` `#frontend`
+
 ---
 
 ## 🧾 Servers, Configs & Formats
