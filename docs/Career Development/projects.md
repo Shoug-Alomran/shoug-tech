@@ -20,6 +20,8 @@ It features multiple user roles — students, instructors, and administrators �
 
 🧠 *Focus:* Core Java design, modularity, and robust data handling  
 
+🌐 **Website:** *(Coming soon)*  
+
 ---
 
 ## 🔐 [CS285 — Cryptography Project](https://github.com/Shoug-Alomran/CS285-CryptographyProject)
@@ -35,6 +37,8 @@ Implemented a **Secure Key Exchange System** based on the **Diffie-Hellman algor
 - Demonstrated encryption/decryption flow  
 
 🧠 *Focus:* Number theory, modular arithmetic, and applied cryptography  
+
+🌐 **Website:** [View Project Site](https://shoug-alomran.github.io/CS285-CryptographyProject/)  
 
 ---
 
@@ -52,6 +56,8 @@ Developed a **preventive health management system** that analyzes family medical
 
 🧠 *Focus:* Structured system analysis and end-to-end documentation using IEEE standards  
 
+🌐 **Website:** [View Project Site](https://shoug-alomran.github.io/SE201--Sillah-Project/)  
+
 ---
 
 ## 🔗 [CS210 — Linked List Implementation & Runtime Analysis](https://github.com/Shoug-Alomran/CS210-Project-Linked-List-Implementation-and-Runtime-Analysis)
@@ -66,6 +72,8 @@ Implemented a **singly linked list** with performance analysis across different 
 - Clean modular code structure  
 
 🧠 *Focus:* Algorithmic efficiency and data structure design  
+
+🌐 **Website:** [View Project Site](https://shoug-alomran.github.io/CS210-Project-Linked-List-Implementation-and-Runtime-Analysis/)  
 
 ---
 
