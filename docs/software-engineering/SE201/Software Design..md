@@ -1,3 +1,3 @@
-# Chapter 6 - System Design 
-- [Open in new tab](./System Design.html)
-<iframe src="../System Design.html" width="100%" height="800" style="border:none;"></iframe>
+# Chapter 6 - Software Design
+- [Open in new tab](./Software Design.html)
+<iframe src="../Software Design.html" width="150%" height="800" style="border:none;"></iframe>
