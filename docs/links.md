@@ -1,6 +1,6 @@
-# 🔗 Link Dump
+# Link Dump
 
-## 🔎 Search / Quick index
+## Search / Quick index
 - [Learning & Documentation](#learning-documentation)
 - [Editors & Dev Tools](#editors-dev-tools)
 - [Containers, VMs & Package Managers](#containers-vms-package-managers)
@@ -15,36 +15,36 @@
 
 ---
 
-## 🏷️ Tag Legend
+## Tag Legend
 
 A quick guide to what each tag means — click any to jump to its section 👇  
 
-### 🧠 [Learning & Development](#learning-development)
+### [Learning & Development](#learning-development)
 `#learning` `#reference` `#dev` `#videos` `#articles` `#java`  
 `#versioncontrol` `#algorithms` `#visualization` `#productivity` `#encoding` `#regex`
 
-### ⚙️ [Development & Tools](#development-tools)
+### [Development & Tools](#development-tools)
 `#editor` `#ai` `#automation` `#packages` `#mac` `#containers`  
 `#docker` `#vm` `#virtualization` `#os` `#bsd` `#ssh` `#ops`  
 `#config` `#docs` `#ci` `#devops` `#web` `#server` `#http` `#seo` `#crawl`
 
-### 🛡️ [Cybersecurity / Networking](#cybersecurity-networking)
+### [Cybersecurity / Networking](#cybersecurity-networking)
 `#cybersec` `#framework` `#osint` `#tools` `#analysis` `#domains`  
 `#research` `#scanning` `#defense` `#collections` `#network` `#pentest`  
 `#phishing` `#metasploit` `#cloud` `#security` `#certs` `#https` `#crypto` `#training`
 
-### 🧾 [Systems, Monitoring & Ops](#systems-monitoring-ops)
+### [Systems, Monitoring & Ops](#systems-monitoring-ops)
 `#monitoring` `#policy` `#governance`
 
-### 🏦 [Finance & Local](#finance-local)
+### [Finance & Local](#finance-local)
 `#banking` `#saudi`
 
-### 🎨 [Creative / Culture / Fun](#creative-culture-fun)
+### [Creative / Culture / Fun](#creative-culture-fun)
 `#art` `#culture` `#fun` `#demoscene`
 
 ---
 
-## 🧠 Learning & Documentation
+## Learning & Documentation
 [W3Schools](https://www.w3schools.com/) — general web tutorials and references.  
 `#learning` `#reference` `#web`
 
@@ -74,7 +74,7 @@ A quick guide to what each tag means — click any to jump to its section 👇
 
 ---
 
-## ✍️ Editors & Dev Tools
+## Editors & Dev Tools
 [Neovim](https://neovim.io/) — extensible modal editor.  
 `#dev` `#editor`
 
@@ -89,7 +89,7 @@ A quick guide to what each tag means — click any to jump to its section 👇
 
 ---
 
-## 🐧 Containers, VMs & Package Managers
+## Containers, VMs & Package Managers
 [Homebrew](https://brew.sh/) — macOS package manager.  
 `#dev` `#packages` `#mac`
 
@@ -116,7 +116,7 @@ A quick guide to what each tag means — click any to jump to its section 👇
 
 ---
 
-## 🧩 Visualization & Problem-Solving
+## Visualization & Problem-Solving
 [DSA Visualizer](https://dsa-visualizer-delta.vercel.app/) — visualize DS & algorithms.  
 `#learning` `#algorithms` `#visualization`
 
@@ -137,7 +137,7 @@ A quick guide to what each tag means — click any to jump to its section 👇
 
 ---
 
-## 🛡️ Cybersecurity & OSINT Tools
+## Cybersecurity & OSINT Tools
 [MITRE ATT&CK](https://attack.mitre.org) — adversary TTPs framework.  
 `#cybersec` `#framework`
 
@@ -170,7 +170,7 @@ A quick guide to what each tag means — click any to jump to its section 👇
 
 ---
 
-## ⚔️ Security Research & Offensive Tools (authorized use only)
+## Security Research & Offensive Tools (authorized use only)
 [Evilginx2](https://github.com/kgretzky/evilginx2) — phishing/tproxy framework (research).  
 `#pentest` `#phishing` `#research`
 
@@ -188,7 +188,7 @@ A quick guide to what each tag means — click any to jump to its section 👇
 
 ---
 
-## 🌐 Web, HTTP & DevOps
+## Web, HTTP & DevOps
 [Apache HTTP Server](https://httpd.apache.org/) — web server.  
 `#web` `#server`
 
@@ -212,7 +212,7 @@ A quick guide to what each tag means — click any to jump to its section 👇
 
 ---
 
-## 🧾 Servers, Configs & Formats
+## Servers, Configs & Formats
 [TOML](https://toml.io/en/) — config format.  
 `#config`
 
@@ -227,13 +227,13 @@ A quick guide to what each tag means — click any to jump to its section 👇
 
 ---
 
-## 📈 Observability & Ops
+## Observability & Ops
 [Netdata — Swap & Memory](https://www.netdata.cloud/blog/swap-memory-when-and-how-to-use-it-on-your-production-systems-or-cloud-provided-vms/) — guidance for VMs.  
 `#ops` `#monitoring`
 
 ---
 
-## 🏦 Banking & Local Resources
+## Banking & Local Resources
 [SingleView — IBAN Validation (SA)](https://www.singleview.com.sa/en/products/ibanValidation) — validation tool.  
 `#banking` `#saudi`
 
@@ -242,7 +242,7 @@ A quick guide to what each tag means — click any to jump to its section 👇
 
 ---
 
-## 🧬 Creative / Demoscene / Fun
+## Creative / Demoscene / Fun
 [Demoscene (Wikipedia)](https://en.m.wikipedia.org/wiki/Demoscene) — culture overview.  
 `#art` `#culture`
 
@@ -254,6 +254,6 @@ A quick guide to what each tag means — click any to jump to its section 👇
 
 ---
 
-## 📚 Misc / Community / Reference
+## Misc / Community / Reference
 [Greathorn](https://www.greathorn.com/) — email security/threat intel.  
 `#reference` `#cybersec`

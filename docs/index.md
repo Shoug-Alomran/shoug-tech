@@ -1,4 +1,4 @@
-# Welcome 🌷
+# Welcome
 
 Hi, I’m **Shoug Fawaz Alomran** — welcome to my Digital Garden 🌿  
 
@@ -7,7 +7,7 @@ It’s a place that keeps growing — one thought, one project, and one insight 
 
 ---
 
-## 🌱 What You'll Find Here
+## What You'll Find Here
 
 - **Learning Notes** — key ideas and takeaways from my studies and courses  
 - **Projects** — work I’m building or experimenting with  
@@ -21,7 +21,7 @@ It’s a place that keeps growing — one thought, one project, and one insight 
 
 ---
 
-## ✨ Start Exploring ✨
+## Start Exploring
 
 You can browse through the sections on the left or use the search bar at the top.  
 Each page is a seed — small notes that grow into bigger ideas over time.

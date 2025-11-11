@@ -1,11 +1,11 @@
-# 🌸 Me 🌸
+# Me
 
 I’m a **Software Engineering & Cybersecurity** student at *Prince Sultan University*.  
 My work sits at the intersection of **ethical penetration testing**, **personal app development**, and **practical user protection** — I look for ways systems can be improved and build tools that make those improvements real.
 
 ---
 
-## 🎯 What I do
+## What I do
 
 - **Ethical Penetration Testing** — I explore systems for weaknesses so they can be fixed before attackers find them. I follow responsible disclosure practices and always work within legal and organizational boundaries.
 - **Application Development** — I build small apps and automation tools (often for personal use or to solve a specific workflow problem), focusing on secure coding practices.
@@ -13,7 +13,7 @@ My work sits at the intersection of **ethical penetration testing**, **personal 
 
 ---
 
-## 💼 Current roles & experience
+## Current roles & experience
 
 - **Cybersecurity Trainee** at *MDD* — hands-on experience with penetration testing tasks, network analysis, and security hardening.
 - **Course Instructor** at *Qimah* — developing learning resources and teaching methods that help students understand complex topics.
@@ -21,7 +21,7 @@ My work sits at the intersection of **ethical penetration testing**, **personal 
 
 ---
 
-## 🛡️ Ethics & approach
+## Ethics & approach
 
 I follow a strict ethics-first approach:
 - I operate only with **permission** (engagements, bug bounties, or lab environments).  
@@ -30,7 +30,7 @@ I follow a strict ethics-first approach:
 
 ---
 
-## 🧠 Technical focus areas
+## Technical focus areas
 
 - Penetration testing (web, network, basic exploitation techniques)  
 - Secure app development (secure APIs, input validation, authentication)  
@@ -39,7 +39,7 @@ I follow a strict ethics-first approach:
 
 ---
 
-## 🏅 Notable training & certifications
+## Notable training & certifications
 
 - **AI in Robotics Bootcamp 2025** — Prince Sultan University  
 - **First Aid Provider** — Saudi Red Crescent Authority  
@@ -47,13 +47,13 @@ I follow a strict ethics-first approach:
 
 ---
 
-## 🌿 Why this matters
+## Why this matters
 
 Security that protects people comes from finding the problems early and fixing them fast. I enjoy both sides of that work: the investigative, creative side of penetration testing, and the constructive side of building apps and protections that make systems safer for everyone.
 
 ---
 
-## 📝 CV
+## CV
 Below is my interactive CV (embedded). You can also download it.
 
 <div style="display:flex; gap:12px; align-items:center; margin:8px 0 18px;">

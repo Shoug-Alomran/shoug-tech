@@ -1,10 +1,10 @@
-# 🧩 Academic Projects
+# Academic Projects
 
 A collection of my university projects that reflect my growth across software engineering, cybersecurity, and computing foundations.
 
 ---
 
-## 🎓 [CS102 — School Course Enrollment System](https://github.com/Shoug-Alomran/CS102-SchoolCourseEnrolmentSystem)
+## [CS102 — School Course Enrollment System](https://github.com/Shoug-Alomran/CS102-SchoolCourseEnrolmentSystem)
 **Type:** Object-Oriented Programming (Java)  
 **Languages & Tools:** Java, File I/O, Collections Framework  
 
@@ -18,13 +18,13 @@ It features multiple user roles — students, instructors, and administrators �
 - Input validation and exception handling  
 - Modular class design and reusable helper functions  
 
-🧠 *Focus:* Core Java design, modularity, and robust data handling  
+ *Focus:* Core Java design, modularity, and robust data handling  
 
-🌐 **Website:** *(Coming soon)*  
+ **Website:** *(Coming soon)*  
 
 ---
 
-## 🔐 [CS285 — Cryptography Project](https://github.com/Shoug-Alomran/CS285-CryptographyProject)
+## [CS285 — Cryptography Project](https://github.com/Shoug-Alomran/CS285-CryptographyProject)
 **Type:** Discrete Mathematics / Cryptography  
 **Languages & Tools:** Java, Modular Arithmetic  
 
@@ -36,13 +36,13 @@ Implemented a **Secure Key Exchange System** based on the **Diffie-Hellman algor
 - Secure shared key derivation  
 - Demonstrated encryption/decryption flow  
 
-🧠 *Focus:* Number theory, modular arithmetic, and applied cryptography  
+ *Focus:* Number theory, modular arithmetic, and applied cryptography  
 
-🌐 **Website:** [View Project Site](https://shoug-alomran.github.io/CS285-CryptographyProject/)  
+ **Website:** [View Project Site](https://shoug-alomran.github.io/CS285-CryptographyProject/)  
 
 ---
 
-## ⚙️ [SE201 — Sillah Project](https://github.com/Shoug-Alomran/SE201--Sillah-Project)
+## [SE201 — Sillah Project](https://github.com/Shoug-Alomran/SE201--Sillah-Project)
 **Type:** Software Engineering Documentation  
 **Languages & Tools:** UML, Requirement Engineering, Visual Paradigm  
 
@@ -54,13 +54,13 @@ Developed a **preventive health management system** that analyzes family medical
 - Class and UI design documentation  
 - Non-functional requirements analysis  
 
-🧠 *Focus:* Structured system analysis and end-to-end documentation using IEEE standards  
+ *Focus:* Structured system analysis and end-to-end documentation using IEEE standards  
 
-🌐 **Website:** [View Project Site](https://shoug-alomran.github.io/SE201--Sillah-Project/)  
+ **Website:** [View Project Site](https://shoug-alomran.github.io/SE201--Sillah-Project/)  
 
 ---
 
-## 🔗 [CS210 — Linked List Implementation & Runtime Analysis](https://github.com/Shoug-Alomran/CS210-Project-Linked-List-Implementation-and-Runtime-Analysis)
+## [CS210 — Linked List Implementation & Runtime Analysis](https://github.com/Shoug-Alomran/CS210-Project-Linked-List-Implementation-and-Runtime-Analysis)
 **Type:** Data Structures & Algorithms  
 **Languages & Tools:** Java  
 
@@ -71,9 +71,9 @@ Implemented a **singly linked list** with performance analysis across different 
 - Algorithm complexity discussion  
 - Clean modular code structure  
 
-🧠 *Focus:* Algorithmic efficiency and data structure design  
+ *Focus:* Algorithmic efficiency and data structure design  
 
-🌐 **Website:** [View Project Site](https://shoug-alomran.github.io/CS210-Project-Linked-List-Implementation-and-Runtime-Analysis/)  
+ **Website:** [View Project Site](https://shoug-alomran.github.io/CS210-Project-Linked-List-Implementation-and-Runtime-Analysis/)  
 
 ---
 
