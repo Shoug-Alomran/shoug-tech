@@ -1,26 +1,26 @@
-# 🌸 Shoug Fawaz Alomran — Digital Garden & Interactive CV 🌸
+# Shoug Fawaz Alomran — Digital Garden & Interactive CV
 
 Welcome to my **Digital Garden**, a living space where I document my journey in **cybersecurity, software development, and personal growth**.  
 Built using [MkDocs Material](https://squidfunk.github.io/mkdocs-material/), this project serves as both an **interactive CV** and a **knowledge hub** — showcasing my projects, skills, and continuous learning path.
 
 ---
 
-## 🌐 Live Site
+## Live Site
 🔗 [Visit My Digital Garden](https://shoug-alomran.github.io/My-Garden/)
 
 ---
 
-## 🧠 About
+## About
 I’m **Shoug Fawaz Alomran**, passionate about:
-- 🧩 **Penetration Testing** — exploring systems ethically to make them safer  
-- 💻 **Software Development** — building useful tools and apps for everyday life  
-- 🛡️ **Cybersecurity Awareness** — helping others protect themselves online  
+- **Penetration Testing** — exploring systems ethically to make them safer  
+- **Software Development** — building useful tools and apps for everyday life  
+- **Cybersecurity Awareness** — helping others protect themselves online  
 
 This site brings together my academic journey, projects, technical labs, volunteering, and research work — all in one evolving space.
 
 ---
 
-## 🗂️ Structure
+## Structure
 | Section | Description |
 |----------|--------------|
 | `Home` | Overview and introduction |
@@ -31,7 +31,7 @@ This site brings together my academic journey, projects, technical labs, volunte
 
 ---
 
-## 🧰 Built With
+## Built With
 - [**Python 3**](https://www.python.org/)  
 - [**MkDocs Material**](https://squidfunk.github.io/mkdocs-material/)  
 - [**GitHub Pages**](https://pages.github.com/) for hosting  
@@ -39,7 +39,7 @@ This site brings together my academic journey, projects, technical labs, volunte
 
 ---
 
-## 🚀 Local Setup
+## Local Setup
 To run locally:
 ```bash
 # Clone this repository
@@ -58,6 +58,6 @@ mkdocs serve
 
 ---
 
-## 🧩 Built With
+## Built With
 - [MkDocs](https://www.mkdocs.org/)
 - [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/)
