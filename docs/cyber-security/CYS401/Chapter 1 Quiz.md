@@ -1,3 +1,3 @@
 # Chapter 1 Quiz
-- [Open in new tab](./Chapter 1.html)
-<iframe src="../Chapter 1.html" width="150%" height="800" style="border:none;"></iframe>
+- [Open in new tab](./Chapter 1 Quiz.html)
+<iframe src="../Chapter 1 Quiz.html" width="150%" height="800" style="border:none;"></iframe>
