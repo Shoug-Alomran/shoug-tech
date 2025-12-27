@@ -1,0 +1,1616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CS 340: Conceptual Design (Entity Relationship Model) - Chapter 2</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@300;400;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1a3a52;
+            --secondary: #2c5f7f;
+            --accent: #e67e22;
+            --light: #f8f9fa;
+            --dark: #0d1b2a;
+            --card-bg: #ffffff;
+            --shadow: rgba(0, 0, 0, 0.08);
+            --border: #e1e8ed;
+            --success: #27ae60;
+            --warning: #f39c12;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            line-height: 1.7;
+            color: var(--dark);
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8eef3 100%);
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header Section */
+        header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 80px 20px 100px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: float 20s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            50% { transform: translate(-30px, 30px) rotate(180deg); }
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .chapter-tag {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        h1 {
+            font-family: 'Crimson Pro', serif;
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            line-height: 1.2;
+        }
+
+        .subtitle {
+            font-size: 1.3rem;
+            opacity: 0.95;
+            font-weight: 400;
+            margin-bottom: 30px;
+        }
+
+        .course-info {
+            display: flex;
+            gap: 40px;
+            margin-top: 40px;
+            flex-wrap: wrap;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            opacity: 0.9;
+        }
+
+        .info-item strong {
+            font-weight: 600;
+        }
+
+        /* Learning Objectives */
+        .learning-objectives {
+            background: var(--card-bg);
+            border-left: 5px solid var(--accent);
+            padding: 30px;
+            margin: -50px auto 60px;
+            max-width: 1100px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px var(--shadow);
+            position: relative;
+            z-index: 2;
+            animation: fadeInUp 0.8s ease-out 0.2s both;
+        }
+
+        .learning-objectives h2 {
+            font-family: 'Crimson Pro', serif;
+            color: var(--primary);
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        .objectives-list {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .objectives-list li {
+            padding: 12px 0;
+            padding-left: 35px;
+            position: relative;
+            color: var(--dark);
+        }
+
+        .objectives-list li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--accent);
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        /* Main Content */
+        main {
+            padding: 40px 0 80px;
+        }
+
+        section {
+            background: var(--card-bg);
+            margin-bottom: 40px;
+            padding: 50px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px var(--shadow);
+            animation: fadeInUp 0.6s ease-out both;
+        }
+
+        section:nth-child(1) { animation-delay: 0.1s; }
+        section:nth-child(2) { animation-delay: 0.2s; }
+        section:nth-child(3) { animation-delay: 0.3s; }
+        section:nth-child(4) { animation-delay: 0.4s; }
+
+        h2 {
+            font-family: 'Crimson Pro', serif;
+            color: var(--primary);
+            font-size: 2.2rem;
+            margin-bottom: 25px;
+            font-weight: 700;
+            border-bottom: 3px solid var(--accent);
+            padding-bottom: 15px;
+        }
+
+        h3 {
+            font-family: 'Crimson Pro', serif;
+            color: var(--secondary);
+            font-size: 1.6rem;
+            margin: 35px 0 20px;
+            font-weight: 600;
+        }
+
+        h4 {
+            font-family: 'DM Sans', sans-serif;
+            color: var(--primary);
+            font-size: 1.2rem;
+            margin: 25px 0 15px;
+            font-weight: 600;
+        }
+
+        p {
+            margin-bottom: 20px;
+            font-size: 1.05rem;
+            color: #333;
+        }
+
+        /* Definition Boxes */
+        .definition {
+            background: linear-gradient(135deg, #f0f7ff 0%, #e6f2ff 100%);
+            border-left: 4px solid var(--secondary);
+            padding: 25px;
+            margin: 25px 0;
+            border-radius: 8px;
+        }
+
+        .definition strong {
+            color: var(--primary);
+            font-size: 1.15rem;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        /* Example Boxes */
+        .example {
+            background: linear-gradient(135deg, #fff8f0 0%, #ffeed9 100%);
+            border-left: 4px solid var(--accent);
+            padding: 25px;
+            margin: 25px 0;
+            border-radius: 8px;
+        }
+
+        .example-title {
+            color: var(--accent);
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        /* Note Boxes */
+        .note {
+            background: linear-gradient(135deg, #fff5f5 0%, #ffe6e6 100%);
+            border-left: 4px solid #e74c3c;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 8px;
+        }
+
+        .note-title {
+            color: #e74c3c;
+            font-weight: 700;
+            font-size: 1rem;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        /* Lists */
+        ul, ol {
+            margin: 20px 0 20px 25px;
+            line-height: 1.9;
+        }
+
+        li {
+            margin-bottom: 12px;
+            color: #444;
+        }
+
+        /* ER Diagram Notation */
+        .notation-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin: 30px 0;
+        }
+
+        .notation-card {
+            background: white;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            padding: 25px;
+            transition: all 0.3s ease;
+        }
+
+        .notation-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px var(--shadow);
+        }
+
+        .notation-symbol {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            color: var(--primary);
+            text-align: center;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .notation-name {
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+            text-align: center;
+        }
+
+        .notation-desc {
+            color: #666;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        /* Attribute Types Grid */
+        .attribute-types {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .attr-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            padding: 25px;
+            transition: all 0.3s ease;
+        }
+
+        .attr-card:hover {
+            border-color: var(--secondary);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px var(--shadow);
+        }
+
+        .attr-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--secondary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+
+        .attr-title {
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        /* Relationship Cards */
+        .relationship-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin: 30px 0;
+        }
+
+        .rel-card {
+            background: white;
+            border-top: 4px solid var(--accent);
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 4px 12px var(--shadow);
+            transition: all 0.3s ease;
+        }
+
+        .rel-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px var(--shadow);
+        }
+
+        .rel-type {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 10px;
+            font-family: 'Crimson Pro', serif;
+        }
+
+        .rel-title {
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        /* Diagram Display */
+        .diagram-box {
+            background: #f8fafc;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 30px;
+            margin: 30px 0;
+            text-align: center;
+        }
+
+        .diagram-title {
+            color: var(--primary);
+            font-weight: 600;
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+        }
+
+        .diagram-content {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px var(--shadow);
+        }
+
+        /* ER Component Visual */
+        .er-visual {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin: 30px 0;
+            padding: 30px;
+            background: #f8f9fa;
+            border-radius: 12px;
+        }
+
+        .er-entity {
+            background: var(--secondary);
+            color: white;
+            padding: 20px 40px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .er-relationship {
+            background: var(--accent);
+            color: white;
+            padding: 15px 30px;
+            transform: rotate(45deg);
+            font-weight: 600;
+        }
+
+        .er-attribute {
+            background: #f39c12;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 50px;
+            font-size: 0.9rem;
+        }
+
+        /* Comparison Table */
+        .comparison-table {
+            width: 100%;
+            margin: 30px 0;
+            border-collapse: collapse;
+            background: white;
+            box-shadow: 0 4px 12px var(--shadow);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .comparison-table th {
+            background: var(--primary);
+            color: white;
+            padding: 18px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .comparison-table td {
+            padding: 15px 18px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .comparison-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin: 30px 0;
+        }
+
+        .point-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f7f9fc 100%);
+            padding: 25px;
+            border-radius: 12px;
+            border: 2px solid var(--border);
+            transition: all 0.3s ease;
+        }
+
+        .point-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px var(--shadow);
+            border-color: var(--accent);
+        }
+
+        .point-card h4 {
+            color: var(--primary);
+            margin-bottom: 12px;
+            font-size: 1.2rem;
+        }
+
+        /* Steps Timeline */
+        .steps-timeline {
+            position: relative;
+            padding-left: 40px;
+            margin: 40px 0;
+        }
+
+        .steps-timeline::before {
+            content: '';
+            position: absolute;
+            left: 12px;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: linear-gradient(to bottom, var(--accent), var(--secondary));
+        }
+
+        .step-item {
+            position: relative;
+            margin-bottom: 40px;
+            padding-left: 20px;
+        }
+
+        .step-item::before {
+            content: '';
+            position: absolute;
+            left: -33px;
+            top: 5px;
+            width: 25px;
+            height: 25px;
+            background: var(--accent);
+            border-radius: 50%;
+            border: 4px solid white;
+            box-shadow: 0 0 0 2px var(--accent);
+        }
+
+        /* Abstraction Levels Diagram */
+        .abstraction-levels {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            margin: 30px 0;
+            box-shadow: 0 4px 15px var(--shadow);
+        }
+
+        .level {
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--primary) 100%);
+            color: white;
+            padding: 20px 30px;
+            margin: 15px 0;
+            border-radius: 8px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .level:hover {
+            transform: translateX(10px);
+            box-shadow: 0 6px 20px var(--shadow);
+        }
+
+        .level-name {
+            font-weight: 700;
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+        }
+
+        .level-desc {
+            font-size: 0.95rem;
+            opacity: 0.9;
+        }
+
+        /* Constraints Visual */
+        .constraints-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin: 30px 0;
+        }
+
+        .constraint-card {
+            background: white;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            padding: 25px;
+            transition: all 0.3s ease;
+        }
+
+        .constraint-card:hover {
+            border-color: var(--success);
+            box-shadow: 0 8px 20px var(--shadow);
+        }
+
+        .constraint-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .constraint-title {
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+            text-align: center;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--dark);
+            color: white;
+            padding: 50px 20px 30px;
+            text-align: center;
+            margin-top: 60px;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .footer-divider {
+            width: 100px;
+            height: 3px;
+            background: var(--accent);
+            margin: 0 auto 30px;
+        }
+
+        .footer-name {
+            font-family: 'Crimson Pro', serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: var(--accent);
+        }
+
+        .footer-title {
+            font-size: 1.1rem;
+            opacity: 0.8;
+            margin-bottom: 30px;
+        }
+
+        .footer-meta {
+            font-size: 0.9rem;
+            opacity: 0.6;
+            margin-top: 30px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            .subtitle {
+                font-size: 1.1rem;
+            }
+
+            section {
+                padding: 30px 25px;
+            }
+
+            .notation-grid,
+            .attribute-types,
+            .relationship-grid,
+            .key-points,
+            .constraints-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .er-visual {
+                flex-direction: column;
+            }
+        }
+
+        /* Special Tables for ER Examples */
+        .er-example-table {
+            width: 100%;
+            margin: 20px 0;
+            border-collapse: collapse;
+            font-size: 0.95rem;
+        }
+
+        .er-example-table th {
+            background: var(--secondary);
+            color: white;
+            padding: 12px;
+            text-align: left;
+        }
+
+        .er-example-table td {
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+        }
+
+        /* Activity Box */
+        .activity-box {
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            border-left: 4px solid var(--success);
+            padding: 25px;
+            margin: 30px 0;
+            border-radius: 8px;
+        }
+
+        .activity-title {
+            color: var(--success);
+            font-weight: 700;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Info Callout */
+        .info-callout {
+            background: #fff9e6;
+            border-left: 4px solid var(--warning);
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 8px;
+        }
+
+        .info-callout strong {
+            color: var(--warning);
+            display: block;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container header-content">
+            <span class="chapter-tag">Chapter 02</span>
+            <h1>Conceptual Design</h1>
+            <p class="subtitle">Entity Relationship Model</p>
+            <div class="course-info">
+                <div class="info-item">
+                    <strong>Course:</strong> CS 340: Introduction to Database Systems
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="learning-objectives">
+            <h2>Learning Objectives</h2>
+            <ul class="objectives-list">
+                <li>Define some basic concepts related to databases (abstraction, schemas, and instances)</li>
+                <li>Explain the main components of ER diagrams (entities, attributes, and relationships)</li>
+                <li>Given a description of a problem, create an ER diagram</li>
+                <li>Justify your choice of entities, relationships, keys, cardinality constraints, participation constraints, and weak entities</li>
+            </ul>
+        </div>
+    </div>
+
+    <main class="container">
+        <section id="recap">
+            <h2>Database Design Review</h2>
+            
+            <p>We learned that databases are useful because they store a lot of data for applications, give desirable guarantees for transactions, and are efficient and reliable. Before any of this is possible, we need to carefully design a database.</p>
+
+            <div class="key-points">
+                <div class="point-card">
+                    <h4>💾 Data Storage</h4>
+                    <p>Databases provide centralized, organized storage for application data</p>
+                </div>
+                <div class="point-card">
+                    <h4>🔒 ACID Guarantees</h4>
+                    <p>Transactions ensure atomicity, consistency, isolation, and durability</p>
+                </div>
+                <div class="point-card">
+                    <h4>⚡ Efficiency</h4>
+                    <p>Optimized query processing and data retrieval mechanisms</p>
+                </div>
+                <div class="point-card">
+                    <h4>📐 Careful Design</h4>
+                    <p>Proper conceptual modeling is the foundation of a successful database</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="abstraction">
+            <h2>Data Abstraction and Architecture</h2>
+            
+            <h3>Preliminaries</h3>
+            <p>Database systems provide an abstract view of the data. The three levels of abstraction are as follows:</p>
+
+            <div class="abstraction-levels">
+                <div class="level">
+                    <div class="level-name">External Level (Views)</div>
+                    <div class="level-desc">Shows different parts of the database to different users. Example: Student view is different from registrar or database admin.</div>
+                </div>
+                <div class="level">
+                    <div class="level-name">Logical Level</div>
+                    <div class="level-desc">What data are stored in the database and what relationships exist among those data.</div>
+                </div>
+                <div class="level">
+                    <div class="level-name">Physical Level</div>
+                    <div class="level-desc">How data are actually stored on disk (storage structures, file organization, indexing).</div>
+                </div>
+            </div>
+
+            <div class="definition">
+                <strong>Data Abstraction</strong>
+                The suppression of details of data organization and storage while highlighting essential features for improved understanding of data. This is one of the key advantages of using relational databases.
+            </div>
+
+            <h3>Schemas and Instances</h3>
+            
+            <div class="definition">
+                <strong>Schema</strong>
+                The logical structure of the database. It describes the database design and changes very infrequently.
+            </div>
+
+            <div class="key-points">
+                <div class="point-card">
+                    <h4>📋 Logical Schema</h4>
+                    <p>Describes the database design at the logical level (e.g., Student takes Course)</p>
+                </div>
+                <div class="point-card">
+                    <h4>💾 Physical Schema</h4>
+                    <p>Describes the database design at the physical storage level</p>
+                </div>
+                <div class="point-card">
+                    <h4>👁️ External Schema (Subschema)</h4>
+                    <p>Describes different views of the database for various external users</p>
+                </div>
+            </div>
+
+            <div class="definition">
+                <strong>Instance</strong>
+                The data in the database at a particular moment in time. The database state changes every time the database is updated.
+            </div>
+
+            <div class="example">
+                <span class="example-title">Schema vs. Instance Example:</span>
+                <p><strong>Schema:</strong> Student(RollNo, Name, Address, PhoneNo, DOB, email, CourseNo, DNo)</p>
+                <p><strong>Instance:</strong> The actual rows of data in the Student table at any given time</p>
+                <table class="er-example-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Student_number</th>
+                            <th>Class</th>
+                            <th>Major</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Smith</td>
+                            <td>17</td>
+                            <td>1</td>
+                            <td>CS</td>
+                        </tr>
+                        <tr>
+                            <td>Brown</td>
+                            <td>8</td>
+                            <td>2</td>
+                            <td>CS</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="data-independence">
+            <h2>Data Independence</h2>
+            
+            <div class="definition">
+                <strong>Data Independence</strong>
+                The protection of user applications from changes made in the definition and organization of data. Application programs should not be exposed to details of data representation and storage.
+            </div>
+
+            <h3>Types of Data Independence</h3>
+
+            <div class="key-points">
+                <div class="point-card">
+                    <h4>📊 Logical Data Independence</h4>
+                    <p>The capacity to change the conceptual schema without having to change external schemas and their associated application programs.</p>
+                    <div class="example" style="margin-top: 15px; background: #f8f9fa; padding: 15px;">
+                        <p style="font-size: 0.9rem; margin: 0;"><strong>Example:</strong> If user B adds a new column (e.g., salary) to their table, it will not affect the external view for user A, though the internal schema has been changed for both users.</p>
+                    </div>
+                </div>
+                <div class="point-card">
+                    <h4>💾 Physical Data Independence</h4>
+                    <p>The capacity to change the internal schema without having to change the conceptual schema.</p>
+                    <div class="example" style="margin-top: 15px; background: #f8f9fa; padding: 15px;">
+                        <p style="font-size: 0.9rem; margin: 0;"><strong>Example:</strong> Changing file organization, storage structures, storage devices, or indexing strategy without affecting the conceptual or external schemas.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="note">
+                <span class="note-title">Important Note:</span>
+                <p>Logical data independence is more difficult to achieve than physical data independence, since application programs are heavily dependent on the logical structure of the data they access.</p>
+            </div>
+        </section>
+
+        <section id="conceptual-design">
+            <h2>Conceptual Design Process</h2>
+            
+            <p>We have our enterprise we intend to model. What are the entities and relationships in this enterprise?</p>
+
+            <div class="definition">
+                <strong>Entities</strong>
+                (Usually) nouns that represent things in the enterprise (e.g., Student, Course, etc.)
+            </div>
+
+            <div class="definition">
+                <strong>Relationships</strong>
+                (Usually) verbs that represent statements about 2 or more objects (e.g., Student takes Course)
+            </div>
+
+            <div class="info-callout">
+                <strong>Design Questions:</strong>
+                <ul style="margin: 10px 0 0 20px;">
+                    <li>What information should we store about those entities and relationships?</li>
+                    <li>What rules do we need to make sure our data is sound? (Integrity constraints)</li>
+                </ul>
+            </div>
+
+            <p style="margin-top: 20px;">The encoding in the relational database realm is referred to as an <strong>Entity-Relationship (ER) diagram</strong>.</p>
+        </section>
+
+        <section id="er-components">
+            <h2>ER Components: Entities and Attributes</h2>
+            
+            <div class="definition">
+                <strong>Entity</strong>
+                A real-world object distinguishable from other objects. Described by a set of attributes.
+            </div>
+
+            <div class="definition">
+                <strong>Entity Set</strong>
+                A collection of similar entities (e.g., Employee is an entity set for all employees). All entities in an entity set have the same set of attributes.
+            </div>
+
+            <div class="key-points">
+                <div class="point-card">
+                    <h4>🔑 Key Attribute</h4>
+                    <p>Each entity set has a key attribute that uniquely identifies each entity</p>
+                </div>
+                <div class="point-card">
+                    <h4>📦 Domain</h4>
+                    <p>Each attribute has a domain (e.g., float, int, date, string)</p>
+                </div>
+                <div class="point-card">
+                    <h4>🎯 Distinguishable</h4>
+                    <p>Each entity can be uniquely identified by its attributes</p>
+                </div>
+            </div>
+
+            <h3>Types of Attributes</h3>
+
+            <div class="attribute-types">
+                <div class="attr-card">
+                    <div class="attr-icon">📌</div>
+                    <div class="attr-title">Simple Attribute</div>
+                    <p>Each entity has a single atomic value for the attribute.</p>
+                    <div class="example" style="margin-top: 15px; background: #f8f9fa; padding: 12px;">
+                        <p style="font-size: 0.9rem; margin: 0;"><strong>Examples:</strong> SSN, Sex, Age</p>
+                    </div>
+                </div>
+
+                <div class="attr-card">
+                    <div class="attr-icon">🧩</div>
+                    <div class="attr-title">Composite Attribute</div>
+                    <p>The attribute may be divided into smaller parts.</p>
+                    <div class="example" style="margin-top: 15px; background: #f8f9fa; padding: 12px;">
+                        <p style="font-size: 0.9rem; margin: 0;"><strong>Examples:</strong><br>
+                        Address(Number, Street, City, Country)<br>
+                        Name(FirstName, MiddleName, LastName)</p>
+                    </div>
+                </div>
+
+                <div class="attr-card">
+                    <div class="attr-icon">📚</div>
+                    <div class="attr-title">Multi-valued Attribute</div>
+                    <p>A set of values for the same entity.</p>
+                    <div class="example" style="margin-top: 15px; background: #f8f9fa; padding: 12px;">
+                        <p style="font-size: 0.9rem; margin: 0;"><strong>Examples:</strong><br>
+                        {Color} 1...3 for a car<br>
+                        {CollegeDegree} for a person</p>
+                    </div>
+                </div>
+
+                <div class="attr-card">
+                    <div class="attr-icon">💾</div>
+                    <div class="attr-title">Stored Attribute</div>
+                    <p>Value stored directly in the database.</p>
+                    <div class="example" style="margin-top: 15px; background: #f8f9fa; padding: 12px;">
+                        <p style="font-size: 0.9rem; margin: 0;"><strong>Example:</strong> BirthDate</p>
+                    </div>
+                </div>
+
+                <div class="attr-card">
+                    <div class="attr-icon">🔄</div>
+                    <div class="attr-title">Derived Attribute</div>
+                    <p>Value can be obtained from other attributes.</p>
+                    <div class="example" style="margin-top: 15px; background: #f8f9fa; padding: 12px;">
+                        <p style="font-size: 0.9rem; margin: 0;"><strong>Example:</strong> Age (derived from BirthDate and current date)</p>
+                    </div>
+                </div>
+
+                <div class="attr-card">
+                    <div class="attr-icon">🌀</div>
+                    <div class="attr-title">Complex Attribute</div>
+                    <p>Composite and multi-valued attributes nested arbitrarily.</p>
+                    <div class="example" style="margin-top: 15px; background: #f8f9fa; padding: 12px;">
+                        <p style="font-size: 0.9rem; margin: 0;"><strong>Example:</strong> {PreviousDegrees(College, Year, Degree, Field)}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="note">
+                <span class="note-title">Design Note:</span>
+                <p>Complex attributes are very rare and not a good design technique. They should be avoided in most cases.</p>
+            </div>
+        </section>
+
+        <section id="keys">
+            <h2>Keys in ER Diagrams</h2>
+            
+            <div class="definition">
+                <strong>Key Attribute</strong>
+                An attribute of an entity type for which each entity must have a unique value.
+            </div>
+
+            <div class="example">
+                <span class="example-title">Key Attribute Examples:</span>
+                <ul>
+                    <li><strong>EMPLOYEE:</strong> SSN (Social Security Number)</li>
+                    <li><strong>STUDENT:</strong> Student ID</li>
+                    <li><strong>CAR:</strong> VehicleIdentificationNumber (VIN)</li>
+                </ul>
+            </div>
+
+            <h3>Key Characteristics</h3>
+
+            <div class="key-points">
+                <div class="point-card">
+                    <h4>🔗 Composite Keys</h4>
+                    <p>A key attribute may be composite</p>
+                    <div class="example" style="margin-top: 12px; background: #f8f9fa; padding: 12px;">
+                        <p style="font-size: 0.9rem; margin: 0;">VehicleTagNumber(Number, State) - license plate</p>
+                    </div>
+                </div>
+                <div class="point-card">
+                    <h4>🎯 Multiple Keys</h4>
+                    <p>An entity type may have more than one key</p>
+                    <div class="example" style="margin-top: 12px; background: #f8f9fa; padding: 12px;">
+                        <p style="font-size: 0.9rem; margin: 0;">CAR: VIN or VehicleTagNumber</p>
+                    </div>
+                </div>
+                <div class="point-card">
+                    <h4>📝 Notation</h4>
+                    <p>Each key is underlined in ER diagrams</p>
+                    <div class="example" style="margin-top: 12px; background: #f8f9fa; padding: 12px;">
+                        <p style="font-size: 0.9rem; margin: 0;">All candidate keys are underlined</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="er-notation">
+            <h2>ER Diagram Notation</h2>
+            
+            <p>In ER diagrams, we use specific symbols to represent different components:</p>
+
+            <div class="notation-grid">
+                <div class="notation-card">
+                    <div class="notation-symbol">
+                        <div style="border: 3px solid var(--primary); padding: 15px 30px; display: inline-block;">ENTITY</div>
+                    </div>
+                    <div class="notation-name">Entity</div>
+                    <p class="notation-desc">Represented by a rectangle. Contains the entity type name.</p>
+                </div>
+
+                <div class="notation-card">
+                    <div class="notation-symbol">
+                        <div style="border: 3px solid var(--primary); padding: 12px 25px; display: inline-block; position: relative;">
+                            <div style="border: 3px solid var(--primary); padding: 10px 20px; position: absolute; top: 5px; left: 5px; background: white;">WEAK</div>
+                            <div style="visibility: hidden;">WEAK</div>
+                        </div>
+                    </div>
+                    <div class="notation-name">Weak Entity</div>
+                    <p class="notation-desc">Represented by a double rectangle. Does not have a key attribute.</p>
+                </div>
+
+                <div class="notation-card">
+                    <div class="notation-symbol">
+                        <div style="border: 3px solid var(--accent); width: 80px; height: 80px; transform: rotate(45deg); display: inline-flex; align-items: center; justify-content: center;">
+                            <span style="transform: rotate(-45deg); font-size: 0.9rem;">RELATES</span>
+                        </div>
+                    </div>
+                    <div class="notation-name">Relationship</div>
+                    <p class="notation-desc">Represented by a diamond. Contains the relationship name.</p>
+                </div>
+
+                <div class="notation-card">
+                    <div class="notation-symbol">
+                        <div style="border: 3px solid #f39c12; border-radius: 50%; padding: 15px 25px; display: inline-block;">Attr</div>
+                    </div>
+                    <div class="notation-name">Attribute</div>
+                    <p class="notation-desc">Represented by an oval connected to its entity or relationship.</p>
+                </div>
+
+                <div class="notation-card">
+                    <div class="notation-symbol">
+                        <div style="border: 3px solid #27ae60; border-bottom: 4px solid #27ae60; border-radius: 50%; padding: 15px 25px; display: inline-block;"><u>Key</u></div>
+                    </div>
+                    <div class="notation-name">Key Attribute</div>
+                    <p class="notation-desc">Represented by an oval with the attribute name underlined.</p>
+                </div>
+
+                <div class="notation-card">
+                    <div class="notation-symbol">
+                        <div style="border: 3px solid #e74c3c; border-radius: 50%; padding: 12px 20px; display: inline-block; position: relative;">
+                            <div style="border: 3px solid #e74c3c; border-radius: 50%; padding: 10px 18px; position: absolute; top: 5px; left: 5px; background: white;">Multi</div>
+                            <div style="visibility: hidden;">Multi</div>
+                        </div>
+                    </div>
+                    <div class="notation-name">Multi-valued Attribute</div>
+                    <p class="notation-desc">Represented by a double oval.</p>
+                </div>
+
+                <div class="notation-card">
+                    <div class="notation-symbol">
+                        <div style="border: 3px dashed #9b59b6; border-radius: 50%; padding: 15px 20px; display: inline-block;">Derived</div>
+                    </div>
+                    <div class="notation-name">Derived Attribute</div>
+                    <p class="notation-desc">Represented by a dashed oval.</p>
+                </div>
+
+                <div class="notation-card">
+                    <div class="notation-symbol">
+                        <div style="display: inline-flex; flex-direction: column; align-items: center; gap: 5px;">
+                            <div style="border: 3px solid #3498db; border-radius: 50%; padding: 8px 15px;">Sub1</div>
+                            <div style="width: 2px; height: 20px; background: #3498db;"></div>
+                            <div style="border: 3px solid #3498db; border-radius: 50%; padding: 12px 18px;">Main</div>
+                        </div>
+                    </div>
+                    <div class="notation-name">Composite Attribute</div>
+                    <p class="notation-desc">Shown as an oval connected to other ovals representing component attributes.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="relationships">
+            <h2>Relationships in ER Diagrams</h2>
+            
+            <div class="definition">
+                <strong>Relationship</strong>
+                A relationship relates two or more distinct entities with a specific meaning.
+            </div>
+
+            <div class="example">
+                <span class="example-title">Relationship Examples:</span>
+                <ul>
+                    <li>EMPLOYEE <strong>John Smith</strong> works on the <strong>ProductX</strong> PROJECT</li>
+                    <li>EMPLOYEE <strong>Franklin Wong</strong> manages the <strong>Research</strong> DEPARTMENT</li>
+                </ul>
+            </div>
+
+            <div class="definition">
+                <strong>Relationship Type</strong>
+                Relationships of the same type are grouped into a relationship type. All relationships in a type have the same participating entity types.
+            </div>
+
+            <h3>Relationship Degree (Arity)</h3>
+            
+            <div class="relationship-grid">
+                <div class="rel-card">
+                    <div class="rel-type">Unary (1)</div>
+                    <div class="rel-title">Recursive Relationship</div>
+                    <p>A relationship type between the same entity type in distinct roles.</p>
+                    <div class="example" style="margin-top: 12px;">
+                        <p style="font-size: 0.9rem; margin: 0;"><strong>Example:</strong> EMPLOYEE supervises EMPLOYEE</p>
+                    </div>
+                </div>
+
+                <div class="rel-card">
+                    <div class="rel-type">Binary (2)</div>
+                    <div class="rel-title">Most Common</div>
+                    <p>A relationship between two different entity types.</p>
+                    <div class="example" style="margin-top: 12px;">
+                        <p style="font-size: 0.9rem; margin: 0;"><strong>Examples:</strong> EMPLOYEE works for DEPARTMENT, STUDENT takes COURSE</p>
+                    </div>
+                </div>
+
+                <div class="rel-card">
+                    <div class="rel-type">Ternary (3)</div>
+                    <div class="rel-title">Three-way Relationship</div>
+                    <p>A relationship among three entity types.</p>
+                    <div class="example" style="margin-top: 12px;">
+                        <p style="font-size: 0.9rem; margin: 0;"><strong>Example:</strong> SUPPLIER supplies PART to PROJECT</p>
+                    </div>
+                </div>
+
+                <div class="rel-card">
+                    <div class="rel-type">N-ary (N)</div>
+                    <div class="rel-title">General Case</div>
+                    <p>A relationship among N entity types.</p>
+                    <div class="example" style="margin-top: 12px;">
+                        <p style="font-size: 0.9rem; margin: 0;">N > 3 relationships are rare in practice</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="cardinality">
+            <h2>Relationship Cardinality Constraints</h2>
+            
+            <div class="definition">
+                <strong>Cardinality Ratio</strong>
+                Specifies the number of relationship instances that an entity can participate in.
+            </div>
+
+            <h3>Types of Cardinality</h3>
+
+            <div class="relationship-grid">
+                <div class="rel-card">
+                    <div class="rel-type">1:1</div>
+                    <div class="rel-title">One-to-One</div>
+                    <p>An entity in A is associated with at most one entity in B, and vice versa.</p>
+                    <div class="example" style="margin-top: 12px;">
+                        <p style="font-size: 0.9rem; margin: 0;"><strong>Example:</strong> An employee manages at most one department. A department is managed by at most one employee.</p>
+                    </div>
+                </div>
+
+                <div class="rel-card">
+                    <div class="rel-type">1:N</div>
+                    <div class="rel-title">One-to-Many</div>
+                    <p>An entity in A is associated with any number of entities in B. An entity in B is associated with at most one entity in A.</p>
+                    <div class="example" style="margin-top: 12px;">
+                        <p style="font-size: 0.9rem; margin: 0;"><strong>Example:</strong> A department has many employees. An employee works for one department.</p>
+                    </div>
+                </div>
+
+                <div class="rel-card">
+                    <div class="rel-type">N:1</div>
+                    <div class="rel-title">Many-to-One</div>
+                    <p>An entity in A is associated with at most one entity in B. An entity in B can be associated with any number of entities in A.</p>
+                    <div class="example" style="margin-top: 12px;">
+                        <p style="font-size: 0.9rem; margin: 0;"><strong>Example:</strong> Many employees work for one department.</p>
+                    </div>
+                </div>
+
+                <div class="rel-card">
+                    <div class="rel-type">M:N</div>
+                    <div class="rel-title">Many-to-Many</div>
+                    <p>An entity in A is associated with any number of entities in B, and vice versa.</p>
+                    <div class="example" style="margin-top: 12px;">
+                        <p style="font-size: 0.9rem; margin: 0;"><strong>Example:</strong> An employee works on many projects. A project has many employees working on it.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="participation">
+            <h2>Participation Constraints</h2>
+            
+            <div class="definition">
+                <strong>Participation Constraint</strong>
+                Specifies whether the existence of an entity depends on its being related to another entity via the relationship type.
+            </div>
+
+            <div class="constraints-grid">
+                <div class="constraint-card">
+                    <div class="constraint-icon">⚪</div>
+                    <div class="constraint-title">Partial Participation</div>
+                    <p>Not all entities in the entity set participate in the relationship.</p>
+                    <p style="margin-top: 10px; font-style: italic; color: #666;">Represented by a single line</p>
+                    <div class="example" style="margin-top: 12px;">
+                        <p style="font-size: 0.9rem; margin: 0;"><strong>Example:</strong> Not all employees manage departments</p>
+                    </div>
+                </div>
+
+                <div class="constraint-card">
+                    <div class="constraint-icon">⚫</div>
+                    <div class="constraint-title">Total Participation</div>
+                    <p>Every entity in the entity set must participate in at least one relationship instance.</p>
+                    <p style="margin-top: 10px; font-style: italic; color: #666;">Represented by a double line</p>
+                    <div class="example" style="margin-top: 12px;">
+                        <p style="font-size: 0.9rem; margin: 0;"><strong>Example:</strong> Every employee must work for a department</p>
+                    </div>
+                </div>
+            </div>
+
+            <h3>(Min, Max) Notation</h3>
+            
+            <div class="definition">
+                <strong>(min, max) Constraint</strong>
+                Specifies that each entity participates in at least <strong>min</strong> and at most <strong>max</strong> relationship instances.
+            </div>
+
+            <div class="key-points">
+                <div class="point-card">
+                    <h4>📏 Default Values</h4>
+                    <p>Default: min=0, max=n (no limit)</p>
+                    <p style="margin-top: 8px; font-size: 0.9rem; color: #666;">Must have min ≤ max, min ≥ 0, max ≥ 1</p>
+                </div>
+                <div class="point-card">
+                    <h4>🎯 Reading (min, max)</h4>
+                    <p>Read the numbers next to an entity type while looking AWAY from that entity</p>
+                    <div class="example" style="margin-top: 12px;">
+                        <p style="font-size: 0.9rem; margin: 0;">EMPLOYEE (1,1) — WORKS_FOR — (1,N) DEPARTMENT</p>
+                        <p style="font-size: 0.85rem; margin: 5px 0 0 0; color: #666;">Each employee works for exactly one department; each department has 1 to N employees</p>
+                    </div>
+                </div>
+                <div class="point-card">
+                    <h4>📊 Common Patterns</h4>
+                    <ul style="margin-top: 10px; font-size: 0.9rem;">
+                        <li>(0,1): Optional, at most one</li>
+                        <li>(1,1): Mandatory, exactly one</li>
+                        <li>(0,N): Optional, any number</li>
+                        <li>(1,N): Mandatory, at least one</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="weak-entities">
+            <h2>Weak Entity Types</h2>
+            
+            <div class="definition">
+                <strong>Weak Entity Type</strong>
+                An entity that does not have a key attribute and is identification-dependent on another entity type (the owner or identifying entity type).
+            </div>
+
+            <div class="key-points">
+                <div class="point-card">
+                    <h4>🔗 Identifying Relationship</h4>
+                    <p>A weak entity must participate in an identifying relationship type with an owner entity</p>
+                </div>
+                <div class="point-card">
+                    <h4>🔑 Partial Key</h4>
+                    <p>Weak entities have a partial key that is unique only within entities related to the same owner</p>
+                </div>
+                <div class="point-card">
+                    <h4>👥 Identification</h4>
+                    <p>Weak entities are identified by combining their partial key with the key of the owner entity</p>
+                </div>
+            </div>
+
+            <div class="example">
+                <span class="example-title">Weak Entity Example:</span>
+                <p><strong>Scenario:</strong> DEPENDENT entities and EMPLOYEE entities</p>
+                <ul>
+                    <li><strong>Owner Entity:</strong> EMPLOYEE (has SSN as key)</li>
+                    <li><strong>Weak Entity:</strong> DEPENDENT (no key attribute)</li>
+                    <li><strong>Partial Key:</strong> Dependent_name</li>
+                    <li><strong>Identifying Relationship:</strong> DEPENDENT_OF</li>
+                    <li><strong>Identification:</strong> A DEPENDENT is identified by (Employee_SSN, Dependent_name)</li>
+                </ul>
+                <p style="margin-top: 15px; font-style: italic; color: #666;">Example: "John Smith's dependent Mary" is different from "Alice Brown's dependent Mary"</p>
+            </div>
+
+            <div class="diagram-box">
+                <div class="diagram-title">Weak Entity Notation</div>
+                <div class="diagram-content">
+                    <p>A weak entity is shown with a <strong>double rectangle</strong></p>
+                    <p>The identifying relationship is shown with a <strong>double diamond</strong></p>
+                    <p>The partial key is <strong>underlined with a dashed line</strong></p>
+                </div>
+            </div>
+        </section>
+
+        <section id="relationship-attributes">
+            <h2>Attributes of Relationships</h2>
+            
+            <div class="definition">
+                <strong>Relationship Attributes</strong>
+                A relationship type can have attributes that describe properties of the relationship instance.
+            </div>
+
+            <div class="example">
+                <span class="example-title">Relationship Attribute Example:</span>
+                <p><strong>Relationship:</strong> WORKS_ON (between EMPLOYEE and PROJECT)</p>
+                <p><strong>Attribute:</strong> HoursPerWeek</p>
+                <p style="margin-top: 12px;">The value of <strong>HoursPerWeek</strong> depends on a particular (employee, project) combination. It describes how many hours per week that specific employee works on that specific project.</p>
+            </div>
+
+            <div class="note">
+                <span class="note-title">Design Note:</span>
+                <p>Most relationship attributes are used with M:N relationships. In 1:N relationships, they can often be transferred to the entity type on the N-side of the relationship.</p>
+            </div>
+        </section>
+
+        <section id="company-example">
+            <h2>Example: COMPANY Database</h2>
+            
+            <p>Let's design a database schema for a company based on the following requirements:</p>
+
+            <div class="example">
+                <span class="example-title">Requirements:</span>
+                <ul>
+                    <li>The company is organized into <strong>DEPARTMENTs</strong>. Each department has a name, number, and an employee who manages it. We keep track of the start date of the department manager. A department may have several locations.</li>
+                    <li>Each department controls a number of <strong>PROJECTs</strong>. Each project has a unique name, unique number, and is located at a single location.</li>
+                    <li>The database stores each <strong>EMPLOYEE's</strong> social security number, address, salary, sex, and birthdate.</li>
+                    <li>Each employee works for one department but may work on several projects. The database keeps track of the number of hours per week that an employee works on each project.</li>
+                    <li>We keep track of the direct supervisor of each employee.</li>
+                    <li>Each employee may have a number of <strong>DEPENDENTs</strong>. For each dependent, we keep a record of name, sex, birthdate, and relationship to the employee.</li>
+                </ul>
+            </div>
+
+            <h3>Identified Entity Types</h3>
+            
+            <div class="key-points">
+                <div class="point-card">
+                    <h4>🏢 DEPARTMENT</h4>
+                    <p><strong>Attributes:</strong> Name, Number, Locations, Manager, Manager_start_date</p>
+                </div>
+                <div class="point-card">
+                    <h4>📋 PROJECT</h4>
+                    <p><strong>Attributes:</strong> Name, Number, Location, Controlling_department</p>
+                </div>
+                <div class="point-card">
+                    <h4>👤 EMPLOYEE</h4>
+                    <p><strong>Attributes:</strong> SSN, Name(Fname, Minit, Lname), Address, Salary, Sex, Birth_date</p>
+                </div>
+                <div class="point-card">
+                    <h4>👨‍👩‍👧 DEPENDENT</h4>
+                    <p><strong>Attributes:</strong> Name, Sex, Birth_date, Relationship, Employee</p>
+                </div>
+            </div>
+
+            <h3>Identified Relationships</h3>
+
+            <div class="relationship-grid">
+                <div class="rel-card">
+                    <div class="rel-title">WORKS_FOR</div>
+                    <p>Between EMPLOYEE and DEPARTMENT (N:1)</p>
+                </div>
+                <div class="rel-card">
+                    <div class="rel-title">MANAGES</div>
+                    <p>Between EMPLOYEE and DEPARTMENT (1:1)</p>
+                    <p style="font-size: 0.9rem; margin-top: 8px;">Attribute: Start_date</p>
+                </div>
+                <div class="rel-card">
+                    <div class="rel-title">CONTROLS</div>
+                    <p>Between DEPARTMENT and PROJECT (1:N)</p>
+                </div>
+                <div class="rel-card">
+                    <div class="rel-title">WORKS_ON</div>
+                    <p>Between EMPLOYEE and PROJECT (M:N)</p>
+                    <p style="font-size: 0.9rem; margin-top: 8px;">Attribute: Hours</p>
+                </div>
+                <div class="rel-card">
+                    <div class="rel-title">SUPERVISION</div>
+                    <p>Between EMPLOYEE and EMPLOYEE (1:N)</p>
+                    <p style="font-size: 0.9rem; margin-top: 8px;">Recursive relationship</p>
+                </div>
+                <div class="rel-card">
+                    <div class="rel-title">DEPENDENTS_OF</div>
+                    <p>Between EMPLOYEE and DEPENDENT (1:N)</p>
+                    <p style="font-size: 0.9rem; margin-top: 8px;">Identifying relationship</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="activity">
+            <h2>Practice Activity: SBS Bank</h2>
+            
+            <div class="activity-box">
+                <div class="activity-title">
+                    <span>🎯</span>
+                    <span>Design Challenge</span>
+                </div>
+                <p><strong>Scenario:</strong> We have a bank called SBS with the following business requirements:</p>
+                <ul style="margin-left: 20px; margin-top: 15px;">
+                    <li>The bank has multiple <strong>branches</strong>. Each branch is located in a specific city and has its own unique name. Every year the branch is assigned a yearly budget and a rating (out of 10).</li>
+                    <li>A <strong>customer</strong> is identified by their name and phone number. The bank also keeps track of their address.</li>
+                    <li>The bank offers two services: <strong>accounts</strong> and <strong>loans</strong> to customers. Each account and loan has a unique number and is created and maintained by a single branch.</li>
+                    <li>Each account is assigned to one or more customers and the balance cannot be negative.</li>
+                    <li>A loan is always assigned to a single customer, has an interest rate, and a balance that cannot be negative.</li>
+                </ul>
+            </div>
+
+            <h3>Sample Solution</h3>
+            
+            <div class="example">
+                <span class="example-title">Identified Entities and Relationships:</span>
+                
+                <div class="key-points" style="margin-top: 20px;">
+                    <div class="point-card">
+                        <h4>🏦 BRANCH</h4>
+                        <p><strong>Attributes:</strong> Name (key), City, Budget, Rating</p>
+                    </div>
+                    <div class="point-card">
+                        <h4>👥 CUSTOMER</h4>
+                        <p><strong>Attributes:</strong> Name, Phone (key), Address</p>
+                    </div>
+                    <div class="point-card">
+                        <h4>💰 ACCOUNT</h4>
+                        <p><strong>Attributes:</strong> ID (key), Balance</p>
+                    </div>
+                    <div class="point-card">
+                        <h4>💵 LOAN</h4>
+                        <p><strong>Attributes:</strong> ID (key), Balance, Interest</p>
+                    </div>
+                </div>
+
+                <div class="relationship-grid" style="margin-top: 25px;">
+                    <div class="rel-card">
+                        <div class="rel-title">Opened_by</div>
+                        <p>BRANCH (1) — ACCOUNT (N)</p>
+                    </div>
+                    <div class="rel-card">
+                        <div class="rel-title">Given_by</div>
+                        <p>BRANCH (1) — LOAN (N)</p>
+                    </div>
+                    <div class="rel-card">
+                        <div class="rel-title">Owns</div>
+                        <p>CUSTOMER (M) — ACCOUNT (N)</p>
+                    </div>
+                    <div class="rel-card">
+                        <div class="rel-title">Takes</div>
+                        <p>CUSTOMER (1) — LOAN (N)</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="design-conventions">
+            <h2>ER Diagram Design Conventions</h2>
+            
+            <div class="key-points">
+                <div class="point-card">
+                    <h4>📝 Naming</h4>
+                    <p>Choose names that convey meanings: nouns for entities and attributes, verbs for relationships</p>
+                </div>
+                <div class="point-card">
+                    <h4>📖 Readability</h4>
+                    <p>Design diagrams to be readable from left to right and top to bottom</p>
+                </div>
+                <div class="point-card">
+                    <h4>🔤 Capitalization</h4>
+                    <p>Entity and relationship type names in UPPERCASE, attributes Capitalized, role names in lowercase</p>
+                </div>
+                <div class="point-card">
+                    <h4>🎨 Consistency</h4>
+                    <p>Use consistent notation and styling throughout the diagram</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="summary">
+            <h2>Chapter Summary</h2>
+            
+            <p>In this chapter, we explored the Entity-Relationship (ER) model for conceptual database design:</p>
+
+            <ul>
+                <li>Understood the three levels of data abstraction: physical, logical, and external (views)</li>
+                <li>Learned about schemas (database structure) versus instances (actual data)</li>
+                <li>Explored data independence: logical and physical</li>
+                <li>Defined entities, entity sets, attributes, and their various types</li>
+                <li>Understood relationships, relationship types, and relationship degrees</li>
+                <li>Learned about cardinality constraints (1:1, 1:N, N:1, M:N)</li>
+                <li>Explored participation constraints (total vs. partial)</li>
+                <li>Studied weak entities and identifying relationships</li>
+                <li>Applied concepts to real-world examples (COMPANY database, SBS Bank)</li>
+            </ul>
+
+            <div style="background: linear-gradient(135deg, #f0f7ff 0%, #e6f2ff 100%); padding: 30px; border-radius: 12px; margin-top: 30px;">
+                <p style="font-weight: 600; color: var(--primary); font-size: 1.1rem; margin-bottom: 15px;">Key Takeaway:</p>
+                <p>The ER model provides a high-level conceptual view of the database structure. It is the first step in database design, helping us understand and model the real-world domain before implementing it in a specific DBMS.</p>
+            </div>
+
+            <div style="background: linear-gradient(135deg, #fff8f0 0%, #ffeed9 100%); padding: 30px; border-radius: 12px; margin-top: 20px;">
+                <p style="font-weight: 600; color: var(--accent); font-size: 1.1rem; margin-bottom: 15px;">Next Steps:</p>
+                <p>In the following chapters, we will learn how to convert ER diagrams into relational schemas, understand normalization, and write SQL queries to interact with our designed databases.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-divider"></div>
+            <div class="footer-name">Shoug Alomran</div>
+            <div class="footer-title">CS 340: Introduction to Database Systems</div>
+            <div class="footer-meta">
+                Chapter 2 - Conceptual Design (Entity Relationship Model) | Course Materials <br>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
