@@ -72,6 +72,15 @@ A quick guide to what each tag means — click any to jump to its section 👇
 [NIST Cybersecurity Framework](https://www.nist.gov/cyberframework) — risk & governance.  
 `#policy` `#framework` `#governance`
 
+[Introducing JSX — React Docs](https://legacy.reactjs.org/docs/introducing-jsx.html) — JSX syntax introduction.  
+`#learning` `#react` `#frontend`
+
+[SQLite Tutorial](https://www.sqlitetutorial.net/) — step‑by‑step SQLite guides and examples.  
+`#learning` `#database` `#sql`
+
+[SQLite Online](https://sqliteonline.com/) — browser‑based SQLite editor & playground.  
+`#learning` `#database` `#sql` `#dev`
+
 ---
 
 ## Editors & Dev Tools
@@ -224,6 +233,10 @@ A quick guide to what each tag means — click any to jump to its section 👇
 
 [What is a CSR?](https://www.greathorn.com/) — email security/threat intel.  
 `#reference` `#cybersec`
+
+[Pandoc](https://pandoc.org/) — universal document converter.  
+`#docs` `#formats` `#conversion`
+
 
 ---
 
