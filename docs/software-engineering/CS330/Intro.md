@@ -50,7 +50,7 @@ This course introduces the core concepts behind modern operating systems. Studen
 - Thrashing and working-set models
 - Virtual memory performance
 
-## Chapter 10 — Mass Storage Structure
+### Chapter 10 — Mass Storage Structure
 - Disk structure and scheduling
 - RAID levels
 - Storage device management
