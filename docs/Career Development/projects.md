@@ -38,7 +38,7 @@ Implemented a **Secure Key Exchange System** based on the **Diffie-Hellman algor
 
  *Focus:* Number theory, modular arithmetic, and applied cryptography  
 
- **Website:** [View Project Site](https://shoug-alomran.github.io/CS285-CryptographyProject/)  
+ **Website:** [View Project Site](https://secure-key-exchange.shoug-tech.com/)  
 
 ---
 
@@ -56,7 +56,7 @@ Developed a **preventive health management system** that analyzes family medical
 
  *Focus:* Structured system analysis and end-to-end documentation using IEEE standards  
 
- **Website:** [View Project Site](https://shoug-alomran.github.io/SE201--Sillah-Project/)  
+ **Website:** [View Project Site](https://sillah.Shoug-Tech.com)  
  **Website for app:** [View Project Site](https://se201--sillah-project.vercel.app/)
 
 ---
@@ -74,7 +74,30 @@ Implemented a **singly linked list** with performance analysis across different 
 
  *Focus:* Algorithmic efficiency and data structure design  
 
- **Website:** [View Project Site](https://shoug-alomran.github.io/CS210-Project-Linked-List-Implementation-and-Runtime-Analysis/)  
+ **Website:** [View Project Site](https://linkedlist.shoug-tech.com)  
+
+---
+## [SE311 — Software Requirements Analysis Project](https://github.com/Shoug-Alomran/SE311-Software-Requirements-Analysis)
+**Type:** Advanced Requirements Engineering  
+**Languages & Tools:** UML, GRL/URN, IEEE 830, MkDocs, Requirements Engineering Techniques  
+
+Developed a **full software requirements analysis** for the Sillah (صلة) preventive health management system, expanding the original SE201 project using formal SE311 methodologies.  
+This project applies the complete Requirements Engineering (RE) process — Inception, Elicitation, Analysis, Specification, Validation, and Requirements Management.
+
+**Highlights:**
+- Vision & Scope document (Phase 1)  
+- Elicitation notes, stakeholder analysis, and requirement prioritization  
+- Functional & non-functional requirements (IEEE 830 structure)  
+- UML diagrams (use case, activity, sequence, class)  
+- Goal modeling using GRL/URN  
+- Traceability matrix and multi‑release planning  
+- Full documentation website built with MkDocs (Material Theme)  
+
+*Focus:* Formal requirements engineering, structured documentation, and professional modeling techniques  
+
+**Website:** [View Project Site](https://software-requirements-analysis.shoug-tech.com)
+
+*(Ongoing)*
 
 ---
 
