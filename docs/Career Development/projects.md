@@ -20,7 +20,7 @@ It features multiple user roles â€” students, instructors, and administrators â€
 
  *Focus:* Core Java design, modularity, and robust data handling  
 
- **Website:** *(Coming soon)*  
+ **Website:** [View Project Site](https://school-course-enrolment-system.shoug-tech.com/)
 
 ---
 
