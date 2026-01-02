@@ -1,0 +1,1221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CS 340 Chapter 7 - Advanced SQL</title>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700;800&family=Inter:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --primary: #7c3aed;
+            --secondary: #f59e0b;
+            --accent: #10b981;
+            --dark: #0f172a;
+            --light: #f8fafc;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #faf5ff 0%, #ede9fe 50%, #fef3c7 100%);
+            color: var(--dark);
+            line-height: 1.7;
+        }
+
+        .container { max-width: 1400px; margin: 0 auto; padding: 60px 30px; }
+
+        .hero {
+            background: linear-gradient(135deg, var(--primary) 0%, #a78bfa 100%);
+            color: white;
+            padding: 100px 60px;
+            border-radius: 30px;
+            margin-bottom: 60px;
+            box-shadow: 0 20px 60px rgba(124, 58, 237, 0.4);
+        }
+
+        .hero h1 {
+            font-family: 'Crimson Pro', serif;
+            font-size: 4rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+        }
+
+        .hero-subtitle {
+            font-size: 1.5rem;
+            opacity: 0.95;
+            margin-bottom: 30px;
+        }
+
+        .hero-meta {
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .meta-badge {
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-weight: 600;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .toc {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            margin-bottom: 50px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            border-left: 5px solid var(--primary);
+        }
+
+        .toc h2 {
+            font-family: 'Crimson Pro', serif;
+            font-size: 2rem;
+            color: var(--dark);
+            margin-bottom: 25px;
+        }
+
+        .toc-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
+        }
+
+        .toc-item {
+            padding: 15px 20px;
+            background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%);
+            border-radius: 12px;
+            border-left: 3px solid var(--secondary);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .toc-item:hover {
+            transform: translateX(10px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .toc-item a {
+            text-decoration: none;
+            color: var(--dark);
+            font-weight: 500;
+        }
+
+        .section {
+            background: white;
+            padding: 50px;
+            border-radius: 25px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+            position: relative;
+        }
+
+        .section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: linear-gradient(180deg, var(--primary) 0%, var(--accent) 100%);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 35px;
+            padding-bottom: 25px;
+            border-bottom: 3px solid #e2e8f0;
+        }
+
+        .section-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, var(--primary) 0%, #a78bfa 100%);
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            box-shadow: 0 8px 20px rgba(124, 58, 237, 0.3);
+        }
+
+        .section h2 {
+            font-family: 'Crimson Pro', serif;
+            font-size: 2.5rem;
+            color: var(--dark);
+            font-weight: 700;
+        }
+
+        .section h3 {
+            font-family: 'Crimson Pro', serif;
+            font-size: 1.8rem;
+            color: var(--primary);
+            margin: 35px 0 20px;
+        }
+
+        .concept-box {
+            background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%);
+            padding: 30px;
+            border-radius: 18px;
+            margin: 25px 0;
+            border-left: 5px solid var(--primary);
+        }
+
+        .example-box {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            padding: 30px;
+            border-radius: 18px;
+            margin: 25px 0;
+            border-left: 5px solid var(--secondary);
+        }
+
+        .important-box {
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            padding: 30px;
+            border-radius: 18px;
+            margin: 25px 0;
+            border-left: 5px solid var(--accent);
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+            padding: 30px;
+            border-radius: 18px;
+            margin: 25px 0;
+            border-left: 5px solid #ef4444;
+        }
+
+        .box-title {
+            font-weight: 700;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+        }
+
+        .sql-code {
+            background: var(--dark);
+            color: #e2e8f0;
+            padding: 25px;
+            border-radius: 12px;
+            font-family: 'Space Mono', monospace;
+            margin: 20px 0;
+            overflow-x: auto;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .sql-code .keyword { color: #a78bfa; }
+        .sql-code .string { color: #fbbf24; }
+        .sql-code .comment { color: #94a3b8; font-style: italic; }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+
+        .comparison-table th {
+            background: linear-gradient(135deg, var(--primary) 0%, #a78bfa 100%);
+            color: white;
+            padding: 18px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .comparison-table td {
+            padding: 18px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .comparison-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .comparison-table tr:hover {
+            background: #faf5ff;
+        }
+
+        ul, ol { margin-left: 25px; margin-top: 15px; }
+        li { margin-bottom: 12px; line-height: 1.8; }
+        li strong { color: var(--primary); }
+
+        .footer {
+            text-align: center;
+            margin-top: 80px;
+            padding: 40px;
+            background: linear-gradient(135deg, var(--dark) 0%, var(--primary) 100%);
+            border-radius: 25px;
+            color: white;
+        }
+
+        .footer .name {
+            font-family: 'Crimson Pro', serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .hero { padding: 60px 30px; }
+            .hero h1 { font-size: 2.5rem; }
+            .section { padding: 30px 25px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="hero">
+            <h1>🚀 Advanced SQL</h1>
+            <p class="hero-subtitle">Complex Queries, Nested Queries, Joins, Aggregation & Views</p>
+            <div class="hero-meta">
+                <div class="meta-badge">📚 Chapter 7</div>
+                <div class="meta-badge">🎯 CS 340</div>
+                <div class="meta-badge">👩‍🎓 Shoug Alomran</div>
+                <div class="meta-badge">⏱️ Master Guide</div>
+            </div>
+        </div>
+
+        <div class="toc">
+            <h2>📑 Table of Contents</h2>
+            <div class="toc-grid">
+                <div class="toc-item"><a href="#null">❓ NULL Values</a></div>
+                <div class="toc-item"><a href="#nested">🔄 Nested Queries</a></div>
+                <div class="toc-item"><a href="#correlated">🔗 Correlated Queries</a></div>
+                <div class="toc-item"><a href="#exists">✅ EXISTS & UNIQUE</a></div>
+                <div class="toc-item"><a href="#joins">🔀 Advanced Joins</a></div>
+                <div class="toc-item"><a href="#aggregation">📊 Aggregation Functions</a></div>
+                <div class="toc-item"><a href="#groupby">👥 GROUP BY & HAVING</a></div>
+                <div class="toc-item"><a href="#views">👁️ Views</a></div>
+                <div class="toc-item"><a href="#schema">⚙️ Schema Changes</a></div>
+                <div class="toc-item"><a href="#jdbc">💻 JDBC & Code Integration</a></div>
+            </div>
+        </div>
+
+        <div class="section" id="null">
+            <div class="section-header">
+                <div class="section-icon">❓</div>
+                <div>
+                    <h2>NULL Values</h2>
+                </div>
+            </div>
+
+            <div class="concept-box">
+                <div class="box-title">📘 What is NULL?</div>
+                <p><strong>NULL</strong> represents the absence of a value in a database. It has multiple interpretations:</p>
+            </div>
+
+            <div class="important-box">
+                <div class="box-title">🔑 NULL Interpretations</div>
+                <ol>
+                    <li><strong>Unknown value:</strong> A person's date of birth is not known (missing information)</li>
+                    <li><strong>Unavailable/withheld:</strong> A person has a home phone but doesn't want it listed</li>
+                    <li><strong>Not applicable:</strong> LastCollegeDegree is NULL for someone with no college degrees</li>
+                </ol>
+            </div>
+
+            <h3>3-Valued Logic</h3>
+            <div class="concept-box">
+                <div class="box-title">⚡ TRUE, FALSE, and UNKNOWN</div>
+                <p>SQL uses <strong>three-valued logic</strong> instead of standard two-valued Boolean logic:</p>
+                <ul>
+                    <li><strong>TRUE:</strong> Condition is definitely true</li>
+                    <li><strong>FALSE:</strong> Condition is definitely false</li>
+                    <li><strong>UNKNOWN:</strong> Condition cannot be determined (involves NULL)</li>
+                </ul>
+            </div>
+
+            <div class="example-box">
+                <div class="box-title">💡 NULL in Queries</div>
+                <p><strong>Important:</strong> Use <code>IS NULL</code> or <code>IS NOT NULL</code> - never use <code>= NULL</code></p>
+                <div class="sql-code">
+<span class="comment">-- Find employees without supervisors</span>
+<span class="keyword">SELECT</span> Fname, Lname
+<span class="keyword">FROM</span> EMPLOYEE
+<span class="keyword">WHERE</span> Super_ssn <span class="keyword">IS NULL</span>;
+
+<span class="comment">-- Find employees with supervisors</span>
+<span class="keyword">SELECT</span> Fname, Lname
+<span class="keyword">FROM</span> EMPLOYEE
+<span class="keyword">WHERE</span> Super_ssn <span class="keyword">IS NOT NULL</span>;
+                </div>
+            </div>
+
+            <div class="warning-box">
+                <div class="box-title">⚠️ Critical NULL Rules</div>
+                <ul>
+                    <li>SQL considers each NULL value as <strong>distinct</strong> from every other NULL</li>
+                    <li>NULL = NULL evaluates to UNKNOWN (not TRUE!)</li>
+                    <li>Always use IS NULL or IS NOT NULL for NULL comparisons</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section" id="nested">
+            <div class="section-header">
+                <div class="section-icon">🔄</div>
+                <div>
+                    <h2>Nested Queries (Subqueries)</h2>
+                </div>
+            </div>
+
+            <div class="concept-box">
+                <div class="box-title">📘 What are Nested Queries?</div>
+                <p><strong>Nested queries</strong> (subqueries) are complete SELECT-FROM-WHERE blocks within another SQL query. They allow you to use the result of one query as part of another query.</p>
+            </div>
+
+            <div class="example-box">
+                <div class="box-title">💡 Problem: Two-Step vs One-Step</div>
+                <p><strong>Problem:</strong> Find all workshops offered by the same presenter as "Robot Operating System"</p>
+                
+                <p style="margin-top: 20px;"><strong>Method 1: Two Separate Queries</strong></p>
+                <div class="sql-code">
+<span class="comment">-- Step 1: Find the presenter</span>
+<span class="keyword">SELECT</span> Presenter
+<span class="keyword">FROM</span> Workshop
+<span class="keyword">WHERE</span> Title = <span class="string">'Robot Operating System'</span>;
+<span class="comment">-- Result: Dr. Maram</span>
+
+<span class="comment">-- Step 2: Use that presenter name</span>
+<span class="keyword">SELECT</span> *
+<span class="keyword">FROM</span> Workshop
+<span class="keyword">WHERE</span> Presenter = <span class="string">'Dr. Maram'</span>;
+                </div>
+
+                <p style="margin-top: 20px;"><strong>Method 2: Single Query with Subquery</strong></p>
+                <div class="sql-code">
+<span class="keyword">SELECT</span> *
+<span class="keyword">FROM</span> Workshop
+<span class="keyword">WHERE</span> Presenter = (<span class="keyword">SELECT</span> Presenter
+                        <span class="keyword">FROM</span> Workshop
+                        <span class="keyword">WHERE</span> Title = <span class="string">'Robot Operating System'</span>);
+                </div>
+            </div>
+
+            <h3>IN Operator with Subqueries</h3>
+            <div class="important-box">
+                <div class="box-title">🔑 IN Operator</div>
+                <p>The <strong>IN</strong> operator checks if a value exists in a set of values returned by a subquery.</p>
+            </div>
+
+            <div class="example-box">
+                <div class="box-title">💡 IN Example</div>
+                <div class="sql-code">
+<span class="comment">-- Find Essns of employees who work same (project, hours) as employee '123456789'</span>
+<span class="keyword">SELECT DISTINCT</span> Essn
+<span class="keyword">FROM</span> WORKS_ON
+<span class="keyword">WHERE</span> (Pno, Hours) <span class="keyword">IN</span> (<span class="keyword">SELECT</span> Pno, Hours
+                         <span class="keyword">FROM</span> WORKS_ON
+                         <span class="keyword">WHERE</span> Essn = <span class="string">'123456789'</span>);
+                </div>
+            </div>
+
+            <h3>Comparison Operators: ANY and ALL</h3>
+            <div class="important-box">
+                <div class="box-title">⚙️ ANY and ALL Operators</div>
+                <ul>
+                    <li><strong>= ANY (or SOME):</strong> TRUE if value equals at least one element in set (equivalent to IN)</li>
+                    <li><strong>> ANY:</strong> TRUE if value is greater than at least one element</li>
+                    <li><strong>> ALL:</strong> TRUE if value is greater than ALL elements in set</li>
+                    <li><strong>&lt; ALL:</strong> TRUE if value is less than ALL elements in set</li>
+                </ul>
+            </div>
+
+            <div class="example-box">
+                <div class="box-title">💡 ALL Example</div>
+                <div class="sql-code">
+<span class="comment">-- Find employees with salary greater than ALL employees in Department 5</span>
+<span class="keyword">SELECT</span> Lname, Fname
+<span class="keyword">FROM</span> EMPLOYEE
+<span class="keyword">WHERE</span> Salary > <span class="keyword">ALL</span> (<span class="keyword">SELECT</span> Salary
+                       <span class="keyword">FROM</span> EMPLOYEE
+                       <span class="keyword">WHERE</span> Dno = 5);
+                </div>
+            </div>
+
+            <h3>Explicit Sets</h3>
+            <div class="example-box">
+                <div class="box-title">💡 Explicit Set Values</div>
+                <div class="sql-code">
+<span class="comment">-- Find employees who work on projects 1, 2, or 3</span>
+<span class="keyword">SELECT DISTINCT</span> Essn
+<span class="keyword">FROM</span> WORKS_ON
+<span class="keyword">WHERE</span> Pno <span class="keyword">IN</span> (1, 2, 3);
+                </div>
+            </div>
+        </div>
+
+        <div class="section" id="correlated">
+            <div class="section-header">
+                <div class="section-icon">🔗</div>
+                <div>
+                    <h2>Correlated Nested Queries</h2>
+                </div>
+            </div>
+
+            <div class="concept-box">
+                <div class="box-title">📘 What are Correlated Queries?</div>
+                <p><strong>Correlated queries</strong> are nested queries where the inner query references attributes from the outer query. The inner query is executed once for each row in the outer query.</p>
+            </div>
+
+            <div class="important-box">
+                <div class="box-title">🔑 Key Characteristics</div>
+                <ul>
+                    <li>The WHERE clause of the nested query <strong>references</strong> the outer query</li>
+                    <li>Cannot be run independently - depends on outer query</li>
+                    <li>Executes like a loop - once for each outer row</li>
+                </ul>
+            </div>
+
+            <div class="example-box">
+                <div class="box-title">💡 Correlated Query Example</div>
+                <div class="sql-code">
+<span class="comment">-- Find employees who have a dependent with same name and sex</span>
+<span class="keyword">SELECT</span> E.Fname, E.Lname
+<span class="keyword">FROM</span> EMPLOYEE <span class="keyword">AS</span> E
+<span class="keyword">WHERE</span> E.Ssn <span class="keyword">IN</span> (<span class="keyword">SELECT</span> D.Essn
+                 <span class="keyword">FROM</span> DEPENDENT <span class="keyword">AS</span> D
+                 <span class="keyword">WHERE</span> E.Fname = D.Dependent_name
+                   <span class="keyword">AND</span> E.Sex = D.Sex);
+                </div>
+                <p style="margin-top: 15px;"><strong>How it works:</strong> For each employee E, the subquery checks if there's a dependent with matching name and sex.</p>
+            </div>
+
+            <div class="concept-box">
+                <div class="box-title">🔄 Evaluation Process</div>
+                <p><strong>Think of it like a loop:</strong></p>
+                <ol>
+                    <li>For each employee tuple in the outer query</li>
+                    <li>Execute the subquery using that employee's values</li>
+                    <li>If the subquery condition is satisfied, include that employee in results</li>
+                </ol>
+            </div>
+
+            <div class="example-box">
+                <div class="box-title">💡 Alternative: Single Block Query</div>
+                <p>Many correlated queries can be rewritten as joins:</p>
+                <div class="sql-code">
+<span class="keyword">SELECT</span> E.Fname, E.Lname
+<span class="keyword">FROM</span> EMPLOYEE <span class="keyword">AS</span> E, DEPENDENT <span class="keyword">AS</span> D
+<span class="keyword">WHERE</span> E.Ssn = D.Essn
+  <span class="keyword">AND</span> E.Sex = D.Sex
+  <span class="keyword">AND</span> E.Fname = D.Dependent_name;
+                </div>
+            </div>
+        </div>
+
+        <div class="section" id="exists">
+            <div class="section-header">
+                <div class="section-icon">✅</div>
+                <div>
+                    <h2>EXISTS and NOT EXISTS</h2>
+                </div>
+            </div>
+
+            <div class="concept-box">
+                <div class="box-title">📘 EXISTS Operator</div>
+                <ul>
+                    <li><strong>EXISTS:</strong> Returns TRUE if the subquery result contains at least one tuple</li>
+                    <li><strong>NOT EXISTS:</strong> Returns TRUE if the subquery result is empty</li>
+                    <li><strong>UNIQUE:</strong> Returns TRUE if there are no duplicate tuples in result</li>
+                </ul>
+            </div>
+
+            <div class="example-box">
+                <div class="box-title">💡 EXISTS Example</div>
+                <div class="sql-code">
+<span class="comment">-- Rewriting dependent query with EXISTS</span>
+<span class="keyword">SELECT</span> E.Fname, E.Lname
+<span class="keyword">FROM</span> EMPLOYEE <span class="keyword">AS</span> E
+<span class="keyword">WHERE EXISTS</span> (<span class="keyword">SELECT</span> *
+               <span class="keyword">FROM</span> DEPENDENT <span class="keyword">AS</span> D
+               <span class="keyword">WHERE</span> E.Ssn = D.Essn 
+                 <span class="keyword">AND</span> E.Sex = D.Sex
+                 <span class="keyword">AND</span> E.Fname = D.Dependent_name);
+                </div>
+            </div>
+
+            <div class="example-box">
+                <div class="box-title">💡 NOT EXISTS Example</div>
+                <div class="sql-code">
+<span class="comment">-- Find employees who have NO dependents</span>
+<span class="keyword">SELECT</span> Fname, Lname
+<span class="keyword">FROM</span> EMPLOYEE
+<span class="keyword">WHERE NOT EXISTS</span> (<span class="keyword">SELECT</span> *
+                     <span class="keyword">FROM</span> DEPENDENT
+                     <span class="keyword">WHERE</span> Ssn = Essn);
+                </div>
+            </div>
+
+            <div class="important-box">
+                <div class="box-title">🎯 When to Use EXISTS</div>
+                <ul>
+                    <li>When checking for <strong>existence</strong> of related records</li>
+                    <li>More efficient than IN for large datasets</li>
+                    <li>Works well with correlated subqueries</li>
+                    <li>Use NOT EXISTS to check for <strong>absence</strong> of related records</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section" id="joins">
+            <div class="section-header">
+                <div class="section-icon">🔀</div>
+                <div>
+                    <h2>Advanced Joins</h2>
+                </div>
+            </div>
+
+            <div class="concept-box">
+                <div class="box-title">📘 JOIN Syntax</div>
+                <p>Advanced SQL provides explicit JOIN syntax in the FROM clause instead of just listing tables.</p>
+            </div>
+
+            <h3>INNER JOIN</h3>
+            <div class="important-box">
+                <div class="box-title">🔑 INNER JOIN (Default)</div>
+                <p>Returns only rows where there's a match in BOTH tables.</p>
+            </div>
+
+            <div class="example-box">
+                <div class="box-title">💡 INNER JOIN Example</div>
+                <div class="sql-code">
+<span class="keyword">SELECT</span> name, First_name, Last_name
+<span class="keyword">FROM</span> Course <span class="keyword">JOIN</span> Faculty <span class="keyword">ON</span> Course.Lecturer_id = Faculty.id;
+
+<span class="comment">-- Equivalent to INNER JOIN:</span>
+<span class="keyword">SELECT</span> name, First_name, Last_name
+<span class="keyword">FROM</span> Course <span class="keyword">INNER JOIN</span> Faculty <span class="keyword">ON</span> Course.Lecturer_id = Faculty.id;
+                </div>
+            </div>
+
+            <h3>LEFT OUTER JOIN</h3>
+            <div class="important-box">
+                <div class="box-title">📋 LEFT OUTER JOIN</div>
+                <p>Returns ALL rows from the LEFT table, even if there's no match in the right table. Unmatched rows get NULL values.</p>
+            </div>
+
+            <div class="example-box">
+                <div class="box-title">💡 LEFT OUTER JOIN Example</div>
+                <div class="sql-code">
+<span class="comment">-- Show ALL courses, even those without lecturers</span>
+<span class="keyword">SELECT</span> name, First_name, Last_name
+<span class="keyword">FROM</span> Course <span class="keyword">LEFT OUTER JOIN</span> Faculty 
+  <span class="keyword">ON</span> Course.Lecturer_id = Faculty.id;
+
+<span class="comment">-- Result includes: Data structure | NULL | NULL</span>
+                </div>
+            </div>
+
+            <h3>RIGHT OUTER JOIN</h3>
+            <div class="important-box">
+                <div class="box-title">📋 RIGHT OUTER JOIN</div>
+                <p>Returns ALL rows from the RIGHT table, even if there's no match in the left table.</p>
+            </div>
+
+            <div class="example-box">
+                <div class="box-title">💡 RIGHT OUTER JOIN Example</div>
+                <div class="sql-code">
+<span class="comment">-- Show ALL lecturers, even those without courses</span>
+<span class="keyword">SELECT</span> name, First_name, Last_name
+<span class="keyword">FROM</span> Course <span class="keyword">RIGHT OUTER JOIN</span> Faculty 
+  <span class="keyword">ON</span> Course.Lecturer_id = Faculty.id;
+
+<span class="comment">-- Result includes: NULL | Khwlah | Alrajhi</span>
+                </div>
+            </div>
+
+            <h3>FULL OUTER JOIN</h3>
+            <div class="example-box">
+                <div class="box-title">💡 FULL OUTER JOIN Example</div>
+                <div class="sql-code">
+<span class="comment">-- Show ALL courses and ALL lecturers</span>
+<span class="keyword">SELECT</span> name, First_name, Last_name
+<span class="keyword">FROM</span> Course <span class="keyword">FULL OUTER JOIN</span> Faculty 
+  <span class="keyword">ON</span> Course.Lecturer_id = Faculty.id;
+                </div>
+            </div>
+
+            <h3>NATURAL JOIN</h3>
+            <div class="concept-box">
+                <div class="box-title">🔑 NATURAL JOIN Characteristics</div>
+                <ul>
+                    <li>No join condition specified</li>
+                    <li>Automatic join on <strong>all columns with same name</strong></li>
+                    <li>Each common column appears only once in result</li>
+                </ul>
+            </div>
+
+            <div class="example-box">
+                <div class="box-title">💡 NATURAL JOIN Example</div>
+                <div class="sql-code">
+<span class="keyword">SELECT</span> Fname, Lname, Address
+<span class="keyword">FROM</span> (EMPLOYEE <span class="keyword">NATURAL JOIN</span>
+      (DEPARTMENT <span class="keyword">AS</span> DEPT (Dname, Dno, Mssn, Msdate)))
+<span class="keyword">WHERE</span> Dname = <span class="string">'Research'</span>;
+                </div>
+            </div>
+
+            <h3>CROSS JOIN</h3>
+            <div class="warning-box">
+                <div class="box-title">⚠️ CROSS JOIN (Cartesian Product)</div>
+                <p><strong>Use carefully!</strong> Returns ALL possible combinations of rows.</p>
+                <div class="sql-code">
+<span class="keyword">SELECT</span> *
+<span class="keyword">FROM</span> Table1 <span class="keyword">CROSS JOIN</span> Table2;
+                </div>
+            </div>
+
+            <h3>Multiway Joins</h3>
+            <div class="example-box">
+                <div class="box-title">💡 Joining 3+ Tables</div>
+                <div class="sql-code">
+<span class="keyword">SELECT</span> Pnumber, Dnum, Lname, Address, Bdate
+<span class="keyword">FROM</span> ((PROJECT <span class="keyword">JOIN</span> DEPARTMENT <span class="keyword">ON</span> Dnum = Dnumber)
+       <span class="keyword">JOIN</span> EMPLOYEE <span class="keyword">ON</span> Mgr_ssn = Ssn)
+<span class="keyword">WHERE</span> Plocation = <span class="string">'Stafford'</span>;
+                </div>
+            </div>
+
+            <div class="important-box">
+                <div class="box-title">📋 Join Type Equivalences</div>
+                <ul>
+                    <li>LEFT JOIN = LEFT OUTER JOIN</li>
+                    <li>RIGHT JOIN = RIGHT OUTER JOIN</li>
+                    <li>FULL JOIN = FULL OUTER JOIN</li>
+                    <li>INNER JOIN = JOIN</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section" id="aggregation">
+            <div class="section-header">
+                <div class="section-icon">📊</div>
+                <div>
+                    <h2>Aggregation Functions</h2>
+                </div>
+            </div>
+
+            <div class="concept-box">
+                <div class="box-title">📘 What are Aggregation Functions?</div>
+                <p><strong>Aggregation functions</strong> perform calculations on sets of values and return a single value.</p>
+            </div>
+
+            <div class="important-box">
+                <div class="box-title">🔑 Core Aggregation Functions</div>
+                <table class="comparison-table">
+                    <tr>
+                        <th>Function</th>
+                        <th>Description</th>
+                        <th>Example</th>
+                    </tr>
+                    <tr>
+                        <td>COUNT()</td>
+                        <td>Number of values</td>
+                        <td>COUNT(*) or COUNT(DISTINCT A)</td>
+                    </tr>
+                    <tr>
+                        <td>SUM()</td>
+                        <td>Sum of values</td>
+                        <td>SUM(Salary) or SUM(DISTINCT Salary)</td>
+                    </tr>
+                    <tr>
+                        <td>AVG()</td>
+                        <td>Average of values</td>
+                        <td>AVG(GPA) or AVG(DISTINCT age)</td>
+                    </tr>
+                    <tr>
+                        <td>MAX()</td>
+                        <td>Maximum value</td>
+                        <td>MAX(Salary)</td>
+                    </tr>
+                    <tr>
+                        <td>MIN()</td>
+                        <td>Minimum value</td>
+                        <td>MIN(age)</td>
+                    </tr>
+                </table>
+            </div>
+
+            <h3>Basic Aggregation Examples</h3>
+            <div class="example-box">
+                <div class="box-title">💡 Simple Aggregations</div>
+                <div class="sql-code">
+<span class="comment">-- Average GPA of all students</span>
+<span class="keyword">SELECT</span> <span class="keyword">AVG</span>(gpa)
+<span class="keyword">FROM</span> Student;
+
+<span class="comment">-- Highest and lowest GPA</span>
+<span class="keyword">SELECT</span> <span class="keyword">MAX</span>(gpa), <span class="keyword">MIN</span>(gpa)
+<span class="keyword">FROM</span> Student;
+
+<span class="comment">-- Count distinct departments</span>
+<span class="keyword">SELECT</span> <span class="keyword">COUNT</span>(<span class="keyword">DISTINCT</span> department)
+<span class="keyword">FROM</span> Student;
+
+<span class="comment">-- Total number of students</span>
+<span class="keyword">SELECT</span> <span class="keyword">COUNT</span>(*)
+<span class="keyword">FROM</span> Student;
+                </div>
+            </div>
+
+            <div class="example-box">
+                <div class="box-title">💡 Multiple Aggregations</div>
+                <div class="sql-code">
+<span class="comment">-- Salary statistics</span>
+<span class="keyword">SELECT</span> <span class="keyword">SUM</span>(Salary), <span class="keyword">MAX</span>(Salary), <span class="keyword">MIN</span>(Salary), <span class="keyword">AVG</span>(Salary)
+<span class="keyword">FROM</span> EMPLOYEE;
+
+<span class="comment">-- Statistics for Research department only</span>
+<span class="keyword">SELECT</span> <span class="keyword">SUM</span>(Salary), <span class="keyword">MAX</span>(Salary), <span class="keyword">MIN</span>(Salary), <span class="keyword">AVG</span>(Salary)
+<span class="keyword">FROM</span> EMPLOYEE <span class="keyword">JOIN</span> DEPARTMENT <span class="keyword">ON</span> Dno = Dnumber
+<span class="keyword">WHERE</span> Dname = <span class="string">'Research'</span>;
+                </div>
+            </div>
+
+            <h3>Aggregates in Nested Queries</h3>
+            <div class="example-box">
+                <div class="box-title">💡 Correlated Aggregate</div>
+                <div class="sql-code">
+<span class="comment">-- Find employees with 2 or more dependents</span>
+<span class="keyword">SELECT</span> Lname, Fname
+<span class="keyword">FROM</span> EMPLOYEE
+<span class="keyword">WHERE</span> (<span class="keyword">SELECT COUNT</span>(*)
+       <span class="keyword">FROM</span> DEPENDENT
+       <span class="keyword">WHERE</span> Ssn = Essn) >= 2;
+                </div>
+            </div>
+        </div>
+
+        <div class="section" id="groupby">
+            <div class="section-header">
+                <div class="section-icon">👥</div>
+                <div>
+                    <h2>GROUP BY and HAVING</h2>
+                </div>
+            </div>
+
+            <div class="concept-box">
+                <div class="box-title">📘 What is GROUP BY?</div>
+                <p><strong>GROUP BY</strong> partitions data into groups based on attribute values, then applies aggregate functions to each group separately.</p>
+            </div>
+
+            <h3>Basic GROUP BY</h3>
+            <div class="example-box">
+                <div class="box-title">💡 Grouping Examples</div>
+                <div class="sql-code">
+<span class="comment">-- For each department: count and average salary</span>
+<span class="keyword">SELECT</span> Dno, <span class="keyword">COUNT</span>(*), <span class="keyword">AVG</span>(Salary)
+<span class="keyword">FROM</span> EMPLOYEE
+<span class="keyword">GROUP BY</span> Dno;
+
+<span class="comment">-- Average GPA per department</span>
+<span class="keyword">SELECT</span> department, <span class="keyword">AVG</span>(gpa)
+<span class="keyword">FROM</span> Student
+<span class="keyword">GROUP BY</span> department;
+                </div>
+            </div>
+
+            <div class="important-box">
+                <div class="box-title">⚠️ GROUP BY Rules</div>
+                <ul>
+                    <li>You can only SELECT attributes that are in the GROUP BY clause</li>
+                    <li>Or you can SELECT aggregate functions</li>
+                    <li>Make sure groupings are sensible for your data</li>
+                </ul>
+            </div>
+
+            <h3>Multiple Grouping Attributes</h3>
+            <div class="example-box">
+                <div class="box-title">💡 Multi-Level Grouping</div>
+                <div class="sql-code">
+<span class="comment">-- Group by major AND standing (creates sub-groups)</span>
+<span class="keyword">SELECT</span> major, standing, <span class="keyword">COUNT</span>(*), <span class="keyword">AVG</span>(age)
+<span class="keyword">FROM</span> Student
+<span class="keyword">GROUP BY</span> major, standing;
+                </div>
+            </div>
+
+            <h3>GROUP BY with JOIN</h3>
+            <div class="example-box">
+                <div class="box-title">💡 Grouping After Join</div>
+                <div class="sql-code">
+<span class="comment">-- For each project: number of employees working on it</span>
+<span class="keyword">SELECT</span> Pnumber, Pname, <span class="keyword">COUNT</span>(*)
+<span class="keyword">FROM</span> PROJECT, WORKS_ON
+<span class="keyword">WHERE</span> Pnumber = Pno
+<span class="keyword">GROUP BY</span> Pnumber, Pname;
+                </div>
+            </div>
+
+            <h3>HAVING Clause</h3>
+            <div class="concept-box">
+                <div class="box-title">🔑 WHERE vs HAVING</div>
+                <ul>
+                    <li><strong>WHERE:</strong> Filters individual rows BEFORE grouping</li>
+                    <li><strong>HAVING:</strong> Filters groups AFTER grouping and aggregation</li>
+                </ul>
+            </div>
+
+            <div class="example-box">
+                <div class="box-title">💡 HAVING Example</div>
+                <div class="sql-code">
+<span class="comment">-- Projects with MORE than 2 employees</span>
+<span class="keyword">SELECT</span> Pnumber, Pname, <span class="keyword">COUNT</span>(*)
+<span class="keyword">FROM</span> PROJECT, WORKS_ON
+<span class="keyword">WHERE</span> Pnumber = Pno
+<span class="keyword">GROUP BY</span> Pnumber, Pname
+<span class="keyword">HAVING COUNT</span>(*) > 2;
+                </div>
+            </div>
+
+            <div class="important-box">
+                <div class="box-title">📋 NULLs in GROUP BY</div>
+                <p>If the grouping attribute contains NULL values, a <strong>separate group</strong> is created for all tuples with NULL in that attribute.</p>
+            </div>
+        </div>
+
+        <div class="section" id="views">
+            <div class="section-header">
+                <div class="section-icon">👁️</div>
+                <div>
+                    <h2>Views</h2>
+                </div>
+            </div>
+
+            <div class="concept-box">
+                <div class="box-title">📘 What is a View?</div>
+                <p>A <strong>view</strong> is a virtual table representing a subset of data from one or more tables. Views are NOT physically stored - they're queries that dynamically generate data when accessed.</p>
+            </div>
+
+            <div class="important-box">
+                <div class="box-title">🎯 Purposes of Views</div>
+                <ul>
+                    <li><strong>Simplify complex queries:</strong> Hide complexity from users</li>
+                    <li><strong>Security:</strong> Restrict access to specific data</li>
+                    <li><strong>Data abstraction:</strong> Present data in particular formats</li>
+                    <li><strong>Access control:</strong> Different users see different data</li>
+                </ul>
+            </div>
+
+            <h3>Creating Views</h3>
+            <div class="example-box">
+                <div class="box-title">💡 Simple View</div>
+                <div class="sql-code">
+<span class="comment">-- View showing specific columns</span>
+<span class="keyword">CREATE VIEW</span> EmployeeView <span class="keyword">AS</span>
+<span class="keyword">SELECT</span> EmployeeID, Name, Position
+<span class="keyword">FROM</span> Employees;
+
+<span class="comment">-- Using the view</span>
+<span class="keyword">SELECT</span> *
+<span class="keyword">FROM</span> EmployeeView;
+                </div>
+            </div>
+
+            <div class="example-box">
+                <div class="box-title">💡 View with JOIN</div>
+                <div class="sql-code">
+<span class="comment">-- View joining multiple tables</span>
+<span class="keyword">CREATE VIEW</span> DepartmentEmployeeView <span class="keyword">AS</span>
+<span class="keyword">SELECT</span> e.Name, d.DepartmentName
+<span class="keyword">FROM</span> Employees e <span class="keyword">JOIN</span> Departments d 
+  <span class="keyword">ON</span> e.DepartmentID = d.DepartmentID;
+
+<span class="keyword">SELECT</span> *
+<span class="keyword">FROM</span> DepartmentEmployeeView;
+                </div>
+            </div>
+
+            <h3>Materialized vs Non-Materialized Views</h3>
+            <div class="comparison-table">
+                <tr>
+                    <th>Feature</th>
+                    <th>Non-Materialized</th>
+                    <th>Materialized</th>
+                </tr>
+                <tr>
+                    <td><strong>Storage</strong></td>
+                    <td>No physical storage</td>
+                    <td>Stored as physical table</td>
+                </tr>
+                <tr>
+                    <td><strong>Execution</strong></td>
+                    <td>Query runs each access</td>
+                    <td>Data pre-computed</td>
+                </tr>
+                <tr>
+                    <td><strong>Data Currency</strong></td>
+                    <td>Always current</td>
+                    <td>Needs periodic refresh</td>
+                </tr>
+                <tr>
+                    <td><strong>Performance</strong></td>
+                    <td>Slower for complex queries</td>
+                    <td>Faster access</td>
+                </tr>
+                <tr>
+                    <td><strong>Best For</strong></td>
+                    <td>Frequently changing data</td>
+                    <td>Complex queries on large tables</td>
+                </tr>
+            </table>
+
+            <h3>View Updates</h3>
+            <div class="warning-box">
+                <div class="box-title">⚠️ View Update Restrictions</div>
+                <p><strong>Not all views are updatable!</strong> For a view to be updatable:</p>
+                <ul>
+                    <li>Must map directly to base table data</li>
+                    <li>Cannot contain aggregations</li>
+                    <li>Cannot contain joins (in most systems)</li>
+                    <li>Cannot contain DISTINCT</li>
+                </ul>
+            </div>
+
+            <h3>Views as Access Control</h3>
+            <div class="important-box">
+                <div class="box-title">🔒 Security with Views</div>
+                <p>Views provide powerful access control by exposing only certain columns/rows to specific users:</p>
+                <div class="sql-code">
+<span class="comment">-- View hiding sensitive salary information</span>
+<span class="keyword">CREATE VIEW</span> PublicEmployeeInfo <span class="keyword">AS</span>
+<span class="keyword">SELECT</span> EmployeeID, Name, Department, Position
+<span class="keyword">FROM</span> Employees;
+<span class="comment">-- Salary column is hidden from this view</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="section" id="schema">
+            <div class="section-header">
+                <div class="section-icon">⚙️</div>
+                <div>
+                    <h2>Schema Changes: DROP and ALTER</h2>
+                </div>
+            </div>
+
+            <h3>DROP - Deleting Database Objects</h3>
+            <div class="concept-box">
+                <div class="box-title">📘 DROP Statement</div>
+                <p>The <strong>DROP</strong> statement permanently removes database objects. Deleted objects cannot be recovered!</p>
+            </div>
+
+            <div class="warning-box">
+                <div class="box-title">⚠️ DROP is Permanent!</div>
+                <p>Once dropped, objects are <strong>permanently deleted</strong> and cannot be recovered. Use with extreme caution!</p>
+            </div>
+
+            <div class="example-box">
+                <div class="box-title">💡 DROP Examples</div>
+                <div class="sql-code">
+<span class="comment">-- Drop a table (and all its data)</span>
+<span class="keyword">DROP TABLE</span> tableName;
+
+<span class="comment">-- Drop an entire database</span>
+<span class="keyword">DROP DATABASE</span> databaseName;
+
+<span class="comment">-- Drop a view</span>
+<span class="keyword">DROP VIEW</span> viewName;
+                </div>
+            </div>
+
+            <h3>ALTER - Modifying Database Objects</h3>
+            <div class="concept-box">
+                <div class="box-title">📘 ALTER Statement</div>
+                <p>The <strong>ALTER</strong> statement modifies the structure of existing database objects without deleting them.</p>
+            </div>
+
+            <div class="example-box">
+                <div class="box-title">💡 ALTER Examples</div>
+                <div class="sql-code">
+<span class="comment">-- Add a new column</span>
+<span class="keyword">ALTER TABLE</span> tableName
+<span class="keyword">ADD</span> columnName dataType;
+
+<span class="comment">-- Modify column data type</span>
+<span class="keyword">ALTER TABLE</span> tableName
+<span class="keyword">MODIFY COLUMN</span> columnName newDataType;
+
+<span class="comment">-- Drop a column</span>
+<span class="keyword">ALTER TABLE</span> tableName
+<span class="keyword">DROP COLUMN</span> columnName;
+
+<span class="comment">-- Add a constraint</span>
+<span class="keyword">ALTER TABLE</span> tableName
+<span class="keyword">ADD CONSTRAINT</span> constraint_name 
+<span class="keyword">FOREIGN KEY</span> (column) <span class="keyword">REFERENCES</span> otherTable(column);
+                </div>
+            </div>
+
+            <div class="important-box">
+                <div class="box-title">🔑 DROP vs ALTER</div>
+                <ul>
+                    <li><strong>DROP:</strong> Deletes entire objects permanently</li>
+                    <li><strong>ALTER:</strong> Modifies structure of existing objects</li>
+                    <li>Both are critical for database evolution and maintenance</li>
+                    <li>Both require appropriate privileges</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section" id="jdbc">
+            <div class="section-header">
+                <div class="section-icon">💻</div>
+                <div>
+                    <h2>Executing SQL in Code: JDBC</h2>
+                </div>
+            </div>
+
+            <div class="concept-box">
+                <div class="box-title">📘 Database APIs</div>
+                <ul>
+                    <li><strong>JDBC (Java Database Connectivity):</strong> API for Java applications</li>
+                    <li><strong>DB-API:</strong> Standard interface for Python applications</li>
+                    <li>Both allow applications to connect, execute queries, retrieve results, and handle transactions</li>
+                </ul>
+            </div>
+
+            <div class="example-box">
+                <div class="box-title">💡 JDBC Example (Java)</div>
+                <div class="sql-code" style="font-size: 0.85rem;">
+<span class="keyword">import</span> java.sql.*;
+
+<span class="keyword">public class</span> MySQLAccess {
+    <span class="keyword">public static void</span> main(String[] args) {
+        String url = <span class="string">"jdbc:mysql://localhost:3306/myDatabase"</span>;
+        String user = <span class="string">"username"</span>;
+        String password = <span class="string">"password"</span>;
+        
+        <span class="keyword">try</span> {
+            <span class="comment">// Register JDBC driver</span>
+            Class.forName(<span class="string">"com.mysql.cj.jdbc.Driver"</span>);
+            
+            <span class="comment">// Open connection</span>
+            Connection connection = DriverManager.getConnection(url, user, password);
+            
+            <span class="comment">// Create and execute statement</span>
+            Statement statement = connection.createStatement();
+            String sql = <span class="string">"SELECT id, name FROM employees"</span>;
+            ResultSet resultSet = statement.executeQuery(sql);
+            
+            <span class="comment">// Process results</span>
+            <span class="keyword">while</span> (resultSet.next()) {
+                <span class="keyword">int</span> id = resultSet.getInt(<span class="string">"id"</span>);
+                String name = resultSet.getString(<span class="string">"name"</span>);
+                System.out.println(<span class="string">"ID: "</span> + id + <span class="string">", Name: "</span> + name);
+            }
+            
+            <span class="comment">// Close resources</span>
+            resultSet.close();
+            statement.close();
+            connection.close();
+            
+        } <span class="keyword">catch</span> (SQLException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+}
+                </div>
+            </div>
+
+            <div class="important-box">
+                <div class="box-title">🎯 Project Expectations</div>
+                <ul>
+                    <li>Execute SELECT, INSERT, UPDATE, DELETE queries in code</li>
+                    <li>Implement basic application logic (user registration, data management)</li>
+                    <li><strong>Bonus (+1 quiz grade):</strong> Full GUI implementation</li>
+                    <li><strong>Alternative bonus:</strong> Advanced features (security, triggers, deployment)</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-header">
+                <div class="section-icon">📋</div>
+                <div>
+                    <h2>Complete SQL Query Structure</h2>
+                </div>
+            </div>
+
+            <div class="important-box">
+                <div class="box-title">🎯 Full SQL Query Syntax</div>
+                <div class="sql-code">
+<span class="keyword">SELECT</span> &lt;attribute and function list&gt;
+<span class="keyword">FROM</span> &lt;table list&gt;
+[<span class="keyword">WHERE</span> &lt;condition&gt;]
+[<span class="keyword">GROUP BY</span> &lt;grouping attribute(s)&gt;]
+[<span class="keyword">HAVING</span> &lt;group condition&gt;]
+[<span class="keyword">ORDER BY</span> &lt;attribute list&gt;];
+                </div>
+                <p style="margin-top: 15px;"><strong>Order of Execution:</strong></p>
+                <ol>
+                    <li>FROM - Identify tables and perform joins</li>
+                    <li>WHERE - Filter rows</li>
+                    <li>GROUP BY - Group rows</li>
+                    <li>HAVING - Filter groups</li>
+                    <li>SELECT - Choose columns and apply functions</li>
+                    <li>ORDER BY - Sort final results</li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-header">
+                <div class="section-icon">✨</div>
+                <div>
+                    <h2>Chapter Summary</h2>
+                </div>
+            </div>
+
+            <div class="concept-box">
+                <div class="box-title">🎯 Key Takeaways</div>
+                <ul>
+                    <li><strong>NULL values:</strong> Use IS NULL/IS NOT NULL; understand 3-valued logic</li>
+                    <li><strong>Nested queries:</strong> Subqueries with IN, ANY, ALL operators</li>
+                    <li><strong>Correlated queries:</strong> Inner query references outer query</li>
+                    <li><strong>EXISTS/NOT EXISTS:</strong> Check for existence of related records</li>
+                    <li><strong>Advanced joins:</strong> INNER, LEFT/RIGHT/FULL OUTER, NATURAL, CROSS</li>
+                    <li><strong>Aggregation:</strong> COUNT, SUM, AVG, MAX, MIN functions</li>
+                    <li><strong>GROUP BY:</strong> Partition data for group-wise aggregation</li>
+                    <li><strong>HAVING:</strong> Filter groups (vs WHERE which filters rows)</li>
+                    <li><strong>Views:</strong> Virtual tables for simplification and security</li>
+                    <li><strong>Schema changes:</strong> DROP (delete) and ALTER (modify) operations</li>
+                    <li><strong>JDBC:</strong> Execute SQL from Java applications</li>
+                </ul>
+            </div>
+
+            <div class="important-box">
+                <div class="box-title">🎓 What's Next</div>
+                <p>With relational database content complete, the course now moves to <strong>NoSQL databases</strong> - exploring alternative data models and distributed systems!</p>
+            </div>
+        </div>
+
+        <div class="footer">
+            <div class="name">Shoug Alomran</div>
+            <div style="font-size: 1.1rem; opacity: 0.9;">CS 340: Introduction to Database Systems</div>
+            <div style="font-size: 1.1rem; opacity: 0.9;">Chapter 7 - Advanced SQL</div>
+            <div style="font-size: 1rem; margin-top: 15px; opacity: 0.8;">🚀 Complete Advanced SQL Master Guide</div>
+        </div>
+    </div>
+
+    <script>
+        document.querySelectorAll('.toc-item a').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            });
+        });
+    </script>
+</body>
+</html>
