@@ -11,6 +11,7 @@ It’s a place that keeps growing — one thought, one project, and one insight 
 
 ### Academics
 Structured notes, summaries, quizzes, and handouts across:
+
 - **Software Engineering (SE)** — SE201, SE311  
 - **Computer Science (CS)** — CS285, CS210, CS330, CS340  
 - **Cyber Security (CYS)** — CYS401  
