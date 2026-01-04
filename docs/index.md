@@ -1,6 +1,6 @@
 # Welcome
 
-Hi, I’m **Shoug Fawaz Alomran** — welcome to my Digital Garden 🌿  
+Hi, I’m **Shoug Fawaz Alomran** — welcome to my Digital Garden
 
 This is my personal space where I collect, refine, and share ideas, notes, and reflections from my learning journey.  
 It’s a place that keeps growing — one thought, one project, and one insight at a time.
@@ -9,10 +9,19 @@ It’s a place that keeps growing — one thought, one project, and one insight 
 
 ## What You'll Find Here
 
-- **Learning Notes** — key ideas and takeaways from my studies and courses  
-- **Projects** — work I’m building or experimenting with  
-- **Reflections** — thoughts on creativity, leadership, and growth  
-- **Resources** — curated tools, readings, and references I value  
+### Academics
+Structured notes, summaries, quizzes, and handouts across:
+- **Software Engineering (SE)** — SE201, SE311  
+- **Computer Science (CS)** — CS285, CS210, CS330, CS340  
+- **Cyber Security (CYS)** — CYS401  
+
+### Career Development
+- Personal profile  
+- Projects  
+- Resume  
+
+### Links
+Curated references, tools, and resources I rely on
 
 ---
 
