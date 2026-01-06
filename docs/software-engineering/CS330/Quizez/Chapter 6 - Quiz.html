@@ -702,4 +702,316 @@ wait(S)             signal(S)
                 keywords: ['mutual', 'exclusion', 'one', 'process', 'critical', 'section', 'interrupts', 'lost', 'responsiveness', 'security', 'multiprocessor'],
                 keyPhrases: ['only one process', 'at a time', 'critical section', 'disabling interrupts', 'important interrupts'],
                 minKeywords: 6,
-                mockAnswer: "Mutual exclusion means that if process P1 is executing in its critical section, then P2 cannot execute in its critical section (and vice versa). Only one process can be in the critical section at a time.\n\nDisabling interrupts cannot be a general solution because:\n1. Important interrupts may be lost during the disabled period, causing system problems\n2. It decreases system responsiveness as the system cannot respond to urgent events\n3. In multiprocessor systems, disabling interrupts on one processor doesn't prevent other processors from accessing shared resources\n4. Allowing user programs to disable interrupts
+                mockAnswer: "Mutual exclusion means that if process P1 is executing in its critical section, then P2 cannot execute in its critical section (and vice versa). Only one process can be in the critical section at a time.\n\nDisabling interrupts cannot be a general solution because:\n1. Important interrupts may be lost during the disabled period, causing system problems\n2. It decreases system responsiveness as the system cannot respond to urgent events\n3. In multiprocessor systems, disabling interrupts on one processor doesn't prevent other processors from accessing shared resources\n4. Allowing user programs to disable interrupts poses security risks"
+            },
+            q12: {
+                keywords: ['producer', 'consumer', 'buffer', 'semaphore', 'mutex', 'empty', 'full', 'synchronization', 'shared'],
+                keyPhrases: ['producer-consumer', 'bounded buffer', 'empty semaphore', 'full semaphore', 'mutex semaphore'],
+                minKeywords: 6,
+                mockAnswer: "The producer-consumer problem involves two types of processes: producers that generate data and consumers that use the data. They share a common fixed-size buffer.\n\nSemaphore Solution:\n1. mutex = 1 (for mutual exclusion when accessing the buffer)\n2. empty = n (number of empty slots, initially n)\n3. full = 0 (number of full slots, initially 0)\n\nProducer:\nwait(empty);  // wait for empty slot\nwait(mutex);  // enter critical section\n// add item to buffer\nsignal(mutex);  // exit critical section\nsignal(full);  // signal that slot is full\n\nConsumer:\nwait(full);  // wait for full slot\nwait(mutex);  // enter critical section\n// remove item from buffer\nsignal(mutex);  // exit critical section\nsignal(empty);  // signal that slot is empty"
+            },
+            q13: {
+                keywords: ['mutual', 'exclusion', 'progress', 'bounded', 'waiting', 'critical', 'section', 'deadlock', 'starvation'],
+                keyPhrases: ['mutual exclusion', 'bounded waiting', 'no process', 'indefinitely'],
+                minKeywords: 6,
+                mockAnswer: "The three requirements for solving the critical section problem are:\n\n1. Mutual Exclusion: If a process is executing in its critical section, then no other process can execute in its critical section. Only one process at a time can be in the critical section.\n\n2. Progress: If no process is executing in its critical section and some processes wish to enter their critical sections, then only those processes that are not executing in their remainder sections can participate in deciding which will enter next. This selection cannot be postponed indefinitely. This prevents deadlock.\n\n3. Bounded Waiting: There exists a bound on the number of times other processes are allowed to enter their critical sections after a process has made a request to enter its critical section and before that request is granted. This prevents starvation and ensures fairness."
+            },
+            q14: {
+                keywords: ['monitor', 'synchronization', 'construct', 'mutual', 'exclusion', 'condition', 'variables', 'automatic', 'semaphore'],
+                keyPhrases: ['synchronization construct', 'mutual exclusion', 'condition variables', 'easier to use', 'automatic synchronization'],
+                minKeywords: 5,
+                mockAnswer: "A monitor is a high-level synchronization construct that provides a convenient and effective mechanism for process synchronization. It is a collection of procedures, variables, and data structures grouped together in a module or package.\n\nKey differences from semaphores:\n1. Ease of Use: Monitors are easier to use because mutual exclusion is automatic - only one process can be active within the monitor at any time. With semaphores, programmers must explicitly call wait() and signal().\n\n2. Error Prevention: Monitors are less error-prone because the synchronization code is centralized within the monitor. With semaphores, wait() and signal() are scattered throughout the code, making it easy to forget them or use them incorrectly.\n\n3. Condition Variables: Monitors use condition variables with wait() and signal() operations that are safer than semaphores.\n\n4. Compiler Support: Monitors can be implemented and enforced by the compiler, while semaphores rely on programmer discipline."
+            }
+        };
+
+        document.getElementById('examForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            let totalScore = 0;
+            let maxScore = 50;
+            let resultsHTML = '<div class="score-display">Calculating your score...</div>';
+            
+            // Grade MCQs (20 marks total)
+            let mcqScore = 0;
+            for (let i = 1; i <= 10; i++) {
+                const questionName = `q${i}`;
+                const selectedAnswer = document.querySelector(`input[name="${questionName}"]:checked`);
+                
+                if (selectedAnswer) {
+                    if (selectedAnswer.value === correctAnswers[questionName]) {
+                        mcqScore += 2;
+                        resultsHTML += `
+                            <div class="question">
+                                <div class="question-header">
+                                    <span class="question-number">Question ${i}</span>
+                                    <span class="question-marks">2/2 Marks ✓</span>
+                                </div>
+                                <div class="feedback correct">
+                                    <div class="feedback-title">✓ Correct!</div>
+                                    <p>${explanations[questionName]}</p>
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        resultsHTML += `
+                            <div class="question">
+                                <div class="question-header">
+                                    <span class="question-number">Question ${i}</span>
+                                    <span class="question-marks">0/2 Marks ✗</span>
+                                </div>
+                                <div class="feedback incorrect">
+                                    <div class="feedback-title">✗ Incorrect</div>
+                                    <p><strong>Your answer:</strong> ${selectedAnswer.value.toUpperCase()}</p>
+                                    <p><strong>Correct answer:</strong> ${correctAnswers[questionName].toUpperCase()}</p>
+                                    <p><strong>Explanation:</strong> ${explanations[questionName]}</p>
+                                </div>
+                            </div>
+                        `;
+                    }
+                } else {
+                    resultsHTML += `
+                        <div class="question">
+                            <div class="question-header">
+                                <span class="question-number">Question ${i}</span>
+                                <span class="question-marks">0/2 Marks</span>
+                            </div>
+                            <div class="feedback incorrect">
+                                <div class="feedback-title">No answer provided</div>
+                                <p><strong>Correct answer:</strong> ${correctAnswers[questionName].toUpperCase()}</p>
+                                <p>${explanations[questionName]}</p>
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+            
+            totalScore += mcqScore;
+            
+            // Grade Written Questions (18 marks total)
+            let writtenScore = 0;
+            
+            // Question 11 (4 marks)
+            const q11Answer = document.querySelector('textarea[name="q11"]').value.toLowerCase();
+            const q11Data = writtenQuestionKeywords.q11;
+            let q11Keywords = 0;
+            let q11Found = [];
+            let q11Missing = [];
+            
+            q11Data.keywords.forEach(keyword => {
+                if (q11Answer.includes(keyword.toLowerCase())) {
+                    q11Keywords++;
+                    q11Found.push(keyword);
+                } else {
+                    q11Missing.push(keyword);
+                }
+            });
+            
+            q11Data.keyPhrases.forEach(phrase => {
+                if (q11Answer.includes(phrase.toLowerCase())) {
+                    q11Keywords += 0.5;
+                }
+            });
+            
+            const q11Score = Math.min(4, Math.round((q11Keywords / q11Data.keywords.length) * 4));
+            writtenScore += q11Score;
+            
+            resultsHTML += `
+                <div class="question">
+                    <div class="question-header">
+                        <span class="question-number">Question 11</span>
+                        <span class="question-marks">${q11Score}/4 Marks</span>
+                    </div>
+                    <div class="feedback ${q11Score === 4 ? 'correct' : q11Score > 0 ? 'partial' : 'incorrect'}">
+                        <div class="feedback-title">${q11Score === 4 ? '✓ Excellent!' : q11Score > 0 ? '⚠ Partial Credit' : '✗ Needs Improvement'}</div>
+                        <p><strong>Your Answer:</strong> ${document.querySelector('textarea[name="q11"]').value || 'No answer provided'}</p>
+                        <p><strong>Keywords Found:</strong> <span class="keywords-found">${q11Found.join(', ') || 'None'}</span></p>
+                        <p><strong>Keywords Missing:</strong> <span class="keywords-missing">${q11Missing.join(', ') || 'None'}</span></p>
+                        <p><strong>Model Answer:</strong> ${q11Data.mockAnswer}</p>
+                    </div>
+                </div>
+            `;
+            
+            // Question 12 (5 marks)
+            const q12Answer = document.querySelector('textarea[name="q12"]').value.toLowerCase();
+            const q12Data = writtenQuestionKeywords.q12;
+            let q12Keywords = 0;
+            let q12Found = [];
+            let q12Missing = [];
+            
+            q12Data.keywords.forEach(keyword => {
+                if (q12Answer.includes(keyword.toLowerCase())) {
+                    q12Keywords++;
+                    q12Found.push(keyword);
+                } else {
+                    q12Missing.push(keyword);
+                }
+            });
+            
+            const q12Score = Math.min(5, Math.round((q12Keywords / q12Data.keywords.length) * 5));
+            writtenScore += q12Score;
+            
+            resultsHTML += `
+                <div class="question">
+                    <div class="question-header">
+                        <span class="question-number">Question 12</span>
+                        <span class="question-marks">${q12Score}/5 Marks</span>
+                    </div>
+                    <div class="feedback ${q12Score === 5 ? 'correct' : q12Score > 0 ? 'partial' : 'incorrect'}">
+                        <div class="feedback-title">${q12Score === 5 ? '✓ Excellent!' : q12Score > 0 ? '⚠ Partial Credit' : '✗ Needs Improvement'}</div>
+                        <p><strong>Your Answer:</strong> ${document.querySelector('textarea[name="q12"]').value || 'No answer provided'}</p>
+                        <p><strong>Keywords Found:</strong> <span class="keywords-found">${q12Found.join(', ') || 'None'}</span></p>
+                        <p><strong>Keywords Missing:</strong> <span class="keywords-missing">${q12Missing.join(', ') || 'None'}</span></p>
+                        <p><strong>Model Answer:</strong> ${q12Data.mockAnswer}</p>
+                    </div>
+                </div>
+            `;
+            
+            // Question 13 (5 marks)
+            const q13Answer = document.querySelector('textarea[name="q13"]').value.toLowerCase();
+            const q13Data = writtenQuestionKeywords.q13;
+            let q13Keywords = 0;
+            let q13Found = [];
+            let q13Missing = [];
+            
+            q13Data.keywords.forEach(keyword => {
+                if (q13Answer.includes(keyword.toLowerCase())) {
+                    q13Keywords++;
+                    q13Found.push(keyword);
+                } else {
+                    q13Missing.push(keyword);
+                }
+            });
+            
+            const q13Score = Math.min(5, Math.round((q13Keywords / q13Data.keywords.length) * 5));
+            writtenScore += q13Score;
+            
+            resultsHTML += `
+                <div class="question">
+                    <div class="question-header">
+                        <span class="question-number">Question 13</span>
+                        <span class="question-marks">${q13Score}/5 Marks</span>
+                    </div>
+                    <div class="feedback ${q13Score === 5 ? 'correct' : q13Score > 0 ? 'partial' : 'incorrect'}">
+                        <div class="feedback-title">${q13Score === 5 ? '✓ Excellent!' : q13Score > 0 ? '⚠ Partial Credit' : '✗ Needs Improvement'}</div>
+                        <p><strong>Your Answer:</strong> ${document.querySelector('textarea[name="q13"]').value || 'No answer provided'}</p>
+                        <p><strong>Keywords Found:</strong> <span class="keywords-found">${q13Found.join(', ') || 'None'}</span></p>
+                        <p><strong>Keywords Missing:</strong> <span class="keywords-missing">${q13Missing.join(', ') || 'None'}</span></p>
+                        <p><strong>Model Answer:</strong> ${q13Data.mockAnswer}</p>
+                    </div>
+                </div>
+            `;
+            
+            // Question 14 (4 marks)
+            const q14Answer = document.querySelector('textarea[name="q14"]').value.toLowerCase();
+            const q14Data = writtenQuestionKeywords.q14;
+            let q14Keywords = 0;
+            let q14Found = [];
+            let q14Missing = [];
+            
+            q14Data.keywords.forEach(keyword => {
+                if (q14Answer.includes(keyword.toLowerCase())) {
+                    q14Keywords++;
+                    q14Found.push(keyword);
+                } else {
+                    q14Missing.push(keyword);
+                }
+            });
+            
+            const q14Score = Math.min(4, Math.round((q14Keywords / q14Data.keywords.length) * 4));
+            writtenScore += q14Score;
+            
+            resultsHTML += `
+                <div class="question">
+                    <div class="question-header">
+                        <span class="question-number">Question 14</span>
+                        <span class="question-marks">${q14Score}/4 Marks</span>
+                    </div>
+                    <div class="feedback ${q14Score === 4 ? 'correct' : q14Score > 0 ? 'partial' : 'incorrect'}">
+                        <div class="feedback-title">${q14Score === 4 ? '✓ Excellent!' : q14Score > 0 ? '⚠ Partial Credit' : '✗ Needs Improvement'}</div>
+                        <p><strong>Your Answer:</strong> ${document.querySelector('textarea[name="q14"]').value || 'No answer provided'}</p>
+                        <p><strong>Keywords Found:</strong> <span class="keywords-found">${q14Found.join(', ') || 'None'}</span></p>
+                        <p><strong>Keywords Missing:</strong> <span class="keywords-missing">${q14Missing.join(', ') || 'None'}</span></p>
+                        <p><strong>Model Answer:</strong> ${q14Data.mockAnswer}</p>
+                    </div>
+                </div>
+            `;
+            
+            totalScore += writtenScore;
+            
+            // Question 15 - Code Analysis (12 marks)
+            const q15Answer = document.querySelector('textarea[name="q15"]').value.toLowerCase();
+            let q15Score = 0;
+            let q15Feedback = '';
+            
+            // Check for key concepts in the answer
+            if (q15Answer.includes('iii') || q15Answer.includes('after') || q15Answer.includes('s2 before s1')) {
+                q15Score += 4;
+                q15Feedback += '<p>✓ Part (a): Correct - S1 will always execute after S2</p>';
+            } else {
+                q15Feedback += '<p>✗ Part (a): Incorrect - The correct answer is (iii)</p>';
+            }
+            
+            if (q15Answer.includes('block') || q15Answer.includes('wait') && q15Answer.includes('signal')) {
+                q15Score += 3;
+                q15Feedback += '<p>✓ Part (b): Good explanation about wait() blocking and signal() unblocking</p>';
+            } else {
+                q15Score += 1;
+                q15Feedback += '<p>⚠ Part (b): Incomplete explanation</p>';
+            }
+            
+            if (q15Answer.includes('any order') || q15Answer.includes('either')) {
+                q15Score += 3;
+                q15Feedback += '<p>✓ Part (c): Correct understanding of S initialized to 1</p>';
+            } else {
+                q15Feedback += '<p>✗ Part (c): Missing explanation</p>';
+            }
+            
+            totalScore += q15Score;
+            
+            resultsHTML += `
+                <div class="question">
+                    <div class="question-header">
+                        <span class="question-number">Question 15 (Code Analysis)</span>
+                        <span class="question-marks">${q15Score}/12 Marks</span>
+                    </div>
+                    <div class="feedback ${q15Score >= 10 ? 'correct' : q15Score >= 6 ? 'partial' : 'incorrect'}">
+                        <div class="feedback-title">${q15Score >= 10 ? '✓ Excellent!' : q15Score >= 6 ? '⚠ Partial Credit' : '✗ Needs Improvement'}</div>
+                        <p><strong>Your Answer:</strong> ${document.querySelector('textarea[name="q15"]').value || 'No answer provided'}</p>
+                        ${q15Feedback}
+                        <p><strong>Model Answer:</strong></p>
+                        <p><strong>a)</strong> (iii) S1 will always execute after S2</p>
+                        <p><strong>b)</strong> Since S is initialized to 0, when P1 executes wait(S), it will block (S becomes -1). P1 cannot proceed until P2 executes signal(S), which increments S to 0 and unblocks P1. Therefore, S2 must execute before S1.</p>
+                        <p><strong>c)</strong> If S was initialized to 1: P1 could execute wait(S) successfully (S becomes 0) and proceed to S1 without blocking. S1 and S2 could execute in any order. P2's signal(S) would increment S to 1.</p>
+                    </div>
+                </div>
+            `;
+            
+            // Display final score
+            const percentage = ((totalScore / maxScore) * 100).toFixed(1);
+            let grade = '';
+            if (percentage >= 90) grade = 'A';
+            else if (percentage >= 80) grade = 'B';
+            else if (percentage >= 70) grade = 'C';
+            else if (percentage >= 60) grade = 'D';
+            else grade = 'F';
+            
+            resultsHTML = `
+                <div class="score-display">
+                    <div>Your Final Score</div>
+                    <div class="score">${totalScore} / ${maxScore}</div>
+                    <div style="font-size: 0.6em; margin-top: 10px;">
+                        Percentage: ${percentage}% | Grade: ${grade}
+                    </div>
+                    <div style="font-size: 0.5em; margin-top: 10px; color: #666;">
+                        MCQs: ${mcqScore}/20 | Written: ${writtenScore}/18 | Code Analysis: ${q15Score}/12
+                    </div>
+                </div>
+            ` + resultsHTML;
+            
+            document.getElementById('results').innerHTML = resultsHTML;
+            document.getElementById('results').classList.add('show');
+            document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+        });
+    </script>
+</body>
+</html>
