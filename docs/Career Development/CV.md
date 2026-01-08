@@ -27,14 +27,14 @@
         .header {
             background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
             color: white;
-            padding: 40px;
+            padding: 25px 40px;
             text-align: center;
             border-bottom: 5px solid #d4af37;
         }
         
         .header h1 {
-            font-size: 2.5em;
-            margin-bottom: 15px;
+            font-size: 2.2em;
+            margin-bottom: 10px;
             letter-spacing: 3px;
             font-weight: 300;
         }
@@ -53,26 +53,26 @@
         }
         
         .content {
-            padding: 30px 40px;
+            padding: 25px 40px;
         }
         
         .section {
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             page-break-inside: avoid;
         }
         
         .section-title {
-            font-size: 1.3em;
+            font-size: 1.2em;
             color: #1e3c72;
             border-bottom: 3px solid #2a5298;
-            padding-bottom: 5px;
-            margin-bottom: 15px;
+            padding-bottom: 4px;
+            margin-bottom: 12px;
             text-transform: uppercase;
             letter-spacing: 1px;
         }
         
         .item {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
         
         .item-title {
@@ -203,6 +203,10 @@
             
             .download-btn {
                 display: none;
+            }
+            
+            @page {
+                margin: 0.5in;
             }
         }
     </style>
