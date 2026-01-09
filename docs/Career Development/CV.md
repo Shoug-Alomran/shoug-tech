@@ -15,6 +15,7 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: #f5f5f5;
             padding: 20px;
+            line-height: 1.4;
         }
         
         .container {
@@ -73,10 +74,11 @@
         
         .item {
             margin-bottom: 15px;
+            page-break-inside: avoid;
         }
         
         .item-title {
-            font-size: 1.1em;
+            font-size: 1.05em;
             font-weight: bold;
             color: #2a5298;
             margin-bottom: 3px;
@@ -92,18 +94,19 @@
             color: #777;
             font-style: italic;
             font-size: 0.85em;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
         
         .item ul {
             margin-left: 20px;
             margin-top: 5px;
+            margin-bottom: 0;
         }
         
         .item li {
-            margin-bottom: 4px;
-            font-size: 0.9em;
-            line-height: 1.5;
+            margin-bottom: 3px;
+            font-size: 0.88em;
+            line-height: 1.4;
         }
         
         .skills-grid {
@@ -194,19 +197,62 @@
             body {
                 background: white;
                 padding: 0;
+                margin: 0;
             }
             
             .container {
                 box-shadow: none;
                 max-width: 100%;
+                margin: 0;
             }
             
             .download-btn {
                 display: none;
             }
             
+            .header {
+                padding: 20px 30px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+                margin-bottom: 8px;
+            }
+            
+            .content {
+                padding: 20px 30px;
+            }
+            
+            .section {
+                margin-bottom: 15px;
+                page-break-inside: avoid;
+            }
+            
+            .section-title {
+                font-size: 1.1em;
+                margin-bottom: 10px;
+                padding-bottom: 3px;
+            }
+            
+            .item {
+                margin-bottom: 10px;
+                page-break-inside: avoid;
+            }
+            
+            .item ul {
+                margin-top: 3px;
+                margin-bottom: 0;
+            }
+            
+            .item li {
+                margin-bottom: 2px;
+                font-size: 0.82em;
+                line-height: 1.3;
+            }
+            
             @page {
-                margin: 0.5in;
+                margin: 0.4in 0.5in;
+                size: letter;
             }
         }
     </style>
