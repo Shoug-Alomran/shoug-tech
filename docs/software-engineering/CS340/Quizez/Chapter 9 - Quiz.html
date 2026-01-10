@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CS340 - Chapter 9: Normalization Exam</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.95;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255,255,255,0.3);
+            margin-top: 20px;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #4ade80;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .question-container {
+            margin-bottom: 40px;
+            padding: 25px;
+            background: #f8f9fa;
+            border-left: 5px solid #667eea;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .question-container.active {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 20px;
+        }
+
+        .question-title {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #333;
+            flex: 1;
+        }
+
+        .badge {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        .badge.past-exam {
+            background: #f59e0b;
+        }
+
+        .badge.generated {
+            background: #06b6d4;
+        }
+
+        .question-text {
+            font-size: 1.05em;
+            margin-bottom: 20px;
+            line-height: 1.6;
+            color: #555;
+            white-space: pre-wrap;
+        }
+
+        .option {
+            margin: 12px 0;
+            padding: 15px;
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .option:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .option input[type="radio"],
+        .option input[type="checkbox"] {
+            margin-right: 12px;
+            margin-top: 3px;
+            cursor: pointer;
+            width: 18px;
+            height: 18px;
+            flex-shrink: 0;
+        }
+
+        .option.selected {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 180px;
+            padding: 15px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+            resize: vertical;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .code-block {
+            background: #1f2937;
+            color: #f3f4f6;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            overflow-x: auto;
+            margin: 10px 0;
+            line-height: 1.5;
+        }
+
+        .info-box {
+            background: #dbeafe;
+            border-left: 4px solid #3b82f6;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+            color: #1e40af;
+            font-size: 0.95em;
+        }
+
+        .table-question {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 0.9em;
+        }
+
+        .table-question td, .table-question th {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+
+        .table-question th {
+            background: #667eea;
+            color: white;
+        }
+
+        button {
+            padding: 12px 24px;
+            font-size: 1em;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .btn-submit-all {
+            background: #667eea;
+            color: white;
+            margin-top: 30px;
+            width: 100%;
+        }
+
+        .btn-submit-all:hover:not(:disabled) {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-prev {
+            background: #6b7280;
+            color: white;
+        }
+
+        .btn-prev:hover {
+            background: #4b5563;
+            transform: translateY(-2px);
+        }
+
+        .btn-next {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-next:hover {
+            background: #059669;
+            transform: translateY(-2px);
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #e5e7eb;
+        }
+
+        .question-counter {
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        .results-container {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .results-container.show {
+            display: block;
+        }
+
+        .score-circle {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 30px;
+            font-size: 3em;
+            font-weight: bold;
+        }
+
+        .score-circle .percentage {
+            font-size: 2.5em;
+        }
+
+        .score-circle .label {
+            font-size: 0.5em;
+            margin-top: 5px;
+        }
+
+        .results-details {
+            margin: 30px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            text-align: left;
+        }
+
+        .results-details p {
+            font-size: 1.1em;
+            margin: 10px 0;
+        }
+
+        .btn-restart {
+            background: #667eea;
+            color: white;
+            margin-top: 20px;
+        }
+
+        .btn-restart:hover {
+            background: #5568d3;
+        }
+
+        .footer {
+            background: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            color: #666;
+            font-size: 0.9em;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .review-question {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .review-title {
+            font-weight: 600;
+            font-size: 1.05em;
+            margin-bottom: 10px;
+        }
+
+        .your-answer {
+            background: white;
+            padding: 12px;
+            border-left: 3px solid #3b82f6;
+            margin: 10px 0;
+            font-size: 0.95em;
+            white-space: pre-wrap;
+            font-family: 'Courier New', monospace;
+        }
+
+        .review-section {
+            margin-top: 40px;
+            border-top: 3px solid #e5e7eb;
+            padding-top: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .question-container {
+                padding: 15px;
+            }
+
+            button {
+                width: 100%;
+            }
+
+            .question-header {
+                flex-direction: column;
+            }
+
+            .badge {
+                margin-left: 0;
+                margin-top: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔧 Chapter 9: Normalization</h1>
+            <p>CS340 - Introduction to Database Systems</p>
+            <div class="progress-bar">
+                <div class="progress-fill"></div>
+            </div>
+        </div>
+
+        <div class="content">
+            <div id="examContent"></div>
+            <div class="results-container" id="resultsContainer">
+                <h2>Exam Results 🎉</h2>
+                <div class="score-circle">
+                    <span class="percentage" id="scorePercentage">0%</span>
+                    <span class="label">Score</span>
+                </div>
+                <div class="results-details">
+                    <p><strong>Total Questions:</strong> <span id="totalQuestions">0</span></p>
+                    <p><strong>Correct Answers:</strong> <span id="correctAnswers">0</span></p>
+                    <p><strong>Incorrect Answers:</strong> <span id="incorrectAnswers">0</span></p>
+                    <p id="resultMessage"></p>
+                </div>
+
+                <div class="review-section" id="reviewSection"></div>
+
+                <button class="btn-restart" onclick="location.reload()">Take Exam Again</button>
+            </div>
+
+            <div class="navigation" id="navigation" style="display: none;">
+                <button class="btn-prev" onclick="previousQuestion()">← Previous</button>
+                <span class="question-counter">Question <span id="currentQuestion">1</span> of <span id="totalQuestionsNav">0</span></span>
+                <button class="btn-next" onclick="nextQuestion()">Next →</button>
+            </div>
+        </div>
+
+        <button class="btn-submit-all" id="submitAllBtn" onclick="submitAllAnswers()">Submit Exam</button>
+
+        <div class="footer">
+            <p><strong>Prepared by: Shoug Alomran</strong></p>
+            <p>CS340 - Introduction to Database Systems | Term 242</p>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                type: 'mcq',
+                question: 'What is the primary goal of normalization in database design?',
+                options: [
+                    'To increase the size of the database',
+                    'To minimize redundancy and improve data consistency',
+                    'To make queries run slower',
+                    'To increase the number of tables'
+                ],
+                correct: 1,
+                explanation: 'Normalization aims to reduce redundancy, eliminate anomalies, and improve data integrity. It minimizes duplicate data storage and ensures consistency.',
+                pastExam: false
+            },
+            {
+                type: 'mcq',
+                question: 'What is a functional dependency in the context of normalization?',
+                options: [
+                    'A relationship between two tables',
+                    'When the value of one attribute determines the value of another attribute',
+                    'A constraint that enforces primary keys',
+                    'The order in which attributes appear in a table'
+                ],
+                correct: 1,
+                explanation: 'A functional dependency (X → Y) means if two tuples have the same X value, they must have the same Y value. It is a relationship between attributes within a table.',
+                pastExam: false
+            },
+            {
+                type: 'mcq',
+                question: 'Which normal form eliminates repeating groups?',
+                options: [
+                    '1NF (First Normal Form)',
+                    '2NF (Second Normal Form)',
+                    '3NF (Third Normal Form)',
+                    'BCNF (Boyce-Codd Normal Form)'
+                ],
+                correct: 0,
+                explanation: 'First Normal Form (1NF) requires all attribute values to be atomic (no composite or multivalued attributes). This eliminates repeating groups and ensures atomicity.',
+                pastExam: true
+            },
+            {
+                type: 'mcq',
+                question: 'What is a partial dependency?',
+                options: [
+                    'A dependency on part of a composite primary key',
+                    'A transitive dependency',
+                    'A functional dependency on a foreign key',
+                    'A dependency that cannot be removed'
+                ],
+                correct: 0,
+                explanation: 'A partial dependency occurs when a non-key attribute depends on only part of a composite primary key, not the entire key. This violates 2NF.',
+                pastExam: true
+            },
+            {
+                type: 'mcq',
+                question: 'A relation is in Second Normal Form (2NF) if:',
+                options: [
+                    'It is in 1NF and every non-prime attribute is fully dependent on the entire primary key',
+                    'It is in 1NF and has no transitive dependencies',
+                    'All attributes are atomic',
+                    'It has only one candidate key'
+                ],
+                correct: 0,
+                explanation: '2NF requires: (1) The relation is in 1NF, and (2) Every non-prime attribute is FULLY functionally dependent on the primary key (not just part of it).',
+                pastExam: false
+            },
+            {
+                type: 'mcq',
+                question: 'What is a transitive dependency?',
+                options: [
+                    'A dependency where X → Y and Y → Z, so X → Z',
+                    'A dependency between two foreign keys',
+                    'A dependency on the order of attributes',
+                    'A dependency that increases with more data'
+                ],
+                correct: 0,
+                explanation: 'A transitive dependency occurs when: X → Y and Y → Z (where Y is not a candidate key), then X → Z. This violates 3NF.',
+                pastExam: true
+            },
+            {
+                type: 'mcq',
+                question: 'A relation is in Third Normal Form (3NF) if:',
+                options: [
+                    'It is in 2NF and has no transitive dependencies on the primary key',
+                    'All attributes are unique',
+                    'It has no foreign keys',
+                    'Every attribute is a primary key'
+                ],
+                correct: 0,
+                explanation: '3NF requires: (1) The relation is in 2NF, and (2) No non-prime attribute is transitively dependent on the primary key.',
+                pastExam: true
+            },
+            {
+                type: 'mcq',
+                question: 'What is BCNF (Boyce-Codd Normal Form)?',
+                options: [
+                    'A less strict version of 3NF',
+                    'A form where every determinant is a candidate key',
+                    'The same as 3NF',
+                    'A form that eliminates all foreign keys'
+                ],
+                correct: 1,
+                explanation: 'BCNF is stricter than 3NF. It requires that every determinant (attribute on which another depends) must be a candidate key. Every BCNF relation is in 3NF, but not vice versa.',
+                pastExam: false
+            },
+            {
+                type: 'mcq',
+                question: 'What is an insertion anomaly?',
+                options: [
+                    'Unable to insert data due to a primary key constraint',
+                    'Unable to insert a new record because required attributes are missing',
+                    'A duplicate insertion error',
+                    'Inserting NULL values'
+                ],
+                correct: 1,
+                explanation: 'An insertion anomaly occurs when you cannot insert data without inserting unrelated data. Example: Cannot add a new course unless you assign it to a student.',
+                pastExam: true
+            },
+            {
+                type: 'mcq',
+                question: 'What is a deletion anomaly?',
+                options: [
+                    'Deleting a record you did not intend to delete',
+                    'Losing valid data when deleting unrelated data',
+                    'Deleting a table by mistake',
+                    'Violating a foreign key constraint'
+                ],
+                correct: 1,
+                explanation: 'A deletion anomaly occurs when deleting data results in unintended loss of other information. Example: Deleting the only employee in a department deletes the department data too.',
+                pastExam: true
+            },
+            {
+                type: 'mcq',
+                question: 'What is an update anomaly?',
+                options: [
+                    'Updating NULL values',
+                    'Having to update the same information in multiple places for consistency',
+                    'Updating a foreign key',
+                    'Updating a primary key'
+                ],
+                correct: 1,
+                explanation: 'An update anomaly occurs when you must update the same fact in multiple rows to maintain consistency. This is caused by redundancy and violates normalization principles.',
+                pastExam: true
+            },
+            {
+                type: 'truefalse',
+                question: 'Every relation in BCNF is also in 3NF.',
+                correct: true,
+                explanation: 'TRUE. BCNF is a stricter form of 3NF. Every BCNF relation must be in 3NF, though not every 3NF relation is in BCNF.',
+                pastExam: false
+            },
+            {
+                type: 'truefalse',
+                question: 'A functional dependency X → Y means X is a primary key.',
+                correct: false,
+                explanation: 'FALSE. A functional dependency X → Y means X determines Y, but X does not have to be a primary key. Any attribute(s) can have functional dependencies.',
+                pastExam: true
+            },
+            {
+                type: 'truefalse',
+                question: 'Normalization always improves query performance.',
+                correct: false,
+                explanation: 'FALSE. While normalization improves data integrity and reduces redundancy, it may require more JOINs in queries, potentially slowing retrieval. Sometimes denormalization is chosen for performance.',
+                pastExam: false
+            },
+            {
+                type: 'truefalse',
+                question: 'A relation with all atomic values is automatically in First Normal Form.',
+                correct: true,
+                explanation: 'TRUE. 1NF requires all values to be atomic (indivisible). This is the fundamental requirement and is the starting point for further normalization.',
+                pastExam: false
+            },
+            {
+                type: 'shortanswer',
+                question: 'Explain the difference between 1NF, 2NF, and 3NF. What problem does each form address?',
+                keywords: ['1nf', 'atomic', 'repeating', 'groups', '2nf', 'partial', 'dependency', '3nf', 'transitive', 'non-prime', 'attribute'],
+                modelAnswer: '1NF (First Normal Form):\n- Problem: Repeating groups and non-atomic values\n- Solution: All values must be atomic (indivisible)\n- No composite or multivalued attributes in cells\n\n2NF (Second Normal Form):\n- Problem: Partial dependencies\n- Solution: Every non-prime attribute must be FULLY dependent on the entire primary key\n- No non-key attribute depends on just part of a composite key\n\n3NF (Third Normal Form):\n- Problem: Transitive dependencies\n- Solution: No non-prime attribute is transitively dependent on the primary key\n- If X → Y and Y → Z (Y not a key), then Y and Z are in another relation\n\nProgression: 1NF addresses atomicity → 2NF addresses key dependencies → 3NF addresses non-key dependencies',
+                explanation: 'Each normal form builds on the previous one, eliminating specific types of anomalies.',
+                pastExam: true
+            },
+            {
+                type: 'shortanswer',
+                question: 'Define functional dependency and provide two examples with actual attributes.',
+                keywords: ['functional', 'dependency', 'determines', 'determines', 'unique', 'same value', 'example', 'attribute', 'ssn', 'employee'],
+                modelAnswer: 'A functional dependency is a relationship between attributes where one attribute (or group) determines another.\n\nDefinition: X → Y means if two tuples have the same X value, they must have the same Y value.\n\nExample 1: SSN → EmployeeName\n- If two records have the same SSN, they must have the same employee name\n- SSN uniquely identifies an employee\n\nExample 2: CourseID → CourseName\n- If two records have the same CourseID, they must have the same course name\n- CourseID uniquely identifies a course\n\nExample 3: (StudentID, CourseID) → Grade\n- The combination of StudentID and CourseID determines the grade\n- A specific student in a specific course has one grade',
+                explanation: 'Functional dependencies are the foundation of normalization and must be identified before decomposing relations.',
+                pastExam: false
+            },
+            {
+                type: 'shortanswer',
+                question: 'Explain the differences between insertion, deletion, and update anomalies with concrete examples.',
+                keywords: ['insertion', 'deletion', 'update', 'anomaly', 'cannot insert', 'lose data', 'multiple places', 'consistency', 'example', 'redundancy'],
+                modelAnswer: 'UPDATE ANOMALY:\n- Problem: Changing one fact requires updating multiple rows\n- Example: If student name appears in 5 different records, changing their name requires 5 updates\n- Risk: If you miss one update, data becomes inconsistent\n\nINSERTION ANOMALY:\n- Problem: Cannot insert new data without inserting unrelated data\n- Example: Cannot add a new course without assigning a student to it\n- Causes: Required attributes for one entity cannot exist without another entity\n\nDELETION ANOMALY:\n- Problem: Deleting data causes unintended loss of other information\n- Example: Deleting the only student in a course deletes the course information too\n- Result: Lose valid data that should be preserved\n\nAll three are caused by redundancy and poor database design.',
+                explanation: 'These anomalies motivate the need for normalization to eliminate redundancy.',
+                pastExam: true
+            },
+            {
+                type: 'problem',
+                question: 'Given the relation: EMP_PROJ(EmployeeID, EmployeeName, ProjectID, ProjectName, Hours)\nWith FD: EmployeeID → EmployeeName and ProjectID → ProjectName\n\nIdentify: (a) What normal form is this in? (b) What anomalies exist? (c) How would you decompose it to 3NF?',
+                keywords: ['1nf', '2nf', 'partial dependency', 'anomaly', 'decompose', 'insertion', 'update', 'relation', 'employee', 'project'],
+                modelAnswer: '(a) NORMAL FORM: 2NF (or possibly 1NF depending on implementation)\n- Has partial dependencies: EmployeeID → EmployeeName and ProjectID → ProjectName\n- Violates 2NF because non-key attributes depend on only part of the composite key\n\n(b) ANOMALIES:\nUpdate: Changing an employee\'s name requires updating all their project records\nInsertion: Cannot add a new employee without assigning them to a project\nDeletion: Deleting an employee\'s last project deletes the employee record\n\n(c) DECOMPOSITION TO 3NF:\nRelation 1: EMPLOYEE(EmployeeID, EmployeeName)\nRelation 2: PROJECT(ProjectID, ProjectName)\nRelation 3: EMP_PROJ(EmployeeID, ProjectID, Hours)\n\nFunctional Dependencies preserved:\n- EMPLOYEE: EmployeeID → EmployeeName\n- PROJECT: ProjectID → ProjectName\n- EMP_PROJ: (EmployeeID, ProjectID) → Hours\n\nResult: All relations in 3NF, anomalies eliminated',
+                explanation: 'Decomposition separates independent entities and their relationships.',
+                pastExam: true
+            },
+            {
+                type: 'problem',
+                question: 'Consider: STUDENT_COURSE(StudentID, StudentName, Major, CourseID, CourseName, Grade)\nWith FD: StudentID → StudentName, StudentID → Major, CourseID → CourseName\n\nIdentify: (a) Current normal form, (b) All dependencies, (c) Decompose to 3NF.',
+                keywords: ['1nf', '2nf', '3nf', 'partial', 'dependency', 'transitive', 'decompose', 'student', 'course', 'separate'],
+                modelAnswer: '(a) NORMAL FORM: 1NF or violates 2NF\n- Partial dependencies exist\n- Multiple non-key attributes depend on only parts of the composite key\n\n(b) ALL FUNCTIONAL DEPENDENCIES:\n- StudentID → StudentName (partial dependency)\n- StudentID → Major (partial dependency)\n- CourseID → CourseName (partial dependency)\n- (StudentID, CourseID) → Grade (full dependency)\n\n(c) DECOMPOSITION TO 3NF:\nRelation 1: STUDENT(StudentID, StudentName, Major)\nRelation 2: COURSE(CourseID, CourseName)\nRelation 3: ENROLLMENT(StudentID, CourseID, Grade)\n\nVerification:\n- STUDENT: StudentID is primary key, all non-key attributes depend on it\n- COURSE: CourseID is primary key, all non-key attributes depend on it\n- ENROLLMENT: (StudentID, CourseID) is primary key, Grade depends on it\n- All in 3NF, no anomalies',
+                explanation: 'Separate entities (Student, Course) from their relationship (Enrollment).',
+                pastExam: false
+            },
+            {
+                type: 'mcq',
+                question: 'Which of the following best describes a key attribute?',
+                options: [
+                    'An attribute that is frequently accessed',
+                    'An attribute that uniquely identifies a tuple',
+                    'An attribute that must not be NULL',
+                    'An attribute that appears in multiple tables'
+                ],
+                correct: 1,
+                explanation: 'A key attribute (or key) is a minimal set of attributes that uniquely identifies each tuple in a relation. A prime attribute is any attribute that is part of some candidate key.',
+                pastExam: false
+            },
+            {
+                type: 'mcq',
+                question: 'What is the relationship between a determinant and BCNF?',
+                options: [
+                    'A determinant is another name for a key',
+                    'BCNF requires that every determinant is a candidate key',
+                    'Determinants cause BCNF violations',
+                    'BCNF has no determinants'
+                ],
+                correct: 1,
+                explanation: 'A determinant is any attribute on which another attribute is functionally dependent. BCNF requires that every determinant must be a candidate key of the relation.',
+                pastExam: false
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let answers = [];
+        let submitted = false;
+
+        function initExam() {
+            document.getElementById('totalQuestionsNav').textContent = questions.length;
+            answers = new Array(questions.length).fill(null);
+            document.getElementById('navigation').style.display = 'flex';
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            const examContent = document.getElementById('examContent');
+            examContent.innerHTML = '';
+            
+            const q = questions[currentQuestionIndex];
+            const questionDiv = document.createElement('div');
+            questionDiv.className = 'question-container active';
+
+            let badgeHtml = '';
+            if (q.pastExam) {
+                badgeHtml = `<span class="badge past-exam">📋 Past Exam</span>`;
+            } else {
+                badgeHtml = `<span class="badge generated">✨ Generated</span>`;
+            }
+            
+            let questionHTML = `
+                <div class="question-header">
+                    <span class="question-title">Question ${currentQuestionIndex + 1}/${questions.length}</span>
+                    ${badgeHtml}
+                </div>
+                <div class="question-text">${q.question}</div>
+            `;
+
+            if (q.type === 'mcq') {
+                questionHTML += '<div>';
+                q.options.forEach((option, idx) => {
+                    const isSelected = answers[currentQuestionIndex] === idx;
+                    
+                    let className = 'option';
+                    if (isSelected) className += ' selected';
+                    
+                    questionHTML += `
+                        <label class="${className}">
+                            <input type="radio" name="answer" value="${idx}" 
+                                ${isSelected ? 'checked' : ''}
+                                onchange="selectAnswer(${idx})">
+                            <span>${option}</span>
+                        </label>
+                    `;
+                });
+                questionHTML += '</div>';
+            } else if (q.type === 'truefalse') {
+                const selected = answers[currentQuestionIndex];
+                questionHTML += `
+                    <div>
+                        <label class="option ${selected === true ? 'selected' : ''}">
+                            <input type="radio" name="answer" value="true" 
+                                ${selected === true ? 'checked' : ''}
+                                onchange="selectAnswer(true)">
+                            <span>True</span>
+                        </label>
+                        <label class="option ${selected === false ? 'selected' : ''}">
+                            <input type="radio" name="answer" value="false" 
+                                ${selected === false ? 'checked' : ''}
+                                onchange="selectAnswer(false)">
+                            <span>False</span>
+                        </label>
+                    </div>
+                `;
+            } else if (q.type === 'shortanswer' || q.type === 'problem') {
+                const answer = answers[currentQuestionIndex] || '';
+                questionHTML += `
+                    <textarea id="answerText" 
+                        onchange="selectAnswer(this.value)"
+                        onkeyup="selectAnswer(this.value)">${answer}</textarea>
+                `;
+            }
+
+            questionDiv.innerHTML = questionHTML;
+            examContent.appendChild(questionDiv);
+            updateProgress();
+        }
+
+        function selectAnswer(answer) {
+            answers[currentQuestionIndex] = answer;
+        }
+
+        function nextQuestion() {
+            if (currentQuestionIndex < questions.length - 1) {
+                currentQuestionIndex++;
+                renderQuestion();
+                document.getElementById('currentQuestion').textContent = currentQuestionIndex + 1;
+                window.scrollTo(0, 0);
+            }
+        }
+
+        function previousQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                renderQuestion();
+                document.getElementById('currentQuestion').textContent = currentQuestionIndex + 1;
+                window.scrollTo(0, 0);
+            }
+        }
+
+        function updateProgress() {
+            const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
+            document.querySelector('.progress-fill').style.width = progress + '%';
+        }
+
+        function submitAllAnswers() {
+            submitted = true;
+            document.getElementById('submitAllBtn').style.display = 'none';
+            document.getElementById('navigation').style.display = 'none';
+            showResults();
+        }
+
+        function gradeWrittenAnswer(answer, keywords) {
+            const answerLower = (answer || '').toLowerCase();
+            const matchedKeywords = keywords.filter(kw => 
+                answerLower.includes(kw.toLowerCase())
+            );
+            const matchPercentage = (matchedKeywords.length / keywords.length) * 100;
+            return {
+                matched: matchedKeywords,
+                total: keywords.length,
+                percentage: matchPercentage
+            };
+        }
+
+        function showResults() {
+            let correctCount = 0;
+            const results = [];
+
+            answers.forEach((answer, idx) => {
+                const q = questions[idx];
+                if (q.type === 'mcq' || q.type === 'truefalse') {
+                    if (answer === q.correct) {
+                        correctCount++;
+                        results.push({
+                            questionIdx: idx,
+                            isCorrect: true,
+                            type: q.type
+                        });
+                    } else {
+                        results.push({
+                            questionIdx: idx,
+                            isCorrect: false,
+                            type: q.type,
+                            userAnswer: answer,
+                            correctAnswer: q.correct
+                        });
+                    }
+                } else {
+                    const grading = gradeWrittenAnswer(answer, q.keywords);
+                    const isPassing = grading.percentage >= 60;
+                    if (isPassing) correctCount++;
+                    
+                    results.push({
+                        questionIdx: idx,
+                        type: q.type,
+                        grading: grading,
+                        userAnswer: answer
+                    });
+                }
+            });
+
+            const percentage = Math.round((correctCount / questions.length) * 100);
+            document.getElementById('scorePercentage').textContent = percentage + '%';
+            document.getElementById('totalQuestions').textContent = questions.length;
+            document.getElementById('correctAnswers').textContent = correctCount;
+            document.getElementById('incorrectAnswers').textContent = questions.length - correctCount;
+
+            let message = '';
+            if (percentage === 100) {
+                message = 'Perfect score! You have mastered Normalization! 🎯';
+            } else if (percentage >= 80) {
+                message = 'Excellent work! You understand normalization concepts well. 🌟';
+            } else if (percentage >= 60) {
+                message = 'Good job! Review normal forms and anomalies to improve. 📚';
+            } else {
+                message = 'Keep studying! Focus on 1NF, 2NF, 3NF, and functional dependencies. 💪';
+            }
+
+            document.getElementById('resultMessage').textContent = message;
+
+            generateReview(results);
+
+            document.getElementById('examContent').innerHTML = '';
+            document.getElementById('resultsContainer').classList.add('show');
+            window.scrollTo(0, 0);
+        }
+
+        function generateReview(results) {
+            const reviewSection = document.getElementById('reviewSection');
+            reviewSection.innerHTML = '<h3 style="margin-bottom: 20px; border-bottom: 2px solid #667eea; padding-bottom: 10px;">Detailed Review</h3>';
+
+            results.forEach((result) => {
+                const q = questions[result.questionIdx];
+                const reviewDiv = document.createElement('div');
+                reviewDiv.className = 'review-question';
+
+                let reviewHTML = `
+                    <div class="review-title">Question ${result.questionIdx + 1}: ${q.type === 'mcq' ? 'Multiple Choice' : q.type === 'truefalse' ? 'True/False' : 'Analysis'}</div>
+                    <div style="margin: 10px 0; color: #666; font-size: 0.95em; white-space: pre-wrap;">${q.question}</div>
+                `;
+
+                if (q.type === 'mcq' || q.type === 'truefalse') {
+                    if (result.isCorrect) {
+                        reviewHTML += `<div style="color: #10b981; font-weight: 600;">✓ Correct</div>`;
+                    } else {
+                        const userAnswerText = q.type === 'mcq' ? q.options[result.userAnswer] : (result.userAnswer ? 'True' : 'False');
+                        const correctAnswerText = q.type === 'mcq' ? q.options[result.correctAnswer] : (result.correctAnswer ? 'True' : 'False');
+                        reviewHTML += `
+                            <div style="color: #ef4444; font-weight: 600;">✗ Incorrect</div>
+                            <div class="your-answer"><strong>Your answer:</strong> ${userAnswerText}</div>
+                            <div class="your-answer"><strong>Correct answer:</strong> ${correctAnswerText}</div>
+                        `;
+                    }
+                } else {
+                    const grading = result.grading;
+                    const isPassing = grading.percentage >= 60;
+                    reviewHTML += `
+                        <div style="color: ${isPassing ? '#10b981' : '#ef4444'}; font-weight: 600;">
+                            ${isPassing ? '✓' : '✗'} Score: ${Math.round(grading.percentage)}% (${grading.matched.length}/${grading.total} key concepts)
+                        </div>
+                        <div class="your-answer"><strong>Your answer:</strong> ${result.userAnswer}</div>
+                        <div style="margin-top: 10px; padding: 10px; background: rgba(251, 191, 36, 0.1); border-left: 3px solid #fbbf24; font-size: 0.9em;">
+                            <strong>Key concepts found:</strong> ${grading.matched.length > 0 ? grading.matched.join(', ') : 'None detected'}
+                        </div>
+                        <div style="margin-top: 10px; padding: 10px; background: rgba(59, 130, 246, 0.1); border-left: 3px solid #3b82f6; font-size: 0.9em;">
+                            <strong>Expected key concepts:</strong> ${q.keywords.join(', ')}
+                        </div>
+                    `;
+                }
+
+                reviewHTML += `
+                    <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #e5e7eb;">
+                        <div style="font-size: 0.95em; line-height: 1.6;"><strong>Explanation:</strong> ${q.explanation}</div>
+                    </div>
+                `;
+
+                if (q.type === 'shortanswer' || q.type === 'problem') {
+                    reviewHTML += `
+                        <div style="margin-top: 15px; padding: 12px; background: rgba(0,0,0,0.05); border-left: 3px solid #667eea; font-family: 'Courier New', monospace; font-size: 0.9em; white-space: pre-wrap; line-height: 1.6;">
+                            <strong>Model answer:</strong>\n${q.modelAnswer}
+                        </div>
+                    `;
+                }
+
+                reviewDiv.innerHTML = reviewHTML;
+                reviewSection.appendChild(reviewDiv);
+            });
+        }
+
+        window.addEventListener('load', initExam);
+    </script>
+</body>
+</html>
