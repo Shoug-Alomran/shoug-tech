@@ -3,27 +3,29 @@
 A collection of my university projects that reflect my growth across software engineering, cybersecurity, and computing foundations.
 
 ---
+## [SE311 — Software Requirements Analysis Project](https://github.com/Shoug-Alomran/SE311-Software-Requirements-Analysis)
+**Type:** Advanced Requirements Engineering  
+**Languages & Tools:** UML, GRL/URN, IEEE 830, MkDocs, Requirements Engineering Techniques  
 
-## [CS102 — School Course Enrollment System](https://github.com/Shoug-Alomran/CS102-SchoolCourseEnrolmentSystem)
-**Type:** Object-Oriented Programming (Java)  
-**Languages & Tools:** Java, File I/O, Collections Framework  
-
-A console-based system simulating a **university course registration platform**.  
-It features multiple user roles — students, instructors, and administrators — each with specific access and capabilities.  
+Developed a **full software requirements analysis** for the Sillah (صلة) preventive health management system, expanding the original SE201 project using formal SE311 methodologies.  
+This project applies the complete Requirements Engineering (RE) process — Inception, Elicitation, Analysis, Specification, Validation, and Requirements Management.
 
 **Highlights:**
-- Role-based authentication system  
-- Course creation, enrollment, and grading workflows  
-- Persistent data storage using file management  
-- Input validation and exception handling  
-- Modular class design and reusable helper functions  
+- Vision & Scope document (Phase 1)  
+- Elicitation notes, stakeholder analysis, and requirement prioritization  
+- Functional & non-functional requirements (IEEE 830 structure)  
+- UML diagrams (use case, activity, sequence, class)  
+- Goal modeling using GRL/URN  
+- Traceability matrix and multi‑release planning  
+- Full documentation website built with MkDocs (Material Theme)  
 
- *Focus:* Core Java design, modularity, and robust data handling  
+*Focus:* Formal requirements engineering, structured documentation, and professional modeling techniques  
 
- **Website:** [View Project Site](https://school-course-enrolment-system.shoug-tech.com/)
+**Website:** [View Project Site](https://software-requirements-analysis.shoug-tech.com)
+
+*(Ongoing)*
 
 ---
-
 ## [CS285 — Cryptography Project](https://github.com/Shoug-Alomran/CS285-CryptographyProject)
 **Type:** Discrete Mathematics / Cryptography  
 **Languages & Tools:** Java, Modular Arithmetic  
@@ -77,27 +79,24 @@ Implemented a **singly linked list** with performance analysis across different 
  **Website:** [View Project Site](https://linkedlist.shoug-tech.com)  
 
 ---
-## [SE311 — Software Requirements Analysis Project](https://github.com/Shoug-Alomran/SE311-Software-Requirements-Analysis)
-**Type:** Advanced Requirements Engineering  
-**Languages & Tools:** UML, GRL/URN, IEEE 830, MkDocs, Requirements Engineering Techniques  
 
-Developed a **full software requirements analysis** for the Sillah (صلة) preventive health management system, expanding the original SE201 project using formal SE311 methodologies.  
-This project applies the complete Requirements Engineering (RE) process — Inception, Elicitation, Analysis, Specification, Validation, and Requirements Management.
+## [CS102 — School Course Enrollment System](https://github.com/Shoug-Alomran/CS102-SchoolCourseEnrolmentSystem)
+**Type:** Object-Oriented Programming (Java)  
+**Languages & Tools:** Java, File I/O, Collections Framework  
+
+A console-based system simulating a **university course registration platform**.  
+It features multiple user roles — students, instructors, and administrators — each with specific access and capabilities.  
 
 **Highlights:**
-- Vision & Scope document (Phase 1)  
-- Elicitation notes, stakeholder analysis, and requirement prioritization  
-- Functional & non-functional requirements (IEEE 830 structure)  
-- UML diagrams (use case, activity, sequence, class)  
-- Goal modeling using GRL/URN  
-- Traceability matrix and multi‑release planning  
-- Full documentation website built with MkDocs (Material Theme)  
+- Role-based authentication system  
+- Course creation, enrollment, and grading workflows  
+- Persistent data storage using file management  
+- Input validation and exception handling  
+- Modular class design and reusable helper functions  
 
-*Focus:* Formal requirements engineering, structured documentation, and professional modeling techniques  
+ *Focus:* Core Java design, modularity, and robust data handling  
 
-**Website:** [View Project Site](https://software-requirements-analysis.shoug-tech.com)
-
-*(Ongoing)*
+ **Website:** [View Project Site](https://school-course-enrolment-system.shoug-tech.com/)
 
 ---
 

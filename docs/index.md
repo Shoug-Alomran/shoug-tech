@@ -1,6 +1,6 @@
 # Welcome
 
-Hi, I’m **Shoug Fawaz Alomran** — welcome to my Digital Garden
+Hi, I’m **Shoug Fawaz Alomran**. Welcome to my Digital Garden
 
 This is my personal space where I collect, refine, and share ideas, notes, and reflections from my learning journey.  
 It’s a place that keeps growing — one thought, one project, and one insight at a time.
@@ -12,9 +12,9 @@ It’s a place that keeps growing — one thought, one project, and one insight 
 ### Academics
 Structured notes, summaries, quizzes, and handouts across:
 
-- **Software Engineering (SE)** — SE201, SE311  
-- **Computer Science (CS)** — CS285, CS210, CS330, CS340  
-- **Cyber Security (CYS)** — CYS401  
+- **Software Engineering (SE)**: SE201, SE311  
+- **Computer Science (CS)**: CS285, CS210, CS330, CS340  
+- **Cyber Security (CYS)**: CYS401  
 
 ### Career Development
 - Personal profile  
