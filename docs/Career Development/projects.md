@@ -3,6 +3,29 @@
 A collection of my university projects that reflect my growth across software engineering, cybersecurity, and computing foundations.
 
 ---
+
+## [CS330 — Parallel Performance Evaluation in Linux](https://github.com/Shoug-Alomran/CS330-Parallel-Performance-Evaluation-in-Linux-Project)
+**Type:** Operating Systems / Parallel Computing  
+**Languages & Tools:** C, Linux (Ubuntu), VirtualBox, GCC, MkDocs  
+
+Conducted an **experimental operating systems project** focused on **process-based parallelism** and performance evaluation in a Linux environment.  
+The project analyzes how execution time scales with different input sizes and numbers of processes using instructor-provided C code.
+
+**Highlights:**
+- Linux-based execution using a virtual machine  
+- Process creation and synchronization using `fork()`  
+- Controlled performance experiments with varying parameters  
+- Execution time measurement and analysis  
+- Clear separation between setup, execution, experiments, and results  
+- Documentation website built with MkDocs (Material Theme)
+
+*Focus:* Process management, parallel execution, performance measurement, and reproducible experimentation  
+
+**Website:** [View Project Site](https://operating-systems.shoug-tech.com)
+
+*(Ongoing)*
+
+---
 ## [SE311 — Software Requirements Analysis Project](https://github.com/Shoug-Alomran/SE311-Software-Requirements-Analysis)
 **Type:** Advanced Requirements Engineering  
 **Languages & Tools:** UML, GRL/URN, IEEE 830, MkDocs, Requirements Engineering Techniques  
