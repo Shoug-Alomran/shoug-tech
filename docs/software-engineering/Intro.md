@@ -8,4 +8,4 @@ In this section, you’ll find:
 - Documentation of team and individual projects.
 - Reflections on design patterns, agile methods, and software architecture.
 
-*Goal:* To continuously refine my understanding of how software is planned, structured, and evolved — from early requirements to real-world deployment.
+*Goal:* To continuously refine my understanding of how software is planned, structured, and evolved; from early requirements to real-world deployment.
