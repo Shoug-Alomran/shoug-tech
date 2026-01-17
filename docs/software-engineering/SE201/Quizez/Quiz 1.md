@@ -1,0 +1,3 @@
+# Quiz 1 (Chapters 1 & 2)
+- [Open in new tab](./Quiz 1.html)
+<iframe src="../Quiz 1.html" width="150%" height="800" style="border:none;"></iframe>
