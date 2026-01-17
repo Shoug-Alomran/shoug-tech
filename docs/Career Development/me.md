@@ -1,31 +1,31 @@
 # Me
 
 I’m a **Software Engineering & Cybersecurity** student at *Prince Sultan University*.  
-My work sits at the intersection of **ethical penetration testing**, **personal app development**, and **practical user protection** — I look for ways systems can be improved and build tools that make those improvements real.
+My work sits at the intersection of **ethical penetration testing**, **personal app development**, and **practical user protection**. I look for ways systems can be improved and build tools that make those improvements real.
 
 ---
 
 ## What I do
 
-- **Ethical Penetration Testing** — I explore systems for weaknesses so they can be fixed before attackers find them. I follow responsible disclosure practices and always work within legal and organizational boundaries.
-- **Application Development** — I build small apps and automation tools (often for personal use or to solve a specific workflow problem), focusing on secure coding practices.
-- **Protecting People** — My primary goal is to help teams and users stay safer online by turning findings into concrete fixes and better-aware designs.
+- **Ethical Penetration Testing**: I explore systems for weaknesses so they can be fixed before attackers find them. I follow responsible disclosure practices and always work within legal and organizational boundaries.
+- **Application Development**: I build small apps and automation tools (often for personal use or to solve a specific workflow problem), focusing on secure coding practices.
+- **Protecting People**: My primary goal is to help teams and users stay safer online by turning findings into concrete fixes and better-aware designs.
 
 ---
 
 ## Current roles & experience
 
-- **Cybersecurity Trainee** at *MDD* — hands-on experience with penetration testing tasks, network analysis, and security hardening.
-- **Course Instructor** at *Qimah* — developing learning resources and teaching methods that help students understand complex topics.
-- **Peer Tutor** at *Prince Sultan University WTC* — mentoring students in technical subjects and academic communication.
+- **Cybersecurity Trainee** at *MDD*: hands-on experience with penetration testing tasks, network analysis, and security hardening.
+- **Course Instructor** at *Qimah*: developing learning resources and teaching methods that help students understand complex topics.
+- **Peer Tutor** at *Prince Sultan University WTC*: mentoring students in technical subjects and academic communication.
 
 ---
 
 ## Ethics & approach
 
 I follow a strict ethics-first approach:
-- I operate only with **permission** (engagements, bug bounties, or lab environments).  
-- I practice **responsible disclosure** — privately reporting vulnerabilities and helping coordinate safe remediation.  
+- I operate only with **permission**: (engagements, bug bounties, or lab environments).  
+- I practice **responsible disclosure**: privately reporting vulnerabilities and helping coordinate safe remediation.  
 - I emphasize **secure development**: fixes, mitigations, and user-centred protections over exploitation.
 
 ---
@@ -41,8 +41,8 @@ I follow a strict ethics-first approach:
 
 ## Notable training & certifications
 
-- **AI in Robotics Bootcamp 2025** — Prince Sultan University  
-- **First Aid Provider** — Saudi Red Crescent Authority  
+- **AI in Robotics Bootcamp 2025** Prince Sultan University  
+- **First Aid Provider** Saudi Red Crescent Authority  
 - Ongoing: practical labs (tryhackme, hackthebox), recommended certification path (e.g., OSCP when ready)
 
 ---
@@ -51,4 +51,4 @@ I follow a strict ethics-first approach:
 
 Security that protects people comes from finding the problems early and fixing them fast. I enjoy both sides of that work: the investigative, creative side of penetration testing, and the constructive side of building apps and protections that make systems safer for everyone.
 
-> **Note:** I only practice security testing in legal contexts — on my own infrastructure, authorized engagements, or controlled labs. If you’d like to collaborate on a security assessment for your project, I can help set up an authorized testing plan and responsible disclosure process.
+> **Note:** I only practice security testing in legal contexts; on my own infrastructure, authorized engagements, or controlled labs. If you’d like to collaborate on a security assessment for your project, I can help set up an authorized testing plan and responsible disclosure process.
