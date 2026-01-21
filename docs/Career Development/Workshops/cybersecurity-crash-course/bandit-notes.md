@@ -1,219 +1,521 @@
-# Bandit Lab Notes (Offensive Security Workshop)
+# OverTheWire Bandit – Documentation (Level 0 → Level 20)
 
-This page contains my OverTheWire Bandit wargame documentation completed during the Cybersecurity Crash Course workshop.  
-Each level documents the goal, the commands used, the solution explanation, and the obtained password.
-**Game Link:** https://overthewire.org/wargames/bandit/
+Wargame: https://overthewire.org/wargames/bandit/  
+Objective: Gain familiarity with Linux commands, networking, file permissions, and privilege mechanisms through incremental challenges.
 
 ---
 
 ## Table of Contents
 
-1. [Level 0 → Level 1](#level-0--level-1)
-2. [Level 1 → Level 2](#level-1--level-2)
-3. [Level 2 → Level 3](#level-2--level-3)
-4. [Level 3 → Level 4](#level-3--level-4)
-5. [Level 4 → Level 5](#level-4--level-5)
-6. [Level 5 → Level 6](#level-5--level-6)
-7. [Level 6 → Level 7](#level-6--level-7)
-8. [Level 7 → Level 8](#level-7--level-8)
-9. [Level 8 → Level 9](#level-8--level-9)
-10. [Level 9 → Level 10](#level-9--level-10)
+- [Level 0 → Level 1](#level-0--level-1)
+- [Level 1 → Level 2](#level-1--level-2)
+- [Level 2 → Level 3](#level-2--level-3)
+- [Level 3 → Level 4](#level-3--level-4)
+- [Level 4 → Level 5](#level-4--level-5)
+- [Level 5 → Level 6](#level-5--level-6)
+- [Level 6 → Level 7](#level-6--level-7)
+- [Level 7 → Level 8](#level-7--level-8)
+- [Level 8 → Level 9](#level-8--level-9)
+- [Level 9 → Level 10](#level-9--level-10)
+- [Level 10 → Level 11](#level-10--level-11)
+- [Level 11 → Level 12](#level-11--level-12)
+- [Level 12 → Level 13](#level-12--level-13)
+- [Level 13 → Level 14](#level-13--level-14)
+- [Level 14 → Level 15](#level-14--level-15)
+- [Level 15 → Level 16](#level-15--level-16)
+- [Level 16 → Level 17](#level-16--level-17)
+- [Level 17 → Level 18](#level-17--level-18)
+- [Level 18 → Level 19](#level-18--level-19)
+- [Level 19 → Level 20](#level-19--level-20)
 
 ---
 
-## Level 0 → Level 1
+# Level 0 → Level 1
 
-**Goal**  
-Log in using SSH and obtain the password from the `readme` file.
+**Level Goal**  
+Log in via SSH and read the `readme` file.
 
 **Commands Used**
 ```
-ssh bandit0@bandit.labs.overthewire.org -p 2220
+ssh bandit0@bandit.labs.overthewire.org
+ -p 2220
 cat readme
 ```
 
-**Explanation**  
-Connected via SSH to the Bandit server on port 2220. The password for the next level was stored in the `readme` file in the home directory and displayed using `cat`.
+**Solution Explanation**  
+Connected to the server via SSH, then displayed the contents of `readme`.
 
-**Password Obtained**  
+**Password for Next Level**  
 `ZjLjTmM6FvvyrNrb2rfNWOZ0TA6ip5If`
+
+**Screenshot**  
+![Level 0 Screenshot](../pics/Level 0.png)
+![Level 0 Screenshot](../pics/Level 0 → Level 1.png)
 
 ---
 
-## Level 1 → Level 2
+# Level 1 → Level 2
 
-**Goal**  
-Retrieve the password stored in a file named `-`.
+**Level Goal**  
+Read a file named `-`.
 
 **Commands Used**
 ```
-cd bandit1
 ls -a
 cat ./-
 ```
 
-**Explanation**  
-The file name `-` conflicts with command flags. Prefixing with `./` ensures the shell treats it as a filename rather than an option.
+**Solution Explanation**  
+`./` ensures `-` is treated as a filename instead of an option.
 
-**Password Obtained**  
+**Password for Next Level**  
 `263JGJPfgU6LdtEvgfWU1XP5yac29mFx`
 
+**Screenshot**  
+![Level 1 Screenshot](../pics/Level 1 → Level 2.png)
+
 ---
 
-## Level 2 → Level 3
+# Level 2 → Level 3
 
-**Goal**  
-Read a file with spaces and leading dashes in its name.
+**Level Goal**  
+Read a file containing spaces in its name.
 
 **Commands Used**
 ```
-cd bandit2
 ls
-cat -- "--spaces in this filename--"
+cat "spaces in this filename"
 ```
 
-**Explanation**  
-Quoting handles spaces in filenames. The `--` indicates the end of command options so `cat` treats the remaining argument as a filename.
+**Solution Explanation**  
+Quotation prevents word splitting.
 
-**Password Obtained**  
+**Password for Next Level**  
 `MNk8KNH3USiio41PRUEoDFPqFxLPlSmx`
 
+**Screenshot**  
+![Level 2 Screenshot]((../pics/Level 2 → Level 3.png)
+
 ---
 
-## Level 3 → Level 4
+# Level 3 → Level 4
 
-**Goal**  
-Find the hidden file in the `inhere` directory containing the password.
+**Level Goal**  
+Find and read a hidden file in `inhere`.
 
 **Commands Used**
 ```
-ls
 cd inhere
 ls -a
-cat "...Hiding-From-You"
+cat .hidden
 ```
 
-**Explanation**  
-The target file was hidden and revealed using `ls -a`. The filename beginning with dots was quoted to avoid shell parsing issues.
+**Solution Explanation**  
+`ls -a` reveals hidden files.
 
-**Password Obtained**  
+**Password for Next Level**  
 `2WmrDFRmJIq3IPxneAaMGhap0pFhF3NJ`
 
 ---
 
-## Level 4 → Level 5
+# Level 4 → Level 5
 
-**Goal**  
-Identify the only human-readable file within the `inhere` directory that contains the password.
+**Level Goal**  
+Identify human-readable file among binary files.
+
+**Commands Used**
+
+**Solution Explanation**  
+`ls -a` reveals hidden files.
+
+**Password for Next Level**  
+`2WmrDFRmJIq3IPxneAaMGhap0pFhF3NJ`
+
+**Screenshot**  
+![Level 3 Screenshot](../pics/Level 4 → Level 5.png)
+
+---
+
+# Level 4 → Level 5
+
+**Level Goal**  
+Identify human-readable file among binary files.
 
 **Commands Used**
 ```
-cd bandit4
 cd inhere
-ls
 file ./*
 cat ./-file07
 ```
 
-**Explanation**  
-The `file` command determines file types. Only `-file07` was human-readable, and was displayed with `cat`. The leading dash required prefixing with `./`.
+**Solution Explanation**  
+`file` identifies readable data.
 
-**Password Obtained**  
+**Password for Next Level**  
 `4oQYVPkXZOOEO5pTW8IFB8jLXxXGUQw`
+
+**Screenshot**  
+![Level 4 Screenshot](../pics/Level 4 → Level 5.png)
 
 ---
 
-## Level 5 → Level 6
+# Level 5 → Level 6
 
-**Goal**  
-Find the file that is human-readable, exactly 1033 bytes in size, and not executable.
+**Level Goal**  
+Find a file that is human-readable, 1033 bytes, and non-executable.
 
 **Commands Used**
 ```
-cd bandit5
-cd inhere
-find . -type f -size 1033c
+find . -type f -size 1033c ! -executable
 cat ./maybehere07/.file2
 ```
 
-**Explanation**  
-`find` searched recursively for files matching size 1033 bytes. The resulting file was displayed with `cat`, revealing the password.
+**Solution Explanation**  
+`find` filters files based on criteria.
 
-**Password Obtained**  
+**Password for Next Level**  
 `HWasnPhtq9AVKe0dmk45knq0vcUahz0E6G`
+
+**Screenshot**  
+![Level 5 Screenshot](../pics/Level 5 → Level 6.png)
 
 ---
 
-## Level 6 → Level 7
+# Level 6 → Level 7
 
-**Goal**  
-Find a 33-byte file owned by user `bandit7` and group `bandit6`.
+**Level Goal**  
+Find a 33-byte file owned by `bandit7` and group `bandit6`.
 
 **Commands Used**
 ```
-find / -type f -user bandit7 -group bandit6 -size 33c
+find / -type f -user bandit7 -group bandit6 -size 33c 2>/dev/null
 cat /var/lib/dpkg/info/bandit7.password
 ```
 
-**Explanation**  
-Searched the entire filesystem for files matching the ownership and size requirements. The valid file was located in `/var/lib/dpkg/info` and contained the password.
+**Solution Explanation**  
+Filtered by size, owner, and group.
 
-**Password Obtained**  
+**Password for Next Level**  
 `z7WtoNQU7NDBdjH8R3TaUUOFd1VtY79s`
+
+**Screenshot**  
+![Level 6 Screenshot](../pics/Level 6 → Level 7.png)
 
 ---
 
-## Level 7 → Level 8
+# Level 7 → Level 8
 
-**Goal**  
-Extract the password located next to the word `millionth` in `data.txt`.
+**Level Goal**  
+Find password next to the word `millionth`.
 
 **Commands Used**
 ```
-ls
 grep "millionth" data.txt
 ```
 
-**Explanation**  
-`grep` filtered the file for the matching word and returned the password located on the same line.
+**Solution Explanation**  
+`grep` finds the matching line.
 
-**Password Obtained**  
+**Password for Next Level**  
 `dfwvzFQi4mU0wFnNbFOe9ROwskMLg7eEc`
+
+**Screenshot**  
+![Level 7 Screenshot](../pics/Level 7 → Level 8.png)
 
 ---
 
-## Level 8 → Level 9
+# Level 8 → Level 9
 
-**Goal**  
-Find the only line in `data.txt` that occurs exactly once.
+**Level Goal**  
+Find unique line in file.
 
 **Commands Used**
 ```
 sort data.txt | uniq -u
 ```
 
-**Explanation**  
-`sort` grouped duplicate lines together. `uniq -u` printed lines that appear only once. The result was the unique password.
+**Solution Explanation**  
+`uniq -u` prints non-duplicate line.
 
-**Password Obtained**  
+**Password for Next Level**  
 `4CKMh1Jl9IbUIZZPXDQGamal4xvAgOJIM`
+
+**Screenshot**  
+![Level 8 Screenshot](../pics/Level 8 → Level 9.png)
 
 ---
 
-## Level 9 → Level 10
+# Level 9 → Level 10
 
-**Goal**  
-Extract human-readable strings from a binary file and identify the line where the password is preceded by multiple equal signs.
+**Level Goal**  
+Extract human-readable strings from binary.
+
+**Commands Used**
+
+**Solution Explanation**  
+`uniq -u` prints non-duplicate line.
+
+**Password for Next Level**  
+`4CKMh1Jl9IbUIZZPXDQGamal4xvAgOJIM`
+
+**Screenshot**  
+![Level 8 Screenshot](../pics/Level 9 → Level 10.png)
+
+---
+
+# Level 9 → Level 10
+
+**Level Goal**  
+Extract human-readable strings from binary.
 
 **Commands Used**
 ```
 strings data.txt | grep '='
 ```
 
-**Explanation**  
-`strings` extracted readable text from binary data. Filtering with `grep '='` isolated lines containing equals signs, revealing the password.
+**Solution Explanation**  
+`strings` prints readable sequences.
 
-**Password Obtained**  
+**Password for Next Level**  
 `FGUVW5ilLVJrxX9kMYMMnlN4MgbpfMiqey`
 
+**Screenshot**  
+![Level 9 Screenshot](../pics/Level 9 → Level 10.png)
+
 ---
+
+# Level 10 → Level 11
+
+**Level Goal**  
+Base64 decode data.
+
+**Commands Used**
+
+**Solution Explanation**  
+`strings` prints readable sequences.
+
+**Password for Next Level**  
+`FGUVW5ilLVJrxX9kMYMMnlN4MgbpfMiqey`
+
+**Screenshot**  
+![Level 9 Screenshot](../pics/Level 10 → Level 11.png)
+
+---
+
+# Level 10 → Level 11
+
+**Level Goal**  
+Base64 decode data.
+
+**Commands Used**
+```
+base64 -d data.txt
+```
+
+**Solution Explanation**  
+Identified base64 encoding and decoded.
+
+**Password for Next Level**  
+`NU5P2RAyE6SBNpBuLktgVWnhDd2U6l7Q`
+
+**Screenshot**  
+![Level 10 Screenshot](../pics/Level 10 → Level 11.png)
+
+---
+
+# Level 11 → Level 12
+
+**Level Goal**  
+Decode ROT13 encoded text.
+
+**Commands Used**
+```
+tr 'A-Za-z' 'N-ZA-Mn-za-m' < data.txt
+```
+
+**Solution Explanation**  
+ROT13 shifts letters by 13 positions.
+
+**Password for Next Level**  
+`5GX7M8S1LKP4E3CA6J75FHD9C2ZVXB1`
+
+**Screenshot**  
+![Level 11 Screenshot](../pics/Level 11 → Level 12.png)
+
+---
+
+# Level 12 → Level 13
+
+**Level Goal**  
+Unpack nested compressed file.
+
+**Commands Used**
+```
+xxd -r data.txt > data.bin
+file data.bin
+```
+## repeated extraction (gzip, bzip2, tar, etc.)
+
+**Solution Explanation**  
+Extracted repeatedly until plaintext password retrieved.
+
+**Password for Next Level**  
+`8xCjnmgoKbgGLhHFAZ1GE5Tmu4M2tKJQo`
+
+**Screenshot**  
+![Level 12 Screenshot](../pics/Level 12 → Level 13.png)
+
+---
+
+# Level 13 → Level 14
+
+**Level Goal**  
+Login using provided SSH private key.
+
+**Commands Used**
+```
+ssh -i sshkey.private bandit14@bandit.labs.overthewire.org
+ -p 2220
+ ```
+
+**Solution Explanation**  
+Authenticated via RSA private key instead of password.
+
+**Password for Next Level**  
+(Password not displayed in this level)
+
+---
+
+# Level 14 → Level 15
+
+**Level Goal**  
+Send password to port `30000` via TCP.
+
+**Commands Used**
+```
+nc localhost 30000
+```
+
+**Solution Explanation**  
+Server validates input and returns password.
+
+**Password for Next Level**  
+`BfMYroe26WYalil77FoDi9qh59eK5xNr`
+
+**Screenshot**  
+![Level 14 Screenshot](../pics/Level 14 → Level 15.png)
+
+---
+
+# Level 15 → Level 16
+
+**Level Goal**  
+Establish SSL connection and submit password.
+
+**Commands Used**
+```
+openssl s_client -connect localhost:30001
+```
+
+**Solution Explanation**  
+Encrypted channel required to receive password.
+
+**Password for Next Level**  
+`kSkVUpMQ7lBYyCM4GBPvcvT1BfWRy0Dx`
+
+**Screenshot**  
+![Level 15 Screenshot](../pics/Level 15 → Level 16.png)
+
+---
+
+# Level 16 → Level 17
+
+**Level Goal**  
+Find SSL-enabled port between 31000–32000 and submit password.
+
+**Commands Used**
+```
+nmap -sV -p31000-32000 localhost
+openssl s_client -connect localhost:31790
+```
+
+**Solution Explanation**  
+Port `31790` returns RSA private key for bandit17.
+
+**Password for Next Level**  
+RSA Private Key (used for SSH auth)
+
+**Screenshot**  
+![Level 16 Screenshot](../pics/Level 16 → Level 17.png)
+
+---
+
+# Level 17 → Level 18
+
+**Level Goal**  
+Compare two files to find difference.
+
+**Commands Used**
+```
+diff passwords.new passwords.old
+```
+
+**Solution Explanation**  
+The changed line indicates the password.
+
+**Password for Next Level**  
+`x2gLTTjFwMOhQ8oWNbMN362QKxfRqGl0`
+
+**Screenshot**  
+![Level 17 Screenshot](../pics/Level 17 → Level 18.png)
+![Level 17 Screenshot](../pics/Level 17 → Level 18_2.png)
+
+
+---
+
+# Level 18 → Level 19
+
+**Level Goal**  
+`.bashrc` logs out interactive shell, so read file non-interactively.
+
+**Commands Used**
+```
+ssh bandit18@bandit.labs.overthewire.org
+ -p 2220 cat readme
+```
+
+**Solution Explanation**  
+Command executes before logout triggers.
+
+**Password for Next Level**  
+`cGWpMaKXVwDUNgPAVJbWYuGHVn9zl3j8`
+
+**Screenshot**  
+![Level 18 Screenshot](../pics/Level 18 → Level 19.png)
+
+---
+
+# Level 19 → Level 20
+
+**Level Goal**  
+Use setuid binary to read bandit20 password.
+
+**Commands Used**
+```
+./bandit20-do cat /etc/bandit_pass/bandit20
+```
+
+**Solution Explanation**  
+`bandit20-do` executes command with bandit20 privileges.
+
+**Password for Next Level**  
+`0QxahG8ZjOVNM9GhS7i0WsCfZyxOUBy0`
+
+**Screenshot**  
+![Level 19 Screenshot](../pics/Level 19 → Level 20.png)
+
+---
+
+# Completion Status
+
+Completed Levels: **0 → 20**
