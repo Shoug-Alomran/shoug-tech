@@ -1,36 +1,10 @@
-# OverTheWire Bandit – Documentation (Level 0 → Level 20)
+# OverTheWire Bandit – Documentation (Level 0 → Level 33)
 
-Wargame: https://overthewire.org/wargames/bandit/  
+Wargame: https://overthewire.org/wargames/bandit/
+
 Objective: Gain familiarity with Linux commands, networking, file permissions, and privilege mechanisms through incremental challenges.
 
----
-
-## Table of Contents
-
-- [Level 0 → Level 1](#level-0--level-1)
-- [Level 1 → Level 2](#level-1--level-2)
-- [Level 2 → Level 3](#level-2--level-3)
-- [Level 3 → Level 4](#level-3--level-4)
-- [Level 4 → Level 5](#level-4--level-5)
-- [Level 5 → Level 6](#level-5--level-6)
-- [Level 6 → Level 7](#level-6--level-7)
-- [Level 7 → Level 8](#level-7--level-8)
-- [Level 8 → Level 9](#level-8--level-9)
-- [Level 9 → Level 10](#level-9--level-10)
-- [Level 10 → Level 11](#level-10--level-11)
-- [Level 11 → Level 12](#level-11--level-12)
-- [Level 12 → Level 13](#level-12--level-13)
-- [Level 13 → Level 14](#level-13--level-14)
-- [Level 14 → Level 15](#level-14--level-15)
-- [Level 15 → Level 16](#level-15--level-16)
-- [Level 16 → Level 17](#level-16--level-17)
-- [Level 17 → Level 18](#level-17--level-18)
-- [Level 18 → Level 19](#level-18--level-19)
-- [Level 19 → Level 20](#level-19--level-20)
-
----
-
-# Level 0 → Level 1
+## Level 0 → Level 1
 
 **Level Goal**  
 Log in via SSH and read the `readme` file.
@@ -54,7 +28,7 @@ Connected to the server via SSH, then displayed the contents of `readme`.
 
 ---
 
-# Level 1 → Level 2
+## Level 1 → Level 2
 
 **Level Goal**  
 Read a file named `-`.
@@ -76,7 +50,7 @@ cat ./-
 
 ---
 
-# Level 2 → Level 3
+## Level 2 → Level 3
 
 **Level Goal**  
 Read a file containing spaces in its name.
@@ -98,7 +72,7 @@ Quotation prevents word splitting.
 
 ---
 
-# Level 3 → Level 4
+## Level 3 → Level 4
 
 **Level Goal**  
 Find and read a hidden file in `inhere`.
@@ -118,25 +92,7 @@ cat .hidden
 
 ---
 
-# Level 4 → Level 5
-
-**Level Goal**  
-Identify human-readable file among binary files.
-
-**Commands Used**
-
-**Solution Explanation**  
-`ls -a` reveals hidden files.
-
-**Password for Next Level**  
-`2WmrDFRmJIq3IPxneAaMGhap0pFhF3NJ`
-
-**Screenshot**  
-![Level 3 Screenshot](../pics/Level 4 → Level 5.png)
-
----
-
-# Level 4 → Level 5
+## Level 4 → Level 5
 
 **Level Goal**  
 Identify human-readable file among binary files.
@@ -159,7 +115,7 @@ cat ./-file07
 
 ---
 
-# Level 5 → Level 6
+## Level 5 → Level 6
 
 **Level Goal**  
 Find a file that is human-readable, 1033 bytes, and non-executable.
@@ -181,7 +137,7 @@ cat ./maybehere07/.file2
 
 ---
 
-# Level 6 → Level 7
+## Level 6 → Level 7
 
 **Level Goal**  
 Find a 33-byte file owned by `bandit7` and group `bandit6`.
@@ -203,7 +159,7 @@ Filtered by size, owner, and group.
 
 ---
 
-# Level 7 → Level 8
+## Level 7 → Level 8
 
 **Level Goal**  
 Find password next to the word `millionth`.
@@ -224,7 +180,7 @@ grep "millionth" data.txt
 
 ---
 
-# Level 8 → Level 9
+## Level 8 → Level 9
 
 **Level Goal**  
 Find unique line in file.
@@ -245,7 +201,7 @@ sort data.txt | uniq -u
 
 ---
 
-# Level 9 → Level 10
+## Level 9 → Level 10
 
 **Level Goal**  
 Extract human-readable strings from binary.
@@ -263,7 +219,7 @@ Extract human-readable strings from binary.
 
 ---
 
-# Level 9 → Level 10
+## Level 9 → Level 10
 
 **Level Goal**  
 Extract human-readable strings from binary.
@@ -284,7 +240,7 @@ strings data.txt | grep '='
 
 ---
 
-# Level 10 → Level 11
+## Level 10 → Level 11
 
 **Level Goal**  
 Base64 decode data.
@@ -302,7 +258,7 @@ Base64 decode data.
 
 ---
 
-# Level 10 → Level 11
+## Level 10 → Level 11
 
 **Level Goal**  
 Base64 decode data.
@@ -323,7 +279,7 @@ Identified base64 encoding and decoded.
 
 ---
 
-# Level 11 → Level 12
+## Level 11 → Level 12
 
 **Level Goal**  
 Decode ROT13 encoded text.
@@ -344,7 +300,7 @@ ROT13 shifts letters by 13 positions.
 
 ---
 
-# Level 12 → Level 13
+## Level 12 → Level 13
 
 **Level Goal**  
 Unpack nested compressed file.
@@ -354,7 +310,7 @@ Unpack nested compressed file.
 xxd -r data.txt > data.bin
 file data.bin
 ```
-## repeated extraction (gzip, bzip2, tar, etc.)
+repeated extraction (gzip, bzip2, tar, etc.)
 
 **Solution Explanation**  
 Extracted repeatedly until plaintext password retrieved.
@@ -367,7 +323,7 @@ Extracted repeatedly until plaintext password retrieved.
 
 ---
 
-# Level 13 → Level 14
+## Level 13 → Level 14
 
 **Level Goal**  
 Login using provided SSH private key.
@@ -386,7 +342,7 @@ Authenticated via RSA private key instead of password.
 
 ---
 
-# Level 14 → Level 15
+## Level 14 → Level 15
 
 **Level Goal**  
 Send password to port `30000` via TCP.
@@ -407,7 +363,7 @@ Server validates input and returns password.
 
 ---
 
-# Level 15 → Level 16
+## Level 15 → Level 16
 
 **Level Goal**  
 Establish SSL connection and submit password.
@@ -428,7 +384,7 @@ Encrypted channel required to receive password.
 
 ---
 
-# Level 16 → Level 17
+## Level 16 → Level 17
 
 **Level Goal**  
 Find SSL-enabled port between 31000–32000 and submit password.
@@ -450,7 +406,7 @@ RSA Private Key (used for SSH auth)
 
 ---
 
-# Level 17 → Level 18
+## Level 17 → Level 18
 
 **Level Goal**  
 Compare two files to find difference.
@@ -473,7 +429,7 @@ The changed line indicates the password.
 
 ---
 
-# Level 18 → Level 19
+## Level 18 → Level 19
 
 **Level Goal**  
 `.bashrc` logs out interactive shell, so read file non-interactively.
@@ -495,7 +451,7 @@ Command executes before logout triggers.
 
 ---
 
-# Level 19 → Level 20
+## Level 19 → Level 20
 
 **Level Goal**  
 Use setuid binary to read bandit20 password.
@@ -509,13 +465,13 @@ Use setuid binary to read bandit20 password.
 `bandit20-do` executes command with bandit20 privileges.
 
 **Password for Next Level**  
-`0QxahG8ZjOVNM9GhS7i0WsCfZyxOUBy0`
+`0qXahG8ZjOVMN9Ghs7iOWsCfZyXOUbYO`
 
 **Screenshot**  
 ![Level 19 Screenshot](../pics/Level 19 → Level 20.png)
 
 ---
 
-# Completion Status
+## Completion Status
 
 Completed Levels: **0 → 20**
