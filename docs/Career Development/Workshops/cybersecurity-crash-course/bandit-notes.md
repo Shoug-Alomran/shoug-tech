@@ -1,6 +1,6 @@
 # OverTheWire Bandit – Documentation (Level 0 → Level 33)
 
-Wargame: https://overthewire.org/wargames/bandit/
+Wargame: [https://overthewire.org/wargames/bandit/](https://overthewire.org/wargames/bandit/)
 
 Objective: Gain familiarity with Linux commands, networking, file permissions, and privilege mechanisms through incremental challenges.
 
