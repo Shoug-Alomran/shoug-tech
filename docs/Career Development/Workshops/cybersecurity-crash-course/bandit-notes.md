@@ -332,7 +332,7 @@ Login using provided SSH private key.
 ```
 ssh -i sshkey.private bandit14@bandit.labs.overthewire.org
  -p 2220
- ```
+```
 
 **Solution Explanation**  
 Authenticated via RSA private key instead of password.
@@ -425,7 +425,6 @@ The changed line indicates the password.
 **Screenshot**  
 ![Level 17 Screenshot](../pics/Level 17 → Level 18.png)
 ![Level 17 Screenshot](../pics/Level 17 → Level 18_2.png)
-
 
 ---
 
