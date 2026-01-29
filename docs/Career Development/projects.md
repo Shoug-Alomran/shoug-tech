@@ -9,7 +9,7 @@ A collection of my university projects that reflect my growth across software en
 **Languages & Tools:** SQL, Relational Databases, Backend Framework, MkDocs, HTML/CSS/JavaScript  
 
 Developing a **full-stack, database-driven web application** as part of the  
-**CS 340 – Introduction to Database Systems** course.  
+**CS 340: Introduction to Database Systems** course.  
 The project focuses on **end-to-end database design and integration**, starting from conceptual modeling and ending with a working web application that executes SQL queries through backend logic.
 
 **Highlights:**
