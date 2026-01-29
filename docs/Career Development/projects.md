@@ -4,6 +4,33 @@ A collection of my university projects that reflect my growth across software en
 
 ---
 
+## [CS340 — Full-Stack Database Web Application](https://github.com/Shoug-Alomran/cs340-database-web-application)
+**Type:** Database Systems / Full-Stack Development  
+**Languages & Tools:** SQL, Relational Databases, Backend Framework, MkDocs, HTML/CSS/JavaScript  
+
+Developing a **full-stack, database-driven web application** as part of the  
+**CS 340 – Introduction to Database Systems** course.  
+The project focuses on **end-to-end database design and integration**, starting from conceptual modeling and ending with a working web application that executes SQL queries through backend logic.
+
+**Highlights:**
+- Conceptual data modeling using **EER diagrams**
+- Logical database design and normalization
+- Relational schema and data dictionary
+- Database implementation using SQL (DDL + constraints)
+- Execution of **basic and advanced SQL queries** through application code
+- CRUD functionality via a web interface
+- Sustainability and maintainability considerations
+- Full documentation website built with **MkDocs (Material Theme)**
+
+*Focus:* Relational database design, SQL integration, data integrity, and full-stack application development  
+
+**Website:** [View Project Site](https://database.shoug-tech.com)
+
+*(Ongoing)*
+
+
+---
+
 ## [CS330 — Parallel Performance Evaluation in Linux](https://github.com/Shoug-Alomran/CS330-Parallel-Performance-Evaluation-in-Linux-Project)
 **Type:** Operating Systems / Parallel Computing  
 **Languages & Tools:** C, Linux (Ubuntu), VirtualBox, GCC, MkDocs  
