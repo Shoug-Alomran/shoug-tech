@@ -893,8 +893,11 @@ ls -la
 ```
 
 **Solution Explanation**  
+
 - The file `bandit27-do` has the SUID bit set and is owned by bandit27
+
 - When executed, it runs as user bandit27 even though invoked by bandit26
+
 - Used it to read the password file for bandit27
 
 **Password for Next Level**  
