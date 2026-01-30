@@ -17,9 +17,13 @@ ssh bandit0@bandit.labs.overthewire.org -p 2220
 ```
 
 **Solution Explanation**  
+
 - The `ssh` command establishes a Secure Shell connection to a remote system
+
 - `bandit0@bandit.labs.overthewire.org` specifies the username and target host
+
 - The `-p 2220` option connects through port 2220 (required by Bandit instead of default port 22)
+
 - The Level 0 password was provided directly: `bandit0`
 
 **Password for Next Level**  
@@ -42,7 +46,9 @@ cat readme
 ```
 
 **Solution Explanation**  
+
 - The `ls` command listed files in the current directory, confirming the presence of a file named `readme`
+
 - The `cat readme` command printed the contents of the readme file to the terminal, revealing the password
 
 **Common Mistakes**
@@ -68,8 +74,11 @@ cat ./-
 ```
 
 **Solution Explanation**  
+
 - The `ls` command revealed a file named `-`
+
 - The `cat ./-` command displayed the contents of the file
+
 - The `./` prefix is required because `-` alone can be interpreted as a stdin indicator, so `./- ` specifies it as a filename in the current directory
 
 **Password for Next Level**  
@@ -92,10 +101,15 @@ cat -- "--spaces in this filename--"
 ```
 
 **Solution Explanation**  
+
 - The `ls` command revealed a file named `--spaces in this filename--`
+
 - Because the filename starts with `--` and contains spaces, the command uses:
+
   - The first `--` to signal the end of options
+
   - Quotes around the filename to handle spaces
+
 - This ensures the filename is treated as a regular file argument
 
 **Password for Next Level**  
@@ -119,11 +133,16 @@ ls -a
 cat "...Hiding-From-You"
 ```
 
-**Solution Explanation**  
+**Solution Explanation** 
+
 - The `ls` command identified the presence of the `inhere` directory
+
 - After entering the directory, a second `ls` showed no visible files
+
 - `ls -a` was used to list all files, including hidden ones (files beginning with `.`)
+
 - The hidden file `...Hiding-From-You` was revealed and read with `cat`
+
 - Quotes were used because the filename begins with multiple dots
 
 **Password for Next Level**  
@@ -145,9 +164,13 @@ cat ./-file07
 ```
 
 **Solution Explanation**  
+
 - The `ls` command revealed multiple files named with a hyphen prefix (`-file00`, `-file01`, etc.)
+
 - `file ./*` was used to determine the type of each file
+
 - Only `-file07` was ASCII text (human-readable)
+
 - `cat ./-file07` displayed the contents (the `./` prefix prevents the `-` from being interpreted as an option)
 
 **Password for Next Level**  
@@ -162,8 +185,11 @@ cat ./-file07
 
 **Goal**  
 Find the password stored in a file with specific properties:
+
 - Human-readable
+
 - 1033 bytes in size
+
 - Not executable
 
 **Commands Used**
@@ -175,9 +201,13 @@ cat ./maybehere07/.file2
 ```
 
 **Solution Explanation**  
+
 - The `ls` command listed multiple subdirectories (`maybehere00` through `maybehere19`)
+
 - Instead of manually checking each folder, `find . -type f -size 1033c` searched recursively for files exactly 1033 bytes in size
+
 - The command returned `./maybehere07/.file2`
+
 - `cat` displayed its contents, revealing the password
 
 **Password for Next Level**  
@@ -192,8 +222,11 @@ cat ./maybehere07/.file2
 
 **Goal**  
 Locate a file anywhere on the system with these properties:
+
 - Owned by user `bandit7`
+
 - Owned by group `bandit6`
+
 - 33 bytes in size
 
 **Commands Used**
@@ -203,9 +236,13 @@ cat /var/lib/dpkg/info/bandit7.password
 ```
 
 **Solution Explanation**  
+
 - The `find` command searched the entire filesystem (`/`) for files matching all three criteria
+
 - `2>/dev/null` suppressed permission denied errors
+
 - The command returned `/var/lib/dpkg/info/bandit7.password`
+
 - `cat` displayed the password
 
 **Password for Next Level**  
@@ -228,8 +265,11 @@ grep "millionth" data.txt
 ```
 
 **Solution Explanation**  
+
 - The `grep` command searches for patterns inside files
+
 - `grep "millionth" data.txt` quickly located the line containing "millionth"
+
 - The password appeared on the same line after the word
 
 **Password for Next Level**  
@@ -251,8 +291,11 @@ sort data.txt | uniq -u
 ```
 
 **Solution Explanation**  
+
 - `sort data.txt` rearranges all lines so duplicates appear adjacent
+
 - `uniq -u` filters and shows only lines that occur exactly once
+
 - The unique line is the password
 
 **Password for Next Level**  
@@ -275,9 +318,13 @@ strings data.txt | grep '='
 ```
 
 **Solution Explanation**  
+
 - `cat data.txt` produces unreadable binary content
+
 - `strings data.txt` extracts human-readable text from the binary file
+
 - `grep '='` filters for lines containing `=` characters
+
 - The password appeared after multiple `=` signs: `========== FGUVW5ilLVJrxX9kMYMMnlN4MgbpfMiqey`
 
 **Password for Next Level**  
@@ -300,8 +347,11 @@ cat data.txt | base64 -d
 ```
 
 **Solution Explanation**  
+
 - Viewing the file with `cat` shows Base64 encoded text
+
 - `base64 -d` decodes the data into human-readable text
+
 - The decoded output reveals: `The password is dtR173fZKb0RRsDFSGsg2RWnpNVj3qRr`
 
 **Common Mistakes**
@@ -325,12 +375,16 @@ Decode text stored in `data.txt` that is encoded using ROT13.
 cat data.txt | tr 'A-Za-z' 'N-ZA-Mn-za-m'
 ```
 
-**Solution Explanation**  
+**Solution Explanation** 
+
 - The file contains text where alphabetical characters are shifted by 13 positions
+
 - The `tr` command rotates uppercase and lowercase letters by 13 positions
+
 - This reveals the password
 
 **Common Mistakes**
+
 - Attempting to use `sort` which does not decode ROT13
 
 **Password for Next Level**  
@@ -354,12 +408,19 @@ file data.bin
 ```
 
 **Solution Explanation**  
+
 - The data is provided as a hex dump that needs to be reversed to binary using `xxd -r`
+
 - The resulting file underwent multiple layers of compression
+
 - Each compression layer was identified using `file`, then decompressed appropriately:
+
   - gzip: `gzip -d data.gz`
+
   - bzip2: `bzip2 -d data.bz2`
+
   - tar: `tar -xf data.tar`
+
 - This cycle repeated several times until reaching ASCII text containing the password
 
 **Command Mapping**
@@ -372,7 +433,9 @@ file data.bin
 | POSIX tar archive | Rename to `.tar` and extract with `tar -xf` |
 
 **Common Mistakes**
+
 - Attempting decompression without identifying the file type first
+
 - Renaming to incorrect extensions
 
 **Password for Next Level**  
@@ -395,10 +458,14 @@ chmod 600 sshkey.private
 ssh -i sshkey.private bandit14@bandit.labs.overthewire.org -p 2220
 ```
 
-**Solution Explanation**  
+**Solution Explanation** 
+
 - Listed files and found `sshkey.private`
+
 - Adjusted file permissions using `chmod 600` (required by SSH for private keys)
+
 - Successfully authenticated as bandit14 using the private key with `-i` flag
+
 - Note: Connecting to localhost is blocked, so the remote hostname must be used
 
 **Password for Next Level**  
@@ -418,9 +485,13 @@ nc localhost 30000
 ```
 
 **Solution Explanation**  
+
 - Read the current password from `/etc/bandit_pass/bandit14`
+
 - Connected to port 30000 using netcat (`nc`)
+
 - Submitted the current password as input
+
 - Received the password for the next level
 
 **Password for Next Level**  
@@ -442,10 +513,14 @@ cat /etc/bandit_pass/bandit15
 openssl s_client -connect localhost:30001
 ```
 
-**Solution Explanation**  
+**Solution Explanation** 
+
 - Read the current password
+
 - Established an SSL/TLS connection using `openssl s_client`
+
 - Manually entered the password into the SSL session
+
 - Received the next level password
 
 **Common Mistakes**
@@ -472,10 +547,15 @@ openssl s_client -connect localhost:31790
 ```
 
 **Solution Explanation**  
+
 - Scanned ports 31000-32000 using `nmap` with service detection
+
 - Nmap revealed several open ports, with 31518 and 31790 speaking SSL
+
 - Port 31518 returned only an echo with KEYUPDATE
+
 - Port 31790 returned an RSA private key for bandit17 after submitting the password
+
 - Saved the RSA key locally, set permissions to 600, and used it to SSH into bandit17
 
 **Nmap Results**
@@ -508,8 +588,11 @@ diff passwords.old passwords.new
 ```
 
 **Solution Explanation**  
+
 - Listed files to find `passwords.old` and `passwords.new`
+
 - Used `diff` to compare the two files
+
 - The changed line indicates the new password
 
 **Password for Next Level**  
@@ -532,8 +615,11 @@ ssh bandit18@bandit.labs.overthewire.org -p 2220 cat readme
 ```
 
 **Solution Explanation**  
+
 - Normal SSH login is not possible because `.bashrc` executes `exit`
+
 - Non-interactive SSH commands bypass `.bashrc`
+
 - Executing `cat readme` directly over SSH retrieves the password without triggering the logout
 
 **Password for Next Level**  
@@ -556,12 +642,16 @@ ls -l
 ```
 
 **Solution Explanation**  
+
 - The file `bandit20-do` has the setuid bit set (`rws`) and is owned by bandit20
+
 - This binary runs commands with bandit20 privileges
+
 - Used it to read the password file for bandit20
 
 **Key Concepts**
 - **setuid binary**: A program that runs with the privileges of its owner instead of the calling user
+
 - **Privilege escalation**: Using controlled mechanisms to run commands as another user
 
 **Password for Next Level**  
@@ -586,14 +676,20 @@ nc -l -p 1234
 ./suconnect 1234
 ```
 
-**Solution Explanation**  
+**Solution Explanation**
+
 - The `suconnect` binary connects to a local TCP port as a client
+
 - It receives a password, validates it against the current level password
+
 - If correct, it sends back the next level password
+
 - Two terminals are required: one runs a listener (`nc -l -p 1234`), the other runs `./suconnect 1234`
+
 - After connection is established, send the current password through the listener to receive bandit21's password
 
 **Common Mistakes**
+
 - Running `./suconnect <port>` before starting a listener (results in "Could not connect" error)
 
 **Password for Next Level**  
@@ -616,8 +712,11 @@ cat /tmp/t7O6lds9S0RqQh9aMcz6ShpAoZKF7fgv
 ```
 
 **Solution Explanation**  
+
 - The cron configuration file `cronjob_bandit22` in `/etc/cron.d` shows a script running every minute as bandit22
+
 - The script `/usr/bin/cronjob_bandit22.sh` sets permissions on a file in `/tmp/` and copies the password there
+
 - Reading the generated file in `/tmp/` reveals the password
 
 **Password for Next Level**  
@@ -639,13 +738,18 @@ echo I am user bandit23 | md5sum | cut -d ' ' -f 1
 cat /tmp/<hash>
 ```
 
-**Solution Explanation**  
+**Solution Explanation** 
+
 - The cron script computes an MD5 hash of the string "I am user <username>"
+
 - It uses that hash as a filename in `/tmp/` and copies the password there
+
 - Manually generating the hash for "I am user bandit23" and reading the corresponding file reveals the password
 
 **Common Mistakes**
+
 - Looking for a static file in `/tmp/` instead of generating the hash name
+
 - Incorrect spacing in the echo command (spacing matters for MD5)
 
 **Password for Next Level**  
@@ -672,15 +776,23 @@ cat /tmp/b24pass
 ```
 
 **Solution Explanation**  
+
 - A cron job running as bandit24 executes any script owned by bandit23 in `/var/spool/bandit24/foo/`
+
 - Created a script that reads `/etc/bandit_pass/bandit24` and writes it to a readable location
+
 - Copied the script to the monitored directory (ownership stays bandit23)
+
 - Waited for cron to execute it (runs every minute)
+
 - Read the output file to get the password
 
 **Common Mistakes**
+
 - Placing scripts in wrong directory (must be in `/var/spool/bandit24/foo/`)
+
 - Not waiting long enough for cron to run
+
 - Not verifying file ownership
 
 **Password for Next Level**  
@@ -702,14 +814,20 @@ done | nc localhost 30002
 ```
 
 **Solution Explanation**  
+
 - A daemon on port 30002 requires the current password and a secret 4-digit PIN (0000-9999)
+
 - Used a for loop with `seq -w 0000 9999` to generate zero-padded PIN codes
+
 - Piped all 10,000 attempts through one netcat connection
+
 - Eventually received: "Correct! The password of user bandit25 is..."
 
 **Common Mistakes**
 - Trying manual trial and error (10,000 combinations)
+
 - Starting a new connection for each PIN (inefficient)
+
 - Forgetting zero-padding (daemon expects exactly 4 digits)
 
 **Password for Next Level**  
@@ -735,17 +853,27 @@ cat /etc/bandit_pass/bandit26
 ```
 
 **Solution Explanation**  
+
 - bandit26's shell is `/usr/bin/showtext` which displays text via `more` then exits
+
 - Made terminal very small so `more` doesn't fit content on one screen
+
 - This forces `more` to display `--More--` and wait for input
+
 - Pressed `v` to open vim from more
+
 - In vim, set shell to bash and spawned a shell
+
 - Now have full bash access as bandit26
 
 **Exploit Chain**
+
 1. Terminal size manipulation → triggers interactive more
+
 2. more → vim escape (pressing `v`)
+
 3. vim → bash escape (`:set shell=/bin/bash` then `:shell`)
+
 4. bash → password access
 
 **Password for Next Level**  
@@ -788,9 +916,12 @@ ls
 cat README
 ```
 
-**Solution Explanation**  
+**Solution Explanation**
+
 - Cloned the repository from the local machine (not from within Bandit SSH)
+
 - The repository contains a README file with the password directly visible
+
 - This level introduces Git as a mechanism for distributing secrets
 
 **Password for Next Level**  
@@ -813,9 +944,13 @@ git log -p
 ```
 
 **Solution Explanation**  
+
 - The current README shows the password as `xxxxxxxx` (redacted)
+
 - Used `git log -p` to inspect commit history and diffs
+
 - Found a previous commit that contained the actual password before it was removed
+
 - This demonstrates that Git history can leak sensitive data even after removal
 
 **Password for Next Level**  
@@ -840,13 +975,19 @@ cat README.md
 ```
 
 **Solution Explanation**  
+
 - The master branch README contains: `password: <no passwords in production!>`
+
 - Used `git branch -r` to list remote branches, revealing `origin/dev`
+
 - Checked out the dev branch with `git checkout dev`
+
 - The README on the dev branch contained the actual password
 
 **Common Mistakes**
+
 - Only checking the master branch
+
 - Assuming password was in commit history (like Level 28)
 
 **Password for Next Level**  
@@ -870,9 +1011,13 @@ git show secret
 ```
 
 **Solution Explanation**  
+
 - The README contains only: `just an empty file... muahaha`
+
 - Used `git tag` to list tags, revealing a tag named `secret`
+
 - `git show secret` displayed the tag content, which contained the password
+
 - This demonstrates that Git tags can contain sensitive data not visible in the working tree
 
 **Password for Next Level**  
@@ -898,13 +1043,19 @@ git push origin master
 ```
 
 **Solution Explanation**  
+
 - The README specifies creating `key.txt` with content "May I come in?" and pushing to master
+
 - The file is ignored by `.gitignore`, so `git add -f` is required to force-add it
+
 - After pushing, the remote server runs a validation hook and returns the password
+
 - The push is rejected after validation, but the password is still printed
 
 **Common Mistakes**
+
 - Not using `-f` flag when `.gitignore` blocks the file
+
 - Stopping when seeing the push rejection (password is still displayed)
 
 **Password for Next Level**  
@@ -925,14 +1076,21 @@ cat /etc/bandit_pass/bandit33
 ```
 
 **Solution Explanation**  
+
 - Logging into bandit32 places the user in a restricted shell that forces uppercase conversion
+
 - Normal commands like `ls` become `LS` (invalid)
+
 - The binary `uppershell` is SUID and owned by bandit33
+
 - Used `$0` which expands to the shell's binary path and is not modified by the uppercase filter
+
 - This dropped into a normal `sh` session with bandit33 privileges
+
 - From there, standard commands worked and the password file became readable
 
 **Common Mistakes**
+
 - Trying to run commands like `ls`, `cat`, `sh`, or `bash` directly (all get uppercased)
 
 **Password for Next Level**  
@@ -949,44 +1107,71 @@ cat /etc/bandit_pass/bandit33
 ## Key Concepts Summary
 
 ### Linux Fundamentals
+
 - File navigation and manipulation
+
 - Hidden files and special characters in filenames
+
 - File permissions and ownership
+
 - Process privileges and setuid binaries
 
 ### Text Processing
+
 - Pattern matching with `grep`
+
 - Sorting and filtering with `sort` and `uniq`
+
 - Extracting strings from binary files
+
 - Encoding/decoding (Base64, ROT13)
 
 ### Compression & Archiving
+
 - Multiple compression formats (gzip, bzip2, tar)
+
 - Hex dump reversal
+
 - Iterative decompression
 
 ### Networking
+
 - TCP connections with netcat
+
 - SSL/TLS connections with OpenSSL
+
 - Port scanning with nmap
+
 - Client-server communication
 
 ### Automation & Scheduling
+
 - Cron job analysis
+
 - Script-based privilege escalation
+
 - Brute-force automation
 
 ### Version Control (Git)
+
 - Repository cloning
+
 - Commit history analysis
+
 - Branch management
+
 - Tag inspection
+
 - Remote repository interaction
 
 ### Privilege Escalation
+
 - Setuid binary exploitation
+
 - Shell escaping techniques
+
 - Restricted shell bypass
+
 - Pager and editor abuse
 
 ---
