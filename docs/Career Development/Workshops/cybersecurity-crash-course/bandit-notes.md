@@ -942,7 +942,7 @@ cat /etc/bandit_pass/bandit33
 
 ## Completion Status
 
-**Completed Levels:** 0 → 33 ✅
+**Completed Levels:** 0 → 33
 
 ---
 
