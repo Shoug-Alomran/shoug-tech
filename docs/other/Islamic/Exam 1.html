@@ -529,6 +529,7 @@
             <p><strong>Duration:</strong> 120 minutes</p>
             <p><strong>Instructions:</strong> Answer all questions carefully. The exam will be graded automatically based on keyword detection.</p>
         </div>
+        
         <div class="exam-content">
             <!-- Section 1: Write the Term -->
             <div class="section">
@@ -1345,7 +1346,7 @@
             
             // Section 2: Lists
             q6: {
-                keywords: ['dual property', 'restricted economic liberty', 'social solidarity', 'balance', 'individual', 'community', 'freedom', 'regulations'],
+                keywords: ['dual property', 'restricted economic liberty', 'social solidarity', 'balance', 'individual', 'community', 'freedom', 'regulations', 'zakat', 'charities'],
                 items: 3,
                 points: 5
             },
@@ -1355,29 +1356,29 @@
                 points: 5
             },
             q8: {
-                keywords: ['life', 'knowledge', 'wealth', 'body', 'time', 'earned', 'spent', 'consumed', 'disposed'],
+                keywords: ['life', 'knowledge', 'wealth', 'body', 'time', 'youth', 'earned', 'spent', 'consumed', 'disposed'],
                 items: 5,
                 points: 5
             },
             
             // Section 3: True/False
-            q9: { answer: 'false', points: 3 }, // Third pillar
+            q9: { answer: 'false', points: 3 },
             q10: { answer: 'true', points: 3 },
-            q11: { answer: 'false', points: 3 }, // Capitalism focuses on individual
-            q12: { answer: 'false', points: 3 }, // Wealth does not include services
+            q11: { answer: 'false', points: 3 },
+            q12: { answer: 'false', points: 3 },
             q13: { answer: 'true', points: 3 },
             
             // Section 4: MCQ
-            q14: { answer: 'b', points: 3 }, // 2.5%
-            q15: { answer: 'd', points: 3 }, // Absolute freedom is NOT Islamic
-            q16: { answer: 'd', points: 3 }, // 8 categories
-            q17: { answer: 'b', points: 3 }, // Socialism
-            q18: { answer: 'b', points: 3 }, // Money without fighting
-            q19: { answer: 'b', points: 3 }, // Abu Bakr
-            q20: { answer: 'c', points: 3 }, // One-fifth
-            q21: { answer: 'c', points: 3 }, // Fighting ownership instinct
-            q22: { answer: 'a', points: 3 }, // Qasd
-            q23: { answer: 'c', points: 3 }, // Must be expensive is NOT a condition
+            q14: { answer: 'b', points: 3 },
+            q15: { answer: 'd', points: 3 },
+            q16: { answer: 'd', points: 3 },
+            q17: { answer: 'b', points: 3 },
+            q18: { answer: 'b', points: 3 },
+            q19: { answer: 'b', points: 3 },
+            q20: { answer: 'c', points: 3 },
+            q21: { answer: 'c', points: 3 },
+            q22: { answer: 'a', points: 3 },
+            q23: { answer: 'c', points: 3 },
             
             // Section 5: Fill in the Blanks
             q24: {
@@ -1524,7 +1525,8 @@
         function gradeListAnswerInline(questionId, answerData) {
             const inputs = [];
             for (let i = 1; i <= answerData.items; i++) {
-                const value = document.getElementById(`${questionId}-${i}`).value;
+                const elem = document.getElementById(`${questionId}-${i}`);
+                const value = elem ? elem.value : '';
                 inputs.push(value);
             }
             
@@ -1585,7 +1587,8 @@
                 const answers = [];
                 
                 answerData.answers.forEach((blank, index) => {
-                    const value = document.getElementById(`${questionId}-${index + 1}`).value;
+                    const elem = document.getElementById(`${questionId}-${index + 1}`);
+                    const value = elem ? elem.value : '';
                     answers.push(value);
                     maxScore += blank.points;
                     if (checkKeywords(value, blank.keywords)) {
@@ -1601,7 +1604,8 @@
                 };
             } else {
                 // Single blank
-                const value = document.getElementById(questionId).value;
+                const elem = document.getElementById(questionId);
+                const value = elem ? elem.value : '';
                 const isCorrect = checkKeywords(value, answerData.keywords);
                 
                 return { 
@@ -1614,98 +1618,46 @@
         }
 
         function gradeExam() {
-            const studentName = document.getElementById('studentName').value;
-            const studentID = document.getElementById('studentID').value;
-            
-            if (!studentName || !studentID) {
-                alert('Please fill in your name and student ID before submitting.');
-                return;
-            }
-            
             let totalScore = 0;
             const maxScore = 100;
-            let results = {
-                section1: [],
-                section2: [],
-                section3: [],
-                section4: [],
-                section5: []
-            };
             
-            // Grade Section 1: Text Answers
+            // Grade Section 1: Text Answers (Q1-Q5)
             for (let i = 1; i <= 5; i++) {
                 const questionId = `q${i}`;
                 const answer = document.getElementById(questionId).value;
                 const result = gradeTextAnswerInline(questionId, answer, answerKey[questionId]);
                 totalScore += result.score;
-                results.section1.push({
-                    number: i,
-                    answer: answer,
-                    score: result.score,
-                    maxScore: answerKey[questionId].points,
-                    feedback: result.feedback
-                });
             }
             
-            // Grade Section 2: Lists
-            [6, 7, 8].forEach((num, idx) => {
-                const questionId = `q${num}`;
+            // Grade Section 2: Lists (Q6-Q8)
+            for (let i = 6; i <= 8; i++) {
+                const questionId = `q${i}`;
                 const result = gradeListAnswerInline(questionId, answerKey[questionId]);
                 totalScore += result.score;
-                results.section2.push({
-                    number: num,
-                    score: result.score,
-                    maxScore: answerKey[questionId].points,
-                    feedback: result.feedback
-                });
-            });
+            }
             
-            // Grade Section 3: True/False
+            // Grade Section 3: True/False (Q9-Q13)
             for (let i = 9; i <= 13; i++) {
                 const questionId = `q${i}`;
                 const selected = document.querySelector(`input[name="${questionId}"]:checked`);
                 const isCorrect = selected && selected.value === answerKey[questionId].answer;
                 totalScore += isCorrect ? answerKey[questionId].points : 0;
-                results.section3.push({
-                    number: i,
-                    selected: selected ? selected.value : 'Not answered',
-                    correct: answerKey[questionId].answer,
-                    isCorrect: isCorrect,
-                    score: isCorrect ? answerKey[questionId].points : 0,
-                    maxScore: answerKey[questionId].points
-                });
             }
             
-            // Grade Section 4: MCQ
+            // Grade Section 4: MCQ (Q14-Q23)
             for (let i = 14; i <= 23; i++) {
                 const questionId = `q${i}`;
                 const selected = document.querySelector(`input[name="${questionId}"]:checked`);
                 const isCorrect = selected && selected.value === answerKey[questionId].answer;
                 totalScore += isCorrect ? answerKey[questionId].points : 0;
-                results.section4.push({
-                    number: i,
-                    selected: selected ? selected.value.toUpperCase() : 'Not answered',
-                    correct: answerKey[questionId].answer.toUpperCase(),
-                    isCorrect: isCorrect,
-                    score: isCorrect ? answerKey[questionId].points : 0,
-                    maxScore: answerKey[questionId].points
-                });
             }
             
-            // Grade Section 5: Fill in the Blanks
-            [24, 25, 26, 27, 28, 29, 30, 31, 32, 33].forEach(num => {
+            // Grade Section 5: Fill in the Blanks (Q24-Q33)
+            const fillBlankQuestions = [24, 25, 26, 27, 28, 29, 30, 31, 32, 33];
+            fillBlankQuestions.forEach(num => {
                 const questionId = `q${num}`;
                 const result = gradeFillBlankInline(questionId, answerKey[questionId]);
                 totalScore += result.score;
-                const maxPoints = answerKey[questionId].answers 
-                    ? answerKey[questionId].answers.reduce((sum, a) => sum + a.points, 0)
-                    : answerKey[questionId].points;
-                results.section5.push({
-                    number: num,
-                    score: result.score,
-                    maxScore: maxPoints,
-                    feedback: result.feedback
-                });
             });
             
             // Calculate grade
@@ -1717,10 +1669,10 @@
             else if (percentage >= 60) gradeLetter = 'D';
             else gradeLetter = 'F';
             
-            displayResults(studentName, studentID, totalScore, maxScore, percentage, gradeLetter, results);
+            displayResults(totalScore, maxScore, percentage, gradeLetter);
         }
 
-        function displayResults(name, id, score, maxScore, percentage, grade, results) {
+        function displayResults(score, maxScore, percentage, grade) {
             const resultsDiv = document.getElementById('results');
             
             let html = `
@@ -1732,7 +1684,16 @@
                 </div>
                 
                 <div style="text-align: center; padding: 20px;">
-                    <p style="font-size: 1.1em; color: #495057;">Review your answers above for detailed feedback on each question.</p>
+                    <p style="font-size: 1.1em; color: #495057; margin-bottom: 20px;">
+                        ${grade === 'A' ? 'Excellent work! 🎉' : 
+                          grade === 'B' ? 'Great job! 👏' : 
+                          grade === 'C' ? 'Good effort! Keep studying! 📚' : 
+                          grade === 'D' ? 'You passed, but there\'s room for improvement. 📖' : 
+                          'Don\'t give up! Review the material and try again. 💪'}
+                    </p>
+                    <p style="font-size: 1em; color: #6c757d; margin-bottom: 20px;">
+                        Scroll up to see detailed feedback for each question by clicking the "Check Answer" buttons.
+                    </p>
                     <button class="retry-btn" onclick="location.reload()">Start New Exam</button>
                 </div>
             `;
