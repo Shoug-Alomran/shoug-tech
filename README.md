@@ -39,6 +39,24 @@ This site brings together my academic journey, projects, technical labs, volunte
 
 ---
 
+## Copyright
+
+© 2026 **Shoug Fawaz Alomran**. All rights reserved.
+
+The content of this repository, including but not limited to text, documentation, design, and original code, is the intellectual property of the author unless otherwise stated.
+
+You may:
+- View and reference this project for **personal and educational purposes**
+
+You may **not**:
+- Reproduce, distribute, or publish substantial portions without explicit permission
+- Use the content for commercial purposes without prior consent
+
+If you would like to reuse or adapt any part of this project, please contact:
+**Shoug.Alomran@Shoug-Tech.com** *(replace with your preferred contact email)*
+
+---
+
 ## Local Setup
 To run locally:
 ```bash
