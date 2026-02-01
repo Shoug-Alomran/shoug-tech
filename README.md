@@ -1,7 +1,7 @@
 # Shoug Fawaz Alomran — Digital Garden & Interactive CV
 
 Welcome to my **Digital Garden**, a living space where I document my journey in **cybersecurity, software development, and personal growth**.  
-Built using [MkDocs Material](https://squidfunk.github.io/mkdocs-material/), this project serves as both an **interactive CV** and a **knowledge hub** — showcasing my projects, skills, and continuous learning path.
+Built using [MkDocs Material](https://squidfunk.github.io/mkdocs-material/), this project serves as both an **interactive CV** and a **knowledge hub**, showcasing my projects, skills, and continuous learning path.
 
 ---
 
@@ -53,7 +53,7 @@ You may **not**:
 - Use the content for commercial purposes without prior consent
 
 If you would like to reuse or adapt any part of this project, please contact:
-**Shoug.Alomran@Shoug-Tech.com** *(replace with your preferred contact email)*
+**Shoug.Alomran@Shoug-Tech.com**
 
 ---
 
