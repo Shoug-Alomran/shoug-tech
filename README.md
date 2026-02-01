@@ -12,11 +12,11 @@ Built using [MkDocs Material](https://squidfunk.github.io/mkdocs-material/), thi
 
 ## About
 I’m **Shoug Fawaz Alomran**, passionate about:
-- **Penetration Testing** — exploring systems ethically to make them safer  
-- **Software Development** — building useful tools and apps for everyday life  
-- **Cybersecurity Awareness** — helping others protect themselves online  
+- **Penetration Testing**: exploring systems ethically to make them safer  
+- **Software Development**: building useful tools and apps for everyday life  
+- **Cybersecurity Awareness**: helping others protect themselves online  
 
-This site brings together my academic journey, projects, technical labs, volunteering, and research work — all in one evolving space.
+This site brings together my academic journey, projects, technical labs, volunteering, and research work, all in one evolving space.
 
 ---
 
