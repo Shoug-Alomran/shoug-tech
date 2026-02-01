@@ -12,11 +12,13 @@ The sessions covered environment setup, Linux fundamentals, the cyber attack lif
 ### 1. Understanding the Attacker’s Mindset
 
 One of the most important takeaways from this workshop was learning how attackers approach systems methodically rather than randomly. By studying the **cyber attack lifecycle**, from reconnaissance and initial access to privilege escalation and impact, I gained a clearer understanding of how real-world attacks are structured and executed. This perspective is essential for anticipating threats and designing effective defensive strategies.
+
 ---
 
 ### 2. Environment Setup and Linux Proficiency
 
 The workshop reinforced the importance of working within a **safe and isolated security lab** using VirtualBox and Kali Linux. Setting up the environment independently improved my confidence in managing virtual machines and highlighted why Linux proficiency is critical in cybersecurity. Through continuous use of Linux commands (file navigation, permissions, searching, and process inspection), I developed stronger command-line skills that are foundational for penetration testing and system analysis.
+
 ---
 
 ### 3. Hands-On Practice with OverTheWire Bandit
