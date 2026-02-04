@@ -1,1314 +1,1711 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SE311 Chapter 3: Requirements Elicitation</title>
+
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        /* ===== Base (Light) ===== */
+        body{
+            font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
+            line-height:1.6;
+            color:#333;
+            background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);
+            padding:20px;
+            transition: background-color .3s ease, color .3s ease;
         }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 20px;
+
+        .container{
+            max-width:1200px;
+            margin:0 auto;
+            background:#fff;
+            border-radius:15px;
+            box-shadow:0 20px 60px rgba(0,0,0,0.3);
+            overflow:hidden;
         }
-        
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            overflow: hidden;
+
+        header{
+            background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);
+            color:#fff;
+            padding:40px;
+            text-align:center;
         }
-        
-        header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 40px;
-            text-align: center;
+
+        header h1{ font-size:2.5em; margin-bottom:10px; }
+        header p{ font-size:1.2em; opacity:.9; }
+
+        /* ===== Controls (only translation toggle) ===== */
+        .controls{
+            display:flex;
+            justify-content:center;
+            gap:12px;
+            padding:16px 24px;
+            background:rgba(255,255,255,0.65);
+            backdrop-filter: blur(8px);
+            border-bottom:1px solid rgba(0,0,0,0.08);
         }
-        
-        header h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
+
+        .toggle-btn{
+            background:#ffffff;
+            border:2px solid rgba(0,0,0,0.12);
+            padding:10px 16px;
+            border-radius:10px;
+            cursor:pointer;
+            font-size:15px;
+            color:#222;
+            transition: all .2s ease;
+            display:flex;
+            align-items:center;
+            gap:8px;
         }
-        
-        header p {
-            font-size: 1.2em;
-            opacity: 0.9;
+        .toggle-btn:hover{ transform:translateY(-1px); border-color:#667eea; }
+        .toggle-btn.active{ background:#667eea; color:#fff; border-color:#667eea; }
+
+        .content{ padding:40px; }
+
+        .section{
+            margin-bottom:40px;
+            padding:30px;
+            background:#f8f9fa;
+            border-radius:10px;
+            border-left:5px solid #667eea;
         }
-        
-        .content {
-            padding: 40px;
+
+        h2{
+            color:#667eea;
+            font-size:2em;
+            margin-bottom:20px;
+            padding-bottom:10px;
+            border-bottom:3px solid #667eea;
         }
-        
-        .section {
-            margin-bottom: 40px;
-            padding: 30px;
-            background: #f8f9fa;
-            border-radius: 10px;
-            border-left: 5px solid #667eea;
+
+        h3{
+            color:#764ba2;
+            font-size:1.5em;
+            margin-top:25px;
+            margin-bottom:15px;
         }
-        
-        h2 {
-            color: #667eea;
-            font-size: 2em;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 3px solid #667eea;
+
+        h4{
+            color:#555;
+            font-size:1.2em;
+            margin-top:20px;
+            margin-bottom:10px;
         }
-        
-        h3 {
-            color: #764ba2;
-            font-size: 1.5em;
-            margin-top: 25px;
-            margin-bottom: 15px;
+
+        .highlight-box{
+            background:linear-gradient(135deg,#667eea15 0%,#764ba215 100%);
+            border-left:4px solid #667eea;
+            padding:20px;
+            margin:20px 0;
+            border-radius:5px;
         }
-        
-        h4 {
-            color: #555;
-            font-size: 1.2em;
-            margin-top: 20px;
-            margin-bottom: 10px;
+
+        .tip-box{
+            background:#e8f5e9;
+            border-left:4px solid #4caf50;
+            padding:20px;
+            margin:20px 0;
+            border-radius:5px;
         }
-        
-        .highlight-box {
-            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
-            border-left: 4px solid #667eea;
-            padding: 20px;
-            margin: 20px 0;
-            border-radius: 5px;
+        .tip-box h4{ color:#2e7d32; margin-top:0; }
+
+        .exam-question{
+            background:#fff3e0;
+            border-left:4px solid #ff9800;
+            padding:20px;
+            margin:20px 0;
+            border-radius:5px;
         }
-        
-        .tip-box {
-            background: #e8f5e9;
-            border-left: 4px solid #4caf50;
-            padding: 20px;
-            margin: 20px 0;
-            border-radius: 5px;
+        .exam-question h4{ color:#e65100; margin-top:0; }
+
+        .past-exam{
+            background:#fce4ec;
+            border-left:4px solid #e91e63;
+            padding:20px;
+            margin:20px 0;
+            border-radius:5px;
         }
-        
-        .tip-box h4 {
-            color: #2e7d32;
-            margin-top: 0;
+        .past-exam h4{ color:#c2185b; margin-top:0; }
+
+        ul,ol{ margin-left:30px; margin-top:10px; margin-bottom:10px; }
+        li{ margin-bottom:8px; }
+
+        .process-flow{
+            display:flex;
+            justify-content:space-between;
+            flex-wrap:wrap;
+            margin:20px 0;
         }
-        
-        .exam-question {
-            background: #fff3e0;
-            border-left: 4px solid #ff9800;
-            padding: 20px;
-            margin: 20px 0;
-            border-radius: 5px;
+
+        .process-step{
+            flex:1;
+            min-width:200px;
+            background:#fff;
+            padding:20px;
+            margin:10px;
+            border-radius:8px;
+            box-shadow:0 2px 10px rgba(0,0,0,0.1);
+            text-align:center;
+            position:relative;
         }
-        
-        .exam-question h4 {
-            color: #e65100;
-            margin-top: 0;
+
+        .process-step::after{
+            content:'→';
+            position:absolute;
+            right:-20px;
+            top:50%;
+            transform:translateY(-50%);
+            font-size:2em;
+            color:#667eea;
         }
-        
-        .past-exam {
-            background: #fce4ec;
-            border-left: 4px solid #e91e63;
-            padding: 20px;
-            margin: 20px 0;
-            border-radius: 5px;
+        .process-step:last-child::after{ content:''; }
+
+        .comparison-table{
+            width:100%;
+            border-collapse:collapse;
+            margin:20px 0;
+            box-shadow:0 2px 10px rgba(0,0,0,0.1);
+            background:#fff;
         }
-        
-        .past-exam h4 {
-            color: #c2185b;
-            margin-top: 0;
+
+        .comparison-table th{
+            background:#667eea;
+            color:#fff;
+            padding:15px;
+            text-align:left;
         }
-        
-        ul, ol {
-            margin-left: 30px;
-            margin-top: 10px;
-            margin-bottom: 10px;
+
+        .comparison-table td{
+            padding:15px;
+            border-bottom:1px solid #ddd;
+            vertical-align:top;
         }
-        
-        li {
-            margin-bottom: 8px;
+
+        .comparison-table tr:nth-child(even){ background:#f8f9fa; }
+
+        .memory-trick{
+            background:#e1f5fe;
+            border-left:4px solid #0288d1;
+            padding:20px;
+            margin:20px 0;
+            border-radius:5px;
         }
-        
-        .process-flow {
-            display: flex;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            margin: 20px 0;
+        .memory-trick h4{ color:#01579b; margin-top:0; }
+
+        strong{ color:#667eea; }
+
+        code{
+            background:#f5f5f5;
+            padding:2px 6px;
+            border-radius:3px;
+            font-family:'Courier New',monospace;
         }
-        
-        .process-step {
-            flex: 1;
-            min-width: 200px;
-            background: white;
-            padding: 20px;
-            margin: 10px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            text-align: center;
-            position: relative;
+
+        /* ===== Language blocks ===== */
+        .lang-block{ display:none; }
+        .lang-block.active{ display:block; }
+
+        /* ===== RTL tweaks (Arabic) ===== */
+        html[dir="rtl"] body{ text-align:right; }
+        html[dir="rtl"] ul, html[dir="rtl"] ol{ margin-left:0; margin-right:30px; }
+        html[dir="rtl"] .comparison-table th,
+        html[dir="rtl"] .comparison-table td{ text-align:right; }
+        html[dir="rtl"] .section{ border-left:none; border-right:5px solid #667eea; }
+
+        html[dir="rtl"] .highlight-box,
+        html[dir="rtl"] .tip-box,
+        html[dir="rtl"] .exam-question,
+        html[dir="rtl"] .past-exam,
+        html[dir="rtl"] .memory-trick{
+            border-left:none;
+            border-right-width:4px;
+            border-right-style:solid;
         }
-        
-        .process-step::after {
-            content: '→';
-            position: absolute;
-            right: -20px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 2em;
-            color: #667eea;
+        html[dir="rtl"] .highlight-box{ border-right-color:#667eea; }
+        html[dir="rtl"] .tip-box{ border-right-color:#4caf50; }
+        html[dir="rtl"] .exam-question{ border-right-color:#ff9800; }
+        html[dir="rtl"] .past-exam{ border-right-color:#e91e63; }
+        html[dir="rtl"] .memory-trick{ border-right-color:#0288d1; }
+
+        html[dir="rtl"] .process-step::after{
+            content:'←';
+            right:auto;
+            left:-20px;
         }
-        
-        .process-step:last-child::after {
-            content: '';
-        }
-        
-        .comparison-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        
-        .comparison-table th {
-            background: #667eea;
-            color: white;
-            padding: 15px;
-            text-align: left;
-        }
-        
-        .comparison-table td {
-            padding: 15px;
-            border-bottom: 1px solid #ddd;
-        }
-        
-        .comparison-table tr:nth-child(even) {
-            background: #f8f9fa;
-        }
-        
-        .memory-trick {
-            background: #e1f5fe;
-            border-left: 4px solid #0288d1;
-            padding: 20px;
-            margin: 20px 0;
-            border-radius: 5px;
-        }
-        
-        .memory-trick h4 {
-            color: #01579b;
-            margin-top: 0;
-        }
-        
-        strong {
-            color: #667eea;
-        }
-        
-        code {
-            background: #f5f5f5;
-            padding: 2px 6px;
-            border-radius: 3px;
-            font-family: 'Courier New', monospace;
+
+        /* ===== AUTO DARK MODE (based on system/OS theme) ===== */
+        @media (prefers-color-scheme: dark){
+            body{
+                color:#e9ecef;
+                background:linear-gradient(135deg,#1f1f1f 0%,#2b2b2b 100%);
+            }
+
+            .container{ background:#1e1e1e; }
+            .controls{
+                background:rgba(0,0,0,0.25);
+                border-bottom:1px solid rgba(255,255,255,0.12);
+            }
+
+            .toggle-btn{
+                background:#222;
+                color:#e9ecef;
+                border-color:rgba(255,255,255,0.18);
+            }
+            .toggle-btn:hover{ border-color:#667eea; }
+            .toggle-btn.active{ background:#667eea; color:#101010; }
+
+            .section{ background:#2a2a2a; }
+
+            h2{ border-bottom-color:#667eea; }
+            h2,h3,h4,p,li,td,th{ color:#e9ecef; }
+
+            .highlight-box,
+            .tip-box,
+            .exam-question,
+            .past-exam,
+            .memory-trick{
+                background:#2f2f2f !important;
+            }
+
+            .comparison-table{ background:#262626; }
+            .comparison-table tr:nth-child(even){ background:#2b2b2b; }
+            .comparison-table td{ border-bottom:1px solid rgba(255,255,255,0.12); }
+
+            code{ background:#333; color:#e9ecef; }
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <header>
             <h1>📋 Requirements Elicitation</h1>
             <p>SE 311 - Chapter 3 Complete Study Guide</p>
         </header>
-        
+
+        <!-- Only control: translation -->
+        <div class="controls">
+            <button class="toggle-btn" id="translateToggle" type="button">
+                🌐 <span id="translateToggleLabel">Translate to Arabic</span>
+            </button>
+        </div>
+
         <div class="content">
-            <!-- Introduction -->
-            <div class="section">
-                <h2>🎯 What is Requirements Elicitation?</h2>
-                
-                <div class="highlight-box">
-                    <h3>Definition</h3>
-                    <p><strong>Elicitation</strong> is the process of identifying the needs and constraints of the various stakeholders for a software system.</p>
-                    <p><em>Etymology:</em> "Elicit" means to draw out, extract, or bring forth (استنبط، استخرج، انتزع)</p>
-                </div>
-                
-                <h3>Key Characteristics</h3>
-                <ul>
-                    <li>A <strong>collaborative and analytical process</strong> that includes activities to collect, discover, extract, and define requirements</li>
-                    <li>Not just "gathering requirements" or transcribing what users say</li>
-                    <li>Discovers business, user, functional, and non-functional requirements</li>
-                    <li>Perhaps the most <strong>challenging, critical, error-prone, and communication-intensive</strong> aspect of software development</li>
-                </ul>
-                
-                <div class="memory-trick">
-                    <h4>💡 Memory Trick</h4>
-                    <p><strong>ELICIT = Extract, Listen, Investigate, Collaborate, Interpret, Transform</strong></p>
-                    <p>Remember: You're not just collecting; you're actively extracting and transforming stakeholder needs into requirements!</p>
-                </div>
-            </div>
+            <!-- ========================= ENGLISH ========================= -->
+            <div id="content-en" class="lang-block active">
 
-            <!-- Elicitation Goals -->
-            <div class="section">
-                <h2>🎯 Elicitation Goals</h2>
-                
-                <ol>
-                    <li><strong>Determine sources of information</strong> and select appropriate techniques</li>
-                    <li><strong>Elicit information</strong> on domain, problem, needs, and constraints</li>
-                    <li><strong>Produce a first document</strong>:
-                        <ul>
-                            <li>Mainly user requirements and elicitation notes</li>
-                            <li>Potentially incomplete, disorganized, and inconsistent</li>
-                            <li>But you must start somewhere!</li>
-                        </ul>
-                    </li>
-                </ol>
-                
-                <div class="highlight-box">
-                    <p><strong>Important:</strong> Requirements development is an iterative process. Do some elicitation → study what you learn → write some requirements → realize you have gaps/conflicts → return to elicitation → repeat!</p>
-                </div>
-            </div>
+                <!-- Introduction -->
+                <div class="section">
+                    <h2>🎯 What is Requirements Elicitation?</h2>
 
-            <!-- Sources of Requirements -->
-            <div class="section">
-                <h2>📚 Sources of Requirements</h2>
-                
-                <h3>1. Stakeholders (Various Types)</h3>
-                
-                <table class="comparison-table">
-                    <thead>
-                        <tr>
-                            <th>Stakeholder Type</th>
-                            <th>Role/Description</th>
-                            <th>Key Contribution</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><strong>Client/Customer</strong></td>
-                            <td>Pays for software development</td>
-                            <td>Business objectives, budget, final decisions</td>
-                        </tr>
-                        <tr>
-                            <td><strong>User</strong></td>
-                            <td>Current or future system users</td>
-                            <td>User requirements, usability needs, workflow</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Domain Expert</strong></td>
-                            <td>Familiar with problem and environment</td>
-                            <td>Domain knowledge, business rules, constraints</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Developer</strong></td>
-                            <td>Technical staff</td>
-                            <td>Technical feasibility, design constraints</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Others</strong></td>
-                            <td>Project manager, tester, etc.</td>
-                            <td>Testing requirements, project constraints</td>
-                        </tr>
-                    </tbody>
-                </table>
-                
-                <h3>2. Other Sources</h3>
-                <ul>
-                    <li><strong>Existing systems</strong> (not necessarily software)</li>
-                    <li><strong>Existing documentation</strong> (user manuals, guides, memos)</li>
-                    <li><strong>Competing systems</strong></li>
-                    <li><strong>Documentation about interfacing systems</strong></li>
-                    <li><strong>Standards, policies, collective agreements, and legislation</strong></li>
-                </ul>
-                
-                <div class="past-exam">
-                    <h4>📌 PAST EXAM - Midterm (Riyadh Seasons)</h4>
-                    <p><strong>Q: List all possible stakeholders</strong></p>
-                    <p><strong>Answer:</strong></p>
+                    <div class="highlight-box">
+                        <h3>Definition</h3>
+                        <p><strong>Elicitation</strong> is the process of identifying the needs and constraints of the various stakeholders for a software system.</p>
+                        <p><em>Etymology:</em> "Elicit" means to draw out, extract, or bring forth (استنبط، استخرج، انتزع)</p>
+                    </div>
+
+                    <h3>Key Characteristics</h3>
                     <ul>
-                        <li>Organizers (clients)</li>
-                        <li>Secure Payment Inc. (external service provider)</li>
-                        <li>Customers (end users)</li>
+                        <li>A <strong>collaborative and analytical process</strong> that includes activities to collect, discover, extract, and define requirements</li>
+                        <li>Not just "gathering requirements" or transcribing what users say</li>
+                        <li>Discovers business, user, functional, and non-functional requirements</li>
+                        <li>Perhaps the most <strong>challenging, critical, error-prone, and communication-intensive</strong> aspect of software development</li>
                     </ul>
-                </div>
-            </div>
 
-            <!-- Elicitation Process -->
-            <div class="section">
-                <h2>🔄 Requirements Elicitation Process</h2>
-                
-                <div class="process-flow">
-                    <div class="process-step">
-                        <h4>1. Plan</h4>
-                        <p>Define objectives and strategy</p>
-                    </div>
-                    <div class="process-step">
-                        <h4>2. Prepare</h4>
-                        <p>Get ready for sessions</p>
-                    </div>
-                    <div class="process-step">
-                        <h4>3. Perform</h4>
-                        <p>Execute elicitation</p>
-                    </div>
-                    <div class="process-step">
-                        <h4>4. Follow Up</h4>
-                        <p>Organize and document</p>
+                    <div class="memory-trick">
+                        <h4>💡 Memory Trick</h4>
+                        <p><strong>ELICIT = Extract, Listen, Investigate, Collaborate, Interpret, Transform</strong></p>
+                        <p>Remember: You're not just collecting; you're actively extracting and transforming stakeholder needs into requirements!</p>
                     </div>
                 </div>
-                
-                <h3>Step 1: Planning for Elicitation</h3>
-                
-                <div class="highlight-box">
-                    <h4>Key Planning Elements</h4>
-                    <ul>
-                        <li><strong>Objectives:</strong> Why this elicitation? (Overall and individual activity goals)</li>
-                        <li><strong>Strategy & Techniques:</strong> Which stakeholders? Which techniques?</li>
-                        <li><strong>Schedule & Resources:</strong> Coordination with clients/customers and development team</li>
-                        <li><strong>Independent Elicitation:</strong> Start with documents & systems before talking to people</li>
-                        <li><strong>Expected Products:</strong> Use cases, SRS, quality attributes specification, etc.</li>
-                        <li><strong>Risks:</strong> Identify potential factors and ways to overcome them</li>
-                    </ul>
+
+                <!-- Elicitation Goals -->
+                <div class="section">
+                    <h2>🎯 Elicitation Goals</h2>
+
+                    <ol>
+                        <li><strong>Determine sources of information</strong> and select appropriate techniques</li>
+                        <li><strong>Elicit information</strong> on domain, problem, needs, and constraints</li>
+                        <li><strong>Produce a first document</strong>:
+                            <ul>
+                                <li>Mainly user requirements and elicitation notes</li>
+                                <li>Potentially incomplete, disorganized, and inconsistent</li>
+                                <li>But you must start somewhere!</li>
+                            </ul>
+                        </li>
+                    </ol>
+
+                    <div class="highlight-box">
+                        <p><strong>Important:</strong> Requirements development is an iterative process. Do some elicitation → study what you learn → write some requirements → realize you have gaps/conflicts → return to elicitation → repeat!</p>
+                    </div>
                 </div>
-                
-                <h3>Step 2: Prepare for Elicitation</h3>
-                
-                <ul>
-                    <li><strong>Decide on scope:</strong> Topics, questions, process flows, or use cases</li>
-                    <li><strong>Create agenda:</strong> Topics to be covered, assigned time, objectives</li>
-                    <li><strong>Prepare resources:</strong> Physical space, participants, documentation, systems</li>
-                    <li><strong>Identify stakeholders:</strong> Learn about cultural, regional, language preferences</li>
-                    <li><strong>Prepare questions:</strong> Imagine learning the user's job
+
+                <!-- Sources of Requirements -->
+                <div class="section">
+                    <h2>📚 Sources of Requirements</h2>
+
+                    <h3>1. Stakeholders (Various Types)</h3>
+
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Stakeholder Type</th>
+                                <th>Role/Description</th>
+                                <th>Key Contribution</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Client/Customer</strong></td>
+                                <td>Pays for software development</td>
+                                <td>Business objectives, budget, final decisions</td>
+                            </tr>
+                            <tr>
+                                <td><strong>User</strong></td>
+                                <td>Current or future system users</td>
+                                <td>User requirements, usability needs, workflow</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Domain Expert</strong></td>
+                                <td>Familiar with problem and environment</td>
+                                <td>Domain knowledge, business rules, constraints</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Developer</strong></td>
+                                <td>Technical staff</td>
+                                <td>Technical feasibility, design constraints</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Others</strong></td>
+                                <td>Project manager, tester, etc.</td>
+                                <td>Testing requirements, project constraints</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h3>2. Other Sources</h3>
+                    <ul>
+                        <li><strong>Existing systems</strong> (not necessarily software)</li>
+                        <li><strong>Existing documentation</strong> (user manuals, guides, memos)</li>
+                        <li><strong>Competing systems</strong></li>
+                        <li><strong>Documentation about interfacing systems</strong></li>
+                        <li><strong>Standards, policies, collective agreements, and legislation</strong></li>
+                    </ul>
+
+                    <div class="past-exam">
+                        <h4>📌 PAST EXAM - Midterm (Riyadh Seasons)</h4>
+                        <p><strong>Q: List all possible stakeholders</strong></p>
+                        <p><strong>Answer:</strong></p>
                         <ul>
-                            <li>What else could...?</li>
-                            <li>What happens when...?</li>
-                            <li>Would you ever need to...?</li>
-                            <li>Where do you get...?</li>
-                            <li>Why do you (or don't you)...?</li>
-                            <li>Does anyone ever...?</li>
+                            <li>Organizers (clients)</li>
+                            <li>Secure Payment Inc. (external service provider)</li>
+                            <li>Customers (end users)</li>
                         </ul>
-                    </li>
-                    <li><strong>Draft analysis models:</strong> Use cases, process flows (straw man models)</li>
-                </ul>
-                
-                <h3>Step 3: Performing Elicitation Activities</h3>
-                
-                <div class="tip-box">
-                    <h4>✅ Best Practice: Take Good Notes</h4>
-                    <p>Document:</p>
-                    <ul>
-                        <li>Attendees</li>
-                        <li>Decisions made</li>
-                        <li>Actions to be taken and who is responsible</li>
-                        <li>Outstanding issues</li>
-                        <li>Key points</li>
-                    </ul>
+                    </div>
                 </div>
-                
-                <h3>Step 4: Following Up After Elicitation</h3>
-                
-                <h4>Organize and Share Notes</h4>
-                <ul>
-                    <li>Review and update <strong>right after session</strong></li>
-                    <li>Consolidate input from multiple sources</li>
-                    <li>Edit notes with care</li>
-                    <li>Keep originals</li>
-                    <li>Review with stakeholders</li>
-                </ul>
-                
-                <h4>Document Open Issues</h4>
-                <ul>
-                    <li>Items that need to be further explored</li>
-                    <li>Gaps that need to be closed</li>
-                </ul>
-            </div>
 
-            <!-- Classifying Customer Input -->
-            <div class="section">
-                <h2>🔍 Classifying Customer Input</h2>
-                
-                <p>Not everything stakeholders say is a requirement. Learn to distinguish:</p>
-                
-                <table class="comparison-table">
-                    <thead>
-                        <tr>
-                            <th>Type</th>
-                            <th>Example</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><strong>Business Requirement</strong></td>
-                            <td>"Save SAR X/year on electricity"</td>
-                        </tr>
-                        <tr>
-                            <td><strong>User Requirement</strong></td>
-                            <td>"I need to print a mailing label"</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Business Rule</strong></td>
-                            <td>"Time-off approvals must comply with HR vacation policy"</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Functional Requirement</strong></td>
-                            <td>"The user must be able to sort the project list alphabetically"</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Quality Attribute</strong></td>
-                            <td>"The mobile software must respond quickly to touch commands"</td>
-                        </tr>
-                        <tr>
-                            <td><strong>External Interface</strong></td>
-                            <td>"Files submitted electronically cannot exceed 10 MB"</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Solution Idea</strong></td>
-                            <td>"Select state from drop-down list"</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Data Definition</strong></td>
-                            <td>"ZIP code has 5 digits + optional 4 digits"</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+                <!-- Elicitation Process -->
+                <div class="section">
+                    <h2>🔄 Requirements Elicitation Process</h2>
 
-            <!-- When Are We Done? -->
-            <div class="section">
-                <h2>🏁 When Are We Done with Elicitation?</h2>
-                
-                <div class="highlight-box">
-                    <p>Signs you're reaching completion:</p>
-                    <ul>
-                        <li>✓ Users can't think of any more use cases or user stories</li>
-                        <li>✓ Users propose new scenarios that don't lead to new functional requirements</li>
-                        <li>✓ Users repeat issues previously covered</li>
-                        <li>✓ Suggested new features/requirements are all <strong>out of scope</strong></li>
-                        <li>✓ Proposed new requirements are all <strong>low priority</strong></li>
-                        <li>✓ Developers and testers reviewing requirements have <strong>few questions</strong></li>
-                    </ul>
-                </div>
-                
-                <div class="tip-box">
-                    <h4>💡 Remember</h4>
-                    <p>You'll <strong>never</strong> be completely done, but these signs suggest you're reaching a good stopping point for the current iteration.</p>
-                </div>
-            </div>
+                    <div class="process-flow">
+                        <div class="process-step"><h4>1. Plan</h4><p>Define objectives and strategy</p></div>
+                        <div class="process-step"><h4>2. Prepare</h4><p>Get ready for sessions</p></div>
+                        <div class="process-step"><h4>3. Perform</h4><p>Execute elicitation</p></div>
+                        <div class="process-step"><h4>4. Follow Up</h4><p>Organize and document</p></div>
+                    </div>
 
-            <!-- Elicitation Challenges -->
-            <div class="section">
-                <h2>⚠️ Elicitation Challenges</h2>
-                
-                <h3>Sources of Challenge & Mitigations</h3>
-                
-                <table class="comparison-table">
-                    <thead>
-                        <tr>
-                            <th>Source</th>
-                            <th>Challenges</th>
-                            <th>Mitigations</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><strong>Scope</strong></td>
-                            <td>
-                                • Inadequately defined<br>
-                                • Incorrectly defined<br>
-                                • Hard to maintain focus
-                            </td>
-                            <td>
-                                • Re-check scope before delving in<br>
-                                • Use "in-scope" and "out-of-scope" labels
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><strong>Requirements</strong></td>
-                            <td>
-                                • Assumed requirements<br>
-                                • Implied requirements<br>
-                                • Missing requirements
-                            </td>
-                            <td>
-                                • Ask "What are we assuming here?"<br>
-                                • Analyze requirements systematically
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><strong>Business Analyst</strong></td>
-                            <td>
-                                • Lack of expertise<br>
-                                • Lack of domain knowledge
-                            </td>
-                            <td>
-                                • Research domain<br>
-                                • Consult others
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><strong>Stakeholders</strong></td>
-                            <td>
-                                • Uncertainty<br>
-                                • Limited technical knowledge<br>
-                                • Availability issues<br>
-                                • Cooperation problems<br>
-                                • Conflicts
-                            </td>
-                            <td>
-                                • BA's interpersonal skills<br>
-                                • Communication skills<br>
-                                • Interviewing techniques
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-                
-                <div class="past-exam">
-                    <h4>📌 PAST EXAM - Major 1</h4>
-                    <p><strong>Q: Collecting quality requirements is considered problematic, discuss what problems we may face as RE when collecting and specifying such requirements</strong></p>
-                    <p><strong>Sample Answer:</strong></p>
-                    <ul>
-                        <li>We lack the right expertise for many professions</li>
-                        <li>Not many experienced software engineers or domain experts are always available</li>
-                        <li>Extracting requirements from stakeholders can be problematic as stakeholders are not always available</li>
-                        <li>Many stakeholders may view our presence as a threat to their job and thus will not cooperate</li>
-                        <li>Many important areas in requirements can be difficult to specify clearly</li>
-                    </ul>
-                </div>
-            </div>
+                    <h3>Step 1: Planning for Elicitation</h3>
 
-            <!-- Elicitation Techniques -->
-            <div class="section">
-                <h2>🛠️ Requirements Elicitation Techniques</h2>
-                
-                <div class="highlight-box">
-                    <h3>Two Categories</h3>
-                    <ul>
-                        <li><strong>Facilitated (Interactive):</strong> Work with stakeholders directly
-                            <ul>
-                                <li>Primarily focus on discovering <strong>user and business requirements</strong></li>
-                            </ul>
-                        </li>
-                        <li><strong>Independent:</strong> Work on your own
-                            <ul>
-                                <li>Focus on discovering needed functionality users might not be aware of</li>
-                            </ul>
-                        </li>
-                    </ul>
-                </div>
-                
-                <h3>Facilitated Techniques</h3>
-                
-                <h4>1. Interviews</h4>
-                <p>One-on-one or small group sessions with stakeholders.</p>
-                
-                <div class="highlight-box">
-                    <h4>Strengths:</h4>
-                    <ul>
-                        <li>Effective for getting to know application domain quickly</li>
-                        <li>Interviewees more comfortable sharing thoughts than in workshops</li>
-                        <li>Easier to establish user involvement</li>
-                        <li>Suitable for busy executives</li>
-                    </ul>
-                </div>
-                
-                <div class="tip-box">
-                    <h4>✅ Interview Tips</h4>
-                    <ol>
-                        <li><strong>Acquire background knowledge:</strong> Domain, interviewee's work</li>
-                        <li><strong>Prepare questions:</strong> Have structured questions ready</li>
-                        <li><strong>Establish rapport:</strong> Introduce yourself, review agenda</li>
-                        <li><strong>Stay in scope:</strong> Keep focused on objectives</li>
-                        <li><strong>Suggest ideas:</strong> Don't just listen—actively contribute</li>
-                        <li><strong>Listen actively:</strong> Paraphrase to confirm understanding</li>
-                    </ol>
-                </div>
-                
-                <div class="memory-trick">
-                    <h4>💡 Interview Example</h4>
-                    <p><strong>User:</strong> "My elevators are too slow!"</p>
-                    <p><strong>Bad Response:</strong> "I don't think so. I think you have an elevator throughput problem, not a speed problem."</p>
-                    <p><strong>Good Response:</strong> "I see. Tell me why you feel they are too slow."</p>
-                    <p><em>Lesson: Never contradict directly—explore the user's perspective!</em></p>
-                </div>
-                
-                <h4>2. Workshops</h4>
-                <p>Facilitated, structured meetings with multiple stakeholders concurrently.</p>
-                
-                <div class="highlight-box">
-                    <p><em>"Facilitation is the art of leading people through processes toward agreed-upon objectives in a manner that encourages participation, ownership, and productivity from all involved"</em> - Sibbet, 1994</p>
-                </div>
-                
-                <div class="highlight-box">
-                    <h4>Strengths:</h4>
-                    <ul>
-                        <li>Effective in solving disagreements</li>
-                        <li>Suitable for tight schedules</li>
-                        <li>Multiple viewpoints gathered at once</li>
-                    </ul>
-                </div>
-                
-                <div class="tip-box">
-                    <h4>✅ Workshop Tips</h4>
-                    <ol>
-                        <li><strong>Establish ground rules</strong> and enforce them</li>
-                        <li><strong>Fill all team roles:</strong> Facilitator, scribe, etc.</li>
-                        <li><strong>Plan an agenda:</strong> Structured approach</li>
-                        <li><strong>Stay in scope:</strong> Don't let discussions wander</li>
-                        <li><strong>Use parking lots:</strong> Capture items for later consideration</li>
-                        <li><strong>Timebox discussions:</strong> Keep momentum</li>
-                        <li><strong>Keep team small:</strong> But include right stakeholders</li>
-                        <li><strong>Keep everyone engaged:</strong> Watch for dominators!</li>
-                    </ol>
-                </div>
-                
-                <h4>3. Focus Groups</h4>
-                <p>Representative group of users who generate input on functional and quality requirements.</p>
-                
-                <div class="highlight-box">
-                    <h4>Strengths:</h4>
-                    <ul>
-                        <li>Valuable for developing commercial products</li>
-                        <li>Explores users' attitudes, impressions, preferences, needs</li>
-                    </ul>
-                    
-                    <h4>Key Points:</h4>
-                    <ul>
-                        <li>Keep them on topic without influencing opinions</li>
-                        <li>Include users from different user classes or same class (multiple sessions)</li>
-                        <li>Participants normally don't have decision-making authority</li>
-                        <li>Generates subjective feedback for further evaluation</li>
-                    </ul>
-                </div>
-                
-                <h4>4. Observations</h4>
-                <p>Shadow important users as they do their work—"in the wild."</p>
-                
-                <div class="highlight-box">
-                    <h4>Strengths:</h4>
-                    <ul>
-                        <li>Useful for important or high-risk tasks</li>
-                        <li>Facilitates requirements validation</li>
-                        <li>Identifies new topics for interviews</li>
-                    </ul>
-                    
-                    <h4>Methods:</h4>
-                    <ul>
-                        <li>Silent observation</li>
-                        <li>Interactive (ask questions)</li>
-                        <li>May be supplemented with questionnaires/interviews</li>
-                        <li>Time-consuming but valuable</li>
-                    </ul>
-                </div>
-                
-                <h4>5. Questionnaires</h4>
-                <p>Survey large groups to understand their needs.</p>
-                
-                <div class="highlight-box">
-                    <h4>Strengths:</h4>
-                    <ul>
-                        <li>Inexpensive</li>
-                        <li>Suitable for large user populations</li>
-                        <li>Easily administered across geographical boundaries</li>
-                    </ul>
-                </div>
-                
-                <div class="tip-box">
-                    <h4>✅ Questionnaire Tips</h4>
-                    <ol>
-                        <li><strong>Cover full set of possible responses</strong></li>
-                        <li><strong>Make answer choices mutually exclusive and exhaustive</strong></li>
-                        <li><strong>Avoid suggestive questions</strong></li>
-                        <li><strong>Use scales consistently</strong></li>
-                        <li><strong>Use closed questions</strong> with choices for statistical analysis</li>
-                        <li><strong>Consult an expert</strong> on questionnaire design</li>
-                        <li><strong>Test the questionnaire</strong> before distribution</li>
-                        <li><strong>Avoid asking too many questions</strong> (fatigue)</li>
-                    </ol>
-                </div>
-                
-                <h3>Independent Techniques</h3>
-                
-                <h4>6. System Interface Analysis</h4>
-                <p>Examine systems to which your system connects.</p>
-                
-                <div class="highlight-box">
-                    <ul>
-                        <li>Reveals functional requirements for data/service exchange</li>
-                        <li>Consult context diagrams and ecosystem maps</li>
-                        <li>Identify functionality in other systems that may lead to requirements</li>
-                    </ul>
-                </div>
-                
-                <h4>7. User Interface Analysis</h4>
-                <p>Study existing systems to discover user and functional requirements.</p>
-                
-                <div class="highlight-box">
-                    <h4>Strengths:</h4>
-                    <ul>
-                        <li>Suitable for building new version of existing system</li>
-                        <li>Facilitates identification of improvement areas</li>
-                        <li>Relates user input to reality</li>
-                    </ul>
-                    
-                    <h4>Important:</h4>
-                    <p>Don't assume you need to stick to all features of the existing UI for next implementation!</p>
-                </div>
-                
-                <h4>8. Document Analysis</h4>
-                <p>Examine any existing documentation for potential requirements.</p>
-                
-                <div class="highlight-box">
-                    <ul>
-                        <li>Good way to get up to speed on existing system or new domain</li>
-                        <li>Documents might not be up to date</li>
-                        <li>User manuals, guides, memos, change histories, etc.</li>
-                    </ul>
-                </div>
-                
-                <div class="past-exam">
-                    <h4>📌 PAST EXAM - Major 1 (Riyadh Seasons)</h4>
-                    <p><strong>Q: How can you gather further requirements? Mention three different elicitation methods. For each, explain: (i) Why suitable? (ii) What stakeholders? (iii) How to implement?</strong></p>
-                    
-                    <p><strong>Sample Answer 1: Analyze Existing Systems</strong></p>
-                    <ul>
-                        <li><strong>Why:</strong> Many cities have developed similar event systems. We can learn from others without reinventing the wheel.</li>
-                        <li><strong>Stakeholders:</strong> Most appropriate for organizers</li>
-                        <li><strong>Implementation:</strong> Task teams to examine current systems and extract requirements, then sit with organizers to see if extracted requirements fit their needs and wants.</li>
-                    </ul>
-                    
-                    <p><strong>Sample Answer 2: Interviews</strong></p>
-                    <ul>
-                        <li><strong>Why:</strong> Very important to gather ideas and opinions of all stakeholders to understand what they have in mind. Can't develop without their input.</li>
-                        <li><strong>Stakeholders:</strong> Appropriate for all stakeholders</li>
-                        <li><strong>Implementation:</strong> Conduct interviews with organizers, Secure Payment Inc., and customers to understand what they want and need in the system.</li>
-                    </ul>
-                    
-                    <p><strong>Sample Answer 3: Prototyping</strong></p>
-                    <ul>
-                        <li><strong>Why:</strong> Prototypes help discover new requirements that stakeholders didn't know existed. Not all can state requirements off the top of their head.</li>
-                        <li><strong>Stakeholders:</strong> Most appropriate for organizers and customers</li>
-                        <li><strong>Implementation:</strong> Create prototypes, have stakeholders use them, examine reactions and facial gestures, then get verbal feedback to extract requirements.</li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Use Cases -->
-            <div class="section">
-                <h2>📝 Use Cases</h2>
-                
-                <div class="highlight-box">
-                    <h3>Definition</h3>
-                    <p>A <strong>use case</strong> is a sequence of interactions between a system and an external actor that results in the actor being able to achieve some outcome of value.</p>
-                    <ul>
-                        <li>User-centric and usage-centric technique</li>
-                        <li>Shifts from product-centric perspective ("what do you want the system to do?") to user-centric perspective ("what do you need to accomplish?")</li>
-                    </ul>
-                </div>
-                
-                <h3>Usage Scenario vs. Use Case</h3>
-                
-                <div class="highlight-box">
-                    <ul>
-                        <li><strong>Scenario:</strong> Description of a single instance of usage
-                            <ul>
-                                <li>Specific actor, at specific time, with specific data</li>
-                            </ul>
-                        </li>
-                        <li><strong>Use Case:</strong> Collection of related usage scenarios
-                            <ul>
-                                <li>A scenario is a specific instance of a use case</li>
-                            </ul>
-                        </li>
-                    </ul>
-                    
-                    <p><strong>Example:</strong></p>
-                    <p>Use Case: "Request a Chemical"</p>
-                    <ul>
-                        <li>Scenario 1: Request chemical from stockroom</li>
-                        <li>Scenario 2: Request chemical from vendor</li>
-                    </ul>
-                </div>
-                
-                <h3>Representation of Use Cases</h3>
-                
-                <h4>Textual Representation</h4>
-                
-                <p><strong>Narrative Form:</strong> Paragraph focusing on primary scenario and some secondary ones</p>
-                
-                <div class="highlight-box">
-                    <p><em>Example:</em> "A User inserts a card in the card reader slot. The system asks for a personal identification number (PIN). The user enters a PIN. After checking that the user identification is valid, the system asks the user to choose an operation..."</p>
-                    <p>Useful when stakeholders first meet</p>
-                </div>
-                
-                <h4>Visual Representation</h4>
-                
-                <p><strong>Use Case Diagram:</strong> UML diagram showing actors, use cases, and relationships</p>
-                
-                <div class="tip-box">
-                    <h4>Use Case Diagram Elements</h4>
-                    <ul>
-                        <li><strong>Actor:</strong> External entity that interacts with system (stick figure)</li>
-                        <li><strong>Use Case:</strong> System functionality (oval)</li>
-                        <li><strong>Relationships:</strong>
-                            <ul>
-                                <li><strong>&lt;&lt;include&gt;&gt;:</strong> Base use case requires included use case</li>
-                                <li><strong>&lt;&lt;extend&gt;&gt;:</strong> Base use case optionally extended</li>
-                                <li>Association: Actor to use case (line)</li>
-                            </ul>
-                        </li>
-                    </ul>
-                </div>
-                
-                <h3>Use Case Best Practices</h3>
-                
-                <ul>
-                    <li>Use case names written as <strong>verb + object</strong> (e.g., "Buy Ticket", "Register Customer")</li>
-                    <li>Actor names reflect <strong>roles</strong> rather than actual people</li>
-                    <li>Use right level of abstraction</li>
-                </ul>
-                
-                <h3>Use Cases - Strengths & Risks</h3>
-                
-                <div class="highlight-box">
-                    <h4>Strengths:</h4>
-                    <ul>
-                        <li>Users have clearer expectations of what system will do</li>
-                        <li>BAs and developers better understand user's business</li>
-                        <li>Prevents implementation of unneeded functionality</li>
-                        <li>May be turned into object models for OO design</li>
-                    </ul>
-                    
-                    <h4>Risks:</h4>
-                    <ul>
-                        <li>Too many use cases (overwhelming)</li>
-                        <li>Highly complex use cases (hard to understand)</li>
-                    </ul>
-                </div>
-                
-                <div class="past-exam">
-                    <h4>📌 PAST EXAM - Midterm</h4>
-                    <p><strong>Q: Draw a use case diagram for a ticket distributor for a train system. The system includes two actors: traveler and central computer system. Use cases: BuyOneWayTicket, BuyWeeklyCard, BuyMonthlyCard, UpdateTariff. Exceptions: Time-Out, TransactionAborted, DistributorOutOfChange, DistributorOutOfPaper.</strong></p>
-                    <p><em>Students should draw a proper use case diagram with travelers connected to ticket purchase use cases, computer system connected to UpdateTariff, and exception use cases extending from base use cases.</em></p>
-                </div>
-            </div>
-
-            <!-- Misuse Cases -->
-            <div class="section">
-                <h2>⚠️ Misuse Cases</h2>
-                
-                <div class="highlight-box">
-                    <h3>Definition</h3>
-                    <p><strong>Negative scenario:</strong> A scenario whose goal is:</p>
-                    <ul>
-                        <li>Undesirable from business organization's viewpoint</li>
-                        <li>Desirable from hostile agent's viewpoint (not necessarily human)</li>
-                    </ul>
-                    <p><strong>Misuse case:</strong> Captures use cases that a system must be protected against</p>
-                    <ul>
-                        <li>Proposed by Sindre & Opdahl (2000)</li>
-                        <li>Obvious applications for security and risk analysis</li>
-                    </ul>
-                </div>
-                
-                <h3>Finding Misuse Cases - 3 Steps</h3>
-                
-                <ol>
-                    <li><strong>Identify potential misactors</strong> for a given use case diagram
+                    <div class="highlight-box">
+                        <h4>Key Planning Elements</h4>
                         <ul>
-                            <li>Misactor = agent with intentions to harm the system</li>
+                            <li><strong>Objectives:</strong> Why this elicitation? (Overall and individual activity goals)</li>
+                            <li><strong>Strategy & Techniques:</strong> Which stakeholders? Which techniques?</li>
+                            <li><strong>Schedule & Resources:</strong> Coordination with clients/customers and development team</li>
+                            <li><strong>Independent Elicitation:</strong> Start with documents & systems before talking to people</li>
+                            <li><strong>Expected Products:</strong> Use cases, SRS, quality attributes specification, etc.</li>
+                            <li><strong>Risks:</strong> Identify potential factors and ways to overcome them</li>
                         </ul>
-                    </li>
-                    <li><strong>Identify misuse cases</strong> – what would actors do to harm system?
-                        <ul>
-                            <li>Express goals of misactors</li>
-                            <li>Add relationships (&lt;&lt;threaten&gt;&gt;)</li>
-                        </ul>
-                    </li>
-                    <li><strong>Mitigate misuse cases</strong>
-                        <ul>
-                            <li>What would neutralize the threats?</li>
-                            <li>New use cases or secondary scenarios (&lt;&lt;mitigate&gt;&gt;)</li>
-                        </ul>
-                    </li>
-                </ol>
-                
-                <div class="highlight-box">
-                    <h4>Example:</h4>
-                    <p><strong>Normal Use Cases:</strong> Browse Catalog, Register Customer</p>
-                    <p><strong>Misactors:</strong> Competitor, Crook</p>
-                    <p><strong>Misuse Cases:</strong> Flood System, Steal Password</p>
-                    <p><strong>Mitigations:</strong> Block Repeated Registrations, Encrypt Message</p>
-                </div>
-                
-                <h3>Misuse Cases - Benefits & Risks</h3>
-                
-                <div class="highlight-box">
-                    <h4>Benefits:</h4>
-                    <ul>
-                        <li>Elicitation of security and safety requirements</li>
-                        <li>Early identification of threats, mitigations, and exceptions</li>
-                        <li>Early identification of test cases</li>
-                        <li>Documentation of rationales</li>
-                    </ul>
-                    
-                    <h4>Risks:</h4>
-                    <ul>
-                        <li>May lead to premature design solutions during mitigation</li>
-                        <li>Goal should be to find requirements (safety, security), not design</li>
-                        <li>Potential for missing misactors/threats in partial view</li>
-                    </ul>
-                </div>
-                
-                <div class="exam-question">
-                    <h4>📝 Practice Question</h4>
-                    <p><strong>Q: For an online banking system, identify potential misuse cases and their mitigations.</strong></p>
-                    <p><strong>Suggested Answer:</strong></p>
-                    <ul>
-                        <li><strong>Misactor:</strong> Hacker</li>
-                        <li><strong>Misuse Case:</strong> Intercept Transaction Data</li>
-                        <li><strong>Mitigation:</strong> Implement End-to-End Encryption</li>
-                        <li><strong>Misactor:</strong> Identity Thief</li>
-                        <li><strong>Misuse Case:</strong> Bypass Authentication</li>
-                        <li><strong>Mitigation:</strong> Two-Factor Authentication</li>
-                    </ul>
-                </div>
-            </div>
+                    </div>
 
-            <!-- Prototyping -->
-            <div class="section">
-                <h2>🎨 Prototyping</h2>
-                
-                <div class="highlight-box">
-                    <h3>Definition</h3>
-                    <p>A software prototype is a partial, possible, or preliminary implementation of a proposed new product.</p>
-                    <ul>
-                        <li>Can be: static designs or working models</li>
-                        <li>Can be: quick sketches or highly detailed screens</li>
-                        <li>Can be: visual displays or full slices of functionality</li>
-                        <li>Takes a tentative step into the solution space</li>
-                    </ul>
-                </div>
-                
-                <h3>Purpose of Prototyping</h3>
-                
-                <p>Prototypes serve three major purposes (must be clear from beginning!):</p>
-                
-                <ol>
-                    <li><strong>Clarify, complete, and validate requirements</strong> – requirements tool</li>
-                    <li><strong>Explore design alternatives</strong> – design tool</li>
-                    <li><strong>Create a subset that will grow</strong> into ultimate product – construction tool</li>
-                </ol>
-                
-                <h3>Prototype Attributes</h3>
-                
-                <table class="comparison-table">
-                    <thead>
-                        <tr>
-                            <th>Attribute</th>
-                            <th>Options</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><strong>Scope</strong></td>
-                            <td>
-                                • Mock-up (interface only)<br>
-                                • Proof-of-concept (key functionality)
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><strong>Future Use</strong></td>
-                            <td>
-                                • Throwaway (discard after use)<br>
-                                • Evolutionary (grows into product)
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><strong>Form</strong></td>
-                            <td>
-                                • Paper (low-fidelity)<br>
-                                • Electronic (high-fidelity)
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-                
-                <h3>Fidelity Levels</h3>
-                
-                <table class="comparison-table">
-                    <thead>
-                        <tr>
-                            <th>Fidelity</th>
-                            <th>Description</th>
-                            <th>Pros</th>
-                            <th>Cons</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><strong>Low</strong></td>
-                            <td>Static or non-functional</td>
-                            <td>
-                                • Easy, quick, cheap<br>
-                                • Excellent for interfaces
-                            </td>
-                            <td>
-                                • Not interactive<br>
-                                • May deter some stakeholders
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><strong>High</strong></td>
-                            <td>Fully functional</td>
-                            <td>
-                                • Deeper understanding<br>
-                                • More precise decisions
-                            </td>
-                            <td>
-                                • Time consuming & costly<br>
-                                • May be difficult to change
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-                
-                <div class="memory-trick">
-                    <h4>💡 Memory Trick: Fidelity</h4>
-                    <p><strong>Fidelity = How REAL and REACTIVE the prototype is</strong></p>
-                    <p>Low fidelity = Paper sketches (static)</p>
-                    <p>High fidelity = Working software (reactive)</p>
-                </div>
-                
-                <h3>Prototyping - Strengths & Risks</h3>
-                
-                <div class="highlight-box">
-                    <h4>Strengths:</h4>
-                    <ul>
-                        <li>Enhances user involvement</li>
-                        <li>Closes expectation gaps</li>
-                        <li>Resolves uncertainties early in development</li>
-                    </ul>
-                    
-                    <h4>Risks:</h4>
-                    <ul>
-                        <li>Pressure to release the prototype</li>
-                        <li>Distraction by detail</li>
-                        <li>Unrealistic performance expectations</li>
-                        <li>Investing excessive effort in prototypes</li>
-                    </ul>
-                </div>
-                
-                <div class="tip-box">
-                    <h4>✅ Prototyping Success Factors</h4>
-                    <ul>
-                        <li>Include prototyping in project plans</li>
-                        <li>State the purpose before building</li>
-                        <li>Plan to develop multiple prototypes</li>
-                        <li>Create throwaways as quickly and cheaply as possible</li>
-                        <li>Don't prototype requirements you already understand (unless exploring design)</li>
-                        <li>Don't expect prototype to replace written requirements</li>
-                    </ul>
-                </div>
-            </div>
+                    <h3>Step 2: Prepare for Elicitation</h3>
 
-            <!-- Comparison of Techniques -->
-            <div class="section">
-                <h2>📊 Comparison of Elicitation Techniques</h2>
-                
-                <table class="comparison-table">
-                    <thead>
-                        <tr>
-                            <th>Technique</th>
-                            <th>Good For</th>
-                            <th>Plus</th>
-                            <th>Minus</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><strong>Questionnaires</strong></td>
-                            <td>Specific questions</td>
-                            <td>Reach many people with low resources</td>
-                            <td>Design crucial; low response rate; may not get desired responses</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Interviews</strong></td>
-                            <td>Exploring issues</td>
-                            <td>Guide interviewee; encourages contact</td>
-                            <td>Time consuming; artificial environment</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Focus Groups</strong></td>
-                            <td>Multiple viewpoints</td>
-                            <td>Highlights consensus/conflict; encourages contact</td>
-                            <td>Time consuming</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Observation</strong></td>
-                            <td>Understanding context</td>
-                            <td>Insight that other techniques can't give</td>
-                            <td>Very time consuming; huge amounts of data</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Document Analysis</strong></td>
-                            <td>Learning procedures/standards</td>
-                            <td>No time commitment from users</td>
-                            <td>Day-to-day work differs from documented procedures</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Factors for Choosing Techniques -->
-            <div class="section">
-                <h2>🎯 Factors for Choosing Elicitation Techniques</h2>
-                
-                <div class="highlight-box">
-                    <p>When choosing appropriate elicitation techniques, consider:</p>
-                    <ol>
-                        <li><strong>Nature of information being elicited</strong>
+                    <ul>
+                        <li><strong>Decide on scope:</strong> Topics, questions, process flows, or use cases</li>
+                        <li><strong>Create agenda:</strong> Topics to be covered, assigned time, objectives</li>
+                        <li><strong>Prepare resources:</strong> Physical space, participants, documentation, systems</li>
+                        <li><strong>Identify stakeholders:</strong> Learn about cultural, regional, language preferences</li>
+                        <li><strong>Prepare questions:</strong> Imagine learning the user's job
                             <ul>
-                                <li>Conscious, unconscious, or subconscious requirements?</li>
+                                <li>What else could...?</li>
+                                <li>What happens when...?</li>
+                                <li>Would you ever need to...?</li>
+                                <li>Where do you get...?</li>
+                                <li>Why do you (or don't you)...?</li>
+                                <li>Does anyone ever...?</li>
                             </ul>
                         </li>
-                        <li><strong>Time and budget constraints</strong></li>
-                        <li><strong>Availability of stakeholders</strong></li>
-                        <li><strong>Experience of BA</strong> with particular techniques</li>
-                    </ol>
-                </div>
-                
-                <div class="memory-trick">
-                    <h4>💡 Memory Trick: N-T-A-E</h4>
-                    <p><strong>N</strong>ature of information</p>
-                    <p><strong>T</strong>ime & budget</p>
-                    <p><strong>A</strong>vailability of stakeholders</p>
-                    <p><strong>E</strong>xperience of BA</p>
-                </div>
-            </div>
+                        <li><strong>Draft analysis models:</strong> Use cases, process flows (straw man models)</li>
+                    </ul>
 
-            <!-- Best Practices -->
-            <div class="section">
-                <h2>✨ Requirements Elicitation Best Practices</h2>
-                
-                <div class="highlight-box">
+                    <h3>Step 3: Performing Elicitation Activities</h3>
+
+                    <div class="tip-box">
+                        <h4>✅ Best Practice: Take Good Notes</h4>
+                        <p>Document:</p>
+                        <ul>
+                            <li>Attendees</li>
+                            <li>Decisions made</li>
+                            <li>Actions to be taken and who is responsible</li>
+                            <li>Outstanding issues</li>
+                            <li>Key points</li>
+                        </ul>
+                    </div>
+
+                    <h3>Step 4: Following Up After Elicitation</h3>
+
+                    <h4>Organize and Share Notes</h4>
                     <ul>
-                        <li>✓ Define product vision and project scope</li>
-                        <li>✓ Identify user classes and their characteristics</li>
-                        <li>✓ Select a product champion for each user class</li>
-                        <li>✓ Conduct focus groups with typical users</li>
-                        <li>✓ Work with user representatives to identify user requirements</li>
-                        <li>✓ Identify system events and responses</li>
-                        <li>✓ Hold elicitation interviews</li>
-                        <li>✓ Hold facilitated elicitation workshops</li>
-                        <li>✓ Observe users performing their jobs</li>
-                        <li>✓ Distribute questionnaires</li>
-                        <li>✓ Perform document analysis</li>
-                        <li>✓ Examine problems of current system</li>
-                        <li>✓ Reuse existing requirements</li>
+                        <li>Review and update <strong>right after session</strong></li>
+                        <li>Consolidate input from multiple sources</li>
+                        <li>Edit notes with care</li>
+                        <li>Keep originals</li>
+                        <li>Review with stakeholders</li>
+                    </ul>
+
+                    <h4>Document Open Issues</h4>
+                    <ul>
+                        <li>Items that need to be further explored</li>
+                        <li>Gaps that need to be closed</li>
                     </ul>
                 </div>
-            </div>
 
-            <!-- Final Remarks -->
-            <div class="section">
-                <h2>🎓 Final Remarks</h2>
-                
-                <div class="highlight-box">
-                    <p><strong>Remember:</strong></p>
-                    <ul>
-                        <li>Requirements elicitation is perhaps the most <strong>challenging, critical, error-prone, and communication-intensive</strong> aspect of software development</li>
-                        <li>Try to <strong>extract the essence</strong> of stakeholders' requirements</li>
-                        <li><strong>Invent new ways</strong> for users to better perform their tasks</li>
-                        <li>Elicitation is <strong>incremental and iterative</strong></li>
-                        <li>No single technique is best—use a <strong>combination</strong> based on context</li>
-                    </ul>
+                <!-- Classifying Customer Input -->
+                <div class="section">
+                    <h2>🔍 Classifying Customer Input</h2>
+
+                    <p>Not everything stakeholders say is a requirement. Learn to distinguish:</p>
+
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Type</th>
+                                <th>Example</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><strong>Business Requirement</strong></td><td>"Save SAR X/year on electricity"</td></tr>
+                            <tr><td><strong>User Requirement</strong></td><td>"I need to print a mailing label"</td></tr>
+                            <tr><td><strong>Business Rule</strong></td><td>"Time-off approvals must comply with HR vacation policy"</td></tr>
+                            <tr><td><strong>Functional Requirement</strong></td><td>"The user must be able to sort the project list alphabetically"</td></tr>
+                            <tr><td><strong>Quality Attribute</strong></td><td>"The mobile software must respond quickly to touch commands"</td></tr>
+                            <tr><td><strong>External Interface</strong></td><td>"Files submitted electronically cannot exceed 10 MB"</td></tr>
+                            <tr><td><strong>Solution Idea</strong></td><td>"Select state from drop-down list"</td></tr>
+                            <tr><td><strong>Data Definition</strong></td><td>"ZIP code has 5 digits + optional 4 digits"</td></tr>
+                        </tbody>
+                    </table>
                 </div>
-            </div>
 
-            <!-- Practice Questions -->
-            <div class="section">
-                <h2>📝 Practice Questions</h2>
-                
-                <div class="exam-question">
-                    <h4>Question 1</h4>
-                    <p>List the four steps of the requirements elicitation process and briefly describe each.</p>
-                    <p><strong>Answer:</strong></p>
+                <!-- When Are We Done? -->
+                <div class="section">
+                    <h2>🏁 When Are We Done with Elicitation?</h2>
+
+                    <div class="highlight-box">
+                        <p>Signs you're reaching completion:</p>
+                        <ul>
+                            <li>✓ Users can't think of any more use cases or user stories</li>
+                            <li>✓ Users propose new scenarios that don't lead to new functional requirements</li>
+                            <li>✓ Users repeat issues previously covered</li>
+                            <li>✓ Suggested new features/requirements are all <strong>out of scope</strong></li>
+                            <li>✓ Proposed new requirements are all <strong>low priority</strong></li>
+                            <li>✓ Developers and testers reviewing requirements have <strong>few questions</strong></li>
+                        </ul>
+                    </div>
+
+                    <div class="tip-box">
+                        <h4>💡 Remember</h4>
+                        <p>You'll <strong>never</strong> be completely done, but these signs suggest you're reaching a good stopping point for the current iteration.</p>
+                    </div>
+                </div>
+
+                <!-- Elicitation Challenges -->
+                <div class="section">
+                    <h2>⚠️ Elicitation Challenges</h2>
+
+                    <h3>Sources of Challenge & Mitigations</h3>
+
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Source</th>
+                                <th>Challenges</th>
+                                <th>Mitigations</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Scope</strong></td>
+                                <td>• Inadequately defined<br>• Incorrectly defined<br>• Hard to maintain focus</td>
+                                <td>• Re-check scope before delving in<br>• Use "in-scope" and "out-of-scope" labels</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Requirements</strong></td>
+                                <td>• Assumed requirements<br>• Implied requirements<br>• Missing requirements</td>
+                                <td>• Ask "What are we assuming here?"<br>• Analyze requirements systematically</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Business Analyst</strong></td>
+                                <td>• Lack of expertise<br>• Lack of domain knowledge</td>
+                                <td>• Research domain<br>• Consult others</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Stakeholders</strong></td>
+                                <td>• Uncertainty<br>• Limited technical knowledge<br>• Availability issues<br>• Cooperation problems<br>• Conflicts</td>
+                                <td>• BA's interpersonal skills<br>• Communication skills<br>• Interviewing techniques</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="past-exam">
+                        <h4>📌 PAST EXAM - Major 1</h4>
+                        <p><strong>Q:</strong> Collecting quality requirements is considered problematic, discuss what problems we may face as RE when collecting and specifying such requirements</p>
+                        <p><strong>Sample Answer:</strong></p>
+                        <ul>
+                            <li>We lack the right expertise for many professions</li>
+                            <li>Not many experienced software engineers or domain experts are always available</li>
+                            <li>Extracting requirements from stakeholders can be problematic as stakeholders are not always available</li>
+                            <li>Many stakeholders may view our presence as a threat to their job and thus will not cooperate</li>
+                            <li>Many important areas in requirements can be difficult to specify clearly</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Elicitation Techniques -->
+                <div class="section">
+                    <h2>🛠️ Requirements Elicitation Techniques</h2>
+
+                    <div class="highlight-box">
+                        <h3>Two Categories</h3>
+                        <ul>
+                            <li><strong>Facilitated (Interactive):</strong> Work with stakeholders directly
+                                <ul><li>Primarily focus on discovering <strong>user and business requirements</strong></li></ul>
+                            </li>
+                            <li><strong>Independent:</strong> Work on your own
+                                <ul><li>Focus on discovering needed functionality users might not be aware of</li></ul>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <h3>Facilitated Techniques</h3>
+
+                    <h4>1. Interviews</h4>
+                    <p>One-on-one or small group sessions with stakeholders.</p>
+
+                    <div class="highlight-box">
+                        <h4>Strengths:</h4>
+                        <ul>
+                            <li>Effective for getting to know application domain quickly</li>
+                            <li>Interviewees more comfortable sharing thoughts than in workshops</li>
+                            <li>Easier to establish user involvement</li>
+                            <li>Suitable for busy executives</li>
+                        </ul>
+                    </div>
+
+                    <div class="tip-box">
+                        <h4>✅ Interview Tips</h4>
+                        <ol>
+                            <li><strong>Acquire background knowledge:</strong> Domain, interviewee's work</li>
+                            <li><strong>Prepare questions:</strong> Have structured questions ready</li>
+                            <li><strong>Establish rapport:</strong> Introduce yourself, review agenda</li>
+                            <li><strong>Stay in scope:</strong> Keep focused on objectives</li>
+                            <li><strong>Suggest ideas:</strong> Don't just listen—actively contribute</li>
+                            <li><strong>Listen actively:</strong> Paraphrase to confirm understanding</li>
+                        </ol>
+                    </div>
+
+                    <div class="memory-trick">
+                        <h4>💡 Interview Example</h4>
+                        <p><strong>User:</strong> "My elevators are too slow!"</p>
+                        <p><strong>Bad Response:</strong> "I don't think so. I think you have an elevator throughput problem, not a speed problem."</p>
+                        <p><strong>Good Response:</strong> "I see. Tell me why you feel they are too slow."</p>
+                        <p><em>Lesson: Never contradict directly—explore the user's perspective!</em></p>
+                    </div>
+
+                    <h4>2. Workshops</h4>
+                    <p>Facilitated, structured meetings with multiple stakeholders concurrently.</p>
+
+                    <div class="highlight-box">
+                        <p><em>"Facilitation is the art of leading people through processes toward agreed-upon objectives in a manner that encourages participation, ownership, and productivity from all involved"</em> - Sibbet, 1994</p>
+                    </div>
+
+                    <div class="highlight-box">
+                        <h4>Strengths:</h4>
+                        <ul>
+                            <li>Effective in solving disagreements</li>
+                            <li>Suitable for tight schedules</li>
+                            <li>Multiple viewpoints gathered at once</li>
+                        </ul>
+                    </div>
+
+                    <div class="tip-box">
+                        <h4>✅ Workshop Tips</h4>
+                        <ol>
+                            <li><strong>Establish ground rules</strong> and enforce them</li>
+                            <li><strong>Fill all team roles:</strong> Facilitator, scribe, etc.</li>
+                            <li><strong>Plan an agenda:</strong> Structured approach</li>
+                            <li><strong>Stay in scope:</strong> Don't let discussions wander</li>
+                            <li><strong>Use parking lots:</strong> Capture items for later consideration</li>
+                            <li><strong>Timebox discussions:</strong> Keep momentum</li>
+                            <li><strong>Keep team small:</strong> But include right stakeholders</li>
+                            <li><strong>Keep everyone engaged:</strong> Watch for dominators!</li>
+                        </ol>
+                    </div>
+
+                    <h4>3. Focus Groups</h4>
+                    <p>Representative group of users who generate input on functional and quality requirements.</p>
+
+                    <div class="highlight-box">
+                        <h4>Strengths:</h4>
+                        <ul><li>Valuable for developing commercial products</li><li>Explores users' attitudes, impressions, preferences, needs</li></ul>
+                        <h4>Key Points:</h4>
+                        <ul>
+                            <li>Keep them on topic without influencing opinions</li>
+                            <li>Include users from different user classes or same class (multiple sessions)</li>
+                            <li>Participants normally don't have decision-making authority</li>
+                            <li>Generates subjective feedback for further evaluation</li>
+                        </ul>
+                    </div>
+
+                    <h4>4. Observations</h4>
+                    <p>Shadow important users as they do their work—"in the wild."</p>
+
+                    <div class="highlight-box">
+                        <h4>Strengths:</h4>
+                        <ul><li>Useful for important or high-risk tasks</li><li>Facilitates requirements validation</li><li>Identifies new topics for interviews</li></ul>
+                        <h4>Methods:</h4>
+                        <ul>
+                            <li>Silent observation</li>
+                            <li>Interactive (ask questions)</li>
+                            <li>May be supplemented with questionnaires/interviews</li>
+                            <li>Time-consuming but valuable</li>
+                        </ul>
+                    </div>
+
+                    <h4>5. Questionnaires</h4>
+                    <p>Survey large groups to understand their needs.</p>
+
+                    <div class="highlight-box">
+                        <h4>Strengths:</h4>
+                        <ul><li>Inexpensive</li><li>Suitable for large user populations</li><li>Easily administered across geographical boundaries</li></ul>
+                    </div>
+
+                    <div class="tip-box">
+                        <h4>✅ Questionnaire Tips</h4>
+                        <ol>
+                            <li><strong>Cover full set of possible responses</strong></li>
+                            <li><strong>Make answer choices mutually exclusive and exhaustive</strong></li>
+                            <li><strong>Avoid suggestive questions</strong></li>
+                            <li><strong>Use scales consistently</strong></li>
+                            <li><strong>Use closed questions</strong> with choices for statistical analysis</li>
+                            <li><strong>Consult an expert</strong> on questionnaire design</li>
+                            <li><strong>Test the questionnaire</strong> before distribution</li>
+                            <li><strong>Avoid asking too many questions</strong> (fatigue)</li>
+                        </ol>
+                    </div>
+
+                    <h3>Independent Techniques</h3>
+
+                    <h4>6. System Interface Analysis</h4>
+                    <p>Examine systems to which your system connects.</p>
+
+                    <div class="highlight-box">
+                        <ul>
+                            <li>Reveals functional requirements for data/service exchange</li>
+                            <li>Consult context diagrams and ecosystem maps</li>
+                            <li>Identify functionality in other systems that may lead to requirements</li>
+                        </ul>
+                    </div>
+
+                    <h4>7. User Interface Analysis</h4>
+                    <p>Study existing systems to discover user and functional requirements.</p>
+
+                    <div class="highlight-box">
+                        <h4>Strengths:</h4>
+                        <ul>
+                            <li>Suitable for building new version of existing system</li>
+                            <li>Facilitates identification of improvement areas</li>
+                            <li>Relates user input to reality</li>
+                        </ul>
+                        <h4>Important:</h4>
+                        <p>Don't assume you need to stick to all features of the existing UI for next implementation!</p>
+                    </div>
+
+                    <h4>8. Document Analysis</h4>
+                    <p>Examine any existing documentation for potential requirements.</p>
+
+                    <div class="highlight-box">
+                        <ul>
+                            <li>Good way to get up to speed on existing system or new domain</li>
+                            <li>Documents might not be up to date</li>
+                            <li>User manuals, guides, memos, change histories, etc.</li>
+                        </ul>
+                    </div>
+
+                    <div class="past-exam">
+                        <h4>📌 PAST EXAM - Major 1 (Riyadh Seasons)</h4>
+                        <p><strong>Q:</strong> How can you gather further requirements? Mention three different elicitation methods. For each, explain: (i) Why suitable? (ii) What stakeholders? (iii) How to implement?</p>
+
+                        <p><strong>Sample Answer 1: Analyze Existing Systems</strong></p>
+                        <ul>
+                            <li><strong>Why:</strong> Many cities have developed similar event systems. We can learn from others without reinventing the wheel.</li>
+                            <li><strong>Stakeholders:</strong> Most appropriate for organizers</li>
+                            <li><strong>Implementation:</strong> Task teams to examine current systems and extract requirements, then sit with organizers to see if extracted requirements fit their needs and wants.</li>
+                        </ul>
+
+                        <p><strong>Sample Answer 2: Interviews</strong></p>
+                        <ul>
+                            <li><strong>Why:</strong> Very important to gather ideas and opinions of all stakeholders to understand what they have in mind. Can't develop without their input.</li>
+                            <li><strong>Stakeholders:</strong> Appropriate for all stakeholders</li>
+                            <li><strong>Implementation:</strong> Conduct interviews with organizers, Secure Payment Inc., and customers to understand what they want and need in the system.</li>
+                        </ul>
+
+                        <p><strong>Sample Answer 3: Prototyping</strong></p>
+                        <ul>
+                            <li><strong>Why:</strong> Prototypes help discover new requirements that stakeholders didn't know existed. Not all can state requirements off the top of their head.</li>
+                            <li><strong>Stakeholders:</strong> Most appropriate for organizers and customers</li>
+                            <li><strong>Implementation:</strong> Create prototypes, have stakeholders use them, examine reactions and facial gestures, then get verbal feedback to extract requirements.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Use Cases -->
+                <div class="section">
+                    <h2>📝 Use Cases</h2>
+
+                    <div class="highlight-box">
+                        <h3>Definition</h3>
+                        <p>A <strong>use case</strong> is a sequence of interactions between a system and an external actor that results in the actor being able to achieve some outcome of value.</p>
+                        <ul>
+                            <li>User-centric and usage-centric technique</li>
+                            <li>Shifts from product-centric perspective ("what do you want the system to do?") to user-centric perspective ("what do you need to accomplish?")</li>
+                        </ul>
+                    </div>
+
+                    <h3>Usage Scenario vs. Use Case</h3>
+
+                    <div class="highlight-box">
+                        <ul>
+                            <li><strong>Scenario:</strong> Description of a single instance of usage
+                                <ul><li>Specific actor, at specific time, with specific data</li></ul>
+                            </li>
+                            <li><strong>Use Case:</strong> Collection of related usage scenarios
+                                <ul><li>A scenario is a specific instance of a use case</li></ul>
+                            </li>
+                        </ul>
+
+                        <p><strong>Example:</strong></p>
+                        <p>Use Case: "Request a Chemical"</p>
+                        <ul>
+                            <li>Scenario 1: Request chemical from stockroom</li>
+                            <li>Scenario 2: Request chemical from vendor</li>
+                        </ul>
+                    </div>
+
+                    <h3>Representation of Use Cases</h3>
+
+                    <h4>Textual Representation</h4>
+                    <p><strong>Narrative Form:</strong> Paragraph focusing on primary scenario and some secondary ones</p>
+
+                    <div class="highlight-box">
+                        <p><em>Example:</em> "A User inserts a card in the card reader slot. The system asks for a personal identification number (PIN). The user enters a PIN. After checking that the user identification is valid, the system asks the user to choose an operation..."</p>
+                        <p>Useful when stakeholders first meet</p>
+                    </div>
+
+                    <h4>Visual Representation</h4>
+                    <p><strong>Use Case Diagram:</strong> UML diagram showing actors, use cases, and relationships</p>
+
+                    <div class="tip-box">
+                        <h4>Use Case Diagram Elements</h4>
+                        <ul>
+                            <li><strong>Actor:</strong> External entity that interacts with system (stick figure)</li>
+                            <li><strong>Use Case:</strong> System functionality (oval)</li>
+                            <li><strong>Relationships:</strong>
+                                <ul>
+                                    <li><strong>&lt;&lt;include&gt;&gt;:</strong> Base use case requires included use case</li>
+                                    <li><strong>&lt;&lt;extend&gt;&gt;:</strong> Base use case optionally extended</li>
+                                    <li>Association: Actor to use case (line)</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <h3>Use Case Best Practices</h3>
+
+                    <ul>
+                        <li>Use case names written as <strong>verb + object</strong> (e.g., "Buy Ticket", "Register Customer")</li>
+                        <li>Actor names reflect <strong>roles</strong> rather than actual people</li>
+                        <li>Use right level of abstraction</li>
+                    </ul>
+
+                    <h3>Use Cases - Strengths & Risks</h3>
+
+                    <div class="highlight-box">
+                        <h4>Strengths:</h4>
+                        <ul>
+                            <li>Users have clearer expectations of what system will do</li>
+                            <li>BAs and developers better understand user's business</li>
+                            <li>Prevents implementation of unneeded functionality</li>
+                            <li>May be turned into object models for OO design</li>
+                        </ul>
+
+                        <h4>Risks:</h4>
+                        <ul>
+                            <li>Too many use cases (overwhelming)</li>
+                            <li>Highly complex use cases (hard to understand)</li>
+                        </ul>
+                    </div>
+
+                    <div class="past-exam">
+                        <h4>📌 PAST EXAM - Midterm</h4>
+                        <p><strong>Q:</strong> Draw a use case diagram for a ticket distributor for a train system. The system includes two actors: traveler and central computer system. Use cases: BuyOneWayTicket, BuyWeeklyCard, BuyMonthlyCard, UpdateTariff. Exceptions: Time-Out, TransactionAborted, DistributorOutOfChange, DistributorOutOfPaper.</p>
+                        <p><em>Students should draw a proper use case diagram with travelers connected to ticket purchase use cases, computer system connected to UpdateTariff, and exception use cases extending from base use cases.</em></p>
+                    </div>
+                </div>
+
+                <!-- Misuse Cases -->
+                <div class="section">
+                    <h2>⚠️ Misuse Cases</h2>
+
+                    <div class="highlight-box">
+                        <h3>Definition</h3>
+                        <p><strong>Negative scenario:</strong> A scenario whose goal is:</p>
+                        <ul>
+                            <li>Undesirable from business organization's viewpoint</li>
+                            <li>Desirable from hostile agent's viewpoint (not necessarily human)</li>
+                        </ul>
+                        <p><strong>Misuse case:</strong> Captures use cases that a system must be protected against</p>
+                        <ul>
+                            <li>Proposed by Sindre & Opdahl (2000)</li>
+                            <li>Obvious applications for security and risk analysis</li>
+                        </ul>
+                    </div>
+
+                    <h3>Finding Misuse Cases - 3 Steps</h3>
+
                     <ol>
-                        <li><strong>Plan:</strong> Define objectives, select strategies/techniques, schedule resources, identify risks, and expected products</li>
-                        <li><strong>Prepare:</strong> Decide on scope and agenda, prepare resources, identify stakeholders, prepare questions, draft models</li>
-                        <li><strong>Perform:</strong> Execute elicitation activities and take good notes (attendees, decisions, actions, issues, key points)</li>
-                        <li><strong>Follow Up:</strong> Organize and share notes, document open issues, review with stakeholders</li>
+                        <li><strong>Identify potential misactors</strong> for a given use case diagram
+                            <ul><li>Misactor = agent with intentions to harm the system</li></ul>
+                        </li>
+                        <li><strong>Identify misuse cases</strong> – what would actors do to harm system?
+                            <ul>
+                                <li>Express goals of misactors</li>
+                                <li>Add relationships (&lt;&lt;threaten&gt;&gt;)</li>
+                            </ul>
+                        </li>
+                        <li><strong>Mitigate misuse cases</strong>
+                            <ul>
+                                <li>What would neutralize the threats?</li>
+                                <li>New use cases or secondary scenarios (&lt;&lt;mitigate&gt;&gt;)</li>
+                            </ul>
+                        </li>
                     </ol>
+
+                    <div class="highlight-box">
+                        <h4>Example:</h4>
+                        <p><strong>Normal Use Cases:</strong> Browse Catalog, Register Customer</p>
+                        <p><strong>Misactors:</strong> Competitor, Crook</p>
+                        <p><strong>Misuse Cases:</strong> Flood System, Steal Password</p>
+                        <p><strong>Mitigations:</strong> Block Repeated Registrations, Encrypt Message</p>
+                    </div>
+
+                    <h3>Misuse Cases - Benefits & Risks</h3>
+
+                    <div class="highlight-box">
+                        <h4>Benefits:</h4>
+                        <ul>
+                            <li>Elicitation of security and safety requirements</li>
+                            <li>Early identification of threats, mitigations, and exceptions</li>
+                            <li>Early identification of test cases</li>
+                            <li>Documentation of rationales</li>
+                        </ul>
+
+                        <h4>Risks:</h4>
+                        <ul>
+                            <li>May lead to premature design solutions during mitigation</li>
+                            <li>Goal should be to find requirements (safety, security), not design</li>
+                            <li>Potential for missing misactors/threats in partial view</li>
+                        </ul>
+                    </div>
+
+                    <div class="exam-question">
+                        <h4>📝 Practice Question</h4>
+                        <p><strong>Q:</strong> For an online banking system, identify potential misuse cases and their mitigations.</p>
+                        <p><strong>Suggested Answer:</strong></p>
+                        <ul>
+                            <li><strong>Misactor:</strong> Hacker</li>
+                            <li><strong>Misuse Case:</strong> Intercept Transaction Data</li>
+                            <li><strong>Mitigation:</strong> Implement End-to-End Encryption</li>
+                            <li><strong>Misactor:</strong> Identity Thief</li>
+                            <li><strong>Misuse Case:</strong> Bypass Authentication</li>
+                            <li><strong>Mitigation:</strong> Two-Factor Authentication</li>
+                        </ul>
+                    </div>
                 </div>
-                
-                <div class="exam-question">
-                    <h4>Question 2</h4>
-                    <p>What are the main differences between interviews and workshops as elicitation techniques?</p>
-                    <p><strong>Answer:</strong></p>
-                    <ul>
-                        <li><strong>Interviews:</strong> One-on-one or small group; interviewees more comfortable sharing; easier to establish rapport; suitable for busy executives; good for getting to know domain quickly</li>
-                        <li><strong>Workshops:</strong> Multiple stakeholders concurrently; facilitated and structured; effective in solving disagreements; suitable for tight schedules; requires careful facilitation to prevent domination</li>
-                    </ul>
-                </div>
-                
-                <div class="exam-question">
-                    <h4>Question 3</h4>
-                    <p>Explain the difference between a use case and a usage scenario with an example.</p>
-                    <p><strong>Answer:</strong></p>
-                    <ul>
-                        <li><strong>Use Case:</strong> Collection of related usage scenarios describing interactions to achieve an outcome of value (e.g., "Withdraw Cash from ATM")</li>
-                        <li><strong>Usage Scenario:</strong> Single instance of a use case with specific actor, time, and data (e.g., "Customer John withdraws SAR 500 from ATM on Jan 7, 2026 at 3:00 PM using his debit card")</li>
-                    </ul>
-                </div>
-                
-                <div class="exam-question">
-                    <h4>Question 4</h4>
-                    <p>What factors should be considered when choosing elicitation techniques?</p>
-                    <p><strong>Answer (N-T-A-E):</strong></p>
+
+                <!-- Prototyping -->
+                <div class="section">
+                    <h2>🎨 Prototyping</h2>
+
+                    <div class="highlight-box">
+                        <h3>Definition</h3>
+                        <p>A software prototype is a partial, possible, or preliminary implementation of a proposed new product.</p>
+                        <ul>
+                            <li>Can be: static designs or working models</li>
+                            <li>Can be: quick sketches or highly detailed screens</li>
+                            <li>Can be: visual displays or full slices of functionality</li>
+                            <li>Takes a tentative step into the solution space</li>
+                        </ul>
+                    </div>
+
+                    <h3>Purpose of Prototyping</h3>
+
+                    <p>Prototypes serve three major purposes (must be clear from beginning!):</p>
+
                     <ol>
-                        <li><strong>Nature</strong> of information: Conscious, unconscious, or subconscious requirements</li>
-                        <li><strong>Time</strong> and budget constraints</li>
-                        <li><strong>Availability</strong> of stakeholders</li>
-                        <li><strong>Experience</strong> of BA with particular techniques</li>
+                        <li><strong>Clarify, complete, and validate requirements</strong> – requirements tool</li>
+                        <li><strong>Explore design alternatives</strong> – design tool</li>
+                        <li><strong>Create a subset that will grow</strong> into ultimate product – construction tool</li>
                     </ol>
+
+                    <h3>Prototype Attributes</h3>
+
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Attribute</th>
+                                <th>Options</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Scope</strong></td>
+                                <td>• Mock-up (interface only)<br>• Proof-of-concept (key functionality)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Future Use</strong></td>
+                                <td>• Throwaway (discard after use)<br>• Evolutionary (grows into product)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Form</strong></td>
+                                <td>• Paper (low-fidelity)<br>• Electronic (high-fidelity)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h3>Fidelity Levels</h3>
+
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Fidelity</th>
+                                <th>Description</th>
+                                <th>Pros</th>
+                                <th>Cons</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Low</strong></td>
+                                <td>Static or non-functional</td>
+                                <td>• Easy, quick, cheap<br>• Excellent for interfaces</td>
+                                <td>• Not interactive<br>• May deter some stakeholders</td>
+                            </tr>
+                            <tr>
+                                <td><strong>High</strong></td>
+                                <td>Fully functional</td>
+                                <td>• Deeper understanding<br>• More precise decisions</td>
+                                <td>• Time consuming & costly<br>• May be difficult to change</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="memory-trick">
+                        <h4>💡 Memory Trick: Fidelity</h4>
+                        <p><strong>Fidelity = How REAL and REACTIVE the prototype is</strong></p>
+                        <p>Low fidelity = Paper sketches (static)</p>
+                        <p>High fidelity = Working software (reactive)</p>
+                    </div>
+
+                    <h3>Prototyping - Strengths & Risks</h3>
+
+                    <div class="highlight-box">
+                        <h4>Strengths:</h4>
+                        <ul>
+                            <li>Enhances user involvement</li>
+                            <li>Closes expectation gaps</li>
+                            <li>Resolves uncertainties early in development</li>
+                        </ul>
+
+                        <h4>Risks:</h4>
+                        <ul>
+                            <li>Pressure to release the prototype</li>
+                            <li>Distraction by detail</li>
+                            <li>Unrealistic performance expectations</li>
+                            <li>Investing excessive effort in prototypes</li>
+                        </ul>
+                    </div>
+
+                    <div class="tip-box">
+                        <h4>✅ Prototyping Success Factors</h4>
+                        <ul>
+                            <li>Include prototyping in project plans</li>
+                            <li>State the purpose before building</li>
+                            <li>Plan to develop multiple prototypes</li>
+                            <li>Create throwaways as quickly and cheaply as possible</li>
+                            <li>Don't prototype requirements you already understand (unless exploring design)</li>
+                            <li>Don't expect prototype to replace written requirements</li>
+                        </ul>
+                    </div>
                 </div>
-                
-                <div class="exam-question">
-                    <h4>Question 5</h4>
-                    <p>Describe the three-step process for finding misuse cases.</p>
-                    <p><strong>Answer:</strong></p>
-                    <ol>
-                        <li><strong>Step 1:</strong> Start from normal use case diagram and identify potential misactors (hostile roles)</li>
-                        <li><strong>Step 2:</strong> Ask what would misactor do to harm system, express goals, add &lt;&lt;threaten&gt;&gt; relationships</li>
-                        <li><strong>Step 3:</strong> Mitigate misuse cases by asking what would neutralize threats, add new use cases or scenarios with &lt;&lt;mitigate&gt;&gt; relationships</li>
-                    </ol>
+
+                <!-- Comparison of Techniques -->
+                <div class="section">
+                    <h2>📊 Comparison of Elicitation Techniques</h2>
+
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Technique</th>
+                                <th>Good For</th>
+                                <th>Plus</th>
+                                <th>Minus</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Questionnaires</strong></td>
+                                <td>Specific questions</td>
+                                <td>Reach many people with low resources</td>
+                                <td>Design crucial; low response rate; may not get desired responses</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Interviews</strong></td>
+                                <td>Exploring issues</td>
+                                <td>Guide interviewee; encourages contact</td>
+                                <td>Time consuming; artificial environment</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Focus Groups</strong></td>
+                                <td>Multiple viewpoints</td>
+                                <td>Highlights consensus/conflict; encourages contact</td>
+                                <td>Time consuming</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Observation</strong></td>
+                                <td>Understanding context</td>
+                                <td>Insight that other techniques can't give</td>
+                                <td>Very time consuming; huge amounts of data</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Document Analysis</strong></td>
+                                <td>Learning procedures/standards</td>
+                                <td>No time commitment from users</td>
+                                <td>Day-to-day work differs from documented procedures</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
+
+                <!-- Factors for Choosing Techniques -->
+                <div class="section">
+                    <h2>🎯 Factors for Choosing Elicitation Techniques</h2>
+
+                    <div class="highlight-box">
+                        <p>When choosing appropriate elicitation techniques, consider:</p>
+                        <ol>
+                            <li><strong>Nature of information being elicited</strong>
+                                <ul><li>Conscious, unconscious, or subconscious requirements?</li></ul>
+                            </li>
+                            <li><strong>Time and budget constraints</strong></li>
+                            <li><strong>Availability of stakeholders</strong></li>
+                            <li><strong>Experience of BA</strong> with particular techniques</li>
+                        </ol>
+                    </div>
+
+                    <div class="memory-trick">
+                        <h4>💡 Memory Trick: N-T-A-E</h4>
+                        <p><strong>N</strong>ature of information</p>
+                        <p><strong>T</strong>ime & budget</p>
+                        <p><strong>A</strong>vailability of stakeholders</p>
+                        <p><strong>E</strong>xperience of BA</p>
+                    </div>
+                </div>
+
+                <!-- Best Practices -->
+                <div class="section">
+                    <h2>✨ Requirements Elicitation Best Practices</h2>
+
+                    <div class="highlight-box">
+                        <ul>
+                            <li>✓ Define product vision and project scope</li>
+                            <li>✓ Identify user classes and their characteristics</li>
+                            <li>✓ Select a product champion for each user class</li>
+                            <li>✓ Conduct focus groups with typical users</li>
+                            <li>✓ Work with user representatives to identify user requirements</li>
+                            <li>✓ Identify system events and responses</li>
+                            <li>✓ Hold elicitation interviews</li>
+                            <li>✓ Hold facilitated elicitation workshops</li>
+                            <li>✓ Observe users performing their jobs</li>
+                            <li>✓ Distribute questionnaires</li>
+                            <li>✓ Perform document analysis</li>
+                            <li>✓ Examine problems of current system</li>
+                            <li>✓ Reuse existing requirements</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Final Remarks -->
+                <div class="section">
+                    <h2>🎓 Final Remarks</h2>
+
+                    <div class="highlight-box">
+                        <p><strong>Remember:</strong></p>
+                        <ul>
+                            <li>Requirements elicitation is perhaps the most <strong>challenging, critical, error-prone, and communication-intensive</strong> aspect of software development</li>
+                            <li>Try to <strong>extract the essence</strong> of stakeholders' requirements</li>
+                            <li><strong>Invent new ways</strong> for users to better perform their tasks</li>
+                            <li>Elicitation is <strong>incremental and iterative</strong></li>
+                            <li>No single technique is best—use a <strong>combination</strong> based on context</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Practice Questions -->
+                <div class="section">
+                    <h2>📝 Practice Questions</h2>
+
+                    <div class="exam-question">
+                        <h4>Question 1</h4>
+                        <p>List the four steps of the requirements elicitation process and briefly describe each.</p>
+                        <p><strong>Answer:</strong></p>
+                        <ol>
+                            <li><strong>Plan:</strong> Define objectives, select strategies/techniques, schedule resources, identify risks, and expected products</li>
+                            <li><strong>Prepare:</strong> Decide on scope and agenda, prepare resources, identify stakeholders, prepare questions, draft models</li>
+                            <li><strong>Perform:</strong> Execute elicitation activities and take good notes (attendees, decisions, actions, issues, key points)</li>
+                            <li><strong>Follow Up:</strong> Organize and share notes, document open issues, review with stakeholders</li>
+                        </ol>
+                    </div>
+
+                    <div class="exam-question">
+                        <h4>Question 2</h4>
+                        <p>What are the main differences between interviews and workshops as elicitation techniques?</p>
+                        <p><strong>Answer:</strong></p>
+                        <ul>
+                            <li><strong>Interviews:</strong> One-on-one or small group; interviewees more comfortable sharing; easier to establish rapport; suitable for busy executives; good for getting to know domain quickly</li>
+                            <li><strong>Workshops:</strong> Multiple stakeholders concurrently; facilitated and structured; effective in solving disagreements; suitable for tight schedules; requires careful facilitation to prevent domination</li>
+                        </ul>
+                    </div>
+
+                    <div class="exam-question">
+                        <h4>Question 3</h4>
+                        <p>Explain the difference between a use case and a usage scenario with an example.</p>
+                        <p><strong>Answer:</strong></p>
+                        <ul>
+                            <li><strong>Use Case:</strong> Collection of related usage scenarios describing interactions to achieve an outcome of value (e.g., "Withdraw Cash from ATM")</li>
+                            <li><strong>Usage Scenario:</strong> Single instance of a use case with specific actor, time, and data (e.g., "Customer John withdraws SAR 500 from ATM on Jan 7, 2026 at 3:00 PM using his debit card")</li>
+                        </ul>
+                    </div>
+
+                    <div class="exam-question">
+                        <h4>Question 4</h4>
+                        <p>What factors should be considered when choosing elicitation techniques?</p>
+                        <p><strong>Answer (N-T-A-E):</strong></p>
+                        <ol>
+                            <li><strong>Nature</strong> of information: Conscious, unconscious, or subconscious requirements</li>
+                            <li><strong>Time</strong> and budget constraints</li>
+                            <li><strong>Availability</strong> of stakeholders</li>
+                            <li><strong>Experience</strong> of BA with particular techniques</li>
+                        </ol>
+                    </div>
+
+                    <div class="exam-question">
+                        <h4>Question 5</h4>
+                        <p>Describe the three-step process for finding misuse cases.</p>
+                        <p><strong>Answer:</strong></p>
+                        <ol>
+                            <li><strong>Step 1:</strong> Start from normal use case diagram and identify potential misactors (hostile roles)</li>
+                            <li><strong>Step 2:</strong> Ask what would misactor do to harm system, express goals, add &lt;&lt;threaten&gt;&gt; relationships</li>
+                            <li><strong>Step 3:</strong> Mitigate misuse cases by asking what would neutralize threats, add new use cases or scenarios with &lt;&lt;mitigate&gt;&gt; relationships</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <!-- Summary -->
+                <div class="section">
+                    <h2>📚 Chapter Summary</h2>
+
+                    <div class="highlight-box">
+                        <h3>Key Takeaways</h3>
+                        <ul>
+                            <li><strong>Elicitation</strong> is about extracting and discovering requirements, not just collecting them</li>
+                            <li>The elicitation process has <strong>4 steps: Plan → Prepare → Perform → Follow Up</strong></li>
+                            <li>Requirements come from <strong>multiple sources:</strong> stakeholders, existing systems, documents, standards</li>
+                            <li><strong>Two categories of techniques:</strong> Facilitated (interactive) and Independent</li>
+                            <li><strong>Facilitated techniques:</strong> Interviews, Workshops, Focus Groups, Observations, Questionnaires</li>
+                            <li><strong>Independent techniques:</strong> System Interface Analysis, User Interface Analysis, Document Analysis</li>
+                            <li><strong>Use cases</strong> are user-centric descriptions of interactions to achieve outcomes of value</li>
+                            <li><strong>Misuse cases</strong> help identify security and safety requirements</li>
+                            <li><strong>Prototyping</strong> helps clarify requirements but has risks (don't release, don't over-invest)</li>
+                            <li>Choose techniques based on <strong>N-T-A-E</strong>: Nature, Time, Availability, Experience</li>
+                            <li>Elicitation is <strong>iterative</strong>—you'll never be completely done!</li>
+                        </ul>
+                    </div>
+                </div>
+
             </div>
 
-            <!-- Summary -->
-            <div class="section">
-                <h2>📚 Chapter Summary</h2>
-                
-                <div class="highlight-box">
-                    <h3>Key Takeaways</h3>
+            <!-- ========================= ARABIC (Saudi Dialect) ========================= -->
+            <div id="content-ar" class="lang-block">
+
+                <!-- مقدمة -->
+                <div class="section">
+                    <h2>🎯 وش يعني استنباط المتطلبات؟</h2>
+
+                    <div class="highlight-box">
+                        <h3>التعريف</h3>
+                        <p><strong>استنباط المتطلبات</strong> هو عملية استخراج احتياجات وقيود أصحاب المصلحة للنظام قبل لا نبني النظام.</p>
+                        <p><em>معلومة:</em> كلمة Elicit يعني “نستخرج / نطلع / نجيب من الشخص” (استنبط، استخرج، انتزع)</p>
+                    </div>
+
+                    <h3>أهم الملامح</h3>
                     <ul>
-                        <li><strong>Elicitation</strong> is about extracting and discovering requirements, not just collecting them</li>
-                        <li>The elicitation process has <strong>4 steps: Plan → Prepare → Perform → Follow Up</strong></li>
-                        <li>Requirements come from <strong>multiple sources:</strong> stakeholders, existing systems, documents, standards</li>
-                        <li><strong>Two categories of techniques:</strong> Facilitated (interactive) and Independent</li>
-                        <li><strong>Facilitated techniques:</strong> Interviews, Workshops, Focus Groups, Observations, Questionnaires</li>
-                        <li><strong>Independent techniques:</strong> System Interface Analysis, User Interface Analysis, Document Analysis</li>
-                        <li><strong>Use cases</strong> are user-centric descriptions of interactions to achieve outcomes of value</li>
-                        <li><strong>Misuse cases</strong> help identify security and safety requirements</li>
-                        <li><strong>Prototyping</strong> helps clarify requirements but has risks (don't release, don't over-invest)</li>
-                        <li>Choose techniques based on <strong>N-T-A-E</strong>: Nature, Time, Availability, Experience</li>
-                        <li>Elicitation is <strong>iterative</strong>—you'll never be completely done!</li>
+                        <li>عملية <strong>تعاونية وتحليلية</strong> فيها جمع/اكتشاف/استخراج/تعريف المتطلبات</li>
+                        <li>مو بس “نجمع كلام المستخدم” ونكتبه زي ما هو</li>
+                        <li>نطلع متطلبات أعمال، مستخدم، وظيفية، وغير وظيفية</li>
+                        <li>غالباً هي <strong>أصعب وأخطر وأكثر جزء فيه أخطاء وتواصل</strong> بتطوير البرمجيات</li>
+                    </ul>
+
+                    <div class="memory-trick">
+                        <h4>💡 خدعة للتذكّر</h4>
+                        <p><strong>ELICIT = Extract, Listen, Investigate, Collaborate, Interpret, Transform</strong></p>
+                        <p>الفكرة: مو قاعدين نجمع بس… قاعدين نستخرج ونحوّل احتياجهم لمتطلبات واضحة.</p>
+                    </div>
+                </div>
+
+                <!-- أهداف الاستنباط -->
+                <div class="section">
+                    <h2>🎯 أهداف الاستنباط</h2>
+
+                    <ol>
+                        <li><strong>تحديد مصادر المعلومات</strong> واختيار الطرق المناسبة</li>
+                        <li><strong>استخراج معلومات</strong> عن المجال، المشكلة، الاحتياج، والقيود</li>
+                        <li><strong>إخراج أول وثيقة</strong>:
+                            <ul>
+                                <li>غالباً متطلبات مستخدم + ملاحظات جلسات</li>
+                                <li>ممكن تكون ناقصة/ملخبطة/فيها تعارضات</li>
+                                <li>بس لازم نبدأ من مكان</li>
+                            </ul>
+                        </li>
+                    </ol>
+
+                    <div class="highlight-box">
+                        <p><strong>مهم:</strong> تطوير المتطلبات تكراري. نسوي استنباط → نحلل → نكتب متطلبات → نكتشف نقص/تعارض → نرجع للاستنباط… وهكذا.</p>
+                    </div>
+                </div>
+
+                <!-- مصادر المتطلبات -->
+                <div class="section">
+                    <h2>📚 مصادر المتطلبات</h2>
+
+                    <h3>1) أصحاب المصلحة (أنواع مختلفة)</h3>
+
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>نوع صاحب المصلحة</th>
+                                <th>دوره/وصفه</th>
+                                <th>وش يقدّم</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>العميل/الزبون</strong></td>
+                                <td>اللي يدفع تكلفة التطوير</td>
+                                <td>أهداف الأعمال، الميزانية، القرار النهائي</td>
+                            </tr>
+                            <tr>
+                                <td><strong>المستخدم</strong></td>
+                                <td>مستخدمين حاليين أو مستقبليين</td>
+                                <td>احتياجات الاستخدام، سهولة الاستخدام، سير العمل</td>
+                            </tr>
+                            <tr>
+                                <td><strong>خبير مجال</strong></td>
+                                <td>فاهم بيئة المشكلة</td>
+                                <td>قواعد العمل، المعرفة بالمجال، القيود</td>
+                            </tr>
+                            <tr>
+                                <td><strong>المطوّر</strong></td>
+                                <td>الطاقم التقني</td>
+                                <td>الجدوى التقنية، قيود التصميم</td>
+                            </tr>
+                            <tr>
+                                <td><strong>غيرهم</strong></td>
+                                <td>مدير مشروع، مختبر…</td>
+                                <td>متطلبات اختبار، قيود المشروع</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h3>2) مصادر ثانية</h3>
+                    <ul>
+                        <li><strong>أنظمة موجودة</strong> (مو شرط تكون برمجية)</li>
+                        <li><strong>توثيق موجود</strong> (كتيبات/أدلة/مذكرات)</li>
+                        <li><strong>أنظمة منافسة</strong></li>
+                        <li><strong>توثيق أنظمة متكاملة</strong> (interfacing systems)</li>
+                        <li><strong>معايير وسياسات وأنظمة ولوائح</strong></li>
+                    </ul>
+
+                    <div class="past-exam">
+                        <h4>📌 اختبار سابق - (موسم الرياض)</h4>
+                        <p><strong>س:</strong> اذكري أصحاب المصلحة المحتملين</p>
+                        <p><strong>إجابة:</strong></p>
+                        <ul>
+                            <li>المنظّمين (العميل)</li>
+                            <li>Secure Payment Inc. (مزود خدمة خارجي)</li>
+                            <li>العملاء/الحضور (مستخدمين)</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- عملية الاستنباط -->
+                <div class="section">
+                    <h2>🔄 عملية استنباط المتطلبات</h2>
+
+                    <div class="process-flow">
+                        <div class="process-step"><h4>1. Plan</h4><p>نحدد الأهداف والاستراتيجية</p></div>
+                        <div class="process-step"><h4>2. Prepare</h4><p>نجهّز للجلسات</p></div>
+                        <div class="process-step"><h4>3. Perform</h4><p>ننّفذ الاستنباط</p></div>
+                        <div class="process-step"><h4>4. Follow Up</h4><p>نرتّب ونوثّق</p></div>
+                    </div>
+
+                    <h3>الخطوة 1: التخطيط</h3>
+                    <div class="highlight-box">
+                        <h4>أشياء أساسية بالتخطيط</h4>
+                        <ul>
+                            <li><strong>الأهداف:</strong> ليه نسوي استنباط؟</li>
+                            <li><strong>الاستراتيجية والطرق:</strong> مين أصحاب المصلحة؟ وش التقنية المناسبة؟</li>
+                            <li><strong>الجدولة والموارد:</strong> تنسيق مع العميل والفريق</li>
+                            <li><strong>استنباط مستقل:</strong> ابدأي بوثائق/أنظمة قبل مقابلة الناس</li>
+                            <li><strong>المخرجات المتوقعة:</strong> Use cases, SRS…</li>
+                            <li><strong>المخاطر:</strong> وش ممكن يعطّلنا وكيف نتعامل</li>
+                        </ul>
+                    </div>
+
+                    <h3>الخطوة 2: التحضير</h3>
+                    <ul>
+                        <li><strong>تحديد النطاق:</strong> المواضيع والأسئلة والـ flows</li>
+                        <li><strong>الأجندة:</strong> مواضيع + وقت لكل جزء + هدف</li>
+                        <li><strong>التجهيزات:</strong> مكان/حضور/وثائق/أنظمة</li>
+                        <li><strong>معرفة أصحاب المصلحة:</strong> لغة/ثقافة/تفضيلات</li>
+                        <li><strong>تحضير أسئلة:</strong> زي: وش يصير إذا…؟ ليه تسوون…؟ هل قد احتجت…؟</li>
+                        <li><strong>نماذج أولية للتحليل:</strong> use cases / process flows كـ straw man</li>
+                    </ul>
+
+                    <h3>الخطوة 3: التنفيذ</h3>
+                    <div class="tip-box">
+                        <h4>✅ أهم شيء: خذي ملاحظات مضبوط</h4>
+                        <ul>
+                            <li>الحضور</li>
+                            <li>القرارات</li>
+                            <li>الإجراءات ومن مسؤول عنها</li>
+                            <li>نقاط معلّقة</li>
+                            <li>أهم النقاط</li>
+                        </ul>
+                    </div>
+
+                    <h3>الخطوة 4: المتابعة</h3>
+                    <h4>ترتيب ومشاركة الملاحظات</h4>
+                    <ul>
+                        <li>راجعيها بعد الجلسة مباشرة</li>
+                        <li>ادمجي المدخلات من مصادر مختلفة</li>
+                        <li>عدّلي الملاحظات بحذر وخلي الأصل</li>
+                        <li>راجعيها مع أصحاب المصلحة</li>
+                    </ul>
+
+                    <h4>توثيق النقاط المفتوحة</h4>
+                    <ul>
+                        <li>أشياء تحتاج استكشاف زيادة</li>
+                        <li>نواقص لازم تتقفل</li>
                     </ul>
                 </div>
+
+                <!-- تصنيف مدخلات العميل -->
+                <div class="section">
+                    <h2>🔍 تصنيف كلام العميل</h2>
+                    <p>مو كل شيء ينقال يعتبر requirement. لازم تفرّقين:</p>
+
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>النوع</th>
+                                <th>مثال</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><strong>متطلب أعمال</strong></td><td>"نوفر X ريال بالسنة"</td></tr>
+                            <tr><td><strong>متطلب مستخدم</strong></td><td>"أحتاج أطبع ملصق شحن"</td></tr>
+                            <tr><td><strong>قاعدة عمل</strong></td><td>"الموافقات لازم تمشي حسب سياسة HR"</td></tr>
+                            <tr><td><strong>متطلب وظيفي</strong></td><td>"المستخدم يقدر يرتّب القائمة أبجديًا"</td></tr>
+                            <tr><td><strong>صفة جودة</strong></td><td>"التطبيق يستجيب بسرعة للمس"</td></tr>
+                            <tr><td><strong>واجهة خارجية</strong></td><td>"الملفات المرسلة ما تتجاوز 10MB"</td></tr>
+                            <tr><td><strong>فكرة حل</strong></td><td>"خلّ الاختيار من قائمة منسدلة"</td></tr>
+                            <tr><td><strong>تعريف بيانات</strong></td><td>"الرمز البريدي 5 أرقام + 4 اختياري"</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- متى نوقف؟ -->
+                <div class="section">
+                    <h2>🏁 متى نعتبر إننا خلصنا الاستنباط؟</h2>
+
+                    <div class="highlight-box">
+                        <p>علامات إنكم قربتم تخلصون (لهالـ iteration):</p>
+                        <ul>
+                            <li>✓ المستخدمين ما عاد عندهم use cases جديدة</li>
+                            <li>✓ السيناريوهات الجديدة ما تطلع وظائف جديدة</li>
+                            <li>✓ تكرار نفس المشاكل اللي انقالت قبل</li>
+                            <li>✓ أي شي جديد كله <strong>خارج النطاق</strong></li>
+                            <li>✓ أي متطلبات جديدة كلها <strong>أولويتها منخفضة</strong></li>
+                            <li>✓ المطورين/التسترز أسئلتهم قليلة على المتطلبات</li>
+                        </ul>
+                    </div>
+
+                    <div class="tip-box">
+                        <h4>💡 تذكير</h4>
+                        <p>صدق ما راح “تخلصين 100%”، بس هذي إشارات إنكم وصلتم نقطة توقف جيدة.</p>
+                    </div>
+                </div>
+
+                <!-- التحديات -->
+                <div class="section">
+                    <h2>⚠️ تحديات الاستنباط</h2>
+
+                    <h3>المصادر + الحلول</h3>
+
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>المصدر</th>
+                                <th>التحديات</th>
+                                <th>الحلول</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>النطاق</strong></td>
+                                <td>• مو واضح<br>• معرف غلط<br>• صعب نخلي التركيز</td>
+                                <td>• نراجع النطاق قبل ما نتعمّق<br>• نستخدم In-scope / Out-of-scope</td>
+                            </tr>
+                            <tr>
+                                <td><strong>المتطلبات</strong></td>
+                                <td>• افتراضات<br>• تلميحات<br>• نواقص</td>
+                                <td>• نسأل: وش قاعدين نفترض؟<br>• تحليل منهجي</td>
+                            </tr>
+                            <tr>
+                                <td><strong>محلل الأعمال</strong></td>
+                                <td>• خبرة أقل<br>• نقص معرفة بالمجال</td>
+                                <td>• بحث عن المجال<br>• استشارة خبراء</td>
+                            </tr>
+                            <tr>
+                                <td><strong>أصحاب المصلحة</strong></td>
+                                <td>• عدم وضوح<br>• معرفة تقنية قليلة<br>• توفرهم صعب<br>• تعاون ضعيف<br>• تعارضات</td>
+                                <td>• مهارات تواصل<br>• مهارات مقابلة<br>• إدارة علاقات</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- الأدوات -->
+                <div class="section">
+                    <h2>🛠️ طرق الاستنباط</h2>
+
+                    <div class="highlight-box">
+                        <h3>قسمين</h3>
+                        <ul>
+                            <li><strong>Facilitated (تفاعلي):</strong> نتعامل مباشرة مع أصحاب المصلحة (مقابلات/ورش...)</li>
+                            <li><strong>Independent (مستقل):</strong> نشتغل لحالنا على وثائق/أنظمة... ونطلع أشياء ما ينتبهون لها المستخدمين</li>
+                        </ul>
+                    </div>
+
+                    <h3>Facilitated</h3>
+                    <h4>1) مقابلات</h4>
+                    <div class="tip-box">
+                        <h4>✅ نصايح سريعة</h4>
+                        <ol>
+                            <li>اجمعي خلفية عن المجال</li>
+                            <li>حضّري أسئلة</li>
+                            <li>ابدئي بتعريف وراجعي الأجندة</li>
+                            <li>خليك داخل النطاق</li>
+                            <li>اسمعي وكرري الفكرة للتأكيد</li>
+                        </ol>
+                    </div>
+
+                    <h4>2) ورش عمل</h4>
+                    <div class="highlight-box">
+                        <ul>
+                            <li>تفيد إذا فيه اختلافات وتحتاجون تتفقون بسرعة</li>
+                            <li>تجمع أكثر من وجهة نظر بنفس الوقت</li>
+                        </ul>
+                    </div>
+
+                    <h4>3) Focus Groups</h4>
+                    <div class="highlight-box">
+                        <ul>
+                            <li>مفيدة للمنتجات التجارية عشان تلتقط تفضيلات وانطباعات المستخدمين</li>
+                            <li>الناس عادة ما عندهم قرار نهائي—يعطون feedback</li>
+                        </ul>
+                    </div>
+
+                    <h4>4) Observation</h4>
+                    <div class="highlight-box">
+                        <ul>
+                            <li>تشوفين الشغل الحقيقي “على الطبيعة”</li>
+                            <li>تفيد بالمهام الحرجة/عالية المخاطر</li>
+                        </ul>
+                    </div>
+
+                    <h4>5) Questionnaires</h4>
+                    <div class="highlight-box">
+                        <ul>
+                            <li>رخيصة وتوصل لكثير ناس</li>
+                            <li>بس تصميمها مهم جدًا</li>
+                        </ul>
+                    </div>
+
+                    <h3>Independent</h3>
+                    <h4>6) System Interface Analysis</h4>
+                    <div class="highlight-box">
+                        <ul>
+                            <li>تفيد لمعرفة متطلبات تبادل بيانات/خدمات مع أنظمة ثانية</li>
+                        </ul>
+                    </div>
+
+                    <h4>7) User Interface Analysis</h4>
+                    <div class="highlight-box">
+                        <ul>
+                            <li>تفيد إذا بتسوون نسخة جديدة لنظام قديم</li>
+                            <li>بس لا تفترضين إن لازم تنقلون كل شي زي ما هو</li>
+                        </ul>
+                    </div>
+
+                    <h4>8) Document Analysis</h4>
+                    <div class="highlight-box">
+                        <ul>
+                            <li>يساعدك تفهمين المجال بسرعة</li>
+                            <li>ممكن الوثائق تكون قديمة—انتبهي</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- use cases -->
+                <div class="section">
+                    <h2>📝 Use Cases</h2>
+
+                    <div class="highlight-box">
+                        <h3>وش هي؟</h3>
+                        <p><strong>Use case</strong> هي سلسلة تفاعلات بين النظام وـ actor خارجي عشان يحقق نتيجة لها قيمة.</p>
+                        <ul>
+                            <li>تركز على المستخدم واستخدامه</li>
+                            <li>تحول السؤال من “وش تبين النظام يسوي؟” إلى “وش تبين تنجزين؟”</li>
+                        </ul>
+                    </div>
+
+                    <h3>Scenario vs Use Case</h3>
+                    <div class="highlight-box">
+                        <ul>
+                            <li><strong>Scenario:</strong> حالة واحدة محددة</li>
+                            <li><strong>Use Case:</strong> مجموعة سيناريوهات مرتبطة</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- misuse cases -->
+                <div class="section">
+                    <h2>⚠️ Misuse Cases</h2>
+                    <div class="highlight-box">
+                        <p>سيناريو سلبي هدفه يضر النظام (مفيد لاستخراج متطلبات أمن/سلامة).</p>
+                        <ol>
+                            <li>تحديد misactors</li>
+                            <li>تحديد misuse cases (وش بيسوون عشان يضرون)</li>
+                            <li>تحديد mitigations (كيف نمنع/نخفف)</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <!-- prototyping -->
+                <div class="section">
+                    <h2>🎨 Prototyping</h2>
+                    <div class="highlight-box">
+                        <p>نموذج أولي يعطي تصور/تجربة، يساعد يوضح المتطلبات، بس انتبهي من مخاطره (لا ينضغط عليكم إنه يصير المنتج النهائي).</p>
+                    </div>
+                </div>
+
+                <!-- الخلاصة -->
+                <div class="section">
+                    <h2>📚 ملخص الفصل</h2>
+                    <div class="highlight-box">
+                        <ul>
+                            <li>الاستنباط = استخراج واكتشاف، مو نسخ كلام</li>
+                            <li>العملية: Plan → Prepare → Perform → Follow Up</li>
+                            <li>المصادر متعددة: ناس + أنظمة + وثائق + معايير</li>
+                            <li>الطرق: تفاعلية + مستقلة</li>
+                            <li>الاستنباط تكراري (Iterative)</li>
+                        </ul>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
+
+    <script>
+        // Translation toggle: EN <-> AR (Saudi dialect)
+        const translateToggle = document.getElementById("translateToggle");
+        const translateToggleLabel = document.getElementById("translateToggleLabel");
+        const contentEn = document.getElementById("content-en");
+        const contentAr = document.getElementById("content-ar");
+
+        let isArabic = false;
+
+        function applyLanguage(ar){
+            isArabic = ar;
+
+            if(isArabic){
+                document.documentElement.lang = "ar";
+                document.documentElement.dir = "rtl";
+                translateToggleLabel.textContent = "ترجم للإنجليزي";
+                contentEn.classList.remove("active");
+                contentAr.classList.add("active");
+                translateToggle.classList.add("active");
+            }else{
+                document.documentElement.lang = "en";
+                document.documentElement.dir = "ltr";
+                translateToggleLabel.textContent = "Translate to Arabic";
+                contentAr.classList.remove("active");
+                contentEn.classList.add("active");
+                translateToggle.classList.remove("active");
+            }
+        }
+
+        translateToggle.addEventListener("click", () => applyLanguage(!isArabic));
+
+        // Default load: English
+        applyLanguage(false);
+    </script>
 </body>
 </html>
