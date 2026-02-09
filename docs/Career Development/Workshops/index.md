@@ -6,3 +6,4 @@ This section collects all the professional development workshops I’ve attended
 ## Workshops
 
 - [Cybersecurity Crash Course — Offensive Security](cybersecurity-crash-course/overview.md)
+- [My Journey as a Student Tutor](My Journey as a Student Tutor/overview.md)
