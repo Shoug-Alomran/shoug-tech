@@ -26,6 +26,7 @@ Alongside my studies, I work as a peer tutor at the Writing & Tutoring Center (W
 ## How Tutoring Shaped My Journey
 
 Tutoring helped me:
+
 - Improve my communication and explanation skills  
 - Become more confident and organized  
 - Learn how to adapt to different students’ needs  
