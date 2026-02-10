@@ -30,7 +30,7 @@ ssh bandit0@bandit.labs.overthewire.org -p 2220
 `bandit0`
 
 **Screenshot**  
-![Level 0 Screenshot](../pics/Level%200.png)
+![Level 0 Screenshot](./pics/Level%200.png)
 
 ---
 
@@ -58,7 +58,7 @@ cat readme
 `ZjLjTmM6FvvyrNrb2rfNWOZ0TA6ip5If`
 
 **Screenshot**  
-![Level 0 → Level 1 Screenshot](../pics/Level%200%20→%20Level%201.png)
+![Level 0 → Level 1 Screenshot](./pics/Level%200%20→%20Level%201.png)
 
 ---
 
@@ -85,7 +85,7 @@ cat ./-
 `263JGJPfgU6LdtEvgfWU1XP5yac29mFx`
 
 **Screenshot**  
-![Level 1 → Level 2 Screenshot](../pics/Level%201%20→%20Level%202.png)
+![Level 1 → Level 2 Screenshot](./pics/Level%201%20→%20Level%202.png)
 
 ---
 
@@ -116,7 +116,7 @@ cat -- "--spaces in this filename--"
 `MNk8KNH3USiio41PRUEoDFPqFxLPlSmx`
 
 **Screenshot**  
-![Level 2 → Level 3 Screenshot](../pics/Level%202%20→%20Level%203.png)
+![Level 2 → Level 3 Screenshot](./pics/Level%202%20→Level%203.png)
 
 ---
 
@@ -177,7 +177,7 @@ cat ./-file07
 `4oQYVPkXZOOEO5pTW8IFB8jLXxXGUQw`
 
 **Screenshot**  
-![Level 4 → Level 5 Screenshot](../pics/Level%204%20→%20Level%205.png)
+![Level 4 → Level 5 Screenshot](./pics/Level%204%20→%20Level%205.png)
 
 ---
 
@@ -214,7 +214,7 @@ cat ./maybehere07/.file2
 `HWasnPhtq9AVKe0dmk45knq0vcUahz0E6G`
 
 **Screenshot**  
-![Level 5 → Level 6 Screenshot](../pics/Level%205%20→%20Level%206.png)
+![Level 5 → Level 6 Screenshot](./pics/Level%205%20→%20Level%206.png)
 
 ---
 
@@ -249,7 +249,7 @@ cat /var/lib/dpkg/info/bandit7.password
 `z7WtoNQU2XfjmMtKjX3iql6i6cA99Ce`
 
 **Screenshot**  
-![Level 6 → Level 7 Screenshot](../pics/Level%206%20→%20Level%207.png)
+![Level 6 → Level 7 Screenshot](./pics/Level%206%20→%20Level%207.png)
 
 ---
 
@@ -276,7 +276,7 @@ grep "millionth" data.txt
 `dfwvzFQi4mU0wFnNbFOe9ROwskMLg7eEc`
 
 **Screenshot**  
-![Level 7 → Level 8 Screenshot](../pics/Level%207%20→%20Level%208.png)
+![Level 7 → Level 8 Screenshot](./pics/Level%207%20→%20Level%208.png)
 
 ---
 
@@ -302,7 +302,7 @@ sort data.txt | uniq -u
 `4CKMh1Jl9IbUIZZPXDQGamal4xvAgOJIM`
 
 **Screenshot**  
-![Level 8 → Level 9 Screenshot](../pics/Level%208%20→%20Level%209.png)
+![Level 8 → Level 9 Screenshot](./pics/Level%208%20→%20Level%209.png)
 
 ---
 
@@ -331,7 +331,7 @@ strings data.txt | grep '='
 `FGUVW5ilLVJrxX9kMYMMnlN4MgbpfMiqey`
 
 **Screenshot**  
-![Level 9 → Level 10 Screenshot](../pics/Level%209%20→%20Level%2010.png)
+![Level 9 → Level 10 Screenshot](./pics/Level%209%20→%20Level%2010.png)
 
 ---
 
@@ -361,7 +361,7 @@ cat data.txt | base64 -d
 `dtR173fZKb0RRsDFSGsg2RWnpNVj3qRr`
 
 **Screenshot**  
-![Level 10 → Level 11 Screenshot](../pics/Level%2010%20→%20Level%2011.png)
+![Level 10 → Level 11 Screenshot](./pics/Level%2010%20→%20Level%2011.png)
 
 ---
 
@@ -391,7 +391,7 @@ cat data.txt | tr 'A-Za-z' 'N-ZA-Mn-za-m'
 `7x16WNeHIi5YkIhWsfFIqoognUTyj9Q4`
 
 **Screenshot**  
-![Level 11 → Level 12 Screenshot](../pics/Level%2011%20→%20Level%2012.png)
+![Level 11 → Level 12 Screenshot](./pics/Level%2011%20→%20Level%2012.png)
 
 ---
 
@@ -442,7 +442,7 @@ file data.bin
 `FO9dwdCWjbaiIh0h8J2eUKs2vdTDwAn`
 
 **Screenshot**  
-![Level 12 → Level 13 Screenshot](../pics/Level%2012%20→%20Level%2013.png)
+![Level 12 → Level 13 Screenshot](./pics/Level%2012%20→%20Level%2013.png)
 
 ---
 
@@ -498,7 +498,7 @@ nc localhost 30000
 `8xCjnmgoKbgGLhHFAZ1GE5Tmu4M2tKJQo`
 
 **Screenshot**  
-![Level 14 → Level 15 Screenshot](../pics/Level%2014%20→%20Level%2015.png)
+![Level 14 → Level 15 Screenshot](./pics/Level%2014%20→%20Level%2015.png)
 
 ---
 
@@ -530,7 +530,7 @@ openssl s_client -connect localhost:30001
 `kSkvUpMQ7lBYyCM4GBPvCvT1BfWRy0Dx`
 
 **Screenshot**  
-![Level 15 → Level 16 Screenshot](../pics/Level%2015%20→%20Level%2016.png)
+![Level 15 → Level 16 Screenshot](./pics/Level%2015%20→%20Level%2016.png)
 
 ---
 
@@ -572,7 +572,7 @@ openssl s_client -connect localhost:31790
 RSA Private Key (used for SSH authentication)
 
 **Screenshot**  
-![Level 16 → Level 17 Screenshot](../pics/Level%2016%20→%20Level%2017.png)
+![Level 16 → Level 17 Screenshot](./pics/Level%2016%20→%20Level%2017.png)
 
 ---
 
@@ -599,8 +599,8 @@ diff passwords.old passwords.new
 `x2gLTTjFwMOhQ8oWNbMN362QKxfRqGl0`
 
 **Screenshots**  
-![Level 17 → Level 18 Screenshot 1](../pics/Level%2017%20→%20Level%2018.png)
-![Level 17 → Level 18 Screenshot 2](../pics/Level%2017%20→%20Level%2018_2.png)
+![Level 17 → Level 18 Screenshot 1](./pics/Level%2017%20→%20Level%2018.png)
+![Level 17 → Level 18 Screenshot 2](./pics/Level%2017%20→%20Level%2018_2.png)
 
 ---
 
@@ -626,7 +626,7 @@ ssh bandit18@bandit.labs.overthewire.org -p 2220 cat readme
 `cGWpMaKXVwDUNgPAVJbWYuGHVn9zl3j8`
 
 **Screenshot**  
-![Level 18 → Level 19 Screenshot](../pics/Level%2018%20→%20Level%2019.png)
+![Level 18 → Level 19 Screenshot](./pics/Level%2018%20→%20Level%2019.png)
 
 ---
 
@@ -658,7 +658,7 @@ ls -l
 `0qXahG8ZjOVMN9Ghs7iOWsCfZyXOUbYO`
 
 **Screenshot**  
-![Level 19 → Level 20 Screenshot](../pics/Level%2019%20→%20Level%2020.png)
+![Level 19 → Level 20 Screenshot](./pics/Level%2019%20→%20Level%2020.png)
 
 ---
 
@@ -696,7 +696,7 @@ nc -l -p 1234
 `EeoULMCra2q0dSkYj561DX7s1CpBuOBt`
 
 **Screenshot**  
-
+![Level 20 → Level 21 Screenshot](./pics/Level%2020%20→%20Level%2021.png)
 
 ---
 
@@ -724,6 +724,9 @@ cat /tmp/t7O6lds9S0RqQh9aMcz6ShpAoZKF7fgv
 
 **Password for Next Level**  
 `tRae0UfB9v0UzbCdn9cY0gQnds9GF58Q`
+
+**Screenshot**  
+![Level 21 → Level 22 Screenshot](./pics/Level%2021%20→%20Level%2022.png)
 
 ---
 
@@ -757,6 +760,9 @@ cat /tmp/<hash>
 
 **Password for Next Level**  
 `0Zf11ioIjMVN551jX3CmStKLYqjk54Ga`
+
+**Screenshot**  
+![Level 22 → Level 23 Screenshot](./pics/Level%2022%20→%20Level%2023.png)
 
 ---
 
@@ -801,6 +807,9 @@ cat /tmp/b24pass
 **Password for Next Level**  
 `gb8KRRCsshuZXI0tUuR6ypOFjiZbf3G8`
 
+**Screenshot**  
+![Level 23 → Level 24 Screenshot](./pics/Level%2023%20→%20Level%2024.png)
+
 ---
 
 ## Level 24 → Level 25
@@ -835,6 +844,10 @@ done | nc localhost 30002
 
 **Password for Next Level**  
 `iCi86ttT4KSNe1armKiwbQNmB3YJP3q4`
+
+**Screenshots**  
+![Level 24 → Level 25 Screenshot 1](./pics/Level%2024%20→%20Level%2025.png)
+![Level 24 → Level 25 Screenshot 2](./pics/Level%2024%20→%20Level%2025_2.png)
 
 ---
 
@@ -882,6 +895,9 @@ cat /etc/bandit_pass/bandit26
 **Password for Next Level**  
 `s0773xxkk0MXfdqOfPRVr9L3jJBUOgCZ`
 
+**Screenshot**  
+![Level 25 → Level 26 Screenshot](./pics/Level%2025%20→%20Level%2026.png)
+
 ---
 
 ## Level 26 → Level 27
@@ -905,6 +921,9 @@ ls -la
 
 **Password for Next Level**  
 `upsNCc7vzaRDx6oZC6GiR6ERwe1MowGB`
+
+**Screenshot**  
+![Level 26 → Level 27 Screenshot](./pics/Level%2026%20→%20Level%2027.png)
 
 ---
 
@@ -932,6 +951,9 @@ cat README
 
 **Password for Next Level**  
 `Yz9IpL0sBcCeuG7m9uQFt8ZNpS4HZRcN`
+
+**Screenshot**  
+![Level 27 → Level 28 Screenshot](./pics/Level%2027%20→%20Level%2028.png)
 
 ---
 
@@ -961,6 +983,9 @@ git log -p
 
 **Password for Next Level**  
 `4pT1t5DENaYuqnqvadYs1oE4QLCdjmJ7`
+
+**Screenshot**  
+![Level 28 → Level 29 Screenshot](./pics/Level%2028%20→%20Level%2029.png)
 
 ---
 
@@ -999,6 +1024,9 @@ cat README.md
 **Password for Next Level**  
 `qp30ex3VLz5MDG1n91YowTv4Q8l7CDZL`
 
+**Screenshot**  
+![Level 29 → Level 30 Screenshot](./pics/Level%2029%20→%20Level%2030.png)
+
 ---
 
 ## Level 30 → Level 31
@@ -1028,6 +1056,9 @@ git show secret
 
 **Password for Next Level**  
 `fb5S2xb7bRyFmAvQYQGEqsbhVyJqhnDy`
+
+**Screenshot**  
+![Level 30 → Level 31 Screenshot](./pics/Level%2030%20→%20Level%2031.png)
 
 ---
 
@@ -1067,6 +1098,9 @@ git push origin master
 **Password for Next Level**  
 `3O9RfhqyAlVBEZpVb6LYStshZoqoSx5K`
 
+**Screenshot**  
+![Level 31 → Level 32 Screenshot](./pics/Level%2031%20→%20Level%2032.png)
+
 ---
 
 ## Level 32 → Level 33
@@ -1101,6 +1135,9 @@ cat /etc/bandit_pass/bandit33
 
 **Password for Next Level**  
 `tQdtbs5D5i2vJwkO8mEyYEyTL8izoeJ0`
+
+**Screenshot**  
+![Level 32 → Level 33 Screenshot](./pics/Level%2032%20→%20Level%2033.png)
 
 ---
 

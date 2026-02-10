@@ -1,0 +1,1104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 7: Software Construction</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            animation: slideIn 0.8s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 60px 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: moveBackground 20s linear infinite;
+        }
+
+        @keyframes moveBackground {
+            0% {
+                transform: translate(0, 0);
+            }
+            100% {
+                transform: translate(50px, 50px);
+            }
+        }
+
+        h1 {
+            font-size: 3.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 1;
+            animation: fadeInDown 1s ease-out;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .chapter-number {
+            font-size: 1.2em;
+            font-weight: 300;
+            letter-spacing: 3px;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .section {
+            margin-bottom: 50px;
+            opacity: 0;
+            animation: fadeIn 0.8s ease-out forwards;
+            animation-delay: 0.3s;
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+
+        h2 {
+            color: #667eea;
+            font-size: 2.2em;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+            position: relative;
+            display: inline-block;
+        }
+
+        h2::after {
+            content: '';
+            position: absolute;
+            bottom: -3px;
+            left: 0;
+            width: 0;
+            height: 3px;
+            background: #764ba2;
+            transition: width 0.5s ease;
+        }
+
+        h2:hover::after {
+            width: 100%;
+        }
+
+        h3 {
+            color: #764ba2;
+            font-size: 1.6em;
+            margin: 25px 0 15px 0;
+            display: flex;
+            align-items: center;
+        }
+
+        h3::before {
+            content: '▸';
+            margin-right: 10px;
+            color: #667eea;
+        }
+
+        p {
+            margin-bottom: 15px;
+            text-align: justify;
+            font-size: 1.05em;
+            line-height: 1.8;
+        }
+
+        .definition-box {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-left: 5px solid #667eea;
+            padding: 25px;
+            margin: 25px 0;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .definition-box:hover {
+            transform: translateX(10px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .definition-box strong {
+            color: #667eea;
+            font-size: 1.2em;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+            border-left: 5px solid #e17055;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #dfe6e9 0%, #b2bec3 100%);
+            border-left: 5px solid #0984e3;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin: 30px 0;
+        }
+
+        .card {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 25px;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+            border-color: #667eea;
+        }
+
+        .card h4 {
+            color: #667eea;
+            font-size: 1.3em;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+        }
+
+        .card-icon {
+            display: inline-block;
+            width: 35px;
+            height: 35px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            margin-right: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        ul {
+            margin: 15px 0 15px 30px;
+        }
+
+        li {
+            margin-bottom: 12px;
+            line-height: 1.7;
+            position: relative;
+            padding-left: 10px;
+        }
+
+        li::marker {
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .diagram-container {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+            text-align: center;
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .process-flow {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .process-step {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .process-step:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        .process-arrow {
+            font-size: 1.5em;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .construction-phase {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 10px;
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 25px 0;
+        }
+
+        .column-box {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            padding: 25px;
+            border-radius: 12px;
+            border: 2px solid #2196f3;
+        }
+
+        .column-box h4 {
+            color: #1976d2;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .benefits-list {
+            list-style: none;
+            margin-left: 0;
+        }
+
+        .benefits-list li {
+            padding-left: 30px;
+            position: relative;
+            margin-bottom: 15px;
+        }
+
+        .benefits-list li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #27ae60;
+            font-weight: bold;
+            font-size: 1.3em;
+        }
+
+        .key-point {
+            background: linear-gradient(135deg, #fff5f5 0%, #ffe5e5 100%);
+            border-left: 5px solid #e74c3c;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+
+        footer {
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 30px;
+            margin-top: 50px;
+        }
+
+        .toc {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .toc h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .toc ul {
+            list-style: none;
+            margin-left: 0;
+        }
+
+        .toc li {
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .toc li:last-child {
+            border-bottom: none;
+        }
+
+        .toc a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: block;
+            padding-left: 20px;
+        }
+
+        .toc a:hover {
+            color: #764ba2;
+            padding-left: 30px;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5em;
+            }
+
+            h2 {
+                font-size: 1.8em;
+            }
+
+            .two-column {
+                grid-template-columns: 1fr;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            header {
+                padding: 40px 20px;
+            }
+
+            .card-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .scroll-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .scroll-top.visible {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .scroll-top:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="chapter-number">CHAPTER 7</div>
+            <h1>Software Construction</h1>
+        </header>
+
+        <div class="content">
+            <!-- Table of Contents -->
+            <div class="toc">
+                <h3>📚 Table of Contents</h3>
+                <ul>
+                    <li><a href="#introduction">Introduction to Software Construction</a></li>
+                    <li><a href="#activities">Software Construction Activities</a></li>
+                    <li><a href="#fundamentals">Software Construction Fundamentals</a></li>
+                    <li><a href="#complexity">Minimizing Complexity</a></li>
+                    <li><a href="#change">Anticipating Change</a></li>
+                    <li><a href="#standards">Standards in Construction</a></li>
+                    <li><a href="#reuse">Software Reuse</a></li>
+                    <li><a href="#opensource">Open Source Software</a></li>
+                </ul>
+            </div>
+
+            <!-- Introduction Section -->
+            <section class="section" id="introduction">
+                <h2>What is Software Construction?</h2>
+                
+                <div class="definition-box">
+                    <strong>Definition:</strong>
+                    Software Construction is the detailed creation of working, meaningful software through a combination of coding, verification, unit testing, integration testing, and debugging. It represents the process of creating an executable version of the software that meets the specified requirements and design specifications.
+                </div>
+
+                <p>Software construction is a fundamental phase in the software development lifecycle where the design is transformed into a functional software product. This phase bridges the gap between software design and the final working system, involving careful implementation of algorithms, data structures, and interfaces that bring the architectural vision to life.</p>
+
+                <h3>Core Activities in Software Construction</h3>
+                
+                <div class="card-grid">
+                    <div class="card">
+                        <h4><span class="card-icon">1</span> High-Level Programming</h4>
+                        <p>Developing programs using high-level programming languages that provide abstraction and improved readability while maintaining efficiency and performance.</p>
+                    </div>
+                    
+                    <div class="card">
+                        <h4><span class="card-icon">2</span> Low-Level Programming</h4>
+                        <p>Creating programs in low-level languages when direct hardware control, maximum performance, or system-level operations are required.</p>
+                    </div>
+                    
+                    <div class="card">
+                        <h4><span class="card-icon">3</span> System Tailoring</h4>
+                        <p>Tailoring and adapting generic, off-the-shelf systems to meet the specific requirements of an organization or particular use case.</p>
+                    </div>
+                    
+                    <div class="card">
+                        <h4><span class="card-icon">4</span> Configuration Management</h4>
+                        <p>Managing different versions of software components and ensuring proper integration of all system elements throughout the construction process.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Activities Section -->
+            <section class="section" id="activities">
+                <h2>Software Construction Activities</h2>
+                
+                <p>Software construction encompasses a range of interconnected activities that work together to transform design specifications into working software. Understanding the relationship between these activities is crucial for effective software development.</p>
+
+                <div class="diagram-container">
+                    <h3>Software Development Lifecycle with Construction Activities</h3>
+                    <div class="process-flow">
+                        <div class="process-step">Problem Definition</div>
+                        <span class="process-arrow">→</span>
+                        <div class="process-step">Requirements Gathering</div>
+                        <span class="process-arrow">→</span>
+                        <div class="process-step">Software Architecture</div>
+                        <span class="process-arrow">→</span>
+                        <div class="process-step">Detailed Design</div>
+                    </div>
+                    
+                    <div class="construction-phase">
+                        <strong style="color: #e17055; font-size: 1.2em; display: block; margin-bottom: 15px;">⚙️ CONSTRUCTION PHASE</strong>
+                        <div class="process-flow">
+                            <div class="process-step" style="background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);">Coding & Debugging</div>
+                            <span class="process-arrow">⇄</span>
+                            <div class="process-step" style="background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);">Unit Testing</div>
+                            <span class="process-arrow">⇄</span>
+                            <div class="process-step" style="background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);">Integration</div>
+                            <span class="process-arrow">→</span>
+                            <div class="process-step" style="background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);">Integration Testing</div>
+                        </div>
+                    </div>
+                    
+                    <div class="process-flow">
+                        <div class="process-step">System Testing</div>
+                        <span class="process-arrow">→</span>
+                        <div class="process-step">Maintenance</div>
+                    </div>
+                </div>
+
+                <div class="info-box">
+                    <strong>🔍 Key Insight:</strong> The construction activities shown in the shaded region represent an iterative process where coding, debugging, testing, and integration work together continuously. This iterative nature ensures that issues are caught early and resolved before moving to subsequent phases.
+                </div>
+
+                <h3>Detailed Construction Activities</h3>
+                
+                <ul>
+                    <li><strong>Coding:</strong> Writing source code according to design specifications, following coding standards and best practices to ensure maintainability and quality.</li>
+                    <li><strong>Debugging:</strong> Identifying, analyzing, and fixing defects in the code through systematic testing and error analysis.</li>
+                    <li><strong>Unit Testing:</strong> Testing individual components or units of code in isolation to verify they function correctly according to their specifications.</li>
+                    <li><strong>Integration:</strong> Combining individual software components and subsystems into a complete system, ensuring proper communication between modules.</li>
+                    <li><strong>Integration Testing:</strong> Verifying that integrated components work together correctly and that interfaces between modules function as designed.</li>
+                </ul>
+            </section>
+
+            <!-- Fundamentals Section -->
+            <section class="section" id="fundamentals">
+                <h2>Software Construction Fundamentals</h2>
+                
+                <p>The fundamentals of software construction provide guiding principles that help developers create high-quality, maintainable, and robust software systems. These fundamental concepts serve as the foundation for all construction activities and decisions.</p>
+
+                <div class="card-grid">
+                    <div class="card">
+                        <h4><span class="card-icon">🎯</span> Minimizing Complexity</h4>
+                        <p>Reducing the inherent complexity of software through clear design, simple implementations, and readable code that can be easily understood and maintained.</p>
+                    </div>
+                    
+                    <div class="card">
+                        <h4><span class="card-icon">🔄</span> Anticipating Change</h4>
+                        <p>Building software with the expectation that requirements, environments, and technologies will evolve, requiring flexible and adaptable solutions.</p>
+                    </div>
+                    
+                    <div class="card">
+                        <h4><span class="card-icon">✓</span> Constructing for Verification</h4>
+                        <p>Designing and implementing software in ways that make it easier to test, verify, and validate against requirements throughout the development process.</p>
+                    </div>
+                    
+                    <div class="card">
+                        <h4><span class="card-icon">📋</span> Standards in Construction</h4>
+                        <p>Adhering to established coding standards, design patterns, and best practices to ensure consistency, quality, and maintainability across the project.</p>
+                    </div>
+                </div>
+
+                <div class="highlight-box">
+                    <strong>💡 Important Principle:</strong> These fundamentals are not isolated concepts but interconnected principles that support and reinforce each other. For example, minimizing complexity makes it easier to anticipate change, while following standards supports both complexity reduction and verification efforts.
+                </div>
+            </section>
+
+            <!-- Minimizing Complexity Section -->
+            <section class="section" id="complexity">
+                <h2>Minimizing Complexity</h2>
+                
+                <p>As software functionality increases, complexity naturally grows. Managing and minimizing this complexity is one of the most critical challenges in software construction. Complex software is harder to understand, modify, test, and maintain, leading to increased costs and higher defect rates.</p>
+
+                <div class="key-point">
+                    <strong>🎯 Core Principle:</strong> Minimizing complexity is one of the strongest drivers in software construction and directly impacts software quality, maintainability, and development efficiency.
+                </div>
+
+                <h3>Why Complexity Matters</h3>
+                
+                <div class="two-column">
+                    <div class="column-box">
+                        <h4>Challenges of Complex Software</h4>
+                        <ul>
+                            <li>Difficult to understand and comprehend</li>
+                            <li>Higher probability of defects and bugs</li>
+                            <li>Increased maintenance costs</li>
+                            <li>Longer development time</li>
+                            <li>Reduced team productivity</li>
+                            <li>Challenging knowledge transfer</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="column-box" style="background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%); border-color: #4caf50;">
+                        <h4>Benefits of Reduced Complexity</h4>
+                        <ul>
+                            <li>Easier code comprehension</li>
+                            <li>Lower defect rates</li>
+                            <li>Faster development cycles</li>
+                            <li>Simplified testing processes</li>
+                            <li>Improved maintainability</li>
+                            <li>Enhanced team collaboration</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h3>Strategies for Reducing Complexity</h3>
+                
+                <div class="definition-box">
+                    <strong>In software construction, reduced complexity is achieved through emphasizing code creation that is simple and readable.</strong>
+                </div>
+
+                <ul>
+                    <li><strong>Clear Naming Conventions:</strong> Using descriptive, meaningful names for variables, functions, and classes that clearly communicate their purpose and behavior.</li>
+                    <li><strong>Modular Design:</strong> Breaking down complex systems into smaller, manageable modules with well-defined interfaces and single responsibilities.</li>
+                    <li><strong>Code Readability:</strong> Writing code that reads like natural language, making it easy for developers to understand the logic and intent without extensive comments.</li>
+                    <li><strong>Abstraction:</strong> Hiding implementation details behind clear interfaces, allowing developers to work at appropriate levels of detail.</li>
+                    <li><strong>Avoiding Deep Nesting:</strong> Keeping control structures shallow and using early returns or guard clauses to reduce cognitive load.</li>
+                    <li><strong>Limiting Function Length:</strong> Keeping functions focused on single tasks and maintaining reasonable lengths that can be easily comprehended.</li>
+                    <li><strong>Consistent Code Style:</strong> Following consistent formatting and style conventions throughout the codebase to reduce cognitive friction.</li>
+                </ul>
+
+                <div class="info-box">
+                    <strong>📊 Practical Impact:</strong> Studies have shown that reducing code complexity can decrease defect rates by 40-60% and significantly improve development velocity. Simple code is not just easier to write—it's easier to test, debug, and maintain throughout the software lifecycle.
+                </div>
+            </section>
+
+            <!-- Anticipating Change Section -->
+            <section class="section" id="change">
+                <h2>Anticipating Change</h2>
+                
+                <p>Software systems exist in dynamic environments where change is inevitable. Requirements evolve, technologies advance, business needs shift, and operating environments transform. Successful software construction requires anticipating these changes and building systems that can adapt gracefully without requiring fundamental restructuring.</p>
+
+                <div class="definition-box">
+                    <strong>Core Concept:</strong>
+                    Most software will change over time, and the anticipation of change drives many aspects of software construction. Changes in the environments in which software operates also affect software in diverse ways.
+                </div>
+
+                <h3>Why Change Happens</h3>
+                
+                <div class="card-grid">
+                    <div class="card">
+                        <h4><span class="card-icon">📱</span> Technology Evolution</h4>
+                        <p>New platforms, frameworks, libraries, and tools emerge regularly, requiring software to adapt to leverage improvements or maintain compatibility.</p>
+                    </div>
+                    
+                    <div class="card">
+                        <h4><span class="card-icon">🎯</span> Business Requirements</h4>
+                        <p>Organizations evolve their strategies, enter new markets, or discover new needs, driving changes in software functionality and capabilities.</p>
+                    </div>
+                    
+                    <div class="card">
+                        <h4><span class="card-icon">👥</span> User Feedback</h4>
+                        <p>User experience insights and feedback often reveal opportunities for improvement or uncover requirements not initially understood.</p>
+                    </div>
+                    
+                    <div class="card">
+                        <h4><span class="card-icon">⚖️</span> Regulatory Changes</h4>
+                        <p>Legal, compliance, and regulatory requirements change over time, necessitating updates to software systems to maintain compliance.</p>
+                    </div>
+                </ul>
+            </div>
+
+                <h3>Building Extensible Software</h3>
+                
+                <div class="highlight-box">
+                    <strong>💡 Key Principle:</strong> Anticipating change means software engineers build extensible software, so they can enhance a software product without disrupting the underlying structure.
+                </div>
+
+                <p>Extensible software maintains a stable core architecture while providing well-defined extension points that allow new functionality to be added without modifying existing code. This approach reduces risk, minimizes testing burden, and preserves the integrity of proven components.</p>
+
+                <h3>How Change Affects Construction</h3>
+                
+                <p>The anticipation of change affects how software is constructed in multiple critical ways:</p>
+
+                <div class="card-grid">
+                    <div class="card">
+                        <h4>1. Use of Control Structures</h4>
+                        <p>Selecting control structures that provide flexibility and can accommodate evolving logic without extensive refactoring. This includes using polymorphism, strategy patterns, and configurable decision trees.</p>
+                    </div>
+                    
+                    <div class="card">
+                        <h4>2. Handling of Errors</h4>
+                        <p>Implementing robust error handling that can gracefully manage unexpected situations and provide clear information for debugging and recovery, even as the system evolves.</p>
+                    </div>
+                    
+                    <div class="card">
+                        <h4>3. Source Code Organization</h4>
+                        <p>Organizing code into logical modules with clear boundaries and dependencies, making it easier to modify, replace, or extend specific components without affecting others.</p>
+                    </div>
+                    
+                    <div class="card">
+                        <h4>4. Code Documentation</h4>
+                        <p>Creating documentation that explains not just what the code does, but why design decisions were made, making it easier for future developers to understand and modify the system appropriately.</p>
+                    </div>
+                    
+                    <div class="card">
+                        <h4>5. Coding Standards</h4>
+                        <p>Following consistent coding standards that make the codebase uniform and predictable, reducing the learning curve for developers who need to modify the system later.</p>
+                    </div>
+                </div>
+
+                <div class="info-box">
+                    <strong>🔧 Practical Techniques:</strong> Anticipation of change is supported by many specific coding techniques including dependency injection, interface-based programming, configuration files, plugin architectures, and the use of design patterns that encapsulate variation points.
+                </div>
+            </section>
+
+            <!-- Standards Section -->
+            <section class="section" id="standards">
+                <h2>Standards in Construction</h2>
+                
+                <p>Standards provide a framework for consistency, quality, and efficiency in software construction. By establishing agreed-upon conventions, practices, and guidelines, standards enable teams to work more effectively together and produce software that meets quality objectives.</p>
+
+                <div class="definition-box">
+                    <strong>Purpose of Standards:</strong>
+                    Applying external or internal development standards during construction helps achieve a project's objectives for efficiency, quality, and cost.
+                </div>
+
+                <h3>Key Areas of Construction Standards</h3>
+                
+                <ul>
+                    <li><strong>Language Structure Restrictions:</strong> Restricting the use of complex or hard-to-understand language structures among others. This includes avoiding obscure features, limiting pointer arithmetic, or restricting the use of certain operators that can lead to confusion or errors.</li>
+                    <li><strong>Naming Conventions:</strong> Establishing consistent patterns for naming variables, functions, classes, and other code elements to improve readability and reduce confusion.</li>
+                    <li><strong>Code Formatting:</strong> Defining standards for indentation, spacing, line length, and code layout to ensure visual consistency across the codebase.</li>
+                    <li><strong>Documentation Requirements:</strong> Specifying what documentation must accompany code, including inline comments, function headers, and design documentation.</li>
+                    <li><strong>Testing Standards:</strong> Establishing requirements for test coverage, testing methodologies, and acceptance criteria for different types of tests.</li>
+                    <li><strong>Version Control Practices:</strong> Defining how code should be committed, branched, merged, and tagged in version control systems.</li>
+                    <li><strong>Security Practices:</strong> Implementing coding standards that prevent common security vulnerabilities and enforce secure coding practices.</li>
+                </ul>
+
+                <div class="two-column">
+                    <div class="column-box">
+                        <h4>External Standards</h4>
+                        <p>Industry standards, language-specific guidelines, and regulatory requirements that apply across organizations:</p>
+                        <ul>
+                            <li>IEEE software engineering standards</li>
+                            <li>Language-specific style guides (PEP 8 for Python, Google Java Style Guide)</li>
+                            <li>Security standards (OWASP guidelines)</li>
+                            <li>Accessibility standards (WCAG)</li>
+                            <li>Industry-specific compliance requirements</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="column-box">
+                        <h4>Internal Standards</h4>
+                        <p>Organization or team-specific standards that address unique needs and preferences:</p>
+                        <ul>
+                            <li>Company coding conventions</li>
+                            <li>Project-specific architecture patterns</li>
+                            <li>Internal code review processes</li>
+                            <li>Team-defined best practices</li>
+                            <li>Technology stack guidelines</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="highlight-box">
+                    <strong>⚖️ Balance and Flexibility:</strong> While standards are important, they should enable rather than constrain developers. Effective standards provide clear guidelines while allowing for reasonable judgment and adaptation to specific circumstances. Standards should be regularly reviewed and updated based on team feedback and evolving best practices.
+                </div>
+            </section>
+
+            <!-- Reuse Section -->
+            <section class="section" id="reuse">
+                <h2>Software Reuse</h2>
+                
+                <p>Most modern software is constructed by reusing existing components or systems rather than building everything from scratch. Software reuse has become a cornerstone of efficient software development, enabling organizations to leverage proven solutions and focus their efforts on unique, value-adding functionality.</p>
+
+                <div class="definition-box">
+                    <strong>Core Principle:</strong>
+                    When you are developing software, you should make as much use as possible of existing code. This approach allows you to develop new systems more quickly, with fewer development risks and lower costs.
+                </div>
+
+                <h3>Benefits of Software Reuse</h3>
+                
+                <div class="card-grid">
+                    <div class="card">
+                        <h4><span class="card-icon">⚡</span> Faster Development</h4>
+                        <p>Reusing existing components eliminates the need to design, implement, and test solutions that already exist, significantly reducing development time and accelerating time-to-market.</p>
+                    </div>
+                    
+                    <div class="card">
+                        <h4><span class="card-icon">💰</span> Cost Reduction</h4>
+                        <p>By leveraging existing solutions, organizations reduce development costs and can allocate resources to innovative features rather than reinventing common functionality.</p>
+                    </div>
+                    
+                    <div class="card">
+                        <h4><span class="card-icon">🛡️</span> Improved Reliability</h4>
+                        <p>Reused components have typically been tested extensively in multiple contexts, making them more reliable than newly developed code that hasn't faced real-world usage.</p>
+                    </div>
+                    
+                    <div class="card">
+                        <h4><span class="card-icon">📉</span> Reduced Risk</h4>
+                        <p>Using proven, battle-tested components reduces technical risk and uncertainty compared to developing new solutions with unknown performance characteristics.</p>
+                    </div>
+                </div>
+
+                <div class="key-point">
+                    <strong>🎯 Critical Insight:</strong> Systematic reuse can enable significant software productivity, quality, and cost improvements. Organizations that successfully implement reuse strategies can achieve development efficiency gains of 30-50% or more.
+                </div>
+
+                <h3>Two Facets of Reuse</h3>
+                
+                <p>Reuse has two closely related but distinct facets that organizations must address to maximize the benefits of reuse:</p>
+
+                <div class="two-column">
+                    <div class="column-box" style="background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%); border-color: #ff9800;">
+                        <h4>🏗️ Construction for Reuse</h4>
+                        <p><strong>Creating reusable software assets</strong></p>
+                        <p>This involves designing and implementing components with reuse in mind from the beginning:</p>
+                        <ul>
+                            <li>Clear, well-defined interfaces</li>
+                            <li>Minimal dependencies on specific contexts</li>
+                            <li>Comprehensive documentation</li>
+                            <li>Thorough testing and validation</li>
+                            <li>Flexible configuration options</li>
+                            <li>Examples and usage guidance</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="column-box" style="background: linear-gradient(135deg, #e8eaf6 0%, #c5cae9 100%); border-color: #3f51b5;">
+                        <h4>🔧 Construction with Reuse</h4>
+                        <p><strong>Reusing software assets in new solutions</strong></p>
+                        <p>This involves identifying and incorporating existing components into new systems:</p>
+                        <ul>
+                            <li>Searching for suitable components</li>
+                            <li>Evaluating fit and quality</li>
+                            <li>Adapting components to requirements</li>
+                            <li>Integrating into the system architecture</li>
+                            <li>Testing in the new context</li>
+                            <li>Maintaining and updating dependencies</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h3>Types of Reusable Assets</h3>
+                
+                <ul>
+                    <li><strong>Libraries and Frameworks:</strong> Collections of reusable functions, classes, or components that provide common functionality such as data structures, algorithms, UI components, or networking capabilities.</li>
+                    <li><strong>Design Patterns:</strong> Proven solutions to common design problems that can be adapted and applied across different contexts to solve similar challenges.</li>
+                    <li><strong>Code Templates:</strong> Starting points or scaffolding for common types of programs or modules that can be customized for specific needs.</li>
+                    <li><strong>Third-Party Components:</strong> Commercial or open-source components that provide complex functionality like payment processing, authentication, or data visualization.</li>
+                    <li><strong>Architectural Patterns:</strong> High-level structural patterns like microservices, layered architecture, or event-driven architecture that can be reused across projects.</li>
+                    <li><strong>Internal Components:</strong> Components developed within an organization that solve common problems across multiple projects.</li>
+                </ul>
+
+                <div class="info-box">
+                    <strong>🎯 Best Practice:</strong> Successful reuse requires organizational support including component repositories, search capabilities, quality standards, documentation requirements, and incentives that encourage both creating reusable components and using existing ones. Organizations should establish governance processes to manage reusable assets and ensure they remain maintained and current.
+                </div>
+            </section>
+
+            <!-- Open Source Section -->
+            <section class="section" id="opensource">
+                <h2>Open Source Software</h2>
+                
+                <p>Open source software represents a powerful form of software reuse that has transformed the software industry. By making source code freely available and allowing anyone to use, modify, and distribute it, open source software has enabled unprecedented collaboration and innovation in software development.</p>
+
+                <div class="definition-box">
+                    <strong>Definition:</strong>
+                    Open source software is released under a license in which the copyright holder grants users the right to use, change, and distribute the software and its source code to anyone and for any purpose.
+                </div>
+
+                <h3>Origins and Philosophy</h3>
+                
+                <div class="highlight-box">
+                    <strong>🏛️ Historical Context:</strong> Open source has its roots in the Free Software Foundation (www.fsf.org), which advocates that source code should not be proprietary but rather should always be available for users to examine and modify as they wish. This philosophy emphasizes freedom, transparency, and community collaboration.
+                </div>
+
+                <p>The open source movement emerged from the belief that software should be a collaborative endeavor where developers can learn from, improve upon, and build on each other's work. This approach has led to some of the most important and widely-used software systems in the world, including operating systems, web servers, databases, programming languages, and development tools.</p>
+
+                <h3>Benefits of Open Source Software</h3>
+                
+                <div class="card-grid">
+                    <div class="card">
+                        <h4><span class="card-icon">🌍</span> Global Collaboration</h4>
+                        <p>Developers worldwide can contribute to projects, bringing diverse perspectives, expertise, and resources that far exceed what any single organization could provide.</p>
+                    </div>
+                    
+                    <div class="card">
+                        <h4><span class="card-icon">🔍</span> Transparency</h4>
+                        <p>Open source code can be inspected by anyone, enabling security audits, bug identification, and verification of functionality without relying solely on vendor claims.</p>
+                    </div>
+                    
+                    <div class="card">
+                        <h4><span class="card-icon">🎓</span> Learning Opportunity</h4>
+                        <p>Developers can study high-quality code written by experts, learning best practices, design patterns, and implementation techniques through real-world examples.</p>
+                    </div>
+                    
+                    <div class="card">
+                        <h4><span class="card-icon">💡</span> Innovation</h4>
+                        <p>The open nature of the code encourages experimentation and innovation, as developers can freely modify and extend existing solutions to create new capabilities.</p>
+                    </div>
+                    
+                    <div class="card">
+                        <h4><span class="card-icon">💰</span> Cost Effectiveness</h4>
+                        <p>Open source software is typically free to use, reducing licensing costs and allowing organizations to invest resources in customization and support rather than licenses.</p>
+                    </div>
+                    
+                    <div class="card">
+                        <h4><span class="card-icon">🛡️</span> Vendor Independence</h4>
+                        <p>Organizations are not locked into a single vendor's roadmap or support model, providing more control over their technology stack and reducing business risk.</p>
+                    </div>
+                </div>
+
+                <h3>Open Source Licensing</h3>
+                
+                <p>Open source licenses define the terms under which software can be used, modified, and distributed. Different licenses provide different levels of freedom and impose different obligations:</p>
+
+                <div class="two-column">
+                    <div class="column-box">
+                        <h4>Permissive Licenses</h4>
+                        <p>Allow maximum freedom with minimal restrictions:</p>
+                        <ul class="benefits-list">
+                            <li>MIT License</li>
+                            <li>Apache License 2.0</li>
+                            <li>BSD Licenses</li>
+                        </ul>
+                        <p style="margin-top: 15px;">These licenses typically allow the code to be used in both open source and proprietary software with few requirements beyond attribution.</p>
+                    </div>
+                    
+                    <div class="column-box">
+                        <h4>Copyleft Licenses</h4>
+                        <p>Require derivative works to remain open source:</p>
+                        <ul class="benefits-list">
+                            <li>GNU General Public License (GPL)</li>
+                            <li>GNU Lesser General Public License (LGPL)</li>
+                            <li>Mozilla Public License (MPL)</li>
+                        </ul>
+                        <p style="margin-top: 15px;">These licenses ensure that improvements and modifications to the software remain available to the community.</p>
+                    </div>
+                </div>
+
+                <h3>Popular Open Source Projects</h3>
+                
+                <div class="info-box">
+                    <strong>🌟 Examples of Influential Open Source Software:</strong>
+                    <ul style="margin-top: 10px;">
+                        <li><strong>Operating Systems:</strong> Linux, FreeBSD, Android</li>
+                        <li><strong>Web Servers:</strong> Apache HTTP Server, Nginx</li>
+                        <li><strong>Databases:</strong> PostgreSQL, MySQL, MongoDB</li>
+                        <li><strong>Programming Languages:</strong> Python, Ruby, Go</li>
+                        <li><strong>Development Tools:</strong> Git, VS Code, Eclipse</li>
+                        <li><strong>Frameworks:</strong> React, Angular, Django, Spring</li>
+                        <li><strong>Cloud Platforms:</strong> Kubernetes, Docker, OpenStack</li>
+                    </ul>
+                </div>
+
+                <h3>Contributing to Open Source</h3>
+                
+                <p>Organizations and individual developers can contribute to open source projects in various ways:</p>
+
+                <ul>
+                    <li><strong>Code Contributions:</strong> Submitting bug fixes, new features, or improvements to existing functionality.</li>
+                    <li><strong>Documentation:</strong> Improving user guides, API documentation, tutorials, and examples to help others use the software.</li>
+                    <li><strong>Testing:</strong> Identifying and reporting bugs, testing new features, and validating releases across different environments.</li>
+                    <li><strong>Support:</strong> Helping other users through forums, mailing lists, or chat channels by answering questions and sharing knowledge.</li>
+                    <li><strong>Sponsorship:</strong> Providing financial support to open source projects or paying developers to work on open source software.</li>
+                </ul>
+
+                <div class="key-point">
+                    <strong>⚠️ Considerations:</strong> While open source software offers many benefits, organizations should carefully evaluate open source components before adoption. Consider factors such as project maturity, community activity, documentation quality, security track record, licensing compatibility, and long-term maintenance prospects. Establish processes for tracking open source dependencies and staying current with security updates.
+                </div>
+            </section>
+
+            <!-- Summary Section -->
+            <section class="section">
+                <h2>Chapter Summary</h2>
+                
+                <div class="definition-box">
+                    <strong>Key Takeaways:</strong>
+                    <ul style="margin-top: 15px; margin-left: 20px;">
+                        <li>Software construction is the detailed creation of working software through coding, verification, testing, and debugging.</li>
+                        <li>Construction activities bridge the gap between design and a functioning system, involving iterative processes of implementation and testing.</li>
+                        <li>Four fundamental principles guide construction: minimizing complexity, anticipating change, constructing for verification, and following standards.</li>
+                        <li>Complexity reduction through simple, readable code is essential for maintainability and quality.</li>
+                        <li>Anticipating change requires building extensible systems that can evolve without major restructuring.</li>
+                        <li>Standards provide consistency and quality guidelines that help teams work effectively together.</li>
+                        <li>Software reuse, both creating reusable assets and using existing components, dramatically improves productivity and quality.</li>
+                        <li>Open source software enables global collaboration and provides high-quality, cost-effective solutions for many common requirements.</li>
+                    </ul>
+                </div>
+
+                <div class="highlight-box" style="margin-top: 30px;">
+                    <strong>🎯 Looking Forward:</strong> The principles and practices of software construction form the foundation for creating reliable, maintainable software systems. As you progress in your software engineering journey, you'll apply these concepts repeatedly, refining your ability to transform designs into robust, working software that meets user needs and business objectives.
+                </div>
+            </section>
+        </div>
+
+        <footer>
+            <p>Chapter 7: Software Construction</p>
+            <p style="font-size: 0.9em; opacity: 0.8; margin-top: 10px;">Software Engineering Education • Creating Quality Software Through Sound Construction Practices</p>
+        </footer>
+    </div>
+
+    <div class="scroll-top" id="scrollTop">↑</div>
+
+    <script>
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Scroll to top button functionality
+        const scrollTopBtn = document.getElementById('scrollTop');
+        
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                scrollTopBtn.classList.add('visible');
+            } else {
+                scrollTopBtn.classList.remove('visible');
+            }
+        });
+
+        scrollTopBtn.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+
+        // Add animation to cards on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.card, .section').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(20px)';
+            el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(el);
+        });
+
+        // Add hover effect sound simulation (visual feedback)
+        document.querySelectorAll('.card, .process-step').forEach(element => {
+            element.addEventListener('mouseenter', function() {
+                this.style.transition = 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+            });
+        });
+    </script>
+</body>
+</html>
