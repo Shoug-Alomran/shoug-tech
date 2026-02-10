@@ -695,6 +695,9 @@ nc -l -p 1234
 **Password for Next Level**  
 `EeoULMCra2q0dSkYj561DX7s1CpBuOBt`
 
+**Screenshot**  
+
+
 ---
 
 ## Level 21 → Level 22
