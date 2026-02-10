@@ -30,4 +30,4 @@ Tutoring helped me:
 - Improve my communication and explanation skills  
 - Become more confident and organized  
 - Learn how to adapt to different students’ needs  
-- Grow both academically and personally  
+- Grow both academically and personally
