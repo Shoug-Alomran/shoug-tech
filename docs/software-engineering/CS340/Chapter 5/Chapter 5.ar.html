@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CS 340 الفصل الخامس - تحويل ER إلى علائقي و DDL</title>
+    <!-- خطوط تدعم العربية -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Tajawal:wght@300;400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --primary: #0f172a;
+            --secondary: #3b82f6;
+            --accent: #f59e0b;
+            --success: #10b981;
+            --purple: #8b5cf6;
+            --teal: #14b8a6;
+            --pink: #ec4899;
+        }
+
+        body {
+            font-family: 'Tajawal', 'Cairo', sans-serif;
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 50%, #fef3c7 100%);
+            color: #0f172a;
+            line-height: 1.7;
+        }
+
+        .container { max-width: 1400px; margin: 0 auto; padding: 60px 30px; }
+
+        .hero {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 100px 60px;
+            border-radius: 30px;
+            margin-bottom: 60px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(15, 23, 42, 0.4);
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -10%;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: float 20s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            50% { transform: translate(30px, 30px) rotate(180deg); }
+        }
+
+        .hero h1 {
+            font-family: 'Cairo', serif;
+            font-size: 4rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-subtitle {
+            font-size: 1.5rem;
+            opacity: 0.95;
+            margin-bottom: 30px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-meta {
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+            position: relative;
+            z-index: 1;
+        }
+
+        .meta-badge {
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-weight: 600;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .toc {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            margin-bottom: 50px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            border-right: 5px solid var(--secondary);
+            border-left: none;
+        }
+
+        .toc h2 {
+            font-family: 'Cairo', serif;
+            font-size: 2rem;
+            color: var(--primary);
+            margin-bottom: 25px;
+        }
+
+        .toc-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+        }
+
+        .toc-item {
+            padding: 15px 20px;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border-radius: 12px;
+            border-right: 3px solid var(--teal);
+            border-left: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .toc-item:hover {
+            transform: translateX(-10px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .toc-item a {
+            text-decoration: none;
+            color: #0f172a;
+            font-weight: 500;
+        }
+
+        .section {
+            background: white;
+            padding: 50px;
+            border-radius: 25px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+            position: relative;
+        }
+
+        .section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 5px;
+            height: 100%;
+            background: linear-gradient(180deg, var(--secondary) 0%, var(--teal) 100%);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 35px;
+            padding-bottom: 25px;
+            border-bottom: 3px solid #e2e8f0;
+        }
+
+        .section-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--teal) 100%);
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
+        }
+
+        .section h2 {
+            font-family: 'Cairo', serif;
+            font-size: 2.5rem;
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .section h3 {
+            font-family: 'Cairo', serif;
+            font-size: 1.8rem;
+            color: var(--secondary);
+            margin: 35px 0 20px;
+        }
+
+        .concept-box {
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+            padding: 30px;
+            border-radius: 18px;
+            margin: 25px 0;
+            border-right: 5px solid var(--secondary);
+            border-left: none;
+        }
+
+        .example-box {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            padding: 30px;
+            border-radius: 18px;
+            margin: 25px 0;
+            border-right: 5px solid var(--accent);
+            border-left: none;
+        }
+
+        .important-box {
+            background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%);
+            padding: 30px;
+            border-radius: 18px;
+            margin: 25px 0;
+            border-right: 5px solid var(--pink);
+            border-left: none;
+        }
+
+        .note-box {
+            background: linear-gradient(135deg, #f0fdfa 0%, #ccfbf1 100%);
+            padding: 30px;
+            border-radius: 18px;
+            margin: 25px 0;
+            border-right: 5px solid var(--teal);
+            border-left: none;
+        }
+
+        .box-title {
+            font-weight: 700;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+        }
+
+        .step-card {
+            background: white;
+            padding: 35px;
+            border-radius: 20px;
+            margin: 30px 0;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+            border: 3px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+
+        .step-card:hover {
+            border-color: var(--secondary);
+            transform: translateY(-5px);
+        }
+
+        .step-header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .step-number {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--accent) 0%, #fbbf24 100%);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.8rem;
+            color: white;
+        }
+
+        .step-card h4 {
+            font-family: 'Cairo', serif;
+            font-size: 1.6rem;
+            color: var(--primary);
+        }
+
+        .notation {
+            background: var(--primary);
+            color: #e2e8f0;
+            padding: 25px;
+            border-radius: 12px;
+            font-family: 'Space Mono', monospace;
+            margin: 20px 0;
+            overflow-x: auto;
+            font-size: 0.95rem;
+            direction: ltr;
+            text-align: left;
+        }
+
+        .notation code { color: #fbbf24; }
+
+        ul, ol { margin-right: 25px; margin-left: 0; margin-top: 15px; }
+        li { margin-bottom: 12px; line-height: 1.8; }
+        li strong { color: var(--secondary); }
+
+        .footer {
+            text-align: center;
+            margin-top: 80px;
+            padding: 40px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            border-radius: 25px;
+            color: white;
+        }
+
+        .footer .name {
+            font-family: 'Cairo', serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .hero { padding: 60px 30px; }
+            .hero h1 { font-size: 2.5rem; }
+            .section { padding: 30px 25px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="hero">
+            <h1>🔄 تحويل مخططات ER إلى علائقي و DDL</h1>
+            <p class="hero-subtitle">تحويل التصاميم المفاهيمية إلى مخططات منطقية لقواعد البيانات باستخدام SQL DDL</p>
+            <div class="hero-meta">
+                <div class="meta-badge">📚 الفصل الخامس</div>
+                <div class="meta-badge">🎯 CS 340</div>
+                <div class="meta-badge">👩‍🎓 شوق العمران</div>
+                <div class="meta-badge">⏱️ ملخص شامل</div>
+            </div>
+        </div>
+
+        <div class="toc">
+            <h2>📑 فهرس المحتويات</h2>
+            <div class="toc-grid">
+                <div class="toc-item"><a href="#overview">🎯 نظرة عامة</a></div>
+                <div class="toc-item"><a href="#step1">1️⃣ الكيانات العادية</a></div>
+                <div class="toc-item"><a href="#step2">2️⃣ الكيانات الضعيفة</a></div>
+                <div class="toc-item"><a href="#step3">3️⃣ علاقات ثنائية 1:1</a></div>
+                <div class="toc-item"><a href="#step4">4️⃣ علاقات ثنائية 1:N</a></div>
+                <div class="toc-item"><a href="#step5">5️⃣ علاقات ثنائية M:N</a></div>
+                <div class="toc-item"><a href="#step6">6️⃣ الخصائص متعددة القيم</a></div>
+                <div class="toc-item"><a href="#step7">7️⃣ العلاقات متعددة الأطراف (N-ary)</a></div>
+                <div class="toc-item"><a href="#step8">8️⃣ التخصص / التعميم</a></div>
+                <div class="toc-item"><a href="#step9">9️⃣ أنواع الاتحاد (Union Types)</a></div>
+                <div class="toc-item"><a href="#ddl">💻 أساسيات DDL</a></div>
+            </div>
+        </div>
+
+        <div class="section" id="overview">
+            <div class="section-header">
+                <div class="section-icon">🎯</div>
+                <div>
+                    <h2>نظرة عامة على تحويل ER إلى علائقي</h2>
+                </div>
+            </div>
+
+            <div class="concept-box">
+                <div class="box-title">📘 وش يعني تحويل؟</div>
+                <p><strong>تحويل ER إلى علائقي</strong> هو عملية منهجية لتحويل مخطط ER (أو EER) المفاهيمي إلى مخطط قاعدة بيانات علائقية منطقية تقدر تنفذه في أي نظام إدارة قواعد بيانات.</p>
+            </div>
+
+            <div class="important-box">
+                <div class="box-title">🎯 الخوارزمية بـ ٩ خطوات</div>
+                <p><strong>الخطوات ١-٧:</strong> تحويل مكونات مخطط ER</p>
+                <ul>
+                    <li>الخطوة ١-٢: أنواع الكيانات (العادية والضعيفة)</li>
+                    <li>الخطوة ٣-٥: العلاقات الثنائية (1:1، 1:N، M:N)</li>
+                    <li>الخطوة ٦: الخصائص متعددة القيم</li>
+                    <li>الخطوة ٧: العلاقات متعددة الأطراف (N-ary)</li>
+                </ul>
+                <p style="margin-top: 15px;"><strong>الخطوات ٨-٩:</strong> تحويل تراكيب EER</p>
+                <ul>
+                    <li>الخطوة ٨: التخصص / التعميم</li>
+                    <li>الخطوة ٩: أنواع الاتحاد (الفئات)</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section" id="step1">
+            <div class="section-header">
+                <div class="section-icon">1️⃣</div>
+                <div>
+                    <h2>الخطوة ١: تحويل الكيانات العادية</h2>
+                </div>
+            </div>
+
+            <div class="step-card">
+                <div class="step-header">
+                    <div class="step-number">١</div>
+                    <h4>الكيانات العادية (القوية)</h4>
+                </div>
+                
+                <div class="concept-box">
+                    <div class="box-title">📋 الخوارزمية</div>
+                    <p>لكل <strong>كيان عادي E</strong> في مخطط ER:</p>
+                    <ol>
+                        <li>أنشئ <strong>علاقة (جدول) R</strong></li>
+                        <li>أضف كل <strong>الخصائص البسيطة</strong> للكيان E كأعمدة في R</li>
+                        <li>اختار <strong>خاصية مفتاح</strong> من E وجعلها المفتاح الأساسي لـ R</li>
+                        <li>إذا كان المفتاح <strong>مركبًا</strong>، فالخصائص البسيطة المكونة له معًا تكون المفتاح الأساسي</li>
+                    </ol>
+                </div>
+
+                <div class="example-box">
+                    <div class="box-title">💡 مثال</div>
+                    <p><strong>كيان ER:</strong> موظف (EMPLOYEE) بخصائص {الرقم_الضريبي، الاسم، تاريخ_الميلاد، العنوان}</p>
+                    <p style="margin-top: 15px;"><strong>المخطط العلائقي:</strong></p>
+                    <div class="notation">
+EMPLOYEE(<u>SSN</u>, Name, BDate, Address)
+                    </div>
+                    <p style="margin-top: 10px;">الرقم_الضريبي (SSN) هو المفتاح الأساسي (تحته خط)</p>
+                </div>
+
+                <div class="note-box">
+                    <div class="box-title">📌 ملاحظة عن الخصائص المركبة</div>
+                    <p>بالنسبة للخصائص المركبة، نضيف فقط <strong>المكونات البسيطة</strong>. مثلاً لو الاسم مركب (الاسم_الأول، الحرف_الأوسط، الاسم_الأخير)، نضيف الأعمدة Fname، Minit، Lname بشكل منفصل.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="section" id="step2">
+            <div class="section-header">
+                <div class="section-icon">2️⃣</div>
+                <div>
+                    <h2>الخطوة ٢: تحويل الكيانات الضعيفة</h2>
+                </div>
+            </div>
+
+            <div class="step-card">
+                <div class="step-header">
+                    <div class="step-number">٢</div>
+                    <h4>الكيانات الضعيفة</h4>
+                </div>
+                
+                <div class="concept-box">
+                    <div class="box-title">📋 الخوارزمية</div>
+                    <p>لكل <strong>كيان ضعيف W</strong> له كيان مالك E:</p>
+                    <ol>
+                        <li>أنشئ <strong>علاقة R</strong></li>
+                        <li>أضف كل <strong>الخصائص البسيطة</strong> للكيان W في R</li>
+                        <li>أضف <strong>مفتاح خارجي</strong> يشير إلى المفتاح الأساسي لعلاقة الكيان المالك</li>
+                        <li>المفتاح الأساسي لـ R هو <strong>دمج</strong>:
+                            <ul>
+                                <li>المفتاح الأساسي للكيان المالك</li>
+                                <li>المفتاح الجزئي للكيان الضعيف (إذا وجد)</li>
+                            </ul>
+                        </li>
+                    </ol>
+                </div>
+
+                <div class="example-box">
+                    <div class="box-title">💡 مثال: تابِع (DEPENDENT)</div>
+                    <p><strong>كيان ضعيف:</strong> تابِع (مفتاح جزئي: اسم_التابع)</p>
+                    <p><strong>كيان مالك:</strong> موظف (المفتاح الأساسي: SSN)</p>
+                    <p style="margin-top: 15px;"><strong>المخطط العلائقي:</strong></p>
+                    <div class="notation">
+DEPENDENT(<u>ESSN</u>, <u>Dependent_name</u>, Sex, BDate, Relationship)
+FOREIGN KEY (ESSN) REFERENCES EMPLOYEE(SSN)
+                    </div>
+                    <p style="margin-top: 10px;">المفتاح الأساسي هو {ESSN, Dependent_name}</p>
+                </div>
+
+                <div class="important-box">
+                    <div class="box-title">⚠️ نقطة مهمة</div>
+                    <p>المفتاح الأساسي للكيان المالك يصير <strong>مفتاح خارجي</strong> وجزء من <strong>المفتاح الأساسي</strong> لجدول الكيان الضعيف.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="section" id="step3">
+            <div class="section-header">
+                <div class="section-icon">3️⃣</div>
+                <div>
+                    <h2>الخطوة ٣: تحويل العلاقات الثنائية 1:1</h2>
+                </div>
+            </div>
+
+            <div class="step-card">
+                <div class="step-header">
+                    <div class="step-number">٣</div>
+                    <h4>العلاقات الثنائية 1:1</h4>
+                </div>
+                
+                <div class="concept-box">
+                    <div class="box-title">📋 ثلاث طرق</div>
+                    <p>لكل علاقة ثنائية من نوع 1:1 بين S و T:</p>
+                </div>
+
+                <div class="note-box">
+                    <div class="box-title">🔹 الطريقة ١: المفتاح الخارجي (الأكثر شيوعًا)</div>
+                    <p><strong>اختر أحد الجدولين</strong> (يفضل اللي عنده مشاركة كلية) وأضف المفتاح الأساسي للجدول الآخر كمفتاح خارجي فيه.</p>
+                    <div class="example-box" style="margin-top: 15px;">
+                        <p><strong>مثال:</strong> موظف يدير قسم (1:1)</p>
+                        <div class="notation">
+DEPARTMENT(<u>Dnumber</u>, Dname, Mgr_ssn, Mgr_start_date)
+FOREIGN KEY (Mgr_ssn) REFERENCES EMPLOYEE(SSN)
+                        </div>
+                        <p style="margin-top: 10px;">Mgr_ssn هو المفتاح الخارجي في جدول DEPARTMENT</p>
+                    </div>
+                </div>
+
+                <div class="note-box">
+                    <div class="box-title">🔹 الطريقة ٢: دمج الجدولين</div>
+                    <p>إذا كان <strong>عند الجدولين مشاركة كلية</strong>، ندمجهم في <strong>جدول واحد</strong> يحوي خصائص الاثنين.</p>
+                </div>
+
+                <div class="note-box">
+                    <div class="box-title">🔹 الطريقة ٣: جدول منفصل للعلاقة</div>
+                    <p>نسوي <strong>جدول مستقل</strong> للعلاقة يحوي مفتاحين خارجيين للجدولين. (نادرًا ما نستخدمه مع 1:1).</p>
+                </div>
+
+                <div class="important-box">
+                    <div class="box-title">💡 اختيار الطريقة المناسبة</div>
+                    <p>نستخدم <strong>طريقة المفتاح الخارجي</strong> لما يكون أحد الطرفين عنده مشاركة كلية. نحط المفتاح الخارجي في الجدول صاحب المشاركة الكلية عشان نتجنب القيم الفارغة (NULL).</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="section" id="step4">
+            <div class="section-header">
+                <div class="section-icon">4️⃣</div>
+                <div>
+                    <h2>الخطوة ٤: تحويل العلاقات الثنائية 1:N</h2>
+                </div>
+            </div>
+
+            <div class="step-card">
+                <div class="step-header">
+                    <div class="step-number">٤</div>
+                    <h4>العلاقات الثنائية 1:N</h4>
+                </div>
+                
+                <div class="concept-box">
+                    <div class="box-title">📋 الخوارزمية</div>
+                    <p>لكل علاقة ثنائية 1:N:</p>
+                    <ol>
+                        <li>حدد العلاقة <strong>S</strong> اللي تمثل الكيان في <strong>جهة N (الطرف الكثير)</strong></li>
+                        <li>أضف في S <strong>مفتاح خارجي</strong> يشير إلى المفتاح الأساسي لعلاقة T (جهة 1)</li>
+                        <li>أضف أي <strong>خصائص بسيطة</strong> للعلاقة كأعمدة في S</li>
+                    </ol>
+                </div>
+
+                <div class="example-box">
+                    <div class="box-title">💡 مثال: يعمل_في (WORKS_FOR)</div>
+                    <p><strong>العلاقة:</strong> موظف (N) يعمل_في (1) قسم</p>
+                    <p style="margin-top: 15px;"><strong>المخطط العلائقي:</strong></p>
+                    <div class="notation">
+EMPLOYEE(<u>SSN</u>, Name, BDate, Address, DNO)
+FOREIGN KEY (DNO) REFERENCES DEPARTMENT(Dnumber)
+
+DEPARTMENT(<u>Dnumber</u>, Dname, Mgr_ssn)
+                    </div>
+                    <p style="margin-top: 10px;">DNO مفتاح خارجي في EMPLOYEE (جهة N)</p>
+                </div>
+
+                <div class="important-box">
+                    <div class="box-title">🎯 القاعدة الذهبية</div>
+                    <p>المفتاح الخارجي دايمًا نحطه في الجدول اللي في <strong>جهة N</strong> (الطرف الكثير).</p>
+                </div>
+
+                <div class="note-box">
+                    <div class="box-title">📌 طريقة بديلة</div>
+                    <p>ممكن ننشئ جدول مستقل للعلاقة، لكن هالطريقة <strong>نادرًا ما تستخدم</strong> مع 1:N لأنها تعقيد بدون فايدة كبيرة.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="section" id="step5">
+            <div class="section-header">
+                <div class="section-icon">5️⃣</div>
+                <div>
+                    <h2>الخطوة ٥: تحويل العلاقات الثنائية M:N</h2>
+                </div>
+            </div>
+
+            <div class="step-card">
+                <div class="step-header">
+                    <div class="step-number">٥</div>
+                    <h4>العلاقات الثنائية M:N</h4>
+                </div>
+                
+                <div class="concept-box">
+                    <div class="box-title">📋 الخوارزمية</div>
+                    <p>لكل علاقة ثنائية M:N:</p>
+                    <ol>
+                        <li>أنشئ <strong>علاقة جديدة S</strong> (جدول العلاقة)</li>
+                        <li>أضف <strong>مفاتيح خارجية</strong> تمثل المفاتيح الأساسية لكلا الجدولين المشاركين</li>
+                        <li><strong>دمجهم</strong> مع بعض يكون المفتاح الأساسي لـ S</li>
+                        <li>أضف أي <strong>خصائص بسيطة</strong> للعلاقة M:N كأعمدة في S</li>
+                    </ol>
+                </div>
+
+                <div class="example-box">
+                    <div class="box-title">💡 مثال: يعمل_على (WORKS_ON)</div>
+                    <p><strong>العلاقة:</strong> موظف (M) يعمل_على (N) مشروع</p>
+                    <p style="margin-top: 15px;"><strong>المخطط العلائقي:</strong></p>
+                    <div class="notation">
+WORKS_ON(<u>ESSN</u>, <u>PNO</u>, Hours)
+FOREIGN KEY (ESSN) REFERENCES EMPLOYEE(SSN)
+FOREIGN KEY (PNO) REFERENCES PROJECT(Pnumber)
+                    </div>
+                    <p style="margin-top: 10px;">المفتاح الأساسي هو {ESSN, PNO}<br>Hours خاصية للعلاقة</p>
+                </div>
+
+                <div class="important-box">
+                    <div class="box-title">⚠️ نقطة مهمة جدًا</div>
+                    <p>العلاقات M:N <strong>دايمًا تحتاج جدول مستقل</strong>. ما نقدر نستخدم مفاتيح خارجية في الجداول المشاركة لأن هذا يخالف النموذج العلائقي (الخصائص متعددة القيم).</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="section" id="step6">
+            <div class="section-header">
+                <div class="section-icon">6️⃣</div>
+                <div>
+                    <h2>الخطوة ٦: تحويل الخصائص متعددة القيم</h2>
+                </div>
+            </div>
+
+            <div class="step-card">
+                <div class="step-header">
+                    <div class="step-number">٦</div>
+                    <h4>الخصائص متعددة القيم</h4>
+                </div>
+                
+                <div class="concept-box">
+                    <div class="box-title">📋 الخوارزمية</div>
+                    <p>لكل <strong>خاصية متعددة القيم A</strong>:</p>
+                    <ol>
+                        <li>أنشئ <strong>علاقة جديدة R</strong></li>
+                        <li>أضف الخاصية <strong>A</strong> في R</li>
+                        <li>أضف <strong>مفتاح خارجي K</strong> يشير إلى المفتاح الأساسي للعلاقة (الكيان أو العلاقة) اللي تتبعها A</li>
+                        <li>المفتاح الأساسي لـ R هو <strong>دمج {A, K}</strong></li>
+                        <li>إذا كانت A <strong>مركبة</strong>، أضف مكوناتها البسيطة</li>
+                    </ol>
+                </div>
+
+                <div class="example-box">
+                    <div class="box-title">💡 مثال: مواقع_القسم (DEPT_LOCATIONS)</div>
+                    <p><strong>خاصية متعددة القيم:</strong> مواقع القسم</p>
+                    <p style="margin-top: 15px;"><strong>المخطط العلائقي:</strong></p>
+                    <div class="notation">
+DEPARTMENT(<u>Dnumber</u>, Dname, Mgr_ssn)
+
+DEPT_LOCATIONS(<u>Dnumber</u>, <u>Dlocation</u>)
+FOREIGN KEY (Dnumber) REFERENCES DEPARTMENT(Dnumber)
+                    </div>
+                    <p style="margin-top: 10px;">المفتاح الأساسي هو {Dnumber, Dlocation}</p>
+                </div>
+
+                <div class="important-box">
+                    <div class="box-title">🎯 ليه نحتاج جدول مستقل؟</div>
+                    <p>النموذج العلائقي يشترط أن كل عمود تكون قيمته <strong>ذرية</strong> (الصيغة الطبيعية الأولى). الخصائص متعددة القيم تخالف هذا الشرط، فلتخزينها نحتاج جدول مستقل.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="section" id="step7">
+            <div class="section-header">
+                <div class="section-icon">7️⃣</div>
+                <div>
+                    <h2>الخطوة ٧: تحويل العلاقات متعددة الأطراف (N-ary)</h2>
+                </div>
+            </div>
+
+            <div class="step-card">
+                <div class="step-header">
+                    <div class="step-number">٧</div>
+                    <h4>العلاقات متعددة الأطراف (n > 2)</h4>
+                </div>
+                
+                <div class="concept-box">
+                    <div class="box-title">📋 الخوارزمية</div>
+                    <p>لكل <strong>علاقة N-ary</strong> (عدد الأطراف > 2):</p>
+                    <ol>
+                        <li>أنشئ <strong>علاقة جديدة S</strong></li>
+                        <li>أضف <strong>مفاتيح خارجية</strong> لكل المفاتيح الأساسية للكيانات المشاركة</li>
+                        <li>المفتاح الأساسي لـ S غالبًا هو <strong>دمج كل المفاتيح الخارجية</strong></li>
+                        <li>أضف أي <strong>خصائص بسيطة</strong> للعلاقة كأعمدة في S</li>
+                    </ol>
+                </div>
+
+                <div class="example-box">
+                    <div class="box-title">💡 مثال: توريد (SUPPLY) علاقة ثلاثية</div>
+                    <p><strong>العلاقة:</strong> مورد يورّد قطعة لمشروع</p>
+                    <p style="margin-top: 15px;"><strong>المخطط العلائقي:</strong></p>
+                    <div class="notation">
+SUPPLY(<u>Sname</u>, <u>Part_no</u>, <u>Proj_name</u>, Quantity)
+FOREIGN KEY (Sname) REFERENCES SUPPLIER(Sname)
+FOREIGN KEY (Part_no) REFERENCES PART(Part_no)
+FOREIGN KEY (Proj_name) REFERENCES PROJECT(Proj_name)
+                    </div>
+                    <p style="margin-top: 10px;">المفتاح الأساسي هو {Sname, Part_no, Proj_name}</p>
+                </div>
+
+                <div class="note-box">
+                    <div class="box-title">📌 اعتبارات الأصلية (Cardinality)</div>
+                    <p>إذا كانت العلاقة لها قيود أصلية (مثلاً M:N:1)، المفتاح الأساسي يمكن يكون مجرد دمج المفاتيح الخارجية لجهات M و N فقط، مو كل الأطراف.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="section" id="step8">
+            <div class="section-header">
+                <div class="section-icon">8️⃣</div>
+                <div>
+                    <h2>الخطوة ٨: تحويل التخصص/التعميم</h2>
+                </div>
+            </div>
+
+            <div class="step-card">
+                <div class="step-header">
+                    <div class="step-number">٨</div>
+                    <h4>تحويل التخصص/التعميم</h4>
+                </div>
+                
+                <div class="concept-box">
+                    <div class="box-title">📋 أربع طرق للتحويل</div>
+                    <p>للتخصص/التعميم، نختار من بين:</p>
+                </div>
+
+                <div class="note-box">
+                    <div class="box-title">🔹 الطريقة ١: جداول متعددة (الكيان الأب + الأبناء)</div>
+                    <p>ننشئ جدول للـ <strong>كيان الأب</strong> وجداول منفصلة لكل <strong>ابن</strong>.</p>
+                    <ul>
+                        <li>جدول الأب يحوي الخصائص المشتركة + المفتاح الأساسي</li>
+                        <li>كل جدول ابن يحوي المفتاح الأساسي (كمفتاح خارجي) + الخصائص الخاصة</li>
+                        <li>أنسب لـ <strong>التخصص المنفصل (Disjoint)</strong></li>
+                    </ul>
+                </div>
+
+                <div class="note-box">
+                    <div class="box-title">🔹 الطريقة ٢: جداول متعددة (الأبناء فقط)</div>
+                    <p>ننشئ جداول <strong>للأبناء فقط</strong>، وكل ابن يحوي كل الخصائص الموروثة + خصائصه الخاصة.</p>
+                    <ul>
+                        <li>مافي جدول مستقل للكيان الأب</li>
+                        <li>كل ابن يضم كل خصائص الأب</li>
+                        <li>أنسب لـ <strong>التخصص الكلي (Total) والمنفصل (Disjoint)</strong></li>
+                    </ul>
+                </div>
+
+                <div class="note-box">
+                    <div class="box-title">🔹 الطريقة ٣: جدول واحد مع عمود النوع</div>
+                    <p>ننشئ <strong>جدول واحد</strong> يحوي كل خصائص الأب وجميع الأبناء.</p>
+                    <ul>
+                        <li>نضيف <strong>عمود نوع</strong> لتمييز الكيانات</li>
+                        <li>الخصائص الخاصة بالأبناء ممكن تكون NULL للكيانات اللي ما تنطبق عليهم</li>
+                        <li>أنسب لـ <strong>التخصص المتداخل (Overlapping)</strong></li>
+                    </ul>
+                </div>
+
+                <div class="note-box">
+                    <div class="box-title">🔹 الطريقة ٤: جدول واحد مع أعمدة نوع متعددة</div>
+                    <p>جدول واحد مع <strong>أعمدة منطقية متعددة</strong> (واحد لكل ابن).</p>
+                    <ul>
+                        <li>كل عمود منطقي يشير إلى انتماء الكيان للابن المحدد</li>
+                        <li>أنسب لـ <strong>التخصص المتداخل (Overlapping)</strong> لما الكيان الواحد يقدر ينتمي لأكثر من ابن</li>
+                    </ul>
+                </div>
+
+                <div class="important-box">
+                    <div class="box-title">💡 كيف نختار الطريقة الصح؟</div>
+                    <ul>
+                        <li><strong>منفصل + الاستعلامات تحتاج كل الكيانات:</strong> الطريقة ١</li>
+                        <li><strong>كلي + منفصل:</strong> الطريقة ٢</li>
+                        <li><strong>متداخل:</strong> الطريقة ٣ أو ٤</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="section" id="step9">
+            <div class="section-header">
+                <div class="section-icon">9️⃣</div>
+                <div>
+                    <h2>الخطوة ٩: تحويل أنواع الاتحاد (الفئات)</h2>
+                </div>
+            </div>
+
+            <div class="step-card">
+                <div class="step-header">
+                    <div class="step-number">٩</div>
+                    <h4>أنواع الاتحاد (Union Types / Categories)</h4>
+                </div>
+                
+                <div class="concept-box">
+                    <div class="box-title">📋 الخوارزمية</div>
+                    <p>لكل <strong>فئة (اتحاد)</strong>:</p>
+                    <ol>
+                        <li>أنشئ جدول للـ <strong>فئة</strong></li>
+                        <li>أضف <strong>مفتاح بديل (Surrogate key)</strong> كمفتاح أساسي</li>
+                        <li>أضف هذا المفتاح البديل <strong>كمفتاح خارجي</strong> في كل جدول من جداول الكيانات الأب</li>
+                        <li>المفتاح البديل يربط كيانات الفئة بكيانات الأب المناظرة</li>
+                    </ol>
+                </div>
+
+                <div class="example-box">
+                    <div class="box-title">💡 مثال: فئة المالك (OWNER)</div>
+                    <p><strong>الفئة:</strong> مالك (اتحاد شخص، بنك، شركة)</p>
+                    <p style="margin-top: 15px;"><strong>المخطط العلائقي:</strong></p>
+                    <div class="notation">
+OWNER(<u>Owner_id</u>, Owner_type, ...)
+
+PERSON(<u>SSN</u>, Name, Owner_id)
+BANK(<u>Bank_code</u>, Name, Owner_id)
+COMPANY(<u>Reg_no</u>, Name, Owner_id)
+                    </div>
+                    <p style="margin-top: 10px;">Owner_id هو المفتاح البديل اليربط الفئة بالجدول الأب المناسب</p>
+                </div>
+
+                <div class="important-box">
+                    <div class="box-title">🎯 ليش نستخدم مفاتيح بديلة؟</div>
+                    <p>الفئات تجمع كيانات من <strong>كيانات أب بمفاتيح أساسية مختلفة</strong>. المفتاح البديل يعطينا طريقة موحدة للإشارة لأعضاء الفئة بغض النظر عن أي جدول أب ينتمون له.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="section" id="ddl">
+            <div class="section-header">
+                <div class="section-icon">💻</div>
+                <div>
+                    <h2>أساسيات لغة تعريف البيانات (DDL)</h2>
+                </div>
+            </div>
+
+            <div class="concept-box">
+                <div class="box-title">📘 وش هي DDL؟</div>
+                <p><strong>لغة تعريف البيانات (DDL)</strong> نستخدمها لتعريف، تعديل، وحذف هياكل قاعدة البيانات. أشهر أوامر DDL: CREATE، ALTER، DROP.</p>
+            </div>
+
+            <h3>CREATE TABLE</h3>
+            <div class="example-box">
+                <div class="box-title">📝 الصيغة الأساسية</div>
+                <div class="notation">
+CREATE TABLE table_name (
+    column_1 datatype,
+    column_2 datatype,
+    column_3 datatype,
+    ...
+);
+                </div>
+            </div>
+
+            <div class="example-box">
+                <div class="box-title">💡 مثال: إنشاء جدول CUSTOMER</div>
+                <div class="notation">
+CREATE TABLE CUSTOMER (
+    Customer_id NUMBER(4),
+    CustomerName VARCHAR(30),
+    CustomerAddress VARCHAR(50)
+);
+                </div>
+            </div>
+
+            <h3>المفاتيح الأساسية</h3>
+            <div class="example-box">
+                <div class="box-title">🔑 تعريف المفتاح الأساسي</div>
+                <div class="notation">
+CREATE TABLE CUSTOMER (
+    Customer_id NUMBER(4) NOT NULL,
+    CustomerName VARCHAR(30) NOT NULL,
+    CustomerAddress VARCHAR(50),
+    PRIMARY KEY (Customer_id)
+);
+                </div>
+            </div>
+
+            <h3>المفاتيح المركبة</h3>
+            <div class="example-box">
+                <div class="box-title">🔗 مفتاح أساسي مركب</div>
+                <div class="notation">
+CREATE TABLE Persons (
+    ID INT NOT NULL,
+    LastName VARCHAR(255) NOT NULL,
+    FirstName VARCHAR(255),
+    Age INT,
+    CONSTRAINT PK_Person PRIMARY KEY (ID, LastName)
+);
+                </div>
+            </div>
+
+            <h3>المفاتيح الخارجية</h3>
+            <div class="example-box">
+                <div class="box-title">🔗 تعريف المفتاح الخارجي</div>
+                <div class="notation">
+CREATE TABLE Orders (
+    OrderID INT NOT NULL,
+    OrderNumber INT NOT NULL,
+    PersonID INT,
+    PRIMARY KEY (OrderID),
+    FOREIGN KEY (PersonID) REFERENCES Persons(PersonID)
+);
+
+-- أو مع تسمية القيد:
+CREATE TABLE Orders (
+    OrderID INT NOT NULL,
+    OrderNumber INT NOT NULL,
+    PersonID INT,
+    PRIMARY KEY (OrderID),
+    CONSTRAINT FK_PersonOrder 
+        FOREIGN KEY (PersonID) 
+        REFERENCES Persons(PersonID)
+);
+                </div>
+            </div>
+
+            <h3>قيود DDL</h3>
+            <div class="note-box">
+                <div class="box-title">⚙️ أشهر القيود</div>
+                <p><strong>قيود على الأعمدة:</strong></p>
+                <ul>
+                    <li><strong>NOT NULL:</strong> العمود لازم يكون له قيمة</li>
+                    <li><strong>UNIQUE:</strong> قيمة العمود تكون فريدة في الجدول</li>
+                    <li><strong>CHECK:</strong> قيمة العمود تحقق شرط معين</li>
+                    <li><strong>DEFAULT:</strong> قيمة افتراضية إذا ما أدخلنا شيء</li>
+                </ul>
+                <p style="margin-top: 15px;"><strong>حالات المفاتيح الخارجية:</strong></p>
+                <ul>
+                    <li><strong>ON DELETE CASCADE:</strong> حذف الصفوف المرتبطة لما يُحذف الصف المُشار إليه</li>
+                    <li><strong>ON UPDATE CASCADE:</strong> تحديث المفتاح الخارجي لما يتحدث المفتاح الأساسي</li>
+                    <li><strong>ON DELETE SET NULL:</strong> يخلي المفتاح الخارجي NULL لما يُحذف الصف المُشار إليه</li>
+                </ul>
+            </div>
+
+            <div class="example-box">
+                <div class="box-title">💡 مثال كامل: جدول DEPENDENT</div>
+                <div class="notation">
+CREATE TABLE Employee (
+    ID INT NOT NULL,
+    EmployeeName VARCHAR(255) NOT NULL,
+    PRIMARY KEY (ID)
+);
+
+CREATE TABLE DEPENDENT (
+    Name VARCHAR(255) NOT NULL,
+    EmployeeID INT NOT NULL,
+    DateOfBirth DATE,
+    Gender VARCHAR(1) DEFAULT 'F',
+    CONSTRAINT PK_Dependent PRIMARY KEY (EmployeeID, Name),
+    FOREIGN KEY (EmployeeID) REFERENCES Employee(ID)
+);
+                </div>
+            </div>
+
+            <h3>ALTER و DROP</h3>
+            <div class="example-box">
+                <div class="box-title">🔧 تعديل وحذف الجداول</div>
+                <div class="notation">
+-- ALTER: إضافة أو تعديل أعمدة
+ALTER TABLE Employee ADD Email VARCHAR(100);
+ALTER TABLE Employee MODIFY Salary NUMBER(10,2);
+
+-- DROP: حذف الجدول كامل
+DROP TABLE DEPENDENT;
+
+-- TRUNCATE: حذف كل الصفوف مع بقاء هيكل الجدول
+TRUNCATE TABLE Orders;
+
+-- RENAME: تغيير اسم الجدول
+RENAME TABLE Old_Name TO New_Name;
+                </div>
+            </div>
+
+            <div class="important-box">
+                <div class="box-title">⚠️ أفضل الممارسات</div>
+                <ul>
+                    <li>دايمًا حدد <strong>المفاتيح الأساسية</strong> بشكل صريح</li>
+                    <li>استخدم <strong>أسماء قيود مفهومة</strong> عشان تسهل الصيانة</li>
+                    <li>حدد <strong>NOT NULL</strong> للخصائص الأساسية</li>
+                    <li>حدد <strong>ON DELETE/UPDATE</strong> للمفاتيح الخارجية</li>
+                    <li>استخدم <strong>أنواع بيانات وأحجام مناسبة</strong></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-header">
+                <div class="section-icon">✨</div>
+                <div>
+                    <h2>ملخص الفصل</h2>
+                </div>
+            </div>
+
+            <div class="concept-box">
+                <div class="box-title">🎯 النقاط الرئيسية</div>
+                <ul>
+                    <li><strong>الخطوات ١-٢:</strong> تحويل الكيانات ينشئ الجداول الأساسية (العادية والضعيفة).</li>
+                    <li><strong>الخطوات ٣-٥:</strong> تحويل العلاقات يعتمد على نوع العلاقة (1:1، 1:N، M:N).</li>
+                    <li><strong>الخطوة ٦:</strong> الخصائص متعددة القيم تحتاج جداول مستقلة.</li>
+                    <li><strong>الخطوة ٧:</strong> العلاقات متعددة الأطراف تحتاج جداول مستقلة للعلاقة.</li>
+                    <li><strong>الخطوات ٨-٩:</strong> تراكيب EER لها عدة طرق للتحويل حسب النوع.</li>
+                    <li><strong>DDL:</strong> أوامر SQL اللي تحوّل المخططات المنطقية إلى جداول فعلية في قاعدة البيانات.</li>
+                </ul>
+            </div>
+
+            <div class="important-box">
+                <div class="box-title">🎓 الخطوات الجاية</div>
+                <p>بعد ما تتعلم تحويل ER إلى علائقي، تقدر:</p>
+                <ul>
+                    <li>تحول أي مخطط ER أو EER إلى جداول علائقية.</li>
+                    <li>تستخدم DDL لتنفيذ المخططات في قواعد بيانات حقيقية.</li>
+                    <li>تكتب استعلامات SQL عشان تتعامل مع البيانات وتستخرجها.</li>
+                    <li>تفهم التسوية (Normalization) عشان تصمم مخططات مثالية.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer">
+            <div class="name">شوق العمران</div>
+            <div style="font-size: 1.1rem; opacity: 0.9;">CS 340: مقدمة في أنظمة قواعد البيانات</div>
+            <div style="font-size: 1.1rem; opacity: 0.9;">الفصل الخامس - تحويل ER إلى علائقي و DDL</div>
+            <div style="font-size: 1rem; margin-top: 15px; opacity: 0.8;">📚 دليل دراسة شامل</div>
+        </div>
+    </div>
+
+    <script>
+        document.querySelectorAll('.toc-item a').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            });
+        });
+    </script>
+</body>
+</html>
