@@ -1,6 +1,6 @@
 # My Journey as a Student Tutor
 
-?? note "Workshop Poster"
+??? note "Workshop Poster"
     ![Workshop Poster](pics/poster.png)
 
 **Presenter:** Shoug Alomran  
