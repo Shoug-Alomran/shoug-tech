@@ -1,6 +1,7 @@
 # My Journey as a Student Tutor
 
-![Workshop Poster](pics/poster.png)
+?? note "Workshop Poster"
+    ![Workshop Poster](pics/poster.png)
 
 **Presenter:** Shoug Alomran  
 **Workshop:** رحلتي مع تقديم دروس التقوية / My Journey as a Student Tutor  

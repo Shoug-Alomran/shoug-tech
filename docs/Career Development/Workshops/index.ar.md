@@ -5,5 +5,5 @@
 
 ## ورش العمل
 
-* [دورة مكثفة في الأمن السيبراني — Offensive Security](cybersecurity-crash-course/overview.md)
-* [رحلتي كطالبة مُدرِّسة](My Journey as a Student Tutor/overview.md)
+- [دورة مكثفة في الأمن السيبراني — Offensive Security](cybersecurity-crash-course/overview.md)
+- [رحلتي كطالبة مُدرِّسة](My Journey as a Student Tutor/overview.md)
