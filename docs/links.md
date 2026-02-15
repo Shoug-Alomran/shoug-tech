@@ -219,6 +219,9 @@ A quick guide to what each tag means — click any to jump to its section 👇
 [VitePress](https://vitepress.dev) — lightning-fast static site generator powered by Vite & Vue.  
 `#docs` `#vue` `#vite` `#frontend`
 
+[Plane](https://plane.so)- open-source project management & issue tracking platform (Linear/Jira alternative).
+`#devops` `#project-management` `#open-source` `#planning`
+
 ---
 
 ## Servers, Configs & Formats
