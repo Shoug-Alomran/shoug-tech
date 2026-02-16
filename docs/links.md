@@ -17,7 +17,7 @@
 
 ## Tag Legend
 
-A quick guide to what each tag means — click any to jump to its section 👇  
+A quick guide to what each tag means — click any to jump to its section  
 
 ### [Learning & Development](#learning-development)
 `#learning` `#reference` `#dev` `#videos` `#articles` `#java`  
