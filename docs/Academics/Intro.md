@@ -38,23 +38,21 @@ Each course typically includes:
 
 ### SE201 — Software Engineering
 
-**Focus:** Foundations of software engineering, processes, design, testing, and project management.
+**Focus:** Foundations of software engineering, processes, design, testing, and project management.  
 **You’ll find:** Chapter notes, UML & diagrams guide, cheat sheets, quizzes, and summaries.
 
---> **Start here:**
-
-* [SE201 Overview](.../SE201/Intro.md)
+→ **Start here:**  
+[SE201 Overview](/Academics/software-engineering/SE201/Intro/)
 
 ---
 
 ### SE311 — Software Requirements Engineering
 
-**Focus:** Requirements elicitation, analysis, specification, validation, and negotiation.
+**Focus:** Requirements elicitation, analysis, specification, validation, and negotiation.  
 **You’ll find:** Structured chapter notes, a midterm cheat sheet, and practice quizzes.
 
---> **Start here:**
-
-* [SE311 Overview](./SE311/Intro.md)
+→ **Start here:**  
+[SE311 Overview](/Academics/software-engineering/SE311/Intro/)
 
 ---
 
@@ -62,45 +60,41 @@ Each course typically includes:
 
 ### CS210 — Data Structures
 
-**Focus:** Core data structures and algorithms (lists, trees, hashing, sorting, recursion, etc.).
+**Focus:** Core data structures and algorithms (lists, trees, hashing, sorting, recursion, etc.).  
 **You’ll find:** Topic-based notes and multiple cheat sheets.
 
---> **Start here:**
-
-* [CS210 Overview](./CS210/Intro.md)
+→ **Start here:**  
+[CS210 Overview](/Academics/computer-science/CS210/Intro/)
 
 ---
 
 ### CS285 — Discrete Mathematics
 
-**Focus:** Logic, proofs, relations, counting, induction, and cryptography foundations.
+**Focus:** Logic, proofs, relations, counting, induction, and cryptography foundations.  
 **You’ll find:** Chapter notes and a concise cheat sheet.
 
---> **Start here:**
-
-* [CS285 Overview](./CS285/Intro.md)
+→ **Start here:**  
+[CS285 Overview](/Academics/computer-science/CS285/Intro/)
 
 ---
 
 ### CS330 — Operating Systems
 
-**Focus:** Processes, threads, CPU scheduling, memory management, synchronization, and deadlocks.
+**Focus:** Processes, threads, CPU scheduling, memory management, synchronization, and deadlocks.  
 **You’ll find:** Chapter notes, summaries, cheat sheets, and quizzes.
 
---> **Start here:**
-
-* [CS330 Overview](./CS330/Intro.md)
+→ **Start here:**  
+[CS330 Overview](/Academics/computer-science/CS330/Intro/)
 
 ---
 
 ### CS340 — Database Systems
 
-**Focus:** Database design, relational model, SQL, transactions, concurrency, and NoSQL.
+**Focus:** Database design, relational model, SQL, transactions, concurrency, and NoSQL.  
 **You’ll find:** Chapter notes, handouts, cheat sheets, symbols, mind maps, and quizzes.
 
---> **Start here:**
-
-* [CS340 Overview](./CS340/Intro.md)
+→ **Start here:**  
+[CS340 Overview](/Academics/computer-science/CS340/Intro/)
 
 ---
 
@@ -108,19 +102,18 @@ Each course typically includes:
 
 ### CYS401 — Cyber Security
 
-**Focus:** Cybersecurity foundations, principles, and core concepts.
+**Focus:** Cybersecurity foundations, principles, and core concepts.  
 **You’ll find:** Chapter notes and quizzes for practice.
 
---> **Start here:**
-
-* [CYS401 Overview](../CYS401/Intro.md)
+→ **Start here:**  
+[CYS401 Overview](/Academics/cyber-security/CYS401/Intro/)
 
 ---
 
 ## Who This Is For
 
-- **Students**: Use this as structured revision and study support
-- **Instructors**: Browse the material organization and depth
+- **Students**: Use this as structured revision and study support  
+- **Instructors**: Browse the material organization and depth  
 - **Employers**: See how I structure knowledge, document systems, and explain technical topics
 
 ---
