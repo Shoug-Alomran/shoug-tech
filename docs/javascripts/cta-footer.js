@@ -109,8 +109,8 @@
     const homeHref = isArabic() ? url("ar/") : url("");
     const academicsHref = isArabic() ? url("ar/Academics/intro/") : url("Academics/intro/");
     const careerHref = isArabic()
-      ? url("ar/Career%20Development/me/")
-      : url("Career%20Development/me/");
+      ? url("ar/career-development/me/")
+      : url("career-development/me/");
     const linksHref = isArabic() ? url("ar/links/") : url("links/");
 
     // Policies

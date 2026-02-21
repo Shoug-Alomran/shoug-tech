@@ -1,147 +1,102 @@
 # Academic Projects
 
-This page is a curated index of my academic and applied projects in software engineering, cybersecurity, and computer science.
-Projects are listed **from most recent to oldest** to reflect my technical growth over time.
-
-Most of these projects were developed as part of university courses and team work. My contributions typically focus on **system structure, documentation, integration, and deployment**, and on taking projects beyond minimum requirements to produce complete, usable systems. Each entry links to a dedicated project site or repository with full technical details.
+[:octicons-mark-github-16: View All on GitHub](https://github.com/Shoug-Alomran){ .md-button .md-button--primary }
 
 ---
 
-## CS340 Full Stack Database Web Application
+A curated index of my academic and applied projects in software engineering, 
+cybersecurity, and computer science — listed from most recent to oldest to 
+reflect my technical growth over time.
 
-A complete database driven web application built from conceptual design to a deployed system.
-
-**Role:** Designed the data model, structured the documentation, and handled system integration and deployment.
-**Focus:**
-
-* EER modeling and normalization
-* SQL integration and CRUD workflows
-* Full documentation site using MkDocs
-
-**Links:**
-
-* Repository: [https://github.com/Shoug-Alomran/cs340-database-web-application](https://github.com/Shoug-Alomran/cs340-database-web-application)
-* Project site: [https://database.shoug-tech.com](https://database.shoug-tech.com)
-
-(Ongoing)
+Most projects were developed in university team contexts. My contributions 
+consistently focus on **system structure, documentation, integration, and 
+deployment** — taking projects beyond minimum requirements to produce complete, 
+usable systems.
 
 ---
 
-## SE311 Software Requirements Analysis Project (Sillah)
+## Software Engineering
 
-A full requirements engineering project applying formal SE311 methodologies to a real system.
+<div class="grid cards" markdown>
 
-**Role:** Led the structure and documentation of the requirements process and models.
-**Focus:**
+-  ### **SE311 — Software Requirements Analysis (Sillah)**
 
-* Vision and scope, elicitation, analysis, specification, and validation
-* UML and GRL/URN modeling
-* Traceability and multi release planning
-* Full documentation site using MkDocs
+    Full requirements engineering project applying formal SE311 methodologies.
+    Vision & scope, elicitation, UML/GRL modeling, traceability, multi-release planning.
 
-**Links:**
+    **Role:** Led requirements structure, documentation, and modeling.
 
-* Repository: [https://github.com/Shoug-Alomran/SE311-Software-Requirements-Analysis](https://github.com/Shoug-Alomran/SE311-Software-Requirements-Analysis)
-* Project site: [https://software-requirements-analysis.shoug-tech.com](https://software-requirements-analysis.shoug-tech.com)
+    [Repository](https://github.com/Shoug-Alomran/SE311-Software-Requirements-Analysis) · 
+    [Project Site](https://software-requirements-analysis.shoug-tech.com) · *Ongoing*
 
-(Ongoing)
+-  ### **SE201 — Sillah Project**
 
----
+    Preventive health management system with full software engineering documentation.
+    Requirements specification, UML diagrams, end-to-end system modeling.
 
-## CS330 Parallel Performance Evaluation in Linux
+    **Role:** System analysis, documentation structure, and modeling lead.
 
-An operating systems project focused on process based parallelism and performance measurement in a Linux environment.
+    [Repository](https://github.com/Shoug-Alomran/SE201--Sillah-Project) · 
+    [Docs](https://sillah.shoug-tech.com) · 
+    [App](https://se201--sillah-project.vercel.app) *(under maintenance)*
 
-**Role:** Structured the experiments and documentation and handled the project site setup.
-**Focus:**
-
-* Process creation and synchronization using fork
-* Controlled performance experiments
-* Reproducible experiment documentation with MkDocs
-
-**Links:**
-
-* Repository: [https://github.com/Shoug-Alomran/CS330-Parallel-Performance-Evaluation-in-Linux-Project](https://github.com/Shoug-Alomran/CS330-Parallel-Performance-Evaluation-in-Linux-Project)
-* Project site: [https://operating-systems.shoug-tech.com](https://operating-systems.shoug-tech.com)
-
-(Ongoing)
+</div>
 
 ---
 
-## CS285 Cryptography Project
+## Computer Science
 
-An implementation of a secure key exchange system based on the Diffie Hellman algorithm.
+<div class="grid cards" markdown>
 
-**Role:** Implemented the system and documented the cryptographic workflow.
-**Focus:**
+- ###  **CS340 — Full Stack Database Web Application**
 
-* Number theory and modular arithmetic
-* Key generation and shared secret derivation
-* Applied cryptography concepts in Java
+    Complete database-driven web app from conceptual design to deployed system.
+    EER modeling, normalization, SQL/CRUD workflows, full MkDocs documentation.
 
-**Links:**
+    **Role:** Data model design, documentation, system integration and deployment.
 
-* Repository: [https://github.com/Shoug-Alomran/CS285-CryptographyProject](https://github.com/Shoug-Alomran/CS285-CryptographyProject)
-* Project site: [https://secure-key-exchange.shoug-tech.com](https://secure-key-exchange.shoug-tech.com)
+    [Repository](https://github.com/Shoug-Alomran/cs340-database-web-application) · 
+    [Project Site](https://database.shoug-tech.com) · *Ongoing*
 
----
+- ###  **CS330 — Parallel Performance Evaluation in Linux**
 
-## SE201 Sillah Project
+    Process-based parallelism and performance measurement in a Linux environment.
+    Fork-based process creation, controlled experiments, reproducible documentation.
 
-A preventive health management system focused on structured software documentation and system modeling.
+    **Role:** Structured experiments, documentation, and project site setup.
 
-**Role:** Contributed to system analysis and led the documentation and modeling structure.
-**Focus:**
+    [Repository](https://github.com/Shoug-Alomran/CS330-Parallel-Performance-Evaluation-in-Linux-Project) · 
+    [Project Site](https://operating-systems.shoug-tech.com) · *Ongoing*
 
-* Software requirements specification
-* UML diagrams and system design documentation
-* End to end documentation using engineering standards
+- ###  **CS285 — Cryptography Project**
 
-**Links:**
+    Secure key exchange system implementing the Diffie-Hellman algorithm in Java.
+    Number theory, modular arithmetic, key generation, shared secret derivation.
 
-* Repository: [https://github.com/Shoug-Alomran/SE201--Sillah-Project](https://github.com/Shoug-Alomran/SE201--Sillah-Project)
-* Documentation site: [https://sillah.shoug-tech.com](https://sillah.shoug-tech.com)
-* Application site: [https://se201--sillah-project.vercel.app](https://se201--sillah-project.vercel.app) (under maintenance)
+    **Role:** Implemented the system and documented the cryptographic workflow.
 
----
+    [Repository](https://github.com/Shoug-Alomran/CS285-CryptographyProject) · 
+    [Project Site](https://secure-key-exchange.shoug-tech.com)
 
-## CS210 Linked List Implementation and Runtime Analysis
+-  ### **CS210 — Linked List Implementation and Runtime Analysis**
 
-An implementation and performance analysis of a singly linked list.
+    Singly linked list implementation with performance analysis in Java.
+    Core data structure operations, runtime complexity discussion, modular design.
 
-**Role:** Implemented the data structure and performed runtime analysis.
-**Focus:**
+    **Role:** Implemented the data structure and performed runtime analysis.
 
-* Core data structure operations
-* Runtime and complexity discussion
-* Clean modular Java implementation
+    [Repository](https://github.com/Shoug-Alomran/CS210-Project-Linked-List-Implementation-and-Runtime-Analysis) · 
+    [Project Site](https://linkedlist.shoug-tech.com)
 
-**Links:**
+- ###  **CS102 — School Course Enrollment System**
 
-* Repository: [https://github.com/Shoug-Alomran/CS210-Project-Linked-List-Implementation-and-Runtime-Analysis](https://github.com/Shoug-Alomran/CS210-Project-Linked-List-Implementation-and-Runtime-Analysis)
-* Project site: [https://linkedlist.shoug-tech.com](https://linkedlist.shoug-tech.com)
+    Console-based university course registration platform with multiple user roles.
+    Role-based access, file persistence, modular OOP design in Java.
+    Built almost entirely independently under difficult team conditions.
 
----
+    **Role:** Designed and implemented the full system from scratch.
 
-## CS102 School Course Enrollment System
+    [Repository](https://github.com/Shoug-Alomran/CS102-SchoolCourseEnrolmentSystem) · 
+    [Project Site](https://school-course-enrolment-system.shoug-tech.com)
 
-A console based system simulating a university course registration platform with multiple user roles.
-
-**Role:** Designed and implemented the system from scratch and handled the full codebase.
-**Focus:**
-
-* Role based access and workflows
-* File based persistence and data handling
-* Modular object oriented design in Java
-
-**Links:**
-
-* Repository: [https://github.com/Shoug-Alomran/CS102-SchoolCourseEnrolmentSystem](https://github.com/Shoug-Alomran/CS102-SchoolCourseEnrolmentSystem)
-* Project site: [https://school-course-enrolment-system.shoug-tech.com](https://school-course-enrolment-system.shoug-tech.com)
-
----
-
-## Source Code
-
-All repositories are available on my GitHub profile:
-[https://github.com/Shoug-Alomran](https://github.com/Shoug-Alomran)
+</div>

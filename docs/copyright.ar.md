@@ -1,31 +1,49 @@
-# حقوق النشر وسياسة الاستخدام
+# :copyright: Copyright & Usage Policy
 
-© 2026 شوق فواز العمران. جميع الحقوق محفوظة.
+*© 2026 Shoug Fawaz Alomran. All rights reserved.*
 
-جميع المحتويات المنشورة ضمن هذا النطاق والنطاقات الفرعية التابعة له، بما في ذلك:
+---
 
-- مشاريع البرمجيات
-- الشيفرة المصدرية
-- التوثيق
-- التصاميم
-- الأبحاث
-- المحتوى المكتوب
+All content published under this domain and its subdomains is protected by
+international copyright laws. This includes software projects, source code,
+documentation, designs, research, and written content.
 
-محمية بموجب قوانين حقوق النشر الدولية.
+---
 
-## الاستخدام المسموح
-- الاطلاع والاستشهاد لأغراض شخصية، تعليمية، وغير تجارية
-- اقتباس أجزاء صغيرة مع الإشارة الواضحة إلى المصدر
+## :white_check_mark: Permitted & Prohibited Use
 
-## الاستخدام الممنوع
-- إعادة إنتاج أو إعادة توزيع المشاريع كاملة
-- الاستخدام التجاري دون إذن كتابي مسبق
-- ادعاء ملكية هذا العمل أو نسبه للنفس
+<div class="grid cards" markdown>
 
-## التراخيص
-قد تتضمن بعض المشاريع تراخيص مستقلة خاصة بها.  
-في حال وجود تعارض، تكون أولوية التطبيق لترخيص المشروع نفسه.
+-   :green_circle: **You May**
 
-## التواصل
-للاستفسارات المتعلقة بالأذونات أو التراخيص:
-[Shoug.Alomran@Shoug-Tech.com](mailto:Shoug.Alomran@Shoug-Tech.com)
+    ---
+
+    - View and reference content for personal, educational, and
+      non-commercial purposes
+    - Quote small portions with proper attribution
+
+-   :red_circle: **You May Not**
+
+    ---
+
+    - Reproduce or redistribute full projects
+    - Use content commercially without written permission
+    - Claim authorship of this work
+
+</div>
+
+---
+
+## :scroll: Licensing
+
+Specific projects may include their own separate licenses. In the event of
+any conflict between a project-level license and this policy, the
+project-level license takes precedence.
+
+---
+
+## :envelope: Contact
+
+For permissions or licensing inquiries, please reach out directly.
+
+**Email:** [Shoug.Alomran@Shoug-Tech.com](mailto:Shoug.Alomran@Shoug-Tech.com)

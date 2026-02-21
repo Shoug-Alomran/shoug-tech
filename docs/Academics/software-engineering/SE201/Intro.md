@@ -1,97 +1,112 @@
-# SE201 Introduction to Software Engineering
+# :pencil: SE201 — Introduction to Software Engineering
 
-This course covers the fundamental principles, processes, and ethics of software engineering. It focuses on how software is planned, designed, implemented, tested, and maintained in real-world environments.
+This course covers the fundamental principles, processes, and ethics of
+software engineering. It focuses on how software is planned, designed,
+implemented, tested, and maintained in real-world environments.
 
-This section contains my structured study material for SE201, including:
-- Chapter notes
-- Quizzes and practice questions
-- Cheat sheets and summaries
-- UML and software engineering diagrams guide
-- Additional reference material
-
-The goal of this section is to provide a clear and practical study resource, not just a list of notes.
+This section contains structured study material including chapter notes,
+quizzes and practice questions, cheat sheets and summaries, a UML and
+diagrams guide, and additional reference material. The goal is a clear,
+practical study resource — not just a list of notes.
 
 ---
 
-## How to Use This Section
+## :compass: How to Use This Section
 
-- If you are following the course week by week, start with Chapter 1 and continue in order.
-- If you are revising for quizzes or exams, use the cheat sheet, summaries, and quizzes.
-- If you are working on diagrams or design tasks, use the UML and diagrams guide.
+Depending on where you are in the course, use this section differently.
 
-This page is the main entry point to all SE201 material.
-
----
-
-## Course Chapters
-
-### Chapter 1 Software Engineering Practice and Ethics
-- What software engineering is  
-- Types of software  
-- Professional ethics and responsibilities  
-
-### Chapter 2 Software Engineering Process
-- SDLC models such as Waterfall, Iterative, and Spiral  
-- Requirements engineering activities  
-- Capability Maturity Model (CMM)  
-
-### Chapter 3 Agile Software Development
-- Agile principles and values  
-- Scrum and Extreme Programming (XP)  
-- Agile versus plan driven development  
-
-### Chapter 4 Planning and Managing the Project
-- Project scheduling  
-- Risk management  
-- Ethical issues in project leadership  
-
-### Chapter 5 Requirements Engineering
-- Functional and non functional requirements  
-- Requirements gathering and documentation  
-- System modeling, including structural, behavioral, and implementation models  
-
-### Chapter 6 Designing the Software
-- Design principles and patterns  
-- Architectural styles  
-- Interface design  
-
-### Chapter 7 Implementing the Software
-- Coding standards and best practices  
-- Reuse and modularity  
-- Documentation and source code organization  
-
-### Chapter 8 Testing the Software
-- Types of faults  
-- Levels of testing  
-- Why software projects fail  
+If you are **following the course week by week**, start with Chapter 1 and
+continue in order. If you are **revising for quizzes or exams**, use the
+cheat sheet, summaries, and quizzes. If you are **working on diagrams or
+design tasks**, go directly to the UML and diagrams guide.
 
 ---
 
-## Study and Reference Material
+## :card_index_dividers: Course Chapters
 
-In addition to the chapter notes, this section also includes:
+<div class="grid cards" markdown>
 
-- A cheat sheet for quick revision  
-- A full course summary in PDF format  
-- A Jira guide related to project management workflows  
-- A complete UML and software engineering diagrams guide  
-- Quizzes and compiled multiple choice questions for practice  
+-   :one: **Chapter 1 — Software Engineering Practice & Ethics**
 
-These materials are intended to support both understanding and exam preparation.
+    ---
+
+    What software engineering is, types of software, and professional ethics
+    and responsibilities.
+
+-   :two: **Chapter 2 — Software Engineering Process**
+
+    ---
+
+    SDLC models including Waterfall, Iterative, and Spiral, requirements
+    engineering activities, and the Capability Maturity Model (CMM).
+
+-   :three: **Chapter 3 — Agile Software Development**
+
+    ---
+
+    Agile principles and values, Scrum and Extreme Programming (XP), and
+    agile versus plan-driven development.
+
+-   :four: **Chapter 4 — Planning & Managing the Project**
+
+    ---
+
+    Project scheduling, risk management, and ethical issues in project
+    leadership.
+
+-   :five: **Chapter 5 — Requirements Engineering**
+
+    ---
+
+    Functional and non-functional requirements, requirements gathering and
+    documentation, and structural, behavioral, and implementation modeling.
+
+-   :six: **Chapter 6 — Designing the Software**
+
+    ---
+
+    Design principles and patterns, architectural styles, and interface
+    design.
+
+-   :seven: **Chapter 7 — Implementing the Software**
+
+    ---
+
+    Coding standards and best practices, reuse and modularity, documentation,
+    and source code organization.
+
+-   :eight: **Chapter 8 — Testing the Software**
+
+    ---
+
+    Types of faults, levels of testing, and why software projects fail.
+
+</div>
 
 ---
 
-## Recommended Study Path
+## :notepad_spiral: Study & Reference Material
 
-1. Read the chapter notes in order from Chapter 1 to Chapter 8  
-2. Use the UML and diagrams guide when working on design related topics  
-3. Review the cheat sheet and summary before quizzes or exams  
-4. Test your understanding using the quizzes and compiled questions  
+In addition to the chapter notes, this section includes a cheat sheet for
+quick revision, a full course summary in PDF format, a Jira guide for project
+management workflows, a complete UML and software engineering diagrams guide,
+and quizzes with compiled multiple-choice questions for practice. These are
+designed to support both deep understanding and efficient exam preparation.
 
 ---
 
-## Notes
+## :round_pushpin: Recommended Study Path
 
-- This material is based on my coursework and personal study.
-- The focus is on clarity, structure, and practical understanding.
-- The content will continue to be refined and expanded over time.
+| Step | Topic |
+|------|-------|
+| 1 | Read chapter notes in order from Chapter 1 to Chapter 8 |
+| 2 | Use the UML and diagrams guide for design-related topics |
+| 3 | Review the cheat sheet and summary before quizzes or exams |
+| 4 | Test understanding using the quizzes and compiled questions |
+
+---
+
+!!! note "About This Material"
+    These notes are based on my own coursework and personal study. The focus
+    is on clarity, structure, and practical understanding. Content will
+    continue to be refined and expanded over time.

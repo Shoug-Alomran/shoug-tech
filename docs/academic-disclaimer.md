@@ -1,78 +1,82 @@
-# Academic Disclaimer
+# :scroll: Academic Disclaimer
 
 *Last updated: 2026*
 
-## 1. Purpose of This Website
+---
 
-Shoug’s Digital Garden is a personal academic documentation platform.
-
-The materials published under the **Academics** section — including notes, summaries, diagrams, quizzes, cheat sheets, and reflections — are created as part of my personal learning process and knowledge organization.
-
-They are intended for educational and reference purposes only.
+Shoug's Digital Garden is a personal academic documentation platform. The
+materials published here are created as part of my personal learning process
+and knowledge organization — intended for educational and reference purposes
+only.
 
 ---
 
-## 2. Nature of the Content
+## :notepad_spiral: Purpose of This Website
 
-All academic content on this website:
-
-* Reflects my personal understanding and interpretation of course material
-* May simplify, reorganize, or rephrase official material for clarity
-* Is not an official representation of any university, instructor, or institution
-* Should not be considered a substitute for lectures, textbooks, or official course documentation
+The content in the Academics section — including notes, summaries, diagrams,
+quizzes, cheat sheets, and reflections — reflects my personal understanding
+and interpretation of course material. It may simplify, reorganize, or
+rephrase official material for clarity, and should not be considered a
+substitute for lectures, textbooks, or official course documentation.
 
 While care is taken to ensure accuracy, errors or omissions may exist.
 
 ---
 
-## 3. University Affiliation
+## :classical_building: University Affiliation
 
-This website is not formally affiliated with any academic institution.
-
-Course names and structures are referenced for documentation purposes only.
-All rights to official course materials remain with their respective institutions and instructors.
-
----
-
-## 4. Intellectual Property
-
-Some materials may reference:
-
-* Standard textbooks
-* Academic frameworks
-* Publicly available educational resources
-
-Where applicable, proper attribution is provided.
-
-All original notes, summaries, and structured documentation on this website are my own intellectual work unless otherwise stated.
+This website is not formally affiliated with any academic institution. Course
+names and structures are referenced for documentation purposes only. All rights
+to official course materials remain with their respective institutions and
+instructors.
 
 ---
 
-## 5. Use of the Content
+## :copyright: Intellectual Property
 
-You may:
+Some materials may reference standard textbooks, academic frameworks, or
+publicly available educational resources. Where applicable, proper attribution
+is provided.
 
-* Use the materials for personal study
-* Reference concepts with proper attribution
-
-You may not:
-
-* Reproduce content commercially
-* Redistribute materials without appropriate credit
-* Present the work as official institutional documentation
+All original notes, summaries, and structured documentation on this website
+are my own intellectual work unless otherwise stated.
 
 ---
 
-## 6. No Academic Liability
+## :white_check_mark: Permitted Use
 
-This website does not guarantee academic outcomes, grades, or examination performance.
+<div class="grid cards" markdown>
 
-Users are responsible for verifying information against official academic sources.
+-   :green_circle: **You May**
+
+    ---
+
+    - Use materials for personal study
+    - Reference concepts with proper attribution
+
+-   :red_circle: **You May Not**
+
+    ---
+
+    - Reproduce content commercially
+    - Redistribute materials without appropriate credit
+    - Present the work as official institutional documentation
+
+</div>
 
 ---
 
-## 7. Contact
+## :warning: No Academic Liability
 
-If you believe any content requires correction, clarification, or attribution adjustment, please contact:
+This website does not guarantee academic outcomes, grades, or examination
+performance. Users are responsible for verifying information against official
+academic sources.
+
+---
+
+## :envelope: Contact
+
+If you believe any content requires correction, clarification, or attribution
+adjustment, please reach out directly.
 
 **Email:** [inquiry@shoug-tech.com](mailto:inquiry@shoug-tech.com)

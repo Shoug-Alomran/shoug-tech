@@ -1,64 +1,63 @@
-# Welcome
+---
+hide:
+  - toc
+  - navigation
+---
 
-Hi, I’m **Shoug Fawaz Alomran**, a **software engineering and cybersecurity student** with a strong focus on **penetration testing, system design, and structured technical work**.
+<div class="home-hero" markdown>
+<div class="home-hero__text" markdown>
 
-This site is my Digital Garden. It is a living, growing space where I document what I learn, build, and teach, across software engineering, computer science, and cybersecurity.
+# Hi, I’m Shoug Fawaz Alomran
 
-It serves four main purposes:
+Software Engineering & Cybersecurity student at Prince Sultan University, with hands-on work in penetration testing, structured technical documentation, and course support (instruction and peer tutoring).
 
-* Support students with structured learning material
-* Demonstrate clarity and documentation quality to instructors
-* Showcase real technical work and growth to employers
-* Share knowledge publicly in a clear and evolving way
+This digital garden is where I publish clear, organized notes, practical projects, and curated learning resources built for students, instructors, and employers.
+
+[Browse Course Notes](Academics/Intro.md){ .md-button .md-button--primary }
+[View Portfolio](career-development/Intro.md){ .md-button }
+
+</div>
+<div class="home-hero__avatar" markdown>
+
+</div>
+</div>
 
 ---
 
-## What You’ll Find Here
+## Explore the Site
 
-### Learn
+<div class="grid cards" markdown>
 
-Structured notes, summaries, quizzes, and study material from my university courses:
+-   :books: **Academics (Course Notes)**
 
-* **Software Engineering (SE)**: SE201, SE311
-* **Computer Science (CS)**: CS285, CS210, CS330, CS340
-* **Cyber Security (CYS)**: CYS401
+    ---
 
-This section is designed for revision, understanding, and practical learning, not just storing notes.
+    Structured summaries, quizzes, and cheat sheets across Software Engineering, Computer Science, and Cybersecurity.
 
-Start here if you are a student or exploring a technical topic.
+    [:octicons-arrow-right-24: Open Academics](Academics/Intro.md)
 
----
+-   :shield: **Cybersecurity**
 
-### Career
+    ---
 
-A professional overview of my work and development, including:
+    Labs, security fundamentals, CTF writeups, and applied penetration testing notes.
 
-* My profile and technical focus
-* Academic and practical projects
-* My resume (CV)
-* Workshops, teaching, and documentation work
+    [:octicons-arrow-right-24: Explore Cybersecurity](Academics/cyber-security/Intro.md)
 
-This section shows how I work, not just what I claim to know.
+-   :briefcase: **Career Development**
 
-Start here if you are an employer or an instructor.
+    ---
 
----
+    Selected projects, workshops, professional materials, and practical work samples.
 
-### Resources
+    [:octicons-arrow-right-24: View Career Development](career-development/Intro.md)
 
-A curated collection of tools, references, and links I rely on in my studies and technical work.
+-   :link: **Resources**
 
----
+    ---
 
-!!! quote "A reminder I live by"
-*“Knowledge grows when it’s shared, not when it’s stored.”*
+    Tools, references, and links I consistently use for study and technical work.
 
----
+    [:octicons-arrow-right-24: Browse Resources](links.md)
 
-## How to Explore
-
-* Use the navigation on the left to browse by topic or section
-* Use the search bar to jump directly to specific concepts
-* Think of each page as a small, focused piece of a larger system of knowledge
-
-This garden grows over time, one project, one concept, and one insight at a time.
+</div>

@@ -1,125 +1,59 @@
-# Learn
-
-Welcome to the learning hub of **Shoug’s Digital Garden**.
-
-This section contains **structured course notes, summaries, cheat sheets, quizzes, and study guides** from my studies in:
-
-* Software Engineering
-* Computer Science
-* Cyber Security
-
-The goal is simple:
-
-> Make complex topics clearer, more structured, and easier to revise — for myself and for other students.
-
-Everything here is organized **by course** and **by topic/chapter**, so you can either:
-
-* Follow a course from start to finish, or
-* Jump directly to a specific topic you need.
-
----
-
-## How to Use This Section
-
-- If you’re **taking one of these courses** → Start with the course overview page.
-- If you’re **revising for exams** → Use the cheat sheets, summaries, and quizzes.
-- If you’re **exploring a topic** → Browse by subject area below.
-
-Each course typically includes:
-
-- Chapter notes
-- Summaries & cheat sheets
-- Quizzes / practice questions
-- (For some courses) mind maps and extra materials
-
----
-
 ## Software Engineering
 
-### SE201 — Software Engineering
+<div class="grid cards" markdown>
 
-**Focus:** Foundations of software engineering, processes, design, testing, and project management.  
-**You’ll find:** Chapter notes, UML & diagrams guide, cheat sheets, quizzes, and summaries.
+-  ### **SE201 — Software Engineering**
 
-→ **Start here:**  
-[SE201 Overview](/Academics/software-engineering/SE201/Intro/)
+    Processes, design, testing, project management. Includes UML guide, cheat sheets, and quizzes.
 
----
+    [:octicons-arrow-right-24: SE201 Overview](software-engineering/SE201/Intro.md)
 
-### SE311 — Software Requirements Engineering
+-  ### **SE311 — Requirements Engineering**
 
-**Focus:** Requirements elicitation, analysis, specification, validation, and negotiation.  
-**You’ll find:** Structured chapter notes, a midterm cheat sheet, and practice quizzes.
+    Elicitation, analysis, specification, validation. Includes cheat sheet and practice quizzes.
 
-→ **Start here:**  
-[SE311 Overview](/Academics/software-engineering/SE311/Intro/)
+    [:octicons-arrow-right-24: SE311 Overview](software-engineering/SE311/Intro.md)
 
----
+</div>
 
 ## Computer Science
 
-### CS210 — Data Structures
+<div class="grid cards" markdown>
 
-**Focus:** Core data structures and algorithms (lists, trees, hashing, sorting, recursion, etc.).  
-**You’ll find:** Topic-based notes and multiple cheat sheets.
+-  ### **CS210 — Data Structures**
 
-→ **Start here:**  
-[CS210 Overview](/Academics/computer-science/CS210/Intro/)
+    Lists, trees, hashing, sorting, recursion. Topic-based notes and cheat sheets.
 
----
+    [:octicons-arrow-right-24: CS210 Overview](computer-science/CS210/Intro.md)
 
-### CS285 — Discrete Mathematics
+-  ### **CS285 — Discrete Mathematics**
 
-**Focus:** Logic, proofs, relations, counting, induction, and cryptography foundations.  
-**You’ll find:** Chapter notes and a concise cheat sheet.
+    Logic, proofs, relations, counting, cryptography. Notes and concise cheat sheet.
 
-→ **Start here:**  
-[CS285 Overview](/Academics/computer-science/CS285/Intro/)
+    [:octicons-arrow-right-24: CS285 Overview](computer-science/CS285/Intro.md)
 
----
+-  ### **CS330 — Operating Systems**
 
-### CS330 — Operating Systems
+    Processes, scheduling, memory, synchronization. Notes, summaries, and quizzes.
 
-**Focus:** Processes, threads, CPU scheduling, memory management, synchronization, and deadlocks.  
-**You’ll find:** Chapter notes, summaries, cheat sheets, and quizzes.
+    [:octicons-arrow-right-24: CS330 Overview](computer-science/CS330/Intro.md)
 
-→ **Start here:**  
-[CS330 Overview](/Academics/computer-science/CS330/Intro/)
+- ###  **CS340 — Database Systems**
 
----
+    SQL, relational model, transactions, NoSQL. Notes, mind maps, cheat sheets, quizzes.
 
-### CS340 — Database Systems
+    [:octicons-arrow-right-24: CS340 Overview](computer-science/CS340/Intro.md)
 
-**Focus:** Database design, relational model, SQL, transactions, concurrency, and NoSQL.  
-**You’ll find:** Chapter notes, handouts, cheat sheets, symbols, mind maps, and quizzes.
+</div>
 
-→ **Start here:**  
-[CS340 Overview](/Academics/computer-science/CS340/Intro/)
+## Cybersecurity
 
----
+<div class="grid cards" markdown>
 
-## Cyber Security
+-  ### **CYS401 — Cyber Security**
 
-### CYS401 — Cyber Security
+    Foundations, principles, and core concepts. Chapter notes and practice quizzes.
 
-**Focus:** Cybersecurity foundations, principles, and core concepts.  
-**You’ll find:** Chapter notes and quizzes for practice.
+    [:octicons-arrow-right-24: CYS401 Overview](cyber-security/CYS401/Intro.md)
 
-→ **Start here:**  
-[CYS401 Overview](/Academics/cyber-security/CYS401/Intro/)
-
----
-
-## Who This Is For
-
-- **Students**: Use this as structured revision and study support  
-- **Instructors**: Browse the material organization and depth  
-- **Employers**: See how I structure knowledge, document systems, and explain technical topics
-
----
-
-## Notes on Content
-
-- These materials are based on my coursework and personal study.
-- They are written to be **clear, structured, and practical**.
-- Over time, this section will continue to grow with more refinements, examples, and improvements.
+</div>
