@@ -5,26 +5,6 @@
 
 ---
 
-I am a **software engineering and cybersecurity student** with a strong focus on 
-**penetration testing, system analysis, and structured technical work**. My academic 
-path leads to a degree titled **Software Engineer / Cyber Security**, and my practical 
-work already reflects that direction.
-
-Alongside my studies, I:
-
-* Work as a **part-time cybersecurity intern**
-* Serve as a **university tutor**
-* Teach a **private psychology course** on an educational platform
-* Build and maintain technical systems, documentation, and learning resources
-
-My long-term goal is to work in **cybersecurity with a red team mindset** — thinking 
-like an attacker to identify weaknesses, break systems safely, and help build stronger 
-defenses. At the same time, I deliberately develop **software engineering skills** 
-(web, systems, and backend concepts) to become a well-rounded engineer who understands 
-both **how systems are built** and **how they are broken**.
-
----
-
 ## How to Use This Section
 
 * **If you are an employer** → Start with **Projects** and **Resume**
