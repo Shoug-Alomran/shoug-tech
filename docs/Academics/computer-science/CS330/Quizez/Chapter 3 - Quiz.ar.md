@@ -1,3 +1,16 @@
 # اختبار الفصل الثالث
-- [فتح في علامة تبويب جديدة](./Chapter 3 - Quiz.html)
-<iframe src="../Chapter 3 - Quiz.html" width="150%" height="800" style="border:none;"></iframe>
+
+هذه الصفحة تحتوي على اختبار الفصل الثالث. استخدمه لمراجعة مفاهيم إدارة العمليات (processes).
+
+إذا ما تحمل العرض بشكل صحيح، افتح الاختبار بشكل مباشر.
+
+- [افتح اختبار الفصل الثالث في صفحة جديدة](../Chapter 3 - Quiz.html)
+
+<div class="iframe-wrap">
+  <iframe
+    src="../Chapter 3 - Quiz.html"
+    title="اختبار الفصل الثالث"
+    loading="lazy"
+    referrerpolicy="no-referrer"
+  ></iframe>
+</div>

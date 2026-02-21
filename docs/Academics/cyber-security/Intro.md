@@ -1,14 +1,16 @@
 # Cyber Security
 
-Cyber Security focuses on protecting systems, networks, and data from unauthorized access, misuse, and attacks.  
-It combines **technical expertise**, **strategic thinking**, and **ethical responsibility** to secure the digital world we depend on.
+This section focuses on cybersecurity from both a defensive and an attacker minded perspective. It documents my learning in protecting systems, networks, and data, while also understanding how those systems can be analyzed, tested, and broken in a controlled and ethical way.
 
-In this section, you’ll find:
+My primary interest in this area is penetration testing and security analysis. I approach security by studying how systems are designed, where they fail, and how weaknesses can be identified and mitigated.
 
-- Notes from penetration testing, ethical hacking, and network security fundamentals.  
+In this section, you will find:
 
-- Practical insights on secure coding, cryptography, and vulnerability assessment.  
+- Structured course material from cybersecurity related subjects such as CYS401  
+- Notes on security principles, threats, attacks, and protection mechanisms  
+- Topics covering cryptography, system security, web security, and architecture level security  
+- Quizzes and study material for revision and concept reinforcement  
 
-- Reflections on real-world security challenges and best practices for defense.
+The goal of this section is to build a strong foundation in cybersecurity fundamentals while developing the mindset needed to analyze systems critically, identify weaknesses, and think like both a defender and an attacker.
 
-*Goal:* To strengthen both the offensive and defensive aspects of my cybersecurity skill set; ensuring systems are resilient, trustworthy, and safe for users.
+This section serves as the entry point to my cybersecurity related coursework and study material.

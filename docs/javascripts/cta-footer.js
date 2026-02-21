@@ -1,5 +1,6 @@
 (function () {
   const EMAIL = "inquiry@shoug-tech.com";
+  const LINKEDIN = "https://www.linkedin.com/in/shoug-alomran";
 
   function isArabic() {
     return location.pathname.includes("/ar/");
@@ -22,15 +23,37 @@
   function addHeaderCTA() {
     const headerInner = document.querySelector(".md-header__inner");
     if (!headerInner) return;
-    if (headerInner.querySelector("a.header-cta")) return;
 
+    // Avoid duplicating on instant navigation
+    if (headerInner.querySelector(".header-actions")) return;
+
+    const wrap = document.createElement("div");
+    wrap.className = "header-actions";
+
+    // LinkedIn button
+    const li = document.createElement("a");
+    li.className = "header-icon-btn header-linkedin";
+    li.href = LINKEDIN;
+    li.target = "_blank";
+    li.rel = "noopener noreferrer";
+    li.setAttribute("aria-label", "LinkedIn");
+    li.innerHTML = `
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M4.98 3.5C4.98 4.88 3.87 6 2.5 6S0 4.88 0 3.5 1.11 1 2.5 1 4.98 2.12 4.98 3.5zM0.5 8H4.5V23H0.5V8zM8 8H12V10.05H12.06C12.62 9.02 14 7.93 16.08 7.93 20.36 7.93 21 10.44 21 14.02V23H17V15.02C17 13.1 16.96 10.64 14.33 10.64 11.66 10.64 11.25 12.72 11.25 14.88V23H7.25V8H8z"/>
+      </svg>
+    `;
+
+    // Contact button
     const cta = document.createElement("a");
     cta.className = "header-cta";
     cta.href = `mailto:${EMAIL}`;
     cta.textContent = isArabic() ? "تواصل" : "Contact";
     cta.setAttribute("aria-label", cta.textContent);
 
-    headerInner.appendChild(cta);
+    wrap.appendChild(li);
+    wrap.appendChild(cta);
+
+    headerInner.appendChild(wrap);
   }
 
   function addFooterBlock() {
@@ -60,6 +83,7 @@
           privacy: "إشعار الخصوصية",
           disclaimer: "إخلاء مسؤولية أكاديمي",
           copyright: "حقوق النشر",
+          linkedin: "LinkedIn",
         }
       : {
           brand: "Shoug’s Digital Garden",
@@ -78,9 +102,10 @@
           privacy: "Privacy Notice",
           disclaimer: "Academic Disclaimer",
           copyright: "Copyright",
+          linkedin: "LinkedIn",
         };
 
-    // ✅ FIXED: Academics points to Academics/Intro.md => usually /Academics/intro/
+    // Navigation links
     const homeHref = isArabic() ? url("ar/") : url("");
     const academicsHref = isArabic() ? url("ar/Academics/intro/") : url("Academics/intro/");
     const careerHref = isArabic()
@@ -137,6 +162,7 @@
           <div class="footer-col">
             <div class="footer-col__title">${t.contact}</div>
             <a class="footer-link" href="mailto:${EMAIL}">${EMAIL}</a>
+            <a class="footer-link" href="${LINKEDIN}" target="_blank" rel="noopener noreferrer">${t.linkedin}</a>
           </div>
         </div>
       </div>

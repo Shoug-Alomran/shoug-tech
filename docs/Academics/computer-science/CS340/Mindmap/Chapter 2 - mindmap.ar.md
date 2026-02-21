@@ -1,3 +1,16 @@
-# الفصل 2 – الخريطة الذهنية
-- [افتح في تبويب جديد](./Chapter 2 - mindmap.html)
-<iframe src="../Chapter 2 - mindmap.html" width="150%" height="800" style="border:none;"></iframe>
+# خريطة ذهنية - الفصل الثاني
+
+هذه الصفحة تحتوي على الخريطة الذهنية للفصل الثاني. استخدمها للمراجعة السريعة لمفاهيم نمذجة البيانات والتصميم المفاهيمي.
+
+إذا ما تحمل العرض بشكل صحيح، افتح الخريطة الذهنية بشكل مباشر.
+
+- [افتح الخريطة الذهنية للفصل الثاني في صفحة جديدة](../Chapter 2 - mindmap.html)
+
+<div class="iframe-wrap">
+  <iframe
+    src="../Chapter 2 - mindmap.html"
+    title="CS340 - الخريطة الذهنية للفصل الثاني"
+    loading="lazy"
+    referrerpolicy="no-referrer"
+  ></iframe>
+</div>

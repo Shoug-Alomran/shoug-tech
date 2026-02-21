@@ -1,3 +1,16 @@
-# شجرة AVL
-- [فتح في علامة تبويب جديدة](./AVL.html)
-<iframe src="../AVL.html" width="100%" height="800" style="border:none;"></iframe>
+# أشجار AVL
+
+هذه الصفحة تحتوي على مادة شجرة AVL. استخدمها للمراجعة عن الأشجار ذاتية التوازن، التدويرات، وصيانة الارتفاع.
+
+إذا ما تحمل العرض بشكل صحيح، افتح الصفحة بشكل مباشر.
+
+- [افتح في صفحة جديدة](../AVL.html)
+
+<div class="iframe-wrap">
+  <iframe
+    src="../AVL.html"
+    title="أشجار AVL"
+    loading="lazy"
+    referrerpolicy="no-referrer"
+  ></iframe>
+</div>

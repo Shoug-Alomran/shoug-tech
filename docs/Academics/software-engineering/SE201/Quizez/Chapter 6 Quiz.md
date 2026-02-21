@@ -1,3 +1,16 @@
 # Chapter 6 Quiz
-- [Open in new tab](./Chapter 6 Quiz.html)
-<iframe src="../Chapter 6 Quiz.html" width="150%" height="800" style="border:none;"></iframe>
+
+This page contains the Chapter 6 quiz. Use it to review design principles, architectural styles, and interface design.
+
+If the embedded view does not load properly, open the quiz directly.
+
+- [Open Chapter 6 Quiz in a new tab](../Chapter 6 Quiz.html)
+
+<div class="iframe-wrap">
+  <iframe
+    src="../Chapter 6 Quiz.html"
+    title="SE201 Chapter 6 Quiz"
+    loading="lazy"
+    referrerpolicy="no-referrer"
+  ></iframe>
+</div>

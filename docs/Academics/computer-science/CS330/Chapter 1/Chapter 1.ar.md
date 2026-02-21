@@ -1,4 +1,16 @@
-# الفصل 1
-- [افتح في تبويب جديد](./Chapter%201.html)
+# الفصل الأول: مقدمة في أنظمة التشغيل
 
-<iframe src="../Chapter 1.html" width="150%" height="800" style="border:none;"></iframe>
+هذه الصفحة تحتوي على مادة الفصل الأول. استخدمها للمراجعة عن أساسيات أنظمة التشغيل، الغرض منها، مكوناتها، ووظائفها الأساسية.
+
+إذا ما تحمل العرض بشكل صحيح، افتح الفصل بشكل مباشر.
+
+- [افتح الفصل الأول في صفحة جديدة](../Chapter 1.html)
+
+<div class="iframe-wrap">
+  <iframe
+    src="../Chapter 1.html"
+    title="الفصل الأول: مقدمة في أنظمة التشغيل"
+    loading="lazy"
+    referrerpolicy="no-referrer"
+  ></iframe>
+</div>

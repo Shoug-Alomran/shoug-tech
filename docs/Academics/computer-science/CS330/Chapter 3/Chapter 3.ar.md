@@ -1,4 +1,16 @@
-# الفصل 3
-- [افتح في تبويب جديد](./Chapter%203.html)
+# الفصل الثالث: إدارة العمليات (Processes)
 
-<iframe src="../Chapter 3.html" width="150%" height="800" style="border:none;"></iframe>
+هذه الصفحة تحتوي على مادة الفصل الثالث. استخدمها للمراجعة عن العمليات، حالات العملية، وكيف تتم إدارة التنفيذ.
+
+إذا ما تحمل العرض بشكل صحيح، افتح الفصل بشكل مباشر.
+
+- [افتح الفصل الثالث في صفحة جديدة](../Chapter 3.html)
+
+<div class="iframe-wrap">
+  <iframe
+    src="../Chapter 3.html"
+    title="الفصل الثالث: إدارة العمليات"
+    loading="lazy"
+    referrerpolicy="no-referrer"
+  ></iframe>
+</div>

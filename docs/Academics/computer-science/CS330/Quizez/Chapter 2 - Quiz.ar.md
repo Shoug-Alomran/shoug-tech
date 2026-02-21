@@ -1,3 +1,16 @@
 # اختبار الفصل الثاني
-- [فتح في علامة تبويب جديدة](./Chapter 2 - Quiz.html)
-<iframe src="../Chapter 2 - Quiz.html" width="150%" height="800" style="border:none;"></iframe>
+
+هذه الصفحة تحتوي على اختبار الفصل الثاني. استخدمه لمراجعة خدمات نظام التشغيل واستدعاءات النظام (system calls).
+
+إذا ما تحمل العرض بشكل صحيح، افتح الاختبار بشكل مباشر.
+
+- [افتح اختبار الفصل الثاني في صفحة جديدة](../Chapter 2 - Quiz.html)
+
+<div class="iframe-wrap">
+  <iframe
+    src="../Chapter 2 - Quiz.html"
+    title="اختبار الفصل الثاني"
+    loading="lazy"
+    referrerpolicy="no-referrer"
+  ></iframe>
+</div>

@@ -1,3 +1,16 @@
 # ورقة الغش
-- [فتح في علامة تبويب جديدة](./Cheat Sheet.html)
-<iframe src="../Cheat Sheet.html" width="150%" height="800" style="border:none;"></iframe>
+
+هذه الصفحة تحتوي على ورقة الغش للمادة. استخدمها للمراجعة السريعة للتعريفات الرئيسية، المعادلات، والمفاهيم الأساسية.
+
+إذا ما تحمل العرض بشكل صحيح، افتح ورقة الغش بشكل مباشر.
+
+- [افتح ورقة الغش في صفحة جديدة](../Cheat Sheet.html)
+
+<div class="iframe-wrap">
+  <iframe
+    src="../Cheat Sheet.html"
+    title="ورقة الغش ٢"
+    loading="lazy"
+    referrerpolicy="no-referrer"
+  ></iframe>
+</div>

@@ -1,4 +1,16 @@
-# الفصل 4 – إدارة مشاريع البرمجيات
+# الفصل الرابع: إدارة مشاريع البرمجيات
 
-- [افتح في تبويب جديد](./Software Project Management.html)
-<iframe src="../Software Project Management.html" width="150%" height="800" style="border:none;"></iframe>
+هذه الصفحة تحتوي على مادة الفصل الرابع. استخدمها للمراجعة عن تخطيط المشاريع، الجدولة، إدارة المخاطر، وأخلاقيات الإدارة.
+
+إذا ما تحمل العرض بشكل صحيح، افتح الفصل بشكل مباشر.
+
+- [افتح الفصل الرابع في صفحة جديدة](../Software Project Management.html)
+
+<div class="iframe-wrap">
+  <iframe
+    src="../Software Project Management.html"
+    title="الفصل الرابع: إدارة مشاريع البرمجيات"
+    loading="lazy"
+    referrerpolicy="no-referrer"
+  ></iframe>
+</div>

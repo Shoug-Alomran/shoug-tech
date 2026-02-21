@@ -1,3 +1,16 @@
-# الفصل 2
-- [افتح في تبويب جديد](./Chapter 2.html)
-<iframe src="../Chapter 2.html" width="150%" height="800" style="border:none;"></iframe>
+# الفصل الثاني: معايير التوثيق
+
+هذه الصفحة تحتوي على مادة الفصل الثاني. استخدمها للمراجعة عن معيار IEEE 830، معايير التوثيق، وهيكل مواصفات المتطلبات.
+
+إذا ما تحمل العرض بشكل صحيح، افتح الفصل بشكل مباشر.
+
+- [افتح الفصل الثاني في صفحة جديدة](../Chapter 2.html)
+
+<div class="iframe-wrap">
+  <iframe
+    src="../Chapter 2.html"
+    title="SE311 - الفصل الثاني: معايير التوثيق"
+    loading="lazy"
+    referrerpolicy="no-referrer"
+  ></iframe>
+</div>

@@ -1,5 +1,16 @@
-# الفصل الثالث – هندسة البرمجيات الرشيقة (Agile)
+# الفصل الثالث: هندسة البرمجيات الرشيقة (Agile)
 
-- [فتح في تبويب جديد](./Agile%20Software%20Engineering.html)
+هذه الصفحة تحتوي على مادة الفصل الثالث. استخدمها للمراجعة عن قيم ومبادئ الرشيقة (Agile)، سكرام (Scrum)، البرمجة المتطرفة (XP)، والمقارنة بين التطوير الرشيق والتطوير المخطط (plan-driven).
 
-<iframe src="../Agile%20Software%20Engineering.html" width="100%" height="800" style="border:none;"></iframe>
+إذا ما تحمل العرض بشكل صحيح، افتح الفصل بشكل مباشر.
+
+- [افتح الفصل الثالث في صفحة جديدة](../Agile Software Engineering.html)
+
+<div class="iframe-wrap">
+  <iframe
+    src="../Agile Software Engineering.html"
+    title="الفصل الثالث: هندسة البرمجيات الرشيقة"
+    loading="lazy"
+    referrerpolicy="no-referrer"
+  ></iframe>
+</div>

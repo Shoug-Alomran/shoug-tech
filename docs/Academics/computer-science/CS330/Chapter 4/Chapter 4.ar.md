@@ -1,5 +1,16 @@
-# الفصل 4
-- [افتح في تبويب جديد](./Chapter%204.html)
+# الفصل الرابع: الخيوط (Threads)
 
-<iframe src="../Chapter 4.html" width="150%" height="800" style="border:none;"></iframe>
+هذه الصفحة تحتوي على مادة الفصل الرابع. استخدمها للمراجعة عن الخيوط، نماذج تعدد الخيوط (multithreading models)، وأساسيات التنفيذ المتزامن (concurrency).
 
+إذا ما تحمل العرض بشكل صحيح، افتح الفصل بشكل مباشر.
+
+- [افتح الفصل الرابع في صفحة جديدة](../Chapter 4.html)
+
+<div class="iframe-wrap">
+  <iframe
+    src="../Chapter 4.html"
+    title="الفصل الرابع: الخيوط"
+    loading="lazy"
+    referrerpolicy="no-referrer"
+  ></iframe>
+</div>

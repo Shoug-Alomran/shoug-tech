@@ -1,4 +1,16 @@
-# الفصل 7 – بناء البرمجيات
+# الفصل السابع: بناء البرمجيات
 
-- [افتح في تبويب جديد](./Software Construction.html)
-<iframe src="../Software Construction.html" width="150%" height="800" style="border:none;"></iframe>
+هذه الصفحة تحتوي على مادة الفصل السابع. استخدمها للمراجعة عن معايير البرمجة (coding standards)، إعادة الاستخدام (reuse)، النمطية (modularity)، وممارسات التوثيق.
+
+إذا ما تحمل العرض بشكل صحيح، افتح الفصل بشكل مباشر.
+
+- [افتح الفصل السابع في صفحة جديدة](../Software Construction.html)
+
+<div class="iframe-wrap">
+  <iframe
+    src="../Software Construction.html"
+    title="الفصل السابع: بناء البرمجيات"
+    loading="lazy"
+    referrerpolicy="no-referrer"
+  ></iframe>
+</div>

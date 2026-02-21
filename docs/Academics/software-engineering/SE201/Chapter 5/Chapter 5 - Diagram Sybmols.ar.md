@@ -1,4 +1,16 @@
-# الفصل 5 – رموز المخططات
+# الفصل الخامس: رموز المخططات
 
-- [افتح في تبويب جديد](./Chapter 5 - Diagram Sybmols.html)
-<iframe src="../Chapter 5 - Diagram Sybmols.html" width="100%" height="800" style="border:none;"></iframe>
+هذه الصفحة تحتوي على مادة مرجعية لرموز المخططات. استخدمها للمراجعة عن رموز UML ومخططات هندسة البرمجيات المستخدمة في المتطلبات والتصميم.
+
+إذا ما تحمل العرض بشكل صحيح، افتح الفصل بشكل مباشر.
+
+- [افتح الفصل الخامس: رموز المخططات في صفحة جديدة](../Chapter 5 - Diagram Sybmols.html)
+
+<div class="iframe-wrap">
+  <iframe
+    src="../Chapter 5 - Diagram Sybmols.html"
+    title="الفصل الخامس: رموز المخططات"
+    loading="lazy"
+    referrerpolicy="no-referrer"
+  ></iframe>
+</div>

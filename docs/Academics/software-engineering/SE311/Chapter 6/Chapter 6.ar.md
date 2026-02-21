@@ -1,3 +1,16 @@
-# الفصل 6
-- [افتح في تبويب جديد](./Chapter 6.html)
-<iframe src="../Chapter 6.html" width="150%" height="800" style="border:none;"></iframe>
+# الفصل السادس: التحقق من صحة المتطلبات (Requirements Validation)
+
+هذه الصفحة تحتوي على مادة الفصل السادس. استخدمها للمراجعة عن تقنيات التحقق، المراجعات (reviews)، وضمان جودة المتطلبات.
+
+إذا ما تحمل العرض بشكل صحيح، افتح الفصل بشكل مباشر.
+
+- [افتح الفصل السادس في صفحة جديدة](../Chapter 6.html)
+
+<div class="iframe-wrap">
+  <iframe
+    src="../Chapter 6.html"
+    title="SE311 - الفصل السادس: التحقق من صحة المتطلبات"
+    loading="lazy"
+    referrerpolicy="no-referrer"
+  ></iframe>
+</div>

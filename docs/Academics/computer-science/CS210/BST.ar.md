@@ -1,3 +1,16 @@
-# شجرة البحث الثنائية (BST)
-- [فتح في علامة تبويب جديدة](./BST.html)
-<iframe src="../BST.html" width="100%" height="800" style="border:none;"></iframe>
+# أشجار البحث الثنائية (BST)
+
+هذه الصفحة تحتوي على مادة أشجار البحث الثنائية. استخدمها للمراجعة عن خصائص BST، الإدراج، الحذف، وطرق المسح.
+
+إذا ما تحمل العرض بشكل صحيح، افتح الصفحة بشكل مباشر.
+
+- [افتح في صفحة جديدة](../BST.html)
+
+<div class="iframe-wrap">
+  <iframe
+    src="../BST.html"
+    title="أشجار البحث الثنائية"
+    loading="lazy"
+    referrerpolicy="no-referrer"
+  ></iframe>
+</div>

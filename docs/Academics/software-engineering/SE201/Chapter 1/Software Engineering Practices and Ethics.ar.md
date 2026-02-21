@@ -1,3 +1,16 @@
-# الفصل 1 – ممارسات هندسة البرمجيات والأخلاقيات
-- [افتح في تبويب جديد](./Software%20Engineering%20Practices%20and%20Ethics.html)
-<iframe src="../Software Engineering Practices and Ethics.html" width="150%" height="800" style="border:none;"></iframe>
+# الفصل الأول: ممارسات وأخلاقيات هندسة البرمجيات
+
+هذه الصفحة تحتوي على مادة الفصل الأول. استخدمها للمراجعة عن أساسيات هندسة البرمجيات، أنواع البرمجيات، والأخلاقيات المهنية.
+
+إذا ما تحمل العرض بشكل صحيح، افتح الفصل بشكل مباشر.
+
+- [افتح الفصل الأول في صفحة جديدة](../Software Engineering Practices and Ethics.html)
+
+<div class="iframe-wrap">
+  <iframe
+    src="../Software Engineering Practices and Ethics.html"
+    title="الفصل الأول: ممارسات وأخلاقيات هندسة البرمجيات"
+    loading="lazy"
+    referrerpolicy="no-referrer"
+  ></iframe>
+</div>

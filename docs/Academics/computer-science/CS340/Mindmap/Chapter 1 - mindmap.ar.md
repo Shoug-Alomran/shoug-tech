@@ -1,3 +1,16 @@
-# الفصل 1 – الخريطة الذهنية
-- [افتح في تبويب جديد](./Chapter 1 - mindmap.html)
-<iframe src="../Chapter 1 - mindmap.html" width="150%" height="800" style="border:none;"></iframe>
+# خريطة ذهنية - الفصل الأول
+
+هذه الصفحة تحتوي على الخريطة الذهنية للفصل الأول. استخدمها للمراجعة السريعة لأساسيات قواعد البيانات والمفاهيم الأساسية.
+
+إذا ما تحمل العرض بشكل صحيح، افتح الخريطة الذهنية بشكل مباشر.
+
+- [افتح الخريطة الذهنية للفصل الأول في صفحة جديدة](../Chapter 1 - mindmap.html)
+
+<div class="iframe-wrap">
+  <iframe
+    src="../Chapter 1 - mindmap.html"
+    title="CS340 - الخريطة الذهنية للفصل الأول"
+    loading="lazy"
+    referrerpolicy="no-referrer"
+  ></iframe>
+</div>

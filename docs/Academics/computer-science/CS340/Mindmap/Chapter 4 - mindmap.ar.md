@@ -1,3 +1,16 @@
-# الفصل 4 – الخريطة الذهنية
-- [افتح في تبويب جديد](./Chapter 4 - mindmap.html)
-<iframe src="../Chapter 4 - mindmap.html" width="150%" height="800" style="border:none;"></iframe>
+# خريطة ذهنية - الفصل الرابع
+
+هذه الصفحة تحتوي على الخريطة الذهنية للفصل الرابع. استخدمها للمراجعة السريعة لأساسيات SQL ومفاهيم الاستعلام في قواعد البيانات.
+
+إذا ما تحمل العرض بشكل صحيح، افتح الخريطة الذهنية بشكل مباشر.
+
+- [افتح الخريطة الذهنية للفصل الرابع في صفحة جديدة](../Chapter 4 - mindmap.html)
+
+<div class="iframe-wrap">
+  <iframe
+    src="../Chapter 4 - mindmap.html"
+    title="CS340 - الخريطة الذهنية للفصل الرابع"
+    loading="lazy"
+    referrerpolicy="no-referrer"
+  ></iframe>
+</div>

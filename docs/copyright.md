@@ -28,4 +28,4 @@ In case of conflict, the project-level license takes precedence.
 
 ## Contact
 For permissions or licensing inquiries:
-Shoug.Alomran@Shoug-Tech.com
+[Shoug.Alomran@Shoug-Tech.com](mailto:Shoug.Alomran@Shoug-Tech.com)

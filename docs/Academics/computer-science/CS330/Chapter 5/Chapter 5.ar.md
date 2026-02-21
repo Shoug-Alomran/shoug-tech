@@ -1,5 +1,16 @@
-# الفصل 5
-- [افتح في تبويب جديد](./Chapter%205.html)
+# الفصل الخامس: جدولة المعالج (CPU Scheduling)
 
-<iframe src="../Chapter 5.html" width="150%" height="800" style="border:none;"></iframe>
+هذه الصفحة تحتوي على مادة الفصل الخامس. استخدمها للمراجعة عن أهداف الجدولة، معاييرها، وخوارزميات جدولة المعالج الشائعة.
 
+إذا ما تحمل العرض بشكل صحيح، افتح الفصل بشكل مباشر.
+
+- [افتح الفصل الخامس في صفحة جديدة](../Chapter 5.html)
+
+<div class="iframe-wrap">
+  <iframe
+    src="../Chapter 5.html"
+    title="الفصل الخامس: جدولة المعالج"
+    loading="lazy"
+    referrerpolicy="no-referrer"
+  ></iframe>
+</div>

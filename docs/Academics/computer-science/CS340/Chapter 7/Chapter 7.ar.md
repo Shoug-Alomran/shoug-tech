@@ -1,4 +1,16 @@
-# الفصل 7
-- [افتح في تبويب جديد](./Chapter%207.html)
+# الفصل السابع: تصميم قواعد البيانات والتطبيع (Normalization)
 
-<iframe src="../Chapter 7.html" width="150%" height="800" style="border:none;"></iframe>
+هذه الصفحة تحتوي على مادة الفصل السابع. استخدمها للمراجعة عن التبعيات الوظيفية (functional dependencies)، التطبيع (normalization)، ومبادئ تصميم المخططات (schema design).
+
+إذا ما تحمل العرض بشكل صحيح، افتح الفصل بشكل مباشر.
+
+- [افتح الفصل السابع في صفحة جديدة](../Chapter 7.html)
+
+<div class="iframe-wrap">
+  <iframe
+    src="../Chapter 7.html"
+    title="الفصل السابع: تصميم قواعد البيانات والتطبيع"
+    loading="lazy"
+    referrerpolicy="no-referrer"
+  ></iframe>
+</div>

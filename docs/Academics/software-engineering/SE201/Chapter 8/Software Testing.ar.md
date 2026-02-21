@@ -1,4 +1,16 @@
-# الفصل 8 – اختبار البرمجيات
+# الفصل الثامن: اختبار البرمجيات
 
-- [افتح في تبويب جديد](./Software Testing.html)
-<iframe src="../Software Testing.html" width="150%" height="800" style="border:none;"></iframe>
+هذه الصفحة تحتوي على مادة الفصل الثامن. استخدمها للمراجعة عن أنواع الأخطاء (faults)، مستويات الاختبار (testing levels)، والأسباب الشائعة لفشل البرمجيات.
+
+إذا ما تحمل العرض بشكل صحيح، افتح الفصل بشكل مباشر.
+
+- [افتح الفصل الثامن في صفحة جديدة](../Software Testing.html)
+
+<div class="iframe-wrap">
+  <iframe
+    src="../Software Testing.html"
+    title="الفصل الثامن: اختبار البرمجيات"
+    loading="lazy"
+    referrerpolicy="no-referrer"
+  ></iframe>
+</div>

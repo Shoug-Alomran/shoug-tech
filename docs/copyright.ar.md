@@ -28,4 +28,4 @@
 
 ## التواصل
 للاستفسارات المتعلقة بالأذونات أو التراخيص:
-Shoug.Alomran@Shoug-Tech.com
+[Shoug.Alomran@Shoug-Tech.com](mailto:Shoug.Alomran@Shoug-Tech.com)

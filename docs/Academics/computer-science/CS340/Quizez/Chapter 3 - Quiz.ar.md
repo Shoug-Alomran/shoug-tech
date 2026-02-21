@@ -1,3 +1,16 @@
 # اختبار الفصل الثالث
-- [فتح في علامة تبويب جديدة](./Chapter%203%20-%20Quiz.html)
-<iframe src="../Chapter 3 - Quiz.html" width="150%" height="800" style="border:none;"></iframe>
+
+هذه الصفحة تحتوي على اختبار الفصل الثالث. استخدمه لمراجعة النموذج العلائقي (relational model) ومفاهيمه.
+
+إذا ما تحمل العرض بشكل صحيح، افتح الاختبار بشكل مباشر.
+
+- [افتح اختبار الفصل الثالث في صفحة جديدة](../Chapter 3 - Quiz.html)
+
+<div class="iframe-wrap">
+  <iframe
+    src="../Chapter 3 - Quiz.html"
+    title="CS340 - اختبار الفصل الثالث"
+    loading="lazy"
+    referrerpolicy="no-referrer"
+  ></iframe>
+</div>

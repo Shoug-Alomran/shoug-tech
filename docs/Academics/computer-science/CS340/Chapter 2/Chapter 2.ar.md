@@ -1,4 +1,16 @@
-# الفصل 2
-- [افتح في تبويب جديد](./Chapter%202.html)
+# الفصل الثاني: مفاهيم وبنية أنظمة قواعد البيانات
 
-<iframe src="../Chapter 2.html" width="150%" height="800" style="border:none;"></iframe>
+هذه الصفحة تحتوي على مادة الفصل الثاني. استخدمها للمراجعة عن مفاهيم نظام قاعدة البيانات، نماذج البيانات (data models)، المخططات (schemas)، وبنية نظام إدارة قواعد البيانات (DBMS architecture).
+
+إذا ما تحمل العرض بشكل صحيح، افتح الفصل بشكل مباشر.
+
+- [افتح الفصل الثاني في صفحة جديدة](../Chapter 2.html)
+
+<div class="iframe-wrap">
+  <iframe
+    src="../Chapter 2.html"
+    title="الفصل الثاني: مفاهيم وبنية أنظمة قواعد البيانات"
+    loading="lazy"
+    referrerpolicy="no-referrer"
+  ></iframe>
+</div>

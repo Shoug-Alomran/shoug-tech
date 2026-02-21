@@ -1,5 +1,16 @@
-# الفصل 2
-- [افتح في تبويب جديد](./Chapter%202.html)
+# الفصل الثاني: خدمات نظام التشغيل
 
-<iframe src="../Chapter 2.html" width="150%" height="800" style="border:none;"></iframe>
+هذه الصفحة تحتوي على مادة الفصل الثاني. استخدمها للمراجعة عن خدمات نظام التشغيل، استدعاءات النظام (system calls)، والتفاعل بين المستخدم والنواة (kernel).
 
+إذا ما تحمل العرض بشكل صحيح، افتح الفصل بشكل مباشر.
+
+- [افتح الفصل الثاني في صفحة جديدة](../Chapter 2.html)
+
+<div class="iframe-wrap">
+  <iframe
+    src="../Chapter 2.html"
+    title="الفصل الثاني: خدمات نظام التشغيل"
+    loading="lazy"
+    referrerpolicy="no-referrer"
+  ></iframe>
+</div>

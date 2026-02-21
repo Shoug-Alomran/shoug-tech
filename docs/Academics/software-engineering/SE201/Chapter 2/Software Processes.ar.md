@@ -1,3 +1,16 @@
-# الفصل 2 – عمليات هندسة البرمجيات
-- [افتح في تبويب جديد](./Software Processes.html)
-<iframe src="../Software Processes.html" width="150%" height="800" style="border:none;"></iframe>
+# الفصل الثاني: عمليات هندسة البرمجيات
+
+هذه الصفحة تحتوي على مادة الفصل الثاني. استخدمها للمراجعة عن نماذج عمليات البرمجيات، دورات حياة تطوير البرمجيات (SDLCs)، أنشطة هندسة المتطلبات، ونموذج نضج القدرات (CMM).
+
+إذا ما تحمل العرض بشكل صحيح، افتح الفصل بشكل مباشر.
+
+- [افتح الفصل الثاني في صفحة جديدة](../Software Processes.html)
+
+<div class="iframe-wrap">
+  <iframe
+    src="../Software Processes.html"
+    title="الفصل الثاني: عمليات هندسة البرمجيات"
+    loading="lazy"
+    referrerpolicy="no-referrer"
+  ></iframe>
+</div>

@@ -1,4 +1,16 @@
-# الفصل 6 – تصميم البرمجيات
+# الفصل السادس: تصميم البرمجيات
 
-- [افتح في تبويب جديد](./Software Design.html)
-<iframe src="../Software Design.html" width="150%" height="800" style="border:none;"></iframe>
+هذه الصفحة تحتوي على مادة الفصل السادس. استخدمها للمراجعة عن مبادئ التصميم، الأنماط المعمارية (architectural styles)، وتصميم واجهات الاستخدام.
+
+إذا ما تحمل العرض بشكل صحيح، افتح الفصل بشكل مباشر.
+
+- [افتح الفصل السادس في صفحة جديدة](../Software Design.html)
+
+<div class="iframe-wrap">
+  <iframe
+    src="../Software Design.html"
+    title="الفصل السادس: تصميم البرمجيات"
+    loading="lazy"
+    referrerpolicy="no-referrer"
+  ></iframe>
+</div>

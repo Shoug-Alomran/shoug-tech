@@ -1,21 +1,132 @@
-# Academics
+# Learn
 
-This section documents my academic journey — not just the courses I completed, but how my understanding evolved through them.
+Welcome to the learning hub of **Shoug’s Digital Garden**.
 
-Each subject represents a stage of growth. Some strengthened my logical reasoning. Others trained me to think in systems, design with structure, or approach problems methodically. Over time, these courses reshaped the way I analyze complexity, break down ambiguity, and build solutions with intention.
+This section contains **structured course notes, summaries, cheat sheets, quizzes, and study guides** from my studies in:
 
-Inside each course, you will find:
+* Software Engineering
+* Computer Science
+* Cyber Security
 
-* Structured chapter notes
-* Concept explanations and summaries
-* Diagrams and modeling references
-* Cheat sheets and revision material
-* Quizzes and practice collections
-* Reflections tied to key learning moments
+The goal is simple:
 
-What began as class notes gradually became something more deliberate — a curated knowledge base. Writing and organizing these materials helped me move from simply *studying* concepts to truly *owning* them.
+> Make complex topics clearer, more structured, and easier to revise — for myself and for other students.
 
-This section reflects that transition:
-from coursework → to understanding → to disciplined documentation.
+Everything here is organized **by course** and **by topic/chapter**, so you can either:
 
-It is both a record of what I learned and a representation of how I think.
+* Follow a course from start to finish, or
+* Jump directly to a specific topic you need.
+
+---
+
+## How to Use This Section
+
+- If you’re **taking one of these courses** → Start with the course overview page.
+- If you’re **revising for exams** → Use the cheat sheets, summaries, and quizzes.
+- If you’re **exploring a topic** → Browse by subject area below.
+
+Each course typically includes:
+
+- Chapter notes
+- Summaries & cheat sheets
+- Quizzes / practice questions
+- (For some courses) mind maps and extra materials
+
+---
+
+## Software Engineering
+
+### SE201 — Software Engineering
+
+**Focus:** Foundations of software engineering, processes, design, testing, and project management.
+**You’ll find:** Chapter notes, UML & diagrams guide, cheat sheets, quizzes, and summaries.
+
+--> **Start here:**
+
+* [SE201 Overview](.../SE201/Intro.md)
+
+---
+
+### SE311 — Software Requirements Engineering
+
+**Focus:** Requirements elicitation, analysis, specification, validation, and negotiation.
+**You’ll find:** Structured chapter notes, a midterm cheat sheet, and practice quizzes.
+
+--> **Start here:**
+
+* [SE311 Overview](./SE311/Intro.md)
+
+---
+
+## Computer Science
+
+### CS210 — Data Structures
+
+**Focus:** Core data structures and algorithms (lists, trees, hashing, sorting, recursion, etc.).
+**You’ll find:** Topic-based notes and multiple cheat sheets.
+
+--> **Start here:**
+
+* [CS210 Overview](./CS210/Intro.md)
+
+---
+
+### CS285 — Discrete Mathematics
+
+**Focus:** Logic, proofs, relations, counting, induction, and cryptography foundations.
+**You’ll find:** Chapter notes and a concise cheat sheet.
+
+--> **Start here:**
+
+* [CS285 Overview](./CS285/Intro.md)
+
+---
+
+### CS330 — Operating Systems
+
+**Focus:** Processes, threads, CPU scheduling, memory management, synchronization, and deadlocks.
+**You’ll find:** Chapter notes, summaries, cheat sheets, and quizzes.
+
+--> **Start here:**
+
+* [CS330 Overview](./CS330/Intro.md)
+
+---
+
+### CS340 — Database Systems
+
+**Focus:** Database design, relational model, SQL, transactions, concurrency, and NoSQL.
+**You’ll find:** Chapter notes, handouts, cheat sheets, symbols, mind maps, and quizzes.
+
+--> **Start here:**
+
+* [CS340 Overview](./CS340/Intro.md)
+
+---
+
+## Cyber Security
+
+### CYS401 — Cyber Security
+
+**Focus:** Cybersecurity foundations, principles, and core concepts.
+**You’ll find:** Chapter notes and quizzes for practice.
+
+--> **Start here:**
+
+* [CYS401 Overview](../CYS401/Intro.md)
+
+---
+
+## Who This Is For
+
+- **Students**: Use this as structured revision and study support
+- **Instructors**: Browse the material organization and depth
+- **Employers**: See how I structure knowledge, document systems, and explain technical topics
+
+---
+
+## Notes on Content
+
+- These materials are based on my coursework and personal study.
+- They are written to be **clear, structured, and practical**.
+- Over time, this section will continue to grow with more refinements, examples, and improvements.

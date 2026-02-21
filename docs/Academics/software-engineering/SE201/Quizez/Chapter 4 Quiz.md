@@ -1,3 +1,16 @@
 # Chapter 4 Quiz
-- [Open in new tab](./Chapter 4 Quiz.html)
-<iframe src="../Chapter 4 Quiz.html" width="150%" height="800" style="border:none;"></iframe>
+
+This page contains the Chapter 4 quiz. Use it to review project planning, scheduling, risk management, and management responsibilities.
+
+If the embedded view does not load properly, open the quiz directly.
+
+- [Open Chapter 4 Quiz in a new tab](../Chapter 4 Quiz.html)
+
+<div class="iframe-wrap">
+  <iframe
+    src="../Chapter 4 Quiz.html"
+    title="SE201 Chapter 4 Quiz"
+    loading="lazy"
+    referrerpolicy="no-referrer"
+  ></iframe>
+</div>

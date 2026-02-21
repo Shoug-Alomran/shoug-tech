@@ -1,3 +1,16 @@
-# ملخّص الميدترم
-- [افتح في تبويب جديد](./Cheat Sheet.html)
-<iframe src="../Cheat Sheet.html" width="150%" height="800" style="border:none;"></iframe>
+# ورقة الغش
+
+هذه الصفحة تحتوي على ورقة الغش للمادة. استخدمها للمراجعة السريعة للتعريفات الرئيسية، المعادلات، والمفاهيم الأساسية.
+
+إذا ما تحمل العرض بشكل صحيح، افتح ورقة الغش بشكل مباشر.
+
+- [افتح ورقة الغش في صفحة جديدة](../Cheat Sheet.html)
+
+<div class="iframe-wrap">
+  <iframe
+    src="../Cheat Sheet.html"
+    title="ورقة الغش"
+    loading="lazy"
+    referrerpolicy="no-referrer"
+  ></iframe>
+</div>

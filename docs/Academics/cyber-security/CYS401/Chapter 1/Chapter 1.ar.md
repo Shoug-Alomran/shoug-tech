@@ -1,5 +1,16 @@
-# الفصل 1
-- [افتح في تبويب جديد](./Chapter%201.html)
+# الفصل الأول: مقدمة في الأمن السيبراني
 
-<iframe src="../Chapter 1.html"
-        width="150%" height="800" style="border:none;"></iframe>
+هذه الصفحة تحتوي على مادة الفصل الأول. استخدمها للمراجعة عن مفاهيم الأمن السيبراني، الأهداف، ثالوث CIA (السرية، integrity، التوفر)، ومكونات النظام الأساسية.
+
+إذا ما تحمل العرض بشكل صحيح، افتح الفصل بشكل مباشر.
+
+- [افتح الفصل الأول في صفحة جديدة](../Chapter 1.html)
+
+<div class="iframe-wrap">
+  <iframe
+    src="../Chapter 1.html"
+    title="CYS401 - الفصل الأول: مقدمة في الأمن السيبراني"
+    loading="lazy"
+    referrerpolicy="no-referrer"
+  ></iframe>
+</div>

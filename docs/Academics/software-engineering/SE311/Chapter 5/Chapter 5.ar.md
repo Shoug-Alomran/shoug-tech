@@ -1,3 +1,16 @@
-# الفصل 5
-- [افتح في تبويب جديد](./Chapter 5.html)
-<iframe src="../Chapter 5.html" width="150%" height="800" style="border:none;"></iframe>
+# الفصل الخامس: تحليل المتطلبات ومواصفاتها
+
+هذه الصفحة تحتوي على مادة الفصل الخامس. استخدمها للمراجعة عن مراحل التحليل، الطرق، وتقنيات المواصفات.
+
+إذا ما تحمل العرض بشكل صحيح، افتح الفصل بشكل مباشر.
+
+- [افتح الفصل الخامس في صفحة جديدة](../Chapter 5.html)
+
+<div class="iframe-wrap">
+  <iframe
+    src="../Chapter 5.html"
+    title="SE311 - الفصل الخامس: تحليل المتطلبات ومواصفاتها"
+    loading="lazy"
+    referrerpolicy="no-referrer"
+  ></iframe>
+</div>
