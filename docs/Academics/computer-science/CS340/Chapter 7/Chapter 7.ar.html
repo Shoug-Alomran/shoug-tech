@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الفصل السابع: لغة الاستعلامات الهيكلية المتقدمة (SQL المتقدمة) - CS 340</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Tajawal:wght@300;400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --primary: #2563eb;
+            --secondary: #7c3aed;
+            --accent: #06b6d4;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #0f172a;
+            --light: #f8fafc;
+        }
+
+        body {
+            font-family: 'Tajawal', 'Cairo', sans-serif;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            color: var(--dark);
+            line-height: 1.7;
+        }
+
+        .container { max-width: 1400px; margin: 0 auto; padding: 40px 20px; }
+
+        .hero {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 80px 40px;
+            border-radius: 30px;
+            margin-bottom: 40px;
+            box-shadow: 0 20px 60px rgba(37, 99, 235, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::after {
+            content: 'SQL';
+            position: absolute;
+            bottom: -30px;
+            left: -20px;
+            font-size: 180px;
+            font-weight: 900;
+            opacity: 0.1;
+            color: white;
+            transform: rotate(-15deg);
+        }
+
+        .hero h1 {
+            font-family: 'Cairo', serif;
+            font-size: 3.8rem;
+            font-weight: 800;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-subtitle {
+            font-size: 1.6rem;
+            opacity: 0.95;
+            margin-bottom: 30px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-meta {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            position: relative;
+            z-index: 2;
+        }
+
+        .meta-badge {
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(8px);
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-weight: 600;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .toc {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            border-right: 5px solid var(--primary);
+        }
+
+        .toc h2 {
+            font-family: 'Cairo', serif;
+            font-size: 2rem;
+            color: var(--dark);
+            margin-bottom: 25px;
+        }
+
+        .toc-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
+        }
+
+        .toc-item {
+            padding: 15px 20px;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border-radius: 10px;
+            border-right: 3px solid var(--secondary);
+            transition: all 0.3s ease;
+        }
+
+        .toc-item:hover {
+            transform: translateX(-8px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .toc-item a {
+            text-decoration: none;
+            color: var(--dark);
+            font-weight: 500;
+            display: block;
+        }
+
+        .section {
+            background: white;
+            padding: 40px;
+            border-radius: 25px;
+            margin-bottom: 35px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #e2e8f0;
+        }
+
+        .section-icon {
+            width: 65px;
+            height: 65px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
+        }
+
+        .section h2 {
+            font-family: 'Cairo', serif;
+            font-size: 2.2rem;
+            color: var(--dark);
+            font-weight: 700;
+        }
+
+        .section h3 {
+            font-family: 'Cairo', serif;
+            font-size: 1.8rem;
+            color: var(--primary);
+            margin: 30px 0 20px;
+        }
+
+        .section h4 {
+            font-size: 1.3rem;
+            color: var(--secondary);
+            margin: 20px 0 10px;
+            font-weight: 700;
+        }
+
+        .concept-box {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-right: 5px solid var(--primary);
+        }
+
+        .example-box {
+            background: linear-gradient(135deg, #fef9c3 0%, #fde047 100%);
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-right: 5px solid var(--warning);
+        }
+
+        .important-box {
+            background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-right: 5px solid var(--success);
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-right: 5px solid var(--danger);
+        }
+
+        .box-title {
+            font-weight: 700;
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .box-title i { font-size: 1.5rem; }
+
+        .sql-code {
+            background: var(--dark);
+            color: #e2e8f0;
+            padding: 25px;
+            border-radius: 12px;
+            font-family: 'Space Mono', monospace;
+            margin: 20px 0;
+            overflow-x: auto;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            direction: ltr;
+            text-align: left;
+            border: 1px solid #334155;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .sql-code .keyword { color: #c084fc; font-weight: bold; }
+        .sql-code .string { color: #fde047; }
+        .sql-code .comment { color: #94a3b8; font-style: italic; }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .comparison-table th {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 15px;
+            text-align: right;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .comparison-table td {
+            padding: 15px;
+            border-bottom: 1px solid #e2e8f0;
+            text-align: right;
+        }
+
+        .comparison-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .comparison-table tr:hover {
+            background: #f8fafc;
+        }
+
+        .keyword-badge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: inline-block;
+            margin: 2px;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 60px;
+            padding: 40px;
+            background: linear-gradient(135deg, var(--dark) 0%, var(--primary) 100%);
+            border-radius: 25px;
+            color: white;
+        }
+
+        .footer .name {
+            font-family: 'Cairo', serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        ul, ol { margin-right: 25px; margin-top: 10px; margin-bottom: 15px; }
+        li { margin-bottom: 8px; }
+        strong { color: var(--primary); }
+
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.5rem; }
+            .hero-subtitle { font-size: 1.2rem; }
+            .section { padding: 25px 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="hero">
+            <h1>🚀 الفصل السابع</h1>
+            <h1>لغة الاستعلامات الهيكلية المتقدمة</h1>
+            <p class="hero-subtitle">SQL المتقدمة: استعلامات متداخلة، JOINs، دوال تجميع، Views، وأكثر</p>
+            <div class="hero-meta">
+                <div class="meta-badge">📚 CS 340: مقدمة في قواعد البيانات</div>
+                <div class="meta-badge">🎓 جامعة الأمير سلطان</div>
+                <div class="meta-badge">👩‍🏫 إعداد: شوق العمران</div>
+            </div>
+        </div>
+
+        <!-- جدول المحتويات -->
+        <div class="toc">
+            <h2>📑 المحتويات</h2>
+            <div class="toc-grid">
+                <div class="toc-item"><a href="#null">❓ قيم NULL والمنطق ثلاثي القيم</a></div>
+                <div class="toc-item"><a href="#nested">🔄 الاستعلامات المتداخلة (Subqueries)</a></div>
+                <div class="toc-item"><a href="#correlated">🔗 الاستعلامات المتداخلة المرتبطة</a></div>
+                <div class="toc-item"><a href="#exists">✅ EXISTS / NOT EXISTS / UNIQUE</a></div>
+                <div class="toc-item"><a href="#joins">🔀 أنواع الربط المتقدمة (Advanced JOINs)</a></div>
+                <div class="toc-item"><a href="#aggregation">📊 دوال التجميع (Aggregate Functions)</a></div>
+                <div class="toc-item"><a href="#groupby">👥 GROUP BY و HAVING</a></div>
+                <div class="toc-item"><a href="#views">👁️ طرق العرض (Views)</a></div>
+                <div class="toc-item"><a href="#schema">⚙️ DROP و ALTER (تغيير الهيكل)</a></div>
+                <div class="toc-item"><a href="#jdbc">💻 JDBC و APIs</a></div>
+            </div>
+        </div>
+
+        <!-- 1. قيم NULL -->
+        <div class="section" id="null">
+            <div class="section-header">
+                <div class="section-icon">❓</div>
+                <h2>قيم NULL والمنطق ثلاثي القيم</h2>
+            </div>
+
+            <div class="concept-box">
+                <div class="box-title">📌 ما هي قيمة NULL؟</div>
+                <p><strong>NULL</strong> تعني "لا قيمة" أو "قيمة غير معروفة". ليست صفرًا ولا مسافة فارغة.</p>
+            </div>
+
+            <div class="important-box">
+                <div class="box-title">🎯 تفسيرات NULL</div>
+                <ul>
+                    <li><strong>قيمة غير معروفة:</strong> مثل تاريخ ميلاد شخص غير مدخل.</li>
+                    <li><strong>قيمة غير متوفرة:</strong> مثل رقم هاتف شخص لا يملك هاتفًا.</li>
+                    <li><strong>غير منطبق:</strong> مثل حقل "المرتبة" لموظف ليس في نظام المراتب.</li>
+                </ul>
+            </div>
+
+            <h3>⚡ المنطق ثلاثي القيم في SQL</h3>
+            <div class="concept-box">
+                <p>SQL لا تستخدم منطق TRUE/FALSE فقط، بل منطق <strong>ثلاثي القيم</strong>:</p>
+                <ul>
+                    <li><strong>TRUE:</strong> الشرط صحيح.</li>
+                    <li><strong>FALSE:</strong> الشرط خطأ.</li>
+                    <li><strong>UNKNOWN:</strong> لا يمكن تحديد الصحة (عند وجود NULL).</li>
+                </ul>
+            </div>
+
+            <h4>جداول الحقيقة للمنطق ثلاثي القيم</h4>
+            <div class="comparison-table">
+                <table>
+                    <tr>
+                        <th>AND</th>
+                        <th>TRUE</th>
+                        <th>FALSE</th>
+                        <th>UNKNOWN</th>
+                    </tr>
+                    <tr>
+                        <td><strong>TRUE</strong></td>
+                        <td>TRUE</td>
+                        <td>FALSE</td>
+                        <td>UNKNOWN</td>
+                    </tr>
+                    <tr>
+                        <td><strong>FALSE</strong></td>
+                        <td>FALSE</td>
+                        <td>FALSE</td>
+                        <td>FALSE</td>
+                    </tr>
+                    <tr>
+                        <td><strong>UNKNOWN</strong></td>
+                        <td>UNKNOWN</td>
+                        <td>FALSE</td>
+                        <td>UNKNOWN</td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="comparison-table">
+                <table>
+                    <tr>
+                        <th>OR</th>
+                        <th>TRUE</th>
+                        <th>FALSE</th>
+                        <th>UNKNOWN</th>
+                    </tr>
+                    <tr>
+                        <td><strong>TRUE</strong></td>
+                        <td>TRUE</td>
+                        <td>TRUE</td>
+                        <td>TRUE</td>
+                    </tr>
+                    <tr>
+                        <td><strong>FALSE</strong></td>
+                        <td>TRUE</td>
+                        <td>FALSE</td>
+                        <td>UNKNOWN</td>
+                    </tr>
+                    <tr>
+                        <td><strong>UNKNOWN</strong></td>
+                        <td>TRUE</td>
+                        <td>UNKNOWN</td>
+                        <td>UNKNOWN</td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="example-box">
+                <div class="box-title">💡 التعامل مع NULL</div>
+                <p><strong>مهم جدًا:</strong> لا نستخدم <code>= NULL</code> أبدًا، بل <code>IS NULL</code> أو <code>IS NOT NULL</code>.</p>
+                <div class="sql-code">
+<span class="comment">-- العثور على موظفين ليس لديهم مشرف (Super_ssn = NULL)</span>
+<span class="keyword">SELECT</span> Fname, Lname
+<span class="keyword">FROM</span> EMPLOYEE
+<span class="keyword">WHERE</span> Super_ssn <span class="keyword">IS NULL</span>;
+
+<span class="comment">-- العثور على موظفين لديهم مشرف</span>
+<span class="keyword">SELECT</span> Fname, Lname
+<span class="keyword">FROM</span> EMPLOYEE
+<span class="keyword">WHERE</span> Super_ssn <span class="keyword">IS NOT NULL</span>;
+                </div>
+            </div>
+
+            <div class="warning-box">
+                <div class="box-title">⚠️ حقائق عن NULL</div>
+                <ul>
+                    <li>NULL = NULL يُنتج <strong>UNKNOWN</strong>، وليس TRUE.</li>
+                    <li>كل NULL يُعامل كقيمة <strong>فريدة ومختلفة</strong> عن أي NULL آخر (لأغراض المقارنة).</li>
+                    <li>عند GROUP BY، كل قيم NULL تجتمع في مجموعة واحدة.</li>
+                    <li>دوال التجميع مثل SUM و AVG <strong>تتجاهل</strong> قيم NULL.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 2. الاستعلامات المتداخلة -->
+        <div class="section" id="nested">
+            <div class="section-header">
+                <div class="section-icon">🔄</div>
+                <h2>الاستعلامات المتداخلة (Nested Queries / Subqueries)</h2>
+            </div>
+
+            <div class="concept-box">
+                <div class="box-title">📌 تعريف</div>
+                <p><strong>الاستعلام المتداخل</strong> هو استعلام <code>SELECT ... FROM ... WHERE</code> كامل داخل استعلام SQL آخر. يُستخدم لجلب بيانات تعتمد على نتيجة استعلام آخر.</p>
+            </div>
+
+            <h3>مثال أساسي: خطوتين مقابل خطوة واحدة</h3>
+            <div class="example-box">
+                <div class="box-title">💡 مثال: ورش العمل</div>
+                <p>المطلوب: إيجاد جميع ورش العمل التي يقدمها نفس مقدم ورشة "Robot Operating System".</p>
+                
+                <p><strong>الطريقة 1: استعلامان منفصلان</strong></p>
+                <div class="sql-code">
+<span class="comment">-- الخطوة 1: نجد اسم المقدم</span>
+<span class="keyword">SELECT</span> Presenter 
+<span class="keyword">FROM</span> Workshop 
+<span class="keyword">WHERE</span> Title = <span class="string">'Robot Operating System'</span>;
+<span class="comment">-- النتيجة: Dr. Maram</span>
+
+<span class="comment">-- الخطوة 2: نبحث بذلك الاسم</span>
+<span class="keyword">SELECT</span> * 
+<span class="keyword">FROM</span> Workshop 
+<span class="keyword">WHERE</span> Presenter = <span class="string">'Dr. Maram'</span>;
+                </div>
+
+                <p><strong>الطريقة 2: استعلام واحد متداخل</strong></p>
+                <div class="sql-code">
+<span class="keyword">SELECT</span> * 
+<span class="keyword">FROM</span> Workshop 
+<span class="keyword">WHERE</span> Presenter = (<span class="keyword">SELECT</span> Presenter
+                        <span class="keyword">FROM</span> Workshop
+                        <span class="keyword">WHERE</span> Title = <span class="string">'Robot Operating System'</span>);
+                </div>
+            </div>
+
+            <h3>استخدام <span class="keyword-badge">IN</span></h3>
+            <div class="important-box">
+                <p><strong>IN</strong> يتحقق إذا كانت القيمة موجودة ضمن مجموعة القيم الناتجة من الاستعلام الداخلي.</p>
+            </div>
+
+            <div class="example-box">
+                <div class="box-title">💡 IN مع عدة أعمدة</div>
+                <div class="sql-code">
+<span class="comment">-- الموظفون الذين يعملون على نفس (مشروع, ساعات) مثل الموظف '123456789'</span>
+<span class="keyword">SELECT DISTINCT</span> Essn
+<span class="keyword">FROM</span> WORKS_ON
+<span class="keyword">WHERE</span> (Pno, Hours) <span class="keyword">IN</span> (<span class="keyword">SELECT</span> Pno, Hours
+                         <span class="keyword">FROM</span> WORKS_ON
+                         <span class="keyword">WHERE</span> Essn = <span class="string">'123456789'</span>);
+                </div>
+            </div>
+
+            <h3>استخدام <span class="keyword-badge">SOME / ANY</span> و <span class="keyword-badge">ALL</span></h3>
+            <div class="important-box">
+                <ul>
+                    <li><code> = SOME </code> أو <code> = ANY </code> يُعادل <code>IN</code>.</li>
+                    <li><code> > SOME </code> يعني أكبر من عنصر واحد على الأقل في القائمة.</li>
+                    <li><code> > ALL </code> يعني أكبر من جميع العناصر في القائمة.</li>
+                </ul>
+            </div>
+
+            <div class="example-box">
+                <div class="box-title">💡 ALL</div>
+                <div class="sql-code">
+<span class="comment">-- الموظفون الذين راتبهم أكبر من جميع موظفي القسم 5</span>
+<span class="keyword">SELECT</span> Lname, Fname
+<span class="keyword">FROM</span> EMPLOYEE
+<span class="keyword">WHERE</span> Salary > <span class="keyword">ALL</span> (<span class="keyword">SELECT</span> Salary
+                       <span class="keyword">FROM</span> EMPLOYEE
+                       <span class="keyword">WHERE</span> Dno = 5);
+                </div>
+            </div>
+
+            <h3>مجموعات صريحة (Explicit Sets)</h3>
+            <div class="example-box">
+                <div class="box-title">💡 IN مع مجموعة صريحة</div>
+                <div class="sql-code">
+<span class="comment">-- الموظفون الذين يعملون على مشاريع 1 أو 2 أو 3</span>
+<span class="keyword">SELECT DISTINCT</span> Essn
+<span class="keyword">FROM</span> WORKS_ON
+<span class="keyword">WHERE</span> Pno <span class="keyword">IN</span> (1, 2, 3);
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. الاستعلامات المتداخلة المرتبطة -->
+        <div class="section" id="correlated">
+            <div class="section-header">
+                <div class="section-icon">🔗</div>
+                <h2>الاستعلامات المتداخلة المرتبطة (Correlated Subqueries)</h2>
+            </div>
+
+            <div class="concept-box">
+                <div class="box-title">📌 تعريف</div>
+                <p>استعلام داخلي يعتمد على متغير من الاستعلام الخارجي. يُنفذ <strong>مرة لكل صف</strong> من الاستعلام الخارجي.</p>
+            </div>
+
+            <div class="important-box">
+                <div class="box-title">⚙️ آلية العمل</div>
+                <p>شبهه بـ <strong>حلقة (Loop)</strong>:</p>
+                <ol>
+                    <li>نأخذ صفًا من الاستعلام الخارجي.</li>
+                    <li>ننفذ الاستعلام الداخلي باستخدام قيمة من هذا الصف.</li>
+                    <li>إذا تحقق الشرط، نضيف الصف للنتائج.</li>
+                    <li>ننتقل للصف التالي، وهكذا.</li>
+                </ol>
+            </div>
+
+            <div class="example-box">
+                <div class="box-title">💡 مثال: موظف له تابع بنفس الاسم والجنس</div>
+                <div class="sql-code">
+<span class="keyword">SELECT</span> E.Fname, E.Lname
+<span class="keyword">FROM</span> EMPLOYEE <span class="keyword">AS</span> E
+<span class="keyword">WHERE</span> E.Ssn <span class="keyword">IN</span> (<span class="keyword">SELECT</span> D.Essn
+                 <span class="keyword">FROM</span> DEPENDENT <span class="keyword">AS</span> D
+                 <span class="keyword">WHERE</span> E.Fname = D.Dependent_name
+                   <span class="keyword">AND</span> E.Sex = D.Sex);
+                </div>
+                <p>الاستعلام الداخلي يستخدم <code>E.Fname</code> و <code>E.Sex</code> من الاستعلام الخارجي.</p>
+            </div>
+
+            <div class="concept-box">
+                <div class="box-title">🔄 بديل باستخدام JOIN</div>
+                <p>يمكن إعادة كتابة بعض الاستعلامات المرتبطة باستخدام JOIN:</p>
+                <div class="sql-code">
+<span class="keyword">SELECT</span> E.Fname, E.Lname
+<span class="keyword">FROM</span> EMPLOYEE E, DEPENDENT D
+<span class="keyword">WHERE</span> E.Ssn = D.Essn
+  <span class="keyword">AND</span> E.Fname = D.Dependent_name
+  <span class="keyword">AND</span> E.Sex = D.Sex;
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. EXISTS / NOT EXISTS / UNIQUE -->
+        <div class="section" id="exists">
+            <div class="section-header">
+                <div class="section-icon">✅</div>
+                <h2>EXISTS / NOT EXISTS / UNIQUE</h2>
+            </div>
+
+            <div class="concept-box">
+                <div class="box-title">📌 EXISTS</div>
+                <p><strong>EXISTS</strong> يُرجع TRUE إذا كان الاستعلام الداخلي يُرجع صفًا واحدًا على الأقل.</p>
+                <p><strong>NOT EXISTS</strong> يُرجع TRUE إذا كان الاستعلام الداخلي لا يُرجع أي صفوف.</p>
+            </div>
+
+            <div class="example-box">
+                <div class="box-title">💡 EXISTS</div>
+                <div class="sql-code">
+<span class="comment">-- موظف له تابع بنفس الاسم والجنس</span>
+<span class="keyword">SELECT</span> E.Fname, E.Lname
+<span class="keyword">FROM</span> EMPLOYEE E
+<span class="keyword">WHERE EXISTS</span> (<span class="keyword">SELECT</span> *
+               <span class="keyword">FROM</span> DEPENDENT D
+               <span class="keyword">WHERE</span> E.Ssn = D.Essn 
+                 <span class="keyword">AND</span> E.Sex = D.Sex
+                 <span class="keyword">AND</span> E.Fname = D.Dependent_name);
+                </div>
+            </div>
+
+            <div class="example-box">
+                <div class="box-title">💡 NOT EXISTS</div>
+                <div class="sql-code">
+<span class="comment">-- الموظفون الذين ليس لديهم توابع</span>
+<span class="keyword">SELECT</span> Fname, Lname
+<span class="keyword">FROM</span> EMPLOYEE
+<span class="keyword">WHERE NOT EXISTS</span> (<span class="keyword">SELECT</span> *
+                     <span class="keyword">FROM</span> DEPENDENT
+                     <span class="keyword">WHERE</span> Ssn = Essn);
+                </div>
+            </div>
+
+            <div class="concept-box">
+                <div class="box-title">📌 UNIQUE</div>
+                <p><strong>UNIQUE</strong> يُرجع TRUE إذا لم يكن هناك صفوف مكررة في نتيجة الاستعلام الداخلي. (نادر الاستخدام).</p>
+            </div>
+
+            <div class="important-box">
+                <div class="box-title">🎯 متى نستخدم EXISTS؟</div>
+                <ul>
+                    <li>لاختبار وجود علاقة بين الجداول.</li>
+                    <li>أداؤه أفضل من <code>IN</code> في بعض قواعد البيانات.</li>
+                    <li>مع الاستعلامات المرتبطة، هو الخيار المنطقي.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 5. أنواع الربط المتقدمة -->
+        <div class="section" id="joins">
+            <div class="section-header">
+                <div class="section-icon">🔀</div>
+                <h2>أنواع الربط المتقدمة (Advanced JOINs)</h2>
+            </div>
+
+            <div class="concept-box">
+                <div class="box-title">📌 صيغة JOIN الصريحة</div>
+                <p>SQL تقدم صيغة <code>JOIN</code> في جملة <code>FROM</code> بدلاً من كتابة الشروط في <code>WHERE</code>.</p>
+            </div>
+
+            <h3>1. INNER JOIN</h3>
+            <div class="important-box">
+                <p><strong>INNER JOIN</strong> = JOIN الافتراضي. يُرجع الصفوف المتطابقة في كلا الجدولين فقط.</p>
+            </div>
+            <div class="example-box">
+                <div class="sql-code">
+<span class="keyword">SELECT</span> name, First_name, Last_name
+<span class="keyword">FROM</span> Course <span class="keyword">JOIN</span> Faculty 
+  <span class="keyword">ON</span> Course.Lecturer_id = Faculty.id;
+                </div>
+            </div>
+
+            <h3>2. LEFT OUTER JOIN</h3>
+            <div class="important-box">
+                <p><strong>LEFT OUTER JOIN</strong> (أو LEFT JOIN) يُرجع <strong>كل الصفوف</strong> من الجدول الأيسر، مع بيانات الجدول الأيمن إن وُجدت، أو NULL إن لم توجد.</p>
+            </div>
+            <div class="example-box">
+                <div class="sql-code">
+<span class="comment">-- كل المقررات حتى التي ليس لها محاضر</span>
+<span class="keyword">SELECT</span> name, First_name, Last_name
+<span class="keyword">FROM</span> Course <span class="keyword">LEFT OUTER JOIN</span> Faculty 
+  <span class="keyword">ON</span> Course.Lecturer_id = Faculty.id;
+                </div>
+            </div>
+
+            <h3>3. RIGHT OUTER JOIN</h3>
+            <div class="important-box">
+                <p><strong>RIGHT OUTER JOIN</strong> يُرجع كل الصفوف من الجدول الأيمن.</p>
+            </div>
+            <div class="example-box">
+                <div class="sql-code">
+<span class="comment">-- كل المحاضرين حتى الذين ليس لديهم مقررات</span>
+<span class="keyword">SELECT</span> name, First_name, Last_name
+<span class="keyword">FROM</span> Course <span class="keyword">RIGHT OUTER JOIN</span> Faculty 
+  <span class="keyword">ON</span> Course.Lecturer_id = Faculty.id;
+                </div>
+            </div>
+
+            <h3>4. FULL OUTER JOIN</h3>
+            <div class="important-box">
+                <p><strong>FULL OUTER JOIN</strong> يُرجع كل الصفوف من كلا الجدولين، مع NULL في الجانب الآخر إن لم يوجد تطابق.</p>
+            </div>
+            <div class="example-box">
+                <div class="sql-code">
+<span class="comment">-- كل المقررات وكل المحاضرين</span>
+<span class="keyword">SELECT</span> name, First_name, Last_name
+<span class="keyword">FROM</span> Course <span class="keyword">FULL OUTER JOIN</span> Faculty 
+  <span class="keyword">ON</span> Course.Lecturer_id = Faculty.id;
+                </div>
+            </div>
+
+            <h3>5. NATURAL JOIN</h3>
+            <div class="important-box">
+                <p><strong>NATURAL JOIN</strong> يربط الجداول بناءً على الأعمدة التي تحمل <strong>نفس الاسم</strong> تلقائيًا. كل عمود مشترك يظهر مرة واحدة فقط في النتيجة.</p>
+            </div>
+            <div class="example-box">
+                <div class="sql-code">
+<span class="keyword">SELECT</span> Fname, Lname, Address
+<span class="keyword">FROM</span> (EMPLOYEE <span class="keyword">NATURAL JOIN</span>
+      (DEPARTMENT <span class="keyword">AS</span> DEPT (Dname, Dno, Mssn, Msdate)))
+<span class="keyword">WHERE</span> Dname = <span class="string">'Research'</span>;
+                </div>
+            </div>
+
+            <h3>6. CROSS JOIN</h3>
+            <div class="warning-box">
+                <div class="box-title">⚠️ الجداء الديكارتي</div>
+                <p><strong>CROSS JOIN</strong> يُرجع كل التركيبات الممكنة من الصفوف من كلا الجدولين. استخدمه بحذر شديد لأنه قد يُنتج كميات هائلة من البيانات.</p>
+                <div class="sql-code">
+<span class="keyword">SELECT</span> *
+<span class="keyword">FROM</span> Table1 <span class="keyword">CROSS JOIN</span> Table2;
+                </div>
+            </div>
+
+            <h3>ربط أكثر من جدولين</h3>
+            <div class="example-box">
+                <div class="box-title">💡 مثال ربط 3 جداول</div>
+                <div class="sql-code">
+<span class="keyword">SELECT</span> Pnumber, Dnum, Lname, Address, Bdate
+<span class="keyword">FROM</span> ((PROJECT <span class="keyword">JOIN</span> DEPARTMENT <span class="keyword">ON</span> Dnum = Dnumber)
+       <span class="keyword">JOIN</span> EMPLOYEE <span class="keyword">ON</span> Mgr_ssn = Ssn)
+<span class="keyword">WHERE</span> Plocation = <span class="string">'Stafford'</span>;
+                </div>
+            </div>
+        </div>
+
+        <!-- 6. دوال التجميع -->
+        <div class="section" id="aggregation">
+            <div class="section-header">
+                <div class="section-icon">📊</div>
+                <h2>دوال التجميع (Aggregate Functions)</h2>
+            </div>
+
+            <div class="concept-box">
+                <div class="box-title">📌 تعريف</div>
+                <p>دوال التجميع تُجري عمليات حسابية على مجموعة من القيم وتُرجع قيمة واحدة. تتجاهل <strong>NULL</strong> في العمليات (ما عدا COUNT(*)).</p>
+            </div>
+
+            <div class="comparison-table">
+                <table>
+                    <tr>
+                        <th>الدالة</th>
+                        <th>الوصف</th>
+                        <th>مثال</th>
+                    </tr>
+                    <tr>
+                        <td><strong>COUNT(*)</strong></td>
+                        <td>عدد الصفوف في الجدول (بما فيها NULL).</td>
+                        <td><code>COUNT(*)</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>COUNT(column)</strong></td>
+                        <td>عدد القيم غير NULL في العمود.</td>
+                        <td><code>COUNT(DISTINCT Dept)</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>SUM(column)</strong></td>
+                        <td>مجموع القيم في العمود (يجب أن يكون رقميًا).</td>
+                        <td><code>SUM(Hours)</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>AVG(column)</strong></td>
+                        <td>متوسط القيم في العمود.</td>
+                        <td><code>AVG(Salary)</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>MAX(column)</strong></td>
+                        <td>أكبر قيمة.</td>
+                        <td><code>MAX(GPA)</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>MIN(column)</strong></td>
+                        <td>أصغر قيمة.</td>
+                        <td><code>MIN(age)</code></td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="example-box">
+                <div class="box-title">💡 أمثلة على دوال التجميع</div>
+                <div class="sql-code">
+<span class="comment">-- متوسط GPA لجميع الطلاب</span>
+<span class="keyword">SELECT</span> <span class="keyword">AVG</span>(gpa) <span class="keyword">FROM</span> Student;
+
+<span class="comment">-- أعلى وأقل GPA</span>
+<span class="keyword">SELECT</span> <span class="keyword">MAX</span>(gpa), <span class="keyword">MIN</span>(gpa) <span class="keyword">FROM</span> Student;
+
+<span class="comment">-- عدد الأقسام المختلفة (بدون تكرار)</span>
+<span class="keyword">SELECT</span> <span class="keyword">COUNT</span>(<span class="keyword">DISTINCT</span> department) <span class="keyword">FROM</span> Student;
+
+<span class="comment">-- إجمالي عدد الطلاب</span>
+<span class="keyword">SELECT</span> <span class="keyword">COUNT</span>(*) <span class="keyword">FROM</span> Student;
+                </div>
+            </div>
+        </div>
+
+        <!-- 7. GROUP BY و HAVING -->
+        <div class="section" id="groupby">
+            <div class="section-header">
+                <div class="section-icon">👥</div>
+                <h2>GROUP BY و HAVING</h2>
+            </div>
+
+            <div class="concept-box">
+                <div class="box-title">📌 GROUP BY</div>
+                <p>يقسم الصفوف إلى مجموعات بناءً على قيم عمود أو أكثر، ثم يطبق دوال التجميع على كل مجموعة.</p>
+            </div>
+
+            <div class="important-box">
+                <div class="box-title">⚠️ قاعدة مهمة</div>
+                <p>في <code>SELECT</code>، يمكننا فقط اختيار الأعمدة الموجودة في <code>GROUP BY</code> أو دوال التجميع.</p>
+            </div>
+
+            <div class="example-box">
+                <div class="box-title">💡 تجميع حسب قسم</div>
+                <div class="sql-code">
+<span class="comment">-- لكل قسم: عدد الموظفين ومتوسط الراتب</span>
+<span class="keyword">SELECT</span> Dno, <span class="keyword">COUNT</span>(*), <span class="keyword">AVG</span>(Salary)
+<span class="keyword">FROM</span> EMPLOYEE
+<span class="keyword">GROUP BY</span> Dno;
+
+<span class="comment">-- لكل تخصص ومستوى: عدد الطلاب ومتوسط العمر</span>
+<span class="keyword">SELECT</span> major, standing, <span class="keyword">COUNT</span>(*), <span class="keyword">AVG</span>(age)
+<span class="keyword">FROM</span> Student
+<span class="keyword">GROUP BY</span> major, standing;
+                </div>
+            </div>
+
+            <div class="example-box">
+                <div class="box-title">💡 GROUP BY مع JOIN</div>
+                <div class="sql-code">
+<span class="comment">-- لكل مشروع: عدد الموظفين العاملين عليه</span>
+<span class="keyword">SELECT</span> Pnumber, Pname, <span class="keyword">COUNT</span>(*)
+<span class="keyword">FROM</span> PROJECT, WORKS_ON
+<span class="keyword">WHERE</span> Pnumber = Pno
+<span class="keyword">GROUP BY</span> Pnumber, Pname;
+                </div>
+            </div>
+
+            <h3>HAVING: فلترة المجموعات</h3>
+            <div class="important-box">
+                <p><strong>WHERE</strong> يُطبق <strong>قبل</strong> التجميع، ويفلتر الصفوف.</p>
+                <p><strong>HAVING</strong> يُطبق <strong>بعد</strong> التجميع، ويفلتر المجموعات (باستخدام دوال التجميع).</p>
+            </div>
+
+            <div class="example-box">
+                <div class="box-title">💡 مثال HAVING</div>
+                <div class="sql-code">
+<span class="comment">-- المشاريع التي يعمل بها أكثر من 2 موظف</span>
+<span class="keyword">SELECT</span> Pnumber, Pname, <span class="keyword">COUNT</span>(*)
+<span class="keyword">FROM</span> PROJECT, WORKS_ON
+<span class="keyword">WHERE</span> Pnumber = Pno
+<span class="keyword">GROUP BY</span> Pnumber, Pname
+<span class="keyword">HAVING COUNT</span>(*) > 2;
+                </div>
+            </div>
+        </div>
+
+        <!-- 8. طرق العرض -->
+        <div class="section" id="views">
+            <div class="section-header">
+                <div class="section-icon">👁️</div>
+                <h2>طرق العرض (Views)</h2>
+            </div>
+
+            <div class="concept-box">
+                <div class="box-title">📌 تعريف</div>
+                <p><strong>طريقة العرض (View)</strong> هي <strong>جدول افتراضي</strong> يمثل نتيجة استعلام مخزّن. لا تحتوي على بيانات حقيقية (في الغالب) بل تُنشئ البيانات عند الاستعلام.</p>
+            </div>
+
+            <div class="important-box">
+                <div class="box-title">🎯 فوائد الـ Views</div>
+                <ul>
+                    <li><strong>تبسيط الاستعلامات:</strong> إخفاء التعقيد عن المستخدمين.</li>
+                    <li><strong>الأمان:</strong> عرض جزء من البيانات فقط، وإخفاء الأعمدة الحساسة (مثل الراتب).</li>
+                    <li><strong>اتساق البيانات:</strong> توفير واجهة موحدة للبيانات.</li>
+                </ul>
+            </div>
+
+            <h3>إنشاء واستخدام View</h3>
+            <div class="example-box">
+                <div class="box-title">💡 View بسيط</div>
+                <div class="sql-code">
+<span class="comment">-- إنشاء View للمعلومات العامة للموظفين (بدون راتب)</span>
+<span class="keyword">CREATE VIEW</span> EmployeePublic <span class="keyword">AS</span>
+<span class="keyword">SELECT</span> Ssn, Fname, Lname, Address, Sex
+<span class="keyword">FROM</span> EMPLOYEE;
+
+<span class="comment">-- استخدام الـ View</span>
+<span class="keyword">SELECT</span> * <span class="keyword">FROM</span> EmployeePublic;
+                </div>
+            </div>
+
+            <div class="example-box">
+                <div class="box-title">💡 View مع JOIN</div>
+                <div class="sql-code">
+<span class="keyword">CREATE VIEW</span> DeptInfo <span class="keyword">AS</span>
+<span class="keyword">SELECT</span> Dname, COUNT(*) <span class="keyword">AS</span> EmpCount, <span class="keyword">AVG</span>(Salary) <span class="keyword">AS</span> AvgSalary
+<span class="keyword">FROM</span> DEPARTMENT, EMPLOYEE
+<span class="keyword">WHERE</span> Dnumber = Dno
+<span class="keyword">GROUP BY</span> Dname;
+                </div>
+            </div>
+
+            <h3>الـ Views المادية وغير المادية</h3>
+            <div class="comparison-table">
+                <table>
+                    <tr>
+                        <th>الخاصية</th>
+                        <th>غير مادية (Virtual)</th>
+                        <th>مادية (Materialized)</th>
+                    </tr>
+                    <tr>
+                        <td><strong>التخزين</strong></td>
+                        <td>لا تخزن بيانات، فقط الاستعلام.</td>
+                        <td>تخزن البيانات فعليًا على القرص.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>السرعة</strong></td>
+                        <td>أبطأ (يُنفذ الاستعلام كل مرة).</td>
+                        <td>سريع جدًا (بيانات جاهزة).</td>
+                    </tr>
+                    <tr>
+                        <td><strong>حداثة البيانات</strong></td>
+                        <td>دائمًا محدثة.</td>
+                        <td>تحتاج تحديثًا دوريًا.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>الاستخدام</strong></td>
+                        <td>الـ Views العادية في SQL.</td>
+                        <td>تُستخدم في مستودعات البيانات (Data Warehouses).</td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="warning-box">
+                <div class="box-title">⚠️ تحديث Views</div>
+                <p>ليس كل View قابل للتحديث (INSERT/UPDATE/DELETE). الشروط عادة:</p>
+                <ul>
+                    <li>يجب أن يكون مأخوذًا من جدول واحد.</li>
+                    <li>يجب أن يحتوي على المفتاح الرئيسي للجدول.</li>
+                    <li>يجب ألا يحتوي على دوال تجميع أو DISTINCT أو GROUP BY.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 9. DROP و ALTER -->
+        <div class="section" id="schema">
+            <div class="section-header">
+                <div class="section-icon">⚙️</div>
+                <h2>تعديل هيكل قاعدة البيانات: DROP و ALTER</h2>
+            </div>
+
+            <h3>DROP: الحذف النهائي</h3>
+            <div class="warning-box">
+                <div class="box-title">⚠️ DROP نهائي ولا يمكن التراجع عنه</div>
+                <p>يُستخدم لحذف كائنات قاعدة البيانات بشكل كامل.</p>
+            </div>
+            <div class="example-box">
+                <div class="sql-code">
+<span class="comment">-- حذف جدول (وجميع بياناته)</span>
+<span class="keyword">DROP TABLE</span> Student;
+
+<span class="comment">-- حذف قاعدة بيانات</span>
+<span class="keyword">DROP DATABASE</span> UniversityDB;
+
+<span class="comment">-- حذف View</span>
+<span class="keyword">DROP VIEW</span> EmployeePublic;
+                </div>
+            </div>
+
+            <h3>ALTER: تعديل الهيكل</h3>
+            <div class="concept-box">
+                <div class="box-title">📌 ALTER TABLE</div>
+                <p>يُستخدم لإضافة أو تعديل أو حذف أعمدة أو قيود في جدول موجود.</p>
+            </div>
+            <div class="example-box">
+                <div class="sql-code">
+<span class="comment">-- إضافة عمود جديد</span>
+<span class="keyword">ALTER TABLE</span> Student
+<span class="keyword">ADD</span> phoneNumber VARCHAR(15);
+
+<span class="comment">-- تعديل نوع عمود</span>
+<span class="keyword">ALTER TABLE</span> Student
+<span class="keyword">MODIFY COLUMN</span> phoneNumber VARCHAR(20);
+
+<span class="comment">-- حذف عمود</span>
+<span class="keyword">ALTER TABLE</span> Student
+<span class="keyword">DROP COLUMN</span> phoneNumber;
+
+<span class="comment">-- إضافة مفتاح خارجي</span>
+<span class="keyword">ALTER TABLE</span> Student
+<span class="keyword">ADD CONSTRAINT</span> fk_department
+<span class="keyword">FOREIGN KEY</span> (dept_id) <span class="keyword">REFERENCES</span> Department(id);
+                </div>
+            </div>
+        </div>
+
+        <!-- 10. JDBC -->
+        <div class="section" id="jdbc">
+            <div class="section-header">
+                <div class="section-icon">💻</div>
+                <h2>JDBC و APIs قواعد البيانات</h2>
+            </div>
+
+            <div class="concept-box">
+                <div class="box-title">📌 ما هي JDBC؟</div>
+                <p><strong>JDBC (Java Database Connectivity)</strong> هي واجهة برمجة تطبيقات (API) تسمح لتطبيقات Java بالاتصال بقواعد البيانات وتنفيذ استعلامات SQL.</p>
+            </div>
+
+            <div class="example-box">
+                <div class="box-title">💡 مثال JDBC</div>
+                <div class="sql-code" style="font-size: 0.85rem;">
+<span class="keyword">import</span> java.sql.*;
+
+<span class="keyword">public class</span> DBExample {
+    <span class="keyword">public static void</span> main(String[] args) {
+        String url = <span class="string">"jdbc:mysql://localhost:3306/myDB"</span>;
+        String user = <span class="string">"root"</span>;
+        String password = <span class="string">"pass"</span>;
+        
+        <span class="keyword">try</span> {
+            <span class="comment">// 1. تحميل Driver</span>
+            Class.forName(<span class="string">"com.mysql.cj.jdbc.Driver"</span>);
+            
+            <span class="comment">// 2. فتح اتصال</span>
+            Connection conn = DriverManager.getConnection(url, user, password);
+            
+            <span class="comment">// 3. إنشاء وتنفيذ استعلام</span>
+            Statement stmt = conn.createStatement();
+            String sql = <span class="string">"SELECT id, name FROM students"</span>;
+            ResultSet rs = stmt.executeQuery(sql);
+            
+            <span class="comment">// 4. معالجة النتائج</span>
+            <span class="keyword">while</span> (rs.next()) {
+                <span class="keyword">int</span> id = rs.getInt(<span class="string">"id"</span>);
+                String name = rs.getString(<span class="string">"name"</span>);
+                System.out.println(id + <span class="string">": "</span> + name);
+            }
+            
+            <span class="comment">// 5. إغلاق الموارد</span>
+            rs.close(); stmt.close(); conn.close();
+            
+        } <span class="keyword">catch</span> (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+                </div>
+            </div>
+
+            <div class="important-box">
+                <div class="box-title">🎯 خطوات JDBC الأساسية</div>
+                <ol>
+                    <li>تحميل الـ Driver المناسب.</li>
+                    <li>فتح اتصال (Connection).</li>
+                    <li>إنشاء كائن Statement.</li>
+                    <li>تنفيذ الاستعلام (executeQuery أو executeUpdate).</li>
+                    <li>معالجة ResultSet (إذا كان استعلام SELECT).</li>
+                    <li>إغلاق الاتصال والموارد.</li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- 11. هيكل استعلام SQL الكامل -->
+        <div class="section">
+            <div class="section-header">
+                <div class="section-icon">📋</div>
+                <h2>هيكل استعلام SQL الكامل وترتيب التنفيذ</h2>
+            </div>
+
+            <div class="important-box">
+                <div class="box-title">📝 الصيغة الكاملة</div>
+                <div class="sql-code">
+<span class="keyword">SELECT</span> &lt;قائمة الأعمدة ودوال التجميع&gt;
+<span class="keyword">FROM</span> &lt;قائمة الجداول&gt;
+[<span class="keyword">WHERE</span> &lt;شرط الصفوف&gt;]
+[<span class="keyword">GROUP BY</span> &lt;أعمدة التجميع&gt;]
+[<span class="keyword">HAVING</span> &lt;شرط المجموعات&gt;]
+[<span class="keyword">ORDER BY</span> &lt;أعمدة الترتيب&gt;];
+                </div>
+            </div>
+
+            <div class="concept-box">
+                <div class="box-title">⚙️ ترتيب التنفيذ المنطقي (Logical Order)</div>
+                <ol>
+                    <li><strong>FROM / JOIN:</strong> تحديد الجداول وربطها.</li>
+                    <li><strong>WHERE:</strong> فلترة الصفوف الفردية.</li>
+                    <li><strong>GROUP BY:</strong> تجميع الصفوف.</li>
+                    <li><strong>HAVING:</strong> فلترة المجموعات.</li>
+                    <li><strong>SELECT:</strong> حساب الأعمدة ودوال التجميع.</li>
+                    <li><strong>ORDER BY:</strong> ترتيب النتائج النهائية.</li>
+                </ol>
+                <p><strong>ملاحظة:</strong> ترتيب الكتابة يختلف عن ترتيب التنفيذ. هذا مهم جدًا لفهم الأخطاء.</p>
+            </div>
+        </div>
+
+        <!-- 12. ملخص الفصل -->
+        <div class="section">
+            <div class="section-header">
+                <div class="section-icon">✨</div>
+                <h2>ملخص الفصل السابع</h2>
+            </div>
+
+            <div class="concept-box">
+                <div class="box-title">📌 النقاط الرئيسية</div>
+                <ul>
+                    <li><strong>NULL:</strong> استخدم IS NULL/IS NOT NULL، افهم المنطق ثلاثي القيم.</li>
+                    <li><strong>الاستعلامات المتداخلة:</strong> استخدمها عند الحاجة لنتيجة استعلام داخل استعلام آخر. IN, ANY, ALL.</li>
+                    <li><strong>الاستعلامات المرتبطة:</strong> الاستعلام الداخلي يعتمد على الخارجي، يُنفذ لكل صف.</li>
+                    <li><strong>EXISTS / NOT EXISTS:</strong> اختبر وجود صفوف في استعلام فرعي.</li>
+                    <li><strong>JOINs:</strong> INNER, LEFT, RIGHT, FULL, NATURAL, CROSS. تعلم الفروق بينها.</li>
+                    <li><strong>دوال التجميع:</strong> COUNT, SUM, AVG, MAX, MIN. تتجاهل NULL ما عدا COUNT(*).</li>
+                    <li><strong>GROUP BY:</strong> لتقسيم البيانات إلى مجموعات وتطبيق دوال تجميع.</li>
+                    <li><strong>HAVING:</strong> لفلترة المجموعات (عكس WHERE الذي يفلتر الصفوف).</li>
+                    <li><strong>Views:</strong> جداول افتراضية للتبسيط والأمان.</li>
+                    <li><strong>DROP/ALTER:</strong> لتعديل هيكل قاعدة البيانات.</li>
+                    <li><strong>JDBC:</strong> ربط Java بقواعد البيانات.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer">
+            <div class="name">شوق العمران</div>
+            <div>CS 340: مقدمة في أنظمة قواعد البيانات</div>
+            <div>الفصل السابع: SQL المتقدمة</div>
+            <div style="margin-top: 20px; font-size: 0.9rem; opacity: 0.8;">جميع الأمثلة والشروحات مأخوذة من المنهج الدراسي</div>
+        </div>
+    </div>
+</body>
+</html>
