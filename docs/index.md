@@ -19,7 +19,8 @@ Structured notes, summaries, quizzes, and handouts across:
 ### Career Development
 - Personal profile  
 - Projects  
-- Resume  
+- Resume
+- Workshops
 
 ### Links
 Curated references, tools, and resources I rely on

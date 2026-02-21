@@ -1,0 +1,1407 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الفصل ٨: إدارة الذاكرة الرئيسية - CS330</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f4f4f4;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: white;
+        }
+
+        header {
+            background: linear-gradient(135deg, #00c9ff 0%, #92fe9d 100%);
+            color: white;
+            padding: 40px;
+            margin-bottom: 30px;
+            text-align: center;
+            border-radius: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            color: #00acc1;
+            font-size: 1.8em;
+            margin: 35px 0 20px 0;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #00c9ff;
+        }
+
+        h3 {
+            color: #0097a7;
+            font-size: 1.4em;
+            margin: 25px 0 15px 0;
+        }
+
+        /* تصور كتلة الذاكرة */
+        .memory-visual {
+            display: flex;
+            justify-content: center;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        .memory-block {
+            width: 120px;
+            height: 150px;
+            border: 2px solid #00acc1;
+            margin: 10px;
+            display: flex;
+            flex-direction: column;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .memory-header {
+            background: #00acc1;
+            color: white;
+            padding: 8px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .memory-content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            background: #e0f7fa;
+        }
+
+        .os-block {
+            background: #ff6b6b;
+        }
+
+        .process-block {
+            background: #4ecdc4;
+        }
+
+        .free-block {
+            background: #95e77e;
+        }
+
+        /* رسم ترجمة العنوان */
+        .address-translation {
+            background: #f8f9ff;
+            border: 2px solid #00c9ff;
+            border-radius: 10px;
+            padding: 30px;
+            margin: 30px 0;
+        }
+
+        .address-flow {
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .address-box {
+            background: white;
+            border: 2px solid #00acc1;
+            padding: 15px;
+            border-radius: 8px;
+            min-width: 150px;
+            text-align: center;
+            margin: 10px;
+        }
+
+        .arrow {
+            font-size: 30px;
+            color: #00acc1;
+            margin: 0 10px;
+        }
+
+        /* تصور جدول الصفحات */
+        .page-table-container {
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-start;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        .page-table {
+            border: 2px solid #00acc1;
+            border-radius: 8px;
+            overflow: hidden;
+            margin: 10px;
+        }
+
+        .page-table-header {
+            background: #00acc1;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .page-entry {
+            display: flex;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .page-entry:last-child {
+            border-bottom: none;
+        }
+
+        .page-number {
+            background: #e0f7fa;
+            padding: 10px;
+            width: 60px;
+            text-align: center;
+            border-left: 1px solid #ddd;
+        }
+
+        .frame-number {
+            padding: 10px;
+            flex: 1;
+            text-align: center;
+        }
+
+        /* جدول القطاعات */
+        .segment-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .segment-table th {
+            background: #00acc1;
+            color: white;
+            padding: 15px;
+            text-align: right;
+        }
+
+        .segment-table td {
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+        }
+
+        .segment-table tr:nth-child(even) {
+            background: #f0f8ff;
+        }
+
+        /* تصور TLB */
+        .tlb-container {
+            background: #fff3e0;
+            border: 2px solid #ff9800;
+            border-radius: 10px;
+            padding: 25px;
+            margin: 30px 0;
+        }
+
+        .tlb-visual {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .tlb-entry {
+            background: white;
+            border: 1px solid #ff9800;
+            padding: 15px;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        /* مقارنة التجزؤ */
+        .fragmentation-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .fragmentation-card {
+            background: white;
+            border: 2px solid #00c9ff;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .fragmentation-card h4 {
+            color: #00acc1;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .frag-visual {
+            display: flex;
+            flex-direction: column;
+            margin: 10px 0;
+        }
+
+        .memory-segment {
+            height: 30px;
+            margin: 2px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .allocated {
+            background: #4ecdc4;
+        }
+
+        .internal-frag {
+            background: #ffeb3b;
+            color: #333;
+        }
+
+        .external-frag {
+            background: #ff9800;
+        }
+
+        /* كتل الأكواد */
+        .code-block {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+        }
+
+        .code-comment {
+            color: #95a5a6;
+        }
+
+        .code-keyword {
+            color: #3498db;
+        }
+
+        /* صندوق المفاهيم */
+        .concept-box {
+            background: #e3f2fd;
+            border-right: 4px solid #2196f3;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .warning-box {
+            background: #fff3cd;
+            border-right: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+        }
+
+        .info-box {
+            background: #f0f8ff;
+            border: 2px solid #00acc1;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        /* استراتيجيات التخصيص */
+        .allocation-strategies {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .strategy-card {
+            background: linear-gradient(135deg, #00c9ff15, #92fe9d15);
+            border: 2px solid #00acc1;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            transition: transform 0.3s;
+        }
+
+        .strategy-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .strategy-card h4 {
+            color: #00acc1;
+            margin-bottom: 10px;
+        }
+
+        /* تصور المبادلة */
+        .swapping-visual {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        .swap-state {
+            text-align: center;
+            margin: 10px;
+        }
+
+        .swap-memory {
+            width: 150px;
+            height: 200px;
+            border: 2px solid #00acc1;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .swap-disk {
+            width: 150px;
+            height: 150px;
+            border: 2px solid #ff9800;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #fff8e1;
+            margin-top: 20px;
+        }
+
+        /* صندوق الصيغ */
+        .formula-box {
+            background: #f5f5f5;
+            border: 2px solid #00acc1;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .formula {
+            font-size: 1.2em;
+            font-family: 'Courier New', monospace;
+            color: #00695c;
+            margin: 10px 0;
+        }
+
+        /* صندوق الأمثلة */
+        .example-box {
+            background: #e8f5e9;
+            border: 2px solid #4caf50;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        /* قسم الاختبار */
+        .exam-section {
+            background: #fff8dc;
+            border: 2px solid #ffd700;
+            padding: 25px;
+            margin: 30px 0;
+            border-radius: 10px;
+        }
+
+        .exam-question {
+            background: white;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        /* حساب العنوان */
+        .address-calc {
+            background: white;
+            border: 2px solid #00acc1;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .calc-step {
+            margin: 10px 0;
+            padding: 10px;
+            background: #e0f7fa;
+            border-right: 3px solid #00acc1;
+        }
+
+        /* الجداول */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        th {
+            background: #00acc1;
+            color: white;
+            padding: 15px;
+            text-align: right;
+        }
+
+        td {
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+        }
+
+        tr:nth-child(even) {
+            background: #f0f8ff;
+        }
+
+        /* تصور البتات */
+        .bit-visual {
+            display: flex;
+            margin: 20px 0;
+            justify-content: center;
+        }
+
+        .bit-segment {
+            border: 1px solid #00acc1;
+            padding: 10px 20px;
+            margin: 0;
+            background: white;
+        }
+
+        .bit-label {
+            text-align: center;
+            font-size: 0.9em;
+            color: #00695c;
+            margin-top: 5px;
+        }
+
+        /* بتات الحماية */
+        .protection-bits {
+            display: flex;
+            gap: 10px;
+            margin: 10px 0;
+        }
+
+        .bit-flag {
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+
+        .read-bit {
+            background: #4caf50;
+            color: white;
+        }
+
+        .write-bit {
+            background: #ff9800;
+            color: white;
+        }
+
+        .execute-bit {
+            background: #2196f3;
+            color: white;
+        }
+
+        /* مكان الصورة */
+        .image-placeholder {
+            background: #95a5a6;
+            color: white;
+            padding: 60px 20px;
+            text-align: center;
+            border-radius: 10px;
+            margin: 20px 0;
+            border: 2px dashed #7f8c8d;
+        }
+
+        .highlight {
+            background: #ffeb3b;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+
+        /* تصميم متجاوب */
+        @media (max-width: 768px) {
+            .memory-visual,
+            .page-table-container,
+            .fragmentation-grid,
+            .allocation-strategies {
+                flex-direction: column;
+            }
+            
+            .arrow {
+                transform: rotate(90deg);
+            }
+        }
+
+        footer {
+            background: #00acc1;
+            color: white;
+            text-align: center;
+            padding: 25px;
+            margin-top: 40px;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>الفصل ٨: الذاكرة الرئيسية</h1>
+            <p style="font-size: 1.2em;">CS330 - أنظمة التشغيل</p>
+            <p>إدارة الذاكرة، ربط العناوين، المبادلة، التصفح والتقسيم</p>
+        </header>
+
+        <!-- القسم 1: خلفية -->
+        <section>
+            <h2>٨.١ خلفية</h2>
+            
+            <div class="concept-box">
+                <p>إدارة الذاكرة ضرورية لتعدد البرمجة. يجب على نظام التشغيل:</p>
+                <ul style="margin-right: 40px;">
+                    <li>تتبع أي أجزاء من الذاكرة تُستخدم حاليًا ومن يستخدمها</li>
+                    <li>تحديد العمليات التي يجب تحميلها عندما تصبح مساحة الذاكرة متاحة</li>
+                    <li>تخصيص وإلغاء تخصيص مساحة الذاكرة حسب الحاجة</li>
+                </ul>
+            </div>
+
+            <h3>العتاد الأساسي</h3>
+            <p>الذاكرة الرئيسية والمسجلات هما التخزين الوحيد الذي يمكن للمعالج الوصول إليه مباشرة.</p>
+            
+            <div class="info-box">
+                <h4>أوقات الوصول للذاكرة:</h4>
+                <ul>
+                    <li><strong>الوصول للمسجلات:</strong> دورة معالج واحدة أو أقل</li>
+                    <li><strong>الذاكرة الرئيسية:</strong> دورات عديدة (تسبب توقفًا)</li>
+                    <li><strong>الذاكرة المخبئية:</strong> تقع بين الذاكرة الرئيسية ومسجلات المعالج</li>
+                </ul>
+            </div>
+
+            <h3>حماية الذاكرة</h3>
+            <div class="address-translation">
+                <h4>مسجلات الأساس والحد</h4>
+                <div class="address-flow">
+                    <div class="address-box">
+                        <strong>المعالج</strong><br>
+                        يولد<br>
+                        عنوانًا منطقيًا
+                    </div>
+                    <span class="arrow">→</span>
+                    <div class="address-box">
+                        <strong>تحقق</strong><br>
+                        العنوان ≥ الأساس<br>
+                        العنوان < الأساس+الحد
+                    </div>
+                    <span class="arrow">→</span>
+                    <div class="address-box">
+                        <strong>الذاكرة</strong><br>
+                        عنوان<br>
+                        فيزيائي
+                    </div>
+                </div>
+                <p style="text-align: center; margin-top: 20px;">إذا فشل التحقق → انتقال إلى نظام التشغيل (خطأ في العنونة)</p>
+            </div>
+        </section>
+
+        <!-- القسم 2: ربط العناوين -->
+        <section>
+            <h2>٨.٢ ربط العناوين</h2>
+            
+            <p>يجب إحضار البرامج إلى الذاكرة ووضعها ضمن عملية للتنفيذ.</p>
+            
+            <h3>ربط التعليمات والبيانات بالذاكرة</h3>
+            <table>
+                <tr>
+                    <th>وقت الربط</th>
+                    <th>الوصف</th>
+                    <th>نوع العنوان</th>
+                    <th>المرونة</th>
+                </tr>
+                <tr>
+                    <td><strong>وقت الترجمة</strong></td>
+                    <td>إذا كان موقع الذاكرة معروفًا مسبقًا، يمكن إنشاء كود مطلق</td>
+                    <td>عناوين مطلقة</td>
+                    <td>يجب إعادة الترجمة إذا تغير موقع البداية</td>
+                </tr>
+                <tr>
+                    <td><strong>وقت التحميل</strong></td>
+                    <td>المترجم يولد كودًا قابلاً لإعادة التموضع</td>
+                    <td>عناوين قابلة لإعادة التموضع</td>
+                    <td>الربط النهائي يؤجل حتى وقت التحميل</td>
+                </tr>
+                <tr>
+                    <td><strong>وقت التنفيذ</strong></td>
+                    <td>الربط يؤجل حتى وقت التشغيل</td>
+                    <td>عناوين ديناميكية</td>
+                    <td>يمكن للعملية التحرك أثناء التنفيذ</td>
+                </tr>
+            </table>
+
+            <h3>مساحة العنوان المنطقية مقابل الفيزيائية</h3>
+            <div class="concept-box">
+                <p><strong>عنوان منطقي:</strong> يولده المعالج؛ يُسمى أيضًا <span class="highlight">عنوانًا افتراضيًا</span></p>
+                <p><strong>عنوان فيزيائي:</strong> عنوان تراه وحدة الذاكرة</p>
+                <p>العناوين المنطقية والفيزيائية متطابقة في مخططات وقت الترجمة ووقت التحميل؛ مختلفة في مخطط وقت التنفيذ</p>
+            </div>
+
+            <h3>وحدة إدارة الذاكرة</h3>
+            <div class="formula-box">
+                <h4>ترجمة العنوان</h4>
+                <p class="formula">العنوان الفيزيائي = العنوان المنطقي + مسجل إعادة التموضع</p>
+                <p>برنامج المستخدم يتعامل مع عناوين منطقية؛ لا يرى أبدًا عناوين فيزيائية حقيقية</p>
+            </div>
+        </section>
+
+        <!-- القسم 3: المبادلة -->
+        <section>
+            <h2>٨.٣ المبادلة</h2>
+            
+            <p>يمكن مبادلة عملية مؤقتًا خارج الذاكرة إلى تخزين احتياطي ثم إعادتها لمواصلة التنفيذ.</p>
+            
+            <div class="swapping-visual">
+                <div class="swap-state">
+                    <h4>الذاكرة الرئيسية</h4>
+                    <div class="swap-memory">
+                        <div class="memory-header os-block">نظام التشغيل</div>
+                        <div class="memory-content process-block">عملية P1</div>
+                        <div class="memory-content free-block">مساحة حرة</div>
+                    </div>
+                </div>
+                
+                <div style="display: flex; flex-direction: column; align-items: center;">
+                    <span class="arrow">⇄</span>
+                    <p><strong>مبادلة خارج / مبادلة داخل</strong></p>
+                </div>
+                
+                <div class="swap-state">
+                    <h4>التخزين الاحتياطي</h4>
+                    <div class="swap-disk">
+                        <strong>تخزين<br>قرص</strong>
+                    </div>
+                </div>
+            </div>
+
+            <div class="warning-box">
+                <h4>قيود المبادلة:</h4>
+                <ul>
+                    <li>يجب أن تكون العملية خاملة تمامًا قبل المبادلة</li>
+                    <li>لا تقم أبدًا بمبادلة عملية لديها إدخال/إخراج معلق</li>
+                    <li>وقت النقل يتناسب مع مقدار الذاكرة المُبادلة</li>
+                </ul>
+            </div>
+
+            <div class="example-box">
+                <h4>حساب وقت المبادلة:</h4>
+                <p>حجم العملية: ١٠٠ ميجابايت</p>
+                <p>معدل نقل التخزين الاحتياطي: ٥٠ ميجابايت/ثانية</p>
+                <p>وقت النقل = ١٠٠ / ٥٠ = ٢ ثانية</p>
+                <p>إجمالي وقت المبادلة (خارج + داخل) = ٤ ثوانٍ</p>
+            </div>
+        </section>
+
+        <!-- القسم 4: تخصيص الذاكرة المتجاورة -->
+        <section>
+            <h2>٨.٤ تخصيص الذاكرة المتجاورة</h2>
+            
+            <h3>تخصيص الذاكرة</h3>
+            <p>الذاكرة الرئيسية مقسمة إلى قسمين:</p>
+            <ul style="margin-right: 40px;">
+                <li><strong>نظام التشغيل المقيم:</strong> عادةً في الذاكرة المنخفضة مع متجه المقاطعة</li>
+                <li><strong>عمليات المستخدم:</strong> في الذاكرة العالية</li>
+            </ul>
+
+            <h3>تخصيص متعدد الأقسام</h3>
+            <div class="memory-visual">
+                <div class="memory-block">
+                    <div class="memory-header os-block">OS</div>
+                    <div class="memory-content">٠-٤٠٠ك</div>
+                </div>
+                <div class="memory-block">
+                    <div class="memory-header process-block">عملية ١</div>
+                    <div class="memory-content">٤٠٠-٦٠٠ك</div>
+                </div>
+                <div class="memory-block">
+                    <div class="memory-header free-block">حرة</div>
+                    <div class="memory-content">٦٠٠-٩٠٠ك</div>
+                </div>
+                <div class="memory-block">
+                    <div class="memory-header process-block">عملية ٢</div>
+                    <div class="memory-content">٩٠٠-١٠٢٤ك</div>
+                </div>
+            </div>
+
+            <h3>استراتيجيات تخصيص التخزين الديناميكي</h3>
+            <div class="allocation-strategies">
+                <div class="strategy-card">
+                    <h4>الأول المناسب</h4>
+                    <p>تخصيص <strong>أول</strong> فجوة مناسبة</p>
+                    <p>✓ سريع</p>
+                    <p>✗ قد ينشئ أجزاء صغيرة</p>
+                </div>
+                
+                <div class="strategy-card">
+                    <h4>الأفضل مناسبة</h4>
+                    <p>تخصيص <strong>أصغر</strong> فجوة مناسبة</p>
+                    <p>✓ يترك فجوات أكبر</p>
+                    <p>✗ أبطأ، ينشئ أجزاء صغيرة</p>
+                </div>
+                
+                <div class="strategy-card">
+                    <h4>الأسوأ مناسبة</h4>
+                    <p>تخصيص <strong>أكبر</strong> فجوة</p>
+                    <p>✓ قد يقلل التجزؤ</p>
+                    <p>✗ استخدام ضعيف</p>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <p><strong>ملاحظة:</strong> الأول المناسب والأفضل مناسبة بشكل عام أفضل من الأسوأ مناسبة من حيث السرعة واستخدام التخزين</p>
+            </div>
+        </section>
+
+        <!-- القسم 5: التجزؤ -->
+        <section>
+            <h2>٨.٥ التجزؤ</h2>
+            
+            <div class="fragmentation-grid">
+                <div class="fragmentation-card">
+                    <h4>تجزؤ خارجي</h4>
+                    <p>مساحة الذاكرة الإجمالية موجودة لتلبية الطلب، لكنها غير متجاورة</p>
+                    <div class="frag-visual">
+                        <div class="memory-segment allocated">عملية أ</div>
+                        <div class="memory-segment external-frag">حرة ٥٠ك</div>
+                        <div class="memory-segment allocated">عملية ب</div>
+                        <div class="memory-segment external-frag">حرة ١٠٠ك</div>
+                        <div class="memory-segment allocated">عملية ج</div>
+                    </div>
+                    <p><strong>المشكلة:</strong> لا يمكن تخصيص ١٥٠ك رغم أن الإجمالي الحر = ١٥٠ك</p>
+                    <p><strong>الحل:</strong> الضغط أو التصفح</p>
+                </div>
+                
+                <div class="fragmentation-card">
+                    <h4>تجزؤ داخلي</h4>
+                    <p>الذاكرة المخصصة قد تكون أكبر من الذاكرة المطلوبة</p>
+                    <div class="frag-visual">
+                        <div class="memory-segment allocated">عملية تحتاج ١٨ك</div>
+                        <div class="memory-segment internal-frag">مهدور ٢ك</div>
+                    </div>
+                    <p><strong>مثال:</strong> عملية تحتاج ١٨ك، تحصل على كتلة ٢٠ك</p>
+                    <p><strong>يحدث في:</strong> مخططات الأقسام الثابتة، التصفح</p>
+                </div>
+            </div>
+
+            <div class="concept-box">
+                <h4>قاعدة الخمسين بالمئة (تحليل إحصائي):</h4>
+                <p>بوجود N كتلة مخصصة، نصف N أخرى من الكتل ستضيع بسبب التجزؤ الخارجي</p>
+                <p>ثلث الذاكرة قد يكون غير قابل للاستخدام!</p>
+            </div>
+        </section>
+
+        <!-- القسم 6: التصفح -->
+        <section>
+            <h2>٨.٦ التصفح</h2>
+            
+            <div class="concept-box">
+                <p><strong>التصفح</strong> يسمح لمساحة العنوان الفيزيائي للعملية أن تكون غير متجاورة</p>
+                <ul style="margin-right: 40px;">
+                    <li>تقسيم الذاكرة الفيزيائية إلى كتل ذات حجم ثابت تسمى <span class="highlight">أطرًا</span></li>
+                    <li>تقسيم الذاكرة المنطقية إلى كتل بنفس الحجم تسمى <span class="highlight">صفحات</span></li>
+                    <li>تتبع جميع الأطر الحرة</li>
+                    <li>إعداد جدول صفحات لترجمة العناوين المنطقية إلى فيزيائية</li>
+                </ul>
+            </div>
+
+            <h3>ترجمة العنوان</h3>
+            <div class="address-translation">
+                <h4>هيكل العنوان المنطقي</h4>
+                <div class="bit-visual">
+                    <div class="bit-segment" style="background: #e3f2fd;">
+                        رقم الصفحة (p)
+                    </div>
+                    <div class="bit-segment" style="background: #fff9c4;">
+                        إزاحة الصفحة (d)
+                    </div>
+                </div>
+                <div style="text-align: center;">
+                    <div class="bit-label">يُستخدم كمؤشر لجدول الصفحات</div>
+                    <div class="bit-label">يُدمج مع العنوان الأساسي</div>
+                </div>
+            </div>
+
+            <h3>مثال جدول صفحات</h3>
+            <div class="page-table-container">
+                <div>
+                    <h4>ذاكرة منطقية</h4>
+                    <div class="page-table">
+                        <div class="page-table-header">صفحات</div>
+                        <div class="page-entry">
+                            <div class="page-number">٠</div>
+                            <div class="frame-number">صفحة ٠</div>
+                        </div>
+                        <div class="page-entry">
+                            <div class="page-number">١</div>
+                            <div class="frame-number">صفحة ١</div>
+                        </div>
+                        <div class="page-entry">
+                            <div class="page-number">٢</div>
+                            <div class="frame-number">صفحة ٢</div>
+                        </div>
+                        <div class="page-entry">
+                            <div class="page-number">٣</div>
+                            <div class="frame-number">صفحة ٣</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h4>جدول الصفحات</h4>
+                    <div class="page-table">
+                        <div class="page-table-header">صفحة ← إطار</div>
+                        <div class="page-entry">
+                            <div class="page-number">٠</div>
+                            <div class="frame-number">٥</div>
+                        </div>
+                        <div class="page-entry">
+                            <div class="page-number">١</div>
+                            <div class="frame-number">٦</div>
+                        </div>
+                        <div class="page-entry">
+                            <div class="page-number">٢</div>
+                            <div class="frame-number">١</div>
+                        </div>
+                        <div class="page-entry">
+                            <div class="page-number">٣</div>
+                            <div class="frame-number">٢</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h4>ذاكرة فيزيائية</h4>
+                    <div class="page-table">
+                        <div class="page-table-header">أطر</div>
+                        <div class="page-entry">
+                            <div class="page-number">٠</div>
+                            <div class="frame-number">حرة</div>
+                        </div>
+                        <div class="page-entry">
+                            <div class="page-number">١</div>
+                            <div class="frame-number">صفحة ٢</div>
+                        </div>
+                        <div class="page-entry">
+                            <div class="page-number">٢</div>
+                            <div class="frame-number">صفحة ٣</div>
+                        </div>
+                        <div class="page-entry">
+                            <div class="page-number">٣</div>
+                            <div class="frame-number">حرة</div>
+                        </div>
+                        <div class="page-entry">
+                            <div class="page-number">٤</div>
+                            <div class="frame-number">حرة</div>
+                        </div>
+                        <div class="page-entry">
+                            <div class="page-number">٥</div>
+                            <div class="frame-number">صفحة ٠</div>
+                        </div>
+                        <div class="page-entry">
+                            <div class="page-number">٦</div>
+                            <div class="frame-number">صفحة ١</div>
+                        </div>
+                        <div class="page-entry">
+                            <div class="page-number">٧</div>
+                            <div class="frame-number">حرة</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h3>مخزن الترجمة المؤقت</h3>
+            <div class="tlb-container">
+                <h4>TLB - ذاكرة مخبئية عتادية لجدول الصفحات</h4>
+                <p>ذاكرة مخبئية عتادية صغيرة سريعة البحث تحتوي إدخالات جدول الصفحات</p>
+                
+                <div class="tlb-visual">
+                    <div class="tlb-entry">
+                        <strong>إصابة TLB</strong><br>
+                        صفحة موجودة في TLB<br>
+                        ~١ وصول للذاكرة
+                    </div>
+                    <div class="tlb-entry">
+                        <strong>خطأ TLB</strong><br>
+                        الوصول لجدول الصفحات<br>
+                        ~٢ وصول للذاكرة
+                    </div>
+                    <div class="tlb-entry">
+                        <strong>نسبة الإصابة</strong><br>
+                        عادة ٩٨-٩٩٪<br>
+                        حاسمة للأداء
+                    </div>
+                </div>
+            </div>
+
+            <h3>حساب وقت الوصول الفعال</h3>
+            <div class="formula-box">
+                <h4>EAT مع TLB</h4>
+                <p class="formula">EAT = α × (وقت TLB + وقت ذاكرة) + (١-α) × (وقت TLB + ٢×وقت ذاكرة)</p>
+                <p>حيث α = نسبة إصابة TLB</p>
+                
+                <div class="example-box" style="background: white; margin-top: 20px;">
+                    <p><strong>مثال:</strong> وقت الذاكرة = ١٠٠ns، وقت TLB = ٢٠ns، نسبة الإصابة = ٨٠٪</p>
+                    <p>EAT = ٠.٨٠ × ١٢٠ + ٠.٢٠ × ٢٢٠ = ٩٦ + ٤٤ = ١٤٠ns</p>
+                </div>
+            </div>
+
+            <h3>هيكل جدول الصفحات</h3>
+            <table>
+                <tr>
+                    <th>نوع الهيكل</th>
+                    <th>الوصف</th>
+                    <th>الميزة</th>
+                </tr>
+                <tr>
+                    <td><strong>هرمي</strong></td>
+                    <td>مستويان أو أكثر من جداول الصفحات</td>
+                    <td>يقلل عبء الذاكرة للمساحات العنوانية المتناثرة</td>
+                </tr>
+                <tr>
+                    <td><strong>مبني على التجزئة</strong></td>
+                    <td>جدول تجزئة بقائمة مرتبطة للتصادمات</td>
+                    <td>جيد للمساحات العنوانية المتناثرة &gt; ٣٢ بت</td>
+                </tr>
+                <tr>
+                    <td><strong>مقلوب</strong></td>
+                    <td>إدخال واحد لكل إطار فيزيائي</td>
+                    <td>يقلل الذاكرة المطلوبة لجداول الصفحات</td>
+                </tr>
+            </table>
+
+            <h3>حماية الصفحات</h3>
+            <div class="concept-box">
+                <h4>بتات الحماية في إدخال جدول الصفحات:</h4>
+                <div class="protection-bits">
+                    <span class="bit-flag read-bit">ق - قراءة</span>
+                    <span class="bit-flag write-bit">ك - كتابة</span>
+                    <span class="bit-flag execute-bit">ن - تنفيذ</span>
+                </div>
+                <p><strong>بت صالح/غير صالح:</strong> يشير إذا كانت الصفحة في مساحة العنوان المنطقي للعملية</p>
+            </div>
+        </section>
+
+        <!-- القسم 7: التقسيم -->
+        <section>
+            <h2>٨.٧ التقسيم</h2>
+            
+            <p>مخطط إدارة الذاكرة يدعم رؤية المستخدم للذاكرة</p>
+            
+            <div class="concept-box">
+                <p>البرنامج هو مجموعة من الأقسام:</p>
+                <ul style="margin-right: 40px;">
+                    <li>البرنامج الرئيسي</li>
+                    <li>إجراءات/دوال</li>
+                    <li>متغيرات محلية، متغيرات عامة</li>
+                    <li>كتلة مشتركة</li>
+                    <li>مكدس</li>
+                    <li>جدول رموز</li>
+                </ul>
+            </div>
+
+            <h3>عنوان منطقي في التقسيم</h3>
+            <div class="bit-visual">
+                <div class="bit-segment" style="background: #e8f5e9;">
+                    رقم القسم (s)
+                </div>
+                <div class="bit-segment" style="background: #fce4ec;">
+                    إزاحة (d)
+                </div>
+            </div>
+
+            <h3>جدول الأقسام</h3>
+            <table class="segment-table">
+                <tr>
+                    <th>قسم</th>
+                    <th>أساس</th>
+                    <th>حد</th>
+                    <th>وصف</th>
+                </tr>
+                <tr>
+                    <td>٠</td>
+                    <td>١٤٠٠</td>
+                    <td>١٠٠٠</td>
+                    <td>البرنامج الرئيسي</td>
+                </tr>
+                <tr>
+                    <td>١</td>
+                    <td>٦٣٠٠</td>
+                    <td>٤٠٠</td>
+                    <td>دالة فرعية</td>
+                </tr>
+                <tr>
+                    <td>٢</td>
+                    <td>٤٣٠٠</td>
+                    <td>٤٠٠</td>
+                    <td>مكدس</td>
+                </tr>
+                <tr>
+                    <td>٣</td>
+                    <td>٣٢٠٠</td>
+                    <td>١١٠٠</td>
+                    <td>قسم بيانات</td>
+                </tr>
+                <tr>
+                    <td>٤</td>
+                    <td>٤٧٠٠</td>
+                    <td>١٠٠٠</td>
+                    <td>جدول رموز</td>
+                </tr>
+            </table>
+
+            <h3>ترجمة العنوان في التقسيم</h3>
+            <div class="address-calc">
+                <h4>مثال: عنوان منطقي (٢، ٥٣)</h4>
+                <div class="calc-step">
+                    الخطوة ١: ابحث عن القسم ٢ في جدول الأقسام
+                </div>
+                <div class="calc-step">
+                    الخطوة ٢: الأساس = ٤٣٠٠، الحد = ٤٠٠
+                </div>
+                <div class="calc-step">
+                    الخطوة ٣: تحقق إذا كانت الإزاحة < الحد: ٥٣ < ٤٠٠ ✓
+                </div>
+                <div class="calc-step">
+                    الخطوة ٤: العنوان الفيزيائي = الأساس + الإزاحة = ٤٣٠٠ + ٥٣ = ٤٣٥٣
+                </div>
+            </div>
+
+            <h3>التقسيم مقابل التصفح</h3>
+            <table>
+                <tr>
+                    <th>الخاصية</th>
+                    <th>التصفح</th>
+                    <th>التقسيم</th>
+                </tr>
+                <tr>
+                    <td>التقسيم</td>
+                    <td>صفحات ذات حجم ثابت</td>
+                    <td>أقسام ذات حجم متغير</td>
+                </tr>
+                <tr>
+                    <td>رؤية المستخدم</td>
+                    <td>غير مرئي للمبرمج</td>
+                    <td>مرئي للمبرمج</td>
+                </tr>
+                <tr>
+                    <td>تجزؤ خارجي</td>
+                    <td>لا</td>
+                    <td>نعم</td>
+                </tr>
+                <tr>
+                    <td>تجزؤ داخلي</td>
+                    <td>نعم (آخر صفحة)</td>
+                    <td>لا</td>
+                </tr>
+                <tr>
+                    <td>مشاركة</td>
+                    <td>صعبة</td>
+                    <td>سهلة (وحدات منطقية)</td>
+                </tr>
+                <tr>
+                    <td>حماية</td>
+                    <td>مستوى الصفحة</td>
+                    <td>مستوى القسم</td>
+                </tr>
+            </table>
+        </section>
+
+        <!-- القسم 8: التقسيم مع التصفح -->
+        <section>
+            <h2>٨.٨ التقسيم مع التصفح</h2>
+            
+            <div class="concept-box">
+                <p>يجمع مزايا كلا المخططين:</p>
+                <ul style="margin-right: 40px;">
+                    <li>تقسيم رؤية المستخدم</li>
+                    <li>تصفح الأقسام لإدارة الذاكرة</li>
+                    <li>يزيل التجزؤ الخارجي</li>
+                    <li>يوفر مشاركة وحماية على مستوى القسم</li>
+                </ul>
+            </div>
+
+            <h3>خطوات ترجمة العنوان</h3>
+            <div class="address-flow">
+                <div class="address-box">
+                    <strong>عنوان منطقي</strong><br>
+                    (s, p, d)<br>
+                    قسم، صفحة، إزاحة
+                </div>
+                <span class="arrow">→</span>
+                <div class="address-box">
+                    <strong>جدول الأقسام</strong><br>
+                    احصل على جدول صفحات<br>
+                    للقسم s
+                </div>
+                <span class="arrow">→</span>
+                <div class="address-box">
+                    <strong>جدول الصفحات</strong><br>
+                    احصل على الإطار<br>
+                    للصفحة p
+                </div>
+                <span class="arrow">→</span>
+                <div class="address-box">
+                    <strong>عنوان فيزيائي</strong><br>
+                    الإطار + الإزاحة d
+                </div>
+            </div>
+
+            <div class="warning-box">
+                <h4>مثال معمارية Intel x86:</h4>
+                <p>يدعم كلاً من التقسيم والتصفح</p>
+                <p>عنوان منطقي → عنوان خطي (عبر التقسيم) → عنوان فيزيائي (عبر التصفح)</p>
+            </div>
+        </section>
+
+        <!-- القسم 9: مسائل تطبيقية -->
+        <section>
+            <h2>٨.٩ مسائل تطبيقية وحسابات</h2>
+            
+            <div class="example-box">
+                <h4>مثال ١: حساب رقم الصفحة والإزاحة</h4>
+                <p><strong>المعطيات:</strong> حجم الصفحة = ١كيلوبايت (١٠٢٤ بايت)، عنوان منطقي = ٣٠٨٥</p>
+                
+                <div class="address-calc">
+                    <div class="calc-step">
+                        رقم الصفحة = ⌊٣٠٨٥ / ١٠٢٤⌋ = ٣
+                    </div>
+                    <div class="calc-step">
+                        الإزاحة = ٣٠٨٥ mod ١٠٢٤ = ٣٠٨٥ - (٣ × ١٠٢٤) = ١٣
+                    </div>
+                    <div class="calc-step">
+                        <strong>الإجابة:</strong> الصفحة = ٣، الإزاحة = ١٣
+                    </div>
+                </div>
+            </div>
+
+            <div class="example-box">
+                <h4>مثال ٢: حساب مساحة العنوان</h4>
+                <p><strong>المعطيات:</strong> ٢٥٦ صفحة بحجم صفحة ٤كيلوبايت، مرسلة إلى ٦٤ إطارًا</p>
+                
+                <div class="address-calc">
+                    <div class="calc-step">
+                        مساحة العنوان المنطقي = ٢٥٦ × ٤كيلوبايت = ١ ميجابايت = ٢²⁰ بايت
+                    </div>
+                    <div class="calc-step">
+                        بتات العنوان المنطقي = log₂(٢²⁰) = ٢٠ بت
+                    </div>
+                    <div class="calc-step">
+                        الذاكرة الفيزيائية = ٦٤ × ٤كيلوبايت = ٢٥٦ كيلوبايت = ٢¹⁸ بايت
+                    </div>
+                    <div class="calc-step">
+                        بتات العنوان الفيزيائي = log₂(٢¹⁸) = ١٨ بت
+                    </div>
+                </div>
+            </div>
+
+            <div class="example-box">
+                <h4>مثال ٣: التجزؤ الداخلي</h4>
+                <p><strong>المعطيات:</strong> حجم العملية = ٧٢,٧٦٦ بايت، حجم الصفحة = ٢٠٤٨ بايت</p>
+                
+                <div class="address-calc">
+                    <div class="calc-step">
+                        عدد الصفحات = ⌈٧٢,٧٦٦ / ٢٠٤٨⌉ = ⌈٣٥.٥٣⌉ = ٣٦ صفحة
+                    </div>
+                    <div class="calc-step">
+                        الذاكرة المخصصة = ٣٦ × ٢٠٤٨ = ٧٣,٧٢٨ بايت
+                    </div>
+                    <div class="calc-step">
+                        التجزؤ الداخلي = ٧٣,٧٢٨ - ٧٢,٧٦٦ = ٩٦٢ بايت
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- القسم 10: أسئلة اختبار -->
+        <section>
+            <h2>٨.١٠ أسئلة اختبار CS330</h2>
+            
+            <div class="exam-section">
+                <h3>أسئلة اختيار من متعدد</h3>
+                
+                <div class="exam-question">
+                    <p><strong>س١.</strong> أي استراتيجية تخصيص ذاكرة هي الأسرع بشكل عام؟</p>
+                    <p><strong>الإجابة:</strong> الأول المناسب (يبحث من البداية ويخصص أول فجوة مناسبة)</p>
+                </div>
+
+                <div class="exam-question">
+                    <p><strong>س٢.</strong> التجزؤ الخارجي يحدث في:</p>
+                    <p><strong>الإجابة:</strong> التخصيص المتجاور ذو الحجم المتغير والتقسيم الخالص</p>
+                </div>
+
+                <div class="exam-question">
+                    <p><strong>س٣.</strong> التجزؤ الداخلي يحدث في:</p>
+                    <p><strong>الإجابة:</strong> التقسيم الثابت والتصفح الخالص</p>
+                </div>
+
+                <div class="exam-question">
+                    <p><strong>س٤.</strong> TLB تعني:</p>
+                    <p><strong>الإجابة:</strong> مخزن الترجمة المؤقت</p>
+                </div>
+
+                <h3>أسئلة إجابة قصيرة</h3>
+                
+                <div class="exam-question">
+                    <p><strong>س٥.</strong> قارن بين التصفح والتقسيم من حيث عبء الذاكرة.</p>
+                    <div class="concept-box">
+                        <p><strong>الإجابة:</strong></p>
+                        <p><strong>التصفح:</strong> يتطلب إدخالًا واحدًا لكل صفحة. للمساحات العنوانية الكبيرة، يمكن أن تكون جداول الصفحات ضخمة.</p>
+                        <p><strong>التقسيم:</strong> يتطلب فقط مسجلين لكل قسم (أساس وحد). عبء أقل بكثير.</p>
+                    </div>
+                </div>
+
+                <div class="exam-question">
+                    <p><strong>س٦.</strong> لماذا لا تدعم أنظمة تشغيل الجوال مثل iOS و Android المبادلة؟</p>
+                    <div class="concept-box">
+                        <p><strong>الإجابة:</strong></p>
+                        <ol>
+                            <li>ذاكرة الفلاش لها دورات كتابة محدودة</li>
+                            <li>سعة تخزين محدودة</li>
+                            <li>إنتاجية ذاكرة ضعيفة بين الفلاش والذاكرة الرئيسية</li>
+                            <li>مخاوف استهلاك الطاقة</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <div class="exam-question">
+                    <p><strong>س٧.</strong> احسب العنوان الفيزيائي للعنوان المنطقي (١، ٥٠٠) في نظام تصفح:</p>
+                    <p>حجم الصفحة = ١٠٢٤ بايت، الصفحة ١ مرسلة إلى الإطار ٦</p>
+                    <div class="address-calc">
+                        <div class="calc-step">
+                            العنوان الفيزيائي = الإطار × حجم_الصفحة + الإزاحة
+                        </div>
+                        <div class="calc-step">
+                            العنوان الفيزيائي = ٦ × ١٠٢٤ + ٥٠٠ = ٦١٤٤ + ٥٠٠ = ٦٦٤٤
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- القسم 11: المصطلحات الرئيسية -->
+        <section>
+            <h2>٨.١١ المصطلحات الرئيسية والتعريفات</h2>
+            
+            <table>
+                <tr>
+                    <th>المصطلح</th>
+                    <th>التعريف</th>
+                </tr>
+                <tr>
+                    <td><strong>عنوان منطقي</strong></td>
+                    <td>عنوان يولده المعالج؛ عنوان افتراضي</td>
+                </tr>
+                <tr>
+                    <td><strong>عنوان فيزيائي</strong></td>
+                    <td>عنوان تراه وحدة الذاكرة</td>
+                </tr>
+                <tr>
+                    <td><strong>MMU</strong></td>
+                    <td>وحدة إدارة الذاكرة - عتاد لترجمة العناوين</td>
+                </tr>
+                <tr>
+                    <td><strong>صفحة</strong></td>
+                    <td>كتلة ذات حجم ثابت في الذاكرة المنطقية</td>
+                </tr>
+                <tr>
+                    <td><strong>إطار</strong></td>
+                    <td>كتلة ذات حجم ثابت في الذاكرة الفيزيائية</td>
+                </tr>
+                <tr>
+                    <td><strong>جدول صفحات</strong></td>
+                    <td>هيكل بيانات لترجمة الصفحة إلى إطار</td>
+                </tr>
+                <tr>
+                    <td><strong>TLB</strong></td>
+                    <td>مخزن الترجمة المؤقت - ذاكرة مخبئية لجدول الصفحات</td>
+                </tr>
+                <tr>
+                    <td><strong>قسم</strong></td>
+                    <td>وحدة منطقية في رؤية المستخدم (كود، بيانات، مكدس)</td>
+                </tr>
+                <tr>
+                    <td><strong>تجزؤ خارجي</strong></td>
+                    <td>ذاكرة حرة موجودة لكنها غير متجاورة</td>
+                </tr>
+                <tr>
+                    <td><strong>تجزؤ داخلي</strong></td>
+                    <td>ذاكرة مخصصة أكبر من المطلوبة</td>
+                </tr>
+                <tr>
+                    <td><strong>ضغط</strong></td>
+                    <td>خلط الذاكرة لوضع الذاكرة الحرة معًا</td>
+                </tr>
+                <tr>
+                    <td><strong>مبادلة</strong></td>
+                    <td>نقل عملية بين الذاكرة الرئيسية والقرص</td>
+                </tr>
+                <tr>
+                    <td><strong>مسجل أساس</strong></td>
+                    <td>يحمل أصغر عنوان فيزيائي قانوني</td>
+                </tr>
+                <tr>
+                    <td><strong>مسجل حد</strong></td>
+                    <td>يحتوي نطاق العناوين المنطقية</td>
+                </tr>
+            </table>
+        </section>
+
+        <!-- أماكن الصور -->
+        <section>
+            <h2>٨.١٢ مخططات من الشرائح</h2>
+            
+            <div class="image-placeholder">
+                <h4>📊 مخطط حماية العنوان بالعتاد</h4>
+                <p>[إدراج مخطط حماية مسجلات الأساس والحد]</p>
+            </div>
+
+            <div class="image-placeholder">
+                <h4>📊 عتاد التصفح مع TLB</h4>
+                <p>[إدراج مخطط تفاعل TLB وجدول الصفحات]</p>
+            </div>
+
+            <div class="image-placeholder">
+                <h4>📊 أمثلة تخصيص الذاكرة</h4>
+                <p>[إدراج مقارنة مرئية للأول المناسب، الأفضل مناسبة، الأسوأ مناسبة]</p>
+            </div>
+
+            <div class="image-placeholder">
+                <h4>📊 مثال التقسيم</h4>
+                <p>[إدراج ترجمة العنوان من منطقي إلى فيزيائي في التقسيم]</p>
+            </div>
+
+            <div class="warning-box">
+                <p><strong>ملاحظة:</strong> يرجى توفير المخططات الفعلية من مواد المقرر لاستبدال هذه العناصر النائبة.</p>
+            </div>
+        </section>
+
+        <footer>
+            <p>CS330 - أنظمة التشغيل</p>
+            <p>الفصل ٨: إدارة الذاكرة الرئيسية</p>
+            <p><strong>إعداد: شوق العمران</strong></p>
+        </footer>
+    </div>
+</body>
+</html>
