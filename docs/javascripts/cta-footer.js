@@ -107,7 +107,7 @@
 
     // Navigation links
     const homeHref = isArabic() ? url("ar/") : url("");
-    const academicsHref = isArabic() ? url("ar/Academics/intro/") : url("Academics/intro/");
+    const academicsHref = isArabic() ? url("ar/Academics/Intro/") : url("Academics/Intro/");
     const careerHref = isArabic()
       ? url("ar/career-development/me/")
       : url("career-development/me/");
