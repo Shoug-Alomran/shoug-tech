@@ -145,5 +145,5 @@ If you are an instructor, collaborator, or employer and would like to discuss
 my work, projects, or background, I welcome the conversation.
 
 **Email:** [inquiry@shoug-tech.com](mailto:inquiry@shoug-tech.com)  
-**LinkedIn:** [Lshoug-alomrank](https://www.linkedin.com/in/shoug-alomran";
+**LinkedIn:** [shoug-alomran](https://www.linkedin.com/in/shoug-alomran";
 )
