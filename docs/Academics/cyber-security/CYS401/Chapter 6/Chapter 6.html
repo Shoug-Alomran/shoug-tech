@@ -1,0 +1,1117 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CYS401 — Chapter 6: Asymmetric Cryptography & PKI</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&family=Cormorant+Garamond:wght@600;700&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════
+   THEME VARIABLES
+═══════════════════════════════════════ */
+:root {
+  --v1: #818cf8; /* indigo    */
+  --v2: #38bdf8; /* sky       */
+  --v3: #fb7185; /* rose      */
+  --v4: #4ade80; /* green     */
+  --v5: #fbbf24; /* amber     */
+  --v6: #c084fc; /* purple    */
+}
+
+[data-theme="dark"] {
+  --bg:       #07090f;
+  --bg2:      #0c1018;
+  --bg3:      #111827;
+  --surf:     rgba(255,255,255,0.04);
+  --surf2:    rgba(255,255,255,0.07);
+  --bdr:      rgba(255,255,255,0.07);
+  --bdr2:     rgba(255,255,255,0.14);
+  --tx:       #e2e8f0;
+  --tx2:      #8892a4;
+  --tx3:      #4b5563;
+  --head:     #f1f5f9;
+  --cbg:      rgba(255,255,255,0.05);
+  --shad:     rgba(0,0,0,0.6);
+  --togbg:    rgba(255,255,255,0.07);
+}
+[data-theme="light"] {
+  --bg:       #eef2ff;
+  --bg2:      #e0e7ff;
+  --bg3:      #c7d2fe;
+  --surf:     rgba(255,255,255,0.7);
+  --surf2:    rgba(255,255,255,0.95);
+  --bdr:      rgba(99,102,241,0.12);
+  --bdr2:     rgba(99,102,241,0.22);
+  --tx:       #1e1b4b;
+  --tx2:      #4338ca;
+  --tx3:      #818cf8;
+  --head:     #0f0a2e;
+  --cbg:      rgba(99,102,241,0.07);
+  --shad:     rgba(99,102,241,0.12);
+  --togbg:    rgba(99,102,241,0.1);
+}
+
+/* ═══════════════════════════════════════
+   BASE
+═══════════════════════════════════════ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Outfit',sans-serif;
+  background:var(--bg);
+  color:var(--tx);
+  line-height:1.7;
+  overflow-x:hidden;
+  transition:background .4s,color .4s;
+}
+
+/* ═══════════════════════════════════════
+   TOGGLE
+═══════════════════════════════════════ */
+.toggle{
+  position:fixed;top:1.25rem;right:1.5rem;z-index:1000;
+  background:var(--togbg);border:1px solid var(--bdr2);
+  border-radius:100px;padding:.4rem 1rem;
+  cursor:pointer;display:flex;align-items:center;gap:.5rem;
+  font-size:.78rem;font-weight:600;color:var(--tx2);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  transition:all .3s;user-select:none;
+}
+.toggle:hover{border-color:var(--v1);color:var(--v1);transform:scale(1.04)}
+
+/* ═══════════════════════════════════════
+   HERO
+═══════════════════════════════════════ */
+.hero{
+  min-height:100vh;display:flex;flex-direction:column;
+  justify-content:center;align-items:center;text-align:center;
+  padding:5rem 2rem 4rem;position:relative;overflow:hidden;
+}
+[data-theme="dark"] .hero{
+  background:
+    radial-gradient(ellipse 80% 60% at 15% 20%,rgba(129,140,248,.14) 0%,transparent 65%),
+    radial-gradient(ellipse 60% 50% at 85% 75%,rgba(192,132,252,.12) 0%,transparent 60%),
+    radial-gradient(ellipse 50% 45% at 55% 55%,rgba(56,189,248,.08) 0%,transparent 60%),
+    var(--bg);
+}
+[data-theme="light"] .hero{
+  background:
+    radial-gradient(ellipse 80% 60% at 15% 20%,rgba(129,140,248,.2) 0%,transparent 65%),
+    radial-gradient(ellipse 60% 50% at 85% 75%,rgba(192,132,252,.18) 0%,transparent 60%),
+    radial-gradient(ellipse 50% 45% at 55% 55%,rgba(56,189,248,.12) 0%,transparent 60%),
+    var(--bg);
+}
+.hero-grid{
+  position:absolute;inset:0;
+  background-image:linear-gradient(var(--bdr) 1px,transparent 1px),linear-gradient(90deg,var(--bdr) 1px,transparent 1px);
+  background-size:55px 55px;opacity:.8;
+}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:.5rem;
+  background:var(--surf2);border:1px solid var(--bdr2);
+  border-radius:100px;padding:.4rem 1.1rem;
+  font-size:.7rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--v1);margin-bottom:1.75rem;position:relative;z-index:1;
+  animation:fadeUp .7s ease both;
+}
+.badge-pulse{width:6px;height:6px;border-radius:50%;background:var(--v1);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+.hero h1{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(2.6rem,6vw,5.8rem);font-weight:700;line-height:1.1;
+  color:var(--head);position:relative;z-index:1;animation:fadeUp .85s ease both;
+}
+.gword{
+  background:linear-gradient(130deg,var(--v1),var(--v6),var(--v2));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.hero-sub{
+  font-size:1rem;color:var(--tx2);margin-top:1.1rem;max-width:540px;
+  position:relative;z-index:1;animation:fadeUp 1s ease both;
+}
+.chips{
+  display:flex;flex-wrap:wrap;gap:.45rem;justify-content:center;
+  margin-top:2rem;position:relative;z-index:1;animation:fadeUp 1.1s ease both;
+}
+.chip{
+  padding:.28rem .8rem;border-radius:100px;font-size:.73rem;font-weight:600;
+  border:1px solid;transition:transform .2s;
+}
+.chip:hover{transform:translateY(-2px)}
+.c1{color:var(--v1);border-color:rgba(129,140,248,.35);background:rgba(129,140,248,.08)}
+.c2{color:var(--v2);border-color:rgba(56,189,248,.35);background:rgba(56,189,248,.08)}
+.c3{color:var(--v3);border-color:rgba(251,113,133,.35);background:rgba(251,113,133,.08)}
+.c4{color:var(--v4);border-color:rgba(74,222,128,.35);background:rgba(74,222,128,.08)}
+.c5{color:var(--v5);border-color:rgba(251,191,36,.35);background:rgba(251,191,36,.08)}
+.c6{color:var(--v6);border-color:rgba(192,132,252,.35);background:rgba(192,132,252,.08)}
+
+.scroll-hint{
+  position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);
+  color:var(--tx3);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;
+  display:flex;flex-direction:column;align-items:center;gap:.4rem;
+  animation:bounce 2.5s infinite;z-index:1;
+}
+@keyframes bounce{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(8px)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+
+/* ═══════════════════════════════════════
+   LAYOUT
+═══════════════════════════════════════ */
+main{max-width:1120px;margin:0 auto;padding:4rem 2rem}
+section{margin-bottom:5.5rem}
+.sh{display:flex;align-items:center;gap:1rem;margin-bottom:2rem}
+.sn{
+  font-family:'JetBrains Mono',monospace;font-size:.67rem;font-weight:600;
+  letter-spacing:.2em;text-transform:uppercase;color:var(--tx3);white-space:nowrap;
+}
+.sl{flex:1;height:1px;background:linear-gradient(90deg,var(--bdr2),transparent)}
+
+h2{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(1.7rem,3vw,2.4rem);font-weight:700;color:var(--head);margin-bottom:.4rem;
+}
+h3{font-family:'Outfit',sans-serif;font-weight:700;font-size:1.05rem;margin-bottom:.6rem;color:var(--head)}
+p{font-size:.93rem;color:var(--tx2);margin-bottom:.7rem}
+strong{color:var(--tx);font-weight:600}
+ul{list-style:none}
+ul li{padding:.3rem 0 .3rem 1rem;position:relative;font-size:.9rem;color:var(--tx2)}
+ul li::before{content:'▸';position:absolute;left:0;color:var(--v1);font-size:.65rem;top:.45rem}
+
+/* gradients */
+.g1{background:linear-gradient(135deg,var(--v1),var(--v2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.g2{background:linear-gradient(135deg,var(--v6),var(--v3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.g3{background:linear-gradient(135deg,var(--v4),var(--v2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.g4{background:linear-gradient(135deg,var(--v5),var(--v3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.t1{color:var(--v1)}.t2{color:var(--v2)}.t3{color:var(--v3)}
+.t4{color:var(--v4)}.t5{color:var(--v5)}.t6{color:var(--v6)}
+
+/* ═══════════════════════════════════════
+   CARDS
+═══════════════════════════════════════ */
+.card{
+  background:var(--surf);border:1px solid var(--bdr);
+  border-radius:16px;padding:1.6rem;
+  transition:border-color .3s,transform .3s,box-shadow .3s;
+}
+.card:hover{border-color:var(--bdr2);transform:translateY(-3px);box-shadow:0 12px 32px var(--shad)}
+.g2c{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1rem}
+.g3c{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1rem}
+.g4c{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem}
+
+.bl1{border-left:3px solid var(--v1)}.bl2{border-left:3px solid var(--v2)}
+.bl3{border-left:3px solid var(--v3)}.bl4{border-left:3px solid var(--v4)}
+.bl5{border-left:3px solid var(--v5)}.bl6{border-left:3px solid var(--v6)}
+
+/* ═══════════════════════════════════════
+   EXAMPLE BOXES
+═══════════════════════════════════════ */
+.ex{border-radius:14px;padding:1.4rem;border:1px solid;margin-top:1.25rem}
+.ex1{background:rgba(129,140,248,.06);border-color:rgba(129,140,248,.28)}
+.ex2{background:rgba(56,189,248,.06);border-color:rgba(56,189,248,.28)}
+.ex3{background:rgba(251,113,133,.06);border-color:rgba(251,113,133,.28)}
+.ex4{background:rgba(74,222,128,.06);border-color:rgba(74,222,128,.28)}
+.ex5{background:rgba(251,191,36,.06);border-color:rgba(251,191,36,.28)}
+.ex6{background:rgba(192,132,252,.06);border-color:rgba(192,132,252,.28)}
+.ex-lbl{
+  font-size:.69rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;
+  margin-bottom:.75rem;display:flex;align-items:center;gap:.5rem;
+}
+.ex-lbl::before{content:'';display:inline-block;width:6px;height:6px;border-radius:50%;background:currentColor}
+
+/* ═══════════════════════════════════════
+   TIPS
+═══════════════════════════════════════ */
+.tip{
+  display:flex;gap:1rem;align-items:flex-start;
+  padding:1.1rem 1.25rem;border-radius:12px;margin-top:1rem;
+}
+.tip-g{background:rgba(74,222,128,.08);border:1px solid rgba(74,222,128,.25)}
+.tip-b{background:rgba(56,189,248,.08);border:1px solid rgba(56,189,248,.25)}
+.tip-w{background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.25)}
+.tip-r{background:rgba(251,113,133,.08);border:1px solid rgba(251,113,133,.25)}
+.tip-p{background:rgba(192,132,252,.08);border:1px solid rgba(192,132,252,.25)}
+.ti{font-size:1.2rem;flex-shrink:0;margin-top:.1rem}
+.tb2 h4{font-size:.84rem;font-weight:700;margin-bottom:.25rem}
+.tb2 p{font-size:.86rem;color:var(--tx2);margin:0}
+
+/* ═══════════════════════════════════════
+   CODE / MONO BLOCKS
+═══════════════════════════════════════ */
+.mono{
+  font-family:'JetBrains Mono',monospace;
+  background:var(--cbg);border:1px solid var(--bdr);
+  border-radius:10px;padding:1.1rem 1.25rem;
+  font-size:.83rem;color:var(--v2);margin-top:.75rem;overflow-x:auto;line-height:1.9;
+}
+.mono .cm{color:var(--tx3)}.mono .kw{color:var(--v3)}.mono .val{color:var(--v4)}
+.mono .sym{color:var(--v5)}
+
+/* ═══════════════════════════════════════
+   RSA STEP CALCULATOR CARDS
+═══════════════════════════════════════ */
+.rsa-steps{display:flex;flex-direction:column;gap:.6rem;margin-top:1rem}
+.rsa-step{
+  display:grid;grid-template-columns:200px 1fr;gap:1rem;align-items:center;
+  background:var(--surf);border:1px solid var(--bdr);border-radius:10px;
+  padding:.8rem 1.1rem;font-size:.88rem;transition:border-color .3s;
+}
+.rsa-step:hover{border-color:var(--bdr2)}
+.rsa-label{font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--tx2)}
+.rsa-val{font-family:'JetBrains Mono',monospace;font-weight:600;color:var(--v4)}
+.rsa-val.pub{color:var(--v2)}.rsa-val.prv{color:var(--v3)}
+
+/* ═══════════════════════════════════════
+   TABLES
+═══════════════════════════════════════ */
+.tw{overflow-x:auto;border-radius:12px;border:1px solid var(--bdr)}
+table{width:100%;border-collapse:collapse;font-size:.87rem}
+th{
+  text-align:left;padding:.65rem .9rem;background:var(--surf2);
+  font-family:'JetBrains Mono',monospace;font-size:.68rem;
+  letter-spacing:.08em;text-transform:uppercase;color:var(--tx3);
+  border-bottom:1px solid var(--bdr2);
+}
+td{padding:.7rem .9rem;border-bottom:1px solid var(--bdr);color:var(--tx)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--surf2)}
+.row-ok td{background:rgba(74,222,128,.05)!important}
+.row-warn td{background:rgba(251,113,133,.05)!important}
+
+/* ═══════════════════════════════════════
+   FLOW DIAGRAM
+═══════════════════════════════════════ */
+.flow{display:flex;align-items:center;flex-wrap:wrap;gap:0;margin:1.5rem 0}
+.fb{
+  background:var(--surf2);border:1px solid var(--bdr2);
+  border-radius:10px;padding:.7rem .9rem;
+  font-size:.8rem;font-weight:600;color:var(--head);text-align:center;
+  flex:1;min-width:80px;
+}
+.fb.a1{background:rgba(129,140,248,.12);border-color:rgba(129,140,248,.4);color:var(--v1)}
+.fb.a2{background:rgba(251,113,133,.12);border-color:rgba(251,113,133,.4);color:var(--v3)}
+.fb.a3{background:rgba(74,222,128,.12);border-color:rgba(74,222,128,.4);color:var(--v4)}
+.fb.a4{background:rgba(192,132,252,.12);border-color:rgba(192,132,252,.4);color:var(--v6)}
+.fa{font-size:1.1rem;color:var(--tx3);padding:0 .3rem;flex-shrink:0}
+
+/* ═══════════════════════════════════════
+   PKI CERTIFICATE FIELDS
+═══════════════════════════════════════ */
+.cert-box{
+  background:var(--surf);border:1px solid var(--bdr2);
+  border-radius:14px;padding:1.5rem;
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:.6rem;
+}
+.cert-field{
+  background:var(--surf2);border:1px solid var(--bdr);
+  border-radius:8px;padding:.6rem .8rem;font-size:.83rem;
+}
+.cert-name{font-weight:700;font-size:.72rem;color:var(--tx3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.2rem}
+.cert-val{color:var(--tx);font-size:.85rem}
+
+/* ═══════════════════════════════════════
+   VS GRID
+═══════════════════════════════════════ */
+.vs{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+@media(max-width:600px){.vs{grid-template-columns:1fr}}
+
+/* ═══════════════════════════════════════
+   PROCESS STEPS
+═══════════════════════════════════════ */
+.psteps{display:flex;flex-direction:column;gap:.7rem}
+.pstep{
+  display:flex;gap:1rem;align-items:flex-start;
+  padding:1rem 1.25rem;
+  background:var(--surf);border:1px solid var(--bdr);
+  border-radius:12px;transition:all .3s;
+}
+.pstep:hover{border-color:var(--bdr2)}
+.psn{
+  width:30px;height:30px;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.78rem;
+  flex-shrink:0;color:#000;
+}
+.psb h4{font-weight:700;font-size:.9rem;margin-bottom:.2rem}
+.psb p{font-size:.85rem;color:var(--tx2);margin:0}
+
+/* ═══════════════════════════════════════
+   BADGE INLINE
+═══════════════════════════════════════ */
+.ibadge{
+  display:inline-block;padding:.2rem .55rem;
+  border-radius:100px;font-size:.7rem;font-weight:600;border:1px solid;
+}
+.ib1{color:var(--v1);border-color:rgba(129,140,248,.4);background:rgba(129,140,248,.1)}
+.ib2{color:var(--v2);border-color:rgba(56,189,248,.4);background:rgba(56,189,248,.1)}
+.ib3{color:var(--v3);border-color:rgba(251,113,133,.4);background:rgba(251,113,133,.1)}
+.ib4{color:var(--v4);border-color:rgba(74,222,128,.4);background:rgba(74,222,128,.1)}
+.ib5{color:var(--v5);border-color:rgba(251,191,36,.4);background:rgba(251,191,36,.1)}
+.ib6{color:var(--v6);border-color:rgba(192,132,252,.4);background:rgba(192,132,252,.1)}
+
+/* ═══════════════════════════════════════
+   FOOTER
+═══════════════════════════════════════ */
+footer{text-align:center;padding:3rem 2rem 4rem;position:relative}
+footer::before{
+  content:'';position:absolute;top:0;left:10%;right:10%;height:1px;
+  background:linear-gradient(90deg,transparent,var(--bdr2),transparent);
+}
+.fname{
+  font-family:'Cormorant Garamond',serif;font-size:1.05rem;font-weight:700;
+  background:linear-gradient(135deg,var(--v1),var(--v6),var(--v2));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.fsub{font-size:.77rem;color:var(--tx3);margin-top:.3rem}
+</style>
+</head>
+<body>
+
+<!-- THEME TOGGLE -->
+<button class="toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+  <span id="ticon">☀️</span>
+  <span id="tlabel">Light Mode</span>
+</button>
+
+<!-- ═══════ HERO ═══════ -->
+<div class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-badge"><span class="badge-pulse"></span>CYS 401 · Chapter 6</div>
+  <h1>Asymmetric Cryptography<br>&amp; <span class="gword">Public Key Infrastructure</span></h1>
+  <p class="hero-sub">RSA Cryptosystem · Hash Functions · Digital Signatures · Certificates · PKI Components</p>
+  <div class="chips">
+    <span class="chip c1">Trapdoor Functions</span>
+    <span class="chip c6">RSA Algorithm</span>
+    <span class="chip c2">Hash vs MAC vs Sig</span>
+    <span class="chip c3">Digital Signatures</span>
+    <span class="chip c4">Digital Certificates</span>
+    <span class="chip c5">PKI &amp; CRL</span>
+  </div>
+  <div class="scroll-hint">scroll ↓</div>
+</div>
+
+<main>
+
+<!-- ═══════════════════════════════════════
+     01 — SYMMETRIC vs ASYMMETRIC (RECAP)
+═══════════════════════════════════════ -->
+<section>
+  <div class="sh"><span class="sn">01</span><div class="sl"></div></div>
+  <h2 class="g1">Symmetric vs Asymmetric — The Big Picture</h2>
+  <p>Chapter 6 builds on symmetric encryption from Chapter 5 and focuses entirely on <strong>asymmetric (public-key) cryptography</strong> — a fundamentally different approach that solves the key distribution problem.</p>
+
+  <div class="vs" style="margin-top:1.5rem">
+    <div class="card bl1">
+      <h3 class="t1">🔐 Symmetric (Review)</h3>
+      <ul>
+        <li>One <strong>shared secret key</strong> for encryption + decryption</li>
+        <li><strong>~30,000× faster</strong> than asymmetric</li>
+        <li>Big problem: <strong>How do you securely share the key?</strong></li>
+        <li>Best for: bulk data encryption</li>
+      </ul>
+    </div>
+    <div class="card bl6">
+      <h3 class="t6">🗝️ Asymmetric (This Chapter)</h3>
+      <ul>
+        <li><strong>Two keys</strong>: one public (shared openly), one private (kept secret)</li>
+        <li>Slower — but <strong>solves key distribution</strong></li>
+        <li>Can be used for <strong>confidentiality, authentication, or both</strong></li>
+        <li>Best for: key exchange, digital signatures</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="tip tip-b" style="margin-top:1rem">
+    <div class="ti">🔑</div>
+    <div class="tb2">
+      <h4 class="t2">The Golden Rule (appears on every exam)</h4>
+      <p><strong>Encrypt</strong> → use receiver's <strong>public key</strong>. <strong>Decrypt</strong> → use receiver's <strong>private key</strong>. <strong>Sign</strong> → use sender's <strong>private key</strong>. <strong>Verify</strong> → use sender's <strong>public key</strong>.</p>
+    </div>
+  </div>
+
+  <!-- Flow: Asymmetric Encryption -->
+  <div class="flow">
+    <div class="fb">📄 Plaintext</div><div class="fa">→</div>
+    <div class="fb a1">Encrypt<br><small>Bob's Public Key</small></div><div class="fa">→</div>
+    <div class="fb">📡 Ciphertext<br><small>Insecure Channel</small></div><div class="fa">→</div>
+    <div class="fb a3">Decrypt<br><small>Bob's Private Key</small></div><div class="fa">→</div>
+    <div class="fb a4" style="color:var(--v4)">📄 Plaintext</div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     02 — TRAPDOOR ONE-WAY FUNCTION
+═══════════════════════════════════════ -->
+<section>
+  <div class="sh"><span class="sn">02</span><div class="sl"></div></div>
+  <h2 class="g2">Trapdoor One-Way Function</h2>
+  <p>The <strong>main idea behind asymmetric-key cryptography</strong> is the concept of the trapdoor one-way function. Understanding this concept explains why RSA is secure.</p>
+
+  <div class="g2c" style="margin-top:1.5rem">
+    <div class="card bl1">
+      <h3 class="t1">↗️ One-Way Function (OWF)</h3>
+      <p>A function that is:</p>
+      <ul>
+        <li><strong>Easy to compute forward:</strong> given x, compute f(x) = y quickly</li>
+        <li><strong>Hard to invert:</strong> given y, computing f⁻¹(y) = x is computationally infeasible</li>
+      </ul>
+      <div class="mono">
+<span class="cm">// Easy (forward): multiply two large primes</span>
+p × q = n  <span class="val">→ Fast</span>
+
+<span class="cm">// Hard (reverse): factor n back to p and q</span>
+n → p, q   <span class="kw">→ Infeasible (RSA security basis)</span>
+      </div>
+    </div>
+    <div class="card bl6">
+      <h3 class="t6">🚪 The "Trapdoor"</h3>
+      <p>A trapdoor makes the inverse <strong>easy if you know a secret</strong> (the private key) — but hard without it.</p>
+      <ul>
+        <li>Without the private key: reversing the function is practically impossible</li>
+        <li>With the private key (the trapdoor): decryption is straightforward</li>
+        <li>This asymmetry is what makes public-key cryptography work</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="ex ex1">
+    <div class="ex-lbl t1">✨ Real-World Analogy</div>
+    <p style="color:var(--tx);font-size:.9rem">Multiplying 17 × 19 = 323 is trivial. But given 323 and asked to find which two primes multiply to give it — that's much harder. Now scale that to 2048-bit numbers: finding the factors becomes computationally infeasible, securing RSA.</p>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     03 — RSA CRYPTOSYSTEM
+═══════════════════════════════════════ -->
+<section>
+  <div class="sh"><span class="sn">03</span><div class="sl"></div></div>
+  <h2 class="g1">RSA Cryptosystem</h2>
+  <p>The most common public-key algorithm. Named after its inventors: <strong>Rivest, Shamir, and Adleman</strong>. RSA computes three key factors — <strong>N, e, and d</strong> — based on prime numbers.</p>
+
+  <div class="g3c" style="margin-top:1.5rem">
+    <div class="card bl2">
+      <h3 class="t2">📤 Encryption</h3>
+      <p>Uses the <strong>public key (e, N)</strong></p>
+      <div class="mono">C = M<span class="kw">ᵉ</span> mod N</div>
+      <p style="margin-top:.6rem;font-size:.85rem">M = plaintext, C = ciphertext, e = public exponent, N = modulus</p>
+    </div>
+    <div class="card bl3">
+      <h3 class="t3">📥 Decryption</h3>
+      <p>Uses the <strong>private key (d, N)</strong></p>
+      <div class="mono">M = C<span class="kw">ᵈ</span> mod N</div>
+      <p style="margin-top:.6rem;font-size:.85rem">C = ciphertext, M = recovered plaintext, d = private exponent, N = modulus</p>
+    </div>
+    <div class="card bl5">
+      <h3 class="t5">⚠️ Note on N</h3>
+      <p><strong>N is shared between both keys</strong> — it appears in both the public key pair (N, e) and private key pair (N, d). N is public; keeping d secret keeps the private key secure.</p>
+    </div>
+  </div>
+
+  <!-- KEY GENERATION -->
+  <h3 style="margin-top:2rem;margin-bottom:1rem" class="t6">🔑 RSA Key Generation — Step by Step</h3>
+  <div class="rsa-steps">
+    <div class="rsa-step">
+      <div class="rsa-label">Step 1 — Choose primes</div>
+      <div class="rsa-val">Select two distinct primes <span style="color:var(--v3)">p</span> and <span style="color:var(--v3)">q</span> where p ≠ q</div>
+    </div>
+    <div class="rsa-step">
+      <div class="rsa-label">Step 2 — Compute n</div>
+      <div class="rsa-val">n = p × q &nbsp;<span style="color:var(--tx3);font-weight:400">(the modulus; part of both keys)</span></div>
+    </div>
+    <div class="rsa-step">
+      <div class="rsa-label">Step 3 — Compute φ(n)</div>
+      <div class="rsa-val">φ(n) = (p−1) × (q−1) &nbsp;<span style="color:var(--tx3);font-weight:400">(Euler's totient)</span></div>
+    </div>
+    <div class="rsa-step">
+      <div class="rsa-label">Step 4 — Choose e</div>
+      <div class="rsa-val pub">Select e where 1 &lt; e &lt; φ(n) and gcd(e, φ(n)) = 1</div>
+    </div>
+    <div class="rsa-step">
+      <div class="rsa-label">Step 5 — Compute d</div>
+      <div class="rsa-val prv">d × e ≡ 1 mod φ(n) &nbsp;&nbsp;<span style="color:var(--tx3);font-weight:400">(via Extended Euclidean Algorithm)</span></div>
+    </div>
+    <div class="rsa-step">
+      <div class="rsa-label">Public Key PU</div>
+      <div class="rsa-val pub">{ e, n } — share openly</div>
+    </div>
+    <div class="rsa-step">
+      <div class="rsa-label">Private Key PR</div>
+      <div class="rsa-val prv">{ d, n } — keep secret</div>
+    </div>
+  </div>
+
+  <!-- EXAMPLE 1 from slides -->
+  <div class="ex ex1" style="margin-top:1.75rem">
+    <div class="ex-lbl t1">📘 RSA Example 1 — From Slides (p=7, q=11)</div>
+    <div class="rsa-steps">
+      <div class="rsa-step"><div class="rsa-label">p=7, q=11</div><div class="rsa-val">n = 7 × 11 = <span class="val">77</span></div></div>
+      <div class="rsa-step"><div class="rsa-label">φ(77)</div><div class="rsa-val">(7−1)(11−1) = 6 × 10 = <span class="val">60</span></div></div>
+      <div class="rsa-step"><div class="rsa-label">Choose e = 13</div><div class="rsa-val pub">gcd(13, 60) = 1 ✓ &nbsp;&nbsp; Public key: {13, 77}</div></div>
+      <div class="rsa-step"><div class="rsa-label">Compute d = 37</div><div class="rsa-val prv">13 × 37 mod 60 = 1 ✓ &nbsp;&nbsp; Private key: {37, 77}</div></div>
+      <div class="rsa-step"><div class="rsa-label">Alice sends M=5</div><div class="rsa-val">Encrypt: C = 5¹³ mod 77 = <span class="val">26</span></div></div>
+      <div class="rsa-step"><div class="rsa-label">Bob decrypts C=26</div><div class="rsa-val">Decrypt: M = 26³⁷ mod 77 = <span class="val">5</span> ✓</div></div>
+    </div>
+  </div>
+
+  <!-- EXAMPLE 2 from slides -->
+  <div class="ex ex4" style="margin-top:1rem">
+    <div class="ex-lbl t4">📗 RSA Example 2 — From Slides (p=3, q=11)</div>
+    <div class="rsa-steps">
+      <div class="rsa-step"><div class="rsa-label">p=3, q=11</div><div class="rsa-val">n = 3 × 11 = <span class="val">33</span> &nbsp;&nbsp; φ(n) = 2 × 10 = <span class="val">20</span></div></div>
+      <div class="rsa-step"><div class="rsa-label">Choose e=7</div><div class="rsa-val pub">gcd(7, 20) = 1 ✓ &nbsp;&nbsp; Public key: {7, 33}</div></div>
+      <div class="rsa-step"><div class="rsa-label">d = 3</div><div class="rsa-val prv">7 × 3 mod 20 = 21 mod 20 = 1 ✓ &nbsp;&nbsp; Private key: {3, 33}</div></div>
+      <div class="rsa-step"><div class="rsa-label">Message M=2</div><div class="rsa-val">Encrypt: C = 2⁷ mod 33 = <span class="val">29</span></div></div>
+      <div class="rsa-step"><div class="rsa-label">Decrypt C=29</div><div class="rsa-val">M = 29³ mod 33 = <span class="val">2</span> ✓</div></div>
+    </div>
+  </div>
+
+  <!-- EXAMPLE 3 — Homework (p=7, q=13) -->
+  <div class="ex ex6" style="margin-top:1rem">
+    <div class="ex-lbl t6">📝 RSA Homework Practice — From Slides (p=7, q=13)</div>
+    <div class="rsa-steps">
+      <div class="rsa-step"><div class="rsa-label">p=7, q=13</div><div class="rsa-val">n = 7 × 13 = <span class="val">91</span> &nbsp;&nbsp; φ(n) = 6 × 12 = <span class="val">72</span></div></div>
+      <div class="rsa-step"><div class="rsa-label">e = 5</div><div class="rsa-val pub">Public key: {91, 5}</div></div>
+      <div class="rsa-step"><div class="rsa-label">d = 29</div><div class="rsa-val prv">Private key: {29, 91}</div></div>
+    </div>
+    <p style="margin-top:.75rem;font-size:.85rem;color:var(--tx2)">This same setup is used in the RSA Signature example below.</p>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     04 — RSA ENCRYPTION vs SIGNATURE
+═══════════════════════════════════════ -->
+<section>
+  <div class="sh"><span class="sn">04</span><div class="sl"></div></div>
+  <h2 class="g4">RSA Encryption vs RSA Signature</h2>
+  <p>RSA can be used in two fundamentally different modes — one for privacy, one for authentication. The key direction flips.</p>
+
+  <div class="vs" style="margin-top:1.5rem">
+    <div class="card bl2">
+      <h3 class="t2">🔐 RSA for Encryption (Confidentiality)</h3>
+      <ul>
+        <li>Encrypt with <strong>receiver's public key</strong></li>
+        <li>Decrypt with <strong>receiver's private key</strong></li>
+        <li>Only the intended receiver can read the message</li>
+        <li>Formula: C = Mᵉ mod N &nbsp;→&nbsp; M = Cᵈ mod N</li>
+      </ul>
+      <div class="flow" style="margin-top:1rem;gap:.2rem">
+        <div class="fb a1" style="font-size:.75rem">Plaintext</div><div class="fa">→</div>
+        <div class="fb" style="font-size:.72rem">Bob's<br>Public Key</div><div class="fa">→</div>
+        <div class="fb" style="font-size:.75rem">Ciphertext</div><div class="fa">→</div>
+        <div class="fb" style="font-size:.72rem">Bob's<br>Private Key</div><div class="fa">→</div>
+        <div class="fb a3" style="font-size:.75rem">Plaintext</div>
+      </div>
+    </div>
+
+    <div class="card bl3">
+      <h3 class="t3">✍️ RSA for Signature (Authentication)</h3>
+      <ul>
+        <li>Sign with <strong>sender's private key</strong></li>
+        <li>Verify with <strong>sender's public key</strong></li>
+        <li>Anyone can verify; only the sender could have signed</li>
+        <li>Formula: S = Mᵈ mod N &nbsp;→&nbsp; M = Sᵉ mod N</li>
+      </ul>
+      <div class="flow" style="margin-top:1rem;gap:.2rem">
+        <div class="fb" style="font-size:.75rem">Message</div><div class="fa">→</div>
+        <div class="fb a2" style="font-size:.72rem">Alice's<br>Private Key</div><div class="fa">→</div>
+        <div class="fb" style="font-size:.75rem">Signature</div><div class="fa">→</div>
+        <div class="fb" style="font-size:.72rem">Alice's<br>Public Key</div><div class="fa">→</div>
+        <div class="fb a4" style="font-size:.75rem">Verified ✓</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Signature Example from slides -->
+  <div class="ex ex3" style="margin-top:1.5rem">
+    <div class="ex-lbl t3">📘 RSA Signature Example — From Slides (p=7, q=13)</div>
+    <div class="rsa-steps">
+      <div class="rsa-step"><div class="rsa-label">Setup</div><div class="rsa-val">n=91, φ(n)=72, e=5, d=29 &nbsp;&nbsp; Public: {91,5} &nbsp; Private: 29</div></div>
+      <div class="rsa-step"><div class="rsa-label">Message M=24 → Sign</div><div class="rsa-val prv">S = 24²⁹ mod 91 = <span class="kw">33</span> &nbsp;&nbsp;(signed using private key d=29)</div></div>
+      <div class="rsa-step"><div class="rsa-label">Verify signature S=33</div><div class="rsa-val pub">M = 33⁵ mod 91 = <span class="val">24</span> ✓ &nbsp;&nbsp;(verified using public key e=5)</div></div>
+    </div>
+  </div>
+
+  <!-- Past Exam Qs -->
+  <div class="ex ex5" style="margin-top:1.25rem">
+    <div class="ex-lbl t5">🎓 Past Exam Questions</div>
+    <p style="color:var(--tx);font-size:.9rem;margin-bottom:.5rem"><strong>Q10: What is used to CREATE a digital signature?</strong></p>
+    <p style="color:var(--tx2);font-size:.87rem">a) Receiver's private key &nbsp; b) Sender's public key &nbsp; <strong style="color:var(--v4)">c) Sender's private key ✅</strong> &nbsp; d) Receiver's public key</p>
+    <div style="margin-top:.9rem;border-top:1px solid var(--bdr);padding-top:.9rem">
+      <p style="color:var(--tx);font-size:.9rem;margin-bottom:.5rem"><strong>Q8: In public key cryptography, if the public key encrypts, then…</strong></p>
+      <p style="color:var(--tx2);font-size:.87rem">a) Only private key can encrypt &nbsp; b) Only public key can encrypt &nbsp; c) Public key encrypts and decrypts &nbsp; <strong style="color:var(--v4)">d) Only the private key can decrypt ✅</strong></p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     05 — RSA SECURITY
+═══════════════════════════════════════ -->
+<section>
+  <div class="sh"><span class="sn">05</span><div class="sl"></div></div>
+  <h2 class="g2">RSA Security</h2>
+  <p>The security of RSA rests on the <strong>computational difficulty of factoring large numbers</strong> into their prime components. This is known as the <em>integer factorization problem</em>.</p>
+
+  <div class="tw" style="margin-top:1.5rem">
+    <table>
+      <thead><tr><th>Key Size</th><th>Year Factored / Status</th><th>Resources Used</th></tr></thead>
+      <tbody>
+        <tr class="row-warn"><td><strong>512-bit</strong></td><td>1999 — factored in 4 months</td><td>35.7 CPU-years (SGI, Sun, Pentium II machines)</td></tr>
+        <tr class="row-warn"><td><strong>640-bit (RSA-640)</strong></td><td>2005 — factored</td><td>30 processors × 2.2 GHz</td></tr>
+        <tr><td><strong>2048-bit</strong></td><td>Prize: $200,000 (2004) — still unfactored</td><td>Theoretically infeasible with current tech</td></tr>
+        <tr class="row-ok"><td><strong>2048-bit (current practice)</strong></td><td>✅ Current recommended minimum</td><td>Standard for modern RSA deployments</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="tip tip-r" style="margin-top:1.25rem">
+    <div class="ti">⚠️</div>
+    <div class="tb2">
+      <h4 class="t3">Key Size Matters</h4>
+      <p>Old RSA keys of 512 bits are <strong>completely broken</strong>. Always use at minimum <strong>2048-bit keys</strong>. Best known factoring algorithms take exponential time — but as computing power grows, key sizes must increase.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     06 — HASH FUNCTIONS, MAC & COMPARISON
+═══════════════════════════════════════ -->
+<section>
+  <div class="sh"><span class="sn">06</span><div class="sl"></div></div>
+  <h2 class="g3">Hash Functions, MAC &amp; Digital Signatures Compared</h2>
+  <p>Three related but distinct mechanisms for ensuring data integrity and authenticity. Knowing the differences is critical for exams.</p>
+
+  <!-- 3-way comparison table -->
+  <div class="tw" style="margin-top:1.5rem">
+    <table>
+      <thead><tr><th>Feature</th><th>Hash</th><th>MAC</th><th>Digital Signature</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Keys Used</strong></td><td>None</td><td>Shared secret key</td><td>Asymmetric key pair</td></tr>
+        <tr><td><strong>Protects</strong></td><td>Integrity only</td><td>Integrity + Authenticity</td><td>Integrity + Authenticity + Non-repudiation</td></tr>
+        <tr><td><strong>Who can verify?</strong></td><td>Anyone (public algorithm)</td><td>Only those with the key</td><td>Anyone with sender's public key</td></tr>
+        <tr><td><strong>Non-repudiation?</strong></td><td class="t3">❌ No</td><td class="t3">❌ No</td><td class="t4">✅ Yes</td></tr>
+        <tr><td><strong>Reversible?</strong></td><td class="t3">❌ One-way</td><td class="t3">❌ One-way</td><td class="t3">❌ One-way hash</td></tr>
+        <tr><td><strong>Example algorithms</strong></td><td>SHA-256, MD5</td><td>HMAC-SHA256</td><td>RSA, DSA, ECDSA</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Hash -->
+  <div class="card bl1" style="margin-top:1.5rem">
+    <h3 class="t1"># Hash Function (One-Way Encryption)</h3>
+    <p>A special mathematical function that produces a <strong>fixed-length output (message digest)</strong> from any input. Once hashed, you <strong>cannot reverse it</strong> to get the original message.</p>
+    <ul>
+      <li>Two different inputs should never produce the same hash — if they do, it's a <strong>collision attack</strong></li>
+      <li>The message digest has <strong>fixed length</strong> regardless of input size</li>
+      <li>Common uses: storing passwords, message integrity verification</li>
+    </ul>
+  </div>
+
+  <!-- MAC -->
+  <div class="card bl4" style="margin-top:1rem">
+    <h3 class="t4">🔑 MAC (Message Authentication Code)</h3>
+    <p>A hash function <strong>combined with a secret key</strong>. Since hash functions are public (anyone can run them), adding a secret key proves the message came from someone who knows the key.</p>
+    <ul>
+      <li>Provides <strong>integrity</strong> (message wasn't tampered with)</li>
+      <li>Provides <strong>authenticity</strong> (came from someone with the shared key)</li>
+      <li>Does <strong>NOT</strong> provide non-repudiation — anyone with the shared key could have made it</li>
+    </ul>
+  </div>
+
+  <!-- SHA -->
+  <h3 style="margin-top:2rem;margin-bottom:1rem" class="t2">🔒 SHA — Secure Hash Algorithm (from slides)</h3>
+  <div class="tw">
+    <table>
+      <thead><tr><th>Version</th><th>Year</th><th>Digest Size</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr class="row-warn"><td><strong>SHA-1</strong></td><td>1993</td><td>160 bits</td><td class="t3">⚠️ Vulnerable to collision attacks — deprecated</td></tr>
+        <tr class="row-ok"><td><strong>SHA-2</strong></td><td>2002</td><td>SHA-256 or SHA-512</td><td class="t4">✅ Widely used today</td></tr>
+        <tr class="row-ok"><td><strong>SHA-3</strong></td><td>2015</td><td>224, 256, 384, or 512 bits</td><td class="t4">✅ Latest NIST standard</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- MD -->
+  <h3 style="margin-top:1.5rem;margin-bottom:1rem" class="t1">📋 MD — Message Digest Family</h3>
+  <div class="tw">
+    <table>
+      <thead><tr><th>Version</th><th>Year</th><th>Output</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>MD2</td><td>1989</td><td>128 bits</td><td>Vulnerable without checksum appended</td></tr>
+        <tr><td>MD4</td><td>1990</td><td>128 bits</td><td>Fast but subject to many attacks</td></tr>
+        <tr class="row-warn"><td>MD5</td><td>1991</td><td>128 bits</td><td>More secure than MD4 but also deprecated — collision attacks known</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="tip tip-g" style="margin-top:1.25rem">
+    <div class="ti">💡</div>
+    <div class="tb2">
+      <h4 class="t4">Collision Attack</h4>
+      <p>Attacker finds two different messages that hash to the <strong>same value</strong>. This is a loss of <strong>integrity</strong>. SHA-1 and MD5 are vulnerable. Always use SHA-256 or higher for security-critical applications.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     07 — DIGITAL SIGNATURES (FULL PROCESS)
+═══════════════════════════════════════ -->
+<section>
+  <div class="sh"><span class="sn">07</span><div class="sl"></div></div>
+  <h2 class="g4">Digital Signatures — Full Process</h2>
+  <p>A digital signature proves <strong>who sent the message</strong> and that the message was <strong>not tampered with</strong>. It also provides <strong>non-repudiation</strong> — the sender cannot deny signing.</p>
+
+  <div class="vs" style="margin-top:1.5rem">
+    <div class="card bl3">
+      <h3 class="t3">🖊️ Signing Process (Sender Side)</h3>
+      <div class="psteps">
+        <div class="pstep">
+          <div class="psn" style="background:linear-gradient(135deg,var(--v3),var(--v6))">1</div>
+          <div class="psb"><h4>Hash the message</h4><p>Apply a hash function (SHA-256) to the plaintext → produces a fixed-length digest</p></div>
+        </div>
+        <div class="pstep">
+          <div class="psn" style="background:linear-gradient(135deg,var(--v3),var(--v6))">2</div>
+          <div class="psb"><h4>Encrypt the hash</h4><p>Encrypt the hash using the <strong>sender's private key</strong> → this is the digital signature</p></div>
+        </div>
+        <div class="pstep">
+          <div class="psn" style="background:linear-gradient(135deg,var(--v3),var(--v6))">3</div>
+          <div class="psb"><h4>Send both</h4><p>Send the original message + the signature together</p></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card bl4">
+      <h3 class="t4">✅ Verification Process (Receiver Side)</h3>
+      <div class="psteps">
+        <div class="pstep">
+          <div class="psn" style="background:linear-gradient(135deg,var(--v4),var(--v2))">1</div>
+          <div class="psb"><h4>Hash the received message</h4><p>Apply the same hash function to the received message → new digest</p></div>
+        </div>
+        <div class="pstep">
+          <div class="psn" style="background:linear-gradient(135deg,var(--v4),var(--v2))">2</div>
+          <div class="psb"><h4>Decrypt the signature</h4><p>Decrypt the received signature using the <strong>sender's public key</strong> → original digest</p></div>
+        </div>
+        <div class="pstep">
+          <div class="psn" style="background:linear-gradient(135deg,var(--v4),var(--v2))">3</div>
+          <div class="psb"><h4>Compare both digests</h4><p>If both hashes match → message is authentic and unmodified ✓</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Full signing flow -->
+  <div style="margin-top:1.5rem">
+    <p style="font-size:.85rem;color:var(--tx3);margin-bottom:.5rem;font-family:'JetBrains Mono',monospace">— Complete Sign + Encrypt Flow —</p>
+    <div class="flow">
+      <div class="fb" style="font-size:.73rem">Plaintext</div><div class="fa">→</div>
+      <div class="fb a1" style="font-size:.73rem">Encrypt<br><small>Receiver Public Key</small></div><div class="fa">→</div>
+      <div class="fb" style="font-size:.73rem">Ciphertext</div><div class="fa">→</div>
+      <div class="fb" style="font-size:.73rem">Compute<br>Hash</div><div class="fa">→</div>
+      <div class="fb a2" style="font-size:.73rem">Encrypt Hash<br><small>Sender Private Key</small></div><div class="fa">→</div>
+      <div class="fb a3" style="font-size:.73rem">Signature</div>
+    </div>
+  </div>
+
+  <div class="ex ex4" style="margin-top:1.25rem">
+    <div class="ex-lbl t4">✨ Generated Practical Example</div>
+    <p style="color:var(--tx);font-size:.9rem">Alice wants to send Bob a signed contract. She hashes the document with SHA-256 → gets digest "3a7f...". She encrypts this digest with her <strong>private key</strong> → creates the digital signature "9b2e...". She sends Bob: [document + signature]. Bob hashes the received document → "3a7f...". He decrypts the signature using Alice's <strong>public key</strong> → "3a7f...". They match → Alice definitely signed it and it wasn't tampered with.</p>
+  </div>
+
+  <div class="tip tip-p" style="margin-top:1rem">
+    <div class="ti">🧠</div>
+    <div class="tb2">
+      <h4 class="t6">Why Digital Signatures ≠ Just Encryption</h4>
+      <p>Encryption provides <strong>confidentiality</strong>. Digital signatures provide <strong>authentication + integrity + non-repudiation</strong>. They use keys in opposite directions. You can have both simultaneously (sign then encrypt).</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     08 — DIGITAL CERTIFICATES
+═══════════════════════════════════════ -->
+<section>
+  <div class="sh"><span class="sn">08</span><div class="sl"></div></div>
+  <h2 class="g1">Digital Certificates</h2>
+  <p>Before two parties exchange data using public-key cryptography, each wants to be sure <strong>the other party is authenticated</strong>. The critical question: <em>"How do I know this public key actually belongs to who I think it does?"</em></p>
+
+  <div class="ex ex2" style="margin-top:1.25rem">
+    <div class="ex-lbl t2">❓ The Problem</div>
+    <p style="color:var(--tx);font-size:.9rem">Before Bob accepts a message with Alice's Digital Signature, Bob wants to be sure the public key belongs to Alice — not to someone <strong>masquerading</strong> as Alice on an open network. Without verification, a man-in-the-middle could substitute their own public key.</p>
+  </div>
+
+  <div class="ex ex4" style="margin-top:1rem">
+    <div class="ex-lbl t4">✅ The Solution: Digital Certificate</div>
+    <p style="color:var(--tx);font-size:.9rem">A trusted third party (<strong>Certification Authority / CA</strong>) authenticates that a public key belongs to a specific entity. Once Alice provides proof of identity, the CA creates a message containing Alice's name + public key — digitally signed by the CA. This signed message is the <strong>Digital Certificate</strong>.</p>
+  </div>
+
+  <!-- X.509 Certificate Fields -->
+  <h3 style="margin-top:2rem;margin-bottom:1rem" class="t1">📜 X.509 Certificate Structure</h3>
+  <p>A Digital Certificate is an <strong>X.509 defined data structure</strong> with a Digital Signature. Since the data is signed by the CA, it cannot be altered without detection.</p>
+  <div class="cert-box" style="margin-top:1rem">
+    <div class="cert-field"><div class="cert-name">Version #</div><div class="cert-val">X.509 version (v1, v2, v3)</div></div>
+    <div class="cert-field"><div class="cert-name">Serial #</div><div class="cert-val">Unique identifier per certificate</div></div>
+    <div class="cert-field"><div class="cert-name">Signature Algorithm</div><div class="cert-val">Algorithm used by CA to sign (e.g., SHA256withRSA)</div></div>
+    <div class="cert-field"><div class="cert-name">Issuer Name</div><div class="cert-val">The CA that issued this certificate</div></div>
+    <div class="cert-field"><div class="cert-name">Validity Period</div><div class="cert-val">Not Before / Not After dates</div></div>
+    <div class="cert-field"><div class="cert-name">Subject Name</div><div class="cert-val">Owner of the certificate (e.g., alice@psu.edu.sa)</div></div>
+    <div class="cert-field"><div class="cert-name">Subject Public Key</div><div class="cert-val">The owner's public key (the whole point!)</div></div>
+    <div class="cert-field"><div class="cert-name">Issuer Unique ID</div><div class="cert-val">Optional CA identifier</div></div>
+    <div class="cert-field"><div class="cert-name">Subject Unique ID</div><div class="cert-val">Optional subject identifier</div></div>
+    <div class="cert-field"><div class="cert-name">Extensions</div><div class="cert-val">Custom attributes (key usage, SAN, etc.)</div></div>
+    <div class="cert-field" style="grid-column:1/-1;border-color:var(--bdr2)"><div class="cert-name" style="color:var(--v3)">CA Digital Signature</div><div class="cert-val" style="color:var(--v3)">CA's signature over all above fields — makes the certificate tamper-proof</div></div>
+  </div>
+
+  <!-- CRL -->
+  <div class="card bl3" style="margin-top:1.5rem">
+    <h3 class="t3">🚫 Certificate Revocation List (CRL)</h3>
+    <p>The CA periodically publishes a <strong>Certificate Revocation List (CRL)</strong> — a list of certificates that have been revoked before their expiry date. Described in the X.509 standard.</p>
+    <ul>
+      <li>Each revoked certificate is identified by its <strong>serial number</strong></li>
+      <li>CRL is distributed via a known web URL or from the CA's X.500 directory entry</li>
+      <li>Relying parties must check the CRL before trusting a certificate</li>
+    </ul>
+    <div class="ex ex3" style="margin-top:.75rem">
+      <div class="ex-lbl t3">🎓 Past Exam Question</div>
+      <p style="color:var(--tx);font-size:.9rem;margin-bottom:.5rem"><strong>Q11: Why would a CA revoke a certificate?</strong></p>
+      <p style="color:var(--tx2);font-size:.87rem">a) User's public key compromised &nbsp; b) User switched to PEM model &nbsp; <strong style="color:var(--v4)">c) User's private key has become compromised ✅</strong> &nbsp; d) User moved to a new location</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     09 — PUBLIC KEY INFRASTRUCTURE (PKI)
+═══════════════════════════════════════ -->
+<section>
+  <div class="sh"><span class="sn">09</span><div class="sl"></div></div>
+  <h2 class="g2">Public Key Infrastructure (PKI)</h2>
+  <p>PKI is the <strong>complete system</strong> of technology, policies, and procedures that supports the use of public-key cryptography at scale. It answers the critical questions about trust.</p>
+
+  <!-- Security Services -->
+  <div class="g4c" style="margin-top:1.5rem">
+    <div class="card bl1" style="text-align:center">
+      <div style="font-size:1.5rem;margin-bottom:.5rem">🔒</div>
+      <h3 class="t1">Privacy</h3>
+      <p>Encryption using public key technology ensures only the intended recipient can read data</p>
+    </div>
+    <div class="card bl3" style="text-align:center">
+      <div style="font-size:1.5rem;margin-bottom:.5rem">🪪</div>
+      <h3 class="t3">Authentication</h3>
+      <p>Digital certificates prove identity — you know who you're talking to</p>
+    </div>
+    <div class="card bl4" style="text-align:center">
+      <div style="font-size:1.5rem;margin-bottom:.5rem">🛡️</div>
+      <h3 class="t4">Integrity</h3>
+      <p>Digital signatures ensure the message wasn't altered in transit</p>
+    </div>
+    <div class="card bl6" style="text-align:center">
+      <div style="font-size:1.5rem;margin-bottom:.5rem">✍️</div>
+      <h3 class="t6">Non-Repudiation</h3>
+      <p>The sender cannot deny having signed — the private key proves authorship</p>
+    </div>
+  </div>
+
+  <!-- PKI Players -->
+  <h3 style="margin-top:2rem;margin-bottom:1rem" class="t5">👥 PKI Players</h3>
+  <div class="g3c">
+    <div class="card bl5">
+      <h3 class="t5">🏛️ Certification Authority (CA)</h3>
+      <p>The <strong>basis of trust</strong> in PKI. A trusted third party that:</p>
+      <ul>
+        <li>Enrolls and validates subscribers (users/devices)</li>
+        <li>Issues and manages digital certificates</li>
+        <li>Manages revocation (CRLs) and renewal of certificates</li>
+        <li>Establishes policies and procedures</li>
+      </ul>
+      <div class="ex ex5" style="margin-top:.75rem">
+        <div class="ex-lbl t5">🎓 Past Exam</div>
+        <p style="color:var(--tx);font-size:.88rem;margin:0"><strong>Q12: What best describes a CA?</strong><br><strong style="color:var(--v4)">→ An organization that issues certificates ✅</strong></p>
+      </div>
+    </div>
+
+    <div class="card bl2">
+      <h3 class="t2">📋 Registration Authority (RA)</h3>
+      <p>Works alongside the CA to handle identity verification:</p>
+      <ul>
+        <li>Enrolling, de-enrolling, approving/rejecting certificate attribute changes</li>
+        <li>Validating certificate applications</li>
+        <li>Authorizing key-pair or certificate generation requests</li>
+        <li>Authorizing requests for key recovery</li>
+        <li>Accepting and authorizing requests for revocation or suspension</li>
+        <li>Physically distributing personal tokens to authorized holders</li>
+      </ul>
+    </div>
+
+    <div class="card bl4">
+      <h3 class="t4">🗄️ Repository</h3>
+      <p>A <strong>publicly available database</strong> that holds:</p>
+      <ul>
+        <li>Issued digital certificates</li>
+        <li>Certificate Revocation Lists (CRLs)</li>
+      </ul>
+      <p>Allows anyone to look up a certificate and check if it has been revoked — ensuring the trust infrastructure works publicly and transparently.</p>
+    </div>
+  </div>
+
+  <!-- Certificate Policy -->
+  <div class="card bl6" style="margin-top:1.5rem">
+    <h3 class="t6">📜 Certificate Policy (CP)</h3>
+    <p>A Certificate Policy is the <strong>basis for trust between unrelated entities</strong>. It is:</p>
+    <div class="g2c">
+      <ul>
+        <li>Not a formal "contract" (but implied)</li>
+        <li>A framework that both informs and constrains PKI implementation</li>
+        <li>A statement of what a certificate means</li>
+      </ul>
+      <ul>
+        <li>A set of rules for certificate holders</li>
+        <li>A way of giving advice to Relying Parties</li>
+        <li>The foundation for cross-organizational trust</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     10 — EXAM TIPS & TRICKS
+═══════════════════════════════════════ -->
+<section>
+  <div class="sh"><span class="sn">10</span><div class="sl"></div></div>
+  <h2 class="g4">Exam Tips &amp; Tricks 🎯</h2>
+
+  <div class="g2c" style="margin-top:1.5rem">
+    <div class="tip tip-b">
+      <div class="ti">🔑</div>
+      <div class="tb2">
+        <h4 class="t2">Key Direction — Never Get It Wrong</h4>
+        <p>Encrypt (confidentiality): <strong>receiver's public key</strong>. Decrypt: <strong>receiver's private key</strong>. Sign: <strong>sender's private key</strong>. Verify: <strong>sender's public key</strong>.</p>
+      </div>
+    </div>
+    <div class="tip tip-g">
+      <div class="ti">📐</div>
+      <div class="tb2">
+        <h4 class="t4">RSA Key Formula Order</h4>
+        <p>Remember: <strong>n = p×q</strong>, then <strong>φ(n) = (p-1)(q-1)</strong>, then choose <strong>e</strong>, then compute <strong>d</strong>. Public = {e, n}. Private = {d, n}. N is in both!</p>
+      </div>
+    </div>
+    <div class="tip tip-w">
+      <div class="ti">🚫</div>
+      <div class="tb2">
+        <h4 class="t5">CA Revocation Reason</h4>
+        <p>A CA revokes a certificate when the user's <strong>private key is compromised</strong> (not public key). If the private key leaks, the certificate can no longer be trusted.</p>
+      </div>
+    </div>
+    <div class="tip tip-r">
+      <div class="ti">⚡</div>
+      <div class="tb2">
+        <h4 class="t3">Hash vs MAC vs Signature</h4>
+        <p>Hash = integrity only. MAC = integrity + authenticity (shared key). Signature = integrity + authenticity + <strong>non-repudiation</strong> (asymmetric keys).</p>
+      </div>
+    </div>
+    <div class="tip tip-p">
+      <div class="ti">🏦</div>
+      <div class="tb2">
+        <h4 class="t6">CA = Basis of Trust</h4>
+        <p>The CA doesn't just issue certificates — it's the <strong>entire foundation of trust</strong> in PKI. Without a trusted CA, there's no way to verify a public key belongs to who you think.</p>
+      </div>
+    </div>
+    <div class="tip tip-g">
+      <div class="ti">🔢</div>
+      <div class="tb2">
+        <h4 class="t4">RSA Security = Factoring Problem</h4>
+        <p>RSA is secure because <strong>factoring large numbers is hard</strong>. Use at least <strong>2048-bit keys</strong>. 512-bit is broken. The bigger the key, the more exponentially harder to break.</p>
+      </div>
+    </div>
+    <div class="tip tip-b">
+      <div class="ti">📋</div>
+      <div class="tb2">
+        <h4 class="t2">X.509 = Certificate Standard</h4>
+        <p>The CRL (Certificate Revocation List) is described in the <strong>X.509 standard</strong>. Each revoked certificate is identified by its <strong>serial number</strong> in the CRL.</p>
+      </div>
+    </div>
+    <div class="tip tip-r">
+      <div class="ti">🚪</div>
+      <div class="tb2">
+        <h4 class="t3">Trapdoor = One-Way with a Secret</h4>
+        <p>Easy forward (multiply primes), hard backward (factor). But with the private key (trapdoor), the inverse (decryption) becomes easy. This asymmetry is the heart of RSA.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     11 — QUICK REFERENCE CHEAT SHEET
+═══════════════════════════════════════ -->
+<section>
+  <div class="sh"><span class="sn">11</span><div class="sl"></div></div>
+  <h2 class="g1">Quick Reference — Master Cheat Sheet</h2>
+
+  <div class="ex ex1" style="margin-top:1.5rem">
+    <div class="ex-lbl t1">📌 Chapter 6 Complete Summary</div>
+    <div class="tw" style="margin-top:.75rem">
+      <table>
+        <thead><tr><th>Topic</th><th>Key Point</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Asymmetric Cryptography</strong></td><td>Two keys: public (open) + private (secret); solves key distribution</td></tr>
+          <tr><td><strong>Trapdoor One-Way Function</strong></td><td>Easy to compute forward; hard to reverse without the private key (trapdoor)</td></tr>
+          <tr><td><strong>RSA Inventors</strong></td><td>Rivest, Shamir, Adleman — most common public-key algorithm</td></tr>
+          <tr><td><strong>RSA n</strong></td><td>n = p × q; appears in BOTH public and private keys</td></tr>
+          <tr><td><strong>RSA Public Key</strong></td><td>{ e, n } — share openly</td></tr>
+          <tr><td><strong>RSA Private Key</strong></td><td>{ d, n } — keep secret</td></tr>
+          <tr><td><strong>RSA Encrypt</strong></td><td>C = Mᵉ mod n (using public key)</td></tr>
+          <tr><td><strong>RSA Decrypt</strong></td><td>M = Cᵈ mod n (using private key)</td></tr>
+          <tr><td><strong>RSA Sign</strong></td><td>S = Mᵈ mod n (using sender's private key)</td></tr>
+          <tr><td><strong>RSA Verify</strong></td><td>M = Sᵉ mod n (using sender's public key)</td></tr>
+          <tr><td><strong>RSA Security</strong></td><td>Based on difficulty of prime factorization; use 2048-bit minimum</td></tr>
+          <tr><td><strong>Hash Function</strong></td><td>One-way; fixed-length output; integrity only; no key</td></tr>
+          <tr><td><strong>MAC</strong></td><td>Hash + shared key; integrity + authenticity; no non-repudiation</td></tr>
+          <tr><td><strong>Digital Signature</strong></td><td>Encrypt hash with private key; integrity + authenticity + non-repudiation</td></tr>
+          <tr><td><strong>SHA-1</strong></td><td>160-bit; vulnerable — deprecated</td></tr>
+          <tr><td><strong>SHA-2/3</strong></td><td>256/512 bits; current standard</td></tr>
+          <tr><td><strong>MD5</strong></td><td>128-bit; deprecated — collision attacks</td></tr>
+          <tr><td><strong>Digital Certificate</strong></td><td>X.509 structure binding public key to identity; signed by CA</td></tr>
+          <tr><td><strong>Certification Authority (CA)</strong></td><td>Trusted third party; issues & manages certificates; basis of PKI trust</td></tr>
+          <tr><td><strong>Registration Authority (RA)</strong></td><td>Validates identities; approves certificate requests before CA issues</td></tr>
+          <tr><td><strong>Repository</strong></td><td>Public database holding certificates and CRLs</td></tr>
+          <tr><td><strong>CRL</strong></td><td>Certificate Revocation List; X.509 standard; revoked by serial number</td></tr>
+          <tr><td><strong>CA Revocation Reason</strong></td><td>Private key compromised (NOT public key)</td></tr>
+          <tr><td><strong>Certificate Policy</strong></td><td>Basis for trust between unrelated entities; defines what a cert means</td></tr>
+          <tr><td><strong>PKI provides</strong></td><td>Privacy + Authentication + Integrity + Non-repudiation</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="fname">Shoug Alomran</div>
+  <div class="fsub">CYS 401 · Chapter 6: Asymmetric Cryptography &amp; PKI · Study Guide</div>
+</footer>
+
+<script>
+(function(){
+  const d = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  document.documentElement.setAttribute('data-theme', d);
+  update(d);
+})();
+
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+  const t = e.matches ? 'dark' : 'light';
+  document.documentElement.setAttribute('data-theme', t);
+  update(t);
+});
+
+function toggleTheme(){
+  const cur = document.documentElement.getAttribute('data-theme');
+  const nxt = cur === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', nxt);
+  update(nxt);
+}
+
+function update(t){
+  document.getElementById('ticon').textContent  = t === 'dark' ? '☀️' : '🌙';
+  document.getElementById('tlabel').textContent = t === 'dark' ? 'Light Mode' : 'Dark Mode';
+}
+</script>
+</body>
+</html>

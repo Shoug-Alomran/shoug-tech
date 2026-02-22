@@ -1,0 +1,1239 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CYS401 — الفصل 5: التشفير</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   THEME VARIABLES
+   ============================================================ */
+:root {
+  --a: #6ee7f7;    /* cyan accent */
+  --b: #f472b6;    /* pink accent */
+  --c: #a78bfa;    /* violet accent */
+  --d: #34d399;    /* emerald accent */
+  --e: #fb923c;    /* orange accent */
+  --f: #facc15;    /* yellow accent */
+}
+
+[data-theme="dark"] {
+  --bg:        #080c14;
+  --bg2:       #0e1422;
+  --bg3:       #141c2e;
+  --surface:   rgba(255,255,255,0.04);
+  --surface2:  rgba(255,255,255,0.07);
+  --border:    rgba(255,255,255,0.08);
+  --border2:   rgba(255,255,255,0.13);
+  --text:      #e2e8f0;
+  --text2:     #94a3b8;
+  --text3:     #64748b;
+  --heading:   #f8fafc;
+  --code-bg:   rgba(255,255,255,0.06);
+  --shadow:    rgba(0,0,0,0.5);
+  --toggle-bg: rgba(255,255,255,0.08);
+}
+
+[data-theme="light"] {
+  --bg:        #f0f4ff;
+  --bg2:       #e8eef9;
+  --bg3:       #dde5f5;
+  --surface:   rgba(255,255,255,0.75);
+  --surface2:  rgba(255,255,255,0.95);
+  --border:    rgba(80,100,160,0.12);
+  --border2:   rgba(80,100,160,0.2);
+  --text:      #1e2a45;
+  --text2:     #475569;
+  --text3:     #94a3b8;
+  --heading:   #0f172a;
+  --code-bg:   rgba(80,100,160,0.08);
+  --shadow:    rgba(100,120,200,0.15);
+  --toggle-bg: rgba(80,100,160,0.12);
+}
+
+/* ============================================================
+   RESET & BASE (مع تعديلات RTL)
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Space Grotesk', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  overflow-x: hidden;
+  transition: background 0.4s ease, color 0.4s ease;
+  text-align: right;
+}
+
+/* ============================================================
+   THEME TOGGLE (يبقى في الشمال بسبب RTL)
+   ============================================================ */
+.theme-toggle {
+  position: fixed;
+  top: 1.25rem;
+  left: 1.5rem;
+  right: auto;
+  z-index: 1000;
+  background: var(--toggle-bg);
+  border: 1px solid var(--border2);
+  border-radius: 100px;
+  padding: 0.45rem 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text2);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: all 0.3s ease;
+  user-select: none;
+}
+.theme-toggle:hover {
+  border-color: var(--a);
+  color: var(--a);
+  transform: scale(1.04);
+}
+.toggle-icon { font-size: 1rem; transition: transform 0.4s ease; }
+
+/* ============================================================
+   HERO
+   ============================================================ */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  position: relative;
+  padding: 5rem 2rem 4rem;
+  overflow: hidden;
+}
+
+[data-theme="dark"] .hero {
+  background:
+    radial-gradient(ellipse 70% 50% at 20% 20%, rgba(110,231,247,0.12) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 50% at 80% 80%, rgba(167,139,250,0.12) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 50% 60%, rgba(244,114,182,0.08) 0%, transparent 60%),
+    var(--bg);
+}
+[data-theme="light"] .hero {
+  background:
+    radial-gradient(ellipse 70% 50% at 20% 20%, rgba(110,231,247,0.18) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 50% at 80% 80%, rgba(167,139,250,0.15) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 50% 60%, rgba(244,114,182,0.12) 0%, transparent 60%),
+    var(--bg);
+}
+
+.hero-grid {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(var(--border) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border) 1px, transparent 1px);
+  background-size: 50px 50px;
+  opacity: 0.7;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: 100px;
+  padding: 0.4rem 1.1rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--a);
+  margin-bottom: 1.75rem;
+  position: relative;
+  z-index: 1;
+  animation: fadeUp 0.7s ease both;
+}
+.badge-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--a);
+  animation: pulse 2s infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+.hero h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(2.8rem, 6vw, 5.5rem);
+  font-weight: 800;
+  line-height: 1.1;
+  color: var(--heading);
+  position: relative;
+  z-index: 1;
+  animation: fadeUp 0.85s ease both;
+}
+.hero h1 .gradient-word {
+  background: linear-gradient(135deg, var(--a), var(--c), var(--b));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-sub {
+  font-size: 1.05rem;
+  color: var(--text2);
+  margin-top: 1.25rem;
+  max-width: 520px;
+  position: relative;
+  z-index: 1;
+  animation: fadeUp 1s ease both;
+}
+
+.hero-chips {
+  display: flex; flex-wrap: wrap; gap: 0.5rem;
+  justify-content: center;
+  margin-top: 2rem;
+  position: relative; z-index: 1;
+  animation: fadeUp 1.1s ease both;
+}
+.chip {
+  padding: 0.3rem 0.85rem;
+  border-radius: 100px;
+  font-size: 0.76rem;
+  font-weight: 600;
+  border: 1px solid;
+  transition: transform 0.2s;
+}
+.chip:hover { transform: translateY(-2px); }
+.chip-a { color:var(--a); border-color:rgba(110,231,247,0.35); background:rgba(110,231,247,0.08); }
+.chip-b { color:var(--b); border-color:rgba(244,114,182,0.35); background:rgba(244,114,182,0.08); }
+.chip-c { color:var(--c); border-color:rgba(167,139,250,0.35); background:rgba(167,139,250,0.08); }
+.chip-d { color:var(--d); border-color:rgba(52,211,153,0.35);  background:rgba(52,211,153,0.08); }
+.chip-e { color:var(--e); border-color:rgba(251,146,60,0.35);  background:rgba(251,146,60,0.08); }
+.chip-f { color:var(--f); border-color:rgba(250,204,21,0.35);  background:rgba(250,204,21,0.08); }
+
+.scroll-hint {
+  position: absolute; bottom: 2rem; left: 50%;
+  transform: translateX(-50%);
+  color: var(--text3);
+  font-size: 0.72rem; letter-spacing: 0.12em;
+  text-transform: uppercase;
+  display: flex; flex-direction: column; align-items: center; gap: 0.4rem;
+  animation: bounce 2.5s infinite;
+  z-index: 1;
+}
+@keyframes bounce { 0%,100%{transform:translateX(-50%) translateY(0)} 50%{transform:translateX(-50%) translateY(8px)} }
+@keyframes fadeUp  { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
+
+/* ============================================================
+   LAYOUT (RTL)
+   ============================================================ */
+main { max-width: 1120px; margin: 0 auto; padding: 4rem 2rem; }
+section { margin-bottom: 5.5rem; }
+
+.section-header { display:flex; align-items:center; gap:1rem; margin-bottom:2rem; }
+.sec-num {
+  font-family:'JetBrains Mono',monospace;
+  font-size:0.68rem; font-weight:600;
+  letter-spacing:0.2em; text-transform:uppercase;
+  color: var(--text3); white-space:nowrap;
+}
+.sec-line { flex:1; height:1px; background:linear-gradient(90deg, var(--border2), transparent); }
+
+h2 {
+  font-family:'Playfair Display',serif;
+  font-size: clamp(1.6rem, 3vw, 2.3rem);
+  font-weight: 800;
+  color: var(--heading);
+  margin-bottom: 0.4rem;
+}
+h3 { font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1.05rem; margin-bottom:0.6rem; color:var(--heading); }
+p  { font-size:0.94rem; color:var(--text2); margin-bottom:0.7rem; }
+strong { color:var(--text); font-weight:600; }
+
+/* ============================================================
+   GRADIENT TEXT HELPERS
+   ============================================================ */
+.ga { background:linear-gradient(135deg,var(--a),var(--d)); -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text; }
+.gb { background:linear-gradient(135deg,var(--b),var(--c)); -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text; }
+.gc { background:linear-gradient(135deg,var(--e),var(--b)); -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text; }
+.gd { background:linear-gradient(135deg,var(--c),var(--a)); -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text; }
+
+/* ============================================================
+   CARDS (مع تعديل border لـ RTL)
+   ============================================================ */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 1.6rem;
+  transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
+}
+.card:hover { border-color: var(--border2); transform:translateY(-3px); box-shadow:0 12px 30px var(--shadow); }
+
+.grid2 { display:grid; grid-template-columns:repeat(auto-fit, minmax(300px,1fr)); gap:1rem; }
+.grid3 { display:grid; grid-template-columns:repeat(auto-fit, minmax(240px,1fr)); gap:1rem; }
+.grid4 { display:grid; grid-template-columns:repeat(auto-fit, minmax(210px,1fr)); gap:1rem; }
+
+.bl-a { border-right:3px solid var(--a); } /* تغيير من border-left */
+.bl-b { border-right:3px solid var(--b); }
+.bl-c { border-right:3px solid var(--c); }
+.bl-d { border-right:3px solid var(--d); }
+.bl-e { border-right:3px solid var(--e); }
+.bl-f { border-right:3px solid var(--f); }
+
+.ta { color:var(--a); } .tb { color:var(--b); } .tc { color:var(--c); }
+.td { color:var(--d); } .te { color:var(--e); } .tf { color:var(--f); }
+
+/* ============================================================
+   DEFINITION CARDS
+   ============================================================ */
+.def-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(220px,1fr)); gap:0.75rem; }
+.def-card {
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:1.2rem;
+  position:relative; overflow:hidden;
+  transition:all 0.3s;
+}
+.def-card:hover { transform:translateY(-2px); }
+.def-top { height:2px; position:absolute; top:0; left:0; right:0; }
+.def-term { font-family:'JetBrains Mono',monospace; font-size:0.78rem; font-weight:600; margin-bottom:0.5rem; text-transform:uppercase; letter-spacing:0.05em; }
+.def-desc { font-size:0.87rem; color:var(--text2); }
+
+/* ============================================================
+   MONO / CODE STYLE (يبقى LTR)
+   ============================================================ */
+.mono {
+  font-family: 'JetBrains Mono', monospace;
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+  font-size: 0.85rem;
+  color: var(--a);
+  margin-top: 0.75rem;
+  overflow-x: auto;
+  direction: ltr;
+  text-align: left;
+}
+.mono span.comment { color: var(--text3); }
+.mono span.key { color: var(--b); }
+.mono span.val { color: var(--d); }
+
+/* ============================================================
+   EXAMPLE BOXES
+   ============================================================ */
+.ex {
+  border-radius:14px;
+  padding:1.4rem;
+  border:1px solid;
+  margin-top:1.25rem;
+}
+.ex-a { background:rgba(110,231,247,0.06); border-color:rgba(110,231,247,0.25); }
+.ex-b { background:rgba(244,114,182,0.06); border-color:rgba(244,114,182,0.25); }
+.ex-c { background:rgba(167,139,250,0.06); border-color:rgba(167,139,250,0.25); }
+.ex-d { background:rgba(52,211,153,0.06);  border-color:rgba(52,211,153,0.25); }
+.ex-e { background:rgba(251,146,60,0.06);  border-color:rgba(251,146,60,0.25); }
+.ex-f { background:rgba(250,204,21,0.06);  border-color:rgba(250,204,21,0.25); }
+
+.ex-label {
+  font-size:0.7rem; font-weight:700; letter-spacing:0.15em;
+  text-transform:uppercase; margin-bottom:0.75rem;
+  display:flex; align-items:center; gap:0.5rem;
+}
+.ex-label::before { content:''; display:inline-block; width:6px;height:6px;border-radius:50%;background:currentColor; }
+
+/* ============================================================
+   TIP BOXES
+   ============================================================ */
+.tip {
+  display:flex; gap:1rem; align-items:flex-start;
+  padding:1.1rem 1.25rem;
+  border-radius:12px; margin-top:1rem;
+}
+.tip-green { background:rgba(52,211,153,0.08); border:1px solid rgba(52,211,153,0.25); }
+.tip-blue  { background:rgba(110,231,247,0.08); border:1px solid rgba(110,231,247,0.25); }
+.tip-warn  { background:rgba(251,146,60,0.08);  border:1px solid rgba(251,146,60,0.25); }
+.tip-yellow{ background:rgba(250,204,21,0.08);  border:1px solid rgba(250,204,21,0.25); }
+.tip-icon  { font-size:1.2rem; flex-shrink:0; margin-top:0.1rem; }
+.tip-body h4 { font-size:0.84rem; font-weight:700; margin-bottom:0.25rem; }
+.tip-body p  { font-size:0.86rem; color:var(--text2); margin:0; }
+
+/* ============================================================
+   TABLES (RTL)
+   ============================================================ */
+.tbl { width:100%; border-collapse:collapse; font-size:0.87rem; }
+.tbl th {
+  text-align:right; padding:0.65rem 0.9rem;
+  background:var(--surface2);
+  font-family:'JetBrains Mono',monospace; font-size:0.7rem;
+  letter-spacing:0.08em; text-transform:uppercase; color:var(--text3);
+  border-bottom:1px solid var(--border2);
+}
+.tbl td { padding:0.7rem 0.9rem; border-bottom:1px solid var(--border); color:var(--text); }
+.tbl tr:last-child td { border-bottom:none; }
+.tbl tr:hover td { background:var(--surface2); }
+.tbl-wrap { overflow-x:auto; border-radius:12px; border:1px solid var(--border); }
+
+/* ============================================================
+   VS (COMPARISON) CARDS
+   ============================================================ */
+.vs { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+@media(max-width:640px){.vs{grid-template-columns:1fr;}}
+
+/* ============================================================
+   CIPHER FLOW DIAGRAM (يبقى LTR مع توجيه من اليمين)
+   ============================================================ */
+.flow {
+  display:flex; align-items:center; gap:0; flex-wrap:wrap;
+  margin:1.5rem 0;
+  direction: ltr;
+  text-align: left;
+  justify-content: flex-end; /* يبدأ من اليمين */
+}
+.flow-box {
+  background:var(--surface2);
+  border:1px solid var(--border2);
+  border-radius:10px;
+  padding:0.75rem 1rem;
+  font-size:0.82rem;
+  font-weight:600;
+  color:var(--heading);
+  text-align:center;
+  flex:1; min-width:80px;
+}
+.flow-box.accent { background:rgba(110,231,247,0.12); border-color:rgba(110,231,247,0.4); color:var(--a); }
+.flow-box.accent2{ background:rgba(167,139,250,0.12); border-color:rgba(167,139,250,0.4); color:var(--c); }
+.flow-box.accent3{ background:rgba(52,211,153,0.12);  border-color:rgba(52,211,153,0.4);  color:var(--d); }
+.flow-arrow { font-size:1.2rem; color:var(--text3); padding:0 0.35rem; flex-shrink:0; }
+
+/* ============================================================
+   STEPS
+   ============================================================ */
+.steps { display:flex; flex-direction:column; gap:0.75rem; }
+.step {
+  display:flex; gap:1rem; align-items:flex-start;
+  padding:1rem 1.25rem;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:12px;
+  transition:all 0.3s;
+}
+.step:hover { border-color:var(--border2); }
+.step-num {
+  width:30px; height:30px; border-radius:8px;
+  display:flex; align-items:center; justify-content:center;
+  font-family:'JetBrains Mono',monospace; font-weight:700; font-size:0.8rem;
+  flex-shrink:0; color:#000;
+  background:linear-gradient(135deg, var(--a), var(--c));
+}
+.step-body h4 { font-weight:700; font-size:0.9rem; margin-bottom:0.2rem; }
+.step-body p  { font-size:0.86rem; color:var(--text2); margin:0; }
+
+/* ============================================================
+   ATTACK TABLE BADGES
+   ============================================================ */
+.badge {
+  display:inline-block; padding:0.2rem 0.55rem;
+  border-radius:100px; font-size:0.7rem; font-weight:600;
+  border:1px solid;
+}
+.badge-a { color:var(--a); border-color:rgba(110,231,247,0.4); background:rgba(110,231,247,0.1); }
+.badge-b { color:var(--b); border-color:rgba(244,114,182,0.4); background:rgba(244,114,182,0.1); }
+.badge-c { color:var(--c); border-color:rgba(167,139,250,0.4); background:rgba(167,139,250,0.1); }
+.badge-e { color:var(--e); border-color:rgba(251,146,60,0.4);  background:rgba(251,146,60,0.1); }
+
+/* ============================================================
+   KEY SIZE TABLE HIGHLIGHT
+   ============================================================ */
+.row-highlight td { background:rgba(52,211,153,0.06) !important; }
+.row-warn td { background:rgba(244,114,182,0.06) !important; }
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+footer {
+  text-align:center;
+  padding:3rem 2rem 4rem;
+  position:relative;
+}
+footer::before {
+  content:'';
+  position:absolute; top:0; left:10%; right:10%;
+  height:1px;
+  background:linear-gradient(90deg, transparent, var(--border2), transparent);
+}
+.footer-name {
+  font-family:'Playfair Display',serif;
+  font-size:1rem; font-weight:800;
+  background:linear-gradient(135deg, var(--a), var(--c), var(--b));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.footer-sub { font-size:0.78rem; color:var(--text3); margin-top:0.3rem; }
+
+/* UL RESET مع تعديلات RTL */
+ul { list-style:none; }
+ul li {
+  padding:0.32rem 0; padding-right:1rem;
+  position:relative; font-size:0.9rem; color:var(--text2);
+}
+ul li::before {
+  content:'◂'; position:absolute; right:0;
+  color:var(--c); font-size:0.65rem; top:0.44rem;
+}
+
+/* DIVIDER */
+.divider { width:100%; height:1px; background:linear-gradient(90deg,transparent,var(--border),transparent); margin:4rem 0; }
+
+@media(max-width:600px){
+  .grid4 { grid-template-columns:1fr 1fr; }
+  .flow   { justify-content:center; }
+  .flow-box { min-width:70px; font-size:0.75rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- THEME TOGGLE -->
+<button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+  <span class="toggle-icon" id="toggle-icon">☀️</span>
+  <span id="toggle-label">الوضع النهاري</span>
+</button>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-grid"></div>
+
+  <div class="hero-badge">
+    <span class="badge-dot"></span>
+    الفصل 5 · CYS 401
+  </div>
+
+  <h1>
+    علم<br>
+    <span class="gradient-word">التشفير</span>
+  </h1>
+  <p class="hero-sub">طرق التشفير، الخوارزميات، الهجمات، التجزئة، وبروتوكولات الاتصال الآمنة</p>
+
+  <div class="hero-chips">
+    <span class="chip chip-a">المفاهيم الأساسية</span>
+    <span class="chip chip-b">التشفير التقليدي</span>
+    <span class="chip chip-c">متماثل مقابل غير متماثل</span>
+    <span class="chip chip-d">دوال التجزئة</span>
+    <span class="chip chip-e">تحليل الشفرات</span>
+    <span class="chip chip-f">مبدأ كيرشوف</span>
+  </div>
+
+  <div class="scroll-hint">
+    ↓ انتقل لأسفل
+  </div>
+</div>
+
+<main>
+
+<!-- ============================================================
+     SECTION 1: BASIC CONCEPTS & TERMINOLOGY
+     ============================================================ -->
+<section>
+  <div class="section-header">
+    <span class="sec-num">01</span>
+    <div class="sec-line"></div>
+  </div>
+  <h2 class="ga">المفاهيم الأساسية والمصطلحات</h2>
+  <p>التشفير (من اليونانية: "كتابة سرية") هو علم وفن تحويل الرسائل لجعلها آمنة ومحصنة ضد الهجمات. احفظ هذه التعريفات جيدًا — تظهر في كل اختبار.</p>
+
+  <div class="def-grid" style="margin-top:1.5rem;">
+    <div class="def-card"><div class="def-top" style="background:var(--a)"></div><div class="def-term ta">النص العادي (Plaintext)</div><div class="def-desc">الرسالة الأصلية القابلة للقراءة قبل تطبيق أي تشفير.</div></div>
+    <div class="def-card"><div class="def-top" style="background:var(--b)"></div><div class="def-term tb">النص المشفر (Ciphertext)</div><div class="def-desc">الرسالة المشوشة غير القابلة للقراءة الناتجة بعد التشفير.</div></div>
+    <div class="def-card"><div class="def-top" style="background:var(--c)"></div><div class="def-term tc">الشيفرة (Cipher)</div><div class="def-desc">الخوارزمية المستخدمة لتحويل النص العادي إلى نص مشفر (والعكس).</div></div>
+    <div class="def-card"><div class="def-top" style="background:var(--d)"></div><div class="def-term td">المفتاح (Key)</div><div class="def-desc">المعلومات السرية التي تستخدمها الشيفرة — معروفة فقط للمرسل والمستقبل.</div></div>
+    <div class="def-card"><div class="def-top" style="background:var(--e)"></div><div class="def-term te">التشفير (Encryption)</div><div class="def-desc">تحويل النص العادي → نص مشفر. يسمح لطرفين بالتواصل عبر قناة غير آمنة.</div></div>
+    <div class="def-card"><div class="def-top" style="background:var(--f)"></div><div class="def-term tf">فك التشفير (Decryption)</div><div class="def-desc">تحويل النص المشفر → نص عادي. استرجاع الرسالة الأصلية.</div></div>
+    <div class="def-card"><div class="def-top" style="background:var(--a)"></div><div class="def-term ta">التشفير (Cryptography)</div><div class="def-desc">دراسة مبادئ وطرق التشفير. يمكن أن يحمي <strong>السرية والسلامة</strong> — لكن ليس التوفر.</div></div>
+    <div class="def-card"><div class="def-top" style="background:var(--b)"></div><div class="def-term tb">تحليل الشفرات (Cryptanalysis)</div><div class="def-desc">عملية الحصول على الرسالة الأصلية من النص المشفر <em>بدون</em> المفتاح. تسمى أيضًا "كسر الشيفرة".</div></div>
+    <div class="def-card"><div class="def-top" style="background:var(--c)"></div><div class="def-term tc">علم التعمية (Cryptology)</div><div class="def-desc">المجال الشامل الذي يجمع كل من التشفير وتحليل الشفرات.</div></div>
+  </div>
+
+  <!-- Encryption Flow -->
+  <div class="flow" style="margin-top:1.75rem;">
+    <div class="flow-box accent3">📄 نص عادي</div>
+    <div class="flow-arrow">←</div>
+    <div class="flow-box accent2">🔓 فك التشفير<br><small>+ المفتاح</small></div>
+    <div class="flow-arrow">←</div>
+    <div class="flow-box" style="background:var(--surface2);">📡 قناة غير آمنة<br><small>(نص مشفر)</small></div>
+    <div class="flow-arrow">←</div>
+    <div class="flow-box accent">🔐 تشفير<br><small>+ المفتاح</small></div>
+    <div class="flow-arrow">←</div>
+    <div class="flow-box">📄 نص عادي</div>
+  </div>
+  <p style="text-align:center; font-size:0.8rem; color:var(--text3); margin-top:0.25rem;">(اتجاه القراءة من اليمين لليسار)</p>
+
+  <div class="tip tip-yellow" style="margin-top:0.5rem;">
+    <div class="tip-icon">⚡</div>
+    <div class="tip-body">
+      <h4 class="tf">نصيحة اختبار: ماذا يحمي التشفير؟</h4>
+      <p>التشفير يحمي <strong>السرية (Confidentiality)</strong> (بالتشفير) و<strong>السلامة (Integrity)</strong> (بالتجزئة). <strong>لا</strong> يحمي التوفر (Availability) — هجوم الحرمان من الخدمة (DoS) يمكن أن يعطل خدمة مشفرة.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SECTION 2: KERCKHOFFS'S PRINCIPLE
+     ============================================================ -->
+<section>
+  <div class="section-header">
+    <span class="sec-num">02</span>
+    <div class="sec-line"></div>
+  </div>
+  <h2 class="gb">مبدأ كيرشوف (Kerckhoffs's Principle)</h2>
+  <p>قاعدة أساسية في التشفير تتبعها جميع أنظمة التشفير الحديثة.</p>
+
+  <div class="card bl-f" style="margin-top:1.25rem;">
+    <h3 class="tf">القاعدة الأساسية</h3>
+    <p><strong>يجب أن تكون الخوارزمية آمنة حتى لو عرف الجميع كيف تعمل.</strong> يجب أن يعتمد أمان نظام التشفير <em>فقط</em> على سرية المفتاح — وليس على سرية الخوارزمية.</p>
+    <div class="vs" style="margin-top:1rem;">
+      <div class="ex ex-d">
+        <div class="ex-label td">✅ عام</div>
+        <p style="margin:0;font-size:0.9rem;color:var(--text);"><strong>الخوارزمية</strong> — أي شخص (بما في ذلك المهاجمين) يمكنه معرفتها.</p>
+      </div>
+      <div class="ex ex-b">
+        <div class="ex-label tb">🔒 سري</div>
+        <p style="margin:0;font-size:0.9rem;color:var(--text);">فقط <strong>المفتاح</strong> يبقى سريًا. مقاومة الشيفرة تعتمد كليًا على سرية المفتاح.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="ex ex-a" style="margin-top:1.25rem;">
+    <div class="ex-label ta">📘 مثال واقعي</div>
+    <p style="color:var(--text);font-size:0.9rem;">معيار AES (التشفير المتقدم) <strong>عام</strong> بالكامل — أي شخص يمكنه قراءة الخوارزمية. ما يجعل بياناتك آمنة هو <strong>المفتاح 256 بت</strong> الذي تعرفه أنت فقط. هذا هو مبدأ كيرشوف في التطبيق.</p>
+  </div>
+</section>
+
+<!-- ============================================================
+     SECTION 3: CLASSIFYING CRYPTOGRAPHIC SYSTEMS
+     ============================================================ -->
+<section>
+  <div class="section-header">
+    <span class="sec-num">03</span>
+    <div class="sec-line"></div>
+  </div>
+  <h2 class="gd">تصنيف أنظمة التشفير</h2>
+  <p>تصنف أنظمة التشفير وفق ثلاث أبعاد مستقلة:</p>
+
+  <div class="grid3" style="margin-top:1.5rem;">
+    <div class="card bl-a">
+      <h3 class="ta">🔑 حسب عدد المفاتيح</h3>
+      <ul>
+        <li><strong>نفس المفتاح</strong> للتشفير وفك التشفير → <strong>متماثل (Symmetric)</strong></li>
+        <li><strong>مفاتيح مختلفة</strong> للتشفير وفك التشفير → <strong>غير متماثل (Asymmetric)</strong></li>
+      </ul>
+    </div>
+    <div class="card bl-b">
+      <h3 class="tb">🔄 حسب نوع العملية</h3>
+      <ul>
+        <li><strong>إحلال (Substitution)</strong> — كل عنصر (حرف/بت) يُستبدل بعنصر آخر</li>
+        <li><strong>تبديل (Transposition)</strong> — إعادة ترتيب العناصر، دون استبدال</li>
+      </ul>
+    </div>
+    <div class="card bl-c">
+      <h3 class="tc">📦 حسب معالجة النص العادي</h3>
+      <ul>
+        <li><strong>Block Cipher</strong> — يعالج كتلة واحدة من المدخلات في كل مرة</li>
+        <li><strong>Stream Cipher</strong> — يعالج المدخلات بتًا بتًا</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Cipher Classification Tree -->
+  <div class="ex ex-c" style="margin-top:1.5rem;">
+    <div class="ex-label tc">🌳 شجرة تصنيف الشيفرات (من الشرائح)</div>
+    <div class="mono">
+<span class="comment">الشيفرات</span>
+├── <span class="key">متماثل</span>
+│   ├── تقليدي
+│   │   ├── إحلال
+│   │   ├── تبديل
+│   │   └── مركب
+│   └── حديث
+│       ├── Block Cipher
+│       └── Stream Cipher
+├── <span class="key">غير متماثل</span>
+└── <span class="key">دوال التجزئة</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SECTION 4: CLASSICAL CIPHERS
+     ============================================================ -->
+<section>
+  <div class="section-header">
+    <span class="sec-num">04</span>
+    <div class="sec-line"></div>
+  </div>
+  <h2 class="gc">طرق التشفير التقليدية</h2>
+
+  <!-- Caesar -->
+  <div class="card bl-e" style="margin-top:1.25rem;">
+    <h3 class="te">🏛️ شيفرة قيصر (إحلال)</h3>
+    <p>استخدمها يوليوس قيصر في القرن الأول قبل الميلاد. شيفرة قيصر هي <strong>إزاحة (shift) الحروف بعدد معين من المواضع</strong>. ناتج الإزاحة ينتج عنه الحرف المشفر.</p>
+    <p><strong>الصيغة:</strong> التشفير: <code>E(x) = (x + n) mod 26</code> &nbsp;|&nbsp; فك التشفير: <code>D(x) = (x − n) mod 26</code></p>
+    <div class="ex ex-e">
+      <div class="ex-label te">📘 مثال من الشرائح (n = 14)</div>
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead><tr><th>النوع</th><th>النص</th></tr></thead>
+          <tbody>
+            <tr><td>النص العادي</td><td><strong>"attack at dawn"</strong></td></tr>
+            <tr><td>النص المشفر (إزاحة 14)</td><td><strong>"OHHOQY OH ROKB"</strong></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="margin-top:0.6rem;font-size:0.85rem;color:var(--text2);">E(a) = (1+14) mod 26 = 15 = <strong>"o"</strong> &nbsp; | &nbsp; D(O) = (15−14) mod 26 = 1 = <strong>"a"</strong></p>
+    </div>
+  </div>
+
+  <!-- ROT13 -->
+  <div class="card bl-b" style="margin-top:1rem;">
+    <h3 class="tb">🔁 ROT13 (حالة خاصة من قيصر)</h3>
+    <p>شيفرة إحلال شائعة حيث كل حرف يُستبدل بالحرف الذي يليه ب 13 موضعًا. تطبيق ROT13 مرتين يعيد النص الأصلي. هناك <strong>26! ≈ 4×10²⁶</strong> احتمال ممكن للإحلال الأحادي.</p>
+    <div class="ex ex-b">
+      <div class="ex-label tb">✨ مثال منشأ</div>
+      <p style="color:var(--text);font-size:0.9rem;">النص العادي: <strong>"نحب جامعة الأمير سلطان"</strong> → النص المشفر: <strong>"بحب جامعخ الأيير سطخان"</strong> (كل حرف مُزاح 13 موضعًا)</p>
+    </div>
+  </div>
+
+  <!-- Vigenere -->
+  <div class="card bl-c" style="margin-top:1rem;">
+    <h3 class="tc">🔡 شيفرة فيجنير (إحلال متعدد الأبجديات)</h3>
+    <p>تستخدم <strong>كلمة مفتاحية</strong> تتكرر لتطابق طول النص العادي. كل حرف يُزاح بمقدار الحرف المقابل في الكلمة المفتاحية — مما يجعل تحليل التردد أصعب بكثير من قيصر.</p>
+    <div class="ex ex-c">
+      <div class="ex-label tc">📘 مثال من الشرائح</div>
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead><tr><th>الحقل</th><th>القيمة</th></tr></thead>
+          <tbody>
+            <tr><td>النص العادي</td><td>GEEKSFORGEEKS</td></tr>
+            <tr><td>الكلمة المفتاحية</td><td>AYUSH (تتكرر → AYUSHAYUSHAYU)</td></tr>
+            <tr><td>النص المشفر</td><td><strong>GCYCZFMLYLEIM</strong></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="margin-top:0.5rem;font-size:0.84rem;color:var(--text2);">التشفير: الصفوف = نص عادي، الأعمدة = مفتاح → التقاطع = النص المشفر. فك التشفير: الصفوف = مفتاح، ابحث عن النص المشفر، العمود = النص العادي.</p>
+    </div>
+  </div>
+
+  <!-- One-Time Pad -->
+  <div class="card bl-d" style="margin-top:1rem;">
+    <h3 class="td">📋 لوحة المرة الواحدة (غير قابلة للكسر!)</h3>
+    <p>اخترعت في 1917 بواسطة جوزيف ماوبورن وجيلبرت فيرنام. تستخدم كتلة من <strong>مفاتيح إزاحة عشوائية تمامًا</strong> (k₁, k₂, …, kₙ) — مفتاح لكل حرف — يتم اختيارها بشكل عشوائي منتظم.</p>
+    <p>بما أن كل إزاحة عشوائية، <strong>كل نص مشفر متساوي الاحتمال لأي نص عادي</strong>. هذا يجعلها <em>غير قابلة للكسر على الإطلاق</em> — الشيفرة الوحيدة المثالية نظريًا.</p>
+    <div class="tip tip-warn" style="margin-top:0.75rem;">
+      <div class="tip-icon">⚠️</div>
+      <div class="tip-body">
+        <h4 class="te">لماذا ليست عملية</h4>
+        <p>يجب أن يكون المفتاح بطول الرسالة، عشوائيًا حقًا، لا يُعاد استخدامه أبدًا، ويتم مشاركته بأمان — مما يجعلها غير عملية لمعظم الاستخدامات الواقعية.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Transposition -->
+  <div class="card bl-a" style="margin-top:1rem;">
+    <h3 class="ta">↔️ شيفرة التبديل (Transposition)</h3>
+    <p>بدلاً من استبدال الأحرف، شيفرات التبديل <strong>تعيد ترتيب</strong> مواضع الأحرف دون تغيير الأحرف نفسها. الأحرف تبقى كما هي — فقط ترتيبها يتغير.</p>
+    <div class="ex ex-a">
+      <div class="ex-label ta">✨ مثال منشأ</div>
+      <p style="color:var(--text);font-size:0.9rem;">النص العادي: <strong>HELLO</strong> ← أعيد ترتيبه بنمط مفتاحي → النص المشفر: <strong>LLEHO</strong>. تحليل التردد لن يفيد لأن ترددات الحروف محفوظة.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SECTION 5: SYMMETRIC vs ASYMMETRIC
+     ============================================================ -->
+<section>
+  <div class="section-header">
+    <span class="sec-num">05</span>
+    <div class="sec-line"></div>
+  </div>
+  <h2 class="ga">التشفير المتماثل مقابل غير المتماثل</h2>
+
+  <div class="vs" style="margin-top:1.5rem;">
+    <!-- Symmetric -->
+    <div class="card bl-a">
+      <h3 class="ta">🔐 التشفير المتماثل</h3>
+      <p><strong>مفتاح سري مشترك واحد</strong> يستخدم لكل من التشفير وفك التشفير. يجب أن يكون لدى كل من المرسل والمستقبل نفس المفتاح.</p>
+      <ul>
+        <li><strong>سريع</strong> — أسرع بحوالي <strong>30,000 مرة</strong> من غير المتماثل</li>
+        <li>توزيع المفاتيح هو التحدي الأكبر</li>
+        <li>DK(EK(P)) = P (فك تشفير النص المشفر يعيد النص العادي)</li>
+        <li>يُسمى أيضًا: تشفير المفتاح الخاص، التقليدي، المفتاح السري</li>
+      </ul>
+      <div class="flow" style="margin-top:1rem;gap:0.25rem;">
+        <div class="flow-box accent3" style="font-size:0.75rem;">نص عادي</div>
+        <div class="flow-arrow">←</div>
+        <div class="flow-box accent2" style="font-size:0.75rem;">فك التشفير<br>🗝️ المفتاح المشترك</div>
+        <div class="flow-arrow">←</div>
+        <div class="flow-box accent" style="font-size:0.75rem;">تشفير<br>🗝️ المفتاح المشترك</div>
+        <div class="flow-arrow">←</div>
+        <div class="flow-box" style="font-size:0.75rem;">نص عادي</div>
+      </div>
+    </div>
+    <!-- Asymmetric -->
+    <div class="card bl-b">
+      <h3 class="tb">🔑 التشفير غير المتماثل (بالمفاتيح العامة)</h3>
+      <p><strong>مفتاحان منفصلان</strong>: مفتاح عام (ينشر للجميع) ومفتاح خاص (يُحفظ سريًا). يُستخدم للسرية، التوثيق، أو كلاهما.</p>
+      <ul>
+        <li><strong>المفتاح العام</strong> = يُقفل (يشفر)</li>
+        <li><strong>المفتاح الخاص</strong> = يفتح (يفك التشفير)</li>
+        <li>أبطأ من المتماثل — لكنه يحل مشكلة توزيع المفاتيح</li>
+        <li>يعتمد على دوال الباب الخلفي أحادية الاتجاه (مثل تحليل الأعداد الأولية الكبيرة)</li>
+      </ul>
+      <div class="ex ex-b" style="margin-top:0.75rem;">
+        <div class="ex-label tb">قاعدة رئيسية</div>
+        <p style="color:var(--text);font-size:0.88rem;margin:0;">التشفير بـ <strong>المفتاح العام للمستقبل</strong> → فك التشفير بـ <strong>المفتاح الخاص للمستقبل</strong>. التوقيع بـ <strong>المفتاح الخاص للمرسل</strong> → التحقق بـ <strong>المفتاح العام للمرسل</strong>.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Comparison Table -->
+  <div class="tbl-wrap" style="margin-top:1.5rem;">
+    <table class="tbl">
+      <thead><tr><th>الميزة</th><th>متماثل</th><th>غير متماثل</th></tr></thead>
+      <tbody>
+        <tr><td><strong>المفاتيح</strong></td><td>مفتاح سري مشترك واحد</td><td>مفتاحان: عام + خاص</td></tr>
+        <tr><td><strong>السرعة</strong></td><td class="td">أسرع بـ 30,000 مرة</td><td class="tb">أبطأ بكثير</td></tr>
+        <tr><td><strong>توزيع المفاتيح</strong></td><td class="tb">صعب / مشكلة</td><td class="td">سهل (المفتاح العام منشور)</td></tr>
+        <tr><td><strong>الاستخدامات</strong></td><td>تشفير البيانات الضخمة</td><td>تبادل المفاتيح، التوقيعات الرقمية</td></tr>
+        <tr><td><strong>نصيحة اختبار</strong></td><td colspan="2">مشكلة التشفير المتماثل = <strong>توزيع آمن للمفاتيح</strong> (من اختبار سابق)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Past Exam Q -->
+  <div class="ex ex-e" style="margin-top:1.25rem;">
+    <div class="ex-label te">🎓 سؤال اختبار سابق</div>
+    <p style="color:var(--text);font-size:0.9rem;margin-bottom:0.5rem;"><strong>س: ما هي مشكلة التشفير بالمفتاح المتماثل؟</strong></p>
+    <p style="color:var(--text2);font-size:0.88rem;">أ) إنه أبطأ من التشفير بالمفتاح غير المتماثل<br>ب) معظم الخوارزميات تبقى خاصة<br>ج) عامل العمل ليس دالة لحجم المفتاح<br><strong style="color:var(--d);">د) التوزيع الآمن للمفتاح السري ✅</strong></p>
+  </div>
+
+  <div class="ex ex-a" style="margin-top:1rem;">
+    <div class="ex-label ta">🎓 سؤال اختبار سابق</div>
+    <p style="color:var(--text);font-size:0.9rem;margin-bottom:0.5rem;"><strong>س: في التشفير بالمفاتيح العامة…</strong></p>
+    <p style="color:var(--text2);font-size:0.88rem;">أ) فقط المفتاح الخاص يمكنه التشفير وفقط المفتاح العام يمكنه فك التشفير<br>ب) فقط المفتاح العام يمكنه التشفير وفقط المفتاح الخاص يمكنه فك التشفير<br>ج) المفتاح العام يستخدم للتشفير وفك التشفير<br><strong style="color:var(--d);">د) إذا قام المفتاح العام بالتشفير، فإن المفتاح الخاص فقط يمكنه فك التشفير ✅</strong></p>
+  </div>
+</section>
+
+<!-- ============================================================
+     SECTION 6: HASH FUNCTIONS
+     ============================================================ -->
+<section>
+  <div class="section-header">
+    <span class="sec-num">06</span>
+    <div class="sec-line"></div>
+  </div>
+  <h2 class="gb">دوال التجزئة (Hash Functions)</h2>
+  <p>دالة التجزئة هي دالة رياضية خاصة تؤدي <strong>تشفيرًا أحادي الاتجاه</strong>. بمجرد المعالجة، لا توجد طريقة عملية لاستعادة النص العادي من مخرج التجزئة.</p>
+
+  <div class="grid3" style="margin-top:1.5rem;">
+    <div class="card bl-a">
+      <h3 class="ta">أحادية الاتجاه</h3>
+      <p><strong>لا يمكن عكس</strong> التجزئة لاسترجاع النص العادي الأصلي. النص العادي → التجزئة سهل؛ التجزئة → النص العادي مستحيل عمليًا.</p>
+    </div>
+    <div class="card bl-d">
+      <h3 class="td">مخرج بطول ثابت</h3>
+      <p><strong>ملخص الرسالة</strong> (قيمة التجزئة) له <strong>طول ثابت</strong> بغض النظر عن حجم المدخل. "HELLO" وملف بحجم 10 جيجابايت ينتجان نفس طول التجزئة.</p>
+    </div>
+    <div class="card bl-c">
+      <h3 class="tc">لا يوجد تجزئتان متطابقتان</h3>
+      <p>من الناحية المثالية، <strong>لا توجد طريقة عملية لتوليد نصين عاديين مختلفين ينتجان نفس التجزئة</strong>. عندما يحدث هذا، تُسمى <em>هجمة تصادم (collision attack)</em>.</p>
+    </div>
+  </div>
+
+  <div class="card bl-e" style="margin-top:1rem;">
+    <h3 class="te">الاستخدامات الشائعة للتجزئة</h3>
+    <ul>
+      <li>تخزين <strong>كلمات المرور</strong> في الحاسوب (لا تخزن كلمات المرور كنص عادي أبدًا)</li>
+      <li>ضمان <strong>سلامة الرسالة</strong> (اكتشاف العبث)</li>
+      <li><strong>رمز مصادقة الرسالة (MAC)</strong> — تجزئة + مفتاح سري للتحقق من السلامة والصحة</li>
+      <li>التوقيعات الرقمية (تجزئة الرسالة، ثم توقيع التجزئة)</li>
+    </ul>
+    <div class="tip tip-blue" style="margin-top:0.75rem;">
+      <div class="tip-icon">💡</div>
+      <div class="tip-body">
+        <h4 class="ta">لماذا MAC؟</h4>
+        <p>دوال التجزئة عامة — أي شخص يمكنه تشغيلها. لذا نحتاج <strong>مفتاحًا سريًا</strong> مدمجًا مع التجزئة لإنشاء MAC، لإثبات من أرسل الرسالة وأنها لم تُعبث.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SHA -->
+  <h3 style="margin-top:2rem;margin-bottom:1rem;" class="tc">🔐 SHA — خوارزمية التجزئة الآمنة</h3>
+  <p style="margin-bottom:1rem;">طورتها NSA ووافقت عليها NIST كمعيار فيدرالي.</p>
+  <div class="tbl-wrap">
+    <table class="tbl">
+      <thead><tr><th>الإصدار</th><th>السنة</th><th>حجم المخرج</th><th>الحالة</th></tr></thead>
+      <tbody>
+        <tr class="row-warn"><td><strong>SHA-1</strong></td><td>1993</td><td>160 بت</td><td class="tb">⚠️ عرضة لهجمات التصادم — تجنب</td></tr>
+        <tr class="row-highlight"><td><strong>SHA-2</strong></td><td>2002</td><td>SHA-256 أو SHA-512</td><td class="td">✅ أكثر أمانًا من SHA-1</td></tr>
+        <tr class="row-highlight"><td><strong>SHA-3</strong></td><td>2015</td><td>224, 256, 384, أو 512 بت</td><td class="td">✅ أحدث معيار من NIST</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- MD -->
+  <h3 style="margin-top:2rem;margin-bottom:1rem;" class="ta">📋 MD — Message Digest</h3>
+  <div class="tbl-wrap">
+    <table class="tbl">
+      <thead><tr><th>الإصدار</th><th>السنة</th><th>المخرج</th><th>ملاحظات</th></tr></thead>
+      <tbody>
+        <tr><td><strong>MD2</strong></td><td>1989</td><td>128 بت</td><td>عرضة للخطر بدون checksum</td></tr>
+        <tr><td><strong>MD4</strong></td><td>1990</td><td>128 بت</td><td>سريع لكنه عرضة للعديد من الهجمات</td></tr>
+        <tr><td><strong>MD5</strong></td><td>1991</td><td>128 بت</td><td>يعتمد على MD4 لكنه أكثر أمانًا؛ أبطأ قليلاً</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="tip tip-warn" style="margin-top:1.25rem;">
+    <div class="tip-icon">⚠️</div>
+    <div class="tip-body">
+      <h4 class="te">هجمة التصادم (Collision Attack)</h4>
+      <p>هجمة التصادم تجد رسالتين مختلفتين تعطيان نفس قيمة التجزئة — فقدان <strong>السلامة</strong>. SHA-1 و MD5 معروفان بأنهما عرضة للخطر. استخدم SHA-256 أو أعلى.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SECTION 7: ATTACKS ON CRYPTOSYSTEMS
+     ============================================================ -->
+<section>
+  <div class="section-header">
+    <span class="sec-num">07</span>
+    <div class="sec-line"></div>
+  </div>
+  <h2 class="gc">الهجمات على أنظمة التشفير</h2>
+  <p>هدف المهاجم هو <strong>استرجاع المفتاح</strong> (وليس الرسائل الفردية فقط)، مما يعرض كل النصوص المشفرة المستقبلية والسابقة للخطر. طريقتان عامتان:</p>
+
+  <div class="vs" style="margin-top:1.25rem;">
+    <div class="card bl-b">
+      <h3 class="tb">١. تحليل الشفرات (Cryptanalysis)</h3>
+      <p>هجمات رياضية/تحليلية تستغل نقاط الضعف في الخوارزمية أو المعلومات المعروفة. يُفترض أن خوارزمية التشفير <strong>معروفة</strong> لجميع الهجمات.</p>
+    </div>
+    <div class="card bl-e">
+      <h3 class="te">٢. القوة الغاشمة (Brute Force)</h3>
+      <p>جرب كل مفتاح ممكن حتى يتم العثور على نص عادي مفهوم. الفعالية تتناسب مع حجم المفتاح — مفاتيح أكبر = وقت هجوم أطول بشكل أسي.</p>
+    </div>
+  </div>
+
+  <!-- Cryptanalysis Types -->
+  <h3 style="margin-top:2rem;margin-bottom:1rem;">أنواع هجمات تحليل الشفرات</h3>
+  <div class="tbl-wrap">
+    <table class="tbl">
+      <thead><tr><th>نوع الهجوم</th><th>ما يعرفه المهاجم</th><th>الهدف</th><th>الصعوبة</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><span class="badge badge-a">نص مشفر فقط</span></td>
+          <td>النص المشفر فقط (C₁, C₂, …). معرفة النص العادي ضئيلة.</td>
+          <td>إيجاد المفتاح K و/أو النصوص العادية</td>
+          <td class="td">الأصعب للمهاجم</td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-c">نص عادي معروف</span></td>
+          <td>بعض أزواج النص العادي-المشفر (P₁,C₁), (P₂,C₂), …</td>
+          <td>إيجاد المفتاح K</td>
+          <td>متوسطة</td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-e">نص عادي مختار</span></td>
+          <td>أزواج نص عادي-مشفر <em>و</em> يمكنه اختيار أي نصوص عادية لتشفيرها</td>
+          <td>إيجاد المفتاح K</td>
+          <td>أسهل للمهاجم</td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-b">نص مشفر مختار</span></td>
+          <td>يمكنه اختيار نصوص مشفرة لفك تشفيرها؛ لديه وصول إلى أوراكل فك التشفير</td>
+          <td>إيجاد المفتاح K</td>
+          <td class="tb">الأسهل للمهاجم</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Brute Force Table -->
+  <h3 style="margin-top:2rem;margin-bottom:1rem;">القوة الغاشمة: حجم المفتاح مقابل الوقت</h3>
+  <div class="tbl-wrap">
+    <table class="tbl">
+      <thead><tr><th>حجم المفتاح</th><th>المفاتيح الممكنة</th><th>الوقت @ 1 فك/μs</th><th>الوقت @ 10⁶ فك/μs</th></tr></thead>
+      <tbody>
+        <tr><td>32 بت</td><td>4.3 × 10⁹</td><td>35.8 دقيقة</td><td>2.15 ملي ثانية</td></tr>
+        <tr class="row-warn"><td><strong>56 بت (DES)</strong></td><td>7.2 × 10¹⁶</td><td>1,142 سنة</td><td class="tb">10.01 ساعة ⚠️ مكسور</td></tr>
+        <tr class="row-highlight"><td><strong>128 بت (AES)</strong></td><td>3.4 × 10³⁸</td><td>5.4 × 10²⁴ سنة</td><td class="td">5.4 × 10¹⁸ سنة ✅</td></tr>
+        <tr class="row-highlight"><td><strong>168 بت (3DES)</strong></td><td>3.7 × 10⁵⁰</td><td>5.9 × 10³⁶ سنة</td><td class="td">5.9 × 10³⁰ سنة ✅</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Frequency Analysis -->
+  <div class="card bl-f" style="margin-top:1.5rem;">
+    <h3 class="tf">📊 تحليل التردد (هجوم على شيفرات الإحلال)</h3>
+    <p>الحروف في اللغات الطبيعية <strong>ليست موزعة بشكل منتظم</strong>. في العربية، حرف 'ا' يظهر بنسبة عالية جدًا، وحرف 'ل' بنسبة عالية أيضًا، إلخ. بتحليل الحروف الأكثر ظهورًا في النص المشفر، يمكن للمهاجم استنتاج نمط الإحلال وكسر الشيفرة.</p>
+    <div class="ex ex-f">
+      <div class="ex-label tf">✨ مثال منشأ</div>
+      <p style="color:var(--text);font-size:0.9rem;">في هجوم نص مشفر فقط على شيفرة قيصر، إذا ظهر الحرف 'X' بشكل متكرر، يخمن المهاجم أن X = E (أكثر حرف شيوعًا في الإنجليزية)، يحسب الإزاحة، ويفك تشفير الرسالة — بدون مفتاح!</p>
+    </div>
+  </div>
+
+  <div class="tip tip-blue" style="margin-top:1rem;">
+    <div class="tip-icon">🛡️</div>
+    <div class="tip-body">
+      <h4 class="ta">لماذا تقاوم فيجنير تحليل التردد</h4>
+      <p>شيفرة فيجنير تستخدم إزاحات مختلفة لكل حرف، لذا نفس الحرف في النص العادي يمكن أن ينتج أحرفًا مختلفة في النص المشفر — مما يخفي أنماط التردد.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SECTION 8: DIGITAL SIGNATURES & SIGNING
+     ============================================================ -->
+<section>
+  <div class="section-header">
+    <span class="sec-num">08</span>
+    <div class="sec-line"></div>
+  </div>
+  <h2 class="ga">التشفير مقابل التوقيعات الرقمية</h2>
+
+  <div class="vs" style="margin-top:1.25rem;">
+    <div class="card bl-a">
+      <h3 class="ta">🔐 التشفير (السرية)</h3>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">١</div>
+          <div class="step-body"><h4>المرسل يشفر</h4><p>باستخدام <strong>المفتاح العام للمستقبل</strong></p></div>
+        </div>
+        <div class="step">
+          <div class="step-num">٢</div>
+          <div class="step-body"><h4>المستقبل يفك التشفير</h4><p>باستخدام <strong>مفتاحه الخاص</strong></p></div>
+        </div>
+      </div>
+    </div>
+    <div class="card bl-c">
+      <h3 class="tc">✍️ التوقيع الرقمي (التوثيق)</h3>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">١</div>
+          <div class="step-body"><h4>الموقع يوقع</h4><p>باستخدام <strong>مفتاحه الخاص</strong></p></div>
+        </div>
+        <div class="step">
+          <div class="step-num">٢</div>
+          <div class="step-body"><h4>أي شخص يتحقق</h4><p>باستخدام <strong>المفتاح العام للمرسل</strong></p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Past Exam Q on signatures -->
+  <div class="ex ex-c" style="margin-top:1.25rem;">
+    <div class="ex-label tc">🎓 سؤال اختبار سابق</div>
+    <p style="color:var(--text);font-size:0.9rem;margin-bottom:0.5rem;"><strong>س: ما الذي يُستخدم لإنشاء توقيع رقمي؟</strong></p>
+    <p style="color:var(--text2);font-size:0.88rem;">أ) المفتاح العام للمستقبل<br>ب) المفتاح العام للمرسل<br><strong style="color:var(--d);">ج) المفتاح الخاص للمرسل ✅</strong><br>د) المفتاح العام للمستقبل</p>
+    <p style="margin-top:0.6rem;font-size:0.84rem;color:var(--text2);">قاعدة للحفظ: <strong>وقع بمفتاحك الخاص، تحقق بمفتاحك العام.</strong></p>
+  </div>
+</section>
+
+<!-- ============================================================
+     SECTION 9: BLOCK CIPHERS
+     ============================================================ -->
+<section>
+  <div class="section-header">
+    <span class="sec-num">09</span>
+    <div class="sec-line"></div>
+  </div>
+  <h2 class="gd">Block Ciphers والانتشار والتعتيم</h2>
+
+  <div class="grid2" style="margin-top:1.25rem;">
+    <div class="card bl-a">
+      <h3 class="ta">🔀 الانتشار (Diffusion)</h3>
+      <p><strong>ينشر</strong> تأثير حرف واحد من النص العادي على العديد من أحرف النص المشفر. يجعل من الصعب رؤية العلاقة بين بنية النص العادي وبنية النص المشفر.</p>
+      <div class="ex ex-a" style="margin-top:0.75rem;">
+        <div class="ex-label ta">🎓 من اختبار سابق</div>
+        <p style="color:var(--text);font-size:0.88rem;margin:0;"><strong>س: في Block Cipher، الانتشار…</strong> → <strong style="color:var(--d);">ب) ينشر تأثير حرف النص العادي على العديد من أحرف النص المشفر ✅</strong></p>
+      </div>
+    </div>
+    <div class="card bl-b">
+      <h3 class="tb">🎭 التعتيم (Confusion)</h3>
+      <p><strong>يخفي</strong> العلاقة بين النص المشفر والنص العادي (والمفتاح). يُنفذ عادة باستخدام <strong>S-boxes غير خطية</strong> (صناديق إحلال).</p>
+    </div>
+  </div>
+
+  <div class="tip tip-green" style="margin-top:1rem;">
+    <div class="tip-icon">🧠</div>
+    <div class="tip-body">
+      <h4 class="td">حيلة للحفظ: الانتشار مقابل التعتيم</h4>
+      <p><strong>الانتشار</strong> = <em>ينتشر</em> (حرف واحد يؤثر على عدة أحرف). <strong>التعتيم</strong> = <em>يخفي</em> (إخفاء العلاقة). كلاهما مطلوب لـ Block Cipher آمن.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SECTION 10: TIPS & TRICKS
+     ============================================================ -->
+<section>
+  <div class="section-header">
+    <span class="sec-num">10</span>
+    <div class="sec-line"></div>
+  </div>
+  <h2 class="gb">نصائح وحيل للاختبارات 🎯</h2>
+
+  <div class="grid2" style="margin-top:1.5rem;">
+    <div class="tip tip-green">
+      <div class="tip-icon">✅</div>
+      <div class="tip-body">
+        <h4 class="td">التشفير يحمي جزئيًا من CIA</h4>
+        <p>التشفير يحمي <strong>السرية</strong> (بالتشفير) و<strong>السلامة</strong> (بالتجزئة). <strong>لا</strong> يحمي التوفر.</p>
+      </div>
+    </div>
+    <div class="tip tip-blue">
+      <div class="tip-icon">🔑</div>
+      <div class="tip-body">
+        <h4 class="ta">قواعد اتجاه المفاتيح</h4>
+        <p>التشفير للخصوصية → <strong>المفتاح العام للمستقبل</strong>. التوقيع للتوثيق → <strong>المفتاح الخاص للمرسل</strong>. التحقق من التوقيع → <strong>المفتاح العام للمرسل</strong>.</p>
+      </div>
+    </div>
+    <div class="tip tip-warn">
+      <div class="tip-icon">⚡</div>
+      <div class="tip-body">
+        <h4 class="te">السرعة</h4>
+        <p>التشفير المتماثل أسرع <strong>بحوالي 30,000 مرة</strong> من غير المتماثل. إذا ذكرت السرعة في سؤال، فكر في المتماثل.</p>
+      </div>
+    </div>
+    <div class="tip tip-yellow">
+      <div class="tip-icon">🛡️</div>
+      <div class="tip-body">
+        <h4 class="tf">لوحة المرة الواحدة = غير قابلة للكسر</h4>
+        <p>الشيفرة الوحيدة <em>نظريًا</em> غير القابلة للكسر. لكن يجب أن يكون المفتاح بطول الرسالة ولا يُعاد استخدامه أبدًا — مما يجعلها غير عملية.</p>
+      </div>
+    </div>
+    <div class="tip tip-green">
+      <div class="tip-icon">📊</div>
+      <div class="tip-body">
+        <h4 class="td">ترتيب إصدارات SHA</h4>
+        <p>SHA-1 (160 بت، مكسور) ← SHA-2 (256/512، آمن) ← SHA-3 (2015، الأحدث). لكلمات المرور، <strong>لا تستخدم SHA-1 أو MD5 أبدًا</strong>.</p>
+      </div>
+    </div>
+    <div class="tip tip-blue">
+      <div class="tip-icon">🎯</div>
+      <div class="tip-body">
+        <h4 class="ta">مبدأ كيرشوف في سطر واحد</h4>
+        <p><strong>الخوارزمية عامة، المفتاح سري.</strong> الأمان يأتي من سرية المفتاح، وليس سرية الخوارزمية. تستخدمه AES, RSA, وكل الأنظمة الحديثة.</p>
+      </div>
+    </div>
+    <div class="tip tip-warn">
+      <div class="tip-icon">🔓</div>
+      <div class="tip-body">
+        <h4 class="te">مشكلة المتماثل = توزيع المفاتيح</h4>
+        <p>الضعف التقليدي للتشفير المتماثل هو <strong>كيف تشارك المفتاح بأمان؟</strong> التشفير غير المتماثل يحل هذه المشكلة بالمفاتيح العامة.</p>
+      </div>
+    </div>
+    <div class="tip tip-yellow">
+      <div class="tip-icon">🌊</div>
+      <div class="tip-body">
+        <h4 class="tf">Block vs Stream</h4>
+        <p><strong>Block cipher</strong> = يعالج قطعًا ثابتة الحجم. <strong>Stream cipher</strong> = يعالج بتًا/بايتًا واحدًا في كل مرة. Block أكثر شيوعًا (AES هو Block cipher).</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SECTION 11: QUICK REFERENCE
+     ============================================================ -->
+<section>
+  <div class="section-header">
+    <span class="sec-num">11</span>
+    <div class="sec-line"></div>
+  </div>
+  <h2 class="gc">مرجع سريع — كل شيء في لمحة</h2>
+
+  <div class="ex ex-c" style="margin-top:1.5rem;">
+    <div class="ex-label tc">📌 ورقة الغش الشاملة للفصل ٥</div>
+    <div class="tbl-wrap" style="margin-top:0.75rem;">
+      <table class="tbl">
+        <thead><tr><th>الموضوع</th><th>النقطة الرئيسية</th></tr></thead>
+        <tbody>
+          <tr><td><strong>التشفير يحمي</strong></td><td>السرية + السلامة فقط (وليس التوفر)</td></tr>
+          <tr><td><strong>مبدأ كيرشوف</strong></td><td>الخوارزمية = عامة؛ المفتاح = سري</td></tr>
+          <tr><td><strong>متماثل</strong></td><td>مفتاح مشترك واحد؛ سريع (أسرع بـ 30,000 مرة)؛ توزيع المفاتيح = مشكلة</td></tr>
+          <tr><td><strong>غير متماثل</strong></td><td>مفاتيح عام + خاص؛ أبطأ؛ يحل مشكلة توزيع المفاتيح</td></tr>
+          <tr><td><strong>التشفير للخصوصية</strong></td><td>استخدم المفتاح العام للمستقبل</td></tr>
+          <tr><td><strong>التوقيع (رقمي)</strong></td><td>استخدم المفتاح الخاص للمرسل</td></tr>
+          <tr><td><strong>التحقق من التوقيع</strong></td><td>استخدم المفتاح العام للمرسل</td></tr>
+          <tr><td><strong>شيفرة قيصر</strong></td><td>E(x) = (x+n) mod 26; شيفرة إزاحة; يمكن كسرها بتحليل التردد</td></tr>
+          <tr><td><strong>شيفرة فيجنير</strong></td><td>إحلال متعدد الأبجديات؛ كلمة مفتاحية متكررة; تقاوم تحليل التردد</td></tr>
+          <tr><td><strong>لوحة المرة الواحدة</strong></td><td>غير قابلة للكسر؛ مفتاح = عشوائي، بطول الرسالة، لا يُعاد استخدامه أبدًا</td></tr>
+          <tr><td><strong>التجزئة = أحادية الاتجاه</strong></td><td>لا يمكن عكسها; مخرج بطول ثابت; تستخدم لكلمات المرور + السلامة</td></tr>
+          <tr><td><strong>SHA-1</strong></td><td>160 بت; عرضة لهجمات التصادم — تجنب</td></tr>
+          <tr><td><strong>SHA-2/3</strong></td><td>SHA-256/512; المعيار الحالي</td></tr>
+          <tr><td><strong>هجمة التصادم</strong></td><td>مدخلان مختلفان → نفس التجزئة → فقدان السلامة</td></tr>
+          <tr><td><strong>MAC</strong></td><td>تجزئة + مفتاح سري = يثبت السلامة والتوثيق</td></tr>
+          <tr><td><strong>هجوم نص مشفر فقط</strong></td><td>الأصعب; المهاجم لديه نص مشفر فقط</td></tr>
+          <tr><td><strong>هجوم نص مشفر مختار</strong></td><td>الأسهل للمهاجم; لديه وصول إلى أوراكل فك التشفير</td></tr>
+          <tr><td><strong>الانتشار</strong></td><td>ينشر تأثير حرف نص عادي واحد على عدة أحرف نص مشفر</td></tr>
+          <tr><td><strong>التعتيم</strong></td><td>يخفي العلاقة بين النص العادي والمشفر; يستخدم S-boxes</td></tr>
+          <tr><td><strong>القوة الغاشمة</strong></td><td>جرب كل المفاتيح; AES 128 بت = غير قابل للكسر عمليًا</td></tr>
+          <tr><td><strong>تحليل التردد</strong></td><td>يكسر شيفرات الإحلال باستخدام أنماط تردد الحروف</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="footer-name">شوق العمران</div>
+  <div class="footer-sub">CYS 401 · الفصل 5: التشفير · دليل دراسة</div>
+</footer>
+
+<script>
+// Auto-detect system preference on load
+(function() {
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const theme = prefersDark ? 'dark' : 'light';
+  document.documentElement.setAttribute('data-theme', theme);
+  updateToggle(theme);
+})();
+
+// Listen for system changes
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+  const theme = e.matches ? 'dark' : 'light';
+  document.documentElement.setAttribute('data-theme', theme);
+  updateToggle(theme);
+});
+
+function toggleTheme() {
+  const current = document.documentElement.getAttribute('data-theme');
+  const next = current === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  updateToggle(next);
+}
+
+function updateToggle(theme) {
+  const icon  = document.getElementById('toggle-icon');
+  const label = document.getElementById('toggle-label');
+  if (theme === 'dark') {
+    icon.textContent  = '☀️';
+    label.textContent = 'الوضع النهاري';
+  } else {
+    icon.textContent  = '🌙';
+    label.textContent = 'الوضع الليلي';
+  }
+}
+</script>
+</body>
+</html>
