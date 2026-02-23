@@ -1,0 +1,1483 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PSU · SE-CYS Degree Planner</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Nunito+Sans:wght@400;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg: #f7f5ff;
+            --bg2: #eeeaf8;
+            --col-lock: #f0eeff;
+            --col-avail: #e8f6ff;
+            --col-done: #e8faf2;
+
+            --lock-hdr: #c4b5fd;
+            --avail-hdr: #7dd3fc;
+            --done-hdr: #6ee7b7;
+
+            --lock-ink: #6d28d9;
+            --avail-ink: #0369a1;
+            --done-ink: #065f46;
+
+            --card-lock: #ffffff;
+            --card-avail: #ffffff;
+            --card-done: #ffffff;
+
+            --ink: #1e1533;
+            --ink2: #6b7280;
+            --ink3: #9ca3af;
+
+            --red: #f87171;
+            --yellow: #fbbf24;
+            --green: #34d399;
+            --blue: #60a5fa;
+            --purple: #a78bfa;
+            --pink: #f472b6;
+            --orange: #fb923c;
+
+            --radius: 16px;
+            --card-radius: 12px;
+            --font: 'Nunito', sans-serif;
+            --font2: 'Nunito Sans', sans-serif;
+
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.07);
+            --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.10);
+            --shadow-card: 0 2px 0px 0px rgba(0, 0, 0, 0.12);
+        }
+
+        .dark {
+            --bg: #130f1e;
+            --bg2: #1c1730;
+            --col-lock: #1e1838;
+            --col-avail: #0d1f35;
+            --col-done: #0a1f18;
+
+            --lock-hdr: #4c1d95;
+            --avail-hdr: #075985;
+            --done-hdr: #064e3b;
+
+            --lock-ink: #c4b5fd;
+            --avail-ink: #7dd3fc;
+            --done-ink: #6ee7b7;
+
+            --card-lock: #221c3c;
+            --card-avail: #0f2440;
+            --card-done: #0a2a1e;
+
+            --ink: #f0ecff;
+            --ink2: #9ca3af;
+            --ink3: #4b5563;
+
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+            --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
+            --shadow-card: 0 2px 0px 0px rgba(0, 0, 0, 0.4);
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--ink);
+            font-family: var(--font);
+            min-height: 100vh;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        /* ── CONFETTI DOTS background ── */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            background-image:
+                radial-gradient(circle, var(--purple) 1px, transparent 1px),
+                radial-gradient(circle, var(--blue) 1px, transparent 1px),
+                radial-gradient(circle, var(--green) 1px, transparent 1px),
+                radial-gradient(circle, var(--yellow) 1px, transparent 1px),
+                radial-gradient(circle, var(--pink) 1px, transparent 1px);
+            background-size: 120px 120px, 200px 200px, 160px 160px, 140px 140px, 180px 180px;
+            background-position: 10px 10px, 60px 80px, 30px 140px, 100px 40px, 80px 160px;
+            opacity: 0.18;
+        }
+
+        .app {
+            position: relative;
+            z-index: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 24px 20px 80px;
+        }
+
+        /* ── TOP BAR ── */
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 28px;
+            flex-wrap: wrap;
+        }
+
+        .logo {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .logo-tag {
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 2.5px;
+            text-transform: uppercase;
+            color: var(--ink2);
+        }
+
+        .logo-title {
+            font-size: clamp(22px, 4vw, 34px);
+            font-weight: 900;
+            line-height: 1;
+            color: var(--ink);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo-pill {
+            display: inline-block;
+            background: linear-gradient(135deg, #a78bfa, #60a5fa);
+            color: #fff;
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            padding: 3px 10px;
+            border-radius: 100px;
+            vertical-align: middle;
+            margin-left: 4px;
+        }
+
+        .topbar-right {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        /* ── CHUNKY BUTTONS ── */
+        .btn {
+            font-family: var(--font);
+            font-weight: 800;
+            font-size: 12px;
+            padding: 9px 16px;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.12s, box-shadow 0.12s;
+            white-space: nowrap;
+            box-shadow: 0 3px 0 rgba(0, 0, 0, 0.2);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 0 rgba(0, 0, 0, 0.2);
+        }
+
+        .btn:active {
+            transform: translateY(1px);
+            box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-purple {
+            background: #a78bfa;
+            color: #fff;
+        }
+
+        .btn-green {
+            background: #34d399;
+            color: #fff;
+        }
+
+        .btn-red {
+            background: #f87171;
+            color: #fff;
+        }
+
+        .btn-ghost {
+            background: var(--bg2);
+            color: var(--ink);
+            box-shadow: 0 3px 0 var(--ink3);
+        }
+
+        /* ── PROGRESS HERO ── */
+        .hero {
+            background: linear-gradient(135deg, #a78bfa 0%, #60a5fa 50%, #34d399 100%);
+            border-radius: var(--radius);
+            padding: 28px 32px;
+            margin-bottom: 24px;
+            color: #fff;
+            box-shadow: var(--shadow-md);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::after {
+            content: '🎓';
+            position: absolute;
+            right: 24px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 80px;
+            opacity: 0.18;
+            pointer-events: none;
+        }
+
+        .hero-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .hero-val {
+            font-size: 36px;
+            font-weight: 900;
+            line-height: 1;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .hero-label {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            opacity: 0.8;
+            margin-top: 4px;
+        }
+
+        .hero-bar-wrap {
+            background: rgba(255, 255, 255, 0.25);
+            border-radius: 100px;
+            height: 12px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .hero-bar-fill {
+            height: 100%;
+            background: #fff;
+            border-radius: 100px;
+            transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .hero-bar-fill::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.4) 50%, transparent 100%);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% {
+                transform: translateX(-100%);
+            }
+
+            100% {
+                transform: translateX(100%);
+            }
+        }
+
+        .hero-pct {
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translate(0, -50%);
+            font-size: 11px;
+            font-weight: 800;
+            color: rgba(255, 255, 255, 0.9);
+            padding-right: 4px;
+        }
+
+        /* ── CHOICE GROUPS ── */
+        .choice-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .choice-card {
+            background: var(--bg2);
+            border-radius: var(--radius);
+            padding: 16px 18px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .choice-card-head {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .choice-badge {
+            font-size: 10px;
+            font-weight: 900;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            padding: 3px 10px;
+            border-radius: 100px;
+            background: linear-gradient(135deg, #a78bfa, #60a5fa);
+            color: #fff;
+        }
+
+        .choice-card-head span:last-child {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--ink2);
+        }
+
+        .choice-opts {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .choice-opt {
+            font-family: var(--font);
+            font-size: 12px;
+            font-weight: 800;
+            padding: 7px 14px;
+            border-radius: 10px;
+            border: 2.5px solid transparent;
+            background: var(--bg);
+            color: var(--ink2);
+            cursor: pointer;
+            transition: all 0.15s;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .choice-opt.selected {
+            background: linear-gradient(135deg, #a78bfa22, #60a5fa22);
+            border-color: #a78bfa;
+            color: var(--lock-ink);
+        }
+
+        .choice-opt:not(.selected):hover {
+            border-color: var(--ink3);
+            color: var(--ink);
+        }
+
+        /* ── CONTROLS ── */
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .search-wrap {
+            flex: 1;
+            min-width: 200px;
+            position: relative;
+        }
+
+        .search-wrap input {
+            width: 100%;
+            padding: 10px 14px 10px 38px;
+            border-radius: 12px;
+            border: 2.5px solid var(--bg2);
+            background: var(--bg2);
+            color: var(--ink);
+            font-family: var(--font);
+            font-size: 13px;
+            font-weight: 600;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .search-wrap input:focus {
+            border-color: #a78bfa;
+        }
+
+        .search-wrap input::placeholder {
+            color: var(--ink3);
+            font-weight: 600;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 16px;
+            color: var(--ink3);
+        }
+
+        .level-filter {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .lf-btn {
+            font-family: var(--font);
+            font-size: 11px;
+            font-weight: 800;
+            padding: 7px 12px;
+            border-radius: 10px;
+            border: 2px solid transparent;
+            background: var(--bg2);
+            color: var(--ink2);
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .lf-btn.active {
+            background: var(--ink);
+            color: var(--bg);
+        }
+
+        .lf-btn:not(.active):hover {
+            border-color: var(--ink3);
+        }
+
+        /* ── KANBAN BOARD ── */
+        .board {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 16px;
+            align-items: start;
+        }
+
+        @media (max-width: 900px) {
+            .board {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 580px) {
+            .board {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ── COLUMN ── */
+        .col {
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .col-locked {
+            background: var(--col-lock);
+        }
+
+        .col-avail {
+            background: var(--col-avail);
+        }
+
+        .col-done {
+            background: var(--col-done);
+        }
+
+        .col-header {
+            padding: 16px 18px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .col-locked .col-header {
+            background: var(--lock-hdr);
+        }
+
+        .col-avail .col-header {
+            background: var(--avail-hdr);
+        }
+
+        .col-done .col-header {
+            background: var(--done-hdr);
+        }
+
+        .col-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .col-icon {
+            font-size: 20px;
+        }
+
+        .col-label {
+            font-size: 14px;
+            font-weight: 900;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .col-locked .col-label {
+            color: var(--lock-ink);
+        }
+
+        .col-avail .col-label {
+            color: var(--avail-ink);
+        }
+
+        .col-done .col-label {
+            color: var(--done-ink);
+        }
+
+        .col-count {
+            font-size: 12px;
+            font-weight: 800;
+            padding: 3px 10px;
+            border-radius: 100px;
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        .col-locked .col-count {
+            color: var(--lock-ink);
+        }
+
+        .col-avail .col-count {
+            color: var(--avail-ink);
+        }
+
+        .col-done .col-count {
+            color: var(--done-ink);
+        }
+
+        .col-body {
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        /* ── COURSE CARD ── */
+        .c-card {
+            background: var(--card-lock);
+            border-radius: var(--card-radius);
+            padding: 12px 14px;
+            cursor: pointer;
+            transition: transform 0.15s, box-shadow 0.15s;
+            box-shadow: var(--shadow-card);
+            position: relative;
+            overflow: hidden;
+            border: 2px solid transparent;
+            user-select: none;
+        }
+
+        .col-avail .c-card {
+            background: var(--card-avail);
+        }
+
+        .col-done .c-card {
+            background: var(--card-done);
+        }
+
+        .c-card:hover:not(.is-locked) {
+            transform: translateY(-3px) scale(1.01);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.13);
+        }
+
+        .c-card:active:not(.is-locked) {
+            transform: translateY(0) scale(0.99);
+        }
+
+        .c-card.is-locked {
+            cursor: not-allowed;
+            opacity: 0.65;
+        }
+
+        .c-card.is-done {
+            border-color: var(--done-hdr);
+        }
+
+        .c-card.highlighted {
+            border-color: var(--yellow) !important;
+            background: rgba(251, 191, 36, 0.08) !important;
+        }
+
+        /* Completion ribbon */
+        .c-card.is-done::after {
+            content: '✓';
+            position: absolute;
+            top: 8px;
+            right: 10px;
+            font-size: 18px;
+            font-weight: 900;
+            color: var(--done-ink);
+            opacity: 0.35;
+        }
+
+        .c-top {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 8px;
+            margin-bottom: 6px;
+        }
+
+        .c-code {
+            font-size: 11px;
+            font-weight: 900;
+            letter-spacing: 1px;
+            padding: 3px 8px;
+            border-radius: 6px;
+            display: inline-block;
+        }
+
+        .col-locked .c-code {
+            background: rgba(167, 139, 250, 0.18);
+            color: var(--lock-ink);
+        }
+
+        .col-avail .c-code {
+            background: rgba(96, 165, 250, 0.18);
+            color: var(--avail-ink);
+        }
+
+        .col-done .c-code {
+            background: rgba(52, 211, 153, 0.18);
+            color: var(--done-ink);
+        }
+
+        .c-hrs {
+            font-size: 11px;
+            font-weight: 800;
+            color: var(--ink2);
+            white-space: nowrap;
+            padding-top: 3px;
+        }
+
+        .c-name {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--ink);
+            line-height: 1.35;
+            margin-bottom: 8px;
+        }
+
+        .c-prereqs {
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+        }
+
+        .pr-chip {
+            font-size: 9px;
+            font-weight: 800;
+            padding: 2px 7px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.12s;
+            letter-spacing: 0.5px;
+        }
+
+        .pr-chip.met {
+            background: rgba(52, 211, 153, 0.2);
+            color: #059669;
+        }
+
+        .pr-chip.unmet {
+            background: rgba(248, 113, 113, 0.2);
+            color: #dc2626;
+        }
+
+        .pr-chip:hover {
+            filter: brightness(0.85);
+            transform: scale(1.05);
+        }
+
+        /* ── GROUP BADGE on card ── */
+        .c-group-tag {
+            font-size: 9px;
+            font-weight: 900;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            padding: 2px 7px;
+            border-radius: 5px;
+            background: linear-gradient(135deg, #a78bfa33, #60a5fa33);
+            color: var(--lock-ink);
+            margin-left: 4px;
+        }
+
+        /* ── LEVEL TAG on card ── */
+        .c-level-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            margin-top: 5px;
+        }
+
+        .c-bottom {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 6px;
+            margin-top: 6px;
+        }
+
+        .c-level-label {
+            font-size: 10px;
+            font-weight: 800;
+            color: var(--ink3);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Column empty state */
+        .col-empty {
+            text-align: center;
+            padding: 28px 16px;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--ink3);
+        }
+
+        .col-empty .col-empty-icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        /* ── CELEBRATION overlay ── */
+        .celebrate {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            pointer-events: none;
+            z-index: 9998;
+            display: flex;
+            justify-content: center;
+        }
+
+        .confetti-piece {
+            position: absolute;
+            top: -10px;
+            width: 8px;
+            height: 12px;
+            border-radius: 2px;
+            animation: confettiFall 1s ease-in forwards;
+        }
+
+        @keyframes confettiFall {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        /* ── TOAST ── */
+        #toast-root {
+            position: fixed;
+            bottom: 28px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .toast {
+            font-family: var(--font);
+            font-size: 13px;
+            font-weight: 800;
+            padding: 12px 22px;
+            border-radius: 100px;
+            color: #fff;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+            animation: toastIn 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            white-space: nowrap;
+        }
+
+        .toast.ok {
+            background: linear-gradient(135deg, #34d399, #059669);
+        }
+
+        .toast.err {
+            background: linear-gradient(135deg, #f87171, #dc2626);
+        }
+
+        .toast.inf {
+            background: linear-gradient(135deg, #a78bfa, #60a5fa);
+        }
+
+        @keyframes toastIn {
+            from {
+                transform: translateY(12px) scale(0.9);
+                opacity: 0;
+            }
+
+            to {
+                transform: none;
+                opacity: 1;
+            }
+        }
+
+        /* ── MODAL ── */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.55);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(6px);
+            animation: fadeIn 0.15s;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .modal {
+            background: var(--bg);
+            border-radius: 20px;
+            padding: 0;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.25);
+            animation: modalPop 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+        }
+
+        @keyframes modalPop {
+            from {
+                transform: scale(0.93) translateY(12px);
+                opacity: 0;
+            }
+
+            to {
+                transform: none;
+                opacity: 1;
+            }
+        }
+
+        .modal-head {
+            background: linear-gradient(135deg, #a78bfa, #60a5fa);
+            padding: 20px 24px 16px;
+            color: #fff;
+        }
+
+        .modal-head h3 {
+            font-size: 18px;
+            font-weight: 900;
+            margin-bottom: 2px;
+        }
+
+        .modal-head p {
+            font-size: 12px;
+            opacity: 0.8;
+            font-weight: 600;
+        }
+
+        .modal-body {
+            padding: 20px 24px;
+        }
+
+        .modal-body p {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--ink2);
+            margin-bottom: 12px;
+            line-height: 1.5;
+        }
+
+        .modal-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            margin-bottom: 20px;
+        }
+
+        .modal-list li {
+            font-size: 12px;
+            font-weight: 800;
+            padding: 6px 12px;
+            background: rgba(248, 113, 113, 0.1);
+            border-radius: 8px;
+            color: #dc2626;
+            border-left: 3px solid #f87171;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+        }
+
+        /* Level dot colors */
+        .lvl1 {
+            background: #f472b6;
+        }
+
+        .lvl2 {
+            background: #fb923c;
+        }
+
+        .lvl3 {
+            background: #fbbf24;
+        }
+
+        .lvl4 {
+            background: #34d399;
+        }
+
+        .lvl5 {
+            background: #60a5fa;
+        }
+
+        .lvl6 {
+            background: #a78bfa;
+        }
+
+        .lvl7 {
+            background: #f87171;
+        }
+
+        .lvl8 {
+            background: #6ee7b7;
+        }
+
+        @media (max-width: 640px) {
+            .choice-row {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-val {
+                font-size: 28px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="app">
+
+        <!-- TOP BAR -->
+        <div class="topbar">
+            <div class="logo">
+                <span class="logo-tag">Prince Sultan University · CCIS</span>
+                <div class="logo-title">
+                    My Degree Plan
+                    <span class="logo-pill">SE-CYS</span>
+                </div>
+            </div>
+            <div class="topbar-right">
+                <button class="btn btn-green" id="mark13Btn">⚡ L1–3 Done</button>
+                <button class="btn btn-purple" id="markAllBtn">🎉 All Done</button>
+                <button class="btn btn-red" id="resetBtn">↺ Reset</button>
+                <button class="btn btn-ghost" id="themeBtn">◐</button>
+            </div>
+        </div>
+
+        <!-- HERO PROGRESS -->
+        <div class="hero">
+            <div class="hero-grid">
+                <div class="hero-stat">
+                    <div class="hero-val" id="heroHours">0</div>
+                    <div class="hero-label">Hours Done</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="hero-val" id="heroTotal">—</div>
+                    <div class="hero-label">Total Hours</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="hero-val" id="heroCourses">0</div>
+                    <div class="hero-label">Courses Done</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="hero-val" id="heroRemain">—</div>
+                    <div class="hero-label">Hours Left</div>
+                </div>
+            </div>
+            <div style="position:relative;">
+                <div class="hero-bar-wrap">
+                    <div class="hero-bar-fill" id="heroBar" style="width:0%"></div>
+                </div>
+                <span class="hero-pct" id="heroPct">0%</span>
+            </div>
+        </div>
+
+        <!-- CHOICE GROUPS -->
+        <div class="choice-row">
+            <div class="choice-card">
+                <div class="choice-card-head">
+                    <span class="choice-badge">GROUP A</span>
+                    <span>Choose your Math elective</span>
+                </div>
+                <div class="choice-opts">
+                    <button class="choice-opt selected" data-group="A" data-val="MATH223">MATH223 · Linear
+                        Algebra</button>
+                    <button class="choice-opt" data-group="A" data-val="CS223">CS223 · Comp. Linear Algebra</button>
+                </div>
+            </div>
+            <div class="choice-card">
+                <div class="choice-card-head">
+                    <span class="choice-badge">GROUP B</span>
+                    <span>Choose your CYS elective</span>
+                </div>
+                <div class="choice-opts">
+                    <button class="choice-opt selected" data-group="B" data-val="CYS406">CYS406 · Data & Network
+                        Sec.</button>
+                    <button class="choice-opt" data-group="B" data-val="CYS404">CYS404 · Cyber-Physical Sys.</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- CONTROLS -->
+        <div class="controls">
+            <div class="search-wrap">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="searchInput" placeholder="Search by code or name…">
+            </div>
+            <div class="level-filter" id="levelFilter">
+                <button class="lf-btn active" data-level="all">All Levels</button>
+            </div>
+        </div>
+
+        <!-- KANBAN BOARD -->
+        <div class="board">
+            <div class="col col-locked">
+                <div class="col-header">
+                    <div class="col-title">
+                        <span class="col-icon">🔒</span>
+                        <span class="col-label">Locked</span>
+                    </div>
+                    <span class="col-count" id="countLocked">0</span>
+                </div>
+                <div class="col-body" id="colLocked"></div>
+            </div>
+            <div class="col col-avail">
+                <div class="col-header">
+                    <div class="col-title">
+                        <span class="col-icon">✨</span>
+                        <span class="col-label">Available</span>
+                    </div>
+                    <span class="col-count" id="countAvail">0</span>
+                </div>
+                <div class="col-body" id="colAvail"></div>
+            </div>
+            <div class="col col-done">
+                <div class="col-header">
+                    <div class="col-title">
+                        <span class="col-icon">🏆</span>
+                        <span class="col-label">Completed</span>
+                    </div>
+                    <span class="col-count" id="countDone">0</span>
+                </div>
+                <div class="col-body" id="colDone"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast-root"></div>
+    <div id="celebrate-root"></div>
+
+    <script>
+        const COURSES_RAW = [
+            { id: 'ARAB101', name: 'Arabic Writing', hours: 2, level: 1, prereqs: [] },
+            { id: 'ENG101', name: 'Intensive Writing', hours: 3, level: 1, prereqs: [] },
+            { id: 'ISC101', name: 'Islamic Ethics', hours: 2, level: 1, prereqs: [] },
+            { id: 'CS101', name: 'Computer Programming I', hours: 4, level: 1, prereqs: [] },
+            { id: 'MATH111', name: 'Calculus I', hours: 3, level: 1, prereqs: [] },
+            { id: 'CHM101', name: 'General Chemistry', hours: 4, level: 1, prereqs: [] },
+            { id: 'CS102', name: 'Computer Programming II', hours: 3, level: 2, prereqs: ['CS101'] },
+            { id: 'CS175', name: 'Digital Logic & Computer Organization', hours: 3, level: 2, prereqs: ['CS101'] },
+            { id: 'ENG103', name: 'Research Writing Techniques', hours: 3, level: 2, prereqs: ['ENG101'] },
+            { id: 'STAT101', name: 'Introduction to Statistics & Probability', hours: 3, level: 2, prereqs: ['MATH111'] },
+            { id: 'MATH113', name: 'Calculus II', hours: 3, level: 2, prereqs: ['MATH111'] },
+            { id: 'ISC103', name: 'Islamic Economic System', hours: 2, level: 2, prereqs: [] },
+            { id: 'SE201', name: 'Introduction to Software Engineering', hours: 3, level: 3, prereqs: ['CS102', 'ENG103'] },
+            { id: 'PHY105', name: 'Physics I', hours: 4, level: 3, prereqs: ['MATH111'] },
+            { id: 'CS285', name: 'Discrete Math for Computing', hours: 3, level: 3, prereqs: ['CS210'] },
+            { id: 'CS210', name: 'Data Structures & Algorithms', hours: 3, level: 3, prereqs: ['CS102'] },
+            { id: 'ISC105', name: 'Holy Quran Sciences', hours: 2, level: 3, prereqs: [] },
+            { id: 'COM201', name: 'Communication Skills', hours: 3, level: 3, prereqs: [] },
+            { id: 'SE365', name: 'Human–Computer Interaction', hours: 3, level: 4, prereqs: ['CS210'] },
+            { id: 'SE311', name: 'Software Requirements Engineering', hours: 3, level: 4, prereqs: ['SE201'] },
+            { id: 'PHY205', name: 'Physics II', hours: 4, level: 4, prereqs: ['PHY105'] },
+            { id: 'CS330', name: 'Introduction to Operating Systems', hours: 3, level: 4, prereqs: ['CS175', 'CS210'] },
+            { id: 'PSY101', name: 'Introduction to Psychology', hours: 3, level: 4, prereqs: [] },
+            { id: 'SE322', name: 'Software Design & Architecture', hours: 3, level: 5, prereqs: ['SE311'] },
+            { id: 'CYS401', name: 'Fundamentals of Cybersecurity', hours: 3, level: 5, prereqs: ['CS210'] },
+            { id: 'CS340', name: 'Introduction to Database Systems', hours: 3, level: 5, prereqs: ['CS210'] },
+            { id: 'CS331', name: 'Data Communications & Computer Networks', hours: 3, level: 5, prereqs: ['CS175', 'CS210'] },
+            { id: 'ISC203', name: 'Contemporary Financial Transactions', hours: 2, level: 5, prereqs: [] },
+            { id: 'ARAB103', name: 'Professional & Literary Writing', hours: 2, level: 5, prereqs: [] },
+            { id: 'CYS403', name: 'Cybersecurity Risk, Governance & Compliance', hours: 3, level: 6, prereqs: ['CYS401'] },
+            { id: 'CYS402', name: 'Secure Software Development', hours: 3, level: 6, prereqs: ['CYS401'] },
+            { id: 'SE401', name: 'Software Testing & Quality Assurance', hours: 3, level: 6, prereqs: ['SE322'] },
+            { id: 'SE371', name: 'Web Engineering', hours: 3, level: 6, prereqs: ['CS210'] },
+            { id: 'MATH221', name: 'Numerical Analysis', hours: 3, level: 6, prereqs: ['MATH113'] },
+            { id: 'ETHC303', name: 'Ethical & Social Aspects of Computing', hours: 3, level: 6, prereqs: [] },
+            { id: 'CYS405', name: 'Penetration Testing & Ethical Hacking', hours: 3, level: 7, prereqs: ['CS331', 'CYS401'] },
+            { id: 'SE499', name: 'Senior Project', hours: 3, level: 7, prereqs: ['SE423'] },
+            { id: 'SE423', name: 'Software Engineering Project Management', hours: 3, level: 7, prereqs: ['SE401'] },
+            { id: 'SE411', name: 'Software Construction', hours: 3, level: 7, prereqs: ['SE401'] },
+            { id: 'ARAB203', name: 'Arabic Grammar', hours: 2, level: 7, prereqs: [] },
+            { id: 'SE492', name: 'Cooperative Training', hours: 10, level: 8, prereqs: ['SE499'] },
+            { id: 'MATH223', name: 'Linear Algebra', hours: 3, level: 6, prereqs: ['MATH113'], group: 'A' },
+            { id: 'CS223', name: 'Computational Linear Algebra', hours: 3, level: 6, prereqs: ['CS101', 'MATH113'], group: 'A' },
+            { id: 'CYS406', name: 'Data & Network Security', hours: 3, level: 7, prereqs: ['CS331', 'CYS401'], group: 'B' },
+            { id: 'CYS404', name: 'Cyber-Physical Systems Security', hours: 3, level: 7, prereqs: ['CS331', 'CYS401'], group: 'B' },
+        ];
+
+        let completed = new Set();
+        let choices = { A: 'MATH223', B: 'CYS406' };
+        let searchQ = '';
+        let levelFilter = 'all';
+        let highlighted = null;
+        let darkMode = false;
+
+        function persist() {
+            localStorage.setItem('psu3_done', JSON.stringify([...completed]));
+            localStorage.setItem('psu3_choices', JSON.stringify(choices));
+            localStorage.setItem('psu3_dark', darkMode ? '1' : '0');
+        }
+        function loadState() {
+            try {
+                const d = localStorage.getItem('psu3_done'); if (d) completed = new Set(JSON.parse(d));
+                const c = localStorage.getItem('psu3_choices'); if (c) choices = JSON.parse(c);
+                const t = localStorage.getItem('psu3_dark'); if (t !== null) darkMode = t === '1';
+            } catch (e) { }
+        }
+
+        function getActive() {
+            return COURSES_RAW.filter(c => !c.group || c.id === choices[c.group]);
+        }
+        function getStatus(c) {
+            if (completed.has(c.id)) return 'done';
+            return c.prereqs.every(p => completed.has(p)) ? 'avail' : 'locked';
+        }
+        function allDeps(id) {
+            const res = new Set(); const q = [id];
+            while (q.length) {
+                const cur = q.shift();
+                getActive().forEach(c => { if (c.prereqs.includes(cur) && !res.has(c.id)) { res.add(c.id); q.push(c.id); } });
+            }
+            return [...res];
+        }
+        function topoSort(ids) {
+            const map = {}; ids.forEach(id => { const c = COURSES_RAW.find(x => x.id === id); map[id] = c ? c.prereqs.filter(p => ids.includes(p)) : []; });
+            const visited = new Set(), result = [];
+            function visit(id) { if (visited.has(id)) return; visited.add(id); (map[id] || []).forEach(visit); result.push(id); }
+            ids.forEach(visit); return result;
+        }
+
+        function updateStats() {
+            const active = getActive();
+            const th = active.reduce((s, c) => s + c.hours, 0);
+            const ch = active.filter(c => completed.has(c.id)).reduce((s, c) => s + c.hours, 0);
+            const cd = active.filter(c => completed.has(c.id)).length;
+            const pct = th > 0 ? Math.round(ch / th * 100) : 0;
+            document.getElementById('heroHours').textContent = ch;
+            document.getElementById('heroTotal').textContent = th;
+            document.getElementById('heroCourses').textContent = cd;
+            document.getElementById('heroRemain').textContent = th - ch;
+            document.getElementById('heroPct').textContent = pct + '%';
+            document.getElementById('heroBar').style.width = pct + '%';
+        }
+
+        function buildCard(course) {
+            const st = getStatus(course);
+            const card = document.createElement('div');
+            card.className = `c-card${st === 'locked' ? ' is-locked' : ''}${st === 'done' ? ' is-done' : ''}${highlighted === course.id ? ' highlighted' : ''}`;
+            card.dataset.id = course.id;
+
+            const prereqHtml = course.prereqs.map(p => {
+                const met = completed.has(p);
+                return `<span class="pr-chip ${met ? 'met' : 'unmet'}" data-prereq="${p}">${p}</span>`;
+            }).join('');
+
+            card.innerHTML = `
+    <div class="c-top">
+      <div>
+        <span class="c-code">${course.id}</span>
+        ${course.group ? `<span class="c-group-tag">GRP ${course.group}</span>` : ''}
+      </div>
+      <span class="c-hrs">${course.hours} hrs</span>
+    </div>
+    <div class="c-name">${course.name}</div>
+    <div class="c-prereqs">${prereqHtml}</div>
+    <div class="c-bottom">
+      <span class="c-level-label">Level ${course.level}</span>
+      <span class="c-level-dot lvl${course.level}"></span>
+    </div>
+  `;
+
+            card.addEventListener('click', e => {
+                if (e.target.closest('.pr-chip')) return;
+                toggleCourse(course.id);
+            });
+            card.querySelectorAll('.pr-chip').forEach(chip => {
+                chip.addEventListener('click', e => {
+                    e.stopPropagation();
+                    const pid = chip.dataset.prereq;
+                    highlighted = highlighted === pid ? null : pid;
+                    render();
+                    const el = document.querySelector(`.c-card[data-id="${pid}"]`);
+                    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                });
+            });
+            return card;
+        }
+
+        function render() {
+            updateStats();
+            const active = getActive();
+            const q = searchQ.toLowerCase();
+
+            const filtered = active.filter(c => {
+                if (q && !c.id.toLowerCase().includes(q) && !c.name.toLowerCase().includes(q)) return false;
+                if (levelFilter !== 'all' && c.level !== parseInt(levelFilter)) return false;
+                return true;
+            });
+
+            const locked = filtered.filter(c => getStatus(c) === 'locked').sort((a, b) => a.level - b.level || a.id.localeCompare(b.id));
+            const avail = filtered.filter(c => getStatus(c) === 'avail').sort((a, b) => a.level - b.level || a.id.localeCompare(b.id));
+            const done = filtered.filter(c => getStatus(c) === 'done').sort((a, b) => a.level - b.level || a.id.localeCompare(b.id));
+
+            document.getElementById('countLocked').textContent = locked.length;
+            document.getElementById('countAvail').textContent = avail.length;
+            document.getElementById('countDone').textContent = done.length;
+
+            const emptyHtml = (icon, msg) => `<div class="col-empty"><span class="col-empty-icon">${icon}</span>${msg}</div>`;
+
+            const colL = document.getElementById('colLocked');
+            const colA = document.getElementById('colAvail');
+            const colD = document.getElementById('colDone');
+
+            colL.innerHTML = ''; colA.innerHTML = ''; colD.innerHTML = '';
+
+            if (!locked.length) colL.innerHTML = emptyHtml('🎉', 'Nothing locked!');
+            else locked.forEach(c => colL.appendChild(buildCard(c)));
+
+            if (!avail.length) colA.innerHTML = emptyHtml('😴', 'No courses available yet');
+            else avail.forEach(c => colA.appendChild(buildCard(c)));
+
+            if (!done.length) colD.innerHTML = emptyHtml('🌱', 'Complete your first course!');
+            else done.forEach(c => colD.appendChild(buildCard(c)));
+
+            // Update choice button states
+            ['A', 'B'].forEach(g => {
+                document.querySelectorAll(`.choice-opt[data-group="${g}"]`).forEach(b => {
+                    b.classList.toggle('selected', b.dataset.val === choices[g]);
+                });
+            });
+
+            // Level filter buttons
+            const lvlFilter = document.getElementById('levelFilter');
+            const existingLevels = [...new Set(active.map(c => c.level))].sort((a, b) => a - b);
+            const currentBtns = [...lvlFilter.querySelectorAll('[data-level]')].map(b => b.dataset.level);
+            const expected = ['all', ...existingLevels.map(String)];
+            if (JSON.stringify(currentBtns) !== JSON.stringify(expected)) {
+                lvlFilter.innerHTML = '';
+                ['all', ...existingLevels].forEach(lv => {
+                    const b = document.createElement('button');
+                    b.className = `lf-btn${levelFilter === String(lv) ? ' active' : ''}`;
+                    b.dataset.level = String(lv);
+                    b.textContent = lv === 'all' ? 'All Levels' : `L${lv}`;
+                    b.addEventListener('click', () => {
+                        levelFilter = String(lv);
+                        document.querySelectorAll('.lf-btn').forEach(x => x.classList.remove('active'));
+                        b.classList.add('active');
+                        render();
+                    });
+                    lvlFilter.appendChild(b);
+                });
+            }
+        }
+
+        function toggleCourse(id) {
+            const course = COURSES_RAW.find(c => c.id === id);
+            if (!course) return;
+
+            if (completed.has(id)) {
+                const deps = allDeps(id).filter(d => completed.has(d));
+                if (deps.length) {
+                    showModal('Remove dependent courses?',
+                        `Unchecking <strong>${id}</strong> will also uncheck these:`,
+                        deps,
+                        () => {
+                            completed.delete(id);
+                            deps.forEach(d => completed.delete(d));
+                            persist(); render();
+                            toast(`${id} + ${deps.length} dependent(s) removed`, 'err');
+                        }
+                    );
+                } else {
+                    completed.delete(id);
+                    persist(); render();
+                    toast(`${course.id} unchecked`, 'err');
+                }
+            } else {
+                const missing = course.prereqs.filter(p => !completed.has(p));
+                if (missing.length) {
+                    toast(`Need ${missing.join(', ')} first! 🔒`, 'err');
+                    return;
+                }
+                completed.add(id);
+                persist(); render();
+                confetti();
+                toast(`${course.id} complete! 🎉`, 'ok');
+            }
+        }
+
+        // Confetti burst
+        function confetti() {
+            const root = document.getElementById('celebrate-root');
+            const colors = ['#a78bfa', '#60a5fa', '#34d399', '#fbbf24', '#f472b6', '#fb923c', '#f87171'];
+            for (let i = 0; i < 18; i++) {
+                const el = document.createElement('div');
+                el.className = 'confetti-piece';
+                el.style.cssText = `
+      left: ${Math.random() * 100}vw;
+      background: ${colors[Math.floor(Math.random() * colors.length)]};
+      width: ${6 + Math.random() * 8}px;
+      height: ${8 + Math.random() * 10}px;
+      animation-delay: ${Math.random() * 0.3}s;
+      animation-duration: ${0.8 + Math.random() * 0.6}s;
+      border-radius: ${Math.random() > 0.5 ? '50%' : '2px'};
+    `;
+                root.appendChild(el);
+                el.addEventListener('animationend', () => el.remove());
+            }
+        }
+
+        function showModal(title, msg, items, onOk) {
+            const ov = document.createElement('div');
+            ov.className = 'modal-overlay';
+            ov.innerHTML = `
+    <div class="modal">
+      <div class="modal-head"><h3>${title}</h3><p>This action cannot be undone easily</p></div>
+      <div class="modal-body">
+        <p>${msg}</p>
+        <ul class="modal-list">${items.map(i => `<li>${i}</li>`).join('')}</ul>
+        <div class="modal-actions">
+          <button class="btn btn-ghost" id="mCancel">Cancel</button>
+          <button class="btn btn-red" id="mOk">Yes, remove</button>
+        </div>
+      </div>
+    </div>
+  `;
+            document.body.appendChild(ov);
+            ov.querySelector('#mCancel').addEventListener('click', () => ov.remove());
+            ov.querySelector('#mOk').addEventListener('click', () => { ov.remove(); onOk(); });
+            ov.addEventListener('click', e => { if (e.target === ov) ov.remove(); });
+        }
+
+        function toast(msg, type = 'inf') {
+            const r = document.getElementById('toast-root');
+            const t = document.createElement('div');
+            t.className = `toast ${type}`;
+            t.textContent = msg;
+            r.appendChild(t);
+            setTimeout(() => {
+                t.style.transition = 'all 0.3s';
+                t.style.opacity = '0';
+                t.style.transform = 'translateY(8px) scale(0.95)';
+                setTimeout(() => t.remove(), 300);
+            }, 2800);
+        }
+
+        // Choice buttons
+        document.querySelectorAll('.choice-opt').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const g = btn.dataset.group, val = btn.dataset.val;
+                if (choices[g] === val) return;
+                const old = choices[g];
+                const aff = completed.has(old) ? [old, ...allDeps(old).filter(d => completed.has(d))] : [];
+                const doSwitch = () => {
+                    aff.forEach(d => completed.delete(d));
+                    choices[g] = val;
+                    persist(); render();
+                    toast(`Group ${g}: switched to ${val} ✓`, 'ok');
+                };
+                if (aff.length) showModal(`Switch Group ${g}?`, `This will remove these completed courses:`, aff, doSwitch);
+                else doSwitch();
+            });
+        });
+
+        document.getElementById('mark13Btn').addEventListener('click', () => {
+            const ids = topoSort(getActive().filter(c => c.level <= 3).map(c => c.id));
+            ids.forEach(id => completed.add(id));
+            persist(); render(); confetti();
+            toast('Levels 1–3 all done! 🚀', 'ok');
+        });
+        document.getElementById('markAllBtn').addEventListener('click', () => {
+            showModal('Mark everything complete?', 'This will mark all active courses as done!', [], () => {
+                const ids = topoSort(getActive().map(c => c.id));
+                ids.forEach(id => completed.add(id));
+                persist(); render(); confetti();
+                toast('You did it!! 🎓🎉', 'ok');
+            });
+        });
+        document.getElementById('resetBtn').addEventListener('click', () => {
+            showModal('Reset all progress?', 'This will clear all your completed courses.', [], () => {
+                completed.clear(); persist(); render();
+                toast('Progress reset', 'err');
+            });
+        });
+        document.getElementById('themeBtn').addEventListener('click', () => {
+            darkMode = !darkMode;
+            document.body.classList.toggle('dark', darkMode);
+            persist();
+        });
+        document.getElementById('searchInput').addEventListener('input', e => {
+            searchQ = e.target.value; render();
+        });
+
+        // Init
+        loadState();
+        document.body.classList.toggle('dark', darkMode);
+        render();
+    </script>
+</body>
+
+</html>

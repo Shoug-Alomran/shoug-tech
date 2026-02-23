@@ -1,0 +1,1222 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الفصل ٤: الخيوط - CS330</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f4f4f4;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: white;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            margin-bottom: 30px;
+            text-align: center;
+            border-radius: 10px;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            color: #667eea;
+            font-size: 1.8em;
+            margin: 35px 0 20px 0;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        h3 {
+            color: #764ba2;
+            font-size: 1.4em;
+            margin: 25px 0 15px 0;
+        }
+
+        /* مقارنة الخيط والعملية */
+        .comparison-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 30px 0;
+        }
+
+        .process-box, .thread-box {
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        .process-box {
+            background: #f0f8ff;
+        }
+
+        .thread-box {
+            background: #f5f0ff;
+        }
+
+        .box-header {
+            text-align: center;
+            padding: 10px;
+            margin-bottom: 15px;
+            font-weight: bold;
+            color: white;
+            border-radius: 5px;
+        }
+
+        .process-box .box-header {
+            background: #3498db;
+        }
+
+        .thread-box .box-header {
+            background: #9b59b6;
+        }
+
+        .resource-section {
+            margin: 10px 0;
+            padding: 10px;
+            background: white;
+            border-radius: 5px;
+        }
+
+        /* تصور نماذج الخيوط */
+        .model-container {
+            margin: 30px 0;
+            padding: 25px;
+            background: #f8f9ff;
+            border-radius: 10px;
+        }
+
+        .thread-model {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 20px 0;
+        }
+
+        .user-space, .kernel-space {
+            width: 100%;
+            max-width: 500px;
+            padding: 20px;
+            margin: 5px 0;
+            border: 2px solid #333;
+            text-align: center;
+        }
+
+        .user-space {
+            background: #e8f4f8;
+        }
+
+        .kernel-space {
+            background: #ffe8e8;
+        }
+
+        .thread-icon {
+            display: inline-block;
+            width: 40px;
+            height: 60px;
+            margin: 0 10px;
+            background: #3498db;
+            border-radius: 5px;
+            position: relative;
+        }
+
+        .thread-icon::before {
+            content: '⇅';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 24px;
+        }
+
+        .kernel-thread {
+            background: #e74c3c;
+        }
+
+        /* شبكة الفوائد */
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .benefit-card {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+
+        .benefit-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .benefit-card h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        /* التزامن مقابل التوازي */
+        .concurrency-diagram {
+            margin: 30px 0;
+            padding: 20px;
+            background: #f0f8ff;
+            border-radius: 10px;
+        }
+
+        .execution-timeline {
+            display: flex;
+            align-items: center;
+            margin: 20px 0;
+            padding: 10px;
+            background: white;
+            border-radius: 5px;
+        }
+
+        .core-label {
+            width: 100px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .timeline {
+            flex: 1;
+            display: flex;
+            height: 40px;
+            border: 1px solid #ddd;
+        }
+
+        .time-slice {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-left: 1px solid #ddd;
+            font-weight: bold;
+            color: white;
+        }
+
+        .t1 { background: #3498db; }
+        .t2 { background: #e74c3c; }
+        .t3 { background: #2ecc71; }
+        .t4 { background: #f39c12; }
+
+        /* كتل الأكواد */
+        .code-block {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+        }
+
+        .code-comment {
+            color: #95a5a6;
+        }
+
+        .code-keyword {
+            color: #3498db;
+        }
+
+        .code-function {
+            color: #2ecc71;
+        }
+
+        /* الجداول */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        th {
+            background: #667eea;
+            color: white;
+            padding: 15px;
+            text-align: right;
+        }
+
+        td {
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+        }
+
+        tr:nth-child(even) {
+            background: #f8f9ff;
+        }
+
+        /* صندوق المفاهيم */
+        .concept-box {
+            background: #f8f9ff;
+            border-right: 4px solid #667eea;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .highlight {
+            background: #ffd700;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+
+        /* صندوق الأمثلة */
+        .example-box {
+            background: #e8f8f5;
+            border: 2px solid #27ae60;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        /* صندوق التحذير */
+        .warning-box {
+            background: #fff3cd;
+            border-right: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+        }
+
+        /* قسم الاختبار */
+        .exam-section {
+            background: #fff8dc;
+            border: 2px solid #ffd700;
+            padding: 25px;
+            margin: 30px 0;
+            border-radius: 10px;
+        }
+
+        .exam-question {
+            background: white;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .mcq-options {
+            list-style: none;
+            margin-top: 15px;
+            margin-right: 0;
+        }
+
+        .mcq-options li {
+            background: #f8f9ff;
+            padding: 10px;
+            margin: 8px 0;
+            border-radius: 5px;
+            border-right: 3px solid transparent;
+        }
+
+        .correct-answer {
+            background: #d4edda !important;
+            border-right: 3px solid #28a745 !important;
+        }
+
+        /* مكان الصورة */
+        .image-placeholder {
+            background: #95a5a6;
+            color: white;
+            padding: 60px 20px;
+            text-align: center;
+            border-radius: 10px;
+            margin: 20px 0;
+            border: 2px dashed #7f8c8d;
+        }
+
+        /* بطاقات مكتبات الخيوط */
+        .library-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .library-card {
+            background: white;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .library-card h4 {
+            color: #667eea;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        footer {
+            background: #667eea;
+            color: white;
+            text-align: center;
+            padding: 25px;
+            margin-top: 40px;
+            border-radius: 10px;
+        }
+
+        .subsection {
+            margin-right: 20px;
+            padding-right: 20px;
+            border-right: 2px solid #ecf0f1;
+        }
+
+        /* مخطط هيكل الخادم */
+        .server-diagram {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin: 30px 0;
+            padding: 30px;
+            background: #f0f8ff;
+            border-radius: 10px;
+        }
+
+        .server-component {
+            padding: 20px;
+            background: #3498db;
+            color: white;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .arrow {
+            font-size: 30px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>الفصل ٤: الخيوط</h1>
+            <p style="font-size: 1.2em;">CS330 - أنظمة التشغيل</p>
+            <p>نماذج الخيوط المتعددة، الفوائد، والتطبيق</p>
+        </header>
+
+        <!-- القسم 1: نظرة عامة على الخيوط -->
+        <section>
+            <h2>٤.١ نظرة عامة على الخيوط</h2>
+            
+            <div class="concept-box">
+                <p><span class="highlight">الخيط</span> هو وحدة أساسية لاستغلال المعالج. ويسمى أيضًا عملية خفيفة الوزن. يتكون الخيط من معرف الخيط، عداد البرنامج، مجموعة المسجلات، والمكدس.</p>
+            </div>
+
+            <h3>مكونات الخيط</h3>
+            <div class="subsection">
+                <h4>كل خيط له خاصته:</h4>
+                <ul>
+                    <li>معرف الخيط</li>
+                    <li>عداد البرنامج</li>
+                    <li>مجموعة المسجلات</li>
+                    <li>مساحة المكدس</li>
+                </ul>
+
+                <h4>الخيوط تشارك مع الخيوط الأخرى:</h4>
+                <ul>
+                    <li>قسم الكود</li>
+                    <li>قسم البيانات</li>
+                    <li>موارد نظام التشغيل (الملفات المفتوحة، الإشارات)</li>
+                </ul>
+            </div>
+
+            <h3>أنواع العمليات</h3>
+            <table>
+                <tr>
+                    <th>النوع</th>
+                    <th>الوصف</th>
+                    <th>الخصائص</th>
+                </tr>
+                <tr>
+                    <td><strong>عملية ثقيلة الوزن</strong></td>
+                    <td>عملية تقليدية بخيط واحد</td>
+                    <td>مسار تحكم واحد</td>
+                </tr>
+                <tr>
+                    <td><strong>عملية خفيفة الوزن</strong></td>
+                    <td>اسم آخر للخيط</td>
+                    <td>وحدة أساسية لاستغلال المعالج</td>
+                </tr>
+                <tr>
+                    <td><strong>عملية متعددة الخيوط</strong></td>
+                    <td>عملية بخيوط متعددة</td>
+                    <td>خيوط متعددة تشارك موارد العملية</td>
+                </tr>
+            </table>
+
+            <div class="image-placeholder">
+                <h4>📊 عملية أحادية الخيط مقابل متعددة الخيوط</h4>
+                <p>[إدراج مخطط يوضح هيكل عملية أحادية الخيط مقابل متعددة الخيوط]</p>
+            </div>
+        </section>
+
+        <!-- القسم 2: الخيط مقابل العملية -->
+        <section>
+            <h2>٤.٢ العمليات أحادية الخيط مقابل متعددة الخيوط</h2>
+            
+            <div class="comparison-container">
+                <div class="process-box">
+                    <div class="box-header">عملية أحادية الخيط</div>
+                    <div class="resource-section">
+                        <strong>الموارد المشتركة:</strong>
+                        <ul>
+                            <li>الكود</li>
+                            <li>البيانات</li>
+                            <li>الملفات</li>
+                        </ul>
+                    </div>
+                    <div class="resource-section">
+                        <strong>لكل عملية:</strong>
+                        <ul>
+                            <li>المسجلات</li>
+                            <li>المكدس</li>
+                            <li>عداد البرنامج</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="thread-box">
+                    <div class="box-header">عملية متعددة الخيوط</div>
+                    <div class="resource-section">
+                        <strong>مشترك (بين الخيوط):</strong>
+                        <ul>
+                            <li>الكود</li>
+                            <li>البيانات</li>
+                            <li>الملفات</li>
+                        </ul>
+                    </div>
+                    <div class="resource-section">
+                        <strong>لكل خيط:</strong>
+                        <ul>
+                            <li>المسجلات</li>
+                            <li>المكدس</li>
+                            <li>عداد البرنامج</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="warning-box">
+                <h4>⚠️ مهم:</h4>
+                <p>الخيوط داخل نفس العملية تشارك الذاكرة والموارد، مما يجعل التواصل بين الخيوط فعالاً ولكنه يتطلب مزامنة دقيقة لتجنب حالات السباق.</p>
+            </div>
+        </section>
+
+        <!-- القسم 3: فوائد تعدد الخيوط -->
+        <section>
+            <h2>٤.٣ فوائد تعدد الخيوط</h2>
+            
+            <div class="benefits-grid">
+                <div class="benefit-card">
+                    <h4>📱 الاستجابة</h4>
+                    <p>تسمح للبرنامج بالاستمرار في العمل حتى لو كان جزء منه محجوبًا. مثال: متصفح الويب يسمح بتفاعل المستخدم في خيط بينما يتم تحميل الصور في خيط آخر.</p>
+                </div>
+                
+                <div class="benefit-card">
+                    <h4>🔄 مشاركة الموارد</h4>
+                    <p>الخيوط تشارك الذاكرة والموارد للعملية التي تنتمي إليها. أسهل من الذاكرة المشتركة أو تمرير الرسائل بين العمليات.</p>
+                </div>
+                
+                <div class="benefit-card">
+                    <h4>💰 الاقتصاد</h4>
+                    <p>إنشاء الخيوط أسرع من إنشاء العمليات. تبديل السياق بين الخيوط له عبء أقل. في Solaris، إنشاء عملية أبطأ ٣٠ مرة من إنشاء خيط.</p>
+                </div>
+                
+                <div class="benefit-card">
+                    <h4>⚡ قابلية التوسع</h4>
+                    <p>يمكن الاستفادة من معماريات متعددة المعالجات. خيوط متعددة يمكن أن تعمل بالتوازي على وحدات معالجة مختلفة. عملية أحادية الخيط يمكن أن تعمل فقط على معالج واحد.</p>
+                </div>
+            </div>
+
+            <div class="exam-section">
+                <h4>📝 سؤال اختبار (CS330):</h4>
+                <div class="exam-question">
+                    <p><strong>س:</strong> اذكر الفوائد الأربع الرئيسية للبرمجة متعددة الخيوط.</p>
+                    <div class="example-box">
+                        <p><strong>الإجابة:</strong></p>
+                        <ol>
+                            <li><strong>الاستجابة:</strong> قد تسمح بالاستمرار في التنفيذ إذا كان جزء من العملية محجوبًا</li>
+                            <li><strong>مشاركة الموارد:</strong> الخيوط تشارك موارد العملية، أسهل من الذاكرة المشتركة</li>
+                            <li><strong>الاقتصاد:</strong> أرخص من إنشاء العمليات، عبء أقل لتبديل السياق</li>
+                            <li><strong>قابلية التوسع:</strong> العملية يمكن أن تستفيد من معماريات متعددة المعالجات</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- القسم 4: البرمجة متعددة النوى -->
+        <section>
+            <h2>٤.٤ البرمجة متعددة النوى</h2>
+            
+            <h3>التزامن مقابل التوازي</h3>
+            <div class="concurrency-diagram">
+                <h4>نظام أحادي النواة (التزامن)</h4>
+                <div class="execution-timeline">
+                    <div class="core-label">نواة واحدة</div>
+                    <div class="timeline">
+                        <div class="time-slice t1">T₁</div>
+                        <div class="time-slice t2">T₂</div>
+                        <div class="time-slice t3">T₃</div>
+                        <div class="time-slice t4">T₄</div>
+                        <div class="time-slice t1">T₁</div>
+                        <div class="time-slice t2">T₂</div>
+                        <div class="time-slice t3">T₃</div>
+                        <div class="time-slice t4">T₄</div>
+                    </div>
+                </div>
+                <p>الخيوط متداخلة عبر الزمن</p>
+
+                <h4>نظام متعدد النوى (التوازي)</h4>
+                <div class="execution-timeline">
+                    <div class="core-label">النواة ١</div>
+                    <div class="timeline">
+                        <div class="time-slice t1">T₁</div>
+                        <div class="time-slice t3">T₃</div>
+                        <div class="time-slice t1">T₁</div>
+                        <div class="time-slice t3">T₃</div>
+                    </div>
+                </div>
+                <div class="execution-timeline">
+                    <div class="core-label">النواة ٢</div>
+                    <div class="timeline">
+                        <div class="time-slice t2">T₂</div>
+                        <div class="time-slice t4">T₄</div>
+                        <div class="time-slice t2">T₂</div>
+                        <div class="time-slice t4">T₄</div>
+                    </div>
+                </div>
+                <p>الخيوط تعمل في وقت واحد على نوى مختلفة</p>
+            </div>
+
+            <table>
+                <tr>
+                    <th>الجانب</th>
+                    <th>التزامن</th>
+                    <th>التوازي</th>
+                </tr>
+                <tr>
+                    <td>التعريف</td>
+                    <td>مهام متعددة تتقدم</td>
+                    <td>مهام متعددة تُنفذ في وقت واحد</td>
+                </tr>
+                <tr>
+                    <td>العتاد</td>
+                    <td>يمكن العمل على نواة واحدة</td>
+                    <td>يحتاج نوى متعددة</td>
+                </tr>
+                <tr>
+                    <td>التنفيذ</td>
+                    <td>تنفيذ متداخل</td>
+                    <td>تنفيذ متزامن</td>
+                </tr>
+            </table>
+
+            <h3>أنواع التوازي</h3>
+            <div class="subsection">
+                <h4>توازي البيانات</h4>
+                <p>يوزع مجموعات فرعية من نفس البيانات عبر نوى متعددة، نفس العملية على كل مجموعة.</p>
+                <p><strong>مثال:</strong> جمع عناصر مصفوفة - تقسيم المصفوفة إلى أجزاء، جمع كل جزء بالتوازي.</p>
+
+                <h4>توازي المهام</h4>
+                <p>توزيع الخيوط عبر النوى، كل خيط يقوم بعملية فريدة.</p>
+                <p><strong>مثال:</strong> خادم ويب - خيط يتعامل مع الطلبات، آخر يعالج البيانات، آخر يحدّث السجلات.</p>
+            </div>
+        </section>
+
+        <!-- القسم 5: خيوط المستخدم وخيوط النواة -->
+        <section>
+            <h2>٤.٥ خيوط المستخدم وخيوط النواة</h2>
+            
+            <h3>خيوط المستخدم</h3>
+            <div class="concept-box">
+                <p>خيوط تُدار بواسطة مكتبة خيوط على مستوى المستخدم، وليس في النواة. تُجدول بواسطة مكتبة الخيوط.</p>
+            </div>
+            
+            <table>
+                <tr>
+                    <th>المزايا</th>
+                    <th>العيوب</th>
+                </tr>
+                <tr>
+                    <td>
+                        <ul>
+                            <li>سريعة في الإنشاء والإدارة</li>
+                            <li>لا تحتاج تدخل من النواة</li>
+                            <li>تبديل الخيط لا يتطلب وضع النواة</li>
+                        </ul>
+                    </td>
+                    <td>
+                        <ul>
+                            <li>استدعاء نظام محجوب يحجب العملية بأكملها</li>
+                            <li>لا يمكن الاستفادة من المعالجة المتعددة</li>
+                            <li>لا توازي حقيقي</li>
+                        </ul>
+                    </td>
+                </tr>
+            </table>
+
+            <p><strong>أمثلة:</strong> POSIX Pthreads, Java threads, Win32 threads</p>
+
+            <h3>خيوط النواة</h3>
+            <div class="concept-box">
+                <p>كل إدارة الخيوط تتم بواسطة النواة نفسها. النواة تقوم بالإنشاء والجدولة والإدارة.</p>
+            </div>
+            
+            <table>
+                <tr>
+                    <th>المزايا</th>
+                    <th>العيوب</th>
+                </tr>
+                <tr>
+                    <td>
+                        <ul>
+                            <li>إذا انحجب خيط، يمكن للنواة جدولة آخر</li>
+                            <li>يمكن تشغيل الخيوط على معالجات مختلفة</li>
+                            <li>توازي حقيقي على أنظمة متعددة المعالجات</li>
+                        </ul>
+                    </td>
+                    <td>
+                        <ul>
+                            <li>أبطأ في الإنشاء والإدارة</li>
+                            <li>يحتاج تدخل من النواة</li>
+                            <li>عبء أكبر لعمليات الخيوط</li>
+                        </ul>
+                    </td>
+                </tr>
+            </table>
+
+            <p><strong>أمثلة:</strong> ويندوز، لينكس، ماك أو إس، iOS، أندرويد</p>
+
+            <div class="exam-section">
+                <h4>📝 سؤال تطبيقي:</h4>
+                <div class="exam-question">
+                    <p><strong>س:</strong> أحد عيوب خيوط المستخدم مقارنة بخيوط النواة هو:</p>
+                    <ul class="mcq-options">
+                        <li>أ) الجدولة خاصة بالتطبيق</li>
+                        <li class="correct-answer">ب) عندما ينفذ خيط مستخدم استدعاء نظام، كل الخيوط في العملية تُحجب</li>
+                        <li>ج) تبديل الخيط لا يتطلب صلاحيات وضع النواة</li>
+                        <li>د) كل ما ذكر</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- القسم 6: نماذج تعدد الخيوط -->
+        <section>
+            <h2>٤.٦ نماذج تعدد الخيوط</h2>
+            
+            <h3>١. نموذج متعدد إلى واحد</h3>
+            <div class="model-container">
+                <div class="thread-model">
+                    <div class="user-space">
+                        <strong>مساحة المستخدم</strong><br>
+                        <span class="thread-icon"></span>
+                        <span class="thread-icon"></span>
+                        <span class="thread-icon"></span>
+                        <span class="thread-icon"></span>
+                    </div>
+                    <div style="font-size: 30px; color: #333;">↓</div>
+                    <div class="kernel-space">
+                        <strong>مساحة النواة</strong><br>
+                        <span class="thread-icon kernel-thread"></span>
+                    </div>
+                </div>
+                <div class="subsection">
+                    <h4>الخصائص:</h4>
+                    <ul>
+                        <li>خيوط مستخدم متعددة تُربط بخيط نواة واحد</li>
+                        <li>إدارة الخيوط في مساحة المستخدم - فعالة</li>
+                        <li>العملية بأكملها تُحجب إذا نفذ خيط استدعاء نظام محجوب</li>
+                        <li>لا يمكن أن تعمل بالتوازي على معالجات متعددة</li>
+                        <li>قلة من الأنظمة تستخدم هذا النموذج حاليًا</li>
+                    </ul>
+                    <p><strong>أمثلة:</strong> Solaris Green Threads, GNU Portable Threads</p>
+                </div>
+            </div>
+
+            <h3>٢. نموذج واحد إلى واحد</h3>
+            <div class="model-container">
+                <div class="thread-model">
+                    <div class="user-space">
+                        <strong>مساحة المستخدم</strong><br>
+                        <span class="thread-icon"></span>
+                        <span class="thread-icon"></span>
+                        <span class="thread-icon"></span>
+                    </div>
+                    <div style="font-size: 30px; color: #333;">↓ ↓ ↓</div>
+                    <div class="kernel-space">
+                        <strong>مساحة النواة</strong><br>
+                        <span class="thread-icon kernel-thread"></span>
+                        <span class="thread-icon kernel-thread"></span>
+                        <span class="thread-icon kernel-thread"></span>
+                    </div>
+                </div>
+                <div class="subsection">
+                    <h4>الخصائص:</h4>
+                    <ul>
+                        <li>كل خيط مستخدم يُربط بخيط نواة</li>
+                        <li>توازٍ أكبر - إذا انحجب واحد، يمكن للآخرين العمل</li>
+                        <li>يمكن أن تعمل على وحدات معالجة مختلفة في نظام متعدد المعالجات</li>
+                        <li>إدارة الخيوط بواسطة النواة - أبطأ</li>
+                        <li>عبء إنشاء خيوط النواة</li>
+                    </ul>
+                    <p><strong>أمثلة:</strong> ويندوز، لينكس</p>
+                </div>
+            </div>
+
+            <h3>٣. نموذج متعدد إلى متعدد</h3>
+            <div class="model-container">
+                <div class="thread-model">
+                    <div class="user-space">
+                        <strong>مساحة المستخدم</strong><br>
+                        <span class="thread-icon"></span>
+                        <span class="thread-icon"></span>
+                        <span class="thread-icon"></span>
+                        <span class="thread-icon"></span>
+                    </div>
+                    <div style="font-size: 30px; color: #333;">↘ ↓ ↙</div>
+                    <div class="kernel-space">
+                        <strong>مساحة النواة</strong><br>
+                        <span class="thread-icon kernel-thread"></span>
+                        <span class="thread-icon kernel-thread"></span>
+                    </div>
+                </div>
+                <div class="subsection">
+                    <h4>الخصائص:</h4>
+                    <ul>
+                        <li>خيوط مستخدم متعددة تُربط بعدد أقل أو مساوٍ من خيوط النواة</li>
+                        <li>يسمح بخيوط مستخدم أكثر من خيوط النواة</li>
+                        <li>خيوط النواة تعمل بالتوازي على معالج متعدد</li>
+                        <li>إذا انحجب خيط، يمكن للنواة جدولة آخر</li>
+                        <li>أفضل ميزات كلا النموذجين</li>
+                    </ul>
+                    <p><strong>أمثلة:</strong> Solaris قبل الإصدار ٩، ويندوز مع ThreadFiber</p>
+                </div>
+            </div>
+
+            <h3>٤. نموذج ثنائي المستوى</h3>
+            <div class="concept-box">
+                <p>مشابه لـ M:M، لكنه يسمح بربط خيط مستخدم بخيط نواة.</p>
+                <p><strong>أمثلة:</strong> IRIX, HP-UX, Tru64 UNIX, Solaris ٨ والإصدارات الأقدم</p>
+            </div>
+        </section>
+
+        <!-- القسم 7: مكتبات الخيوط -->
+        <section>
+            <h2>٤.٧ مكتبات الخيوط</h2>
+            
+            <div class="concept-box">
+                <p><span class="highlight">مكتبة الخيوط</span> توفر للمبرمج واجهة برمجة لإنشاء وإدارة الخيوط.</p>
+            </div>
+
+            <div class="library-grid">
+                <div class="library-card">
+                    <h4>POSIX Pthreads</h4>
+                    <ul>
+                        <li>معيار POSIX (IEEE 1003.1c)</li>
+                        <li>مواصفة، وليس تطبيقًا</li>
+                        <li>شائعة في أنظمة يونكس</li>
+                        <li>يمكن أن تكون على مستوى المستخدم أو النواة</li>
+                    </ul>
+                </div>
+                
+                <div class="library-card">
+                    <h4>Java Threads</h4>
+                    <ul>
+                        <li>تُدار بواسطة JVM</li>
+                        <li>مستقلة عن النظام</li>
+                        <li>عادةً تُربط بخيوط نظام التشغيل</li>
+                        <li>مضمنة في اللغة</li>
+                    </ul>
+                </div>
+                
+                <div class="library-card">
+                    <h4>Windows Threads</h4>
+                    <ul>
+                        <li>واجهة Win32/64 API</li>
+                        <li>مكتبة على مستوى النواة</li>
+                        <li>نموذج واحد إلى واحد</li>
+                        <li>دالة CreateThread()</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h3>مثال Pthreads</h3>
+            <div class="code-block">
+<span class="code-comment">// مثال بسيط لـ Pthread في لغة C</span>
+#include &lt;pthread.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+<span class="code-keyword">void</span> *<span class="code-function">runner</span>(<span class="code-keyword">void</span> *param) {
+    <span class="code-keyword">int</span> *value = (<span class="code-keyword">int</span> *)param;
+    printf("الخيط: القيمة = %d\n", *value);
+    *value = (*value) * 2;
+    <span class="code-function">pthread_exit</span>(0);
+}
+
+<span class="code-keyword">int</span> <span class="code-function">main</span>() {
+    <span class="code-keyword">pthread_t</span> tid;  <span class="code-comment">// معرف الخيط</span>
+    <span class="code-keyword">pthread_attr_t</span> attr;  <span class="code-comment">// سمات الخيط</span>
+    <span class="code-keyword">int</span> value = 5;
+    
+    <span class="code-comment">// تهيئة السمات الافتراضية</span>
+    <span class="code-function">pthread_attr_init</span>(&attr);
+    
+    <span class="code-comment">// إنشاء خيط</span>
+    <span class="code-function">pthread_create</span>(&tid, &attr, runner, &value);
+    
+    <span class="code-comment">// انتظار خروج الخيط</span>
+    <span class="code-function">pthread_join</span>(tid, NULL);
+    
+    printf("الرئيسي: القيمة = %d\n", value);
+    return 0;
+}
+            </div>
+
+            <h3>دوال Pthread الشائعة</h3>
+            <table>
+                <tr>
+                    <th>الدالة</th>
+                    <th>الوصف</th>
+                </tr>
+                <tr>
+                    <td><code>pthread_create()</code></td>
+                    <td>إنشاء خيط جديد</td>
+                </tr>
+                <tr>
+                    <td><code>pthread_join()</code></td>
+                    <td>انتظار إنهاء الخيط</td>
+                </tr>
+                <tr>
+                    <td><code>pthread_exit()</code></td>
+                    <td>إنهاء الخيط الحالي</td>
+                </tr>
+                <tr>
+                    <td><code>pthread_attr_init()</code></td>
+                    <td>تهيئة سمات الخيط</td>
+                </tr>
+                <tr>
+                    <td><code>pthread_self()</code></td>
+                    <td>الحصول على معرف الخيط الحالي</td>
+                </tr>
+                <tr>
+                    <td><code>pthread_equal()</code></td>
+                    <td>مقارنة معرفي خيطين</td>
+                </tr>
+            </table>
+        </section>
+
+        <!-- القسم 8: قضايا الخيوط -->
+        <section>
+            <h2>٤.٨ قضايا الخيوط</h2>
+            
+            <h3>١. دلالات fork() و exec()</h3>
+            <div class="concept-box">
+                <p>عندما تستدعي عملية متعددة الخيوط fork():</p>
+                <ul>
+                    <li>هل يجب على العملية الجديدة نسخ كل الخيوط؟</li>
+                    <li>أو فقط الخيط المستدعي؟</li>
+                </ul>
+                <p>الأنظمة المختلفة تتعامل مع هذا بشكل مختلف. exec() عادةً تستبدل العملية بأكملها.</p>
+            </div>
+
+            <h3>٢. معالجة الإشارات</h3>
+            <div class="subsection">
+                <p>أين يجب تسليم الإشارة؟</p>
+                <ul>
+                    <li>إلى الخيط الذي تنطبق عليه الإشارة</li>
+                    <li>إلى كل خيط في العملية</li>
+                    <li>إلى خيوط معينة في العملية</li>
+                    <li>إلى خيط محدد مخصص لاستقبال كل الإشارات</li>
+                </ul>
+            </div>
+
+            <h3>٣. إلغاء الخيط</h3>
+            <table>
+                <tr>
+                    <th>النوع</th>
+                    <th>الوصف</th>
+                    <th>المشكلات</th>
+                </tr>
+                <tr>
+                    <td><strong>غير متزامن</strong></td>
+                    <td>إنهاء الخيط المستهدف فورًا</td>
+                    <td>قد لا يتم تحرير الموارد، قد تكون البيانات غير متناسقة</td>
+                </tr>
+                <tr>
+                    <td><strong>مؤجل</strong></td>
+                    <td>الخيط المستهدف يتحقق من علامة بشكل دوري</td>
+                    <td>أكثر أمانًا لكن يحتاج تعاونًا</td>
+                </tr>
+            </table>
+
+            <h3>٤. تخزين محلي للخيط</h3>
+            <div class="concept-box">
+                <p>يسمح لكل خيط بأن يكون له نسخته الخاصة من البيانات. مفيد عندما لا تتحكم في عملية إنشاء الخيط.</p>
+            </div>
+
+            <h3>٥. تجمعات الخيوط</h3>
+            <div class="subsection">
+                <h4>المفهوم:</h4>
+                <p>إنشاء عدد من الخيوط عند بدء التشغيل ووضعها في تجمع حيث تنتظر العمل.</p>
+                
+                <h4>المزايا:</h4>
+                <ul>
+                    <li>عادةً أسرع قليلاً لخدمة الطلب بخيط موجود</li>
+                    <li>يسمح بتحديد عدد الخيوط في التطبيق</li>
+                    <li>يفصل المهمة التي يجب أداؤها عن إدارة الخيوط</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- القسم 9: هيكل الخادم متعدد الخيوط -->
+        <section>
+            <h2>٤.٩ هيكل الخادم متعدد الخيوط</h2>
+            
+            <div class="server-diagram">
+                <div class="server-component">عميل</div>
+                <span class="arrow">→</span>
+                <div class="server-component" style="background: #e74c3c;">خادم<br>(خيط رئيسي)</div>
+                <span class="arrow">→</span>
+                <div class="server-component" style="background: #2ecc71;">خيط عامل</div>
+            </div>
+
+            <div class="concept-box">
+                <h4>كيف يعمل:</h4>
+                <ol>
+                    <li>الخادم ينشئ خيطًا منفصلاً يستمع لطلبات العملاء</li>
+                    <li>عند وصول طلب، ينشئ الخادم خيطًا جديدًا لخدمة الطلب</li>
+                    <li>الخادم يستأنف الاستماع لطلبات إضافية</li>
+                    <li>أكثر كفاءة من إنشاء عملية جديدة لكل طلب</li>
+                </ol>
+            </div>
+
+            <div class="example-box">
+                <h4>مثال: خادم ويب</h4>
+                <ul>
+                    <li>الخيط الرئيسي يستمع على المنفذ ٨٠</li>
+                    <li>لكل طلب HTTP، يتم إنشاء خيط عامل</li>
+                    <li>الخيط العامل يتعامل مع الطلب ويرسل الرد</li>
+                    <li>الخيط الرئيسي يستمر في قبول اتصالات جديدة</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- القسم 10: تمارين اختبار -->
+        <section>
+            <h2>٤.١٠ أسئلة تطبيقية على طريقة الاختبارات</h2>
+            
+            <div class="exam-section">
+                <h3>أسئلة اختيار من متعدد</h3>
+                
+                <div class="exam-question">
+                    <p><strong>س١.</strong> أي مما يلي لا تشاركه الخيوط؟</p>
+                    <ul class="mcq-options">
+                        <li>أ) عداد البرنامج</li>
+                        <li>ب) المكدس</li>
+                        <li class="correct-answer">ج) كل من (أ) و (ب)</li>
+                        <li>د) لا شيء مما ذكر</li>
+                    </ul>
+                </div>
+
+                <div class="exam-question">
+                    <p><strong>س٢.</strong> عملية لها مسارات تحكم متعددة يمكنها أداء أكثر من مهمة في وقت واحد. هذا يسمى:</p>
+                    <ul class="mcq-options">
+                        <li>أ) تعدد البرمجة</li>
+                        <li class="correct-answer">ب) تعدد الخيوط</li>
+                        <li>ج) تعدد المعالجة</li>
+                        <li>د) تعدد المهام</li>
+                    </ul>
+                </div>
+
+                <div class="exam-question">
+                    <p><strong>س٣.</strong> في نموذج الخيوط متعدد إلى واحد، إذا نفذ خيط استدعاء نظام محجوب:</p>
+                    <ul class="mcq-options">
+                        <li>أ) فقط ذلك الخيط يُحجب</li>
+                        <li class="correct-answer">ب) العملية بأكملها تُحجب</li>
+                        <li>ج) يتم جدولة خيط آخر</li>
+                        <li>د) النواة تتحول إلى عملية أخرى</li>
+                    </ul>
+                </div>
+
+                <div class="exam-question">
+                    <p><strong>س٤.</strong> إنشاء الخيط هو:</p>
+                    <ul class="mcq-options">
+                        <li>أ) أكثر تكلفة من إنشاء العملية</li>
+                        <li class="correct-answer">ب) أقل تكلفة من إنشاء العملية</li>
+                        <li>ج) متساوٍ في التكلفة مع إنشاء العملية</li>
+                        <li>د) غير ممكن في أنظمة التشغيل الحديثة</li>
+                    </ul>
+                </div>
+
+                <h3>أسئلة إجابة قصيرة</h3>
+                
+                <div class="exam-question">
+                    <p><strong>س٥.</strong> تأمل مقطع الكود هذا. كم عدد العمليات والخيوط الفريدة التي تم إنشاؤها؟</p>
+                    <div class="code-block">
+pid = fork();
+if (pid == 0) {  <span class="code-comment">/* العملية الابنة */</span>
+    fork();
+    thread_create(...);
+}
+fork();
+                    </div>
+                    <div class="example-box">
+                        <h4>الإجابة:</h4>
+                        <ul>
+                            <li>fork() الأولى تنشئ ابنًا واحدًا (عمليتان إجمالاً)</li>
+                            <li>الابنة تنفذ fork() ثانية (٣ عمليات إجمالاً)</li>
+                            <li>عمليتان تنفذان thread_create() (خيطان تم إنشاؤهما)</li>
+                            <li>كل الـ ٣ عمليات تنفذ fork() النهائية (٦ عمليات إجمالاً)</li>
+                            <li><strong>الإجمالي: ٦ عمليات، ٨ خيوط (٦ رئيسية + ٢ منشأة)</strong></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="exam-question">
+                    <p><strong>س٦.</strong> في نظام متعدد المعالجات بنموذج خيوط متعدد إلى متعدد، ناقش الأداء عندما:</p>
+                    <p>أ) عدد خيوط النواة &lt; عدد المعالجات</p>
+                    <p>ب) عدد خيوط النواة = عدد المعالجات</p>
+                    <div class="example-box">
+                        <h4>الإجابة:</h4>
+                        <p><strong>أ)</strong> بعض المعالجات تبقى خاملة لأن الجدول يربط خيوط النواة فقط بالمعالجات، وليس خيوط المستخدم.</p>
+                        <p><strong>ب)</strong> يمكن استخدام كل المعالجات في وقت واحد. لكن إذا انحجب خيط نواة (خطأ صفحة، استدعاء نظام)، يصبح المعالج المقابل خاملاً.</p>
+                    </div>
+                </div>
+
+                <div class="exam-question">
+                    <p><strong>س٧.</strong> ما الفرق بين التزامن والتوازي؟</p>
+                    <div class="example-box">
+                        <h4>الإجابة:</h4>
+                        <ul>
+                            <li><strong>التزامن:</strong> مهام متعددة تتقدم، ربما متداخلة. يمكن أن يحدث على معالج واحد من خلال تقاسم الوقت.</li>
+                            <li><strong>التوازي:</strong> مهام متعددة تُنفذ في وقت واحد. يحتاج معالجات/نوى متعددة.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- القسم 11: المصطلحات الرئيسية -->
+        <section>
+            <h2>٤.١١ المصطلحات الرئيسية والتعريفات</h2>
+            
+            <table>
+                <tr>
+                    <th>المصطلح</th>
+                    <th>التعريف</th>
+                </tr>
+                <tr>
+                    <td><strong>خيط</strong></td>
+                    <td>وحدة أساسية لاستغلال المعالج؛ عملية خفيفة الوزن</td>
+                </tr>
+                <tr>
+                    <td><strong>تعدد الخيوط</strong></td>
+                    <td>قدرة نظام التشغيل على دعم خيوط متعددة في عملية واحدة</td>
+                </tr>
+                <tr>
+                    <td><strong>خيط مستخدم</strong></td>
+                    <td>خيط يُدار بواسطة مكتبة على مستوى المستخدم بدون دعم النواة</td>
+                </tr>
+                <tr>
+                    <td><strong>خيط نواة</strong></td>
+                    <td>خيط يُدار مباشرة بواسطة نواة نظام التشغيل</td>
+                </tr>
+                <tr>
+                    <td><strong>تجمع خيوط</strong></td>
+                    <td>مجموعة من الخيوط المنشأة مسبقًا تنتظر العمل</td>
+                </tr>
+                <tr>
+                    <td><strong>TLS</strong></td>
+                    <td>تخزين محلي للخيط - تخزين بيانات لكل خيط</td>
+                </tr>
+                <tr>
+                    <td><strong>pthread</strong></td>
+                    <td>مواصفة مكتبة خيوط POSIX</td>
+                </tr>
+                <tr>
+                    <td><strong>التزامن</strong></td>
+                    <td>مهام متعددة تتقدم (ربما متداخلة)</td>
+                </tr>
+                <tr>
+                    <td><strong>التوازي</strong></td>
+                    <td>مهام متعددة تُنفذ في وقت واحد</td>
+                </tr>
+                <tr>
+                    <td><strong>حالة السباق</strong></td>
+                    <td>عندما تعتمد النتيجة على توقيت أحداث غير متحكم فيها</td>
+                </tr>
+            </table>
+        </section>
+
+        <!-- أماكن الصور -->
+        <section>
+            <h2>٤.١٢ مخططات من الشرائح</h2>
+            
+            <div class="image-placeholder">
+                <h4>📊 عملية أحادية الخيط مقابل متعددة الخيوط</h4>
+                <p>[إدراج مخطط من Chapter_4.pdf صفحة ٦]</p>
+            </div>
+
+            <div class="image-placeholder">
+                <h4>📊 خيوط المستخدم وخيوط النواة</h4>
+                <p>[إدراج مخطط يوضح فصل مساحة المستخدم/النواة]</p>
+            </div>
+
+            <div class="image-placeholder">
+                <h4>📊 هيكل خادم متعدد الخيوط</h4>
+                <p>[إدراج مخطط هيكل الخادم من الشرائح]</p>
+            </div>
+
+            <div class="image-placeholder">
+                <h4>📊 مقارنة نماذج الخيوط</h4>
+                <p>[إدراج نماذج متعدد إلى واحد، واحد إلى واحد، متعدد إلى متعدد]</p>
+            </div>
+
+            <div class="warning-box">
+                <p><strong>ملاحظة:</strong> يرجى توفير المخططات الفعلية من شرائح Chapter_4.pdf لاستبدال هذه العناصر النائبة.</p>
+            </div>
+        </section>
+
+        <footer>
+            <p>CS330 - أنظمة التشغيل</p>
+            <p>الفصل ٤: الخيوط</p>
+            <p><strong>إعداد: شوق العمران</strong></p>
+            <p>جامعة الأمير سلطان</p>
+        </footer>
+    </div>
+</body>
+</html>

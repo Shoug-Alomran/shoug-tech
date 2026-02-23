@@ -1,0 +1,1049 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CS 340 Chapter 9 - Normalization</title>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700;800&family=Inter:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --primary: #2563eb;
+            --secondary: #f59e0b;
+            --accent: #ec4899;
+            --success: #10b981;
+            --danger: #ef4444;
+            --dark: #0f172a;
+            --light: #f8fafc;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 50%, #fef3c7 100%);
+            color: var(--dark);
+            line-height: 1.7;
+        }
+
+        .container { max-width: 1400px; margin: 0 auto; padding: 60px 30px; }
+
+        .hero {
+            background: linear-gradient(135deg, var(--primary) 0%, #3b82f6 100%);
+            color: white;
+            padding: 100px 60px;
+            border-radius: 30px;
+            margin-bottom: 60px;
+            box-shadow: 0 20px 60px rgba(37, 99, 235, 0.4);
+        }
+
+        .hero h1 {
+            font-family: 'Crimson Pro', serif;
+            font-size: 4rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+        }
+
+        .hero-subtitle {
+            font-size: 1.5rem;
+            opacity: 0.95;
+            margin-bottom: 30px;
+        }
+
+        .hero-meta {
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .meta-badge {
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-weight: 600;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .toc {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            margin-bottom: 50px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            border-left: 5px solid var(--primary);
+        }
+
+        .toc h2 {
+            font-family: 'Crimson Pro', serif;
+            font-size: 2rem;
+            color: var(--dark);
+            margin-bottom: 25px;
+        }
+
+        .toc-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
+        }
+
+        .toc-item {
+            padding: 15px 20px;
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+            border-radius: 12px;
+            border-left: 3px solid var(--secondary);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .toc-item:hover {
+            transform: translateX(10px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .toc-item a {
+            text-decoration: none;
+            color: var(--dark);
+            font-weight: 500;
+        }
+
+        .section {
+            background: white;
+            padding: 50px;
+            border-radius: 25px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+            position: relative;
+        }
+
+        .section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: linear-gradient(180deg, var(--primary) 0%, var(--accent) 100%);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 35px;
+            padding-bottom: 25px;
+            border-bottom: 3px solid #e2e8f0;
+        }
+
+        .section-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, var(--primary) 0%, #3b82f6 100%);
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
+        }
+
+        .section h2 {
+            font-family: 'Crimson Pro', serif;
+            font-size: 2.5rem;
+            color: var(--dark);
+            font-weight: 700;
+        }
+
+        .section h3 {
+            font-family: 'Crimson Pro', serif;
+            font-size: 1.8rem;
+            color: var(--primary);
+            margin: 35px 0 20px;
+        }
+
+        .concept-box {
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+            padding: 30px;
+            border-radius: 18px;
+            margin: 25px 0;
+            border-left: 5px solid var(--primary);
+        }
+
+        .example-box {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            padding: 30px;
+            border-radius: 18px;
+            margin: 25px 0;
+            border-left: 5px solid var(--secondary);
+        }
+
+        .important-box {
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            padding: 30px;
+            border-radius: 18px;
+            margin: 25px 0;
+            border-left: 5px solid var(--success);
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+            padding: 30px;
+            border-radius: 18px;
+            margin: 25px 0;
+            border-left: 5px solid var(--danger);
+        }
+
+        .anomaly-box {
+            background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%);
+            padding: 30px;
+            border-radius: 18px;
+            margin: 25px 0;
+            border-left: 5px solid var(--accent);
+        }
+
+        .box-title {
+            font-weight: 700;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+        }
+
+        .nf-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+
+        .nf-table th {
+            background: linear-gradient(135deg, var(--primary) 0%, #3b82f6 100%);
+            color: white;
+            padding: 18px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .nf-table td {
+            padding: 18px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .nf-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .nf-table tr:hover {
+            background: #eff6ff;
+        }
+
+        .fd-notation {
+            background: var(--dark);
+            color: #e2e8f0;
+            padding: 15px 25px;
+            border-radius: 8px;
+            font-family: 'Space Mono', monospace;
+            display: inline-block;
+            margin: 10px 0;
+            font-size: 1.1rem;
+        }
+
+        .fd-arrow {
+            color: var(--accent);
+            font-weight: bold;
+        }
+
+        .decomposition-flow {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin: 25px 0;
+            flex-wrap: wrap;
+        }
+
+        .decomp-box {
+            flex: 1;
+            min-width: 200px;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            border: 2px solid var(--primary);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .decomp-arrow {
+            font-size: 2rem;
+            color: var(--accent);
+            font-weight: bold;
+        }
+
+        ul, ol { margin-left: 25px; margin-top: 15px; }
+        li { margin-bottom: 12px; line-height: 1.8; }
+        li strong { color: var(--primary); }
+
+        .rule-box {
+            background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%);
+            padding: 25px;
+            border-radius: 12px;
+            margin: 20px 0;
+            border-left: 4px solid #a855f7;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 80px;
+            padding: 40px;
+            background: linear-gradient(135deg, var(--dark) 0%, var(--primary) 100%);
+            border-radius: 25px;
+            color: white;
+        }
+
+        .footer .name {
+            font-family: 'Crimson Pro', serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .hero { padding: 60px 30px; }
+            .hero h1 { font-size: 2.5rem; }
+            .section { padding: 30px 25px; }
+            .decomposition-flow { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="hero">
+            <h1>📐 Functional Dependencies & Normalization</h1>
+            <p class="hero-subtitle">Optimizing Database Design Through Normal Forms</p>
+            <div class="hero-meta">
+                <div class="meta-badge">📚 Chapter 9</div>
+                <div class="meta-badge">🎯 CS 340</div>
+                <div class="meta-badge">👩‍🎓 Shoug Alomran</div>
+                <div class="meta-badge">⏱️ Complete Guide</div>
+            </div>
+        </div>
+
+        <div class="toc">
+            <h2>📑 Table of Contents</h2>
+            <div class="toc-grid">
+                <div class="toc-item"><a href="#guidelines">📋 Design Guidelines</a></div>
+                <div class="toc-item"><a href="#redundancy">💾 Redundancy & Anomalies</a></div>
+                <div class="toc-item"><a href="#fd">🔗 Functional Dependencies</a></div>
+                <div class="toc-item"><a href="#keys">🔑 Keys & Attributes</a></div>
+                <div class="toc-item"><a href="#1nf">1️⃣ First Normal Form (1NF)</a></div>
+                <div class="toc-item"><a href="#2nf">2️⃣ Second Normal Form (2NF)</a></div>
+                <div class="toc-item"><a href="#3nf">3️⃣ Third Normal Form (3NF)</a></div>
+                <div class="toc-item"><a href="#bcnf">⭐ Boyce-Codd Normal Form (BCNF)</a></div>
+                <div class="toc-item"><a href="#armstrong">🎓 Armstrong's Axioms</a></div>
+                <div class="toc-item"><a href="#closure">🔄 Closure Algorithm</a></div>
+            </div>
+        </div>
+
+        <div class="section" id="guidelines">
+            <div class="section-header">
+                <div class="section-icon">📋</div>
+                <div>
+                    <h2>Informal Design Guidelines</h2>
+                </div>
+            </div>
+
+            <div class="concept-box">
+                <div class="box-title">🎯 Goals of Database Design</div>
+                <ol>
+                    <li><strong>Information Preservation:</strong> Maintain all concepts including attributes, entities, relationships, and specializations from conceptual design</li>
+                    <li><strong>Minimum Redundancy:</strong> Minimize redundant storage and reduce need for multiple updates</li>
+                </ol>
+                <p style="margin-top: 15px;"><strong>Question:</strong> Is redundancy always bad? Sometimes redundancy is acceptable for performance reasons!</p>
+            </div>
+
+            <h3>Four Key Guidelines</h3>
+            
+            <div class="important-box">
+                <div class="box-title">📌 Guideline 1: Clear Semantics</div>
+                <p><strong>Semantics of relation attributes must be clear</strong></p>
+                <ul>
+                    <li>Each tuple should represent <strong>one entity or relationship instance</strong></li>
+                    <li>Don't mix attributes from different entities (EMPLOYEE, DEPARTMENT, PROJECT)</li>
+                    <li>Use foreign keys to refer to other entities</li>
+                    <li>Keep entity and relationship attributes separate</li>
+                    <li><strong>Bottom line:</strong> Design schemas that are easy to explain</li>
+                </ul>
+            </div>
+
+            <div class="important-box">
+                <div class="box-title">📌 Guideline 2: Avoid Anomalies</div>
+                <p><strong>Design schemas that don't suffer from insertion, deletion, and update anomalies</strong></p>
+                <p>If anomalies exist, document them so applications can handle them properly</p>
+            </div>
+
+            <div class="important-box">
+                <div class="box-title">📌 Guideline 3: Minimize NULL Values</div>
+                <p><strong>Design relations with as few NULL values as possible</strong></p>
+                <ul>
+                    <li>Frequently NULL attributes should be in separate relations</li>
+                    <li>NULLs waste storage space</li>
+                    <li>NULLs have multiple interpretations (not applicable, unknown, unavailable)</li>
+                    <li>Can cause problems with JOINs and understanding attribute meaning</li>
+                </ul>
+            </div>
+
+            <div class="important-box">
+                <div class="box-title">📌 Guideline 4: Avoid Spurious Tuples</div>
+                <p><strong>Design relations that can be joined without generating spurious (false) tuples</strong></p>
+                <ul>
+                    <li>Join on attributes that are primary keys and foreign keys</li>
+                    <li>Bad designs can generate erroneous results in JOINs</li>
+                    <li>Always use lossless joins</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section" id="redundancy">
+            <div class="section-header">
+                <div class="section-icon">💾</div>
+                <div>
+                    <h2>Redundancy & Update Anomalies</h2>
+                </div>
+            </div>
+
+            <div class="concept-box">
+                <div class="box-title">⚠️ Problems with Redundant Information</div>
+                <ul>
+                    <li><strong>Wastes storage</strong> space</li>
+                    <li>Causes <strong>update anomalies</strong>:
+                        <ul>
+                            <li>Insertion anomalies</li>
+                            <li>Deletion anomalies</li>
+                            <li>Modification anomalies</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+
+            <h3>The Three Types of Anomalies</h3>
+
+            <div class="anomaly-box">
+                <div class="box-title">🔴 Update (Modification) Anomaly</div>
+                <p><strong>Example:</strong> Consider <code>EMP_PROJ(Emp#, Proj#, Ename, Pname, No_hours)</code></p>
+                <p><strong>Problem:</strong> Changing project P1's name from "Billing" to "Customer-Accounting" requires updating ALL 100 employees working on that project!</p>
+                <p style="margin-top: 10px;"><strong>Impact:</strong> Data inconsistency if some updates are missed</p>
+            </div>
+
+            <div class="anomaly-box">
+                <div class="box-title">🟠 Insertion Anomaly</div>
+                <p><strong>Example:</strong> <code>EMP_PROJ(Emp#, Proj#, Ename, Pname, No_hours)</code></p>
+                <p><strong>Problems:</strong></p>
+                <ul>
+                    <li>Cannot insert a project unless an employee is assigned to it</li>
+                    <li>Cannot insert an employee unless they're assigned to a project</li>
+                </ul>
+                <p style="margin-top: 10px;"><strong>Impact:</strong> Loss of information about projects/employees</p>
+            </div>
+
+            <div class="anomaly-box">
+                <div class="box-title">🟡 Deletion Anomaly</div>
+                <p><strong>Example:</strong> <code>EMP_PROJ(Emp#, Proj#, Ename, Pname, No_hours)</code></p>
+                <p><strong>Problems:</strong></p>
+                <ul>
+                    <li>Deleting a project deletes ALL employees working on it</li>
+                    <li>Deleting the sole employee on a project deletes the project</li>
+                </ul>
+                <p style="margin-top: 10px;"><strong>Impact:</strong> Unintended loss of important information</p>
+            </div>
+        </div>
+
+        <div class="section" id="fd">
+            <div class="section-header">
+                <div class="section-icon">🔗</div>
+                <div>
+                    <h2>Functional Dependencies (FDs)</h2>
+                </div>
+            </div>
+
+            <div class="concept-box">
+                <div class="box-title">📘 What are Functional Dependencies?</div>
+                <p>A <strong>formal tool</strong> for analyzing relational schemas that enables detection and description of design problems in precise form.</p>
+                <p style="margin-top: 15px;"><strong>Definition:</strong> A set of attributes X functionally determines a set of attributes Y if the value of X determines a unique value for Y</p>
+            </div>
+
+            <div class="important-box">
+                <div class="box-title">🔑 Formal Definition</div>
+                <p><strong>X → Y holds if:</strong> Whenever two tuples have the same value for X, they must have the same value for Y</p>
+                <p style="margin-top: 10px;">For any two tuples t₁ and t₂: If t₁[X] = t₂[X], then t₁[Y] = t₂[Y]</p>
+                <div class="fd-notation">
+                    X <span class="fd-arrow">→</span> Y
+                </div>
+                <p style="margin-top: 15px;"><strong>Key Points:</strong></p>
+                <ul>
+                    <li>FDs are a property of the <strong>relation schema</strong>, not individual instances</li>
+                    <li>FDs are derived from real-world constraints</li>
+                    <li>Used to define normal forms</li>
+                </ul>
+            </div>
+
+            <h3>Examples of Functional Dependencies</h3>
+
+            <div class="example-box">
+                <div class="box-title">💡 Common FD Examples</div>
+                <div class="fd-notation">SSN <span class="fd-arrow">→</span> ENAME</div>
+                <p>Social security number determines employee name</p>
+
+                <div class="fd-notation" style="margin-top: 15px;">PNUMBER <span class="fd-arrow">→</span> {PNAME, PLOCATION}</div>
+                <p>Project number determines project name and location</p>
+
+                <div class="fd-notation" style="margin-top: 15px;">{SSN, PNUMBER} <span class="fd-arrow">→</span> HOURS</div>
+                <p>Employee SSN and project number together determine hours worked</p>
+            </div>
+
+            <h3>Types of Functional Dependencies</h3>
+
+            <div class="nf-table">
+                <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                    <th>Example</th>
+                </tr>
+                <tr>
+                    <td><strong>Full Dependency</strong></td>
+                    <td>Removal of any attribute breaks the FD</td>
+                    <td>{SSN, PNUMBER} → HOURS</td>
+                </tr>
+                <tr>
+                    <td><strong>Partial Dependency</strong></td>
+                    <td>A subset of the left side can determine the right side</td>
+                    <td>SSN → ENAME (when key is {SSN, PNUMBER})</td>
+                </tr>
+                <tr>
+                    <td><strong>Transitive Dependency</strong></td>
+                    <td>X → Y and Y → Z, therefore X → Z</td>
+                    <td>SSN → DNUMBER → DMGR_SSN</td>
+                </tr>
+            </table>
+
+            <h3>Determining FDs from Instances</h3>
+
+            <div class="warning-box">
+                <div class="box-title">⚠️ Important Rules</div>
+                <ul>
+                    <li>From a relation instance, we can only conclude that an FD <strong>may exist</strong></li>
+                    <li>We can definitively conclude that certain FDs <strong>do NOT exist</strong> when tuples violate them</li>
+                    <li>Understanding attribute meaning and relationships is essential</li>
+                    <li>If X → Y in R, this does NOT mean Y → X in R</li>
+                </ul>
+            </div>
+
+            <div class="important-box">
+                <div class="box-title">🔑 Key Property</div>
+                <p><strong>If X is a candidate key of R, then X → R</strong></p>
+                <p>This means a candidate key functionally determines all attributes in the relation</p>
+            </div>
+        </div>
+
+        <div class="section" id="keys">
+            <div class="section-header">
+                <div class="section-icon">🔑</div>
+                <div>
+                    <h2>Keys & Attribute Classifications</h2>
+                </div>
+            </div>
+
+            <div class="concept-box">
+                <div class="box-title">📘 Superkey</div>
+                <p>A <strong>superkey</strong> is a set of attributes S ⊆ R where no two tuples will have the same values for S</p>
+                <p style="margin-top: 10px;"><strong>Example:</strong> {ID}, {ID, First_name, Last_name}, {ID, Order_date}</p>
+            </div>
+
+            <div class="important-box">
+                <div class="box-title">🔑 Key (Candidate Key)</div>
+                <p>A <strong>key</strong> is a <strong>minimal superkey</strong> - removing any attribute causes it to no longer be a superkey</p>
+                <p style="margin-top: 10px;"><strong>Example:</strong> {ID} or {First_name, Last_name} (if unique)</p>
+            </div>
+
+            <div class="concept-box">
+                <div class="box-title">🎯 Key Terminology</div>
+                <ul>
+                    <li><strong>Candidate Key:</strong> Any valid key for the relation</li>
+                    <li><strong>Primary Key:</strong> One candidate key chosen as the main identifier</li>
+                    <li><strong>Secondary Keys:</strong> Other candidate keys not chosen as primary</li>
+                    <li><strong>Prime Attribute:</strong> Member of <strong>at least one</strong> candidate key</li>
+                    <li><strong>Non-prime Attribute:</strong> NOT a member of any candidate key</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section" id="1nf">
+            <div class="section-header">
+                <div class="section-icon">1️⃣</div>
+                <div>
+                    <h2>First Normal Form (1NF)</h2>
+                </div>
+            </div>
+
+            <div class="concept-box">
+                <div class="box-title">📘 Definition of 1NF</div>
+                <p>A relation is in <strong>First Normal Form</strong> if it does NOT allow:</p>
+                <ul>
+                    <li><strong>Composite attributes</strong> (attributes with sub-parts)</li>
+                    <li><strong>Multivalued attributes</strong> (attributes with multiple values)</li>
+                    <li><strong>Nested relations</strong> (relations within relations)</li>
+                    <li><strong>Repeated groups</strong></li>
+                </ul>
+            </div>
+
+            <div class="important-box">
+                <div class="box-title">✅ 1NF Requirements</div>
+                <p><strong>Each attribute must contain only atomic (indivisible) values</strong></p>
+                <ul>
+                    <li>Considered part of the definition of a relation</li>
+                    <li>Most RDBMSs only allow 1NF relations</li>
+                    <li>All values must be from the same domain</li>
+                </ul>
+            </div>
+
+            <h3>Normalizing to 1NF</h3>
+
+            <div class="example-box">
+                <div class="box-title">💡 Method 1: Separate Relation</div>
+                <p><strong>For multivalued attributes:</strong></p>
+                <ol>
+                    <li>Remove attributes that violate 1NF</li>
+                    <li>Place them in a separate relation with the primary key</li>
+                    <li>Primary key of new relation = combination of original PK + multivalued attribute</li>
+                </ol>
+            </div>
+
+            <div class="example-box">
+                <div class="box-title">💡 Method 2: Expand Key (with redundancy)</div>
+                <p><strong>Alternative approach:</strong></p>
+                <ol>
+                    <li>Expand the key to include the multivalued attribute</li>
+                    <li>Create separate tuple for each value</li>
+                    <li><strong>Warning:</strong> Introduces redundancy!</li>
+                </ol>
+            </div>
+
+            <div class="example-box">
+                <div class="box-title">💡 Nested Relations</div>
+                <p><strong>To normalize nested relations:</strong></p>
+                <ol>
+                    <li>Remove the nested relation attributes</li>
+                    <li>Create new relation with original PK + nested relation's candidate key</li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="section" id="2nf">
+            <div class="section-header">
+                <div class="section-icon">2️⃣</div>
+                <div>
+                    <h2>Second Normal Form (2NF)</h2>
+                </div>
+            </div>
+
+            <div class="concept-box">
+                <div class="box-title">📘 Definition of 2NF</div>
+                <p>A relation schema R is in <strong>Second Normal Form (2NF)</strong> if:</p>
+                <ol>
+                    <li>It is in <strong>1NF</strong>, AND</li>
+                    <li>Every <strong>non-prime attribute</strong> is <strong>fully functionally dependent</strong> on the primary key</li>
+                </ol>
+            </div>
+
+            <div class="important-box">
+                <div class="box-title">🔑 Key Concept: Full Functional Dependency</div>
+                <p><strong>Full FD:</strong> Removal of any attribute from the left side breaks the dependency</p>
+                <div style="margin-top: 15px;">
+                    <div class="fd-notation">✅ {SSN, PNUMBER} → HOURS</div>
+                    <p style="margin-top: 5px;">Full FD - neither SSN → HOURS nor PNUMBER → HOURS holds</p>
+                </div>
+                <div style="margin-top: 15px;">
+                    <div class="fd-notation">❌ {SSN, PNUMBER} → ENAME</div>
+                    <p style="margin-top: 5px;">Partial dependency - SSN → ENAME holds</p>
+                </div>
+            </div>
+
+            <div class="warning-box">
+                <div class="box-title">⚠️ 2NF Violation</div>
+                <p><strong>A relation violates 2NF when:</strong></p>
+                <ul>
+                    <li>A non-prime attribute depends on only <strong>part</strong> of a composite primary key</li>
+                    <li>This is called a <strong>partial dependency</strong></li>
+                </ul>
+            </div>
+
+            <h3>Normalizing to 2NF</h3>
+
+            <div class="example-box">
+                <div class="box-title">💡 2NF Normalization Process</div>
+                <p><strong>Steps:</strong></p>
+                <ol>
+                    <li>Identify all partial dependencies</li>
+                    <li>For each partial dependency X → Y:
+                        <ul>
+                            <li>Create new relation with X and Y</li>
+                            <li>Remove Y from original relation</li>
+                            <li>Keep X in original relation as foreign key</li>
+                        </ul>
+                    </li>
+                </ol>
+            </div>
+
+            <div class="important-box">
+                <div class="box-title">📋 General Definition (Multiple Keys)</div>
+                <p>A relation is in 2NF if every non-prime attribute is NOT partially dependent on <strong>any key</strong> of R</p>
+                <p style="margin-top: 10px;"><em>This accounts for relations with multiple candidate keys</em></p>
+            </div>
+        </div>
+
+        <div class="section" id="3nf">
+            <div class="section-header">
+                <div class="section-icon">3️⃣</div>
+                <div>
+                    <h2>Third Normal Form (3NF)</h2>
+                </div>
+            </div>
+
+            <div class="concept-box">
+                <div class="box-title">📘 Definition of 3NF (Simple)</div>
+                <p>A relation schema R is in <strong>Third Normal Form (3NF)</strong> if:</p>
+                <ol>
+                    <li>It is in <strong>2NF</strong>, AND</li>
+                    <li>No <strong>non-prime attribute</strong> is transitively dependent on the primary key</li>
+                </ol>
+            </div>
+
+            <div class="important-box">
+                <div class="box-title">🔑 Transitive Dependency</div>
+                <p><strong>Transitive FD:</strong> X → Z can be derived from X → Y and Y → Z</p>
+                <div style="margin-top: 15px;">
+                    <div class="fd-notation">SSN → DNUMBER → DMGR_SSN</div>
+                    <p style="margin-top: 5px;">Therefore: SSN → DMGR_SSN is transitive</p>
+                </div>
+                <div style="margin-top: 15px;">
+                    <div class="fd-notation">✅ SSN → ENAME</div>
+                    <p style="margin-top: 5px;">Non-transitive - no intermediate attribute</p>
+                </div>
+            </div>
+
+            <div class="warning-box">
+                <div class="box-title">⚠️ Important Note</div>
+                <p>In X → Y → Z with X as primary key:</p>
+                <ul>
+                    <li>Only a problem if Y is <strong>NOT a candidate key</strong></li>
+                    <li>If Y IS a candidate key, no problem exists</li>
+                </ul>
+            </div>
+
+            <h3>General 3NF Definition (Multiple Keys)</h3>
+
+            <div class="important-box">
+                <div class="box-title">🎯 Formal 3NF Definition</div>
+                <p>A relation R is in 3NF if whenever X → A holds, then <strong>either:</strong></p>
+                <ol>
+                    <li>X is a <strong>superkey</strong> of R, OR</li>
+                    <li>A is a <strong>prime attribute</strong> of R</li>
+                </ol>
+            </div>
+
+            <div class="concept-box">
+                <div class="box-title">📋 Alternative 3NF Definition</div>
+                <p>A relation is in 3NF if every non-prime attribute:</p>
+                <ol>
+                    <li>Is <strong>fully functionally dependent</strong> on every key, AND</li>
+                    <li>Is <strong>non-transitively dependent</strong> on every key</li>
+                </ol>
+                <p style="margin-top: 10px;"><em>Note: This definition shows that 3NF implies 2NF</em></p>
+            </div>
+
+            <h3>The Mnemonic Rule</h3>
+
+            <div class="example-box">
+                <div class="box-title">💡 Remember the Normal Forms</div>
+                <ul>
+                    <li><strong>1NF:</strong> All attributes depend on <strong>the key</strong></li>
+                    <li><strong>2NF:</strong> All attributes depend on <strong>the whole key</strong></li>
+                    <li><strong>3NF:</strong> All attributes depend on <strong>nothing but the key</strong></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section" id="bcnf">
+            <div class="section-header">
+                <div class="section-icon">⭐</div>
+                <div>
+                    <h2>Boyce-Codd Normal Form (BCNF)</h2>
+                </div>
+            </div>
+
+            <div class="concept-box">
+                <div class="box-title">📘 What is BCNF?</div>
+                <p><strong>BCNF</strong> is a stronger form of 3NF that handles relations with overlapping candidate keys</p>
+                <p style="margin-top: 10px;">When a relation has more than one candidate key, anomalies may result even in 3NF</p>
+            </div>
+
+            <div class="important-box">
+                <div class="box-title">🔑 BCNF Definition</div>
+                <p>A relation R is in <strong>Boyce-Codd Normal Form (BCNF)</strong> if:</p>
+                <p style="margin-top: 10px;">Whenever X → A holds in R, then <strong>X is a superkey</strong> of R</p>
+                <div style="margin-top: 20px; padding: 15px; background: white; border-radius: 8px;">
+                    <p><strong>In other words:</strong></p>
+                    <p>Every determinant must be a candidate key</p>
+                </div>
+            </div>
+
+            <div class="concept-box">
+                <div class="box-title">📊 Normal Form Hierarchy</div>
+                <p>Each normal form is strictly stronger than the previous:</p>
+                <ul>
+                    <li>Every 2NF relation is in 1NF</li>
+                    <li>Every 3NF relation is in 2NF</li>
+                    <li><strong>Every BCNF relation is in 3NF</strong></li>
+                </ul>
+                <p style="margin-top: 15px;"><strong>Key Point:</strong> Relations can be in 3NF but NOT in BCNF!</p>
+            </div>
+
+            <h3>3NF vs BCNF</h3>
+
+            <div class="warning-box">
+                <div class="box-title">⚠️ When 3NF ≠ BCNF</div>
+                <p><strong>Recall the general 3NF definition:</strong> X → A is okay if either:</p>
+                <ol>
+                    <li>X is a superkey, OR</li>
+                    <li>A is a prime attribute</li>
+                </ol>
+                <p style="margin-top: 15px;"><strong>BCNF only allows condition (a)</strong></p>
+                <p>BCNF removes condition (b), making it stricter than 3NF</p>
+            </div>
+
+            <h3>BCNF Decomposition</h3>
+
+            <div class="example-box">
+                <div class="box-title">💡 BCNF Normalization Algorithm</div>
+                <p><strong>To decompose R into BCNF:</strong></p>
+                <ol>
+                    <li>Let X → A be the FD that violates BCNF</li>
+                    <li>Decompose R into:
+                        <ul>
+                            <li><strong>R₁ = R - A</strong></li>
+                            <li><strong>R₂ = XA</strong></li>
+                        </ul>
+                    </li>
+                    <li>If either R₁ or R₂ is not in BCNF, repeat the process</li>
+                </ol>
+            </div>
+
+            <div class="warning-box">
+                <div class="box-title">⚠️ Trade-off with BCNF</div>
+                <p><strong>Important:</strong> BCNF decomposition may not preserve all functional dependencies!</p>
+                <ul>
+                    <li>Must ensure <strong>lossless (non-additive) join</strong> property</li>
+                    <li>Some FDs may be lost in decomposition</li>
+                    <li>This is sometimes acceptable to achieve BCNF</li>
+                </ul>
+            </div>
+
+            <h3>Non-Additive Join Test</h3>
+
+            <div class="concept-box">
+                <div class="box-title">📋 Lossless Join Property</div>
+                <p>A decomposition D = {R₁, R₂} has the lossless join property if <strong>either:</strong></p>
+                <ol>
+                    <li>(R₁ ∩ R₂) → (R₁ - R₂) is in F⁺, OR</li>
+                    <li>(R₁ ∩ R₂) → (R₂ - R₁) is in F⁺</li>
+                </ol>
+                <p style="margin-top: 15px;"><strong>Translation:</strong> The common attributes must functionally determine one of the relation's unique attributes</p>
+            </div>
+        </div>
+
+        <div class="section" id="armstrong">
+            <div class="section-header">
+                <div class="section-icon">🎓</div>
+                <div>
+                    <h2>Armstrong's Axioms</h2>
+                </div>
+            </div>
+
+            <div class="concept-box">
+                <div class="box-title">📘 Inference Rules for FDs</div>
+                <p><strong>Armstrong's Axioms</strong> are proven and complete inference rules for deriving functional dependencies</p>
+            </div>
+
+            <div class="important-box">
+                <div class="box-title">🔑 The Three Axioms</div>
+                <p><strong>1. Reflexivity:</strong> If Y ⊆ X, then X → Y</p>
+                <div class="fd-notation">Example: AB → B</div>
+
+                <p style="margin-top: 20px;"><strong>2. Augmentation:</strong> If X → Y, then XZ → YZ</p>
+                <div class="fd-notation">Example: If A → B, then AC → BC</div>
+
+                <p style="margin-top: 20px;"><strong>3. Transitivity:</strong> If X → Y and Y → Z, then X → Z</p>
+                <div class="fd-notation">Example: If A → B and B → C, then A → C</div>
+            </div>
+
+            <h3>Derived Rules</h3>
+
+            <div class="rule-box">
+                <div class="box-title">📐 Additional Inference Rules</div>
+                <p><strong>Union:</strong> If X → Y and X → Z, then X → YZ</p>
+                <p style="margin-top: 10px;"><strong>Decomposition:</strong> If X → YZ, then X → Y and X → Z</p>
+                <p style="margin-top: 15px;"><em>These can be proven using Armstrong's Axioms</em></p>
+            </div>
+
+            <div class="example-box">
+                <div class="box-title">💡 Proof Example: Union Rule</div>
+                <p><strong>Prove:</strong> If X → Y and X → Z, then X → YZ</p>
+                <ol>
+                    <li>Given: X → Y, X → Z</li>
+                    <li>X → Y implies XX → XY (augmentation)</li>
+                    <li>Augment X → Z with Y: XY → ZY</li>
+                    <li>X → XY → ZY means X → ZY (transitivity)</li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="section" id="closure">
+            <div class="section-header">
+                <div class="section-icon">🔄</div>
+                <div>
+                    <h2>Closure Algorithm</h2>
+                </div>
+            </div>
+
+            <div class="concept-box">
+                <div class="box-title">📘 What is Closure?</div>
+                <p><strong>Closure of X (denoted X⁺):</strong> The set of all attributes functionally determined by X based on F</p>
+                <p style="margin-top: 10px;"><strong>Key property:</strong> A key contains a full set of attributes in its closure</p>
+            </div>
+
+            <div class="important-box">
+                <div class="box-title">🔧 Closure Algorithm</div>
+                <p><strong>Input:</strong> Set of FDs F, and set of attributes X</p>
+                <p><strong>Output:</strong> X⁺ (closure of X)</p>
+                <div style="margin-top: 20px; background: white; padding: 20px; border-radius: 10px; font-family: 'Space Mono', monospace; font-size: 0.9rem;">
+X⁺ := X<br>
+<strong>repeat</strong><br>
+&nbsp;&nbsp;old_X⁺ := X⁺<br>
+&nbsp;&nbsp;<strong>for each</strong> FD Y → Z in F <strong>do</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<strong>if</strong> X⁺ ⊇ Y <strong>then</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;X⁺ := X⁺ ∪ Z<br>
+<strong>until</strong> (X⁺ = old_X⁺)
+                </div>
+            </div>
+
+            <h3>Finding Keys Using Closure</h3>
+
+            <div class="example-box">
+                <div class="box-title">💡 Complete Example</div>
+                <p><strong>Relation:</strong> SupplierPart(sname, city, status, p#, pname, qty)</p>
+                <p><strong>Functional Dependencies:</strong></p>
+                <ul>
+                    <li>fd1: sname → city</li>
+                    <li>fd2: city → status</li>
+                    <li>fd3: p# → pname</li>
+                    <li>fd4: {sname, p#} → qty</li>
+                </ul>
+                <p style="margin-top: 20px;"><strong>Prove {sname, p#} is a key:</strong></p>
+                
+                <p style="margin-top: 15px;"><strong>Step 1: Show it's a superkey</strong></p>
+                <ol>
+                    <li>{sname, p#} → {sname, p#} (trivial)</li>
+                    <li>sname → city (fd1)</li>
+                    <li>sname → status (transitive via fd2)</li>
+                    <li>{sname, p#} → qty (fd4)</li>
+                    <li>p# → pname (fd3)</li>
+                    <li>Therefore: {sname, p#}⁺ = {sname, p#, city, status, qty, pname} ✓</li>
+                </ol>
+
+                <p style="margin-top: 15px;"><strong>Step 2: Show it's minimal</strong></p>
+                <ul>
+                    <li>p# is not determined by anything → sname alone is not a key</li>
+                    <li>sname is not on right side of any FD with p# alone → p# alone is not a key</li>
+                    <li>Therefore {sname, p#} is minimal ✓</li>
+                </ul>
+
+                <p style="margin-top: 15px;"><strong>Conclusion: {sname, p#} is a key!</strong></p>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-header">
+                <div class="section-icon">📊</div>
+                <div>
+                    <h2>Summary of Normal Forms</h2>
+                </div>
+            </div>
+
+            <div class="nf-table">
+                <tr>
+                    <th>Normal Form</th>
+                    <th>Requirements</th>
+                    <th>Eliminates</th>
+                </tr>
+                <tr>
+                    <td><strong>1NF</strong></td>
+                    <td>No multivalued or composite attributes</td>
+                    <td>Repeating groups, nested relations</td>
+                </tr>
+                <tr>
+                    <td><strong>2NF</strong></td>
+                    <td>1NF + No partial dependencies</td>
+                    <td>Partial dependencies on candidate keys</td>
+                </tr>
+                <tr>
+                    <td><strong>3NF</strong></td>
+                    <td>2NF + No transitive dependencies</td>
+                    <td>Transitive dependencies through non-keys</td>
+                </tr>
+                <tr>
+                    <td><strong>BCNF</strong></td>
+                    <td>Every determinant is a candidate key</td>
+                    <td>All dependencies where determinant isn't a superkey</td>
+                </tr>
+            </table>
+
+            <div class="important-box">
+                <div class="box-title">🎯 Practical Guidelines</div>
+                <ul>
+                    <li>Normalize to <strong>at least 3NF</strong> in practice</li>
+                    <li>BCNF is ideal but may sacrifice dependency preservation</li>
+                    <li>4NF and 5NF rarely used in practice</li>
+                    <li><strong>Denormalization:</strong> Sometimes acceptable for performance (but document it!)</li>
+                </ul>
+            </div>
+
+            <div class="concept-box">
+                <div class="box-title">✨ Key Takeaways</div>
+                <ul>
+                    <li>Normalization eliminates redundancy and anomalies</li>
+                    <li>Each normal form builds on the previous one</li>
+                    <li>Higher normal forms mean better data integrity</li>
+                    <li>Trade-offs exist between normalization and performance</li>
+                    <li>Understanding FDs is essential for good database design</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer">
+            <div class="name">Shoug Alomran</div>
+            <div style="font-size: 1.1rem; opacity: 0.9;">CS 340: Introduction to Database Systems</div>
+            <div style="font-size: 1.1rem; opacity: 0.9;">Chapter 9 - Functional Dependencies & Normalization</div>
+            <div style="font-size: 1rem; margin-top: 15px; opacity: 0.8;">📐 Complete Normalization Master Guide</div>
+        </div>
+    </div>
+
+    <script>
+        document.querySelectorAll('.toc-item a').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            });
+        });
+    </script>
+</body>
+</html>

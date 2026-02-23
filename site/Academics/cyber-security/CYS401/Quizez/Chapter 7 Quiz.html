@@ -1,0 +1,1241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chapter 7 Quiz — Security Design</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f0f2ff;
+    --surface: #ffffff;
+    --surface2: #f5f7ff;
+    --border: rgba(100,80,255,0.12);
+    --text: #14112e;
+    --text2: #4a4570;
+    --accent1: #5533ff;
+    --accent2: #ff3366;
+    --accent3: #00d4aa;
+    --accent4: #ff9900;
+    --grad1: linear-gradient(135deg, #5533ff 0%, #9933ff 100%);
+    --grad2: linear-gradient(135deg, #ff3366 0%, #ff6633 100%);
+    --grad3: linear-gradient(135deg, #00d4aa 0%, #0099ff 100%);
+    --grad4: linear-gradient(135deg, #ff9900 0%, #ff3366 100%);
+    --shadow: 0 8px 40px rgba(85,51,255,0.12);
+    --shadow-hover: 0 16px 60px rgba(85,51,255,0.22);
+    --correct: #00d4aa;
+    --wrong: #ff3366;
+    --correct-bg: rgba(0,212,170,0.08);
+    --wrong-bg: rgba(255,51,102,0.08);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0a0914;
+      --surface: #130f2a;
+      --surface2: #1a1535;
+      --border: rgba(150,120,255,0.15);
+      --text: #f0eeff;
+      --text2: #a89fd8;
+      --accent1: #7b5fff;
+      --accent2: #ff4d77;
+      --accent3: #00e8bb;
+      --accent4: #ffaa22;
+      --grad1: linear-gradient(135deg, #7b5fff 0%, #b366ff 100%);
+      --grad2: linear-gradient(135deg, #ff4d77 0%, #ff7755 100%);
+      --grad3: linear-gradient(135deg, #00e8bb 0%, #33aaff 100%);
+      --grad4: linear-gradient(135deg, #ffaa22 0%, #ff4d77 100%);
+      --shadow: 0 8px 40px rgba(0,0,0,0.5);
+      --shadow-hover: 0 16px 60px rgba(123,95,255,0.3);
+      --correct: #00e8bb;
+      --wrong: #ff4d77;
+      --correct-bg: rgba(0,232,187,0.08);
+      --wrong-bg: rgba(255,77,119,0.08);
+    }
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    font-size: 15px;
+    overflow-x: hidden;
+  }
+
+  /* HERO */
+  .hero {
+    position: relative;
+    min-height: 260px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    text-align: center;
+    padding: 50px 24px 40px;
+    overflow: hidden;
+  }
+  .hero-bg { position:absolute;inset:0; background:var(--grad1); z-index:0; }
+  .hero-bg::after {
+    content:'';position:absolute;inset:0;
+    background: radial-gradient(ellipse at 15% 85%, rgba(255,51,102,0.4) 0%, transparent 55%),
+                radial-gradient(ellipse at 85% 15%, rgba(0,212,170,0.3) 0%, transparent 50%);
+  }
+  .orb { position:absolute;border-radius:50%;filter:blur(55px);opacity:0.3;animation:float 8s ease-in-out infinite; }
+  .orb:nth-child(2){width:280px;height:280px;background:#ff3366;top:-80px;right:-50px;animation-delay:-3s;}
+  .orb:nth-child(3){width:180px;height:180px;background:#00d4aa;bottom:-50px;left:8%;animation-delay:-6s;}
+  @keyframes float{0%,100%{transform:translateY(0) scale(1);}50%{transform:translateY(-18px) scale(1.04);}}
+  .hero-content { position:relative;z-index:1; }
+  .hero-tag {
+    display:inline-block;background:rgba(255,255,255,0.2);backdrop-filter:blur(10px);
+    border:1px solid rgba(255,255,255,0.3);border-radius:100px;padding:6px 20px;
+    font-size:12px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:#fff;margin-bottom:18px;
+  }
+  .hero h1 {
+    font-family:'Syne',sans-serif;font-size:clamp(1.8rem,5vw,3.2rem);font-weight:800;
+    color:#fff;line-height:1.1;margin-bottom:10px;
+  }
+  .hero h1 span { color:rgba(255,255,255,0.6); }
+  .hero p { color:rgba(255,255,255,0.8);font-size:1rem;max-width:480px;margin:0 auto;font-weight:300; }
+
+  /* PROGRESS BAR */
+  .progress-wrap {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 24px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    backdrop-filter: blur(20px);
+  }
+  .progress-bar-outer {
+    flex: 1;
+    height: 8px;
+    background: var(--surface2);
+    border-radius: 100px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .progress-bar-inner {
+    height: 100%;
+    background: var(--grad1);
+    border-radius: 100px;
+    transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+    width: 0%;
+  }
+  .progress-label {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text2);
+    white-space: nowrap;
+  }
+  .score-pill {
+    background: var(--grad1);
+    color: #fff;
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 5px 16px;
+    border-radius: 100px;
+    white-space: nowrap;
+  }
+
+  /* MAIN */
+  main {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  /* SECTION DIVIDER */
+  .section-divider {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin: 40px 0 20px;
+  }
+  .section-divider:first-child { margin-top: 0; }
+  .sec-icon {
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; flex-shrink: 0;
+  }
+  .sec-icon.g1 { background: var(--grad1); }
+  .sec-icon.g2 { background: var(--grad2); }
+  .sec-icon.g3 { background: var(--grad3); }
+  .sec-icon.g4 { background: var(--grad4); }
+  .section-divider h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: var(--text);
+  }
+  .section-divider p { font-size: 13px; color: var(--text2); margin-top:2px; }
+
+  /* QUESTION CARD */
+  .q-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 28px;
+    margin-bottom: 16px;
+    box-shadow: var(--shadow);
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+  .q-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--grad1);
+    transition: opacity 0.3s;
+  }
+  .q-card.answered-correct::before { background: linear-gradient(135deg, #00d4aa, #0099ff); }
+  .q-card.answered-wrong::before { background: linear-gradient(135deg, #ff3366, #ff6633); }
+
+  .q-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .q-num {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text2);
+  }
+  .q-type {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 12px;
+    border-radius: 100px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text2);
+  }
+  .q-text {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 18px;
+    line-height: 1.6;
+  }
+  .q-scenario {
+    background: var(--surface2);
+    border-left: 3px solid var(--accent1);
+    border-radius: 0 12px 12px 0;
+    padding: 12px 16px;
+    font-size: 13.5px;
+    color: var(--text2);
+    margin-bottom: 16px;
+    font-style: italic;
+  }
+
+  /* MCQ OPTIONS */
+  .options { display: flex; flex-direction: column; gap: 10px; }
+  .option-btn {
+    background: var(--surface2);
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    padding: 13px 18px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: var(--text);
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .option-btn:hover:not(:disabled) {
+    border-color: var(--accent1);
+    background: var(--surface);
+    transform: translateX(4px);
+  }
+  .option-btn:disabled { cursor: default; }
+  .option-btn.selected-correct {
+    background: var(--correct-bg);
+    border-color: var(--correct);
+    color: var(--text);
+  }
+  .option-btn.selected-wrong {
+    background: var(--wrong-bg);
+    border-color: var(--wrong);
+    color: var(--text);
+  }
+  .option-btn.show-correct {
+    background: var(--correct-bg);
+    border-color: var(--correct);
+    opacity: 0.7;
+  }
+  .opt-letter {
+    width: 28px; height: 28px;
+    border-radius: 8px;
+    background: var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    flex-shrink: 0;
+    transition: all 0.2s;
+  }
+  .selected-correct .opt-letter { background: var(--correct); color: #fff; }
+  .selected-wrong .opt-letter { background: var(--wrong); color: #fff; }
+  .show-correct .opt-letter { background: var(--correct); color: #fff; }
+
+  /* TEXT INPUT */
+  .text-input-wrap { display: flex; gap: 10px; align-items: flex-start; flex-wrap: wrap; }
+  .text-input {
+    flex: 1;
+    min-width: 200px;
+    background: var(--surface2);
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 16px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: var(--text);
+    outline: none;
+    transition: all 0.2s;
+  }
+  .text-input:focus { border-color: var(--accent1); background: var(--surface); }
+  .text-input:disabled { opacity: 0.7; cursor: default; }
+  .text-input.correct-input { border-color: var(--correct); background: var(--correct-bg); }
+  .text-input.wrong-input { border-color: var(--wrong); background: var(--wrong-bg); }
+
+  .submit-btn {
+    background: var(--grad1);
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    padding: 12px 22px;
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .submit-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(85,51,255,0.3); }
+  .submit-btn:disabled { opacity: 0.5; cursor: default; transform: none; }
+
+  /* FEEDBACK */
+  .feedback {
+    margin-top: 14px;
+    border-radius: 14px;
+    padding: 14px 18px;
+    font-size: 13.5px;
+    line-height: 1.65;
+    display: none;
+    animation: fadeIn 0.3s ease;
+  }
+  @keyframes fadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+  .feedback.show { display: block; }
+  .feedback.correct-fb { background: var(--correct-bg); border: 1px solid var(--correct); }
+  .feedback.wrong-fb { background: var(--wrong-bg); border: 1px solid var(--wrong); }
+  .fb-header {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .fb-header.correct-h { color: var(--correct); }
+  .fb-header.wrong-h { color: var(--wrong); }
+  .fb-body { color: var(--text2); }
+  .fb-answer {
+    margin-top: 8px;
+    padding: 8px 12px;
+    background: var(--surface);
+    border-radius: 8px;
+    font-size: 13px;
+    color: var(--text);
+  }
+  .fb-answer strong { color: var(--correct); }
+
+  /* TRUE/FALSE */
+  .tf-options { display: flex; gap: 12px; }
+  .tf-btn {
+    flex: 1;
+    padding: 14px;
+    border-radius: 12px;
+    border: 1.5px solid var(--border);
+    background: var(--surface2);
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: var(--text);
+    text-align: center;
+  }
+  .tf-btn:hover:not(:disabled) { transform: translateY(-3px); box-shadow: var(--shadow-hover); }
+  .tf-btn:disabled { cursor: default; }
+  .tf-btn.tf-true:hover:not(:disabled) { border-color: var(--correct); color: var(--correct); }
+  .tf-btn.tf-false:hover:not(:disabled) { border-color: var(--wrong); color: var(--wrong); }
+  .tf-btn.selected-correct { background: var(--correct-bg); border-color: var(--correct); color: var(--correct); }
+  .tf-btn.selected-wrong { background: var(--wrong-bg); border-color: var(--wrong); color: var(--wrong); }
+  .tf-btn.show-correct { background: var(--correct-bg); border-color: var(--correct); color: var(--correct); opacity:0.7; }
+
+  /* RESULTS SCREEN */
+  #results-screen {
+    display: none;
+    text-align: center;
+    padding: 60px 24px;
+    animation: fadeIn 0.5s ease;
+  }
+  .results-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 28px;
+    padding: 50px 40px;
+    box-shadow: var(--shadow);
+    max-width: 600px;
+    margin: 0 auto;
+    position: relative;
+    overflow: hidden;
+  }
+  .results-card::before {
+    content: '';
+    position: absolute;
+    top:0;left:0;right:0;height:4px;
+    background: var(--grad1);
+  }
+  .score-circle {
+    width: 140px; height: 140px;
+    border-radius: 50%;
+    background: var(--grad1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    margin: 0 auto 28px;
+    box-shadow: 0 0 60px rgba(85,51,255,0.3);
+  }
+  .score-big {
+    font-family: 'Syne', sans-serif;
+    font-size: 2.8rem;
+    font-weight: 800;
+    color: #fff;
+    line-height: 1;
+  }
+  .score-denom { font-size: 14px; color: rgba(255,255,255,0.7); }
+  .results-card h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.8rem;
+    font-weight: 800;
+    margin-bottom: 10px;
+  }
+  .results-card p { color: var(--text2); font-size: 14px; margin-bottom: 24px; }
+  .grade-badge {
+    display: inline-block;
+    font-family: 'Syne', sans-serif;
+    font-size: 1rem;
+    font-weight: 800;
+    padding: 8px 28px;
+    border-radius: 100px;
+    margin-bottom: 28px;
+    color: #fff;
+  }
+  .results-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 30px;
+  }
+  .stat-box {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px;
+    text-align: center;
+  }
+  .stat-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.6rem;
+    font-weight: 800;
+  }
+  .stat-num.green { color: var(--correct); }
+  .stat-num.red { color: var(--wrong); }
+  .stat-num.blue { color: var(--accent1); }
+  .stat-label { font-size: 12px; color: var(--text2); margin-top: 2px; }
+  .restart-btn {
+    background: var(--grad1);
+    color: #fff;
+    border: none;
+    border-radius: 14px;
+    padding: 16px 40px;
+    font-family: 'Syne', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .restart-btn:hover { transform: translateY(-3px); box-shadow: 0 12px 30px rgba(85,51,255,0.35); }
+
+  /* FINISH BTN */
+  #finish-wrap {
+    text-align: center;
+    padding: 30px 0 10px;
+  }
+  .finish-btn {
+    background: var(--grad4);
+    color: #fff;
+    border: none;
+    border-radius: 14px;
+    padding: 16px 48px;
+    font-family: 'Syne', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: var(--shadow);
+  }
+  .finish-btn:hover { transform: translateY(-3px); box-shadow: var(--shadow-hover); }
+
+  footer {
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    text-align: center;
+    padding: 28px 24px;
+    color: var(--text2);
+    font-size: 13px;
+    margin-top: 20px;
+  }
+
+  @media (max-width:600px) {
+    .tf-options { flex-direction: column; }
+    .text-input-wrap { flex-direction: column; }
+    .results-stats { grid-template-columns: 1fr; }
+    .results-card { padding: 36px 24px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-bg">
+    <div class="orb"></div><div class="orb"></div><div class="orb"></div>
+  </div>
+  <div class="hero-content">
+    <div class="hero-tag">Chapter 7 · Security Quiz</div>
+    <h1>Test Your Knowledge<br><span>Security Design & Models</span></h1>
+    <p>25 questions across 4 categories. Keyword-graded answers with instant explanations.</p>
+  </div>
+</div>
+
+<!-- PROGRESS -->
+<div class="progress-wrap">
+  <div class="progress-label" id="progress-label">0 / 25</div>
+  <div class="progress-bar-outer">
+    <div class="progress-bar-inner" id="progress-bar"></div>
+  </div>
+  <div class="score-pill" id="score-pill">Score: 0</div>
+</div>
+
+<main id="quiz-main">
+
+  <!-- ========================= SECTION 1 ========================= -->
+  <div class="section-divider">
+    <div class="sec-icon g1">🔐</div>
+    <div><h2>Architecture Principles</h2><p>Questions 1–8</p></div>
+  </div>
+
+  <!-- Q1 MCQ -->
+  <div class="q-card" id="q1">
+    <div class="q-meta">
+      <span class="q-num">Question 1</span>
+      <span class="q-type">Multiple Choice</span>
+    </div>
+    <div class="q-text">Which security architecture principle states that security requirements should be addressed from the very beginning of development — not as an afterthought?</div>
+    <div class="options" id="opts1">
+      <button class="option-btn" onclick="checkMCQ('q1','A','Security by Design','A')">
+        <span class="opt-letter">A</span> Least Privilege
+      </button>
+      <button class="option-btn" onclick="checkMCQ('q1','B','Security by Design','A')">
+        <span class="opt-letter">B</span> Defense in Depth
+      </button>
+      <button class="option-btn" onclick="checkMCQ('q1','C','Security by Design','A')">
+        <span class="opt-letter">C</span> Security by Design
+      </button>
+      <button class="option-btn" onclick="checkMCQ('q1','D','Security by Design','A')">
+        <span class="opt-letter">D</span> Zero Trust
+      </button>
+    </div>
+    <div class="feedback" id="fb1"></div>
+  </div>
+
+  <!-- Q2 TF -->
+  <div class="q-card" id="q2">
+    <div class="q-meta">
+      <span class="q-num">Question 2</span>
+      <span class="q-type">True / False</span>
+    </div>
+    <div class="q-text">The principle of <strong>Fail Secure</strong> prioritizes availability — it disables the security control so users can still access the system even when something goes wrong.</div>
+    <div class="tf-options">
+      <button class="tf-btn tf-true" onclick="checkTF('q2', true, false, 'Fail Secure is the opposite — it blocks access to protect security, which may cause denial of service. <strong>Fail Safe</strong> is the one that disables controls to keep systems accessible, at the risk of illegitimate access. Fail Secure = security first. Fail Safe = availability first.')">✅ True</button>
+      <button class="tf-btn tf-false" onclick="checkTF('q2', false, false, 'Fail Secure is the opposite — it blocks access to protect security, which may cause denial of service. <strong>Fail Safe</strong> is the one that disables controls to keep systems accessible, at the risk of illegitimate access. Fail Secure = security first. Fail Safe = availability first.')">❌ False</button>
+    </div>
+    <div class="feedback" id="fb2"></div>
+  </div>
+
+  <!-- Q3 SHORT -->
+  <div class="q-card" id="q3">
+    <div class="q-meta">
+      <span class="q-num">Question 3</span>
+      <span class="q-type">Short Answer</span>
+    </div>
+    <div class="q-scenario">Scenario: A financial organization ensures that the same person who initiates a wire transfer cannot also approve it. What security principle does this demonstrate?</div>
+    <div class="text-input-wrap">
+      <input class="text-input" id="input3" placeholder="Type your answer here…" onkeydown="if(event.key==='Enter') submitText('q3', ['separation of duties','separation','duties','dual control','task split','two person'], 'Separation of Duties', 'Separation of Duties means no single person has sole control over an entire transaction. By splitting initiation and authorization, fraud requires collusion between two people. Methods include task splitting (two people share a task) and task shadowing (one works, one monitors).')">
+      <button class="submit-btn" onclick="submitText('q3', ['separation of duties','separation of duty','separation','duties','dual control','task split','task shadow','two person'], 'Separation of Duties', 'Separation of Duties means no single person has sole control over an entire transaction. By splitting initiation and authorization, fraud requires collusion between two people. Methods include task splitting (two people share a task) and task shadowing (one works, one monitors).')">Submit</button>
+    </div>
+    <div class="feedback" id="fb3"></div>
+  </div>
+
+  <!-- Q4 MCQ -->
+  <div class="q-card" id="q4">
+    <div class="q-meta">
+      <span class="q-num">Question 4</span>
+      <span class="q-type">Multiple Choice</span>
+    </div>
+    <div class="q-text">A database admin is only given access to the databases they directly manage — not to HR systems, application servers, or other unrelated resources. This is an example of:</div>
+    <div class="options" id="opts4">
+      <button class="option-btn" onclick="checkMCQ('q4','A','Least Privilege','C')">
+        <span class="opt-letter">A</span> Zero Trust
+      </button>
+      <button class="option-btn" onclick="checkMCQ('q4','B','Least Privilege','C')">
+        <span class="opt-letter">B</span> Default Deny
+      </button>
+      <button class="option-btn" onclick="checkMCQ('q4','C','Least Privilege','C')">
+        <span class="opt-letter">C</span> Least Privilege
+      </button>
+      <button class="option-btn" onclick="checkMCQ('q4','D','Least Privilege','C')">
+        <span class="opt-letter">D</span> Separation of Duties
+      </button>
+    </div>
+    <div class="feedback" id="fb4"></div>
+  </div>
+
+  <!-- Q5 SHORT -->
+  <div class="q-card" id="q5">
+    <div class="q-meta">
+      <span class="q-num">Question 5</span>
+      <span class="q-type">Short Answer</span>
+    </div>
+    <div class="q-text">An enterprise deploys a perimeter firewall, an IDS, network segmentation, secure endpoints, AND encryption — so that if the firewall is bypassed, other controls still protect the network. What principle does this represent?</div>
+    <div class="text-input-wrap">
+      <input class="text-input" id="input5" placeholder="Type your answer here…" onkeydown="if(event.key==='Enter') submitText('q5', ['defense in depth','layered','defense','depth','multiple layers','layers of security'], 'Defense in Depth', 'Defense in Depth uses multiple layers of security so that if one control fails or is compromised, another still protects the system. No single point of failure. The key idea: an attacker must defeat every layer, not just one.')">
+      <button class="submit-btn" onclick="submitText('q5', ['defense in depth','layered','defense','depth','multiple layers','layers of security'], 'Defense in Depth', 'Defense in Depth uses multiple layers of security so that if one control fails or is compromised, another still protects the system. No single point of failure. The key idea: an attacker must defeat every layer, not just one.')">Submit</button>
+    </div>
+    <div class="feedback" id="fb5"></div>
+  </div>
+
+  <!-- Q6 TF -->
+  <div class="q-card" id="q6">
+    <div class="q-meta">
+      <span class="q-num">Question 6</span>
+      <span class="q-type">True / False</span>
+    </div>
+    <div class="q-text"><strong>Zero Trust</strong> is a security model that assumes all internal network users are trusted, but external users must be verified before access is granted.</div>
+    <div class="tf-options">
+      <button class="tf-btn tf-true" onclick="checkTF('q6', true, false, 'Zero Trust assumes NO actor is trusted — inside OR outside the network perimeter. Every interaction must be verified before access is granted. Even an internal employee needs MFA and device verification. The key phrase is: &quot;Never trust, always verify.&quot;')">✅ True</button>
+      <button class="tf-btn tf-false" onclick="checkTF('q6', false, false, 'Zero Trust assumes NO actor is trusted — inside OR outside the network perimeter. Every interaction must be verified before access is granted. Even an internal employee needs MFA and device verification. The key phrase is: &quot;Never trust, always verify.&quot;')">❌ False</button>
+    </div>
+    <div class="feedback" id="fb6"></div>
+  </div>
+
+  <!-- Q7 MCQ -->
+  <div class="q-card" id="q7">
+    <div class="q-meta">
+      <span class="q-num">Question 7</span>
+      <span class="q-type">Multiple Choice</span>
+    </div>
+    <div class="q-text">Which of the following BEST describes the "Default Deny" principle?</div>
+    <div class="options" id="opts7">
+      <button class="option-btn" onclick="checkMCQ('q7','A','Default Deny','B')">
+        <span class="opt-letter">A</span> All users are granted basic access unless explicitly removed
+      </button>
+      <button class="option-btn" onclick="checkMCQ('q7','B','Default Deny','B')">
+        <span class="opt-letter">B</span> Access to resources is blocked by default; access must be explicitly configured
+      </button>
+      <button class="option-btn" onclick="checkMCQ('q7','C','Default Deny','B')">
+        <span class="opt-letter">C</span> External systems are denied access but internal users are trusted
+      </button>
+      <button class="option-btn" onclick="checkMCQ('q7','D','Default Deny','B')">
+        <span class="opt-letter">D</span> Systems fail into an accessible state when a control malfunctions
+      </button>
+    </div>
+    <div class="feedback" id="fb7"></div>
+  </div>
+
+  <!-- Q8 SHORT -->
+  <div class="q-card" id="q8">
+    <div class="q-meta">
+      <span class="q-num">Question 8</span>
+      <span class="q-type">Short Answer</span>
+    </div>
+    <div class="q-text">Name <strong>two</strong> ongoing maintenance tasks that are required because "Security is a Process" — meaning security must be maintained over time.</div>
+    <div class="text-input-wrap">
+      <input class="text-input" id="input8" placeholder="e.g., patch security holes, update antivirus…" onkeydown="if(event.key==='Enter') submitText('q8', ['patch','antivirus','virus','firewall','obsolete users','update','test','check users','security holes'], 'Any two of: patch security holes, update antivirus software, test firewalls, check for obsolete users', 'Every system has vulnerabilities. Security requirements change over time and so does the threat context. Common maintenance tasks include: checking for obsolete/inactive user accounts, updating antivirus signatures, patching known security vulnerabilities, and regularly testing firewall rules. Failing to maintain security controls creates gaps attackers can exploit.')">
+      <button class="submit-btn" onclick="submitText('q8', ['patch','antivirus','virus','firewall','obsolete users','update','test','check users','security holes'], 'Any two of: patch security holes, update antivirus software, test firewalls, check for obsolete users', 'Every system has vulnerabilities. Security requirements change over time and so does the threat context. Common maintenance tasks include: checking for obsolete/inactive user accounts, updating antivirus signatures, patching known security vulnerabilities, and regularly testing firewall rules. Failing to maintain security controls creates gaps attackers can exploit.')">Submit</button>
+    </div>
+    <div class="feedback" id="fb8"></div>
+  </div>
+
+  <!-- ========================= SECTION 2 ========================= -->
+  <div class="section-divider">
+    <div class="sec-icon g2">⚠️</div>
+    <div><h2>Architecture Flaws & Attacks</h2><p>Questions 9–14</p></div>
+  </div>
+
+  <!-- Q9 MCQ -->
+  <div class="q-card" id="q9">
+    <div class="q-meta">
+      <span class="q-num">Question 9</span>
+      <span class="q-type">Multiple Choice</span>
+    </div>
+    <div class="q-text">A technique used to transfer information in a secretive, unauthorized manner — either by exploiting shared resources like RAM/CPU or by accessing storage media — is called a:</div>
+    <div class="options" id="opts9">
+      <button class="option-btn" onclick="checkMCQ('q9','A','Covert Channel','C')">
+        <span class="opt-letter">A</span> Salami Attack
+      </button>
+      <button class="option-btn" onclick="checkMCQ('q9','B','Covert Channel','C')">
+        <span class="opt-letter">B</span> Data Diddling
+      </button>
+      <button class="option-btn" onclick="checkMCQ('q9','C','Covert Channel','C')">
+        <span class="opt-letter">C</span> Covert Channel
+      </button>
+      <button class="option-btn" onclick="checkMCQ('q9','D','Covert Channel','C')">
+        <span class="opt-letter">D</span> Maintenance Hook
+      </button>
+    </div>
+    <div class="feedback" id="fb9"></div>
+  </div>
+
+  <!-- Q10 SHORT -->
+  <div class="q-card" id="q10">
+    <div class="q-meta">
+      <span class="q-num">Question 10</span>
+      <span class="q-type">Short Answer</span>
+    </div>
+    <div class="q-scenario">Scenario: A malicious employee at a bank writes code that rounds down each transaction by $0.001 and deposits those fractions into a hidden account. Over millions of transactions, this accumulates into a large theft that went undetected. What type of attack is this?</div>
+    <div class="text-input-wrap">
+      <input class="text-input" id="input10" placeholder="Type the attack name…" onkeydown="if(event.key==='Enter') submitText('q10', ['salami','aggregation','incremental'], 'Salami Attack (also called Aggregation or Incremental Attack)', 'A Salami attack involves many small individual actions that are each too tiny to be noticed, but cumulatively add up to a significant attack. The name comes from slicing salami — each slice is thin, but you eventually eat the whole thing. This is also called an incremental attack. Protection: implement anomaly detection and audit logs that flag unusual patterns even at small scales.')">
+      <button class="submit-btn" onclick="submitText('q10', ['salami','aggregation','incremental'], 'Salami Attack (also called Aggregation or Incremental Attack)', 'A Salami attack involves many small individual actions that are each too tiny to be noticed, but cumulatively add up to a significant attack. The name comes from slicing salami — each slice is thin, but you eventually eat the whole thing. This is also called an incremental attack. Protection: implement anomaly detection and audit logs that flag unusual patterns even at small scales.')">Submit</button>
+    </div>
+    <div class="feedback" id="fb10"></div>
+  </div>
+
+  <!-- Q11 TF -->
+  <div class="q-card" id="q11">
+    <div class="q-meta">
+      <span class="q-num">Question 11</span>
+      <span class="q-type">True / False</span>
+    </div>
+    <div class="q-text">A <strong>Maintenance Hook</strong> (backdoor) is a legitimate and safe feature because it is only accessible to authorized developers.</div>
+    <div class="tf-options">
+      <button class="tf-btn tf-true" onclick="checkTF('q11', true, false, 'Maintenance hooks are dangerous security vulnerabilities. They bypass normal authentication checks and, if left in production code, can be exploited by attackers who discover them. Even if originally intended for legitimate developer use, they represent a design flaw that violates Security by Design and Least Privilege principles.')">✅ True</button>
+      <button class="tf-btn tf-false" onclick="checkTF('q11', false, false, 'Maintenance hooks are dangerous security vulnerabilities. They bypass normal authentication checks and, if left in production code, can be exploited by attackers who discover them. Even if originally intended for legitimate developer use, they represent a design flaw that violates Security by Design and Least Privilege principles.')">❌ False</button>
+    </div>
+    <div class="feedback" id="fb11"></div>
+  </div>
+
+  <!-- Q12 MCQ -->
+  <div class="q-card" id="q12">
+    <div class="q-meta">
+      <span class="q-num">Question 12</span>
+      <span class="q-type">Multiple Choice</span>
+    </div>
+    <div class="q-text">Which type of covert channel involves one process accessing the timing or usage of a shared system resource (such as CPU or RAM) to leak information to another process?</div>
+    <div class="options" id="opts12">
+      <button class="option-btn" onclick="checkMCQ('q12','A','Covert Timing Channel','A')">
+        <span class="opt-letter">A</span> Covert Timing Channel
+      </button>
+      <button class="option-btn" onclick="checkMCQ('q12','B','Covert Timing Channel','A')">
+        <span class="opt-letter">B</span> Covert Storage Channel
+      </button>
+      <button class="option-btn" onclick="checkMCQ('q12','C','Covert Timing Channel','A')">
+        <span class="opt-letter">C</span> Overt Channel
+      </button>
+      <button class="option-btn" onclick="checkMCQ('q12','D','Covert Timing Channel','A')">
+        <span class="opt-letter">D</span> Maintenance Hook
+      </button>
+    </div>
+    <div class="feedback" id="fb12"></div>
+  </div>
+
+  <!-- Q13 SHORT -->
+  <div class="q-card" id="q13">
+    <div class="q-meta">
+      <span class="q-num">Question 13</span>
+      <span class="q-type">Short Answer</span>
+    </div>
+    <div class="q-text">What is <strong>Data Diddling</strong>? Describe when it occurs.</div>
+    <div class="text-input-wrap">
+      <input class="text-input" id="input13" placeholder="Describe data diddling…" onkeydown="if(event.key==='Enter') submitText('q13', ['before','during','entry','input','changing data','alter','modify','changed'], 'Changing data before or during entry into a computer system', 'Data Diddling is the unauthorized changing of data before or during its entry into a computer system. The alteration happens at the input stage, which makes it particularly hard to detect afterward since the system only sees the already-corrupted data. Example: a payroll clerk changes hours from 40 to 400 before submitting timesheets. Protection: input validation and audit trails.')">
+      <button class="submit-btn" onclick="submitText('q13', ['before','during','entry','input','changing data','alter','modify','changed'], 'Changing data before or during entry into a computer system', 'Data Diddling is the unauthorized changing of data before or during its entry into a computer system. The alteration happens at the input stage, which makes it particularly hard to detect afterward since the system only sees the already-corrupted data. Example: a payroll clerk changes hours from 40 to 400 before submitting timesheets. Protection: input validation and audit trails.')">Submit</button>
+    </div>
+    <div class="feedback" id="fb13"></div>
+  </div>
+
+  <!-- Q14 MCQ -->
+  <div class="q-card" id="q14">
+    <div class="q-meta">
+      <span class="q-num">Question 14</span>
+      <span class="q-type">Multiple Choice</span>
+    </div>
+    <div class="q-text">Which protection mechanism ensures that a system returns to a known-good secure state after a failure or discontinuity, preventing the failure from compromising secure operation?</div>
+    <div class="options" id="opts14">
+      <button class="option-btn" onclick="checkMCQ('q14','A','Trusted Recovery','B')">
+        <span class="opt-letter">A</span> Input Validation
+      </button>
+      <button class="option-btn" onclick="checkMCQ('q14','B','Trusted Recovery','B')">
+        <span class="opt-letter">B</span> Trusted Recovery
+      </button>
+      <button class="option-btn" onclick="checkMCQ('q14','C','Trusted Recovery','B')">
+        <span class="opt-letter">C</span> Process Isolation
+      </button>
+      <button class="option-btn" onclick="checkMCQ('q14','D','Trusted Recovery','B')">
+        <span class="opt-letter">D</span> Confinement
+      </button>
+    </div>
+    <div class="feedback" id="fb14"></div>
+  </div>
+
+  <!-- ========================= SECTION 3 ========================= -->
+  <div class="section-divider">
+    <div class="sec-icon g3">🛡️</div>
+    <div><h2>CIA Techniques & OS Concepts</h2><p>Questions 15–18</p></div>
+  </div>
+
+  <!-- Q15 SHORT -->
+  <div class="q-card" id="q15">
+    <div class="q-meta">
+      <span class="q-num">Question 15</span>
+      <span class="q-type">Short Answer</span>
+    </div>
+    <div class="q-text">What is <strong>process confinement</strong>, and give one real-world technology that implements it?</div>
+    <div class="text-input-wrap">
+      <input class="text-input" id="input15" placeholder="Describe confinement and give an example…" onkeydown="if(event.key==='Enter') submitText('q15', ['sandbox','sandboxing','memory','read','write','restrict','isolat','certain','locations'], 'Restricting a process to only certain memory locations/resources. Example: sandboxing.', 'Process confinement allows a process to read from and write to ONLY specific memory locations and resources. It prevents processes from accessing memory or resources they are not authorized for. This is used in operating systems for process isolation and memory protection. Sandboxing (e.g., Sandboxie, browser tab sandboxing) is a common real-world implementation — programs run in an isolated container that cannot affect the host system.')">
+      <button class="submit-btn" onclick="submitText('q15', ['sandbox','sandboxing','memory','read','write','restrict','isolat','certain','locations'], 'Restricting a process to only certain memory locations/resources. Example: sandboxing.', 'Process confinement allows a process to read from and write to ONLY specific memory locations and resources. It prevents processes from accessing memory or resources they are not authorized for. This is used in operating systems for process isolation and memory protection. Sandboxing (e.g., Sandboxie, browser tab sandboxing) is a common real-world implementation — programs run in an isolated container that cannot affect the host system.')">Submit</button>
+    </div>
+    <div class="feedback" id="fb15"></div>
+  </div>
+
+  <!-- Q16 TF -->
+  <div class="q-card" id="q16">
+    <div class="q-meta">
+      <span class="q-num">Question 16</span>
+      <span class="q-type">True / False</span>
+    </div>
+    <div class="q-text">In the OS ring model, Ring 0 (the Kernel) has the <strong>least</strong> privilege, while Ring 3 (Applications) has the <strong>most</strong> privilege.</div>
+    <div class="tf-options">
+      <button class="tf-btn tf-true" onclick="checkTF('q16', true, false, 'This is reversed. Ring 0 (Kernel) is the MOST privileged ring with direct hardware access. Ring 3 (Applications/User mode) is the LEAST privileged. As the ring number increases (0→1→2→3), privilege decreases. This is why a kernel exploit is so dangerous — it gives an attacker the highest possible level of system access.')">✅ True</button>
+      <button class="tf-btn tf-false" onclick="checkTF('q16', false, false, 'This is reversed. Ring 0 (Kernel) is the MOST privileged ring with direct hardware access. Ring 3 (Applications/User mode) is the LEAST privileged. As the ring number increases (0→1→2→3), privilege decreases. This is why a kernel exploit is so dangerous — it gives an attacker the highest possible level of system access.')">❌ False</button>
+    </div>
+    <div class="feedback" id="fb16"></div>
+  </div>
+
+  <!-- Q17 MCQ -->
+  <div class="q-card" id="q17">
+    <div class="q-meta">
+      <span class="q-num">Question 17</span>
+      <span class="q-type">Multiple Choice</span>
+    </div>
+    <div class="q-text">If a compromised program is processing sensitive data, which aspect of the CIA triad is MOST directly threatened?</div>
+    <div class="options" id="opts17">
+      <button class="option-btn" onclick="checkMCQ('q17','A','Confidentiality','A')">
+        <span class="opt-letter">A</span> Confidentiality
+      </button>
+      <button class="option-btn" onclick="checkMCQ('q17','B','Confidentiality','A')">
+        <span class="opt-letter">B</span> Integrity
+      </button>
+      <button class="option-btn" onclick="checkMCQ('q17','C','Confidentiality','A')">
+        <span class="opt-letter">C</span> Availability
+      </button>
+      <button class="option-btn" onclick="checkMCQ('q17','D','Confidentiality','A')">
+        <span class="opt-letter">D</span> All three equally
+      </button>
+    </div>
+    <div class="feedback" id="fb17"></div>
+  </div>
+
+  <!-- Q18 SHORT -->
+  <div class="q-card" id="q18">
+    <div class="q-meta">
+      <span class="q-num">Question 18</span>
+      <span class="q-type">Short Answer</span>
+    </div>
+    <div class="q-text">What does <strong>Process Isolation</strong> guarantee in an operating system?</div>
+    <div class="text-input-wrap">
+      <input class="text-input" id="input18" placeholder="Describe process isolation…" onkeydown="if(event.key==='Enter') submitText('q18', ['own memory','its own','only affect','isolated','cannot access','other process','disjoint','page table','separate'], 'Any behavior will only affect the memory and resources of the isolated process — not other processes', 'Process isolation ensures that any behavior (including malicious or buggy behavior) will only affect the memory and resources associated with that specific isolated process. Other processes are protected. This is implemented using separate virtual memory spaces and disjoint page tables — each process starts at virtual address 0 but maps to different physical memory locations. This prevents a compromised process from reading passwords or data from another process.')">
+      <button class="submit-btn" onclick="submitText('q18', ['own memory','its own','only affect','isolated','cannot access','other process','disjoint','page table','separate'], 'Any behavior will only affect the memory and resources of the isolated process — not other processes', 'Process isolation ensures that any behavior (including malicious or buggy behavior) will only affect the memory and resources associated with that specific isolated process. Other processes are protected. This is implemented using separate virtual memory spaces and disjoint page tables — each process starts at virtual address 0 but maps to different physical memory locations. This prevents a compromised process from reading passwords or data from another process.')">Submit</button>
+    </div>
+    <div class="feedback" id="fb18"></div>
+  </div>
+
+  <!-- ========================= SECTION 4 ========================= -->
+  <div class="section-divider">
+    <div class="sec-icon g4">🗂️</div>
+    <div><h2>Security Models</h2><p>Questions 19–25</p></div>
+  </div>
+
+  <!-- Q19 MCQ -->
+  <div class="q-card" id="q19">
+    <div class="q-meta">
+      <span class="q-num">Question 19</span>
+      <span class="q-type">Multiple Choice</span>
+    </div>
+    <div class="q-text">The <strong>Bell-LaPadula</strong> model is designed to enforce which security property?</div>
+    <div class="options" id="opts19">
+      <button class="option-btn" onclick="checkMCQ('q19','A','Confidentiality','A')">
+        <span class="opt-letter">A</span> Confidentiality
+      </button>
+      <button class="option-btn" onclick="checkMCQ('q19','B','Confidentiality','A')">
+        <span class="opt-letter">B</span> Integrity
+      </button>
+      <button class="option-btn" onclick="checkMCQ('q19','C','Confidentiality','A')">
+        <span class="opt-letter">C</span> Availability
+      </button>
+      <button class="option-btn" onclick="checkMCQ('q19','D','Confidentiality','A')">
+        <span class="opt-letter">D</span> Non-repudiation
+      </button>
+    </div>
+    <div class="feedback" id="fb19"></div>
+  </div>
+
+  <!-- Q20 SHORT -->
+  <div class="q-card" id="q20">
+    <div class="q-meta">
+      <span class="q-num">Question 20</span>
+      <span class="q-type">Short Answer</span>
+    </div>
+    <div class="q-scenario">Scenario: A user with "Secret" clearance tries to read a "Top Secret" document. According to Bell-LaPadula, is this allowed? Name the rule that applies.</div>
+    <div class="text-input-wrap">
+      <input class="text-input" id="input20" placeholder="Allowed or not? What rule?" onkeydown="if(event.key==='Enter') submitText('q20', ['no read up','not allowed','no','denied','blocked','cannot read','simple security'], 'Not allowed — the No Read Up (Simple Security) rule', 'Bell-LaPadula\'s Simple Security Property (No Read Up) states that a subject CANNOT read an object at a classification level higher than their clearance. A Secret-cleared user cannot read Top Secret documents. This prevents classified information from leaking down to lower-clearance personnel. In the model: L(s) must be ≥ L(o) for a read to be permitted.')">
+      <button class="submit-btn" onclick="submitText('q20', ['no read up','not allowed','no','denied','blocked','cannot read','simple security'], 'Not allowed — the No Read Up (Simple Security) rule', 'Bell-LaPadula\'s Simple Security Property (No Read Up) states that a subject CANNOT read an object at a classification level higher than their clearance. A Secret-cleared user cannot read Top Secret documents. This prevents classified information from leaking down to lower-clearance personnel. In the model: L(s) must be ≥ L(o) for a read to be permitted.')">Submit</button>
+    </div>
+    <div class="feedback" id="fb20"></div>
+  </div>
+
+  <!-- Q21 MCQ -->
+  <div class="q-card" id="q21">
+    <div class="q-meta">
+      <span class="q-num">Question 21</span>
+      <span class="q-type">Multiple Choice</span>
+    </div>
+    <div class="q-text">The <strong>Biba</strong> model's "No Read Down" rule means:</div>
+    <div class="options" id="opts21">
+      <button class="option-btn" onclick="checkMCQ('q21','A','No Read Down = cant read below integrity level','B')">
+        <span class="opt-letter">A</span> A higher-integrity user cannot write to a lower-integrity object
+      </button>
+      <button class="option-btn" onclick="checkMCQ('q21','B','No Read Down = cant read below integrity level','B')">
+        <span class="opt-letter">B</span> A subject cannot read from an object at a lower integrity level than their own
+      </button>
+      <button class="option-btn" onclick="checkMCQ('q21','C','No Read Down = cant read below integrity level','B')">
+        <span class="opt-letter">C</span> A user cannot read classified documents above their clearance level
+      </button>
+      <button class="option-btn" onclick="checkMCQ('q21','D','No Read Down = cant read below integrity level','B')">
+        <span class="opt-letter">D</span> A subject cannot read from any external system
+      </button>
+    </div>
+    <div class="feedback" id="fb21"></div>
+  </div>
+
+  <!-- Q22 TF -->
+  <div class="q-card" id="q22">
+    <div class="q-meta">
+      <span class="q-num">Question 22</span>
+      <span class="q-type">True / False</span>
+    </div>
+    <div class="q-text">In the Access Control Matrix, the <strong>columns</strong> represent Capability Lists tied to subjects (users).</div>
+    <div class="tf-options">
+      <button class="tf-btn tf-true" onclick="checkTF('q22', true, false, 'Columns are NOT capability lists — they are Access Control Lists (ACLs) tied to OBJECTS (resources). ROWS are the capability lists tied to SUBJECTS (users). To remember: look down a column to see who can access a specific object (ACL). Look across a row to see everything a user can do (capability list).')">✅ True</button>
+      <button class="tf-btn tf-false" onclick="checkTF('q22', false, false, 'Columns are NOT capability lists — they are Access Control Lists (ACLs) tied to OBJECTS (resources). ROWS are the capability lists tied to SUBJECTS (users). To remember: look down a column to see who can access a specific object (ACL). Look across a row to see everything a user can do (capability list).')">❌ False</button>
+    </div>
+    <div class="feedback" id="fb22"></div>
+  </div>
+
+  <!-- Q23 SHORT -->
+  <div class="q-card" id="q23">
+    <div class="q-meta">
+      <span class="q-num">Question 23</span>
+      <span class="q-type">Short Answer</span>
+    </div>
+    <div class="q-text">What are the <strong>four rules</strong> of the Take-Grant model? List them.</div>
+    <div class="text-input-wrap">
+      <input class="text-input" id="input23" placeholder="List the four rules…" onkeydown="if(event.key==='Enter') submitText('q23', ['take','grant','create','remove'], 'Take, Grant, Create, Remove', 'The four Take-Grant rules are: (1) Take rule — a subject can take rights over an object from another subject; (2) Grant rule — a subject can grant rights to an object to another subject; (3) Create rule — a subject can create new rights; (4) Remove rule — a subject can remove rights it holds. These rules are used to trace how privileges propagate through a system and identify where leakage may occur.')">
+      <button class="submit-btn" onclick="submitText('q23', ['take','grant','create','remove'], 'Take, Grant, Create, Remove', 'The four Take-Grant rules are: (1) Take rule — a subject can take rights over an object from another subject; (2) Grant rule — a subject can grant rights to an object to another subject; (3) Create rule — a subject can create new rights; (4) Remove rule — a subject can remove rights it holds. These rules are used to trace how privileges propagate through a system and identify where leakage may occur.')">Submit</button>
+    </div>
+    <div class="feedback" id="fb23"></div>
+  </div>
+
+  <!-- Q24 MCQ -->
+  <div class="q-card" id="q24">
+    <div class="q-meta">
+      <span class="q-num">Question 24</span>
+      <span class="q-type">Multiple Choice</span>
+    </div>
+    <div class="q-text">Which statement CORRECTLY compares Bell-LaPadula and Biba?</div>
+    <div class="options" id="opts24">
+      <button class="option-btn" onclick="checkMCQ('q24','A','Bell vs Biba','C')">
+        <span class="opt-letter">A</span> Bell-LaPadula: No Write Up / Biba: No Read Up
+      </button>
+      <button class="option-btn" onclick="checkMCQ('q24','B','Bell vs Biba','C')">
+        <span class="opt-letter">B</span> Both models protect confidentiality and integrity equally
+      </button>
+      <button class="option-btn" onclick="checkMCQ('q24','C','Bell vs Biba','C')">
+        <span class="opt-letter">C</span> Bell-LaPadula: No Read Up, No Write Down / Biba: No Write Up, No Read Down
+      </button>
+      <button class="option-btn" onclick="checkMCQ('q24','D','Bell vs Biba','C')">
+        <span class="opt-letter">D</span> Biba focuses on confidentiality; Bell-LaPadula focuses on integrity
+      </button>
+    </div>
+    <div class="feedback" id="fb24"></div>
+  </div>
+
+  <!-- Q25 SHORT -->
+  <div class="q-card" id="q25">
+    <div class="q-meta">
+      <span class="q-num">Question 25</span>
+      <span class="q-type">Short Answer</span>
+    </div>
+    <div class="q-scenario">Scenario: A "Top Secret" cleared analyst wants to write a report summary into an "Unclassified" document. According to Bell-LaPadula, is this allowed? What rule applies and why?</div>
+    <div class="text-input-wrap">
+      <input class="text-input" id="input25" placeholder="Allowed? Which rule? Why?" onkeydown="if(event.key==='Enter') submitText('q25', ['no write down','not allowed','no','denied','blocked','cannot write','star property'], 'Not allowed — the No Write Down (Star Property *) rule prevents writing to lower classification levels', 'Bell-LaPadula\'s Star Property (*-property) or No Write Down rule states that a subject CANNOT write data to an object at a LOWER classification level than their clearance. This prevents a Top Secret user from intentionally or accidentally leaking classified information into an Unclassified document. Even though the analyst has high clearance, writing down would create an information leak. This is one of the most tested Bell-LaPadula rules on exams.')">
+      <button class="submit-btn" onclick="submitText('q25', ['no write down','not allowed','no','denied','blocked','cannot write','star property'], 'Not allowed — the No Write Down (Star Property *) rule prevents writing to lower classification levels', 'Bell-LaPadula\'s Star Property (*-property) or No Write Down rule states that a subject CANNOT write data to an object at a LOWER classification level than their clearance. This prevents a Top Secret user from intentionally or accidentally leaking classified information into an Unclassified document. Even though the analyst has high clearance, writing down would create an information leak. This is one of the most tested Bell-LaPadula rules on exams.')">Submit</button>
+    </div>
+    <div class="feedback" id="fb25"></div>
+  </div>
+
+  <!-- FINISH BUTTON -->
+  <div id="finish-wrap">
+    <button class="finish-btn" onclick="showResults()">🏁 Submit Quiz & See Results</button>
+  </div>
+
+  <!-- RESULTS SCREEN -->
+  <div id="results-screen">
+    <div class="results-card">
+      <div class="score-circle">
+        <div class="score-big" id="res-score">0</div>
+        <div class="score-denom" id="res-denom">/ 25</div>
+      </div>
+      <div class="grade-badge" id="res-badge">—</div>
+      <h2 id="res-title">—</h2>
+      <p id="res-msg">—</p>
+      <div class="results-stats">
+        <div class="stat-box">
+          <div class="stat-num green" id="res-correct">0</div>
+          <div class="stat-label">Correct</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num red" id="res-wrong">0</div>
+          <div class="stat-label">Wrong</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num blue" id="res-pct">0%</div>
+          <div class="stat-label">Score</div>
+        </div>
+      </div>
+      <button class="restart-btn" onclick="restartQuiz()">🔄 Try Again</button>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <div style="font-family:'Syne',sans-serif;font-size:1.05rem;font-weight:800;background:var(--grad1);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:5px;">Shoug Alomran</div>
+  <div>Chapter 7 — Security Design Quiz · Keyword-Graded with Explanations</div>
+  <div style="margin-top:4px;opacity:0.5;font-size:12px;">Auto Dark/Light Mode · 25 Questions</div>
+</footer>
+
+<script>
+  const TOTAL = 25;
+  let answered = 0;
+  let score = 0;
+  const answeredSet = new Set();
+
+  function updateProgress() {
+    const pct = (answered / TOTAL) * 100;
+    document.getElementById('progress-bar').style.width = pct + '%';
+    document.getElementById('progress-label').textContent = answered + ' / ' + TOTAL;
+    document.getElementById('score-pill').textContent = 'Score: ' + score;
+  }
+
+  function recordAnswer(qId, isCorrect) {
+    if (answeredSet.has(qId)) return false;
+    answeredSet.add(qId);
+    answered++;
+    if (isCorrect) score++;
+    updateProgress();
+    return true;
+  }
+
+  // ---- MCQ ----
+  function checkMCQ(qId, chosen, correctLabel, correctLetter) {
+    const card = document.getElementById(qId);
+    const buttons = card.querySelectorAll('.option-btn');
+    const fb = document.getElementById('fb' + qId.replace('q',''));
+    if (!recordAnswer(qId, chosen === correctLetter)) return;
+
+    const isCorrect = chosen === correctLetter;
+    card.classList.add(isCorrect ? 'answered-correct' : 'answered-wrong');
+
+    buttons.forEach((btn, i) => {
+      btn.disabled = true;
+      const letter = ['A','B','C','D'][i];
+      if (letter === correctLetter && !isCorrect) btn.classList.add('show-correct');
+    });
+    const chosenBtn = buttons[['A','B','C','D'].indexOf(chosen)];
+    chosenBtn.classList.add(isCorrect ? 'selected-correct' : 'selected-wrong');
+
+    const mcqExplanations = {
+      'q1': 'Security by Design (option C) is correct. Security requirements must be built in from the start, not retrofitted. Adding security after development wastes time and money and leaves gaps. Least Privilege is about access levels; Defense in Depth is about layering controls; Zero Trust is about never assuming trust.',
+      'q4': 'Least Privilege (C) is correct. The admin receives only what they need for their specific job — no more. Zero Trust is about verifying every interaction; Default Deny is about blocking access by default; Separation of Duties is about splitting tasks between people.',
+      'q7': 'Option B is correct. Default Deny means everything is blocked unless a rule explicitly allows it — like a firewall with an implicit deny at the end. Option A describes "Default Allow." Option C describes "Do not trust external systems." Option D describes Fail Safe.',
+      'q9': 'Covert Channel (C) is correct. It is specifically the technique for unauthorized/secretive information transfer. A Salami attack is about small cumulative fraud; Data Diddling is about altering input data; a Maintenance Hook is a backdoor for developer access.',
+      'q12': 'Covert Timing Channel (A) is correct. Timing channels exploit CPU/RAM usage patterns — the timing of when a resource is used can leak information. A Storage Channel reads/writes to actual storage media. Overt channels are legitimate communications. Maintenance Hooks are developer backdoors.',
+      'q14': 'Trusted Recovery (B) is correct. It specifically addresses returning to a secure state after failure. Input Validation prevents bad data from entering; Process Isolation prevents cross-process interference; Confinement restricts what resources a process can access.',
+      'q17': 'Confidentiality (A) is most directly threatened when a compromised program processes sensitive data — the data could be read or exfiltrated. Integrity is threatened when data is altered unpredictably. Availability is threatened when data is corrupted/lost. The slides specifically link "affected program + sensitive data → confidentiality threat."',
+      'q19': 'Confidentiality (A) is correct. Bell-LaPadula was designed for military classification systems where keeping secrets confidential is the priority. The Biba model addresses Integrity. Neither model directly addresses Availability. Non-repudiation is handled by audit logs and digital signatures.',
+      'q21': 'Option B is correct. Biba\'s "No Read Down" prevents a higher-integrity subject from reading lower-integrity data — to avoid contaminating trusted information with untrustworthy sources. Option A describes "No Write Down" (Bell-LaPadula). Option C is Bell-LaPadula\'s "No Read Up." Option D is about external systems trust.',
+      'q24': 'Option C is the correct comparison. Bell-LaPadula: No Read Up + No Write Down (protects confidentiality). Biba: No Write Up + No Read Down (protects integrity). Option A has the rules mixed up. Option B is wrong — each model protects only one property. Option D has them reversed.',
+    };
+
+    showFeedback(
+      'fb' + qId.replace('q',''),
+      isCorrect,
+      isCorrect
+        ? '✅ Correct! ' + correctLabel + ' is right.'
+        : '❌ Wrong. The correct answer is: ' + correctLabel,
+      isCorrect ? '' : (mcqExplanations[qId] || '')
+    );
+  }
+
+  // ---- TRUE/FALSE ----
+  function checkTF(qId, userAnswer, correctAnswer, explanation) {
+    const card = document.getElementById(qId);
+    const btns = card.querySelectorAll('.tf-btn');
+    if (!recordAnswer(qId, userAnswer === correctAnswer)) return;
+
+    const isCorrect = userAnswer === correctAnswer;
+    card.classList.add(isCorrect ? 'answered-correct' : 'answered-wrong');
+
+    btns.forEach(btn => { btn.disabled = true; });
+
+    const trueBtn = card.querySelector('.tf-true');
+    const falseBtn = card.querySelector('.tf-false');
+
+    if (isCorrect) {
+      (userAnswer ? trueBtn : falseBtn).classList.add('selected-correct');
+    } else {
+      (userAnswer ? trueBtn : falseBtn).classList.add('selected-wrong');
+      (correctAnswer ? trueBtn : falseBtn).classList.add('show-correct');
+    }
+
+    showFeedback(
+      'fb' + qId.replace('q',''),
+      isCorrect,
+      isCorrect ? '✅ Correct!' : '❌ False — this statement is incorrect.',
+      isCorrect ? 'Well done! Your reasoning is right.' : explanation
+    );
+  }
+
+  // ---- SHORT ANSWER ----
+  function submitText(qId, keywords, correctLabel, explanation) {
+    const num = qId.replace('q','');
+    const input = document.getElementById('input' + num);
+    const val = input.value.trim().toLowerCase();
+    if (!val) return;
+    if (answeredSet.has(qId)) return;
+
+    const card = document.getElementById(qId);
+    const btn = input.nextElementSibling;
+
+    const matched = keywords.some(kw => val.includes(kw.toLowerCase()));
+    recordAnswer(qId, matched);
+
+    input.disabled = true;
+    btn.disabled = true;
+    input.classList.add(matched ? 'correct-input' : 'wrong-input');
+    card.classList.add(matched ? 'answered-correct' : 'answered-wrong');
+
+    showFeedback(
+      'fb' + num,
+      matched,
+      matched ? '✅ Correct!' : '❌ Not quite.',
+      matched
+        ? explanation
+        : '📌 The expected answer was: <strong>' + correctLabel + '</strong><br><br>' + explanation
+    );
+  }
+
+  function showFeedback(fbId, isCorrect, headline, body) {
+    const fb = document.getElementById(fbId);
+    fb.className = 'feedback show ' + (isCorrect ? 'correct-fb' : 'wrong-fb');
+    fb.innerHTML = `
+      <div class="fb-header ${isCorrect ? 'correct-h' : 'wrong-h'}">${headline}</div>
+      <div class="fb-body">${body}</div>
+    `;
+  }
+
+  // ---- RESULTS ----
+  function showResults() {
+    document.getElementById('finish-wrap').style.display = 'none';
+    const rs = document.getElementById('results-screen');
+    rs.style.display = 'block';
+    rs.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+    const pct = Math.round((score / TOTAL) * 100);
+    document.getElementById('res-score').textContent = score;
+    document.getElementById('res-denom').textContent = '/ ' + TOTAL;
+    document.getElementById('res-correct').textContent = score;
+    document.getElementById('res-wrong').textContent = answered - score;
+    document.getElementById('res-pct').textContent = pct + '%';
+
+    let grade, title, msg, color;
+    if (pct >= 90) {
+      grade='A+'; title='Outstanding! 🎉'; msg='You have a strong command of Chapter 7. Keep it up!'; color='var(--grad3)';
+    } else if (pct >= 80) {
+      grade='A'; title='Great Work! 🌟'; msg='Excellent understanding. Review any questions you missed and you\'re exam-ready.'; color='var(--grad1)';
+    } else if (pct >= 70) {
+      grade='B'; title='Good Job! 👍'; msg='Solid foundation. Focus on the areas you missed — especially the security models.'; color='var(--grad3)';
+    } else if (pct >= 60) {
+      grade='C'; title='Keep Studying 📚'; msg='You know the basics but need to review architecture principles and model rules more carefully.'; color='var(--grad4)';
+    } else {
+      grade='F'; title='More Study Needed 💪'; msg='Don\'t worry — go back to the study guide and review each section, then try again!'; color='var(--grad2)';
+    }
+
+    const badge = document.getElementById('res-badge');
+    badge.textContent = grade;
+    badge.style.background = color;
+    document.getElementById('res-title').textContent = title;
+    document.getElementById('res-msg').textContent = msg;
+    document.querySelector('.score-circle').style.background = color;
+  }
+
+  function restartQuiz() {
+    location.reload();
+  }
+
+  updateProgress();
+</script>
+</body>
+</html>

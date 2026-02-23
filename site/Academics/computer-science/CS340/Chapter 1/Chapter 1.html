@@ -1,0 +1,1055 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CS 340: Introduction to Database Systems - Chapter 1</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@300;400;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1a3a52;
+            --secondary: #2c5f7f;
+            --accent: #e67e22;
+            --light: #f8f9fa;
+            --dark: #0d1b2a;
+            --card-bg: #ffffff;
+            --shadow: rgba(0, 0, 0, 0.08);
+            --border: #e1e8ed;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            line-height: 1.7;
+            color: var(--dark);
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8eef3 100%);
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header Section */
+        header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 80px 20px 100px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: float 20s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            50% { transform: translate(-30px, 30px) rotate(180deg); }
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .chapter-tag {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        h1 {
+            font-family: 'Crimson Pro', serif;
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            line-height: 1.2;
+        }
+
+        .subtitle {
+            font-size: 1.3rem;
+            opacity: 0.95;
+            font-weight: 400;
+            margin-bottom: 30px;
+        }
+
+        .course-info {
+            display: flex;
+            gap: 40px;
+            margin-top: 40px;
+            flex-wrap: wrap;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            opacity: 0.9;
+        }
+
+        .info-item strong {
+            font-weight: 600;
+        }
+
+        /* Learning Objectives */
+        .learning-objectives {
+            background: var(--card-bg);
+            border-left: 5px solid var(--accent);
+            padding: 30px;
+            margin: -50px auto 60px;
+            max-width: 1100px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px var(--shadow);
+            position: relative;
+            z-index: 2;
+            animation: fadeInUp 0.8s ease-out 0.2s both;
+        }
+
+        .learning-objectives h2 {
+            font-family: 'Crimson Pro', serif;
+            color: var(--primary);
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        .objectives-list {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .objectives-list li {
+            padding: 12px 0;
+            padding-left: 35px;
+            position: relative;
+            color: var(--dark);
+        }
+
+        .objectives-list li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--accent);
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        /* Main Content */
+        main {
+            padding: 40px 0 80px;
+        }
+
+        section {
+            background: var(--card-bg);
+            margin-bottom: 40px;
+            padding: 50px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px var(--shadow);
+            animation: fadeInUp 0.6s ease-out both;
+        }
+
+        section:nth-child(1) { animation-delay: 0.1s; }
+        section:nth-child(2) { animation-delay: 0.2s; }
+        section:nth-child(3) { animation-delay: 0.3s; }
+        section:nth-child(4) { animation-delay: 0.4s; }
+
+        h2 {
+            font-family: 'Crimson Pro', serif;
+            color: var(--primary);
+            font-size: 2.2rem;
+            margin-bottom: 25px;
+            font-weight: 700;
+            border-bottom: 3px solid var(--accent);
+            padding-bottom: 15px;
+        }
+
+        h3 {
+            font-family: 'Crimson Pro', serif;
+            color: var(--secondary);
+            font-size: 1.6rem;
+            margin: 35px 0 20px;
+            font-weight: 600;
+        }
+
+        p {
+            margin-bottom: 20px;
+            font-size: 1.05rem;
+            color: #333;
+        }
+
+        /* Definition Boxes */
+        .definition {
+            background: linear-gradient(135deg, #f0f7ff 0%, #e6f2ff 100%);
+            border-left: 4px solid var(--secondary);
+            padding: 25px;
+            margin: 25px 0;
+            border-radius: 8px;
+        }
+
+        .definition strong {
+            color: var(--primary);
+            font-size: 1.15rem;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        /* Example Boxes */
+        .example {
+            background: linear-gradient(135deg, #fff8f0 0%, #ffeed9 100%);
+            border-left: 4px solid var(--accent);
+            padding: 25px;
+            margin: 25px 0;
+            border-radius: 8px;
+        }
+
+        .example-title {
+            color: var(--accent);
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        /* Lists */
+        ul, ol {
+            margin: 20px 0 20px 25px;
+            line-height: 1.9;
+        }
+
+        li {
+            margin-bottom: 12px;
+            color: #444;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 30px 0;
+            background: white;
+            box-shadow: 0 2px 8px var(--shadow);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        th {
+            background: var(--primary);
+            color: white;
+            padding: 18px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 15px 18px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        /* Code/SQL Blocks */
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 25px;
+            border-radius: 8px;
+            margin: 25px 0;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .code-block .keyword {
+            color: #f56565;
+            font-weight: bold;
+        }
+
+        .code-block .string {
+            color: #68d391;
+        }
+
+        /* Diagram Section */
+        .diagram-section {
+            background: #f8fafc;
+            padding: 30px;
+            border-radius: 12px;
+            margin: 30px 0;
+            text-align: center;
+        }
+
+        .diagram-title {
+            color: var(--primary);
+            font-weight: 600;
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+        }
+
+        /* Key Points Grid */
+        .key-points {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin: 30px 0;
+        }
+
+        .point-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f7f9fc 100%);
+            padding: 25px;
+            border-radius: 12px;
+            border: 2px solid var(--border);
+            transition: all 0.3s ease;
+        }
+
+        .point-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px var(--shadow);
+            border-color: var(--accent);
+        }
+
+        .point-card h4 {
+            color: var(--primary);
+            margin-bottom: 12px;
+            font-size: 1.2rem;
+        }
+
+        /* ACID Properties */
+        .acid-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .acid-card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            border-top: 4px solid var(--accent);
+            box-shadow: 0 4px 12px var(--shadow);
+        }
+
+        .acid-letter {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 10px;
+            font-family: 'Crimson Pro', serif;
+        }
+
+        .acid-title {
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        /* Steps Timeline */
+        .steps-timeline {
+            position: relative;
+            padding-left: 40px;
+            margin: 40px 0;
+        }
+
+        .steps-timeline::before {
+            content: '';
+            position: absolute;
+            left: 12px;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: linear-gradient(to bottom, var(--accent), var(--secondary));
+        }
+
+        .step-item {
+            position: relative;
+            margin-bottom: 40px;
+            padding-left: 20px;
+        }
+
+        .step-item::before {
+            content: '';
+            position: absolute;
+            left: -33px;
+            top: 5px;
+            width: 25px;
+            height: 25px;
+            background: var(--accent);
+            border-radius: 50%;
+            border: 4px solid white;
+            box-shadow: 0 0 0 2px var(--accent);
+        }
+
+        .step-number {
+            display: inline-block;
+            background: var(--accent);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+        }
+
+        .step-title {
+            font-size: 1.4rem;
+            color: var(--primary);
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        /* Comparison Table */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 30px 0;
+        }
+
+        .comparison-side {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px var(--shadow);
+        }
+
+        .comparison-side h4 {
+            color: var(--primary);
+            font-size: 1.4rem;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid var(--accent);
+        }
+
+        .comparison-side.negative h4 {
+            border-bottom-color: #e74c3c;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--dark);
+            color: white;
+            padding: 50px 20px 30px;
+            text-align: center;
+            margin-top: 60px;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .footer-divider {
+            width: 100px;
+            height: 3px;
+            background: var(--accent);
+            margin: 0 auto 30px;
+        }
+
+        .footer-name {
+            font-family: 'Crimson Pro', serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: var(--accent);
+        }
+
+        .footer-title {
+            font-size: 1.1rem;
+            opacity: 0.8;
+            margin-bottom: 30px;
+        }
+
+        .footer-meta {
+            font-size: 0.9rem;
+            opacity: 0.6;
+            margin-top: 30px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            .subtitle {
+                font-size: 1.1rem;
+            }
+
+            section {
+                padding: 30px 25px;
+            }
+
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+
+            .course-info {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .key-points {
+                grid-template-columns: 1fr;
+            }
+
+            .acid-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Highlight Animation */
+        .highlight {
+            background: linear-gradient(120deg, transparent 0%, var(--accent) 0%);
+            background-size: 0% 100%;
+            background-repeat: no-repeat;
+            transition: background-size 0.6s ease;
+        }
+
+        .highlight:hover {
+            background-size: 100% 100%;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container header-content">
+            <span class="chapter-tag">Chapter 01</span>
+            <h1>Introduction to Database Systems</h1>
+            <p class="subtitle">CS 340: Foundations of Modern Data Management</p>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="learning-objectives">
+            <h2>Learning Objectives</h2>
+            <ul class="objectives-list">
+                <li>Describe basic database concepts, architecture, and DBMS principles</li>
+                <li>Define a database and database management system</li>
+                <li>Explain why we need databases and their advantages over file systems</li>
+                <li>Demonstrate knowledge of emerging topics in databases</li>
+            </ul>
+        </div>
+    </div>
+
+    <main class="container">
+        <section id="definitions">
+            <h2>Fundamental Definitions</h2>
+            
+            <div class="definition">
+                <strong>Database</strong>
+                An organized collection of related data, stored on disk, sometimes accessed by multiple people.
+            </div>
+
+            <div class="example">
+                <span class="example-title">Examples of Databases:</span>
+                <ul>
+                    <li><strong>University Database:</strong> Contains data on courses, students, faculty, and other resources</li>
+                    <li><strong>Movies Database:</strong> Contains data on movies, genres, actors, and directors</li>
+                    <li><strong>E-commerce Database:</strong> Contains products, customers, orders, and inventory information</li>
+                </ul>
+            </div>
+
+            <div class="definition">
+                <strong>Database Management System (DBMS)</strong>
+                A software system that manages databases. It allows accessing, modifying, backing up, and recovering the database.
+            </div>
+
+            <div class="example">
+                <span class="example-title">Popular DBMS Examples:</span>
+                <ul>
+                    <li><strong>Oracle:</strong> Enterprise-level relational database system</li>
+                    <li><strong>PostgreSQL:</strong> Open-source relational database</li>
+                    <li><strong>MySQL:</strong> Widely used open-source database</li>
+                    <li><strong>MongoDB:</strong> NoSQL document-oriented database</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="why-dbms">
+            <h2>Why Use a Database Management System?</h2>
+            
+            <p>Databases store all the data that a system would need in a reliable, secure, shareable, and efficient manner. However, they need to be designed carefully.</p>
+
+            <h3>The File-Based System Problem</h3>
+            
+            <p>Prior to DBMS, the file system provided by the operating system was used to store information. In a file-based system, we have a collection of application programs that perform services for end users, where each program defines and manages its own data.</p>
+
+            <div class="key-points">
+                <div class="point-card">
+                    <h4>🔒 Security Issues</h4>
+                    <p>How do you prevent unauthorized access to files? File systems lack sophisticated access control mechanisms.</p>
+                </div>
+                <div class="point-card">
+                    <h4>👥 Concurrent Access</h4>
+                    <p>What happens when multiple people access the same file simultaneously? Data corruption risks increase.</p>
+                </div>
+                <div class="point-card">
+                    <h4>💾 Recovery Problems</h4>
+                    <p>What if the hard drive fails or power goes off? File systems don't guarantee data recovery.</p>
+                </div>
+                <div class="point-card">
+                    <h4>⚡ Performance</h4>
+                    <p>Can you guarantee access at certain speeds? File systems lack optimized lookup mechanisms.</p>
+                </div>
+                <div class="point-card">
+                    <h4>🔁 Data Redundancy</h4>
+                    <p>Student information repeated across multiple files leads to inconsistencies and wasted storage.</p>
+                </div>
+            </div>
+
+            <div class="comparison">
+                <div class="comparison-side negative">
+                    <h4>❌ File-Based Systems</h4>
+                    <ul>
+                        <li>Data redundancy and inconsistency</li>
+                        <li>Difficulty accessing data</li>
+                        <li>Data isolation</li>
+                        <li>Integrity problems</li>
+                        <li>Atomicity problems</li>
+                        <li>Concurrent access anomalies</li>
+                        <li>Security problems</li>
+                    </ul>
+                </div>
+                <div class="comparison-side">
+                    <h4>✅ Database Management Systems</h4>
+                    <ul>
+                        <li>Centralized data management</li>
+                        <li>Easy data access via queries</li>
+                        <li>Data integration and relationships</li>
+                        <li>Built-in integrity constraints</li>
+                        <li>ACID transaction support</li>
+                        <li>Concurrency control mechanisms</li>
+                        <li>Authentication and authorization</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="dbms-structure">
+            <h2>Simplified DBMS Architecture</h2>
+            
+            <div class="diagram-section">
+                <p class="diagram-title">How Users Interact with a DBMS</p>
+                <p>Users and programmers interact with the database through application programs and queries. The DBMS software processes these requests and accesses the stored database on disk, managing both the actual data and the database definition (meta-data).</p>
+                
+                <div style="background: white; padding: 30px; border-radius: 12px; margin-top: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+                    <p style="font-weight: 600; color: var(--primary); margin-bottom: 15px;">DBMS Components:</p>
+                    <ul style="text-align: left; max-width: 600px; margin: 0 auto;">
+                        <li><strong>Application Programs/Queries:</strong> User interface layer</li>
+                        <li><strong>Software to Process Queries:</strong> Query processor and optimizer</li>
+                        <li><strong>Software to Access Stored Data:</strong> Storage manager</li>
+                        <li><strong>Stored Database:</strong> Actual data files</li>
+                        <li><strong>Stored Database Definition (Meta-Data):</strong> System catalog</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="dbms-functions">
+            <h2>Key Functions of a DBMS</h2>
+            
+            <div class="key-points">
+                <div class="point-card">
+                    <h4>📋 Define Database</h4>
+                    <p>Structure, data types, and constraints of a database</p>
+                </div>
+                <div class="point-card">
+                    <h4>🔍 Query Data</h4>
+                    <p>Retrieve information based on stored data</p>
+                </div>
+                <div class="point-card">
+                    <h4>✏️ Modify Data</h4>
+                    <p>Insert, update, or delete data</p>
+                </div>
+                <div class="point-card">
+                    <h4>🔐 Security</h4>
+                    <p>Control access through authentication and authorization</p>
+                </div>
+                <div class="point-card">
+                    <h4>👥 Concurrent Access</h4>
+                    <p>Handle multiple users simultaneously</p>
+                </div>
+                <div class="point-card">
+                    <h4>🔧 Maintenance</h4>
+                    <p>Backup, recovery, and database optimization</p>
+                </div>
+            </div>
+
+            <h3>Queries and Transactions</h3>
+            <p>Applications issue two main types of requests to the database:</p>
+            
+            <div class="definition">
+                <strong>Queries</strong>
+                Requests that generate a result based on the stored data. Queries retrieve information without modifying it.
+            </div>
+
+            <div class="example">
+                <span class="example-title">Example Query:</span>
+                <div class="code-block">
+<span class="keyword">SELECT</span> s.name<br>
+<span class="keyword">FROM</span> Student s<br>
+<span class="keyword">WHERE</span> s.major = <span class="string">"CS"</span>
+                </div>
+                <p><em>Plain English:</em> Find all students who are majoring in CS</p>
+            </div>
+
+            <div class="definition">
+                <strong>Transactions</strong>
+                Collections of operations that must be executed as a single unit to maintain database consistency.
+            </div>
+        </section>
+
+        <section id="objectives">
+            <h2>Objectives of Database Systems</h2>
+            
+            <div class="key-points">
+                <div class="point-card">
+                    <h4>📊 Data Availability</h4>
+                    <p>Data are made available to a wide variety of users in a meaningful format at reasonable cost, ensuring easy access.</p>
+                </div>
+                <div class="point-card">
+                    <h4>✅ Data Integrity</h4>
+                    <p>Data available in the database is reliable and correct, maintaining accuracy and consistency.</p>
+                </div>
+                <div class="point-card">
+                    <h4>🔒 Data Security</h4>
+                    <p>Only authorized users can access the data. Security can be enforced through passwords and access control.</p>
+                </div>
+                <div class="point-card">
+                    <h4>🔓 Data Independence</h4>
+                    <p>DBMS allows users to store, update, and retrieve data efficiently while hiding implementation details.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="characteristics">
+            <h2>Main Characteristics of the Database Approach</h2>
+            
+            <h3>1. Self-Describing Nature</h3>
+            <div class="definition">
+                A database system stores not only the database but also a complete definition or description of the database, known as the <strong>System Catalog</strong>. 
+                The description stored in the System Catalog is called <strong>meta-data</strong>.
+            </div>
+            
+            <div class="example">
+                <span class="example-title">Database Catalog Example:</span>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Relation Name</th>
+                            <th>Number of Columns</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>STUDENT</td>
+                            <td>4</td>
+                        </tr>
+                        <tr>
+                            <td>COURSE</td>
+                            <td>4</td>
+                        </tr>
+                        <tr>
+                            <td>SECTION</td>
+                            <td>5</td>
+                        </tr>
+                        <tr>
+                            <td>GRADE_REPORT</td>
+                            <td>3</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <table style="margin-top: 20px;">
+                    <thead>
+                        <tr>
+                            <th>Column Name</th>
+                            <th>Data Type</th>
+                            <th>Belongs to Relation</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Name</td>
+                            <td>Character (30)</td>
+                            <td>STUDENT</td>
+                        </tr>
+                        <tr>
+                            <td>Student_number</td>
+                            <td>Character (4)</td>
+                            <td>STUDENT</td>
+                        </tr>
+                        <tr>
+                            <td>Class</td>
+                            <td>Integer (1)</td>
+                            <td>STUDENT</td>
+                        </tr>
+                        <tr>
+                            <td>Major</td>
+                            <td>Major_type</td>
+                            <td>STUDENT</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p style="margin-top: 15px; font-style: italic; color: #666;">This allows the DBMS software to work with different database applications.</p>
+            </div>
+
+            <h3>2. Program-Data Independence</h3>
+            <div class="definition">
+                The structure of data files is stored in the DBMS catalog separately from the access programs. DBMS allows changing data structures and storage organization without having to change the DBMS access programs.
+            </div>
+
+            <h3>3. Data Abstraction</h3>
+            <div class="definition">
+                A DBMS provides users with a conceptual representation of data that does not include many details of how data is stored or how operations are implemented. Programs refer to data model constructs rather than data storage details.
+            </div>
+
+            <h3>4. Support for Multiple Views</h3>
+            <div class="definition">
+                Each user may see a different view of the database, which describes only the data of interest to that user.
+            </div>
+
+            <div class="example">
+                <span class="example-title">Example Views:</span>
+                <p><strong>TRANSCRIPT View:</strong> Shows student names with their course numbers, grades, semesters, years, and section IDs.</p>
+                <p><strong>COURSE_PREREQUISITES View:</strong> Shows course names with their course numbers and prerequisites.</p>
+                <p>Different users (students, faculty, administrators) can see different views of the same underlying data.</p>
+            </div>
+
+            <h3>5. Multi-User Transaction Processing</h3>
+            <div class="definition">
+                Allows a set of concurrent users to retrieve from and update the database. Concurrency control within the DBMS guarantees that each transaction is correctly executed or aborted.
+            </div>
+        </section>
+
+        <section id="acid">
+            <h2>ACID Properties</h2>
+            
+            <p>Any DBMS must support the ACID concept to ensure that transactions are processed reliably:</p>
+
+            <div class="acid-grid">
+                <div class="acid-card">
+                    <div class="acid-letter">A</div>
+                    <div class="acid-title">Atomicity</div>
+                    <p>The entire transaction takes place at once or doesn't happen at all. Every transaction is a single unit.</p>
+                </div>
+                <div class="acid-card">
+                    <div class="acid-letter">C</div>
+                    <div class="acid-title">Consistency</div>
+                    <p>The database must be consistent before and after a transaction. Data integrity constraints must be followed.</p>
+                </div>
+                <div class="acid-card">
+                    <div class="acid-letter">I</div>
+                    <div class="acid-title">Isolation</div>
+                    <p>Multiple transactions occur independently without interference. Concurrent transactions don't affect each other.</p>
+                </div>
+                <div class="acid-card">
+                    <div class="acid-letter">D</div>
+                    <div class="acid-title">Durability</div>
+                    <p>The changes of a successful transaction occur even if the system failure occurs (power off, crash, etc.).</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="design-steps">
+            <h2>How to Design and Implement a Database</h2>
+            
+            <p>There are multiple steps that align with the contents of this course:</p>
+
+            <div class="steps-timeline">
+                <div class="step-item">
+                    <span class="step-number">Step 1</span>
+                    <div class="step-title">Conceptual Modeling</div>
+                    <p>Create Entity-Relationship (ER) diagrams to represent real-world objects (entities) and their relationships. Entities are described by attributes.</p>
+                    <div class="example">
+                        <span class="example-title">Example:</span>
+                        <p><strong>Entity:</strong> Student (described by ID, Name, Address)</p>
+                        <p><strong>Relationship:</strong> Student "Takes" Course</p>
+                    </div>
+                </div>
+
+                <div class="step-item">
+                    <span class="step-number">Step 2</span>
+                    <div class="step-title">Logical Modeling</div>
+                    <p>Use the relational model - the most used data model in the world today. Convert ER diagrams into tables.</p>
+                    <div class="example">
+                        <span class="example-title">Example: Student Table</span>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Student ID</th>
+                                    <th>Name</th>
+                                    <th>Major</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>123</td>
+                                    <td>Ahmad</td>
+                                    <td>CS</td>
+                                </tr>
+                                <tr>
+                                    <td>124</td>
+                                    <td>Ali</td>
+                                    <td>SE</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <p style="margin-top: 15px;"><em>Note: The logical view is separate from the physical view (how data is stored). Applications refer to logical model tables rather than where data is stored.</em></p>
+                    </div>
+                </div>
+
+                <div class="step-item">
+                    <span class="step-number">Step 3</span>
+                    <div class="step-title">Optimization</div>
+                    <p>Carefully design databases to capture all needed information, minimize space usage, and ensure easy maintenance. Focus on normalization and different normal forms.</p>
+                </div>
+
+                <div class="step-item">
+                    <span class="step-number">Step 4</span>
+                    <div class="step-title">Querying the Data</div>
+                    <p>Use Structured Query Language (SQL) to query data. SQL is a declarative language where statements describe the desired result rather than the computational steps.</p>
+                    <div class="example">
+                        <span class="example-title">SQL Query Example:</span>
+                        <div class="code-block">
+<span class="keyword">SELECT</span> s.name<br>
+<span class="keyword">FROM</span> Student s<br>
+<span class="keyword">WHERE</span> s.major = <span class="string">"CS"</span>
+                        </div>
+                        <p><em>Plain English: Find all students who are majoring in CS</em></p>
+                    </div>
+                </div>
+
+                <div class="step-item">
+                    <span class="step-number">Step 5</span>
+                    <div class="step-title">Other Database Applications</div>
+                    <ul>
+                        <li><strong>Data Warehousing & OLAP:</strong> Organizations collect and organize current and historical data to identify patterns</li>
+                        <li><strong>OLTP:</strong> Online Transaction Processing ensures ACID properties</li>
+                        <li><strong>Data Mining:</strong> Exploration and analysis of large data to find knowledge in the form of patterns</li>
+                    </ul>
+                </div>
+
+                <div class="step-item">
+                    <span class="step-number">Step 6</span>
+                    <div class="step-title">Create Your Own Application</div>
+                    <p>Build complete applications using Java with JDBC (Java Database Connectivity) or other technologies like Python or NodeJS. Create full applications with GUI interfaces.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="users">
+            <h2>Database Users</h2>
+            
+            <div class="key-points">
+                <div class="point-card">
+                    <h4>👨‍💼 Database Administrator (DBA)</h4>
+                    <p>Handles authorizing access for users, monitors database use, and controls and manages the efficiency of the database.</p>
+                </div>
+                <div class="point-card">
+                    <h4>🎨 Database Designers</h4>
+                    <p>Define the content, structure, and constraints of the database. Responsible for the conceptual and logical design.</p>
+                </div>
+                <div class="point-card">
+                    <h4>👥 End-Users</h4>
+                    <p>Can be application developers or application users. They issue queries, ask for reports, and can update the database content.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="when-not-to-use">
+            <h2>When NOT to Use a Database</h2>
+            
+            <p><strong>Short answer:</strong> Not always. Designing a DBMS is a long process that incurs a lot of overhead.</p>
+
+            <h3>Scenarios where a database might not be necessary:</h3>
+            
+            <div class="key-points">
+                <div class="point-card">
+                    <h4>📄 Static Data</h4>
+                    <p>If your data is static and never changing, the overhead of a DBMS may not be justified.</p>
+                </div>
+                <div class="point-card">
+                    <h4>⚙️ Hardware Limitations</h4>
+                    <p>Embedded systems with limited resources may not support full DBMS functionality.</p>
+                </div>
+                <div class="point-card">
+                    <h4>👤 Single User</h4>
+                    <p>If there's no multiple user access requirement, simpler file storage might suffice.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="summary">
+            <h2>Chapter Summary</h2>
+            
+            <p>In this chapter, we explored the fundamental concepts of databases and database management systems:</p>
+
+            <ul>
+                <li>Defined what databases and DBMS are, and how they interact</li>
+                <li>Explored the benefits of DBMS over traditional file-based systems</li>
+                <li>Learned about the main characteristics of database systems: self-describing nature, program-data independence, data abstraction, multiple views, and multi-user transaction processing</li>
+                <li>Understood the ACID properties that ensure reliable transaction processing</li>
+                <li>Reviewed the process of designing a database application from conceptual modeling to implementation</li>
+                <li>Identified different types of database users and their roles</li>
+            </ul>
+
+            <div style="background: linear-gradient(135deg, #f0f7ff 0%, #e6f2ff 100%); padding: 30px; border-radius: 12px; margin-top: 30px;">
+                <p style="font-weight: 600; color: var(--primary); font-size: 1.1rem; margin-bottom: 15px;">Next Steps:</p>
+                <p>In the following chapters, we will continue to look at all of these steps in detail, starting with conceptual modeling using Entity-Relationship diagrams.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-divider"></div>
+            <div class="footer-name">Shoug Alomran</div>
+            <div class="footer-title">CS 340: Introduction to Database Systems</div>
+            <div class="footer-meta">
+                Chapter 1 - Introduction | Shoug Alomran<br>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
