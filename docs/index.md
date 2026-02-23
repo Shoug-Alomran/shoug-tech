@@ -60,4 +60,12 @@ This digital garden is where I publish clear, organized notes, practical project
 
     [:octicons-arrow-right-24: Browse Resources](links.md)
 
+-   :compass: **Academic Plan**
+
+    ---
+
+    Choose your learning path: Old School, Roadmap, Stacks, or Classic view of my course progression.
+
+    [:octicons-arrow-right-24: View Academic Plan](academic-plan.md)
+
 </div>
