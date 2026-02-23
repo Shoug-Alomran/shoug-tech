@@ -97,4 +97,5 @@ more reliable systems.
 ## Contact
 
 **Email:** [inquiry@shoug-tech.com](mailto:inquiry@shoug-tech.com)  
-**LinkedIn:** [Lshoug-alomrank](https://www.linkedin.com/in/shoug-alomran";
+**LinkedIn:** <a rel="me" href="https://www.linkedin.com/in/shoug-alomran">https://www.linkedin.com/in/shoug-alomran</a>  
+**GitHub:** <a rel="me" href="https://github.com/Shoug-Alomran">https://github.com/Shoug-Alomran</a>
