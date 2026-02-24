@@ -1,4 +1,5 @@
 ---
+title: Shoug Fawaz Alomran | Software Engineering & Cybersecurity Student
 hide:
   - toc
   - navigation
