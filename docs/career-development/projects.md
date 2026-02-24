@@ -100,3 +100,23 @@ usable systems.
     [Project Site](https://school-course-enrolment-system.shoug-tech.com)
 
 </div>
+
+---
+
+## Mathmatics
+
+<div class="grid cards" markdown>
+
+- ### **MATH221 — Numerical Analysis Methods**
+
+    Implementation and analysis of core numerical techniques including root-finding,
+    interpolation, numerical differentiation, and numerical integration methods.
+    Focused on algorithm accuracy, convergence behavior, stability, and computational efficiency.
+
+    **Role:** Implemented numerical algorithms, analyzed error behavior, and documented
+    mathematical derivations alongside computational results.
+
+    [Repository](https://github.com/Shoug-Alomran/MATH221-Numerical-Analysis) ·
+    [Project Site](https://numerical-analysis.shoug-tech.com)
+
+</div>
