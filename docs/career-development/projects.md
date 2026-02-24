@@ -116,7 +116,7 @@ usable systems.
     **Role:** Implemented numerical algorithms, analyzed error behavior, and documented
     mathematical derivations alongside computational results.
 
-    [Repository](https://github.com/Shoug-Alomran/MATH221-Numerical-Analysis) ·
+    [Repository](https://github.com/Shoug-Alomran/Math221_Numerical-Analysis) ·
     [Project Site](https://numerical-analysis.shoug-tech.com)
 
 </div>
