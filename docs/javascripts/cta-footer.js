@@ -1,6 +1,7 @@
 (function () {
   const EMAIL = "inquiry@shoug-tech.com";
   const LINKEDIN = "https://www.linkedin.com/in/shoug-alomran";
+  const GITHUB = "https://github.com/Shoug-Alomran";
 
   function isArabic() {
     return location.pathname.includes("/ar/");
@@ -43,6 +44,19 @@
       </svg>
     `;
 
+    // GitHub button
+    const gh = document.createElement("a");
+    gh.className = "header-icon-btn header-github";
+    gh.href = GITHUB;
+    gh.target = "_blank";
+    gh.rel = "noopener noreferrer";
+    gh.setAttribute("aria-label", "GitHub");
+    gh.innerHTML = `
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M12 0.5C5.73 0.5.75 5.63.75 12c0 5.11 3.29 9.44 7.86 10.97.58.11.79-.26.79-.58v-2.1c-3.2.71-3.88-1.56-3.88-1.56-.53-1.36-1.29-1.72-1.29-1.72-1.05-.73.08-.72.08-.72 1.16.08 1.77 1.21 1.77 1.21 1.03 1.8 2.7 1.28 3.36.98.1-.76.4-1.28.73-1.57-2.55-.3-5.23-1.3-5.23-5.78 0-1.28.45-2.33 1.2-3.15-.12-.3-.52-1.52.12-3.17 0 0 .98-.32 3.2 1.2.93-.26 1.92-.39 2.9-.39.99 0 1.98.13 2.9.39 2.22-1.52 3.2-1.2 3.2-1.2.64 1.65.24 2.87.12 3.17.75.82 1.2 1.87 1.2 3.15 0 4.49-2.69 5.48-5.25 5.77.41.36.78 1.08.78 2.18v3.23c0 .32.21.69.8.58 4.56-1.53 7.84-5.86 7.84-10.97C23.25 5.63 18.27.5 12 .5z"/>
+      </svg>
+    `;
+
     // Contact button
     const cta = document.createElement("a");
     cta.className = "header-cta";
@@ -51,6 +65,7 @@
     cta.setAttribute("aria-label", cta.textContent);
 
     wrap.appendChild(li);
+    wrap.appendChild(gh);
     wrap.appendChild(cta);
 
     headerInner.appendChild(wrap);
@@ -84,6 +99,7 @@
           disclaimer: "إخلاء مسؤولية أكاديمي",
           copyright: "حقوق النشر",
           linkedin: "LinkedIn",
+          github: "GitHub",
         }
       : {
           brand: "Shoug’s Digital Garden",
@@ -103,6 +119,7 @@
           disclaimer: "Academic Disclaimer",
           copyright: "Copyright",
           linkedin: "LinkedIn",
+          github: "GitHub",
         };
 
     // Navigation links
@@ -163,6 +180,7 @@
             <div class="footer-col__title">${t.contact}</div>
             <a class="footer-link" href="mailto:${EMAIL}">${EMAIL}</a>
             <a class="footer-link" href="${LINKEDIN}" target="_blank" rel="noopener noreferrer">${t.linkedin}</a>
+            <a class="footer-link" href="${GITHUB}" target="_blank" rel="noopener noreferrer">${t.github}</a>
           </div>
         </div>
       </div>
