@@ -38,7 +38,7 @@ usable systems.
 
     [Repository](https://github.com/Shoug-Alomran/SE201--Sillah-Project) · 
     [Docs](https://sillah.shoug-tech.com) · 
-    [App](https://se201--sillah-project.vercel.app) *(under maintenance)*
+    [App](https://sillah-app.shoug-tech.com) *(under maintenance)*
 
 </div>
 
