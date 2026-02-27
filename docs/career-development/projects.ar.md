@@ -31,7 +31,7 @@
 
     [المستودع](https://github.com/Shoug-Alomran/SE201--Sillah-Project) · 
     [الوثائق](https://sillah.shoug-tech.com) · 
-    [التطبيق](https://se201--sillah-project.vercel.app) *(قيد الصيانة)*
+    [التطبيق](https://sillah-app.shoug-tech.com) *(قيد الصيانة)*
 
 </div>
 
