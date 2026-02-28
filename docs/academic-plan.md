@@ -1,4 +1,11 @@
+---
+title: Academic Plan
+description: Choose a learning-path format that fits your style and progression goals.
+---
+
 # Academic Plan
+
+> **Section summary:** Pick the study layout that fits how you learn, then follow it consistently.
 
 Choose your learning path theme:
 

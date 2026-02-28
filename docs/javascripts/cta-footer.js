@@ -2,6 +2,8 @@
   const EMAIL = "inquiry@shoug-tech.com";
   const LINKEDIN = "https://www.linkedin.com/in/shoug-alomran";
   const GITHUB = "https://github.com/Shoug-Alomran";
+  const LS_LEFT_KEY = "sg_hide_left_sidebar";
+  const LS_RIGHT_KEY = "sg_hide_right_sidebar";
 
   function isArabic() {
     return location.pathname.includes("/ar/");
@@ -30,6 +32,29 @@
 
     const wrap = document.createElement("div");
     wrap.className = "header-actions";
+
+    // Sidebar toggles
+    const leftToggle = document.createElement("button");
+    leftToggle.type = "button";
+    leftToggle.className = "header-icon-btn header-toggle-btn header-toggle-left";
+    leftToggle.setAttribute("aria-label", isArabic() ? "إخفاء/إظهار القائمة الجانبية اليسرى" : "Toggle left sidebar");
+    leftToggle.setAttribute("title", isArabic() ? "القائمة اليسرى" : "Left sidebar");
+    leftToggle.innerHTML = `
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M3 4h18v16H3V4zm2 2v12h4V6H5zm6 0v2h8V6h-8zm0 4v2h8v-2h-8zm0 4v2h8v-2h-8z"/>
+      </svg>
+    `;
+
+    const rightToggle = document.createElement("button");
+    rightToggle.type = "button";
+    rightToggle.className = "header-icon-btn header-toggle-btn header-toggle-right";
+    rightToggle.setAttribute("aria-label", isArabic() ? "إخفاء/إظهار جدول المحتويات" : "Toggle table of contents");
+    rightToggle.setAttribute("title", isArabic() ? "جدول المحتويات" : "Table of contents");
+    rightToggle.innerHTML = `
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M3 4h18v16H3V4zm2 2v12h8V6H5zm10 0v2h4V6h-4zm0 4v2h4v-2h-4zm0 4v2h4v-2h-4z"/>
+      </svg>
+    `;
 
     // LinkedIn button
     const li = document.createElement("a");
@@ -64,6 +89,8 @@
     cta.textContent = isArabic() ? "تواصل" : "Contact";
     cta.setAttribute("aria-label", cta.textContent);
 
+    wrap.appendChild(leftToggle);
+    wrap.appendChild(rightToggle);
     wrap.appendChild(li);
     wrap.appendChild(gh);
     wrap.appendChild(cta);
@@ -219,7 +246,282 @@
 
   function run() {
     addHeaderCTA();
+    addQuickLinksWidget();
+    initSidebarToggles();
     addFooterBlock();
+    initRevealMotion();
+    syncEmbeddedIframesTheme();
+    translateTabs();
+  }
+
+  function addQuickLinksWidget() {
+    const content = document.querySelector(".md-content__inner.md-typeset");
+    if (!content) return;
+    if (content.querySelector(".quick-links-widget")) return;
+    if (location.pathname.endsWith("/")) {
+      const p = location.pathname.replace(/\/+$/, "/");
+      if (p === "/" || p === "/ar/" || p === "/start-here/" || p === "/ar/start-here/") return;
+    }
+
+    const links = isArabic()
+      ? [
+          ["الرئيسية", url("ar/")],
+          ["ابدأ من هنا", url("ar/start-here/")],
+          ["نظرة عامة أكاديمية", url("ar/Academics/Intro/")],
+          ["الخطة الأكاديمية", url("ar/academic-plan/")],
+          ["SE201", url("ar/Academics/software-engineering/SE201/Intro/")],
+          ["CS340", url("ar/Academics/computer-science/CS340/Intro/")],
+          ["CYS401", url("ar/Academics/cyber-security/CYS401/Intro/")],
+          ["التطوير المهني", url("ar/career-development/Intro/")],
+          ["المشاريع", url("ar/career-development/projects/")],
+          ["الروابط", url("ar/links/")]
+        ]
+      : [
+          ["Home", url("")],
+          ["Start Here", url("start-here/")],
+          ["Academics Overview", url("Academics/Intro/")],
+          ["Academic Plan", url("academic-plan/")],
+          ["SE201", url("Academics/software-engineering/SE201/Intro/")],
+          ["CS340", url("Academics/computer-science/CS340/Intro/")],
+          ["CYS401", url("Academics/cyber-security/CYS401/Intro/")],
+          ["Career Development", url("career-development/Intro/")],
+          ["Projects", url("career-development/projects/")],
+          ["Links", url("links/")]
+        ];
+
+    const block = document.createElement("details");
+    block.className = "quick-links-widget";
+
+    const summary = document.createElement("summary");
+    summary.textContent = isArabic() ? "وصول سريع (أكثر 10 صفحات)" : "Quick Access (Top 10 pages)";
+    block.appendChild(summary);
+
+    const list = document.createElement("div");
+    list.className = "quick-links-widget__list";
+    links.forEach(([label, href]) => {
+      const a = document.createElement("a");
+      a.className = "quick-links-widget__link";
+      a.href = href;
+      a.textContent = label;
+      list.appendChild(a);
+    });
+    block.appendChild(list);
+
+    const firstHeading = content.querySelector("h1, h2");
+    if (firstHeading && firstHeading.parentElement) {
+      firstHeading.parentElement.insertBefore(block, firstHeading.nextSibling);
+    } else {
+      content.prepend(block);
+    }
+  }
+
+  function setToggleVisualState() {
+    const leftBtn = document.querySelector(".header-toggle-left");
+    const rightBtn = document.querySelector(".header-toggle-right");
+    if (leftBtn) {
+      leftBtn.classList.toggle("is-active", document.body.classList.contains("sg-hide-left-sidebar"));
+    }
+    if (rightBtn) {
+      rightBtn.classList.toggle("is-active", document.body.classList.contains("sg-hide-right-sidebar"));
+    }
+  }
+
+  function initSidebarToggles() {
+    const leftBtn = document.querySelector(".header-toggle-left");
+    const rightBtn = document.querySelector(".header-toggle-right");
+    if (!leftBtn || !rightBtn) return;
+
+    if (!leftBtn.dataset.bound) {
+      leftBtn.dataset.bound = "1";
+      leftBtn.addEventListener("click", () => {
+        const hide = !document.body.classList.contains("sg-hide-left-sidebar");
+        document.body.classList.toggle("sg-hide-left-sidebar", hide);
+        try {
+          localStorage.setItem(LS_LEFT_KEY, hide ? "1" : "0");
+        } catch (e) {}
+        setToggleVisualState();
+      });
+    }
+
+    if (!rightBtn.dataset.bound) {
+      rightBtn.dataset.bound = "1";
+      rightBtn.addEventListener("click", () => {
+        const hide = !document.body.classList.contains("sg-hide-right-sidebar");
+        document.body.classList.toggle("sg-hide-right-sidebar", hide);
+        try {
+          localStorage.setItem(LS_RIGHT_KEY, hide ? "1" : "0");
+        } catch (e) {}
+        setToggleVisualState();
+      });
+    }
+
+    try {
+      const hideLeft = localStorage.getItem(LS_LEFT_KEY) === "1";
+      const hideRight = localStorage.getItem(LS_RIGHT_KEY) === "1";
+      document.body.classList.toggle("sg-hide-left-sidebar", hideLeft);
+      document.body.classList.toggle("sg-hide-right-sidebar", hideRight);
+    } catch (e) {}
+
+    setToggleVisualState();
+  }
+
+  function isSiteDark() {
+    return document.body?.getAttribute("data-md-color-scheme") === "slate";
+  }
+
+  function getIframeThemeStyle() {
+    return `
+      html[data-parent-theme="dark"] { color-scheme: dark; }
+      html[data-parent-theme="dark"] body {
+        background: #0b1020 !important;
+        color: #e5e7eb !important;
+      }
+      html[data-parent-theme="dark"] .container,
+      html[data-parent-theme="dark"] main,
+      html[data-parent-theme="dark"] section,
+      html[data-parent-theme="dark"] article,
+      html[data-parent-theme="dark"] aside,
+      html[data-parent-theme="dark"] nav,
+      html[data-parent-theme="dark"] header,
+      html[data-parent-theme="dark"] footer,
+      html[data-parent-theme="dark"] .content,
+      html[data-parent-theme="dark"] .card,
+      html[data-parent-theme="dark"] .panel,
+      html[data-parent-theme="dark"] .box,
+      html[data-parent-theme="dark"] .wrapper {
+        background: #111827 !important;
+        color: #e5e7eb !important;
+      }
+      html[data-parent-theme="dark"] h1,
+      html[data-parent-theme="dark"] h2,
+      html[data-parent-theme="dark"] h3,
+      html[data-parent-theme="dark"] h4,
+      html[data-parent-theme="dark"] h5,
+      html[data-parent-theme="dark"] h6,
+      html[data-parent-theme="dark"] p,
+      html[data-parent-theme="dark"] li,
+      html[data-parent-theme="dark"] dt,
+      html[data-parent-theme="dark"] dd,
+      html[data-parent-theme="dark"] span,
+      html[data-parent-theme="dark"] div,
+      html[data-parent-theme="dark"] label {
+        color: #e5e7eb !important;
+      }
+      html[data-parent-theme="dark"] a { color: #c4b5fd !important; }
+      html[data-parent-theme="dark"] table {
+        background: #0f172a !important;
+        color: #e5e7eb !important;
+      }
+      html[data-parent-theme="dark"] th {
+        background: #1f2937 !important;
+        color: #f8fafc !important;
+      }
+      html[data-parent-theme="dark"] td {
+        background: #111827 !important;
+        color: #e5e7eb !important;
+        border-color: #374151 !important;
+      }
+      html[data-parent-theme="dark"] pre,
+      html[data-parent-theme="dark"] code,
+      html[data-parent-theme="dark"] .formula {
+        background: #111827 !important;
+        color: #e5e7eb !important;
+        border-color: #374151 !important;
+      }
+      html[data-parent-theme="dark"] input,
+      html[data-parent-theme="dark"] textarea,
+      html[data-parent-theme="dark"] select,
+      html[data-parent-theme="dark"] button {
+        background: #1f2937 !important;
+        color: #f8fafc !important;
+        border-color: #4b5563 !important;
+      }
+    `;
+  }
+
+  function applyThemeToIframe(iframe) {
+    const dark = isSiteDark();
+    try {
+      const doc = iframe.contentDocument;
+      if (!doc || !doc.documentElement) return;
+
+      doc.documentElement.setAttribute("data-parent-theme", dark ? "dark" : "light");
+
+      if (doc.body) {
+        doc.body.classList.toggle("parent-dark", dark);
+        doc.body.classList.toggle("parent-light", !dark);
+      }
+
+      let styleTag = doc.getElementById("parent-iframe-dark-theme");
+      if (!styleTag) {
+        styleTag = doc.createElement("style");
+        styleTag.id = "parent-iframe-dark-theme";
+        styleTag.textContent = getIframeThemeStyle();
+        (doc.head || doc.documentElement).appendChild(styleTag);
+      }
+    } catch (e) {
+      // ignore cross-origin or transient iframe loading errors
+    }
+  }
+
+  function syncEmbeddedIframesTheme() {
+    const iframes = document.querySelectorAll(".md-content iframe");
+    if (!iframes.length) return;
+
+    iframes.forEach((iframe) => {
+      if (!iframe.dataset.themeBound) {
+        iframe.dataset.themeBound = "1";
+        iframe.addEventListener("load", () => applyThemeToIframe(iframe));
+      }
+      applyThemeToIframe(iframe);
+    });
+
+    if (syncEmbeddedIframesTheme.boundObserver) return;
+    syncEmbeddedIframesTheme.boundObserver = true;
+
+    const target = document.body;
+    if (!target || typeof MutationObserver === "undefined") return;
+
+    new MutationObserver(() => {
+      document.querySelectorAll(".md-content iframe").forEach((iframe) => applyThemeToIframe(iframe));
+    }).observe(target, {
+      attributes: true,
+      attributeFilter: ["data-md-color-scheme"]
+    });
+  }
+
+  function initRevealMotion() {
+    const selectors = [
+      ".md-typeset .grid.cards > ul > li",
+      ".home-hero__text",
+      ".value-strip",
+      ".md-typeset > h1"
+    ];
+
+    const nodes = document.querySelectorAll(selectors.join(","));
+    if (!nodes.length) return;
+
+    nodes.forEach((el) => el.classList.add("reveal"));
+
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduced || typeof IntersectionObserver === "undefined") {
+      nodes.forEach((el) => el.classList.add("is-visible"));
+      return;
+    }
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-visible");
+            io.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.16 }
+    );
+
+    nodes.forEach((el) => io.observe(el));
   }
 
   // Material instant navigation support
@@ -228,4 +530,24 @@
   } else {
     document.addEventListener("DOMContentLoaded", run);
   }
+
+  function translateTabs() {
+    if (!isArabic()) return;
+
+    const map = {
+      "Home": "الرئيسية",
+      "Start Here": "ابدأ من هنا",
+      "Learn": "تعلّم",
+      "Career": "المسار المهني",
+      "Career Development": "المسار المهني",
+      "Resources": "الموارد",
+      "About": "حول"
+    };
+
+    document.querySelectorAll(".md-tabs__link").forEach((a) => {
+      const t = a.textContent.trim();
+      if (map[t]) a.textContent = map[t];
+    });
+  }
+
 })();

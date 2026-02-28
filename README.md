@@ -79,3 +79,52 @@ mkdocs serve
 ## Built With
 - [MkDocs](https://www.mkdocs.org/)
 - [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/)
+
+## Arabic Sync Workflow (Saudi Arabic)
+This repo includes a safe translation script:
+
+`scripts/sync_arabic.py`
+
+What it does:
+- Scans all English `*.md` pages under `docs/`
+- Creates matching Arabic files as `*.ar.md`
+- Uses Saudi-friendly formal Arabic style
+- Preserves Markdown structure
+
+Recommended run order:
+
+```bash
+# 1) Preview what will be generated/updated (safe)
+python3 scripts/sync_arabic.py
+
+# 2) Apply only missing Arabic files
+OPENAI_API_KEY=your_key python3 scripts/sync_arabic.py --apply
+
+# 3) Also refresh existing Arabic files when English changed
+OPENAI_API_KEY=your_key python3 scripts/sync_arabic.py --apply --update-existing
+```
+
+## Bilingual Parity Check
+Run this before publishing to catch missing EN/AR pairs:
+
+```bash
+python3 scripts/check_i18n_parity.py
+```
+
+Strict mode (CI-friendly):
+
+```bash
+python3 scripts/check_i18n_parity.py --strict
+```
+
+## Pre-release QA
+Run one command before publishing:
+
+```bash
+bash scripts/preflight_qa.sh
+```
+
+This runs:
+- Strict EN/AR parity check
+- Clean MkDocs build
+- Favicon presence check

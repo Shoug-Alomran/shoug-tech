@@ -1,4 +1,11 @@
+---
+title: Links
+description: Curated technical resources for learning, development, cybersecurity, and operations.
+---
+
 # :link: Resources & Link Dump
+
+> **Section summary:** A curated, tagged reference list for tools and sites I actually use.
 
 A curated collection of tools, references, and links I consistently use for
 study, development, and technical work — organized by category with tags for

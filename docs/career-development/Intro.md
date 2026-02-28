@@ -1,4 +1,11 @@
+---
+title: Career Development Overview
+description: Portfolio context, projects, workshops, and how I execute technical work.
+---
+
 # Career Development
+
+> **Section summary:** Use this page to evaluate execution quality, project impact, and professional growth evidence.
 
 [View Resume](./CV.html){ .md-button .md-button--primary }
 [Contact Me](mailto:inquiry@shoug-tech.com){ .md-button }
@@ -145,5 +152,4 @@ If you are an instructor, collaborator, or employer and would like to discuss
 my work, projects, or background, I welcome the conversation.
 
 **Email:** [inquiry@shoug-tech.com](mailto:inquiry@shoug-tech.com)  
-**LinkedIn:** [shoug-alomran](https://www.linkedin.com/in/shoug-alomran";
-)
+**LinkedIn:** [shoug-alomran](https://www.linkedin.com/in/shoug-alomran)

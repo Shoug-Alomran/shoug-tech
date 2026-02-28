@@ -1,3 +1,10 @@
+---
+title: Learn Overview
+description: Course map for software engineering, computer science, and cybersecurity tracks.
+---
+
+> **Section summary:** Start from your course area and jump directly into notes, cheat sheets, and quizzes.
+
 ## Software Engineering
 
 <div class="grid cards" markdown>
