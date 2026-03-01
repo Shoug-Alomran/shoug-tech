@@ -2,6 +2,7 @@
   const EMAIL = "inquiry@shoug-tech.com";
   const LINKEDIN = "https://www.linkedin.com/in/shoug-alomran";
   const GITHUB = "https://github.com/Shoug-Alomran";
+  const REPO = `${GITHUB}/My-Garden`;
   const LS_LEFT_KEY = "sg_hide_left_sidebar";
   const LS_RIGHT_KEY = "sg_hide_right_sidebar";
 
@@ -21,6 +22,11 @@
     const base = getBase().replace(/\/$/, ""); // remove trailing slash
     const clean = String(path || "").replace(/^\//, ""); // remove leading slash
     return `${base}/${clean}`.replace(/\/+$/, "/"); // ensure ends with /
+  }
+
+  function repoPolicyFile(path) {
+    const clean = String(path || "").replace(/^\//, "");
+    return `${REPO}/blob/main/policy/${clean}`;
   }
 
   function addHeaderCTA() {
@@ -157,10 +163,16 @@
       : url("career-development/me/");
     const linksHref = isArabic() ? url("ar/links/") : url("links/");
 
-    // Policies
-    const privacyHref = isArabic() ? url("ar/privacy-notice/") : url("privacy-notice/");
-    const disclaimerHref = isArabic() ? url("ar/academic-disclaimer/") : url("academic-disclaimer/");
-    const copyrightHref = isArabic() ? url("ar/copyright/") : url("copyright/");
+    // Policies (moved to repository-level policy folder)
+    const privacyHref = isArabic()
+      ? repoPolicyFile("privacy-notice.ar.md")
+      : repoPolicyFile("privacy-notice.md");
+    const disclaimerHref = isArabic()
+      ? repoPolicyFile("academic-disclaimer.ar.md")
+      : repoPolicyFile("academic-disclaimer.md");
+    const copyrightHref = isArabic()
+      ? repoPolicyFile("copyright.ar.md")
+      : repoPolicyFile("copyright.md");
 
     const dirAttr = isArabic() ? 'dir="rtl"' : 'dir="ltr"';
 

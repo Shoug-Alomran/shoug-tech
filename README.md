@@ -27,6 +27,7 @@ This site brings together my academic journey, projects, technical labs, volunte
 | `Links` | Bookmark hub for cybersecurity platforms, tools, and guides |
 | `Me` | Personal portfolio, volunteering, and research experiences |
 | `Docs/` | Contains all Markdown pages used for the site content |
+| `policy/` | Repository policy documents (security and related governance docs) |
 | `mkdocs.yml` | Configuration file for MkDocs Material |
 
 ---
