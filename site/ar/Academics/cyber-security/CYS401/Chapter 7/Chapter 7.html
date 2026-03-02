@@ -1,1103 +1,0 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl" data-theme="auto">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>الفصل 7 — مبادئ تصميم الأمن</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --bg: #f0f2ff;
-    --surface: #ffffff;
-    --surface2: #f5f7ff;
-    --border: rgba(100,80,255,0.12);
-    --text: #14112e;
-    --text2: #4a4570;
-    --accent1: #5533ff;
-    --accent2: #ff3366;
-    --accent3: #00d4aa;
-    --accent4: #ff9900;
-    --grad1: linear-gradient(135deg, #5533ff 0%, #9933ff 100%);
-    --grad2: linear-gradient(135deg, #ff3366 0%, #ff6633 100%);
-    --grad3: linear-gradient(135deg, #00d4aa 0%, #0099ff 100%);
-    --grad4: linear-gradient(135deg, #ff9900 0%, #ff3366 100%);
-    --shadow: 0 8px 40px rgba(85,51,255,0.12);
-    --shadow-hover: 0 16px 60px rgba(85,51,255,0.22);
-    --tip-bg: rgba(0,212,170,0.08);
-    --exam-bg: rgba(255,51,102,0.08);
-    --example-bg: rgba(85,51,255,0.06);
-  }
-
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --bg: #0a0914;
-      --surface: #130f2a;
-      --surface2: #1a1535;
-      --border: rgba(150,120,255,0.15);
-      --text: #f0eeff;
-      --text2: #a89fd8;
-      --accent1: #7b5fff;
-      --accent2: #ff4d77;
-      --accent3: #00e8bb;
-      --accent4: #ffaa22;
-      --grad1: linear-gradient(135deg, #7b5fff 0%, #b366ff 100%);
-      --grad2: linear-gradient(135deg, #ff4d77 0%, #ff7755 100%);
-      --grad3: linear-gradient(135deg, #00e8bb 0%, #33aaff 100%);
-      --grad4: linear-gradient(135deg, #ffaa22 0%, #ff4d77 100%);
-      --shadow: 0 8px 40px rgba(0,0,0,0.5);
-      --shadow-hover: 0 16px 60px rgba(123,95,255,0.3);
-      --tip-bg: rgba(0,232,187,0.08);
-      --exam-bg: rgba(255,77,119,0.08);
-      --example-bg: rgba(123,95,255,0.08);
-    }
-  }
-
-  * { margin:0; padding:0; box-sizing:border-box; }
-
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    line-height: 1.7;
-    font-size: 15px;
-    overflow-x: hidden;
-    text-align: right;
-  }
-
-  /* HERO */
-  .hero {
-    position: relative;
-    min-height: 320px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    text-align: center;
-    padding: 60px 24px 50px;
-    overflow: hidden;
-  }
-
-  .hero-bg {
-    position: absolute; inset: 0;
-    background: var(--grad1);
-    z-index: 0;
-  }
-  .hero-bg::after {
-    content: '';
-    position: absolute; inset: 0;
-    background: radial-gradient(ellipse at 20% 80%, rgba(255,51,102,0.4) 0%, transparent 60%),
-                radial-gradient(ellipse at 80% 20%, rgba(0,212,170,0.3) 0%, transparent 55%);
-  }
-  .hero-orb {
-    position: absolute;
-    border-radius: 50%;
-    filter: blur(60px);
-    opacity: 0.35;
-    animation: float 8s ease-in-out infinite;
-  }
-  .hero-orb:nth-child(2) { width:300px;height:300px; background:#ff3366; top:-80px; left:-60px; } /* تعديل من right لـ left */
-  .hero-orb:nth-child(3) { width:200px;height:200px; background:#00d4aa; bottom:-60px; right:10%; } /* تعديل من left لـ right */
-
-  @keyframes float {
-    0%,100% { transform: translateY(0) scale(1); }
-    50% { transform: translateY(-20px) scale(1.05); }
-  }
-
-  .hero-content { position: relative; z-index: 1; }
-  .hero-tag {
-    display: inline-block;
-    background: rgba(255,255,255,0.2);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255,255,255,0.3);
-    border-radius: 100px;
-    padding: 6px 20px;
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: #fff;
-    margin-bottom: 20px;
-  }
-  .hero h1 {
-    font-family: 'Syne', sans-serif;
-    font-size: clamp(2rem, 6vw, 3.8rem);
-    font-weight: 800;
-    color: #fff;
-    line-height: 1.1;
-    margin-bottom: 12px;
-    text-shadow: 0 4px 30px rgba(0,0,0,0.2);
-  }
-  .hero h1 span { color: rgba(255,255,255,0.6); }
-  .hero p {
-    color: rgba(255,255,255,0.8);
-    font-size: 1.05rem;
-    max-width: 500px;
-    margin: 0 auto;
-    font-weight: 300;
-  }
-
-  /* NAV PILLS */
-  .nav-pills {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    justify-content: center;
-    padding: 28px 24px;
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    backdrop-filter: blur(20px);
-    background: rgba(var(--surface), 0.9);
-  }
-  .nav-pills a {
-    text-decoration: none;
-    padding: 7px 18px;
-    border-radius: 100px;
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--text2);
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    transition: all 0.2s;
-    white-space: nowrap;
-  }
-  .nav-pills a:hover {
-    background: var(--accent1);
-    color: #fff;
-    border-color: var(--accent1);
-    transform: translateY(-1px);
-  }
-
-  /* MAIN LAYOUT */
-  main {
-    max-width: 960px;
-    margin: 0 auto;
-    padding: 50px 24px 80px;
-    display: flex;
-    flex-direction: column;
-    gap: 60px;
-  }
-
-  /* SECTION */
-  section { scroll-margin-top: 80px; }
-
-  .section-header {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    margin-bottom: 28px;
-  }
-  .section-icon {
-    width: 50px; height: 50px;
-    border-radius: 14px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 22px;
-    flex-shrink: 0;
-  }
-  .s1 .section-icon { background: var(--grad1); }
-  .s2 .section-icon { background: var(--grad2); }
-  .s3 .section-icon { background: var(--grad3); }
-  .s4 .section-icon { background: var(--grad4); }
-
-  .section-header h2 {
-    font-family: 'Syne', sans-serif;
-    font-size: 1.8rem;
-    font-weight: 800;
-    color: var(--text);
-  }
-  .section-header p {
-    font-size: 13px;
-    color: var(--text2);
-    margin-top: 2px;
-  }
-
-  /* PRINCIPLE CARDS GRID */
-  .principles-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 16px;
-  }
-
-  .card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 24px;
-    box-shadow: var(--shadow);
-    transition: all 0.3s;
-    position: relative;
-    overflow: hidden;
-  }
-  .card:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-hover);
-    border-color: var(--accent1);
-  }
-  .card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 3px;
-  }
-  .card.c1::before { background: var(--grad1); }
-  .card.c2::before { background: var(--grad2); }
-  .card.c3::before { background: var(--grad3); }
-  .card.c4::before { background: var(--grad4); }
-  .card.c1:nth-child(odd)::before { background: var(--grad1); }
-  .card:nth-child(1)::before { background: var(--grad1); }
-  .card:nth-child(2)::before { background: var(--grad2); }
-  .card:nth-child(3)::before { background: var(--grad3); }
-  .card:nth-child(4)::before { background: var(--grad4); }
-  .card:nth-child(5)::before { background: var(--grad1); }
-  .card:nth-child(6)::before { background: var(--grad2); }
-  .card:nth-child(7)::before { background: var(--grad3); }
-  .card:nth-child(8)::before { background: var(--grad4); }
-  .card:nth-child(9)::before { background: var(--grad1); }
-
-  .card-num {
-    font-family: 'Syne', sans-serif;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--text2);
-    margin-bottom: 8px;
-  }
-  .card h3 {
-    font-family: 'Syne', sans-serif;
-    font-size: 1.05rem;
-    font-weight: 700;
-    margin-bottom: 10px;
-    color: var(--text);
-  }
-  .card p {
-    font-size: 14px;
-    color: var(--text2);
-    line-height: 1.65;
-  }
-
-  /* CALLOUT BOXES */
-  .tip-box, .exam-box, .example-box {
-    border-radius: 16px;
-    padding: 18px 22px;
-    margin-top: 14px;
-    font-size: 13.5px;
-    line-height: 1.65;
-    border-right: 3px solid; /* تغيير من border-left */
-    border-left: none;
-  }
-  .tip-box {
-    background: var(--tip-bg);
-    border-color: var(--accent3);
-    color: var(--text);
-  }
-  .exam-box {
-    background: var(--exam-bg);
-    border-color: var(--accent2);
-    color: var(--text);
-  }
-  .example-box {
-    background: var(--example-bg);
-    border-color: var(--accent1);
-    color: var(--text);
-  }
-  .box-label {
-    font-weight: 700;
-    font-size: 11px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    margin-bottom: 5px;
-    display: block;
-  }
-  .tip-box .box-label { color: var(--accent3); }
-  .exam-box .box-label { color: var(--accent2); }
-  .example-box .box-label { color: var(--accent1); }
-
-  /* WIDE CARDS */
-  .wide-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 24px;
-    padding: 30px;
-    box-shadow: var(--shadow);
-    margin-bottom: 20px;
-    transition: all 0.3s;
-  }
-  .wide-card:hover { box-shadow: var(--shadow-hover); }
-  .wide-card h3 {
-    font-family: 'Syne', sans-serif;
-    font-size: 1.15rem;
-    font-weight: 700;
-    margin-bottom: 10px;
-    color: var(--text);
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  .badge {
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    padding: 3px 12px;
-    border-radius: 100px;
-    color: #fff;
-  }
-  .badge.conf { background: var(--grad1); }
-  .badge.integ { background: var(--grad3); }
-  .badge.avail { background: var(--grad4); }
-
-  /* COMPARISON TABLE */
-  .compare-wrap {
-    background: var(--surface);
-    border-radius: 24px;
-    overflow: hidden;
-    border: 1px solid var(--border);
-    box-shadow: var(--shadow);
-  }
-  table { width: 100%; border-collapse: collapse; }
-  thead tr { background: var(--grad1); }
-  thead th {
-    padding: 16px 20px;
-    font-family: 'Syne', sans-serif;
-    font-size: 13px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: #fff;
-    text-align: right; /* تغيير من left */
-  }
-  tbody tr {
-    border-bottom: 1px solid var(--border);
-    transition: background 0.2s;
-  }
-  tbody tr:hover { background: var(--surface2); }
-  tbody tr:last-child { border-bottom: none; }
-  td {
-    padding: 14px 20px;
-    font-size: 14px;
-    color: var(--text2);
-    vertical-align: top;
-  }
-  td:first-child {
-    font-weight: 600;
-    color: var(--text);
-    font-family: 'Syne', sans-serif;
-    font-size: 13px;
-  }
-
-  /* HIGHLIGHT BAND */
-  .highlight-band {
-    background: var(--grad1);
-    border-radius: 24px;
-    padding: 32px;
-    color: #fff;
-    position: relative;
-    overflow: hidden;
-  }
-  .highlight-band::after {
-    content: '';
-    position: absolute;
-    left: -40px; top: -40px; /* تغيير من right */
-    width: 200px; height: 200px;
-    background: rgba(255,255,255,0.07);
-    border-radius: 50%;
-  }
-  .highlight-band h3 {
-    font-family: 'Syne', sans-serif;
-    font-size: 1.3rem;
-    font-weight: 800;
-    margin-bottom: 12px;
-  }
-  .highlight-band p { opacity: 0.9; font-size: 14px; line-height: 1.7; }
-
-  /* ACM TABLE */
-  .acm-table { overflow-x: auto; }
-  .acm-table table { min-width: 500px; }
-  .acm-table thead tr { background: var(--grad3); }
-  .acm-table td:not(:first-child) { color: var(--accent1); font-weight: 500; font-size: 13px; }
-
-  /* TAGS ROW */
-  .tags-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-top: 14px;
-  }
-  .tag {
-    padding: 5px 14px;
-    border-radius: 100px;
-    font-size: 12px;
-    font-weight: 600;
-    border: 1px solid var(--border);
-    background: var(--surface2);
-    color: var(--text2);
-  }
-
-  /* MODELS LIST */
-  .models-list {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 12px;
-  }
-  .model-item {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 16px 18px;
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--text);
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    transition: all 0.2s;
-  }
-  .model-item:hover {
-    border-color: var(--accent1);
-    transform: translateX(-4px); /* تغيير من translateX(4px) */
-  }
-  .model-dot {
-    width: 8px; height: 8px;
-    border-radius: 50%;
-    flex-shrink: 0;
-  }
-
-  /* DIVIDER */
-  .divider {
-    height: 1px;
-    background: var(--border);
-    margin: 10px 0;
-  }
-
-  /* FOOTER */
-  footer {
-    background: var(--surface);
-    border-top: 1px solid var(--border);
-    text-align: center;
-    padding: 30px 24px;
-    color: var(--text2);
-    font-size: 13px;
-  }
-  footer strong { color: var(--accent1); font-family: 'Syne', sans-serif; }
-
-  /* UL RESET */
-  ul { list-style: none; }
-  ul li {
-    padding: 0.32rem 1rem 0.32rem 0; /* تعديل padding */
-    position: relative; font-size: 0.9rem; color: var(--text2);
-  }
-  ul li::before {
-    content: '◂'; position: absolute; right: 0; /* تغيير من left */
-    color: var(--accent1); font-size: 0.65rem; top: 0.44rem;
-  }
-
-  /* RESPONSIVE */
-  @media (max-width: 600px) {
-    .principles-grid { grid-template-columns: 1fr; }
-    .nav-pills { gap: 7px; }
-    .nav-pills a { font-size: 12px; padding: 6px 13px; }
-  }
-</style>
-  <script src="/javascripts/standalone-theme.js"></script>
-</head>
-<body>
-
-<!-- HERO -->
-<div class="hero">
-  <div class="hero-bg">
-    <div class="hero-orb"></div>
-    <div class="hero-orb"></div>
-    <div class="hero-orb"></div>
-  </div>
-  <div class="hero-content">
-    <div class="hero-tag">أمن المعلومات · الفصل 7</div>
-    <h1>مبادئ تصميم الأمن<br><span>النماذج والقدرات</span></h1>
-    <p>دليل دراسة مرئي شامل لمبادئ البنية الأمنية، نماذج الأمن، وتقنيات CIA.</p>
-  </div>
-</div>
-
-<!-- NAV -->
-<nav class="nav-pills">
-  <a href="#principles">🔐 مبادئ البنية الأمنية</a>
-  <a href="#flaws">⚠️ عيوب البنية الأمنية</a>
-  <a href="#cia">🛡️ تقنيات CIA</a>
-  <a href="#models">🗂️ نماذج الأمن</a>
-  <a href="#bellbiba">⚖️ Bell-LaPadula vs Biba</a>
-  <a href="#acm">📊 مصفوفة التحكم بالوصول</a>
-  <a href="#takegrant">🔄 نموذج Take-Grant</a>
-</nav>
-
-<main>
-
-  <!-- SECTION 1: ARCHITECTURE PRINCIPLES -->
-  <section id="principles" class="s1">
-    <div class="section-header">
-      <div class="section-icon">🔐</div>
-      <div>
-        <h2>مبادئ البنية الأمنية</h2>
-        <p>9 قواعد أساسية لتصميم أنظمة آمنة</p>
-      </div>
-    </div>
-
-    <div class="highlight-band" style="margin-bottom:28px;">
-      <h3>ما هي البنية الأمنية؟</h3>
-      <p>البنية الأمنية هي النظام الشامل المطلوب لحماية البنية التحتية لتقنية المعلومات في المؤسسة — بما في ذلك مواصفات الأجهزة والبرمجيات، العمليات، والإجراءات المتضمنة في منع وتخفيف والتحقيق في التهديدات. مبادئ البنية الأمنية هي القواعد الأساسية التي يجب تطبيقها عند تصميم وتنفيذ الضوابط الأمنية.</p>
-    </div>
-
-    <div class="principles-grid">
-
-      <!-- #1 -->
-      <div class="card">
-        <div class="card-num">المبدأ #1</div>
-        <h3>🏗️ الأمن بالتصميم</h3>
-        <p>يجب أن تؤخذ المتطلبات الأمنية في الاعتبار من بداية التطوير — وليس كفكرة لاحقة. بناء الأمن مبكرًا يوفر الوقت والمال والجهد.</p>
-        <div class="tip-box">
-          <span class="box-label">💡 نصيحة</span>
-          فكر في الأمن كأساس، وليس كطبقة طلاء. إضافته لاحقًا مثل تركيب أقفال على باب زجاجي.
-        </div>
-        <div class="exam-box">
-          <span class="box-label">📝 ركز في الاختبار</span>
-          إذا سأل سؤال "متى يجب معالجة المتطلبات الأمنية؟"، الإجابة هي <strong>أثناء التصميم الأولي</strong>، وليس بعد التطوير.
-        </div>
-      </div>
-
-      <!-- #2 -->
-      <div class="card">
-        <div class="card-num">المبدأ #2</div>
-        <h3>✂️ البساطة</h3>
-        <p>قلل التعقيد في الضوابط الأمنية. الأنظمة الأبسط بها أخطاء أقل، وأسهل في الإدارة، ويتم حل المشكلات الأمنية بشكل أسرع.</p>
-        <div class="tip-box">
-          <span class="box-label">💡 نصيحة</span>
-          كلما كان النظام أكثر تعقيدًا، زادت احتمالية الأخطاء في التكوين. اختر ضوابط بسيطة ومفهومة بدلاً من المعقدة.
-        </div>
-        <div class="example-box">
-          <span class="box-label">📌 مثال</span>
-          استخدام حل MFA واحد عبر جميع الأنظمة أبسط من خمس طرق مصادقة مختلفة — وأسهل في المراجعة.
-        </div>
-      </div>
-
-      <!-- #3 -->
-      <div class="card">
-        <div class="card-num">المبدأ #3</div>
-        <h3>🧅 الدفاع في العمق</h3>
-        <p>استخدم طبقات متعددة من الأمن. إذا فشل أو تم تجاوز أحد الضوابط، لا تزال الضوابط الأخرى تحمي النظام. لا توجد نقطة فشل واحدة.</p>
-        <div class="example-box">
-          <span class="box-label">📌 مثال واقعي</span>
-          شبكة مؤسسة تستخدم: جدار ناري محيطي → نظام كشف التسلل → تجزئة الشبكة → أمن نقاط النهاية → تشفير. إذا تم تجاوز جدار الحماية، لا تزال طبقات IDS والأخرى تمنع المهاجم.
-        </div>
-        <div class="exam-box">
-          <span class="box-label">📝 ركز في الاختبار</span>
-          "الأمن متعدد الطبقات" = الدفاع في العمق. ابحث عن إجابات تذكر ضوابط متعددة تعمل معًا.
-        </div>
-      </div>
-
-      <!-- #4 -->
-      <div class="card">
-        <div class="card-num">المبدأ #4</div>
-        <h3>🔑 أقل صلاحية</h3>
-        <p>امنح فقط الحد الأدنى من الصلاحيات اللازمة لمستخدم أو عملية للقيام بعملهم. <em>لا أكثر، لا أقل.</em></p>
-        <div class="example-box">
-          <span class="box-label">📌 مثال</span>
-          مسؤول قاعدة بيانات يجب أن يصل فقط إلى قواعد البيانات المخصصة له — وليس خوادم التطبيقات أو ملفات الموارد البشرية غير المرتبطة بدوره. مستخدم للقراءة فقط لا يجب أن يكون لديه صلاحيات كتابة أو حذف.
-        </div>
-        <div class="exam-box">
-          <span class="box-label">📝 ركز في الاختبار</span>
-          أقل صلاحية هو المبدأ الأكثر اختبارًا. أي سيناريو عن "إعطاء الحد الأدنى من الوصول" ينطبق هنا.
-        </div>
-      </div>
-
-      <!-- #5 -->
-      <div class="card">
-        <div class="card-num">المبدأ #5</div>
-        <h3>🚫 الرفض الافتراضي</h3>
-        <p>الإعداد الافتراضي هو <strong>رفض كل الوصول</strong>. يجب منح الوصول صراحةً من خلال التكوين. لا شيء مسموح به ما لم يُصرح به على وجه التحديد.</p>
-        <div class="tip-box">
-          <span class="box-label">💡 نصيحة</span>
-          فكر في حارس أمن في نادٍ: لا تدخل ما لم يكن اسمك على القائمة. القائمة فارغة افتراضيًا.
-        </div>
-        <div class="exam-box">
-          <span class="box-label">📝 ركز في الاختبار</span>
-          يُسمى أيضًا "الرفض الضمني" في سياقات جدران الحماية وقوائم ACL. إذا لم تطابق أي قاعدة، يتم رفض الوصول.
-        </div>
-      </div>
-
-      <!-- #6 -->
-      <div class="card">
-        <div class="card-num">المبدأ #6</div>
-        <h3>🔒 الفشل الآمن</h3>
-        <p>عند فشل النظام، يجب أن يفشل في حالة آمنة — تمنع الوصول لحماية سلامة البيانات، حتى لو تسبب ذلك في رفض الخدمة.</p>
-        <div class="compare-wrap" style="margin-top:14px;">
-          <table>
-            <thead><tr><th>الوضع</th><th>النتيجة</th><th>الخطر</th></tr></thead>
-            <tbody>
-              <tr><td>فشل آمن</td><td>الوصول محظور</td><td>رفض الخدمة</td></tr>
-              <tr><td>فشل آمن (بديل)</td><td>التحكم معطل</td><td>وصول غير مشروع</td></tr>
-            </tbody>
-          </table>
-        </div>
-        <div class="exam-box">
-          <span class="box-label">📝 ركز في الاختبار</span>
-          الفشل الآمن = أولوية الأمن (يمنع الوصول). الفشل الآمن (البديل) = أولوية التوفر (يسمح بالوصول). اختبارات الأمن تفضل الفشل الآمن.
-        </div>
-      </div>
-
-      <!-- #7 -->
-      <div class="card">
-        <div class="card-num">المبدأ #7</div>
-        <h3>👥 الفصل بين الواجبات</h3>
-        <p>لا يوجد شخص واحد لديه سيطرة كاملة على معاملة بأكملها. يتم تقسيم المهام أو تظليلها بين عدة أشخاص لمنع الاحتيال.</p>
-        <div class="tags-row">
-          <span class="tag">تظليل المهام</span>
-          <span class="tag">تقسيم المهام</span>
-        </div>
-        <div class="example-box">
-          <span class="box-label">📌 مثال</span>
-          في البنك: الشخص أ يبدأ تحويلًا مصرفيًا، الشخص ب يجب أن يأذن به. الاحتيال يتطلب تواطؤ شخصين.
-        </div>
-        <div class="exam-box">
-          <span class="box-label">📝 ركز في الاختبار</span>
-          الفصل بين الواجبات يمنع أي موظف منفرد من ارتكاب وإخفاء الاحتيال. إنه أيضًا تحكم رئيسي ضد التهديدات الداخلية.
-        </div>
-      </div>
-
-      <!-- #8 -->
-      <div class="card">
-        <div class="card-num">المبدأ #8</div>
-        <h3>🌐 لا تثق في الأنظمة الخارجية</h3>
-        <p>الأنظمة الخارجية ليست تحت سيطرة مؤسستك. تعامل معها على أنها غير آمنة افتراضيًا حتى يتم تأسيس الثقة صراحةً من خلال التحقق.</p>
-        <div class="tip-box">
-          <span class="box-label">💡 نصيحة</span>
-          دائمًا تحقق، عقم، وصادق البيانات من واجهات برمجة التطبيقات الخارجية، شبكات الشركاء، وخدمات الطرف الثالث — لا تفترض أبدًا أنها آمنة.
-        </div>
-        <div class="example-box">
-          <span class="box-label">📌 مثال</span>
-          مستشفى يتلقى بيانات مرضى من عيادة خارجية يجب أن يشفر الاتصال ويحقق من البيانات قبل استيرادها إلى أنظمتهم.
-        </div>
-      </div>
-
-      <!-- #9 -->
-      <div class="card">
-        <div class="card-num">المبدأ #9</div>
-        <h3>🛡️ الثقة المعدومة (Zero Trust)</h3>
-        <p>لا يُثق بأي فاعل، نظام، أو خدمة — داخل أو خارج الشبكة — افتراضيًا. يجب التحقق من كل تفاعل قبل منح الوصول.</p>
-        <div class="example-box">
-          <span class="box-label">📌 مثال</span>
-          موظف داخل المكتب الرئيسي لا يزال بحاجة إلى MFA + التحقق من الجهاز للوصول إلى نظام ملفات الشركة. التواجد على الشبكة الداخلية ليس كافيًا.
-        </div>
-        <div class="exam-box">
-          <span class="box-label">📝 ركز في الاختبار</span>
-          الثقة المعدومة هي تطور "لا تثق في الأنظمة الخارجية" — ممتدة إلى الأنظمة <em>الداخلية</em> أيضًا. العبارة الرئيسية: "لا تثق أبدًا، تحقق دائمًا."
-        </div>
-      </div>
-
-    </div><!-- end grid -->
-
-    <!-- Security is a Process -->
-    <div class="wide-card" style="margin-top:28px; border-right: 4px solid var(--accent4); border-left: none;">
-      <h3>⏳ الأمن هو عملية — وليس منتجًا</h3>
-      <p style="color:var(--text2); font-size:14px; margin-top:10px;">كل نظام به ثغرات. الهدف هو <strong>الضمان</strong>، وليس الكمال. الأنظمة، المتطلبات، وسياقات التهديد تتغير بمرور الوقت. الأنظمة الآمنة تحتاج إلى صيانة مستمرة:</p>
-      <div class="tags-row" style="margin-top:14px;">
-        <span class="tag">التحقق من المستخدمين المنتهية صلاحياتهم</span>
-        <span class="tag">تحديث توقيعات مكافحة الفيروسات</span>
-        <span class="tag">تصحيح الثغرات الأمنية</span>
-        <span class="tag">اختبار جدران الحماية بانتظام</span>
-        <span class="tag">مراجعة ضوابط الوصول</span>
-      </div>
-    </div>
-  </section>
-
-  <!-- SECTION 2: ARCHITECTURE FLAWS -->
-  <section id="flaws" class="s2">
-    <div class="section-header">
-      <div class="section-icon">⚠️</div>
-      <div>
-        <h2>عيوب البنية الأمنية الشائعة</h2>
-        <p>أنواع الهجمات التي تستغل نقاط الضعف في التصميم والبرمجة</p>
-      </div>
-    </div>
-
-    <div class="wide-card" style="border-right: 4px solid var(--accent2); border-left: none;">
-      <h3>📡 القنوات الخفية (Covert Channels)</h3>
-      <p style="font-size:14px; color:var(--text2); margin-top:10px;">القناة الخفية هي تقنية هجوم تستخدم لـ <strong>نقل المعلومات بطريقة سرية، غير مصرح بها، أو غير مشروعة</strong>. يمكن استخدامها لاستخراج معلومات من — أو زرع معلومات في — مؤسسة دون اكتشاف.</p>
-      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:14px; margin-top:18px;">
-        <div class="tip-box" style="margin:0; border-color: var(--accent1);">
-          <span class="box-label" style="color:var(--accent1);">⏱️ قناة توقيت خفية</span>
-          عملية تصل إلى بيانات عملية أخرى من خلال مورد مشترك مثل الذاكرة أو المعالج. توقيت العمليات يسرب المعلومات.
-        </div>
-        <div class="tip-box" style="margin:0; border-color: var(--accent4);">
-          <span class="box-label" style="color:var(--accent4);">💾 قناة تخزين خفية</span>
-          عملية تقرأ أو تكتب على وسائط تخزين للتواصل سرًا. مثال: تطبيقات أندرويد تطلب الوصول لتخزين الصور قد تقرأ بيانات وصفية لا يحق لها الاطلاع عليها.
-        </div>
-      </div>
-    </div>
-
-    <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap:16px; margin-top:16px;">
-
-      <div class="wide-card" style="margin:0; border-right: 4px solid var(--accent2); border-left: none;">
-        <h3>🪤 خطاف الصيانة (باب خلفي)</h3>
-        <p style="font-size:14px; color:var(--text2); margin-top:10px;">باب خلفي في البرمجيات يسمح للمطورين بالوصول السهل للصيانة — متجاوزًا المصادقة العادية. إذا تُرك في الإنتاج، يصبح ثغرة خطيرة.</p>
-        <div class="exam-box" style="margin-top:12px;">
-          <span class="box-label">📝 ركز في الاختبار</span>
-          إذا وصف سيناريو وصول مخفي للمطورين يتجاوز الفحوصات العادية → خطاف صيانة / باب خلفي.
-        </div>
-      </div>
-
-      <div class="wide-card" style="margin:0; border-right: 4px solid var(--accent4); border-left: none;">
-        <h3>🧂 هجوم السلامي (التجميعي)</h3>
-        <p style="font-size:14px; color:var(--text2); margin-top:10px;">هجمات صغيرة لا تُكتشف بشكل فردي، لكنها تتراكم لتشكل هجومًا كبيرًا. يُسمى أيضًا <em>الهجوم التدريجي</em>.</p>
-        <div class="example-box" style="margin-top:12px;">
-          <span class="box-label">📌 مثال</span>
-          موظف بنك يُقرّب كل معاملة إلى أقرب قرش ويحول هذه الكسور إلى حسابه. كل معاملة لا تُذكر؛ عبر الملايين تصبح هائلة.
-        </div>
-      </div>
-
-      <div class="wide-card" style="margin:0; border-right: 4px solid var(--accent3); border-left: none;">
-        <h3>✏️ تلاعب بالبيانات (Data Diddling)</h3>
-        <p style="font-size:14px; color:var(--text2); margin-top:10px;">تغيير البيانات <strong>قبل أو أثناء الإدخال</strong> إلى نظام الحاسوب. يتم تغيير البيانات في مرحلة الإدخال، مما يجعل اكتشافها صعبًا بعد ذلك.</p>
-        <div class="example-box" style="margin-top:12px;">
-          <span class="box-label">📌 مثال</span>
-          موظف رواتب يغير ساعات عمل موظف من 40 إلى 400 قبل إرسال جدول الوقت إلى نظام الرواتب.
-        </div>
-      </div>
-
-      <div class="wide-card" style="margin:0; border-right: 4px solid var(--accent1); border-left: none;">
-        <h3>👑 برامج مميزة (Privileged Programs)</h3>
-        <p style="font-size:14px; color:var(--text2); margin-top:10px;">برامج يمكنها منح المستخدمين <strong>صلاحيات إضافية تتجاوز ما تم تعيينه لهم أصلاً</strong> — مما يخلق مسارًا لهجمات تصعيد الصلاحيات.</p>
-        <div class="exam-box" style="margin-top:12px;">
-          <span class="box-label">📝 ركز في الاختبار</span>
-          البرامج المميزة تنتهك مبدأ أقل صلاحية. المهاجم الذي يستغل أحدها يمكنه الحصول على وصول مرتفع عبر النظام.
-        </div>
-      </div>
-
-    </div>
-
-    <div class="wide-card" style="margin-top:16px; background: var(--grad3); border:none; color: #fff;">
-      <h3 style="color:#fff;">🛠️ كيف تحمي نفسك من هذه العيوب</h3>
-      <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:14px;">
-        <div>
-          <strong>الاسترداد الموثوق</strong><br>
-          <span style="font-size:13px; opacity:0.9;">آليات لضمان أن حالات الفشل لا تعرض التشغيل الآمن للخطر. يعود النظام إلى حالة آمنة معروفة بعد الفشل.</span>
-        </div>
-        <div>
-          <strong>التحقق من المدخلات</strong><br>
-          <span style="font-size:13px; opacity:0.9;">التحقق وتنقية جميع المدخلات قبل معالجتها يمنع التلاعب بالبيانات، هجمات الحقن، والتلاعب بالمعاملات.</span>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- SECTION 3: CIA TECHNIQUES -->
-  <section id="cia" class="s3">
-    <div class="section-header">
-      <div class="section-icon">🛡️</div>
-      <div>
-        <h2>تقنيات CIA</h2>
-        <p>ضمان السرية، السلامة، والتوفر</p>
-      </div>
-    </div>
-
-    <div class="highlight-band" style="background: var(--grad3); margin-bottom:24px;">
-      <h3>ثالوث CIA في تصميم البرمجيات</h3>
-      <p>يستخدم مصممو البرمجيات تقنيات لضمان أن البرامج تفعل <em>فقط ما هو مطلوب</em> ولا شيء أكثر. عندما تفشل الضوابط: البرامج المتأثرة تهدد <strong>السرية</strong> → تغييرات غير متوقعة في البيانات تكسر <strong>السلامة</strong> → تلف البيانات يسبب فقدان <strong>التوفر</strong>.</p>
-    </div>
-
-    <div class="wide-card">
-      <h3>🔒 الحصر (Confinement) <span class="badge conf">السرية</span></h3>
-      <p style="font-size:14px; color:var(--text2); margin-top:10px;">حصر العمليات يقيد العملية لتقرأ وتكتب فقط <strong>مواقع وموارد ذاكرة محددة</strong>. يُستخدم في أنظمة التشغيل لعزل العمليات وحماية الذاكرة.</p>
-      <div class="example-box" style="margin-top:14px;">
-        <span class="box-label">📌 مثال — العزل (Sandboxing)</span>
-        برنامج Sandboxie يشغل البرامج في بيئة معزولة بحيث لا يمكن لأي تغييرات أو برمجيات خبيثة التأثير على النظام المضيف أو البرامج الأخرى. متصفحات الويب تستخدم العزل لعزل التبويبات عن بعضها وعن نظام التشغيل.
-      </div>
-      <div class="tip-box" style="margin-top:10px;">
-        <span class="box-label">💡 نصيحة</span>
-        الحصر = <em>المفهوم</em>. العزل = <em>تطبيق</em> شائع للحصر.
-      </div>
-    </div>
-
-    <div class="wide-card">
-      <h3>🔬 عزل العمليات <span class="badge integ">السلامة</span></h3>
-      <p style="font-size:14px; color:var(--text2); margin-top:10px;">عزل العمليات يضمن أن سلوك عملية واحدة سيؤثر فقط على <strong>ذاكرتها ومواردها الخاصة</strong>. العمليات المنفصلة لا يمكنها التدخل في بعضها البعض.</p>
-      <p style="font-size:14px; color:var(--text2); margin-top:8px;">كل عملية تحصل على مساحة ذاكرة افتراضية خاصة بها. جداول الصفحات منفصلة — لا يمكن لعملية الوصول إلى صفحات ذاكرة عملية أخرى. العناوين الافتراضية لكل عملية تبدأ من 0، لكنها تُرسم إلى مواقع فيزيائية مختلفة.</p>
-      <div class="exam-box" style="margin-top:14px;">
-        <span class="box-label">📝 ركز في الاختبار</span>
-        عزل العمليات هو آلية نظام التشغيل التي تمنع عملية مخترقة من قراءة بيانات حساسة لعملية أخرى (مثل كلمات المرور في الذاكرة).
-      </div>
-    </div>
-
-    <div class="wide-card">
-      <h3>⭕ الحدود (مستويات الصلاحية) <span class="badge avail">التحكم بالوصول</span></h3>
-      <p style="font-size:14px; color:var(--text2); margin-top:10px;">كل عملية تعمل على النظام تُعطى <strong>مستوى صلاحية</strong> يخبر نظام التشغيل بما يُسمح للعملية بفعله. نموذج الحلقات يحدد مستويات الصلاحية:</p>
-      <div style="margin-top:14px; display:grid; grid-template-columns: repeat(auto-fill, minmax(180px,1fr)); gap:10px;">
-        <div class="tip-box" style="margin:0; border-color:var(--accent2); text-align:center;">
-          <span class="box-label" style="color:var(--accent2);">الحلقة 0 — أعلى صلاحية</span>
-          <strong>النواة (Kernel)</strong> — وصول مباشر للعتاد
-        </div>
-        <div class="tip-box" style="margin:0; border-color:var(--accent4); text-align:center;">
-          <span class="box-label" style="color:var(--accent4);">الحلقتان 1 و 2</span>
-          <strong>برامج تشغيل الأجهزة</strong> — إدارة العتاد
-        </div>
-        <div class="tip-box" style="margin:0; border-color:var(--accent3); text-align:center;">
-          <span class="box-label" style="color:var(--accent3);">الحلقة 3 — أقل صلاحية</span>
-          <strong>التطبيقات</strong> — برامج المستخدم
-        </div>
-      </div>
-      <div class="exam-box" style="margin-top:14px;">
-        <span class="box-label">📝 ركز في الاختبار</span>
-        أكثر مستويي صلاحية يتم اختبارهما هما <strong>وضع المستخدم</strong> (الحلقة 3) و<strong>وضع النواة</strong> (الحلقة 0). وضع النواة = وصول كامل. وضع المستخدم = وصول مقيد.
-      </div>
-    </div>
-  </section>
-
-  <!-- SECTION 4: SECURITY MODELS -->
-  <section id="models" class="s4">
-    <div class="section-header">
-      <div class="section-icon">🗂️</div>
-      <div>
-        <h2>نظرة عامة على نماذج الأمن</h2>
-        <p>أطر لتحديد وتنفيذ السياسات الأمنية</p>
-      </div>
-    </div>
-
-    <div class="wide-card" style="margin-bottom:20px;">
-      <p style="font-size:14px; color:var(--text2);">النموذج الأمني هو مخطط لـ <strong>تحديد وتنفيذ السياسات الأمنية</strong>. قد يعتمد على نموذج رسمي لحقوق الوصول، الحوسبة، الحوسبة الموزعة، أو بدون أساس نظري محدد.</p>
-    </div>
-
-    <div class="models-list">
-      <div class="model-item"><div class="model-dot" style="background:var(--accent1)"></div>قاعدة الحوسبة الموثوقة (TCB)</div>
-      <div class="model-item"><div class="model-dot" style="background:var(--accent2)"></div>نموذج آلة الحالة</div>
-      <div class="model-item"><div class="model-dot" style="background:var(--accent3)"></div>نموذج تدفق المعلومات</div>
-      <div class="model-item"><div class="model-dot" style="background:var(--accent4)"></div>نموذج عدم التداخل</div>
-      <div class="model-item"><div class="model-dot" style="background:var(--accent1)"></div>نموذج Take-Grant</div>
-      <div class="model-item"><div class="model-dot" style="background:var(--accent2)"></div>مصفوفة التحكم بالوصول</div>
-      <div class="model-item"><div class="model-dot" style="background:var(--accent3)"></div>نموذج Bell-LaPadula ⭐</div>
-      <div class="model-item"><div class="model-dot" style="background:var(--accent4)"></div>نموذج Biba ⭐</div>
-      <div class="model-item"><div class="model-dot" style="background:var(--accent1)"></div>نموذج Clark-Wilson</div>
-      <div class="model-item"><div class="model-dot" style="background:var(--accent2)"></div>Brewer & Nash (الجدار الصيني)</div>
-      <div class="model-item"><div class="model-dot" style="background:var(--accent3)"></div>نموذج Goguen-Meseguer</div>
-      <div class="model-item"><div class="model-dot" style="background:var(--accent4)"></div>نموذج Sutherland</div>
-      <div class="model-item"><div class="model-dot" style="background:var(--accent1)"></div>نموذج Graham-Denning</div>
-    </div>
-
-    <div class="tip-box" style="margin-top:20px;">
-      <span class="box-label">💡 نصيحة للدراسة</span>
-      ركز تحضيرك للاختبار على: <strong>Bell-LaPadula</strong> (السرية)، <strong>Biba</strong> (السلامة)، <strong>مصفوفة التحكم بالوصول</strong>، و <strong>Take-Grant</strong>. هذه تظهر بشكل متكرر.
-    </div>
-  </section>
-
-  <!-- SECTION 5: BELL-LAPADULA vs BIBA -->
-  <section id="bellbiba">
-    <div class="section-header">
-      <div class="section-icon">⚖️</div>
-      <div>
-        <h2>Bell-LaPadula مقابل Biba</h2>
-        <p>النموذجان الأكثر اختبارًا</p>
-      </div>
-    </div>
-
-    <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:24px;">
-
-      <!-- Bell-LaPadula -->
-      <div class="wide-card" style="border-top: 4px solid var(--accent1);">
-        <h3>🔵 نموذج Bell-LaPadula <span class="badge conf">السرية</span></h3>
-        <p style="font-size:14px; color:var(--text2); margin-top:10px;">مصمم لحماية <strong>السرية</strong> في أنظمة التصنيف العسكرية. يستخدم ترتيبًا خطيًا للمستويات الأمنية.</p>
-        <div class="divider" style="margin:14px 0;"></div>
-        <div class="compare-wrap">
-          <table>
-            <thead><tr><th>المستوى</th><th>الموضوع</th><th>الكائن</th></tr></thead>
-            <tbody>
-              <tr><td>سري جدًا</td><td>تمارا</td><td>ملفات الموظفين</td></tr>
-              <tr><td>سري</td><td>صموئيل</td><td>ملفات البريد الإلكتروني</td></tr>
-              <tr><td>سري (محدود)</td><td>كلير</td><td>سجلات النشاط</td></tr>
-              <tr><td>غير مصنف</td><td>أليس</td><td>قوائم الهاتف</td></tr>
-            </tbody>
-          </table>
-        </div>
-        <div class="tip-box" style="margin-top:14px;">
-          <span class="box-label">قاعدتان أساسيتان</span>
-          <strong>لا تقرأ أعلى</strong> — لا يمكن لموضوع قراءة كائنات بمستوى أعلى من تصنيفه.<br><br>
-          <strong>لا تكتب أسفل</strong> — لا يمكن لموضوع كتابة بيانات إلى مستوى تصنيف أدنى (يمنع تسريب الأسرار).
-        </div>
-        <div class="example-box" style="margin-top:10px;">
-          <span class="box-label">📌 أمثلة</span>
-          ✅ تمارا (سري جدًا) يمكنها قراءة جميع الملفات.<br>
-          ❌ كلير (سري محدود) لا يمكنها قراءة ملفات الموظفين أو البريد الإلكتروني.<br>
-          ✅ أليس (غير مصنف) يمكنها فقط قراءة قوائم الهاتف.
-        </div>
-        <div class="exam-box" style="margin-top:10px;">
-          <span class="box-label">📝 ركز في الاختبار</span>
-          Bell-LaPadula = السرية. "لا تقرأ أعلى، لا تكتب أسفل." التصنيفات العسكرية. تذكر: لا يحمي السلامة.
-        </div>
-      </div>
-
-      <!-- Biba -->
-      <div class="wide-card" style="border-top: 4px solid var(--accent3);">
-        <h3>🟢 نموذج Biba <span class="badge integ">السلامة</span></h3>
-        <p style="font-size:14px; color:var(--text2); margin-top:10px;">مصمم لحماية <strong>سلامة البيانات</strong>. الفلسفة المعاكسة لـ Bell-LaPadula — تركز على منع تلوث البيانات عالية السلامة.</p>
-        <div class="divider" style="margin:14px 0;"></div>
-        <div class="tip-box">
-          <span class="box-label">قاعدتان أساسيتان</span>
-          <strong>لا تكتب أعلى</strong> — لا يمكن لموضوع الكتابة إلى مستوى سلامة أعلى من مستواه (لا يمكنه تلويث البيانات الموثوقة).<br><br>
-          <strong>لا تقرأ أسفل</strong> — لا يمكن لموضوع القراءة من مستوى سلامة أدنى (يمنع التلوث ببيانات غير موثوقة).
-        </div>
-        <div class="example-box" style="margin-top:10px;">
-          <span class="box-label">📌 مثال</span>
-          محلل بمستوى سري لا يمكنه كتابة تغييرات على وثائق سرية جدًا (لا تكتب أعلى). أيضًا لا يمكنه قراءة مصادر إنترنت غير مصنفة ودمجها في تقارير سرية (لا تقرأ أسفل — خطر تلوث البيانات).
-        </div>
-        <div class="exam-box" style="margin-top:10px;">
-          <span class="box-label">📝 ركز في الاختبار</span>
-          Biba = السلامة. "لا تكتب أعلى، لا تقرأ أسفل." إنه عكس اتجاه القراءة لـ Bell-LaPadula. Biba لا يحمي السرية.
-        </div>
-      </div>
-    </div>
-
-    <!-- Comparison Table -->
-    <div class="compare-wrap">
-      <table>
-        <thead><tr><th>الخاصية</th><th>Bell-LaPadula</th><th>Biba</th></tr></thead>
-        <tbody>
-          <tr><td>الهدف</td><td>السرية</td><td>السلامة</td></tr>
-          <tr><td>لا تقرأ</td><td>لا تقرأ أعلى (لا تقرأ فوق مستواك)</td><td>لا تقرأ أسفل (لا تقرأ تحت مستواك)</td></tr>
-          <tr><td>لا تكتب</td><td>لا تكتب أسفل (لا تكتب تحت مستواك)</td><td>لا تكتب أعلى (لا تكتب فوق مستواك)</td></tr>
-          <tr><td>حالة الاستخدام</td><td>التصنيف العسكري/الحكومي</td><td>أنظمة السلامة المالية/قواعد البيانات</td></tr>
-          <tr><td>القيد</td><td>لا يعالج السلامة</td><td>لا يعالج السرية</td></tr>
-        </tbody>
-      </table>
-    </div>
-
-    <div class="exam-box" style="margin-top:20px;">
-      <span class="box-label">📝 حيلة للحفظ</span>
-      <strong>Bell-LaPadula:</strong> فكر في جاسوس — الجواسيس لا يمكنهم قراءة ملفات فوق مستوى تصريحهم (لا تقرأ أعلى) ولا يمكنهم كتابة أسرار لمستويات أدنى (لا تكتب أسفل) لمنع التسريبات.<br><br>
-      <strong>Biba:</strong> فكر في طاهٍ — لن يقرأ وصفة من طباخ أقل خبرة (لا تقرأ أسفل = لا تلوث) ولا يمكنه إعادة كتابة كتاب وصفات رئيس الطهاة (لا تكتب أعلى = لا فساد).
-    </div>
-  </section>
-
-  <!-- SECTION 6: ACCESS CONTROL MATRIX -->
-  <section id="acm">
-    <div class="section-header">
-      <div class="section-icon">📊</div>
-      <div>
-        <h2>مصفوفة التحكم بالوصول</h2>
-        <p>رسم الخرائط بين الفاعلين، الكائنات، وحقوق الوصول</p>
-      </div>
-    </div>
-
-    <div class="wide-card" style="margin-bottom:20px;">
-      <p style="font-size:14px; color:var(--text2);">مصفوفة التحكم بالوصول هي جدول يربط <strong>الفاعلين (المستخدمين)</strong> بـ <strong>الكائنات (الموارد)</strong> و <strong>الحقوق</strong> التي يملكها كل فاعل على كل كائن.</p>
-      <div class="tags-row" style="margin-top:12px;">
-        <span class="tag">الأعمدة ← قوائم ACL (مرتبطة بالكائنات)</span>
-        <span class="tag">الصفوف ← قوائم الصلاحيات (مرتبطة بالفاعلين)</span>
-      </div>
-    </div>
-
-    <div class="acm-table compare-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>الفاعل \ الكائن</th>
-            <th>ملف 1</th><th>ملف 2</th><th>ملف 3</th><th>ملف 4</th>
-            <th>حساب 1</th><th>حساب 2</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>جون</td>
-            <td>ملكية، قراءة، كتابة</td><td>—</td><td>ملكية، قراءة، كتابة</td><td>—</td>
-            <td>استعلام، إيداع</td><td>—</td>
-          </tr>
-          <tr>
-            <td>أليس</td>
-            <td>قراءة</td><td>ملكية، قراءة، كتابة</td><td>كتابة</td><td>قراءة</td>
-            <td>استعلام، سحب</td><td>استعلام، إيداع</td>
-          </tr>
-          <tr>
-            <td>بوب</td>
-            <td>قراءة، كتابة</td><td>قراءة</td><td>—</td><td>ملكية، قراءة، كتابة</td>
-            <td>—</td><td>استعلام، سحب</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <div class="example-box" style="margin-top:16px;">
-      <span class="box-label">📌 قراءة المصفوفة</span>
-      إذا نظرت إلى <strong>عمود "ملف 1" (قائمة ACL)</strong>: جون (ملكية،قراءة،كتابة)، أليس (قراءة)، بوب (قراءة،كتابة) — هؤلاء هم جميع الفاعلين الذين لديهم وصول للملف 1.<br><br>
-      إذا نظرت إلى <strong>صف "أليس" (قائمة صلاحياتها)</strong>: ملف 1 (قراءة)، ملف 2 (ملكية،قراءة،كتابة)، ملف 3 (كتابة)، ملف 4 (قراءة)، حساب 1 (استعلام، سحب)، حساب 2 (استعلام، إيداع) — هذه كل الأشياء التي يمكن لأليس فعلها.
-    </div>
-    <div class="exam-box" style="margin-top:12px;">
-      <span class="box-label">📝 ركز في الاختبار</span>
-      ACL = عرض لكل كائن (من يمكنه الوصول لهذا الملف؟). قائمة الصلاحيات = عرض لكل فاعل (ما الذي يمكن لهذا المستخدم الوصول إليه؟). كلاهما يأتي من نفس المصفوفة — فقط يُقرأ في اتجاهات مختلفة.
-    </div>
-  </section>
-
-  <!-- SECTION 7: TAKE-GRANT -->
-  <section id="takegrant">
-    <div class="section-header">
-      <div class="section-icon">🔄</div>
-      <div>
-        <h2>نموذج Take-Grant</h2>
-        <p>تتبع كيفية انتشار الحقوق عبر النظام</p>
-      </div>
-    </div>
-
-    <div class="wide-card" style="margin-bottom:20px;">
-      <p style="font-size:14px; color:var(--text2);">نموذج Take-Grant يحدد <strong>كيف يمكن تمرير الحقوق بين الفاعلين</strong>. يُستخدم لتحديد متى يمكن أن تتغير الحقوق وأين يحدث تسريب الصلاحيات.</p>
-    </div>
-
-    <div class="compare-wrap">
-      <table>
-        <thead><tr><th>القاعدة</th><th>الوصف</th><th>الترميز</th></tr></thead>
-        <tbody>
-          <tr>
-            <td>قاعدة الأخذ (Take)</td>
-            <td>تسمح لفاعل بأخذ حقوق على كائن من فاعل آخر</td>
-            <td>"x يأخذ (α إلى z) من y"</td>
-          </tr>
-          <tr>
-            <td>قاعدة المنح (Grant)</td>
-            <td>تسمح لفاعل بمنح حقوق على كائن لفاعل آخر</td>
-            <td>"x يمنح (α إلى z) إلى y"</td>
-          </tr>
-          <tr>
-            <td>قاعدة الإنشاء (Create)</td>
-            <td>تسمح لفاعل بإنشاء حقوق جديدة</td>
-            <td>"x ينشئ (α إلى) {فاعل/كائن} جديد n"</td>
-          </tr>
-          <tr>
-            <td>قاعدة الإزالة (Remove)</td>
-            <td>تسمح لفاعل بإزالة حقوق يملكها</td>
-            <td>"x يزيل (α إلى) y"</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <div class="tip-box" style="margin-top:16px;">
-      <span class="box-label">💡 نقطة رئيسية</span>
-      نموذج Take-Grant يسمح لمحللي الأمن بتحديد <strong>متى يمكن أن تتغير الحقوق في النظام</strong> وتحديد <strong>أين قد يحدث تسريب للصلاحيات</strong> — أي كيف يمكن لطرف غير مصرح له الحصول على حقوق وصول من خلال سلسلة من عمليات المنح والأخذ.
-    </div>
-    <div class="example-box" style="margin-top:12px;">
-      <span class="box-label">📌 مثال على التسريب</span>
-      أليس تمنح بوب حق "القراءة" على الملف X. ثم يأخذ بوب هذا الحق ويمنحه لتشارلي (الذي لم يكن مصرحًا له). من خلال سلسلة من عمليات Take-Grant، تشارلي الآن لديه وصول غير مصرح به — هذا هو تسريب الصلاحيات.
-    </div>
-    <div class="exam-box" style="margin-top:12px;">
-      <span class="box-label">📝 ركز في الاختبار</span>
-      Take-Grant يتعلق بتتبع انتشار الصلاحيات. أسئلة الاختبار قد تطلب منك متابعة سلسلة من القواعد لتحديد ما إذا كان يمكن لفاعل الحصول على وصول لمورد لم يكن مصرحًا له به أصلاً.
-    </div>
-  </section>
-
-</main>
-
-<!-- FOOTER -->
-<footer>
-  <div style="font-family:'Syne',sans-serif; font-size:1.1rem; font-weight:800; background: var(--grad1); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; margin-bottom:6px;">
-    شوق العمران
-  </div>
-  <div>الفصل 7 — مبادئ تصميم الأمن، النماذج، والقدرات</div>
-  <div style="margin-top:4px; opacity:0.5; font-size:12px;">دليل دراسة أمن المعلومات · تم تفعيل الوضع التلقائي للضوء/الظلام</div>
-</footer>
-
-</body>
-</html>
