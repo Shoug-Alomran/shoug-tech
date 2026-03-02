@@ -261,9 +261,25 @@
     addQuickLinksWidget();
     initSidebarToggles();
     addFooterBlock();
+    replaceFooterCredit();
     initRevealMotion();
     syncEmbeddedIframesTheme();
     translateTabs();
+  }
+
+  function replaceFooterCredit() {
+    const footerMeta = document.querySelector(".md-footer-meta");
+    if (!footerMeta) return;
+
+    const creditLink = footerMeta.querySelector(
+      'a[href*="squidfunk.github.io/mkdocs-material"], a[href*="mkdocs-material"]'
+    );
+    if (!creditLink) return;
+
+    creditLink.textContent = "Made by Blueprint";
+    creditLink.href = "https://blueprint.shoug-tech.com/";
+    creditLink.target = "_blank";
+    creditLink.rel = "noopener noreferrer";
   }
 
   function addQuickLinksWidget() {
