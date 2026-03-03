@@ -286,10 +286,9 @@
     const content = document.querySelector(".md-content__inner.md-typeset");
     if (!content) return;
     if (content.querySelector(".quick-links-widget")) return;
-    if (location.pathname.endsWith("/")) {
-      const p = location.pathname.replace(/\/+$/, "/");
-      if (p === "/" || p === "/ar/" || p === "/start-here/" || p === "/ar/start-here/") return;
-    }
+    const p = location.pathname.replace(/\/+$/, "/");
+    if (p === "/" || p === "/ar/" || p === "/start-here/" || p === "/ar/start-here/") return;
+    if (p === "/career-development/services/" || p === "/ar/career-development/services/") return;
 
     const links = isArabic()
       ? [

@@ -17,10 +17,14 @@ last_updated: 2026-03-02
   <div class="page-hero__body">
     <h1 class="page-hero__title">Base Package + Structured Add-Ons</h1>
     <p class="page-hero__summary">
-      Clear scope. Predictable delivery. No hidden complexity.
+      Blueprint Studio builds clean, static websites for portfolios, course hubs, documentation, and professional pages, designed for clarity and long-term maintainability.
     </p>
-    <p>
-      View my website: <a href="https://blueprint.shoug-tech.com/" target="_blank">blueprint.shoug-tech.com</a>
+    <p class="page-hero__scope">
+      Service scope: static websites only • fast, secure, low-maintenance • no backend/SaaS builds
+    </p>
+    <p class="page-hero__link">
+      View my website:
+      <a href="https://blueprint.shoug-tech.com/" target="_blank" rel="noopener noreferrer">blueprint.shoug-tech.com</a>
     </p>
   </div>
 </section>
