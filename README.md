@@ -1,131 +1,118 @@
-# Shoug Fawaz Alomran — Digital Garden & Interactive CV
+# Shoug Fawaz Alomran - Digital Garden & Interactive CV
 
-Welcome to my **Digital Garden**, a living space where I document my journey in **cybersecurity, software development, and personal growth**.  
-Built using [MkDocs Material](https://squidfunk.github.io/mkdocs-material/), this project serves as both an **interactive CV** and a **knowledge hub**, showcasing my projects, skills, and continuous learning path.
-
----
-
-## Live Site
-🔗 [Visit My Digital Garden](https://shoug-alomran.github.io/My-Garden/)
-
----
+This repository powers my digital garden: a bilingual (English/Arabic) MkDocs site that combines course notes, cybersecurity content, projects, workshops, and career pages.
 
 ## About
 I’m **Shoug Fawaz Alomran**, passionate about:
-- **Penetration Testing**: exploring systems ethically to make them safer  
-- **Software Development**: building useful tools and apps for everyday life  
-- **Cybersecurity Awareness**: helping others protect themselves online  
+- **Penetration Testing**: exploring systems ethically to make them safer
+- **Software Development**: building useful tools and apps for everyday life
+- **Cybersecurity Awareness**: helping others protect themselves online
 
-This site brings together my academic journey, projects, technical labs, volunteering, and research work, all in one evolving space.
+This digital garden is both an interactive CV and a long-term learning archive covering academics, projects, labs, volunteering, and career development.
 
----
+## Live Site
+- [Primary domain](https://shoug-tech.com/)
+- [GitHub Pages deployment](https://shoug-alomran.github.io/My-Garden/)
 
-## Structure
-| Section | Description |
-|----------|--------------|
-| `Home` | Overview and introduction |
-| `Links` | Bookmark hub for cybersecurity platforms, tools, and guides |
-| `Me` | Personal portfolio, volunteering, and research experiences |
-| `Docs/` | Contains all Markdown pages used for the site content |
-| `policy/` | Repository policy documents (security and related governance docs) |
-| `mkdocs.yml` | Configuration file for MkDocs Material |
+## Tech Stack
+- Python 3
+- [MkDocs](https://www.mkdocs.org/)
+- [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/)
+- [mkdocs-static-i18n](https://github.com/ultrabug/mkdocs-static-i18n)
+- GitHub Actions + GitHub Pages
 
----
+## Repository Layout
+- `docs/`: site content, assets, custom styles/scripts, and Arabic `*.ar.md` pages
+- `mkdocs.yml`: full navigation, theme, plugins, and i18n config
+- `scripts/`: bilingual parity checks, Arabic sync utility, preflight QA
+- `.github/workflows/deploy-mkdocs.yml`: CI build and deploy pipeline
+- `site/`: generated output (build artifact only)
 
-## Built With
-- [**Python 3**](https://www.python.org/)  
-- [**MkDocs Material**](https://squidfunk.github.io/mkdocs-material/)  
-- [**GitHub Pages**](https://pages.github.com/) for hosting  
-- [**Visual Studio Code**](https://code.visualstudio.com/) for development  
+## Site Sections
+- `Home`: overview and introduction
+- `Start Here`: onboarding guide for navigating the garden
+- `Learn`: academic notes, chapters, quizzes, and study resources
+- `Career Development`: profile, projects, services, CV, and workshop materials
+- `Resources`: curated links and references
+- `About`: copyright and policy pages
 
----
-
-## Copyright
-
-© 2026 **Shoug Fawaz Alomran**. All rights reserved.
-
-The content of this repository, including but not limited to text, documentation, design, and original code, is the intellectual property of the author unless otherwise stated.
-
-You may:
-- View and reference this project for **personal and educational purposes**
-
-You may **not**:
-- Reproduce, distribute, or publish substantial portions without explicit permission
-- Use the content for commercial purposes without prior consent
-
-If you would like to reuse or adapt any part of this project, please contact:
-**Shoug.Alomran@Shoug-Tech.com**
-
----
-
-## Local Setup
-To run locally:
+## Local Development
 ```bash
-# Clone this repository
 git clone https://github.com/Shoug-Alomran/My-Garden.git
 cd My-Garden
 
-# Create and activate virtual environment
-python3 -m venv venv
-source venv/bin/activate
+python3 -m venv .venv
+source .venv/bin/activate
 
-# Install dependencies
-pip install mkdocs-material
+pip install --upgrade pip
+pip install mkdocs-material mkdocs-static-i18n
 
-# Serve locally
 mkdocs serve
-
----
-
-## Built With
-- [MkDocs](https://www.mkdocs.org/)
-- [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/)
-
-## Arabic Sync Workflow (Saudi Arabic)
-This repo includes a safe translation script:
-
-`scripts/sync_arabic.py`
-
-What it does:
-- Scans all English `*.md` pages under `docs/`
-- Creates matching Arabic files as `*.ar.md`
-- Uses Saudi-friendly formal Arabic style
-- Preserves Markdown structure
-
-Recommended run order:
-
-```bash
-# 1) Preview what will be generated/updated (safe)
-python3 scripts/sync_arabic.py
-
-# 2) Apply only missing Arabic files
-OPENAI_API_KEY=your_key python3 scripts/sync_arabic.py --apply
-
-# 3) Also refresh existing Arabic files when English changed
-OPENAI_API_KEY=your_key python3 scripts/sync_arabic.py --apply --update-existing
 ```
 
-## Bilingual Parity Check
-Run this before publishing to catch missing EN/AR pairs:
-
+## Bilingual Workflow
+### 1) EN/AR parity check
 ```bash
 python3 scripts/check_i18n_parity.py
 ```
 
-Strict mode (CI-friendly):
-
+Strict mode:
 ```bash
 python3 scripts/check_i18n_parity.py --strict
 ```
 
-## Pre-release QA
-Run one command before publishing:
+Auto-create missing Arabic placeholders:
+```bash
+python3 scripts/check_i18n_parity.py --autofix-missing-ar
+```
 
+### 2) Arabic sync utility
+`scripts/sync_arabic.py` translates English markdown into Saudi-friendly formal Arabic while preserving markdown structure.
+
+```bash
+# Dry-run
+python3 scripts/sync_arabic.py
+
+# Create missing Arabic files
+OPENAI_API_KEY=your_key python3 scripts/sync_arabic.py --apply
+
+# Update existing Arabic files when English changes
+OPENAI_API_KEY=your_key python3 scripts/sync_arabic.py --apply --update-existing
+```
+
+Optional:
+- `--backup` create `.bak` before overwriting
+- `--limit N` process only first N files
+- `--force` ignore hash cache and retranslate
+
+## Pre-Release QA
+Run:
 ```bash
 bash scripts/preflight_qa.sh
 ```
 
-This runs:
-- Strict EN/AR parity check
-- Clean MkDocs build
-- Favicon presence check
+It performs:
+- strict EN/AR parity check with autofix for missing Arabic files
+- clean `mkdocs build --clean`
+- favicon validation (`docs/favicon.ico`)
+
+## Deployment
+On every push to `main`, GitHub Actions:
+1. installs dependencies
+2. runs strict EN/AR parity checks
+3. builds the MkDocs site
+4. deploys to GitHub Pages
+
+Workflow file: `.github/workflows/deploy-mkdocs.yml`
+
+## Copyright
+Copyright (c) 2026 Shoug Fawaz Alomran. All rights reserved.
+
+You may:
+- View and reference this project for personal and educational use
+
+You may not:
+- Reproduce, redistribute, or publish substantial portions without explicit permission
+- Use the content commercially without prior consent
+
+Contact: **Shoug.Alomran@Shoug-Tech.com**
