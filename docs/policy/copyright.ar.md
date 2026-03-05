@@ -1,52 +1,48 @@
-!!! warning "تنبيه"
-    إنذار : تم ترجمة هذه الصفحة باستخدام الذكاء الاصطناعي.
+# :copyright: حقوق النشر وسياسة الاستخدام
 
-# :copyright: Copyright & Usage Policy
-
-*© 2026 Shoug Fawaz Alomran. All rights reserved.*
+*© 2026 شوق فواز العمران. جميع الحقوق محفوظة.*
 
 ---
 
-All content published under this domain and its subdomains is protected by
-international copyright laws. This includes software projects, source code,
-documentation, designs, research, and written content.
+جميع المحتويات المنشورة تحت هذا النطاق والنطاقات الفرعية التابعة له
+محمية بموجب قوانين حقوق النشر الدولية. ويشمل ذلك مشاريع البرمجيات،
+الشفرة المصدرية، التوثيق، التصاميم، الأبحاث، والمحتوى المكتوب.
 
 ---
 
-## :white_check_mark: Permitted & Prohibited Use
+## :white_check_mark: الاستخدام المسموح والممنوع
 
 <div class="grid cards" markdown>
 
--   :green_circle: **You May**
+* :green_circle: **يُسمح لك بـ**
 
-    ---
+  ---
 
-    - View and reference content for personal, educational, and
-      non-commercial purposes
-    - Quote small portions with proper attribution
+  * عرض المحتوى والاطلاع عليه لأغراض شخصية أو تعليمية أو غير تجارية
+  * اقتباس أجزاء صغيرة من المحتوى مع ذكر المصدر بشكل واضح
 
--   :red_circle: **You May Not**
+* :red_circle: **لا يُسمح لك بـ**
 
-    ---
+  ---
 
-    - Reproduce or redistribute full projects
-    - Use content commercially without written permission
-    - Claim authorship of this work
+  * إعادة نشر أو إعادة توزيع المشاريع كاملة
+  * استخدام المحتوى لأغراض تجارية دون الحصول على إذن كتابي
+  * ادعاء ملكية أو تأليف هذا العمل
 
 </div>
 
 ---
 
-## :scroll: Licensing
+## :scroll: التراخيص
 
-Specific projects may include their own separate licenses. In the event of
-any conflict between a project-level license and this policy, the
-project-level license takes precedence.
+قد تتضمن بعض المشاريع تراخيص خاصة بها. في حال وجود أي تعارض
+بين ترخيص مشروع معين وهذه السياسة، فإن ترخيص المشروع هو
+المرجع المعتمد ويأخذ الأولوية.
 
 ---
 
-## :envelope: Contact
+## :envelope: التواصل
 
-For permissions or licensing inquiries, please reach out directly.
+للحصول على إذن أو للاستفسار عن التراخيص، يرجى التواصل مباشرة.
 
-**Email:** [Shoug.Alomran@Shoug-Tech.com](mailto:Shoug.Alomran@Shoug-Tech.com)
+**البريد الإلكتروني:** [Shoug.Alomran@Shoug-Tech.com](mailto:Shoug.Alomran@Shoug-Tech.com)
