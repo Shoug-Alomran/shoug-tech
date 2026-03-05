@@ -5,6 +5,9 @@ hide:
   - navigation
 ---
 
+!!! warning "تنبيه"
+    إنذار : تم ترجمة هذه الصفحة باستخدام الذكاء الاصطناعي.
+
 <div class="home-hero" markdown>
 <div class="home-hero__text" markdown>
 

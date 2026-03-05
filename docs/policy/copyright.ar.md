@@ -1,3 +1,6 @@
+!!! warning "تنبيه"
+    إنذار : تم ترجمة هذه الصفحة باستخدام الذكاء الاصطناعي.
+
 # :copyright: Copyright & Usage Policy
 
 *© 2026 Shoug Fawaz Alomran. All rights reserved.*

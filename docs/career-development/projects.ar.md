@@ -1,3 +1,6 @@
+!!! warning "تنبيه"
+    إنذار : تم ترجمة هذه الصفحة باستخدام الذكاء الاصطناعي.
+
 # مشاريع أكاديمية
 
 [:octicons-mark-github-16: عرض الكل على GitHub](https://github.com/Shoug-Alomran){ .md-button .md-button--primary }

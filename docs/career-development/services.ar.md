@@ -7,6 +7,9 @@ metrics: وضوح التسليم، التحكم بالمراجعات، جودة 
 last_updated: 2026-03-02
 ---
 
+!!! warning "تنبيه"
+    إنذار : تم ترجمة هذه الصفحة باستخدام الذكاء الاصطناعي.
+
 <section class="page-hero">
   <div class="page-hero__bar">
     <span class="dot dot-red"></span>

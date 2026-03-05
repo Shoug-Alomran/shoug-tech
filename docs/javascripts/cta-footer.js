@@ -265,6 +265,7 @@
     initRevealMotion();
     syncEmbeddedIframesTheme();
     translateTabs();
+    translateSidebarNav();
   }
 
   function replaceFooterCredit() {
@@ -388,6 +389,14 @@
       document.body.classList.toggle("sg-hide-left-sidebar", hideLeft);
       document.body.classList.toggle("sg-hide-right-sidebar", hideRight);
     } catch (e) {}
+
+    // Always keep TOC visible in Arabic pages.
+    if (isArabic()) {
+      document.body.classList.remove("sg-hide-right-sidebar");
+      try {
+        localStorage.setItem(LS_RIGHT_KEY, "0");
+      } catch (e) {}
+    }
 
     setToggleVisualState();
   }
@@ -572,6 +581,19 @@
     };
 
     document.querySelectorAll(".md-tabs__link").forEach((a) => {
+      const t = a.textContent.trim();
+      if (map[t]) a.textContent = map[t];
+    });
+  }
+
+  function translateSidebarNav() {
+    if (!isArabic()) return;
+
+    const map = {
+      "Services": "الخدمات"
+    };
+
+    document.querySelectorAll(".md-nav--primary .md-nav__link").forEach((a) => {
       const t = a.textContent.trim();
       if (map[t]) a.textContent = map[t];
     });
