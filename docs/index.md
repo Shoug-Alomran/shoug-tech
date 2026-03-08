@@ -65,7 +65,7 @@ This digital garden publishes my structured learning outputs: course notes, tech
 
     View the roadmap of your learning flow through multiple plan formats.
 
-    [:octicons-arrow-right-24: View Academic Plan](academic-plan.md)
+    [:octicons-arrow-right-24: View Academic Plan](academic-plan-themes/academic-plan.md)
 
 -   :link: **Resources**
 

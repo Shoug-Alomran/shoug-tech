@@ -24,7 +24,7 @@ Choose the path that matches why you are visiting.
     Get structured notes, chapter summaries, cheat sheets, and quizzes fast.
 
     - [Open Learn Overview](Academics/Intro.md)
-    - [View Academic Plan](academic-plan.md)
+    - [View Academic Plan](academic-plan-themes/academic-plan.md)
     - [Browse Cybersecurity Notes](Academics/cyber-security/Intro.md)
 
 -   :school: **I am an Instructor**
