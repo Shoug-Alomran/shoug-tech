@@ -59,6 +59,15 @@ This digital garden publishes my structured learning outputs: course notes, tech
 
     [:octicons-arrow-right-24: Open Career](career-development/Intro.md)
 
+-   :rocket: **Blueprint Studio**
+
+    ---
+
+    Explore the services page and visit the Blueprint website for static website packages and project inquiries.
+
+    [:octicons-arrow-right-24: View Services](career-development/services.md)
+    [:octicons-link-external-24: Visit Blueprint](https://blueprint.shoug-tech.com){ target="_blank" rel="noopener" }
+
 -   :compass: **Academic Plan**
 
     ---
@@ -93,5 +102,6 @@ This digital garden publishes my structured learning outputs: course notes, tech
 [Cybersecurity (CYS401)](Academics/cyber-security/CYS401/Intro.md){ .md-button }
 [Projects](career-development/projects.md){ .md-button }
 [Workshops](career-development/Workshops/index.md){ .md-button }
+[Blueprint Services](career-development/services.md){ .md-button }
 [Resources](links.md){ .md-button }
 </div>

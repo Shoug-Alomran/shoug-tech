@@ -301,8 +301,8 @@
           ["CS340", url("ar/Academics/computer-science/CS340/Intro/")],
           ["CYS401", url("ar/Academics/cyber-security/CYS401/Intro/")],
           ["التطوير المهني", url("ar/career-development/Intro/")],
-          ["المشاريع", url("ar/career-development/projects/")],
-          ["الروابط", url("ar/links/")]
+          ["خدمات Blueprint", url("ar/career-development/services/")],
+          ["Blueprint", "https://blueprint.shoug-tech.com/"]
         ]
       : [
           ["Home", url("")],
@@ -313,8 +313,8 @@
           ["CS340", url("Academics/computer-science/CS340/Intro/")],
           ["CYS401", url("Academics/cyber-security/CYS401/Intro/")],
           ["Career Development", url("career-development/Intro/")],
-          ["Projects", url("career-development/projects/")],
-          ["Links", url("links/")]
+          ["Blueprint Services", url("career-development/services/")],
+          ["Blueprint", "https://blueprint.shoug-tech.com/"]
         ];
 
     const block = document.createElement("details");

@@ -62,6 +62,15 @@ hide:
 
     [:octicons-arrow-right-24: شوف ملفي المهني](career-development/Intro.md)
 
+-   :rocket: **Blueprint Studio**
+
+    ---
+
+    تصفح صفحة الخدمات وادخل موقع Blueprint إذا كنت تبحث عن باقات مواقع ثابتة أو تريد تبدأ مشروع.
+
+    [:octicons-arrow-right-24: شوف الخدمات](career-development/services.md)
+    [:octicons-link-external-24: ادخل موقع Blueprint](https://blueprint.shoug-tech.com){ target="_blank" rel="noopener" }
+
 -   :compass: **الخطة الأكاديمية**
 
     ---
@@ -96,5 +105,6 @@ hide:
 [مادة CYS401](Academics/cyber-security/CYS401/Intro.md){ .md-button }
 [المشاريع](career-development/projects.md){ .md-button }
 [ورش العمل](career-development/Workshops/index.md){ .md-button }
+[خدمات Blueprint](career-development/services.md){ .md-button }
 [الروابط](links.md){ .md-button }
 </div>
