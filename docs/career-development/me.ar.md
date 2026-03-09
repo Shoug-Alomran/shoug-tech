@@ -3,7 +3,7 @@
 
 # عني
 
-[عرض السيرة الذاتية](../CV.html){ .md-button .md-button--primary }
+[عرض السيرة الذاتية](/career-development/CV.html){ .md-button .md-button--primary }
 [تواصل معي](mailto:Shoug.Alomran@Shoug-Tech.com){ .md-button }
 
 ---

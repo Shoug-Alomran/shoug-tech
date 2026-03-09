@@ -35,7 +35,7 @@ Choose the path that matches why you are visiting.
 
     - [See Course Notes Structure](Academics/Intro.md)
     - [Read Workshops and Teaching Work](career-development/Workshops/index.md)
-    - [Open Academic Disclaimer](academic-disclaimer.md)
+    - [Open Academic Disclaimer](policy/academic-disclaimer.md)
 
 -   :briefcase: **I am an Employer**
 

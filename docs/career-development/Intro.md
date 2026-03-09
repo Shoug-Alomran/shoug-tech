@@ -7,7 +7,7 @@ description: Portfolio context, projects, workshops, and how I execute technical
 
 > **Section summary:** Use this page to evaluate execution quality, project impact, and professional growth evidence.
 
-[View Resume](./CV.html){ .md-button .md-button--primary }
+[View Resume](../CV.html){ .md-button .md-button--primary }
 [Contact Me](mailto:inquiry@shoug-tech.com){ .md-button }
 
 ---
@@ -96,7 +96,7 @@ and documented the work in detail. My instructors specifically noted the
     structure, and professional growth. Documented with full timeline, skills 
     breakdown, feedback, and reflection.
 
-    [:octicons-arrow-right-24: View Workshop](./Workshops/My%20Journey%20as%20a%20Student%20Tutor/overview.md)
+    [:octicons-arrow-right-24: View Workshop](./Workshops/My Journey as a Student Tutor/overview.md)
 
 -   :lock: **Cybersecurity Crash Course**
 

@@ -2,5 +2,5 @@
     إنذار : تم ترجمة هذه الصفحة باستخدام الذكاء الاصطناعي.
 
 # الاستدعاء الذاتي (Recursion)
-- [فتح في علامة تبويب جديدة](./Recursion.html)
+- [فتح في علامة تبويب جديدة](../Recursion.html)
 <iframe src="../Recursion.html" width="100%" height="800" style="border:none;"></iframe>

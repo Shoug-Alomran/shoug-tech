@@ -7,11 +7,11 @@
 
 إذا ما تحمل العرض بشكل صحيح، افتح الفصل بشكل مباشر.
 
-- [افتح الفصل الثاني في صفحة جديدة](../Chapter 2.html)
+- [افتح الفصل الثاني في صفحة جديدة](/Academics/computer-science/CS340/Chapter 2/Chapter 2.html)
 
 <div class="iframe-wrap">
   <iframe
-    src="../Chapter 2.html"
+    src="/Academics/computer-science/CS340/Chapter 2/Chapter 2.html"
     title="الفصل الثاني: مفاهيم وبنية أنظمة قواعد البيانات"
     loading="lazy"
     referrerpolicy="no-referrer"

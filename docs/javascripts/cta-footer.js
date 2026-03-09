@@ -24,9 +24,9 @@
     return `${base}/${clean}`.replace(/\/+$/, "/"); // ensure ends with /
   }
 
-  function repoPolicyFile(path) {
+  function policyHref(path) {
     const clean = String(path || "").replace(/^\//, "");
-    return `${REPO}/blob/main/policy/${clean}`;
+    return url(clean.replace(/\.md$/, "/"));
   }
 
   function addHeaderCTA() {
@@ -165,14 +165,14 @@
 
     // Policies (moved to repository-level policy folder)
     const privacyHref = isArabic()
-      ? repoPolicyFile("privacy-notice.ar.md")
-      : repoPolicyFile("privacy-notice.md");
+      ? policyHref("ar/policy/privacy-notice.ar.md")
+      : policyHref("policy/privacy-notice.md");
     const disclaimerHref = isArabic()
-      ? repoPolicyFile("academic-disclaimer.ar.md")
-      : repoPolicyFile("academic-disclaimer.md");
+      ? policyHref("ar/policy/academic-disclaimer.ar.md")
+      : policyHref("policy/academic-disclaimer.md");
     const copyrightHref = isArabic()
-      ? repoPolicyFile("copyright.ar.md")
-      : repoPolicyFile("copyright.md");
+      ? policyHref("ar/policy/copyright.ar.md")
+      : policyHref("policy/copyright.md");
 
     const dirAttr = isArabic() ? 'dir="rtl"' : 'dir="ltr"';
 

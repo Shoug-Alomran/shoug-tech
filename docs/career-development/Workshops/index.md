@@ -22,6 +22,6 @@ compared to peers. These pages are a direct example of that.
     professional growth. Documented with full timeline, skills breakdown, 
     feedback received, and reflection.
 
-    [:octicons-arrow-right-24: View Workshop](My%20Journey%20as%20a%20Student%20Tutor/overview.md)
+    [:octicons-arrow-right-24: View Workshop](My Journey as a Student Tutor/overview.md)
 
 </div>

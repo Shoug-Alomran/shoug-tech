@@ -7,11 +7,11 @@
 
 إذا ما تحمل العرض بشكل صحيح، افتح الاختبار بشكل مباشر.
 
-- [افتح اختبار الفصل الرابع في صفحة جديدة](../Chapter 4 Quiz.html)
+- [افتح اختبار الفصل الرابع في صفحة جديدة](/Academics/cyber-security/CYS401/Quizez/Chapter 4 Quiz.html)
 
 <div class="iframe-wrap">
   <iframe
-    src="../Chapter 4 Quiz.html"
+    src="/Academics/cyber-security/CYS401/Quizez/Chapter 4 Quiz.html"
     title="CYS401 - اختبار الفصل الرابع"
     loading="lazy"
     referrerpolicy="no-referrer"
