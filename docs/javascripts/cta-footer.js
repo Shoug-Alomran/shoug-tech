@@ -272,15 +272,26 @@
     const footerMeta = document.querySelector(".md-footer-meta");
     if (!footerMeta) return;
 
-    const creditLink = footerMeta.querySelector(
-      'a[href*="squidfunk.github.io/mkdocs-material"], a[href*="mkdocs-material"]'
-    );
-    if (!creditLink) return;
+    const copyright = footerMeta.querySelector(".md-copyright");
+    if (!copyright || copyright.querySelector(".custom-footer-meta")) return;
 
-    creditLink.textContent = "Made by Blueprint";
-    creditLink.href = "https://blueprint.shoug-tech.com/";
-    creditLink.target = "_blank";
-    creditLink.rel = "noopener noreferrer";
+    const highlight = copyright.querySelector(".md-copyright__highlight");
+    const copyrightText = highlight
+      ? highlight.innerHTML.trim()
+      : copyright.textContent
+          .replace(/\s*Made with\s*/i, " ")
+          .replace(/\s*Material for MkDocs\s*/i, " ")
+          .trim();
+
+    copyright.innerHTML = `
+      <div class="custom-footer-meta">
+        <div class="custom-footer-meta__copyright">${copyrightText}</div>
+        <div class="custom-footer-meta__credit">
+          Made by
+          <a href="https://blueprint.shoug-tech.com/" target="_blank" rel="noopener noreferrer">Blueprint</a>
+        </div>
+      </div>
+    `;
   }
 
   function addQuickLinksWidget() {
