@@ -19,7 +19,7 @@ description: Course map for software engineering, computer science, and cybersec
 
     Elicitation, analysis, specification, validation. Includes cheat sheet and practice quizzes.
 
-    [:octicons-arrow-right-24: SE311 Overview](software-engineering/SE311/intro.md)
+    [:octicons-arrow-right-24: SE311 Overview](software-engineering/SE311/intro/)
 
 </div>
 

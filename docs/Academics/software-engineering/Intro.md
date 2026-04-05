@@ -34,7 +34,7 @@ quality.
     Requirements elicitation, analysis, specification, validation, and
     traceability. Includes notes, quizzes, and supporting material.
 
-    [:octicons-arrow-right-24: View SE311](SE311/intro.md)
+    [:octicons-arrow-right-24: View SE311](SE311/intro/)
 
 </div>
 
