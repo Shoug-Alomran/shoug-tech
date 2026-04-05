@@ -1,0 +1,19 @@
+!!! warning "تنبيه"
+    إنذار : تم ترجمة هذه الصفحة باستخدام الذكاء الاصطناعي.
+
+# الفصل الثاني: معايير التوثيق
+
+هذه الصفحة تحتوي على مادة الفصل الثاني. استخدمها للمراجعة عن معيار IEEE 830، معايير التوثيق، وهيكل مواصفات المتطلبات.
+
+إذا ما تحمل العرض بشكل صحيح، افتح الفصل بشكل مباشر.
+
+- [افتح الفصل الثاني في صفحة جديدة](/ar/Academics/software-engineering/SE311/chapter-2/chapter-2.html)
+
+<div class="iframe-wrap">
+  <iframe
+    src="/ar/Academics/software-engineering/SE311/chapter-2/chapter-2.html"
+    title="SE311 - الفصل الثاني: معايير التوثيق"
+    loading="lazy"
+    referrerpolicy="no-referrer"
+  ></iframe>
+</div>

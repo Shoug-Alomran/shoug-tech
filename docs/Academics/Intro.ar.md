@@ -16,13 +16,13 @@ description: خريطة المواد لهندسة البرمجيات وعلوم 
 
     العمليات، التصميم، الاختبار، إدارة المشاريع. يشمل دليل UML، أوراق غش، واختبارات.
 
-    [:octicons-arrow-right-24: نظرة عامة على SE201](software-engineering/SE201/Intro.md)
+    [:octicons-arrow-right-24: نظرة عامة على SE201](software-engineering/SE201/intro.md)
 
 -  ### **SE311 — هندسة المتطلبات**
 
     الاستخراج، التحليل، المواصفات، التحقق. يشمل ورقة غش واختبارات تدريبية.
 
-    [:octicons-arrow-right-24: نظرة عامة على SE311](software-engineering/SE311/Intro.md)
+    [:octicons-arrow-right-24: نظرة عامة على SE311](software-engineering/SE311/intro.md)
 
 </div>
 
@@ -34,25 +34,25 @@ description: خريطة المواد لهندسة البرمجيات وعلوم 
 
     القوائم، الأشجار، التجزئة، الفرز، الاستدعاء الذاتي. ملاحظات حسب الموضوع وأوراق غش.
 
-    [:octicons-arrow-right-24: نظرة عامة على CS210](computer-science/CS210/Intro.md)
+    [:octicons-arrow-right-24: نظرة عامة على CS210](computer-science/CS210/intro.md)
 
 -  ### **CS285 — الرياضيات المتقطعة**
 
     المنطق، البراهين، العلاقات، العد، التشفير. ملاحظات وورقة غش مختصرة.
 
-    [:octicons-arrow-right-24: نظرة عامة على CS285](computer-science/CS285/Intro.md)
+    [:octicons-arrow-right-24: نظرة عامة على CS285](computer-science/CS285/intro.md)
 
 -  ### **CS330 — أنظمة التشغيل**
 
     العمليات، الجدولة، الذاكرة، التزامن. ملاحظات، ملخصات، واختبارات.
 
-    [:octicons-arrow-right-24: نظرة عامة على CS330](computer-science/CS330/Intro.md)
+    [:octicons-arrow-right-24: نظرة عامة على CS330](computer-science/CS330/intro.md)
 
 - ###  **CS340 — أنظمة قواعد البيانات**
 
     SQL، النموذج العلائقي، المعاملات، NoSQL. ملاحظات، خرائط ذهنية، أوراق غش، اختبارات.
 
-    [:octicons-arrow-right-24: نظرة عامة على CS340](computer-science/CS340/Intro.md)
+    [:octicons-arrow-right-24: نظرة عامة على CS340](computer-science/CS340/intro.md)
 
 </div>
 
@@ -64,6 +64,6 @@ description: خريطة المواد لهندسة البرمجيات وعلوم 
 
     الأسس، المبادئ، والمفاهيم الأساسية. ملاحظات الفصول واختبارات تدريبية.
 
-    [:octicons-arrow-right-24: نظرة عامة على CYS401](cyber-security/CYS401/Intro.md)
+    [:octicons-arrow-right-24: نظرة عامة على CYS401](cyber-security/CYS401/intro.md)
 
 </div>
