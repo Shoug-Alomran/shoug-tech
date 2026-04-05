@@ -10,7 +10,30 @@ python3 scripts/check_i18n_parity.py --autofix-missing-ar --strict
 echo "[2/3] Building MkDocs site..."
 mkdocs build --clean
 
-echo "[3/3] Verifying favicon exists..."
-test -f docs/favicon.ico
+echo "[3/3] Verifying configured theme assets exist..."
+python3 - <<'PY'
+from pathlib import Path
+import re
+import sys
+
+root = Path(".")
+config_text = (root / "mkdocs.yml").read_text(encoding="utf-8")
+
+required = []
+for key in ("favicon", "logo"):
+    match = re.search(rf"(?m)^  {re.escape(key)}:\s+(.+?)\s*$", config_text)
+    if match:
+        value = match.group(1).strip().strip("'\"")
+        required.append((key, root / "docs" / value))
+
+missing = [(key, path) for key, path in required if not path.exists()]
+if missing:
+    for key, path in missing:
+        print(f"[error] theme {key} asset not found: {path}")
+    sys.exit(1)
+
+for key, path in required:
+    print(f"[ok] theme {key}: {path}")
+PY
 
 echo "Preflight QA passed."
