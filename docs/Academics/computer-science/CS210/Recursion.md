@@ -4,11 +4,11 @@ This page contains the material on recursion. Use it for revision of recursive d
 
 If the embedded view does not load properly, open the page directly.
 
-- [Open in a new tab](../Recursion.html)
+- [Open in a new tab](/Academics/computer-science/CS210/Recursion.html)
 
 <div class="iframe-wrap">
   <iframe
-    src="../Recursion.html"
+    src="/Academics/computer-science/CS210/Recursion.html"
     title="Recursion"
     loading="lazy"
     referrerpolicy="no-referrer"

@@ -23,7 +23,7 @@ performance, structure, and correctness — not just how to write code.
     Fundamental data structures, algorithm analysis, sorting, trees, graphs,
     and hashing. Includes topic notes, cheat sheets, and complexity references.
 
-    [:octicons-arrow-right-24: View CS210](CS210/Intro.md)
+    [:octicons-arrow-right-24: View CS210](CS210/intro.md)
 
 -   :triangular_ruler: **CS285 — Discrete Math for Computing**
 
@@ -32,7 +32,7 @@ performance, structure, and correctness — not just how to write code.
     Logic, sets, functions, number theory, counting, relations, and proof
     techniques. Includes chapter notes and a cheat sheet.
 
-    [:octicons-arrow-right-24: View CS285](CS285/Intro.md)
+    [:octicons-arrow-right-24: View CS285](CS285/intro.md)
 
 -   :computer: **CS330 — Introduction to Operating Systems**
 
@@ -41,7 +41,7 @@ performance, structure, and correctness — not just how to write code.
     Processes, threads, scheduling, synchronization, memory management, and
     file systems. Includes notes, quizzes, a summary, and a Unix/Linux project.
 
-    [:octicons-arrow-right-24: View CS330](CS330/Intro.md)
+    [:octicons-arrow-right-24: View CS330](CS330/intro.md)
 
 -   :floppy_disk: **CS340 — Introduction to Database Systems**
 
@@ -50,7 +50,7 @@ performance, structure, and correctness — not just how to write code.
     Data modeling, SQL, relational algebra, normalization, and NoSQL. Includes
     notes, mind maps, quizzes, and a full course summary.
 
-    [:octicons-arrow-right-24: View CS340](CS340/Intro.md)
+    [:octicons-arrow-right-24: View CS340](CS340/intro.md)
 
 </div>
 

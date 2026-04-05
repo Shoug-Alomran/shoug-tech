@@ -1,0 +1,1160 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CS 340 الفصل ٩ - التسوية (Normalization)</title>
+    <!-- خطوط عربية -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Tajawal:wght@300;400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --primary: #2563eb;
+            --secondary: #f59e0b;
+            --accent: #ec4899;
+            --success: #10b981;
+            --danger: #ef4444;
+            --dark: #0f172a;
+            --light: #f8fafc;
+        }
+
+        body {
+            font-family: 'Tajawal', 'Cairo', 'Inter', sans-serif;
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 50%, #fef3c7 100%);
+            color: var(--dark);
+            line-height: 1.7;
+        }
+
+        .container { max-width: 1400px; margin: 0 auto; padding: 60px 30px; }
+
+        .hero {
+            background: linear-gradient(135deg, var(--primary) 0%, #3b82f6 100%);
+            color: white;
+            padding: 100px 60px;
+            border-radius: 30px;
+            margin-bottom: 60px;
+            box-shadow: 0 20px 60px rgba(37, 99, 235, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -10%;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: float 20s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            50% { transform: translate(30px, 30px) rotate(180deg); }
+        }
+
+        .hero h1 {
+            font-family: 'Cairo', serif;
+            font-size: 4rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-subtitle {
+            font-size: 1.5rem;
+            opacity: 0.95;
+            margin-bottom: 30px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-meta {
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+            position: relative;
+            z-index: 1;
+        }
+
+        .meta-badge {
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-weight: 600;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .toc {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            margin-bottom: 50px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            border-right: 5px solid var(--primary);
+            border-left: none;
+        }
+
+        .toc h2 {
+            font-family: 'Cairo', serif;
+            font-size: 2rem;
+            color: var(--dark);
+            margin-bottom: 25px;
+        }
+
+        .toc-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
+        }
+
+        .toc-item {
+            padding: 15px 20px;
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+            border-radius: 12px;
+            border-right: 3px solid var(--secondary);
+            border-left: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .toc-item:hover {
+            transform: translateX(-10px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .toc-item a {
+            text-decoration: none;
+            color: var(--dark);
+            font-weight: 500;
+        }
+
+        .section {
+            background: white;
+            padding: 50px;
+            border-radius: 25px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+            position: relative;
+        }
+
+        .section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 5px;
+            height: 100%;
+            background: linear-gradient(180deg, var(--primary) 0%, var(--accent) 100%);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 35px;
+            padding-bottom: 25px;
+            border-bottom: 3px solid #e2e8f0;
+        }
+
+        .section-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, var(--primary) 0%, #3b82f6 100%);
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
+        }
+
+        .section h2 {
+            font-family: 'Cairo', serif;
+            font-size: 2.5rem;
+            color: var(--dark);
+            font-weight: 700;
+        }
+
+        .section h3 {
+            font-family: 'Cairo', serif;
+            font-size: 1.8rem;
+            color: var(--primary);
+            margin: 35px 0 20px;
+        }
+
+        .concept-box {
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+            padding: 30px;
+            border-radius: 18px;
+            margin: 25px 0;
+            border-right: 5px solid var(--primary);
+            border-left: none;
+        }
+
+        .example-box {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            padding: 30px;
+            border-radius: 18px;
+            margin: 25px 0;
+            border-right: 5px solid var(--secondary);
+            border-left: none;
+        }
+
+        .important-box {
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            padding: 30px;
+            border-radius: 18px;
+            margin: 25px 0;
+            border-right: 5px solid var(--success);
+            border-left: none;
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+            padding: 30px;
+            border-radius: 18px;
+            margin: 25px 0;
+            border-right: 5px solid var(--danger);
+            border-left: none;
+        }
+
+        .anomaly-box {
+            background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%);
+            padding: 30px;
+            border-radius: 18px;
+            margin: 25px 0;
+            border-right: 5px solid var(--accent);
+            border-left: none;
+        }
+
+        .box-title {
+            font-weight: 700;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+        }
+
+        .nf-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+
+        .nf-table th {
+            background: linear-gradient(135deg, var(--primary) 0%, #3b82f6 100%);
+            color: white;
+            padding: 18px;
+            text-align: right;
+            font-weight: 600;
+        }
+
+        .nf-table td {
+            padding: 18px;
+            border-bottom: 1px solid #e2e8f0;
+            text-align: right;
+        }
+
+        .nf-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .nf-table tr:hover {
+            background: #eff6ff;
+        }
+
+        .fd-notation {
+            background: var(--dark);
+            color: #e2e8f0;
+            padding: 15px 25px;
+            border-radius: 8px;
+            font-family: 'Space Mono', monospace;
+            display: inline-block;
+            margin: 10px 0;
+            font-size: 1.1rem;
+            direction: ltr;
+            text-align: left;
+        }
+
+        .fd-arrow {
+            color: var(--accent);
+            font-weight: bold;
+        }
+
+        .decomposition-flow {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin: 25px 0;
+            flex-wrap: wrap;
+        }
+
+        .decomp-box {
+            flex: 1;
+            min-width: 200px;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            border: 2px solid var(--primary);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .decomp-arrow {
+            font-size: 2rem;
+            color: var(--accent);
+            font-weight: bold;
+        }
+
+        ul, ol { margin-right: 25px; margin-left: 0; margin-top: 15px; }
+        li { margin-bottom: 12px; line-height: 1.8; }
+        li strong { color: var(--primary); }
+
+        .rule-box {
+            background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%);
+            padding: 25px;
+            border-radius: 12px;
+            margin: 20px 0;
+            border-right: 4px solid #a855f7;
+            border-left: none;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 80px;
+            padding: 40px;
+            background: linear-gradient(135deg, var(--dark) 0%, var(--primary) 100%);
+            border-radius: 25px;
+            color: white;
+        }
+
+        .footer .name {
+            font-family: 'Cairo', serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .hero { padding: 60px 30px; }
+            .hero h1 { font-size: 2.5rem; }
+            .section { padding: 30px 25px; }
+            .decomposition-flow { flex-direction: column; }
+        }
+    </style>
+  <script src="/javascripts/standalone-theme.js"></script>
+<style id="codex-responsive-html">
+  html { width: 100%; }
+  body {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+  img, svg, video, canvas, iframe {
+    max-width: 100% !important;
+    height: auto;
+  }
+  table {
+    max-width: 100% !important;
+  }
+  .table-wrap, .table-scroll, .overflow-x, .comparison-table, .acm-table, .matrix-wrap {
+    max-width: 100% !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+  }
+  header,
+  main,
+  .header-inner,
+  .hero,
+  .hero-inner,
+  .content,
+  .container,
+  .wrap,
+  .page,
+  .page-shell,
+  .page-wrap,
+  .layout,
+  .content-wrap,
+  .exam-container,
+  .quiz-container,
+  .cheat-sheet,
+  .toc,
+  .section,
+  .section-body,
+  .card,
+  .panel {
+    width: min(100%, calc(100vw - 24px)) !important;
+    max-width: min(1600px, calc(100vw - 24px)) !important;
+  }
+  @media (max-width: 768px) {
+    header,
+    main,
+    .header-inner,
+    .hero,
+    .hero-inner,
+    .content,
+    .container,
+    .wrap,
+    .page,
+    .page-shell,
+    .page-wrap,
+    .layout,
+    .content-wrap,
+    .exam-container,
+    .quiz-container,
+    .cheat-sheet,
+    .toc,
+    .section,
+    .section-body,
+    .card,
+    .panel {
+      width: min(100%, calc(100vw - 16px)) !important;
+      max-width: min(100%, calc(100vw - 16px)) !important;
+    }
+    body {
+      overflow-x: hidden;
+    }
+  }
+</style>
+</head>
+<body>
+    <div class="container">
+        <div class="hero">
+            <h1>📐 التبعيات الوظيفية والتسوية (Normalization)</h1>
+            <p class="hero-subtitle">تحسين تصميم قواعد البيانات من خلال الأشكال الطبيعية</p>
+            <div class="hero-meta">
+                <div class="meta-badge">📚 الفصل ٩</div>
+                <div class="meta-badge">🎯 CS 340</div>
+                <div class="meta-badge">👩‍🎓 شوق العمران</div>
+                <div class="meta-badge">⏱️ دليل شامل</div>
+            </div>
+        </div>
+
+        <div class="toc">
+            <h2>📑 فهرس المحتويات</h2>
+            <div class="toc-grid">
+                <div class="toc-item"><a href="#guidelines">📋 إرشادات التصميم</a></div>
+                <div class="toc-item"><a href="#redundancy">💾 التكرار والشذوذ</a></div>
+                <div class="toc-item"><a href="#fd">🔗 التبعيات الوظيفية</a></div>
+                <div class="toc-item"><a href="#keys">🔑 المفاتيح والخصائص</a></div>
+                <div class="toc-item"><a href="#1nf">1️⃣ الشكل الطبيعي الأول</a></div>
+                <div class="toc-item"><a href="#2nf">2️⃣ الشكل الطبيعي الثاني</a></div>
+                <div class="toc-item"><a href="#3nf">3️⃣ الشكل الطبيعي الثالث</a></div>
+                <div class="toc-item"><a href="#bcnf">⭐ صيغة بويز-كود العادية</a></div>
+                <div class="toc-item"><a href="#armstrong">🎓 بديهيات أرمسترونغ</a></div>
+                <div class="toc-item"><a href="#closure">🔄 خوارزمية الإغلاق</a></div>
+            </div>
+        </div>
+
+        <div class="section" id="guidelines">
+            <div class="section-header">
+                <div class="section-icon">📋</div>
+                <div>
+                    <h2>إرشادات التصميم غير الرسمية</h2>
+                </div>
+            </div>
+
+            <div class="concept-box">
+                <div class="box-title">🎯 أهداف تصميم قاعدة البيانات</div>
+                <ol>
+                    <li><strong>الحفاظ على المعلومات:</strong> الاحتفاظ بكل المفاهيم بما في ذلك الخصائص والكيانات والعلاقات والتخصصات من التصميم المفاهيمي.</li>
+                    <li><strong>الحد الأدنى من التكرار:</strong> تقليل التخزين المتكرر وتقليل الحاجة إلى تحديثات متعددة.</li>
+                </ol>
+                <p style="margin-top: 15px;"><strong>سؤال:</strong> هل التكرار دائمًا سيئ؟ أحيانًا يكون التكرار مقبولاً لأسباب تتعلق بالأداء!</p>
+            </div>
+
+            <h3>أربع إرشادات رئيسية</h3>
+            
+            <div class="important-box">
+                <div class="box-title">📌 الإرشاد ١: دلالات واضحة</div>
+                <p><strong>يجب أن تكون دلالات خصائص العلاقة واضحة</strong></p>
+                <ul>
+                    <li>كل صف (tuple) يجب أن يمثل <strong>كيانًا واحدًا أو علاقة واحدة</strong>.</li>
+                    <li>لا تخلط خصائص من كيانات مختلفة (موظف، قسم، مشروع).</li>
+                    <li>استخدم المفاتيح الخارجية للإشارة إلى كيانات أخرى.</li>
+                    <li>افصل خصائص الكيان عن خصائص العلاقة.</li>
+                    <li><strong>الخلاصة:</strong> صمم مخططات يسهل شرحها.</li>
+                </ul>
+            </div>
+
+            <div class="important-box">
+                <div class="box-title">📌 الإرشاد ٢: تجنب الشذوذ</div>
+                <p><strong>صمم مخططات لا تعاني من شذوذ الإدراج والحذف والتحديث</strong></p>
+                <p>إذا كان الشذوذ موجودًا، قم بتوثيقه حتى تتمكن التطبيقات من التعامل معه بشكل صحيح.</p>
+            </div>
+
+            <div class="important-box">
+                <div class="box-title">📌 الإرشاد ٣: تقليل قيم NULL</div>
+                <p><strong>صمم العلاقات بأقل عدد ممكن من قيم NULL</strong></p>
+                <ul>
+                    <li>الخصائص التي تحتوي على NULL بشكل متكرر يجب وضعها في علاقات منفصلة.</li>
+                    <li>NULL تستهلك مساحة تخزين.</li>
+                    <li>NULL لها تفسيرات متعددة (غير منطبق، غير معروف، غير متاح).</li>
+                    <li>يمكن أن تسبب مشاكل في JOIN وفهم معنى الخاصية.</li>
+                </ul>
+            </div>
+
+            <div class="important-box">
+                <div class="box-title">📌 الإرشاد ٤: تجنب الصفوف الزائفة</div>
+                <p><strong>صمم علاقات يمكن ربطها دون توليد صفوف زائفة (خاطئة)</strong></p>
+                <ul>
+                    <li>اربط على الخصائص التي هي مفاتيح أساسية وخارجية.</li>
+                    <li>التصاميم السيئة يمكن أن تولد نتائج خاطئة في JOIN.</li>
+                    <li>استخدم دائمًا وصلات غير فقدانية (lossless joins).</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section" id="redundancy">
+            <div class="section-header">
+                <div class="section-icon">💾</div>
+                <div>
+                    <h2>التكرار وشذوذ التحديث</h2>
+                </div>
+            </div>
+
+            <div class="concept-box">
+                <div class="box-title">⚠️ مشاكل المعلومات المتكررة</div>
+                <ul>
+                    <li>تهدر <strong>مساحة التخزين</strong>.</li>
+                    <li>تسبب <strong>شذوذ التحديث</strong>:
+                        <ul>
+                            <li>شذوذ الإدراج (Insertion anomalies).</li>
+                            <li>شذوذ الحذف (Deletion anomalies).</li>
+                            <li>شذوذ التعديل (Modification anomalies).</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+
+            <h3>الأنواع الثلاثة للشذوذ</h3>
+
+            <div class="anomaly-box">
+                <div class="box-title">🔴 شذوذ التحديث (التعديل)</div>
+                <p><strong>مثال:</strong> لنأخذ <code>EMP_PROJ(رقم_الموظف#, رقم_المشروع#, اسم_الموظف, اسم_المشروع, عدد_الساعات)</code></p>
+                <p><strong>المشكلة:</strong> تغيير اسم المشروع P1 من "الفوترة" إلى "محاسبة العملاء" يتطلب تحديث جميع الموظفين الـ ١٠٠ العاملين في ذلك المشروع!</p>
+                <p style="margin-top: 10px;"><strong>التأثير:</strong> عدم تناسق البيانات إذا فاتنا بعض التحديثات.</p>
+            </div>
+
+            <div class="anomaly-box">
+                <div class="box-title">🟠 شذوذ الإدراج</div>
+                <p><strong>مثال:</strong> <code>EMP_PROJ(رقم_الموظف#, رقم_المشروع#, اسم_الموظف, اسم_المشروع, عدد_الساعات)</code></p>
+                <p><strong>المشاكل:</strong></p>
+                <ul>
+                    <li>لا يمكن إدراج مشروع ما لم يتم تعيين موظف له.</li>
+                    <li>لا يمكن إدراج موظف ما لم يتم تعيينه في مشروع.</li>
+                </ul>
+                <p style="margin-top: 10px;"><strong>التأثير:</strong> فقدان معلومات عن المشاريع/الموظفين.</p>
+            </div>
+
+            <div class="anomaly-box">
+                <div class="box-title">🟡 شذوذ الحذف</div>
+                <p><strong>مثال:</strong> <code>EMP_PROJ(رقم_الموظف#, رقم_المشروع#, اسم_الموظف, اسم_المشروع, عدد_الساعات)</code></p>
+                <p><strong>المشاكل:</strong></p>
+                <ul>
+                    <li>حذف مشروع يؤدي إلى حذف جميع الموظفين العاملين عليه.</li>
+                    <li>حذف الموظف الوحيد في مشروع يؤدي إلى حذف المشروع.</li>
+                </ul>
+                <p style="margin-top: 10px;"><strong>التأثير:</strong> فقدان غير مقصود لمعلومات مهمة.</p>
+            </div>
+        </div>
+
+        <div class="section" id="fd">
+            <div class="section-header">
+                <div class="section-icon">🔗</div>
+                <div>
+                    <h2>التبعيات الوظيفية (FDs)</h2>
+                </div>
+            </div>
+
+            <div class="concept-box">
+                <div class="box-title">📘 ما هي التبعيات الوظيفية؟</div>
+                <p><strong>أداة رسمية</strong> لتحليل المخططات العلائقية تمكن من اكتشاف ووصف مشاكل التصميم بشكل دقيق.</p>
+                <p style="margin-top: 15px;"><strong>تعريف:</strong> مجموعة من الخصائص X تحدد وظيفيًا مجموعة من الخصائص Y إذا كانت قيمة X تحدد قيمة فريدة لـ Y.</p>
+            </div>
+
+            <div class="important-box">
+                <div class="box-title">🔑 تعريف رسمي</div>
+                <p><strong>تتحقق X → Y إذا:</strong> كلما كان لصفين نفس القيمة لـ X، يجب أن يكون لهما نفس القيمة لـ Y.</p>
+                <p style="margin-top: 10px;">لأي صفين t₁ و t₂: إذا كان t₁[X] = t₂[X]، فإن t₁[Y] = t₂[Y].</p>
+                <div class="fd-notation">
+                    X <span class="fd-arrow">→</span> Y
+                </div>
+                <p style="margin-top: 15px;"><strong>نقاط رئيسية:</strong></p>
+                <ul>
+                    <li>التبعيات الوظيفية هي خاصية لـ <strong>مخطط العلاقة</strong>، وليس للحالات الفردية.</li>
+                    <li>التبعيات الوظيفية تُستمد من قيود العالم الحقيقي.</li>
+                    <li>تستخدم لتحديد الأشكال الطبيعية.</li>
+                </ul>
+            </div>
+
+            <h3>أمثلة على التبعيات الوظيفية</h3>
+
+            <div class="example-box">
+                <div class="box-title">💡 أمثلة شائعة</div>
+                <div class="fd-notation">SSN <span class="fd-arrow">→</span> ENAME</div>
+                <p>الرقم الضريبي يحدد اسم الموظف.</p>
+
+                <div class="fd-notation" style="margin-top: 15px;">PNUMBER <span class="fd-arrow">→</span> {PNAME, PLOCATION}</div>
+                <p>رقم المشروع يحدد اسم المشروع وموقعه.</p>
+
+                <div class="fd-notation" style="margin-top: 15px;">{SSN, PNUMBER} <span class="fd-arrow">→</span> HOURS</div>
+                <p>الرقم الضريبي ورقم المشروع معًا يحددان عدد ساعات العمل.</p>
+            </div>
+
+            <h3>أنواع التبعيات الوظيفية</h3>
+
+            <div class="nf-table">
+                <tr>
+                    <th>النوع</th>
+                    <th>الوصف</th>
+                    <th>مثال</th>
+                </tr>
+                <tr>
+                    <td><strong>تبعية كاملة</strong></td>
+                    <td>إزالة أي خاصية من الجانب الأيسر يبطل التبعية.</td>
+                    <td>{SSN, PNUMBER} → HOURS</td>
+                </tr>
+                <tr>
+                    <td><strong>تبعية جزئية</strong></td>
+                    <td>مجموعة فرعية من الجانب الأيسر يمكنها تحديد الجانب الأيمن.</td>
+                    <td>SSN → ENAME (عندما يكون المفتاح {SSN, PNUMBER})</td>
+                </tr>
+                <tr>
+                    <td><strong>تبعية متعدية</strong></td>
+                    <td>X → Y و Y → Z، إذن X → Z.</td>
+                    <td>SSN → DNUMBER → DMGR_SSN</td>
+                </tr>
+            </table>
+
+            <h3>تحديد التبعيات من الحالات</h3>
+
+            <div class="warning-box">
+                <div class="box-title">⚠️ قواعد مهمة</div>
+                <ul>
+                    <li>من حالة علاقة، يمكننا فقط استنتاج أن التبعية <strong>قد تكون موجودة</strong>.</li>
+                    <li>يمكننا الجزم بأن تبعيات معينة <strong>غير موجودة</strong> عندما تخالفها الصفوف.</li>
+                    <li>فهم معنى الخصائص والعلاقات أمر ضروري.</li>
+                    <li>إذا كانت X → Y في R، فهذا لا يعني أن Y → X في R.</li>
+                </ul>
+            </div>
+
+            <div class="important-box">
+                <div class="box-title">🔑 خاصية المفتاح</div>
+                <p><strong>إذا كان X مفتاحًا مرشحًا لـ R، فإن X → R</strong></p>
+                <p>هذا يعني أن المفتاح المرشح يحدد وظيفيًا جميع الخصائص في العلاقة.</p>
+            </div>
+        </div>
+
+        <div class="section" id="keys">
+            <div class="section-header">
+                <div class="section-icon">🔑</div>
+                <div>
+                    <h2>المفاتيح وتصنيفات الخصائص</h2>
+                </div>
+            </div>
+
+            <div class="concept-box">
+                <div class="box-title">📘 المفتاح الفائق (Superkey)</div>
+                <p><strong>المفتاح الفائق</strong> هو مجموعة خصائص S ⊆ R حيث لا يوجد صفان لهما نفس القيم لـ S.</p>
+                <p style="margin-top: 10px;"><strong>مثال:</strong> {ID}, {ID, الاسم_الأول, الاسم_الأخير}, {ID, تاريخ_الطلب}</p>
+            </div>
+
+            <div class="important-box">
+                <div class="box-title">🔑 المفتاح (المفتاح المرشح)</div>
+                <p><strong>المفتاح</strong> هو <strong>مفتاح فائق أصغر</strong> - إزالة أي خاصية يجعله غير مفتاح فائق.</p>
+                <p style="margin-top: 10px;"><strong>مثال:</strong> {ID} أو {الاسم_الأول, الاسم_الأخير} (إذا كانا فريدين).</p>
+            </div>
+
+            <div class="concept-box">
+                <div class="box-title">🎯 مصطلحات المفاتيح</div>
+                <ul>
+                    <li><strong>المفتاح المرشح:</strong> أي مفتاح صالح للعلاقة.</li>
+                    <li><strong>المفتاح الأساسي:</strong> مفتاح مرشح واحد يتم اختياره كمعرف رئيسي.</li>
+                    <li><strong>المفاتيح الثانوية:</strong> مفاتيح مرشحة أخرى لم تُختر كمفاتيح أساسية.</li>
+                    <li><strong>خاصية رئيسية (Prime):</strong> خاصية تنتمي إلى <strong>واحد على الأقل</strong> من المفاتيح المرشحة.</li>
+                    <li><strong>خاصية غير رئيسية (Non-prime):</strong> خاصية لا تنتمي إلى أي مفتاح مرشح.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section" id="1nf">
+            <div class="section-header">
+                <div class="section-icon">1️⃣</div>
+                <div>
+                    <h2>الشكل الطبيعي الأول (1NF)</h2>
+                </div>
+            </div>
+
+            <div class="concept-box">
+                <div class="box-title">📘 تعريف 1NF</div>
+                <p>تكون العلاقة في <strong>الشكل الطبيعي الأول</strong> إذا كانت <strong>لا تسمح</strong> بـ:</p>
+                <ul>
+                    <li><strong>الخصائص المركبة</strong> (خصائص لها أجزاء فرعية).</li>
+                    <li><strong>الخصائص متعددة القيم</strong> (خصائص لها قيم متعددة).</li>
+                    <li><strong>العلاقات المتداخلة</strong> (علاقات داخل علاقات).</li>
+                    <li><strong>المجموعات المكررة</strong>.</li>
+                </ul>
+            </div>
+
+            <div class="important-box">
+                <div class="box-title">✅ متطلبات 1NF</div>
+                <p><strong>يجب أن تحتوي كل خاصية على قيم ذرية (غير قابلة للتجزئة) فقط</strong></p>
+                <ul>
+                    <li>تعتبر جزءًا من تعريف العلاقة.</li>
+                    <li>معظم أنظمة إدارة قواعد البيانات العلائقية تسمح فقط بعلاقات 1NF.</li>
+                    <li>يجب أن تكون جميع القيم من نفس المجال.</li>
+                </ul>
+            </div>
+
+            <h3>التطبيع إلى 1NF</h3>
+
+            <div class="example-box">
+                <div class="box-title">💡 الطريقة ١: علاقة منفصلة</div>
+                <p><strong>للخصائص متعددة القيم:</strong></p>
+                <ol>
+                    <li>أزل الخصائص التي تخالف 1NF.</li>
+                    <li>ضعها في علاقة منفصلة مع المفتاح الأساسي.</li>
+                    <li>المفتاح الأساسي للعلاقة الجديدة = دمج المفتاح الأساسي الأصلي + الخاصية متعددة القيم.</li>
+                </ol>
+            </div>
+
+            <div class="example-box">
+                <div class="box-title">💡 الطريقة ٢: توسيع المفتاح (مع تكرار)</div>
+                <p><strong>طريقة بديلة:</strong></p>
+                <ol>
+                    <li>وسع المفتاح ليشمل الخاصية متعددة القيم.</li>
+                    <li>أنشئ صفًا منفصلاً لكل قيمة.</li>
+                    <li><strong>تحذير:</strong> يسبب تكرارًا!</li>
+                </ol>
+            </div>
+
+            <div class="example-box">
+                <div class="box-title">💡 العلاقات المتداخلة</div>
+                <p><strong>لتطبيع العلاقات المتداخلة:</strong></p>
+                <ol>
+                    <li>أزل خصائص العلاقة المتداخلة.</li>
+                    <li>أنشئ علاقة جديدة بالمفتاح الأساسي الأصلي + المفتاح المرشح للعلاقة المتداخلة.</li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="section" id="2nf">
+            <div class="section-header">
+                <div class="section-icon">2️⃣</div>
+                <div>
+                    <h2>الشكل الطبيعي الثاني (2NF)</h2>
+                </div>
+            </div>
+
+            <div class="concept-box">
+                <div class="box-title">📘 تعريف 2NF</div>
+                <p>مخطط العلاقة R يكون في <strong>الشكل الطبيعي الثاني (2NF)</strong> إذا:</p>
+                <ol>
+                    <li>كان في <strong>1NF</strong>، و</li>
+                    <li>كل <strong>خاصية غير رئيسية</strong> تعتمد <strong>اعتمادًا كليًا وظيفيًا</strong> على المفتاح الأساسي.</li>
+                </ol>
+            </div>
+
+            <div class="important-box">
+                <div class="box-title">🔑 مفهوم رئيسي: الاعتماد الوظيفي الكامل</div>
+                <p><strong>اعتماد كامل:</strong> إزالة أي خاصية من الجانب الأيسر يبطل التبعية.</p>
+                <div style="margin-top: 15px;">
+                    <div class="fd-notation">✅ {SSN, PNUMBER} → HOURS</div>
+                    <p style="margin-top: 5px;">اعتماد كامل - لا SSN → HOURS ولا PNUMBER → HOURS يتحققان.</p>
+                </div>
+                <div style="margin-top: 15px;">
+                    <div class="fd-notation">❌ {SSN, PNUMBER} → ENAME</div>
+                    <p style="margin-top: 5px;">اعتماد جزئي - SSN → ENAME يتحقق.</p>
+                </div>
+            </div>
+
+            <div class="warning-box">
+                <div class="box-title">⚠️ انتهاك 2NF</div>
+                <p><strong>تنتهك العلاقة 2NF عندما:</strong></p>
+                <ul>
+                    <li>تعتمد خاصية غير رئيسية على <strong>جزء</strong> فقط من المفتاح الأساسي المركب.</li>
+                    <li>يسمى هذا <strong>اعتمادًا جزئيًا</strong>.</li>
+                </ul>
+            </div>
+
+            <h3>التطبيع إلى 2NF</h3>
+
+            <div class="example-box">
+                <div class="box-title">💡 عملية تطبيع 2NF</div>
+                <p><strong>الخطوات:</strong></p>
+                <ol>
+                    <li>حدد جميع الاعتمادات الجزئية.</li>
+                    <li>لكل اعتماد جزئي X → Y:
+                        <ul>
+                            <li>أنشئ علاقة جديدة تحتوي على X و Y.</li>
+                            <li>أزل Y من العلاقة الأصلية.</li>
+                            <li>أبقِ X في العلاقة الأصلية كمفتاح خارجي.</li>
+                        </ul>
+                    </li>
+                </ol>
+            </div>
+
+            <div class="important-box">
+                <div class="box-title">📋 تعريف عام (مفاتيح متعددة)</div>
+                <p>تكون العلاقة في 2NF إذا كانت كل خاصية غير رئيسية <strong>غير معتمدة جزئيًا</strong> على <strong>أي مفتاح</strong> من مفاتيح R.</p>
+                <p style="margin-top: 10px;"><em>هذا يأخذ في الاعتبار العلاقات ذات المفاتيح المرشحة المتعددة.</em></p>
+            </div>
+        </div>
+
+        <div class="section" id="3nf">
+            <div class="section-header">
+                <div class="section-icon">3️⃣</div>
+                <div>
+                    <h2>الشكل الطبيعي الثالث (3NF)</h2>
+                </div>
+            </div>
+
+            <div class="concept-box">
+                <div class="box-title">📘 تعريف 3NF (بسيط)</div>
+                <p>مخطط العلاقة R يكون في <strong>الشكل الطبيعي الثالث (3NF)</strong> إذا:</p>
+                <ol>
+                    <li>كان في <strong>2NF</strong>، و</li>
+                    <li>لا توجد <strong>خاصية غير رئيسية</strong> تعتمد اعتمادًا متعديًا على المفتاح الأساسي.</li>
+                </ol>
+            </div>
+
+            <div class="important-box">
+                <div class="box-title">🔑 الاعتماد المتعدي (Transitive Dependency)</div>
+                <p><strong>اعتماد متعدي:</strong> يمكن اشتقاق X → Z من X → Y و Y → Z.</p>
+                <div style="margin-top: 15px;">
+                    <div class="fd-notation">SSN → DNUMBER → DMGR_SSN</div>
+                    <p style="margin-top: 5px;">إذن: SSN → DMGR_SSN هو اعتماد متعدي.</p>
+                </div>
+                <div style="margin-top: 15px;">
+                    <div class="fd-notation">✅ SSN → ENAME</div>
+                    <p style="margin-top: 5px;">غير متعدٍ - لا توجد خاصية وسيطة.</p>
+                </div>
+            </div>
+
+            <div class="warning-box">
+                <div class="box-title">⚠️ ملاحظة مهمة</div>
+                <p>في X → Y → Z حيث X هو المفتاح الأساسي:</p>
+                <ul>
+                    <li>تكون مشكلة فقط إذا كان Y <strong>ليس مفتاحًا مرشحًا</strong>.</li>
+                    <li>إذا كان Y هو مفتاح مرشح، فلا توجد مشكلة.</li>
+                </ul>
+            </div>
+
+            <h3>تعريف 3NF العام (مفاتيح متعددة)</h3>
+
+            <div class="important-box">
+                <div class="box-title">🎯 تعريف 3NF الرسمي</div>
+                <p>تكون العلاقة R في 3NF إذا، كلما تحقق X → A، فإن <strong>إما:</strong></p>
+                <ol>
+                    <li>X هو <strong>مفتاح فائق</strong> لـ R، أو</li>
+                    <li>A هي <strong>خاصية رئيسية</strong> في R.</li>
+                </ol>
+            </div>
+
+            <div class="concept-box">
+                <div class="box-title">📋 تعريف بديل لـ 3NF</div>
+                <p>تكون العلاقة في 3NF إذا كانت كل خاصية غير رئيسية:</p>
+                <ol>
+                    <li>تعتمد <strong>اعتمادًا كليًا وظيفيًا</strong> على كل مفتاح، و</li>
+                    <li>تعتمد <strong>اعتمادًا غير متعدٍ</strong> على كل مفتاح.</li>
+                </ol>
+                <p style="margin-top: 10px;"><em>ملاحظة: هذا التعريف يظهر أن 3NF تتضمن 2NF.</em></p>
+            </div>
+
+            <h3>قاعدة ذهنية للحفظ</h3>
+
+            <div class="example-box">
+                <div class="box-title">💡 تذكر الأشكال الطبيعية</div>
+                <ul>
+                    <li><strong>1NF:</strong> كل الخصائص تعتمد على <strong>المفتاح</strong>.</li>
+                    <li><strong>2NF:</strong> كل الخصائص تعتمد على <strong>المفتاح كاملاً</strong>.</li>
+                    <li><strong>3NF:</strong> كل الخصائص تعتمد على <strong>المفتاح فقط</strong> (لا شيء غيره).</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section" id="bcnf">
+            <div class="section-header">
+                <div class="section-icon">⭐</div>
+                <div>
+                    <h2>صيغة بويز-كود العادية (BCNF)</h2>
+                </div>
+            </div>
+
+            <div class="concept-box">
+                <div class="box-title">📘 ما هي BCNF؟</div>
+                <p><strong>BCNF</strong> هي صيغة أقوى من 3NF تتعامل مع العلاقات ذات المفاتيح المرشحة المتداخلة.</p>
+                <p style="margin-top: 10px;">عندما تحتوي العلاقة على أكثر من مفتاح مرشح، قد تظهر شذوذ حتى في 3NF.</p>
+            </div>
+
+            <div class="important-box">
+                <div class="box-title">🔑 تعريف BCNF</div>
+                <p>تكون العلاقة R في <strong>صيغة بويز-كود العادية (BCNF)</strong> إذا:</p>
+                <p style="margin-top: 10px;">كلما تحقق X → A في R، فإن <strong>X هو مفتاح فائق</strong> لـ R.</p>
+                <div style="margin-top: 20px; padding: 15px; background: white; border-radius: 8px;">
+                    <p><strong>بعبارة أخرى:</strong></p>
+                    <p>كل محدد (الجانب الأيسر) يجب أن يكون مفتاحًا مرشحًا.</p>
+                </div>
+            </div>
+
+            <div class="concept-box">
+                <div class="box-title">📊 تسلسل الأشكال الطبيعية</div>
+                <p>كل شكل طبيعي هو أقوى من الذي قبله:</p>
+                <ul>
+                    <li>كل علاقة في 2NF تكون في 1NF.</li>
+                    <li>كل علاقة في 3NF تكون في 2NF.</li>
+                    <li><strong>كل علاقة في BCNF تكون في 3NF</strong>.</li>
+                </ul>
+                <p style="margin-top: 15px;"><strong>نقطة مهمة:</strong> يمكن أن تكون العلاقات في 3NF ولكن ليست في BCNF!</p>
+            </div>
+
+            <h3>3NF مقابل BCNF</h3>
+
+            <div class="warning-box">
+                <div class="box-title">⚠️ متى 3NF ≠ BCNF</div>
+                <p><strong>تذكر تعريف 3NF العام:</strong> X → A مقبولة إذا:</p>
+                <ol>
+                    <li>X مفتاح فائق، أو</li>
+                    <li>A خاصية رئيسية.</li>
+                </ol>
+                <p style="margin-top: 15px;"><strong>BCNF تسمح فقط بالشرط (أ)</strong></p>
+                <p>BCNF تزيل الشرط (ب)، مما يجعلها أكثر صرامة من 3NF.</p>
+            </div>
+
+            <h3>تطبيق BCNF (التحلل)</h3>
+
+            <div class="example-box">
+                <div class="box-title">💡 خوارزمية تطبيع BCNF</div>
+                <p><strong>لتحليل R إلى BCNF:</strong></p>
+                <ol>
+                    <li>لنفترض أن X → A هي التبعية التي تخالف BCNF.</li>
+                    <li>حلل R إلى:
+                        <ul>
+                            <li><strong>R₁ = R - A</strong></li>
+                            <li><strong>R₂ = XA</strong></li>
+                        </ul>
+                    </li>
+                    <li>إذا كان أي من R₁ أو R₂ ليس في BCNF، كرر العملية.</li>
+                </ol>
+            </div>
+
+            <div class="warning-box">
+                <div class="box-title">⚠️ مفاضلة مع BCNF</div>
+                <p><strong>مهم:</strong> تحلل BCNF قد لا يحافظ على جميع التبعيات الوظيفية!</p>
+                <ul>
+                    <li>يجب ضمان خاصية <strong>الوصل غير الفقداني (lossless join)</strong>.</li>
+                    <li>بعض التبعيات قد تُفقد في التحلل.</li>
+                    <li>هذا مقبول أحيانًا لتحقيق BCNF.</li>
+                </ul>
+            </div>
+
+            <h3>اختبار الوصل غير الفقداني</h3>
+
+            <div class="concept-box">
+                <div class="box-title">📋 خاصية الوصل غير الفقداني</div>
+                <p>تحلل D = {R₁, R₂} له خاصية الوصل غير الفقداني إذا <strong>كان:</strong></p>
+                <ol>
+                    <li>(R₁ ∩ R₂) → (R₁ - R₂) في F⁺، أو</li>
+                    <li>(R₁ ∩ R₂) → (R₂ - R₁) في F⁺.</li>
+                </ol>
+                <p style="margin-top: 15px;"><strong>ترجمة:</strong> الخصائص المشتركة يجب أن تحدد وظيفيًا الخصائص الفريدة لإحدى العلاقات.</p>
+            </div>
+        </div>
+
+        <div class="section" id="armstrong">
+            <div class="section-header">
+                <div class="section-icon">🎓</div>
+                <div>
+                    <h2>بديهيات أرمسترونغ</h2>
+                </div>
+            </div>
+
+            <div class="concept-box">
+                <div class="box-title">📘 قواعد استنتاج للتبعيات الوظيفية</div>
+                <p><strong>بديهيات أرمسترونغ</strong> هي قواعد استنتاج مُثبتة وكاملة لاشتقاق التبعيات الوظيفية.</p>
+            </div>
+
+            <div class="important-box">
+                <div class="box-title">🔑 البديهيات الثلاث</div>
+                <p><strong>١. الانعكاسية:</strong> إذا كان Y ⊆ X، فإن X → Y</p>
+                <div class="fd-notation">مثال: AB → B</div>
+
+                <p style="margin-top: 20px;"><strong>٢. التكبير:</strong> إذا كان X → Y، فإن XZ → YZ</p>
+                <div class="fd-notation">مثال: إذا A → B، فإن AC → BC</div>
+
+                <p style="margin-top: 20px;"><strong>٣. العبور:</strong> إذا كان X → Y و Y → Z، فإن X → Z</p>
+                <div class="fd-notation">مثال: إذا A → B و B → C، فإن A → C</div>
+            </div>
+
+            <h3>قواعد مشتقة</h3>
+
+            <div class="rule-box">
+                <div class="box-title">📐 قواعد استنتاج إضافية</div>
+                <p><strong>الاتحاد:</strong> إذا كان X → Y و X → Z، فإن X → YZ</p>
+                <p style="margin-top: 10px;"><strong>التحلل:</strong> إذا كان X → YZ، فإن X → Y و X → Z</p>
+                <p style="margin-top: 15px;"><em>يمكن إثبات هذه باستخدام بديهيات أرمسترونغ.</em></p>
+            </div>
+
+            <div class="example-box">
+                <div class="box-title">💡 مثال إثبات: قاعدة الاتحاد</div>
+                <p><strong>أثبت:</strong> إذا كان X → Y و X → Z، فإن X → YZ</p>
+                <ol>
+                    <li>المعطى: X → Y، X → Z</li>
+                    <li>X → Y يعني XX → XY (تكبير)</li>
+                    <li>كبر X → Z بإضافة Y: XY → ZY</li>
+                    <li>X → XY → ZY يعني X → ZY (عبور)</li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="section" id="closure">
+            <div class="section-header">
+                <div class="section-icon">🔄</div>
+                <div>
+                    <h2>خوارزمية الإغلاق</h2>
+                </div>
+            </div>
+
+            <div class="concept-box">
+                <div class="box-title">📘 ما هو الإغلاق؟</div>
+                <p><strong>إغلاق X (يرمز له X⁺):</strong> مجموعة كل الخصائص المحددة وظيفيًا بواسطة X بناءً على F.</p>
+                <p style="margin-top: 10px;"><strong>خاصية رئيسية:</strong> المفتاح يحتوي على مجموعة كاملة من الخصائص في إغلاقه.</p>
+            </div>
+
+            <div class="important-box">
+                <div class="box-title">🔧 خوارزمية الإغلاق</div>
+                <p><strong>المدخلات:</strong> مجموعة تبعيات F، ومجموعة خصائص X</p>
+                <p><strong>المخرجات:</strong> X⁺ (إغلاق X)</p>
+                <div style="margin-top: 20px; background: white; padding: 20px; border-radius: 10px; font-family: 'Space Mono', monospace; font-size: 0.9rem; direction: ltr; text-align: left;">
+X⁺ := X<br>
+<strong>كرر</strong><br>
+&nbsp;&nbsp;old_X⁺ := X⁺<br>
+&nbsp;&nbsp;<strong>لكل</strong> تبعية Y → Z في F <strong>افعل</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<strong>إذا كان</strong> X⁺ ⊇ Y <strong>فإن</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;X⁺ := X⁺ ∪ Z<br>
+<strong>حتى</strong> (X⁺ = old_X⁺)
+                </div>
+            </div>
+
+            <h3>إيجاد المفاتيح باستخدام الإغلاق</h3>
+
+            <div class="example-box">
+                <div class="box-title">💡 مثال كامل</div>
+                <p><strong>العلاقة:</strong> المورد_قطعة (اسم_المورد، المدينة، الحالة، رقم_القطعة#, اسم_القطعة, الكمية)</p>
+                <p><strong>التبعيات الوظيفية:</strong></p>
+                <ul>
+                    <li>fd1: اسم_المورد → المدينة</li>
+                    <li>fd2: المدينة → الحالة</li>
+                    <li>fd3: رقم_القطعة → اسم_القطعة</li>
+                    <li>fd4: {اسم_المورد, رقم_القطعة} → الكمية</li>
+                </ul>
+                <p style="margin-top: 20px;"><strong>أثبت أن {اسم_المورد, رقم_القطعة} هو مفتاح:</strong></p>
+                
+                <p style="margin-top: 15px;"><strong>الخطوة ١: أظهر أنه مفتاح فائق</strong></p>
+                <ol>
+                    <li>{اسم_المورد, رقم_القطعة} → {اسم_المورد, رقم_القطعة} (بديهي)</li>
+                    <li>اسم_المورد → المدينة (fd1)</li>
+                    <li>اسم_المورد → الحالة (عبور عبر fd2)</li>
+                    <li>{اسم_المورد, رقم_القطعة} → الكمية (fd4)</li>
+                    <li>رقم_القطعة → اسم_القطعة (fd3)</li>
+                    <li>إذن: {اسم_المورد, رقم_القطعة}⁺ = {اسم_المورد, رقم_القطعة, المدينة, الحالة, الكمية, اسم_القطعة} ✓</li>
+                </ol>
+
+                <p style="margin-top: 15px;"><strong>الخطوة ٢: أظهر أنه أصغر (minimal)</strong></p>
+                <ul>
+                    <li>رقم_القطعة لا يحدده شيء → اسم_المورد وحده ليس مفتاحًا.</li>
+                    <li>اسم_المورد ليس في الجانب الأيمن لأي تبعية مع رقم_القطعة وحده → رقم_القطعة وحده ليس مفتاحًا.</li>
+                    <li>إذن {اسم_المورد, رقم_القطعة} هو أصغر مفتاح ✓</li>
+                </ul>
+
+                <p style="margin-top: 15px;"><strong>النتيجة: {اسم_المورد, رقم_القطعة} هو مفتاح!</strong></p>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-header">
+                <div class="section-icon">📊</div>
+                <div>
+                    <h2>ملخص الأشكال الطبيعية</h2>
+                </div>
+            </div>
+
+            <div class="nf-table">
+                <tr>
+                    <th>الشكل الطبيعي</th>
+                    <th>المتطلبات</th>
+                    <th>يزيل</th>
+                </tr>
+                <tr>
+                    <td><strong>1NF</strong></td>
+                    <td>لا توجد خصائص مركبة أو متعددة القيم.</td>
+                    <td>المجموعات المكررة، العلاقات المتداخلة.</td>
+                </tr>
+                <tr>
+                    <td><strong>2NF</strong></td>
+                    <td>1NF + لا توجد تبعيات جزئية.</td>
+                    <td>الاعتماد الجزئي على المفاتيح المرشحة.</td>
+                </tr>
+                <tr>
+                    <td><strong>3NF</strong></td>
+                    <td>2NF + لا توجد تبعيات متعدية.</td>
+                    <td>الاعتماد المتعدي عبر خصائص غير رئيسية.</td>
+                </tr>
+                <tr>
+                    <td><strong>BCNF</strong></td>
+                    <td>كل محدد (الجانب الأيسر) هو مفتاح مرشح.</td>
+                    <td>كل التبعيات حيث المحدد ليس مفتاحًا فائقًا.</td>
+                </tr>
+            </table>
+
+            <div class="important-box">
+                <div class="box-title">🎯 إرشادات عملية</div>
+                <ul>
+                    <li>طبق التسوية إلى <strong>على الأقل 3NF</strong> عمليًا.</li>
+                    <li>BCNF مثالي ولكن قد يضحي بالحفاظ على التبعيات.</li>
+                    <li>4NF و 5NF نادرًا ما تستخدم عمليًا.</li>
+                    <li><strong>إلغاء التسوية (Denormalization):</strong> مقبول أحيانًا لأداء أفضل (ولكن وثّق ذلك!)</li>
+                </ul>
+            </div>
+
+            <div class="concept-box">
+                <div class="box-title">✨ النقاط الرئيسية</div>
+                <ul>
+                    <li>التسوية تزيل التكرار والشذوذ.</li>
+                    <li>كل شكل طبيعي يبني على الذي قبله.</li>
+                    <li>الأشكال الطبيعية الأعلى تعني تكامل بيانات أفضل.</li>
+                    <li>هناك مفاضلة بين التسوية والأداء.</li>
+                    <li>فهم التبعيات الوظيفية أساسي لتصميم قاعدة بيانات جيد.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer">
+            <div class="name">شوق العمران</div>
+            <div style="font-size: 1.1rem; opacity: 0.9;">CS 340: مقدمة في أنظمة قواعد البيانات</div>
+            <div style="font-size: 1.1rem; opacity: 0.9;">الفصل ٩ - التبعيات الوظيفية والتسوية (Normalization)</div>
+            <div style="font-size: 1rem; margin-top: 15px; opacity: 0.8;">📐 دليل متكامل للتسوية</div>
+        </div>
+    </div>
+
+    <script>
+        document.querySelectorAll('.toc-item a').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            });
+        });
+    </script>
+</body>
+</html>

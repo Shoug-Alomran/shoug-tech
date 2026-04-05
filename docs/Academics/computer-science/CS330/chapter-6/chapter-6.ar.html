@@ -1,0 +1,1235 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الفصل ٦: مزامنة العمليات - CS330</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f4f4f4;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: white;
+        }
+
+        header {
+            background: linear-gradient(135deg, #00c9ff 0%, #92fe9d 100%);
+            color: white;
+            padding: 40px;
+            margin-bottom: 30px;
+            text-align: center;
+            border-radius: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            color: #00c9ff;
+            font-size: 1.8em;
+            margin: 35px 0 20px 0;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #92fe9d;
+        }
+
+        h3 {
+            color: #00a8cc;
+            font-size: 1.4em;
+            margin: 25px 0 15px 0;
+        }
+
+        /* مخطط القسم الحرج */
+        .critical-section-diagram {
+            background: #f0f8ff;
+            border: 2px solid #00c9ff;
+            border-radius: 10px;
+            padding: 30px;
+            margin: 30px 0;
+            text-align: center;
+        }
+
+        .process-structure {
+            background: white;
+            border: 2px solid #333;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px auto;
+            max-width: 500px;
+        }
+
+        .section-block {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .entry-section { background: #3498db; }
+        .critical-section { background: #e74c3c; }
+        .exit-section { background: #f39c12; }
+        .remainder-section { background: #95a5a6; }
+
+        /* صندوق حالة السباق */
+        .race-condition-box {
+            background: #ffe5e5;
+            border: 2px solid #ff6b6b;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+        }
+
+        /* شبكة الحلول */
+        .solutions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .solution-card {
+            background: white;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+
+        .solution-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .solution-card h4 {
+            color: #00c9ff;
+            margin-bottom: 10px;
+        }
+
+        /* كتل الأكواد */
+        .code-block {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+        }
+
+        .code-comment {
+            color: #95a5a6;
+        }
+
+        .code-keyword {
+            color: #3498db;
+        }
+
+        .code-function {
+            color: #2ecc71;
+        }
+
+        /* الجداول */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        th {
+            background: #00c9ff;
+            color: white;
+            padding: 15px;
+            text-align: right;
+        }
+
+        td {
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+        }
+
+        tr:nth-child(even) {
+            background: #f8f9ff;
+        }
+
+        /* صندوق المفاهيم */
+        .concept-box {
+            background: #e8fff8;
+            border-right: 4px solid #00c9ff;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .highlight {
+            background: #ffd700;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+
+        /* صندوق الأمثلة */
+        .example-box {
+            background: #e8f8f5;
+            border: 2px solid #27ae60;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        /* صندوق التحذير */
+        .warning-box {
+            background: #fff3cd;
+            border-right: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+        }
+
+        /* المشاكل الكلاسيكية */
+        .problem-container {
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            background: #f8f9ff;
+        }
+
+        .problem-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            margin: -20px -20px 20px -20px;
+            border-radius: 8px 8px 0 0;
+            text-align: center;
+        }
+
+        /* تصور الفلاسفة */
+        .philosophers-table {
+            width: 400px;
+            height: 400px;
+            margin: 30px auto;
+            position: relative;
+            background: #f0f8ff;
+            border-radius: 50%;
+            border: 3px solid #333;
+        }
+
+        .philosopher {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            background: #3498db;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .chopstick {
+            position: absolute;
+            width: 4px;
+            height: 80px;
+            background: #8b4513;
+            transform-origin: center bottom;
+        }
+
+        /* تصور المخزن المؤقت */
+        .buffer-visualization {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        .buffer-slot {
+            width: 60px;
+            height: 60px;
+            border: 2px solid #333;
+            margin: 0 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            font-weight: bold;
+        }
+
+        .buffer-slot.full {
+            background: #3498db;
+            color: white;
+        }
+
+        .buffer-slot.empty {
+            background: #ecf0f1;
+        }
+
+        /* عمليات السيمافور */
+        .semaphore-box {
+            background: #f0f8ff;
+            border: 2px solid #3498db;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+        }
+
+        .operation-flow {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .operation-step {
+            background: white;
+            border: 2px solid #ddd;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .arrow {
+            font-size: 30px;
+            color: #333;
+        }
+
+        /* تصور المراقب */
+        .monitor-diagram {
+            background: #fff8dc;
+            border: 3px solid #ffd700;
+            padding: 30px;
+            margin: 30px 0;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .monitor-box {
+            background: white;
+            border: 2px solid #333;
+            padding: 20px;
+            margin: 20px auto;
+            max-width: 600px;
+            border-radius: 10px;
+        }
+
+        /* قسم الاختبار */
+        .exam-section {
+            background: #fff8dc;
+            border: 2px solid #ffd700;
+            padding: 25px;
+            margin: 30px 0;
+            border-radius: 10px;
+        }
+
+        .exam-question {
+            background: white;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .mcq-options {
+            list-style: none;
+            margin-top: 15px;
+            margin-right: 0;
+        }
+
+        .mcq-options li {
+            background: #f8f9ff;
+            padding: 10px;
+            margin: 8px 0;
+            border-radius: 5px;
+            border-right: 3px solid transparent;
+        }
+
+        .correct-answer {
+            background: #d4edda !important;
+            border-right: 3px solid #28a745 !important;
+        }
+
+        /* حل بيترسون */
+        .peterson-box {
+            background: #f5f3ff;
+            border: 2px solid #9b59b6;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+        }
+
+        /* مكان الصورة */
+        .image-placeholder {
+            background: #95a5a6;
+            color: white;
+            padding: 60px 20px;
+            text-align: center;
+            border-radius: 10px;
+            margin: 20px 0;
+            border: 2px dashed #7f8c8d;
+        }
+
+        /* قائمة المتطلبات */
+        .requirements-list {
+            background: white;
+            border: 2px solid #00c9ff;
+            border-radius: 10px;
+            padding: 0;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .requirements-list li {
+            padding: 15px;
+            border-bottom: 1px solid #ddd;
+            list-style: none;
+        }
+
+        .requirements-list li:last-child {
+            border-bottom: none;
+        }
+
+        .requirements-list li:before {
+            content: "✓";
+            color: #27ae60;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+
+        footer {
+            background: #00c9ff;
+            color: white;
+            text-align: center;
+            padding: 25px;
+            margin-top: 40px;
+            border-radius: 10px;
+        }
+
+        .subsection {
+            margin-right: 20px;
+            padding-right: 20px;
+            border-right: 2px solid #ecf0f1;
+        }
+
+        /* تصور الجمود */
+        .deadlock-diagram {
+            background: #ffe5e5;
+            border: 2px solid #e74c3c;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+        }
+
+        /* تصميم متجاوب */
+        @media (max-width: 768px) {
+            .solutions-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .operation-flow {
+                flex-direction: column;
+            }
+        }
+    </style>
+  <script src="/javascripts/standalone-theme.js"></script>
+<style id="codex-responsive-html">
+  html { width: 100%; }
+  body {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+  img, svg, video, canvas, iframe {
+    max-width: 100% !important;
+    height: auto;
+  }
+  table {
+    max-width: 100% !important;
+  }
+  .table-wrap, .table-scroll, .overflow-x, .comparison-table, .acm-table, .matrix-wrap {
+    max-width: 100% !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+  }
+  header,
+  main,
+  .header-inner,
+  .hero,
+  .hero-inner,
+  .content,
+  .container,
+  .wrap,
+  .page,
+  .page-shell,
+  .page-wrap,
+  .layout,
+  .content-wrap,
+  .exam-container,
+  .quiz-container,
+  .cheat-sheet,
+  .toc,
+  .section,
+  .section-body,
+  .card,
+  .panel {
+    width: min(100%, calc(100vw - 24px)) !important;
+    max-width: min(1600px, calc(100vw - 24px)) !important;
+  }
+  @media (max-width: 768px) {
+    header,
+    main,
+    .header-inner,
+    .hero,
+    .hero-inner,
+    .content,
+    .container,
+    .wrap,
+    .page,
+    .page-shell,
+    .page-wrap,
+    .layout,
+    .content-wrap,
+    .exam-container,
+    .quiz-container,
+    .cheat-sheet,
+    .toc,
+    .section,
+    .section-body,
+    .card,
+    .panel {
+      width: min(100%, calc(100vw - 16px)) !important;
+      max-width: min(100%, calc(100vw - 16px)) !important;
+    }
+    body {
+      overflow-x: hidden;
+    }
+  }
+</style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>الفصل ٦: مزامنة العمليات</h1>
+            <p style="font-size: 1.2em;">CS330 - أنظمة التشغيل</p>
+            <p>القسم الحرج، السيمافورات، المشاكل الكلاسيكية</p>
+        </header>
+
+        <!-- القسم 1: الخلفية -->
+        <section>
+            <h2>٦.١ خلفية</h2>
+            
+            <div class="concept-box">
+                <p>الوصول المتزامن إلى البيانات المشتركة قد يؤدي إلى عدم تناسق البيانات. الحفاظ على تناسق البيانات يتطلب آليات لضمان التنفيذ المنظم للعمليات المتعاونة.</p>
+            </div>
+
+            <h3>العمليات المتعاونة</h3>
+            <div class="subsection">
+                <p>العمليات يمكن أن تُنفذ بشكل متزامن وقد تُقاطع في أي وقت، مكملة التنفيذ جزئيًا. الوصول المتزامن إلى البيانات المشتركة قد يؤدي إلى <span class="highlight">حالات السباق</span>.</p>
+            </div>
+
+            <h3>حالة السباق</h3>
+            <div class="race-condition-box">
+                <h4>⚠️ تعريف حالة السباق:</h4>
+                <p>موقف حيث عدة عمليات تصل وتتعامل مع نفس البيانات بشكل متزامن، وتعتمد النتيجة على الترتيب المحدد الذي يحدث به الوصول.</p>
+                
+                <div class="example-box">
+                    <h4>مثال: مشكلة العداد</h4>
+                    <p>افترض أن العداد = ٥</p>
+                    <p>المنتج ينفذ: <code>counter++</code></p>
+                    <p>المستهلك ينفذ: <code>counter--</code></p>
+                    <p>النتيجة يمكن أن تكون: ٤، ٥، أو ٦!</p>
+                </div>
+            </div>
+
+            <div class="code-block">
+<span class="code-comment">// مثال حالة السباق</span>
+<span class="code-comment">// عملية المنتج</span>
+counter++; <span class="code-comment">// هذه في الواقع ثلاث تعليمات آلية:</span>
+           <span class="code-comment">// ١. register1 = counter</span>
+           <span class="code-comment">// ٢. register1 = register1 + 1</span>
+           <span class="code-comment">// ٣. counter = register1</span>
+
+<span class="code-comment">// عملية المستهلك</span>
+counter--; <span class="code-comment">// هذه أيضًا ثلاث تعليمات آلية:</span>
+           <span class="code-comment">// ١. register2 = counter</span>
+           <span class="code-comment">// ٢. register2 = register2 - 1</span>
+           <span class="code-comment">// ٣. counter = register2</span>
+            </div>
+        </section>
+
+        <!-- القسم 2: مشكلة القسم الحرج -->
+        <section>
+            <h2>٦.٢ مشكلة القسم الحرج</h2>
+            
+            <div class="concept-box">
+                <p><span class="highlight">القسم الحرج</span> هو جزء من كود العملية الذي يتعامل مع البيانات أو الموارد المشتركة. يجب أن يكون تنفيذ القسم الحرج حصريًا بشكل متبادل.</p>
+            </div>
+
+            <div class="process-structure">
+                <div class="section-block entry-section">قسم الدخول</div>
+                <div class="section-block critical-section">القسم الحرج</div>
+                <div class="section-block exit-section">قسم الخروج</div>
+                <div class="section-block remainder-section">القسم المتبقي</div>
+            </div>
+
+            <h3>متطلبات الحل</h3>
+            <ul class="requirements-list">
+                <li><strong>الاستبعاد المتبادل:</strong> إذا كانت العملية Pi تنفذ في قسمها الحرج، فلا يمكن لأي عملية أخرى أن تنفذ في أقسامها الحرجة.</li>
+                <li><strong>التقدم:</strong> إذا لم تكن هناك عملية تنفذ في قسمها الحرج وكانت بعض العمليات ترغب في الدخول، فيمكن فقط لتلك التي ليست في قسمها المتبقي المشاركة في تحديد من يدخل بعد ذلك، ولا يمكن تأجيل هذا الاختيار إلى أجل غير مسمى.</li>
+                <li><strong>الانتظار المحدود:</strong> يجب أن يوجد حد على عدد المرات التي يُسمح فيها للعمليات الأخرى بالدخول إلى أقسامها الحرجة بعد أن تقدمت عملية بطلب وقبل منح هذا الطلب. هذا يمنع التجويع.</li>
+            </ul>
+
+            <div class="warning-box">
+                <h4>⚠️ مهم:</h4>
+                <p>يجب تلبية جميع المتطلبات الثلاثة لحل صحيح لمشكلة القسم الحرج!</p>
+            </div>
+        </section>
+
+        <!-- القسم 3: حل بيترسون -->
+        <section>
+            <h2>٦.٣ حل بيترسون</h2>
+            
+            <div class="peterson-box">
+                <h3>حل لعمليتين</h3>
+                <p>يفترض أن تعليمات التحميل والتخزين ذرية. يستخدم متغيرين مشتركين:</p>
+                <ul>
+                    <li><code>int turn;</code> - يشير إلى من دوره لدخول القسم الحرج</li>
+                    <li><code>boolean flag[2];</code> - يشير إلى ما إذا كانت العملية جاهزة لدخول القسم الحرج</li>
+                </ul>
+            </div>
+
+            <div class="code-block">
+<span class="code-comment">// حل بيترسون للعملية Pi</span>
+<span class="code-keyword">do</span> {
+    flag[i] = <span class="code-keyword">true</span>;
+    turn = j;
+    <span class="code-keyword">while</span> (flag[j] && turn == j)
+        ; <span class="code-comment">// انتظار نشط</span>
+    
+    <span class="code-comment">// القسم الحرج</span>
+    
+    flag[i] = <span class="code-keyword">false</span>;
+    
+    <span class="code-comment">// القسم المتبقي</span>
+} <span class="code-keyword">while</span> (<span class="code-keyword">true</span>);
+            </div>
+
+            <div class="example-box">
+                <h4>✅ إثبات أن حل بيترسون يعمل:</h4>
+                <ul>
+                    <li><strong>الاستبعاد المتبادل:</strong> لا يمكن أن تكون كلتا العمليتين في القسم الحرج في نفس الوقت</li>
+                    <li><strong>التقدم:</strong> العملية خارج القسم الحرج لا تمنع الآخرين</li>
+                    <li><strong>الانتظار المحدود:</strong> العملية تنتظر على الأكثر دورًا واحدًا</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- القسم 4: حلول العتاد -->
+        <section>
+            <h2>٦.٤ مزامنة العتاد</h2>
+            
+            <div class="concept-box">
+                <p>العديد من الأنظمة توفر دعمًا عتاديًا لكود القسم الحرج. الأجهزة الحديثة توفر <span class="highlight">تعليمات عتاد ذرية</span> خاصة.</p>
+            </div>
+
+            <h3>تعليمة Test and Set</h3>
+            <div class="code-block">
+<span class="code-keyword">boolean</span> <span class="code-function">test_and_set</span>(<span class="code-keyword">boolean</span> *target) {
+    <span class="code-keyword">boolean</span> rv = *target;
+    *target = <span class="code-keyword">true</span>;
+    <span class="code-keyword">return</span> rv;
+}
+
+<span class="code-comment">// حل باستخدام test_and_set()</span>
+<span class="code-keyword">do</span> {
+    <span class="code-keyword">while</span> (<span class="code-function">test_and_set</span>(&lock))
+        ; <span class="code-comment">// انتظار نشط</span>
+    
+    <span class="code-comment">// القسم الحرج</span>
+    
+    lock = <span class="code-keyword">false</span>;
+    
+    <span class="code-comment">// القسم المتبقي</span>
+} <span class="code-keyword">while</span> (<span class="code-keyword">true</span>);
+            </div>
+
+            <h3>تعليمة Compare and Swap</h3>
+            <div class="code-block">
+<span class="code-keyword">int</span> <span class="code-function">compare_and_swap</span>(<span class="code-keyword">int</span> *value, <span class="code-keyword">int</span> expected, <span class="code-keyword">int</span> new_value) {
+    <span class="code-keyword">int</span> temp = *value;
+    <span class="code-keyword">if</span> (*value == expected)
+        *value = new_value;
+    <span class="code-keyword">return</span> temp;
+}
+            </div>
+        </section>
+
+        <!-- القسم 5: أقفال Mutex -->
+        <section>
+            <h2>٦.٥ أقفال Mutex</h2>
+            
+            <div class="concept-box">
+                <p>الحلول السابقة معقدة لمبرمجي التطبيقات. مصممو أنظمة التشغيل يبنون أدوات برمجية لحل مشكلة القسم الحرج. أبسطها هو <span class="highlight">قفل mutex</span>.</p>
+            </div>
+
+            <div class="code-block">
+<span class="code-comment">// استخدام قفل Mutex</span>
+<span class="code-function">acquire</span>() {
+    <span class="code-keyword">while</span> (!available)
+        ; <span class="code-comment">// انتظار نشط</span>
+    available = <span class="code-keyword">false</span>;
+}
+
+<span class="code-function">release</span>() {
+    available = <span class="code-keyword">true</span>;
+}
+
+<span class="code-comment">// كود العملية</span>
+<span class="code-keyword">do</span> {
+    <span class="code-function">acquire</span>(lock);
+    
+    <span class="code-comment">// القسم الحرج</span>
+    
+    <span class="code-function">release</span>(lock);
+    
+    <span class="code-comment">// القسم المتبقي</span>
+} <span class="code-keyword">while</span> (<span class="code-keyword">true</span>);
+            </div>
+
+            <div class="warning-box">
+                <h4>⚠️ مشكلة Spinlock:</h4>
+                <p>هذا التنفيذ يتطلب انتظارًا نشطًا. بينما تكون عملية في قسمها الحرج، أي عملية أخرى تحاول الدخول يجب أن تستمر في التكرار (تدور). هذا يضيع دورات المعالج.</p>
+            </div>
+        </section>
+
+        <!-- القسم 6: السيمافورات -->
+        <section>
+            <h2>٦.٦ السيمافورات</h2>
+            
+            <div class="semaphore-box">
+                <h3>تعريف السيمافور</h3>
+                <p>أداة مزامنة توفر طرقًا أكثر تطورًا للعمليات لمزامنة أنشطتها.</p>
+                <p>السيمافور S هو متغير صحيح يتم الوصول إليه فقط من خلال عمليتين ذريتين:</p>
+            </div>
+
+            <div class="operation-flow">
+                <div class="operation-step">
+                    <h4>wait(S)</h4>
+                    <code>S--;<br>if (S < 0)<br>&nbsp;&nbsp;block();</code>
+                </div>
+                <span class="arrow">↔</span>
+                <div class="operation-step">
+                    <h4>signal(S)</h4>
+                    <code>S++;<br>if (S <= 0)<br>&nbsp;&nbsp;wakeup();</code>
+                </div>
+            </div>
+
+            <h3>أنواع السيمافورات</h3>
+            <table>
+                <tr>
+                    <th>النوع</th>
+                    <th>النطاق</th>
+                    <th>الاستخدام</th>
+                </tr>
+                <tr>
+                    <td><strong>سيمافور ثنائي</strong></td>
+                    <td>٠ أو ١</td>
+                    <td>الاستبعاد المتبادل (mutex)</td>
+                </tr>
+                <tr>
+                    <td><strong>سيمافور عددي</strong></td>
+                    <td>نطاق غير محدود</td>
+                    <td>تخصيص موارد مع نسخ متعددة</td>
+                </tr>
+            </table>
+
+            <h3>تنفيذ السيمافور بدون انتظار نشط</h3>
+            <div class="code-block">
+<span class="code-keyword">typedef struct</span> {
+    <span class="code-keyword">int</span> value;
+    <span class="code-keyword">struct</span> process *list;
+} semaphore;
+
+<span class="code-function">wait</span>(semaphore *S) {
+    S->value--;
+    <span class="code-keyword">if</span> (S->value < 0) {
+        <span class="code-comment">// إضافة هذه العملية إلى S->list</span>
+        <span class="code-function">block</span>();
+    }
+}
+
+<span class="code-function">signal</span>(semaphore *S) {
+    S->value++;
+    <span class="code-keyword">if</span> (S->value <= 0) {
+        <span class="code-comment">// إزالة عملية P من S->list</span>
+        <span class="code-function">wakeup</span>(P);
+    }
+}
+            </div>
+        </section>
+
+        <!-- القسم 7: المشاكل الكلاسيكية -->
+        <section>
+            <h2>٦.٧ المشاكل الكلاسيكية في المزامنة</h2>
+            
+            <!-- مشكلة المخزن المؤقت المحدود -->
+            <div class="problem-container">
+                <div class="problem-header">
+                    <h3>١. مشكلة المخزن المؤقت المحدود</h3>
+                </div>
+                
+                <div class="buffer-visualization">
+                    <div class="buffer-slot full">عنصر</div>
+                    <div class="buffer-slot full">عنصر</div>
+                    <div class="buffer-slot empty">فارغ</div>
+                    <div class="buffer-slot empty">فارغ</div>
+                    <div class="buffer-slot empty">فارغ</div>
+                </div>
+
+                <p><strong>السيمافورات المستخدمة:</strong></p>
+                <ul>
+                    <li><code>mutex</code> - مهيأ إلى ١ (استبعاد متبادل)</li>
+                    <li><code>full</code> - مهيأ إلى ٠ (عدد المخازن الممتلئة)</li>
+                    <li><code>empty</code> - مهيأ إلى n (عدد المخازن الفارغة)</li>
+                </ul>
+
+                <div class="code-block">
+<span class="code-comment">// عملية المنتج</span>
+<span class="code-keyword">do</span> {
+    <span class="code-comment">// إنتاج عنصر في next_produced</span>
+    
+    <span class="code-function">wait</span>(empty);
+    <span class="code-function">wait</span>(mutex);
+    
+    <span class="code-comment">// إضافة next_produced إلى المخزن المؤقت</span>
+    
+    <span class="code-function">signal</span>(mutex);
+    <span class="code-function">signal</span>(full);
+} <span class="code-keyword">while</span> (<span class="code-keyword">true</span>);
+
+<span class="code-comment">// عملية المستهلك</span>
+<span class="code-keyword">do</span> {
+    <span class="code-function">wait</span>(full);
+    <span class="code-function">wait</span>(mutex);
+    
+    <span class="code-comment">// إزالة عنصر من المخزن المؤقت إلى next_consumed</span>
+    
+    <span class="code-function">signal</span>(mutex);
+    <span class="code-function">signal</span>(empty);
+    
+    <span class="code-comment">// استهلاك العنصر في next_consumed</span>
+} <span class="code-keyword">while</span> (<span class="code-keyword">true</span>);
+                </div>
+            </div>
+
+            <!-- مشكلة القراء والكتاب -->
+            <div class="problem-container">
+                <div class="problem-header">
+                    <h3>٢. مشكلة القراء والكتاب</h3>
+                </div>
+                
+                <p>مجموعة بيانات مشتركة بين عمليات متزامنة:</p>
+                <ul>
+                    <li><strong>القراء:</strong> يقرؤون فقط مجموعة البيانات؛ لا تحديثات</li>
+                    <li><strong>الكتاب:</strong> يمكنهم القراءة والكتابة</li>
+                </ul>
+                
+                <p><strong>المشكلة:</strong> السماح لقراء متعددين بالقراءة في نفس الوقت. كاتب واحد فقط يمكنه الوصول إلى البيانات المشتركة في كل مرة.</p>
+                
+                <p><strong>البيانات المشتركة:</strong></p>
+                <ul>
+                    <li><code>rw_mutex</code> - مهيأ إلى ١ (مشترك للقراء/الكتاب)</li>
+                    <li><code>mutex</code> - مهيأ إلى ١ (يحمي read_count)</li>
+                    <li><code>read_count</code> - مهيأ إلى ٠ (عدد القراء)</li>
+                </ul>
+
+                <div class="code-block">
+<span class="code-comment">// عملية الكاتب</span>
+<span class="code-keyword">do</span> {
+    <span class="code-function">wait</span>(rw_mutex);
+    
+    <span class="code-comment">// يتم تنفيذ الكتابة</span>
+    
+    <span class="code-function">signal</span>(rw_mutex);
+} <span class="code-keyword">while</span> (<span class="code-keyword">true</span>);
+
+<span class="code-comment">// عملية القارئ</span>
+<span class="code-keyword">do</span> {
+    <span class="code-function">wait</span>(mutex);
+    read_count++;
+    <span class="code-keyword">if</span> (read_count == 1)
+        <span class="code-function">wait</span>(rw_mutex);
+    <span class="code-function">signal</span>(mutex);
+    
+    <span class="code-comment">// يتم تنفيذ القراءة</span>
+    
+    <span class="code-function">wait</span>(mutex);
+    read_count--;
+    <span class="code-keyword">if</span> (read_count == 0)
+        <span class="code-function">signal</span>(rw_mutex);
+    <span class="code-function">signal</span>(mutex);
+} <span class="code-keyword">while</span> (<span class="code-keyword">true</span>);
+                </div>
+            </div>
+
+            <!-- مشكلة الفلاسفة -->
+            <div class="problem-container">
+                <div class="problem-header">
+                    <h3>٣. مشكلة الفلاسفة</h3>
+                </div>
+                
+                <div class="image-placeholder">
+                    <h4>🍝 طاولة الفلاسفة</h4>
+                    <p>[إدراج مخطط: ٥ فلاسفة حول طاولة مع وعاء أرز وأعواد تناول الطعام]</p>
+                </div>
+                
+                <p><strong>وصف المشكلة:</strong></p>
+                <ul>
+                    <li>٥ فلاسفة يأكلون ويفكرون فقط</li>
+                    <li>كل فيلسوف يحتاج عودين لتناول الطعام</li>
+                    <li>متاح فقط ٥ أعواد</li>
+                    <li>توضح صعوبة تخصيص الموارد بدون جمود أو تجويع</li>
+                </ul>
+
+                <div class="code-block">
+<span class="code-comment">// حل بسيط (قد يسبب جمود!)</span>
+chopstick[5]; <span class="code-comment">// سيمافورات مهيأة إلى ١</span>
+
+<span class="code-keyword">do</span> {
+    <span class="code-function">wait</span>(chopstick[i]);
+    <span class="code-function">wait</span>(chopstick[(i+1) % 5]);
+    
+    <span class="code-comment">// تناول الطعام</span>
+    
+    <span class="code-function">signal</span>(chopstick[i]);
+    <span class="code-function">signal</span>(chopstick[(i+1) % 5]);
+    
+    <span class="code-comment">// التفكير</span>
+} <span class="code-keyword">while</span> (<span class="code-keyword">true</span>);
+
+<span class="code-comment">// المشكلة: جمود إذا التقط كل فيلسوف العود الأيسر!</span>
+                </div>
+
+                <div class="example-box">
+                    <h4>حلول لمنع الجمود:</h4>
+                    <ul>
+                        <li>السماح بأقصى ٤ فلاسفة على الطاولة</li>
+                        <li>السماح بالتقاط العيدان فقط إذا كان كلاهما متاحًا</li>
+                        <li>الفلاسفة الفرديون يلتقطون اليسار أولاً، الزوجيون يلتقطون اليمين أولاً</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- القسم 8: المراقبات -->
+        <section>
+            <h2>٦.٨ المراقبات</h2>
+            
+            <div class="monitor-diagram">
+                <h3>هيكل المراقب</h3>
+                <div class="monitor-box">
+                    <p><strong>البيانات المشتركة</strong></p>
+                    <p>↓</p>
+                    <p><strong>العمليات/الإجراءات</strong></p>
+                    <p>↓</p>
+                    <p><strong>كود التهيئة</strong></p>
+                    <p>↓</p>
+                    <p><strong>قائمة انتظار الدخول</strong></p>
+                </div>
+            </div>
+
+            <div class="concept-box">
+                <p>تجريد عالي المستوى يوفر آلية ملائمة وفعالة لمزامنة العمليات. يمكن لعملية واحدة فقط أن تكون نشطة داخل المراقب في كل مرة.</p>
+            </div>
+
+            <h3>حل المراقب لمشكلة الفلاسفة</h3>
+            <div class="code-block">
+<span class="code-keyword">monitor</span> DiningPhilosophers {
+    <span class="code-keyword">enum</span> {THINKING, HUNGRY, EATING} state[5];
+    condition self[5];
+    
+    <span class="code-keyword">void</span> <span class="code-function">pickup</span>(<span class="code-keyword">int</span> i) {
+        state[i] = HUNGRY;
+        <span class="code-function">test</span>(i);
+        <span class="code-keyword">if</span> (state[i] != EATING)
+            self[i].<span class="code-function">wait</span>();
+    }
+    
+    <span class="code-keyword">void</span> <span class="code-function">putdown</span>(<span class="code-keyword">int</span> i) {
+        state[i] = THINKING;
+        <span class="code-function">test</span>((i + 4) % 5);
+        <span class="code-function">test</span>((i + 1) % 5);
+    }
+    
+    <span class="code-keyword">void</span> <span class="code-function">test</span>(<span class="code-keyword">int</span> i) {
+        <span class="code-keyword">if</span> ((state[(i+4)%5] != EATING) &&
+            (state[i] == HUNGRY) &&
+            (state[(i+1)%5] != EATING)) {
+            state[i] = EATING;
+            self[i].<span class="code-function">signal</span>();
+        }
+    }
+}
+            </div>
+        </section>
+
+        <!-- القسم 9: الجمود والتجويع -->
+        <section>
+            <h2>٦.٩ الجمود والتجويع</h2>
+            
+            <div class="deadlock-diagram">
+                <h3>⚠️ مثال الجمود</h3>
+                <p>عمليتان أو أكثر تنتظران إلى أجل غير مسمى لحدث لا يمكن أن يسببه إلا إحدى العمليات المنتظرة.</p>
+                
+                <div class="code-block">
+<span class="code-comment">// مثال جمود مع سيمافورين</span>
+Semaphore S = 1, Q = 1;
+
+<span class="code-comment">// عملية P0</span>        <span class="code-comment">// عملية P1</span>
+<span class="code-function">wait</span>(S);           <span class="code-function">wait</span>(Q);
+<span class="code-function">wait</span>(Q);           <span class="code-function">wait</span>(S);
+   ...                ...
+<span class="code-function">signal</span>(S);         <span class="code-function">signal</span>(Q);
+<span class="code-function">signal</span>(Q);         <span class="code-function">signal</span>(S);
+                </div>
+                <p>P0 تنتظر Q (ممسوك من قبل P1)، P1 تنتظر S (ممسوك من قبل P0) → <strong>جمود!</strong></p>
+            </div>
+
+            <div class="warning-box">
+                <h4>⚠️ التجويع</h4>
+                <p>حجب غير محدد. عملية قد لا تُزال أبدًا من قائمة انتظار السيمافور التي علقت فيها.</p>
+            </div>
+
+            <h3>انعكاس الأولوية</h3>
+            <div class="concept-box">
+                <p>عملية ذات أولوية عالية تُستبق بشكل غير مباشر بواسطة عملية ذات أولوية منخفضة تمتلك قفلًا تحتاجه العملية ذات الأولوية العالية.</p>
+                <p><strong>الحل:</strong> بروتوكول وراثة الأولوية</p>
+            </div>
+        </section>
+
+        <!-- القسم 10: مسائل تطبيقية -->
+        <section>
+            <h2>٦.١٠ مسائل تطبيقية وأسئلة اختبارات</h2>
+            
+            <div class="exam-section">
+                <h3>أسئلة اختيار من متعدد</h3>
+                
+                <div class="exam-question">
+                    <p><strong>س١.</strong> موقف حيث عدة عمليات تصل إلى نفس البيانات في نفس الوقت وتعتمد النتيجة على ترتيب الوصول يسمى:</p>
+                    <ul class="mcq-options">
+                        <li>أ) حالة ديناميكية</li>
+                        <li class="correct-answer">ب) حالة سباق</li>
+                        <li>ج) حالة أساسية</li>
+                        <li>د) حالة حرجة</li>
+                    </ul>
+                </div>
+
+                <div class="exam-question">
+                    <p><strong>س٢.</strong> ما هو الترتيب الصحيح للعمليات لحماية قسم حرج باستخدام سيمافور ثنائي؟</p>
+                    <ul class="mcq-options">
+                        <li>أ) release() متبوعة بـ acquire()</li>
+                        <li>ب) acquire() متبوعة بـ release()</li>
+                        <li class="correct-answer">ج) wait() متبوعة بـ signal()</li>
+                        <li>د) signal() متبوعة بـ wait()</li>
+                    </ul>
+                </div>
+
+                <div class="exam-question">
+                    <p><strong>س٣.</strong> الاستبعاد المتبادل يمكن توفيره بواسطة:</p>
+                    <ul class="mcq-options">
+                        <li>أ) Spinlocks</li>
+                        <li>ب) أقفال Mutex</li>
+                        <li>ج) كل (أ) و (ب)</li>
+                        <li class="correct-answer">د) كل (أ) و (ب)</li>
+                    </ul>
+                </div>
+
+                <div class="exam-question">
+                    <p><strong>س٤.</strong> أي من هذه لا يلبي متطلبات القسم الحرج؟</p>
+                    <ul class="mcq-options">
+                        <li>أ) الاستبعاد المتبادل</li>
+                        <li>ب) التقدم</li>
+                        <li>ج) الانتظار المحدود</li>
+                        <li class="correct-answer">د) كلها تلبي المتطلبات</li>
+                    </ul>
+                </div>
+
+                <div class="exam-question">
+                    <p><strong>س٥.</strong> مشكلة المخزن المؤقت المحدود تُعرف أيضًا باسم:</p>
+                    <ul class="mcq-options">
+                        <li>أ) مشكلة القراء والكتاب</li>
+                        <li>ب) مشكلة الفلاسفة</li>
+                        <li class="correct-answer">ج) مشكلة المنتج-المستهلك</li>
+                        <li>د) لا شيء مما ذكر</li>
+                    </ul>
+                </div>
+
+                <div class="exam-question">
+                    <p><strong>س٦.</strong> في مشكلة الفلاسفة، يحدث الجمود عندما:</p>
+                    <ul class="mcq-options">
+                        <li class="correct-answer">أ) جميع الفلاسفة الخمسة يلتقطون العود الأيسر</li>
+                        <li>ب) ٤ فلاسفة يلتقطون العيدان</li>
+                        <li>ج) ٣ فلاسفة يلتقطون العيدان</li>
+                        <li>د) ٦ فلاسفة يلتقطون العيدان</li>
+                    </ul>
+                </div>
+
+                <h3>أسئلة إجابة قصيرة</h3>
+                
+                <div class="exam-question">
+                    <p><strong>س٧.</strong> بالنظر إلى برنامجين متزامنين يستخدمان سيمافورين S1 (init=1) و S2 (init=0):</p>
+                    <div class="code-block">
+عملية P1:            عملية P2:
+سيمافور S1=1;             سيمافور S1=1;
+سيمافور S2=0;             سيمافور S2=0;
+                      
+while(True) {         while(True) {
+  wait(S2);             wait(S1);
+  print("A");           print("B");
+  signal(S1);           signal(S2);
+}                     }
+                    </div>
+                    <p><strong>ما هو نمط المخرجات؟</strong></p>
+                    <div class="example-box">
+                        <h4>الإجابة:</h4>
+                        <p>P1 ستُحجب بدايةً عند wait(S2). P2 تنفذ wait(S1)، تطبع "B"، ثم تشير S2. يمكن لـ P1 الآن المتابعة، تطبع "A"، تشير S1. النمط: <strong>BABA...</strong></p>
+                    </div>
+                </div>
+
+                <div class="exam-question">
+                    <p><strong>س٨.</strong> متغير مشترك mutex مهيأ إلى ١. كل عملية تنفذ wait(mutex) قبل دخول القسم الحرج و signal(mutex) بعده. ماذا يحدث إذا استبدلت عملية signal(mutex) بـ wait(mutex)؟</p>
+                    <div class="example-box">
+                        <h4>الإجابة:</h4>
+                        <p><strong>سيحدث جمود.</strong> بعد أن تدخل العملية الأولى القسم الحرج وتخرج منه، ستنفذ wait(mutex) مرة أخرى، مما يجعل mutex = -١. لا يمكن لأي عملية أخرى دخول القسم الحرج مرة أخرى.</p>
+                    </div>
+                </div>
+
+                <div class="exam-question">
+                    <p><strong>س٩.</strong> ما هي المتطلبات الثلاثة لحل مشكلة القسم الحرج؟</p>
+                    <div class="example-box">
+                        <h4>الإجابة:</h4>
+                        <ol>
+                            <li><strong>الاستبعاد المتبادل:</strong> عملية واحدة فقط في القسم الحرج في كل مرة</li>
+                            <li><strong>التقدم:</strong> لا يمكن تأجيل اختيار العملية التالية إلى أجل غير مسمى</li>
+                            <li><strong>الانتظار المحدود:</strong> حد لعدد مرات دخول الآخرين للقسم الحرج بعد الطلب</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- القسم 11: المصطلحات الرئيسية -->
+        <section>
+            <h2>٦.١١ المصطلحات الرئيسية والتعريفات</h2>
+            
+            <table>
+                <tr>
+                    <th>المصطلح</th>
+                    <th>التعريف</th>
+                </tr>
+                <tr>
+                    <td><strong>حالة السباق</strong></td>
+                    <td>النتيجة تعتمد على ترتيب تنفيذ العمليات</td>
+                </tr>
+                <tr>
+                    <td><strong>قسم حرج</strong></td>
+                    <td>قطعة كود تصل إلى بيانات مشتركة</td>
+                </tr>
+                <tr>
+                    <td><strong>استبعاد متبادل</strong></td>
+                    <td>عملية واحدة فقط في القسم الحرج في كل مرة</td>
+                </tr>
+                <tr>
+                    <td><strong>سيمافور</strong></td>
+                    <td>متغير صحيح مع عمليات wait/signal ذرية</td>
+                </tr>
+                <tr>
+                    <td><strong>Mutex</strong></td>
+                    <td>سيمافور ثنائي للاستبعاد المتبادل</td>
+                </tr>
+                <tr>
+                    <td><strong>Spinlock</strong></td>
+                    <td>قفل يستخدم انتظارًا نشطًا</td>
+                </tr>
+                <tr>
+                    <td><strong>جمود</strong></td>
+                    <td>عمليات تنتظر إلى أجل غير مسمى لبعضها البعض</td>
+                </tr>
+                <tr>
+                    <td><strong>تجويع</strong></td>
+                    <td>عملية لا تحصل على موارد أبدًا</td>
+                </tr>
+                <tr>
+                    <td><strong>مراقب</strong></td>
+                    <td>بناء مزامنة عالي المستوى</td>
+                </tr>
+                <tr>
+                    <td><strong>عملية ذرية</strong></td>
+                    <td>عملية تكتمل دون انقطاع</td>
+                </tr>
+                <tr>
+                    <td><strong>انتظار نشط</strong></td>
+                    <td>اختبار مستمر لشرط</td>
+                </tr>
+                <tr>
+                    <td><strong>انعكاس الأولوية</strong></td>
+                    <td>عملية منخفضة الأولوية تحجب عملية عالية الأولوية</td>
+                </tr>
+            </table>
+        </section>
+
+        <!-- أماكن الصور -->
+        <section>
+            <h2>٦.١٢ مخططات من الشرائح</h2>
+            
+            <div class="image-placeholder">
+                <h4>📊 توضيح حالة السباق</h4>
+                <p>[إدراج مخطط يظهر الوصول المتزامن إلى عداد مشترك]</p>
+            </div>
+
+            <div class="image-placeholder">
+                <h4>📊 طاولة الفلاسفة</h4>
+                <p>[إدراج مخطط من Chapter_6.pdf يظهر ٥ فلاسفة مع أعواد الطعام]</p>
+            </div>
+
+            <div class="image-placeholder">
+                <h4>📊 هيكل المراقب</h4>
+                <p>[إدراج مخطط تخطيطي للمراقب]</p>
+            </div>
+
+            <div class="image-placeholder">
+                <h4>📊 مخزن المنتج-المستهلك المؤقت</h4>
+                <p>[إدراج تصور للمخزن المؤقت المحدود]</p>
+            </div>
+
+            <div class="warning-box">
+                <p><strong>ملاحظة:</strong> يرجى توفير المخططات الفعلية من شرائح Chapter_6.pdf لاستبدال هذه العناصر النائبة.</p>
+            </div>
+        </section>
+
+        <footer>
+            <p>CS330 - أنظمة التشغيل</p>
+            <p>الفصل ٦: مزامنة العمليات</p>
+            <p><strong>إعداد: شوق العمران</strong></p>
+        </footer>
+    </div>
+</body>
+</html>

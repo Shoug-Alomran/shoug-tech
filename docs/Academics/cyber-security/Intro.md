@@ -23,7 +23,7 @@ how weaknesses can be identified and mitigated.
     Covers cryptography, system security, web security, and
     architecture-level security. Includes structured notes and quizzes.
 
-    [:octicons-arrow-right-24: View CYS401](CYS401/Intro.md)
+    [:octicons-arrow-right-24: View CYS401](CYS401/intro.md)
 
 </div>
 

@@ -7,11 +7,11 @@
 
 إذا لم يتم تحميل العرض المضمن بشكل صحيح، افتح الاختبار مباشرة.
 
-- [افتح اختبار منتصف الفصل الأول في علامة تبويب جديدة](../Midterm-1.html)
+- [افتح اختبار منتصف الفصل الأول في علامة تبويب جديدة](/ar/Academics/computer-science/CS210/Exams/Midterm-1.html)
 
 <div class="iframe-wrap">
   <iframe
-    src="../Midterm-1.html"
+    src="/ar/Academics/computer-science/CS210/Exams/Midterm-1.html"
     title="اختبار منتصف الفصل الأول"
     loading="lazy"
     referrerpolicy="no-referrer"

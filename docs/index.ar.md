@@ -19,8 +19,8 @@ hide:
 
 <div class="hero-actions" markdown>
 [ابدأ من هنا](start-here.md){ .md-button .md-button--primary }
-[استعرض Learn Hub](Academics/Intro.md){ .md-button }
-[شاهد ملفي المهني](career-development/Intro.md){ .md-button }
+[استعرض Learn Hub](Academics/intro.md){ .md-button }
+[شاهد ملفي المهني](/ar/career-development/intro/){ .md-button }
 </div>
 
 </div>
@@ -44,7 +44,7 @@ hide:
 
     ملاحظات منظمة وملخصات دراسة في هندسة البرمجيات، علوم الحاسب، والأمن السيبراني.
 
-    [:octicons-arrow-right-24: ادخل على Learn Hub](Academics/Intro.md)
+    [:octicons-arrow-right-24: ادخل على Learn Hub](Academics/intro.md)
 
 -   :shield: **مسار الأمن السيبراني**
 
@@ -52,7 +52,7 @@ hide:
 
     تجارب عملية في الأمن السيبراني، ملاحظات تحليل التهديدات، ومراجع عملية.
 
-    [:octicons-arrow-right-24: ادخل على مسار الأمن السيبراني](Academics/cyber-security/Intro.md)
+    [:octicons-arrow-right-24: ادخل على مسار الأمن السيبراني](Academics/cyber-security/intro.md)
 
 -   :briefcase: **ملفي المهني**
 
@@ -60,7 +60,7 @@ hide:
 
     مشاريعي المختارة، ورش العمل، والوثائق المهنية.
 
-    [:octicons-arrow-right-24: شوف ملفي المهني](career-development/Intro.md)
+    [:octicons-arrow-right-24: شوف ملفي المهني](/ar/career-development/intro/)
 
 -   :rocket: **Blueprint Studio**
 
@@ -100,9 +100,9 @@ hide:
 ## روابط سريعة
 
 <div class="hero-actions" markdown>
-[ملخصات SE201](Academics/software-engineering/SE201/Intro.md){ .md-button }
-[ملخصات CS340](Academics/computer-science/CS340/Intro.md){ .md-button }
-[مادة CYS401](Academics/cyber-security/CYS401/Intro.md){ .md-button }
+[ملخصات SE201](Academics/software-engineering/SE201/intro.md){ .md-button }
+[ملخصات CS340](Academics/computer-science/CS340/intro.md){ .md-button }
+[مادة CYS401](Academics/cyber-security/CYS401/intro.md){ .md-button }
 [المشاريع](career-development/projects.md){ .md-button }
 [ورش العمل](career-development/Workshops/index.md){ .md-button }
 [خدمات Blueprint](career-development/services.md){ .md-button }

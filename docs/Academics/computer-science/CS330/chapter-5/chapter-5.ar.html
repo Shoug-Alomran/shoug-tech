@@ -1,0 +1,1402 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الفصل ٥: جدولة المعالج - CS330</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f4f4f4;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: white;
+        }
+
+        header {
+            background: linear-gradient(135deg, #ff6b6b 0%, #4ecdc4 100%);
+            color: white;
+            padding: 40px;
+            margin-bottom: 30px;
+            text-align: center;
+            border-radius: 10px;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            color: #ff6b6b;
+            font-size: 1.8em;
+            margin: 35px 0 20px 0;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #4ecdc4;
+        }
+
+        h3 {
+            color: #4ecdc4;
+            font-size: 1.4em;
+            margin: 25px 0 15px 0;
+        }
+
+        /* أنماط مخطط جانت */
+        .gantt-chart {
+            margin: 30px 0;
+            background: #f8f9ff;
+            padding: 20px;
+            border-radius: 10px;
+            overflow-x: auto;
+        }
+
+        .gantt-bar {
+            display: flex;
+            margin: 20px 0;
+            border: 2px solid #333;
+            min-height: 50px;
+            position: relative;
+        }
+
+        .process-slot {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            border-left: 1px solid #666;
+            font-weight: bold;
+            color: white;
+            min-width: 60px;
+        }
+
+        .process-slot:last-child {
+            border-left: none;
+        }
+
+        .p1 { background: #3498db; }
+        .p2 { background: #e74c3c; }
+        .p3 { background: #2ecc71; }
+        .p4 { background: #f39c12; }
+        .p5 { background: #9b59b6; }
+
+        .time-axis {
+            display: flex;
+            margin-top: 5px;
+        }
+
+        .time-mark {
+            flex: 1;
+            text-align: left;
+            font-size: 12px;
+            font-weight: bold;
+            min-width: 60px;
+        }
+
+        /* بطاقات معايير الجدولة */
+        .criteria-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .criteria-card {
+            background: white;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+
+        .criteria-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .criteria-card h4 {
+            color: #ff6b6b;
+            margin-bottom: 10px;
+        }
+
+        /* جدول مقارنة الخوارزميات */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        th {
+            background: #ff6b6b;
+            color: white;
+            padding: 15px;
+            text-align: right;
+        }
+
+        td {
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+        }
+
+        tr:nth-child(even) {
+            background: #f8f9ff;
+        }
+
+        /* صندوق الصيغ */
+        .formula-box {
+            background: #fff8dc;
+            border: 2px solid #ffd700;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .formula {
+            background: #333;
+            color: #fff;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 1.2em;
+        }
+
+        /* كتلة الكود */
+        .code-block {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+        }
+
+        /* صندوق المفاهيم */
+        .concept-box {
+            background: #f0f8ff;
+            border-right: 4px solid #4ecdc4;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .highlight {
+            background: #ffd700;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+
+        /* صندوق الأمثلة */
+        .example-box {
+            background: #e8f8f5;
+            border: 2px solid #27ae60;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        /* صندوق التحذير */
+        .warning-box {
+            background: #fff3cd;
+            border-right: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+        }
+
+        /* جدول العمليات للأمثلة */
+        .process-table {
+            margin: 20px 0;
+        }
+
+        .calculation-table {
+            background: white;
+            border: 2px solid #ddd;
+            margin: 20px 0;
+        }
+
+        .calculation-table th {
+            background: #4ecdc4;
+        }
+
+        /* صندوق الخوارزمية */
+        .algorithm-box {
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            background: #f8f9ff;
+        }
+
+        .algorithm-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            margin: -20px -20px 20px -20px;
+            border-radius: 8px 8px 0 0;
+            text-align: center;
+        }
+
+        /* قسم الاختبار */
+        .exam-section {
+            background: #fff8dc;
+            border: 2px solid #ffd700;
+            padding: 25px;
+            margin: 30px 0;
+            border-radius: 10px;
+        }
+
+        .exam-question {
+            background: white;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .mcq-options {
+            list-style: none;
+            margin-top: 15px;
+            margin-right: 0;
+        }
+
+        .mcq-options li {
+            background: #f8f9ff;
+            padding: 10px;
+            margin: 8px 0;
+            border-radius: 5px;
+            border-right: 3px solid transparent;
+        }
+
+        .correct-answer {
+            background: #d4edda !important;
+            border-right: 3px solid #28a745 !important;
+        }
+
+        /* استباقي مقابل غير استباقي */
+        .comparison-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .comparison-box {
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #ddd;
+        }
+
+        .preemptive {
+            background: #e8f4f8;
+            border-color: #3498db;
+        }
+
+        .nonpreemptive {
+            background: #fff5f5;
+            border-color: #e74c3c;
+        }
+
+        /* مكان الصورة */
+        .image-placeholder {
+            background: #95a5a6;
+            color: white;
+            padding: 60px 20px;
+            text-align: center;
+            border-radius: 10px;
+            margin: 20px 0;
+            border: 2px dashed #7f8c8d;
+        }
+
+        /* قوائم متعددة المستويات */
+        .queue-level {
+            background: linear-gradient(to left, #3498db, #2980b9);
+            color: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        .queue-level.high-priority {
+            background: linear-gradient(to left, #e74c3c, #c0392b);
+        }
+
+        .queue-level.medium-priority {
+            background: linear-gradient(to left, #f39c12, #e67e22);
+        }
+
+        .queue-level.low-priority {
+            background: linear-gradient(to left, #95a5a6, #7f8c8d);
+        }
+
+        footer {
+            background: #ff6b6b;
+            color: white;
+            text-align: center;
+            padding: 25px;
+            margin-top: 40px;
+            border-radius: 10px;
+        }
+
+        .subsection {
+            margin-right: 20px;
+            padding-right: 20px;
+            border-right: 2px solid #ecf0f1;
+        }
+
+        /* تصميم متجاوب */
+        @media (max-width: 768px) {
+            .comparison-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .criteria-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+  <script src="/javascripts/standalone-theme.js"></script>
+<style id="codex-responsive-html">
+  html { width: 100%; }
+  body {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+  img, svg, video, canvas, iframe {
+    max-width: 100% !important;
+    height: auto;
+  }
+  table {
+    max-width: 100% !important;
+  }
+  .table-wrap, .table-scroll, .overflow-x, .comparison-table, .acm-table, .matrix-wrap {
+    max-width: 100% !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+  }
+  header,
+  main,
+  .header-inner,
+  .hero,
+  .hero-inner,
+  .content,
+  .container,
+  .wrap,
+  .page,
+  .page-shell,
+  .page-wrap,
+  .layout,
+  .content-wrap,
+  .exam-container,
+  .quiz-container,
+  .cheat-sheet,
+  .toc,
+  .section,
+  .section-body,
+  .card,
+  .panel {
+    width: min(100%, calc(100vw - 24px)) !important;
+    max-width: min(1600px, calc(100vw - 24px)) !important;
+  }
+  @media (max-width: 768px) {
+    header,
+    main,
+    .header-inner,
+    .hero,
+    .hero-inner,
+    .content,
+    .container,
+    .wrap,
+    .page,
+    .page-shell,
+    .page-wrap,
+    .layout,
+    .content-wrap,
+    .exam-container,
+    .quiz-container,
+    .cheat-sheet,
+    .toc,
+    .section,
+    .section-body,
+    .card,
+    .panel {
+      width: min(100%, calc(100vw - 16px)) !important;
+      max-width: min(100%, calc(100vw - 16px)) !important;
+    }
+    body {
+      overflow-x: hidden;
+    }
+  }
+</style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>الفصل ٥: جدولة المعالج</h1>
+            <p style="font-size: 1.2em;">CS330 - أنظمة التشغيل</p>
+            <p>خوارزميات الجدولة، مقاييس الأداء، والتحليل</p>
+        </header>
+
+        <!-- القسم 1: المفاهيم الأساسية -->
+        <section>
+            <h2>٥.١ المفاهيم الأساسية</h2>
+            
+            <div class="concept-box">
+                <p><span class="highlight">جدولة المعالج</span> هي أساس أنظمة التشغيل متعددة البرمجة. بتبديل المعالج بين العمليات، يمكن لنظام التشغيل جعل الكمبيوتر أكثر إنتاجية.</p>
+            </div>
+
+            <h3>دورة انفجار المعالج والإدخال/الإخراج</h3>
+            <div class="subsection">
+                <p>تنفيذ العملية يتكون من دورة من تنفيذ المعالج وانتظار الإدخال/الإخراج:</p>
+                <ul>
+                    <li><strong>انفجار المعالج:</strong> عندما يتم تنفيذ العملية في المعالج</li>
+                    <li><strong>انفجار الإدخال/الإخراج:</strong> عندما تنتظر العملية عملية إدخال/إخراج</li>
+                </ul>
+                <p>تنفيذ العملية يبدأ بانفجار معالج، يتبعه انفجار إدخال/إخراج، ثم انفجار معالج آخر، وهكذا.</p>
+            </div>
+
+            <h3>جدول المعالج</h3>
+            <div class="concept-box">
+                <p><span class="highlight">جدول المعالج</span> يختار من بين العمليات في قائمة الانتظار الجاهزة ويخصص نواة معالج لواحدة منها.</p>
+            </div>
+
+            <h3>الموزع</h3>
+            <div class="concept-box">
+                <p><span class="highlight">الموزع</span> يعطي التحكم في المعالج للعملية التي اختارها الجدول. هذا يتضمن:</p>
+                <ul>
+                    <li>تبديل السياق</li>
+                    <li>التحول إلى وضع المستخدم</li>
+                    <li>القفز إلى الموقع المناسب في برنامج المستخدم</li>
+                </ul>
+                <p><strong>كمون التوزيع:</strong> الوقت الذي يستغرقه الموزع لإيقاف عملية وبدء تشغيل أخرى.</p>
+            </div>
+        </section>
+
+        <!-- القسم 2: معايير الجدولة -->
+        <section>
+            <h2>٥.٢ معايير الجدولة</h2>
+            
+            <div class="criteria-grid">
+                <div class="criteria-card">
+                    <h4>⚙️ استغلال المعالج</h4>
+                    <p>إبقاء المعالج مشغولاً قدر الإمكان. في الأنظمة الحقيقية، يجب أن يتراوح من ٤٠٪ (تحميل خفيف) إلى ٩٠٪ (تحميل ثقيل).</p>
+                </div>
+                
+                <div class="criteria-card">
+                    <h4>📊 الإنتاجية</h4>
+                    <p>عدد العمليات التي تكمل التنفيذ لكل وحدة زمنية. الأكبر هو الأفضل.</p>
+                </div>
+                
+                <div class="criteria-card">
+                    <h4>⏱️ زمن الإنجاز</h4>
+                    <p>مقدار الوقت لتنفيذ عملية معينة. مجموع الفترات التي تقضيها في الانتظار، قائمة الانتظار الجاهزة، التنفيذ، وأداء الإدخال/الإخراج.</p>
+                </div>
+                
+                <div class="criteria-card">
+                    <h4>⏳ زمن الانتظار</h4>
+                    <p>مقدار الوقت الذي قضته العملية في الانتظار في قائمة الانتظار الجاهزة.</p>
+                </div>
+                
+                <div class="criteria-card">
+                    <h4>💬 زمن الاستجابة</h4>
+                    <p>الوقت من تقديم الطلب حتى ظهور أول استجابة. مهم للأنظمة التفاعلية.</p>
+                </div>
+            </div>
+
+            <div class="formula-box">
+                <h3>الصيغ الرئيسية:</h3>
+                <div class="formula">
+                    زمن الإنجاز = وقت الإكمال - وقت الوصول
+                </div>
+                <div class="formula">
+                    زمن الانتظار = زمن الإنجاز - وقت الانفجار
+                </div>
+                <div class="formula">
+                    زمن الاستجابة = أول وقت معالج - وقت الوصول
+                </div>
+            </div>
+
+            <h3>معايير التحسين</h3>
+            <table>
+                <tr>
+                    <th>المعيار</th>
+                    <th>هدف التحسين</th>
+                </tr>
+                <tr>
+                    <td>استغلال المعالج</td>
+                    <td>تعظيم</td>
+                </tr>
+                <tr>
+                    <td>الإنتاجية</td>
+                    <td>تعظيم</td>
+                </tr>
+                <tr>
+                    <td>زمن الإنجاز</td>
+                    <td>تقليل</td>
+                </tr>
+                <tr>
+                    <td>زمن الانتظار</td>
+                    <td>تقليل</td>
+                </tr>
+                <tr>
+                    <td>زمن الاستجابة</td>
+                    <td>تقليل</td>
+                </tr>
+            </table>
+        </section>
+
+        <!-- القسم 3: جدولة استباقية مقابل غير استباقية -->
+        <section>
+            <h2>٥.٣ الجدولة الاستباقية مقابل غير الاستباقية</h2>
+            
+            <div class="concept-box">
+                <p>قرارات جدولة المعالج قد تحدث عندما:</p>
+                <ol>
+                    <li>تنتقل العملية من حالة التشغيل إلى حالة الانتظار (طلب إدخال/إخراج)</li>
+                    <li>تنتقل العملية من حالة التشغيل إلى حالة الجاهزية (مقاطعة)</li>
+                    <li>تنتقل العملية من حالة الانتظار إلى حالة الجاهزية (اكتمال إدخال/إخراج)</li>
+                    <li>تنتهي العملية</li>
+                </ol>
+            </div>
+
+            <div class="comparison-container">
+                <div class="comparison-box nonpreemptive">
+                    <h4>الجدولة غير الاستباقية</h4>
+                    <ul>
+                        <li>الجدولة فقط في الحالتين ١ و ٤</li>
+                        <li>العملية تبقى في المعالج حتى تفرج عنه</li>
+                        <li>لا مقاطعة في منتصف التنفيذ</li>
+                        <li>أمثلة: FCFS, SJF (غير استباقي)</li>
+                    </ul>
+                </div>
+                
+                <div class="comparison-box preemptive">
+                    <h4>الجدولة الاستباقية</h4>
+                    <ul>
+                        <li>الجدولة في كل الحالات (١، ٢، ٣، ٤)</li>
+                        <li>يمكن مقاطعة العملية</li>
+                        <li>زمن استجابة أفضل</li>
+                        <li>أمثلة: RR, SJF (استباقي), Priority</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="warning-box">
+                <h4>⚠️ مهم:</h4>
+                <p>تقريبًا كل أنظمة التشغيل الحديثة بما فيها ويندوز، ماك أو إس، لينكس، ويونكس تستخدم خوارزميات جدولة استباقية.</p>
+            </div>
+        </section>
+
+        <!-- القسم 4: جدولة FCFS -->
+        <section>
+            <h2>٥.٤ جدولة من يأتي أولاً يُخدم أولاً (FCFS)</h2>
+            
+            <div class="algorithm-box">
+                <div class="algorithm-header">
+                    <h3>خوارزمية FCFS</h3>
+                </div>
+                <ul>
+                    <li>أبسط خوارزمية جدولة معالج</li>
+                    <li>العملية التي تطلب المعالج أولاً تُخصص لها المعالج أولاً</li>
+                    <li>تُنفذ بقائمة FIFO</li>
+                    <li><strong>غير استباقية</strong></li>
+                </ul>
+            </div>
+
+            <h3>مثال ١: FCFS</h3>
+            <table class="process-table">
+                <tr>
+                    <th>العملية</th>
+                    <th>وقت الانفجار</th>
+                </tr>
+                <tr>
+                    <td>P1</td>
+                    <td>٢٤</td>
+                </tr>
+                <tr>
+                    <td>P2</td>
+                    <td>٣</td>
+                </tr>
+                <tr>
+                    <td>P3</td>
+                    <td>٣</td>
+                </tr>
+            </table>
+
+            <p><strong>ترتيب الوصول: P1, P2, P3</strong></p>
+            
+            <div class="gantt-chart">
+                <h4>مخطط جانت:</h4>
+                <div class="gantt-bar">
+                    <div class="process-slot p1" style="flex: 24;">P1</div>
+                    <div class="process-slot p2" style="flex: 3;">P2</div>
+                    <div class="process-slot p3" style="flex: 3;">P3</div>
+                </div>
+                <div class="time-axis">
+                    <div class="time-mark">٠</div>
+                    <div class="time-mark" style="flex: 24;">٢٤</div>
+                    <div class="time-mark" style="flex: 3;">٢٧</div>
+                    <div class="time-mark" style="flex: 3;">٣٠</div>
+                </div>
+            </div>
+
+            <table class="calculation-table">
+                <tr>
+                    <th>العملية</th>
+                    <th>زمن الانتظار</th>
+                    <th>زمن الإنجاز</th>
+                </tr>
+                <tr>
+                    <td>P1</td>
+                    <td>٠</td>
+                    <td>٢٤</td>
+                </tr>
+                <tr>
+                    <td>P2</td>
+                    <td>٢٤</td>
+                    <td>٢٧</td>
+                </tr>
+                <tr>
+                    <td>P3</td>
+                    <td>٢٧</td>
+                    <td>٣٠</td>
+                </tr>
+                <tr>
+                    <th>المتوسط</th>
+                    <th>١٧</th>
+                    <th>٢٧</th>
+                </tr>
+            </table>
+
+            <h3>تأثير القافلة</h3>
+            <div class="warning-box">
+                <h4>⚠️ تأثير القافلة:</h4>
+                <p>العمليات القصيرة خلف عملية طويلة. كل العمليات الأخرى تنتظر عملية كبيرة واحدة لتترك المعالج. هذا التأثير يؤدي إلى انخفاض استغلال المعالج والأجهزة.</p>
+            </div>
+
+            <div class="exam-section">
+                <h4>📝 تطبيق:</h4>
+                <p>إذا تغير ترتيب الوصول إلى P2, P3, P1:</p>
+                <ul>
+                    <li>متوسط زمن الانتظار = (٦ + ٠ + ٣) / ٣ = ٣</li>
+                    <li>أفضل بكثير من الحالة السابقة!</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- القسم 5: جدولة SJF -->
+        <section>
+            <h2>٥.٥ جدولة الأقصر وظيفةً أولاً (SJF)</h2>
+            
+            <div class="algorithm-box">
+                <div class="algorithm-header">
+                    <h3>خوارزمية SJF</h3>
+                </div>
+                <ul>
+                    <li>ربط كل عملية بطول انفجار المعالج التالي لها</li>
+                    <li>جدولة العملية بأقصر وقت انفجار</li>
+                    <li>SJF مثالي - يعطي أقل متوسط زمن انتظار</li>
+                    <li>يمكن أن تكون استباقية أو غير استباقية</li>
+                </ul>
+            </div>
+
+            <h3>نسختان:</h3>
+            <div class="comparison-container">
+                <div class="comparison-box">
+                    <h4>SJF غير استباقية</h4>
+                    <p>بمجرد إعطاء المعالج لعملية، لا يمكن استباقها حتى تكمل انفجار المعالج الخاص بها</p>
+                </div>
+                <div class="comparison-box">
+                    <h4>SJF استباقية (SRTF)</h4>
+                    <p>إذا وصلت عملية جديدة بطول انفجار معالج أقل من الوقت المتبقي للعملية الحالية، يتم استباقها. تُعرف أيضًا بأقصر وقت متبقي أولاً</p>
+                </div>
+            </div>
+
+            <h3>مثال: SJF استباقية</h3>
+            <table class="process-table">
+                <tr>
+                    <th>العملية</th>
+                    <th>وقت الوصول</th>
+                    <th>وقت الانفجار</th>
+                </tr>
+                <tr>
+                    <td>P1</td>
+                    <td>٠</td>
+                    <td>٨</td>
+                </tr>
+                <tr>
+                    <td>P2</td>
+                    <td>١</td>
+                    <td>٤</td>
+                </tr>
+                <tr>
+                    <td>P3</td>
+                    <td>٢</td>
+                    <td>٩</td>
+                </tr>
+                <tr>
+                    <td>P4</td>
+                    <td>٣</td>
+                    <td>٥</td>
+                </tr>
+            </table>
+
+            <div class="gantt-chart">
+                <h4>مخطط جانت (SJF استباقية):</h4>
+                <div class="gantt-bar">
+                    <div class="process-slot p1" style="flex: 1;">P1</div>
+                    <div class="process-slot p2" style="flex: 4;">P2</div>
+                    <div class="process-slot p4" style="flex: 5;">P4</div>
+                    <div class="process-slot p1" style="flex: 7;">P1</div>
+                    <div class="process-slot p3" style="flex: 9;">P3</div>
+                </div>
+                <div class="time-axis">
+                    <div class="time-mark">٠</div>
+                    <div class="time-mark">١</div>
+                    <div class="time-mark" style="flex: 4;">٥</div>
+                    <div class="time-mark" style="flex: 5;">١٠</div>
+                    <div class="time-mark" style="flex: 7;">١٧</div>
+                    <div class="time-mark" style="flex: 9;">٢٦</div>
+                </div>
+            </div>
+
+            <p>متوسط زمن الانتظار = [(١٠-١) + (١-١) + (١٧-٢) + (٥-٣)] / ٤ = ٢٦/٤ = ٦.٥</p>
+        </section>
+
+        <!-- القسم 6: جدولة الأولويات -->
+        <section>
+            <h2>٥.٦ جدولة الأولويات</h2>
+            
+            <div class="algorithm-box">
+                <div class="algorithm-header">
+                    <h3>خوارزمية الأولويات</h3>
+                </div>
+                <ul>
+                    <li>رقم أولوية (عدد صحيح) يُربط بكل عملية</li>
+                    <li>المعالج يُخصص للعملية ذات الأولوية الأعلى</li>
+                    <li>الاتفاقية: رقم أصغر = أولوية أعلى</li>
+                    <li>يمكن أن تكون استباقية أو غير استباقية</li>
+                </ul>
+            </div>
+
+            <h3>مثال: جدولة الأولويات</h3>
+            <table class="process-table">
+                <tr>
+                    <th>العملية</th>
+                    <th>وقت الانفجار</th>
+                    <th>الأولوية</th>
+                </tr>
+                <tr>
+                    <td>P1</td>
+                    <td>١٠</td>
+                    <td>٣</td>
+                </tr>
+                <tr>
+                    <td>P2</td>
+                    <td>١</td>
+                    <td>١</td>
+                </tr>
+                <tr>
+                    <td>P3</td>
+                    <td>٢</td>
+                    <td>٤</td>
+                </tr>
+                <tr>
+                    <td>P4</td>
+                    <td>١</td>
+                    <td>٥</td>
+                </tr>
+                <tr>
+                    <td>P5</td>
+                    <td>٥</td>
+                    <td>٢</td>
+                </tr>
+            </table>
+
+            <div class="gantt-chart">
+                <h4>مخطط جانت:</h4>
+                <div class="gantt-bar">
+                    <div class="process-slot p2" style="flex: 1;">P2</div>
+                    <div class="process-slot p5" style="flex: 5;">P5</div>
+                    <div class="process-slot p1" style="flex: 10;">P1</div>
+                    <div class="process-slot p3" style="flex: 2;">P3</div>
+                    <div class="process-slot p4" style="flex: 1;">P4</div>
+                </div>
+                <div class="time-axis">
+                    <div class="time-mark">٠</div>
+                    <div class="time-mark">١</div>
+                    <div class="time-mark" style="flex: 5;">٦</div>
+                    <div class="time-mark" style="flex: 10;">١٦</div>
+                    <div class="time-mark" style="flex: 2;">١٨</div>
+                    <div class="time-mark">١٩</div>
+                </div>
+            </div>
+
+            <div class="warning-box">
+                <h4>⚠️ مشكلة - التجويع:</h4>
+                <p>العمليات ذات الأولوية المنخفضة قد لا تُنفذ أبدًا.</p>
+                <h4>✅ حل - التقادم:</h4>
+                <p>مع مرور الوقت، زيادة أولوية العملية.</p>
+            </div>
+        </section>
+
+        <!-- القسم 7: جدولة Round Robin -->
+        <section>
+            <h2>٥.٧ جدولة Round Robin</h2>
+            
+            <div class="algorithm-box">
+                <div class="algorithm-header">
+                    <h3>خوارزمية Round Robin</h3>
+                </div>
+                <ul>
+                    <li>كل عملية تحصل على وحدة صغيرة من وقت المعالج (الكم الزمني q)</li>
+                    <li>بعد انقضاء الوقت، تُستبق العملية وتُضاف إلى نهاية قائمة الانتظار الجاهزة</li>
+                    <li>قائمة الانتظار الجاهزة تُعامل كقائمة دائرية</li>
+                    <li><strong>استباقية</strong></li>
+                    <li>مصممة لأنظمة المشاركة الزمنية</li>
+                </ul>
+            </div>
+
+            <h3>الأداء:</h3>
+            <div class="concept-box">
+                <ul>
+                    <li>إذا كان q كبيرًا → FIFO (FCFS)</li>
+                    <li>إذا كان q صغيرًا → مشاركة المعالج (تظهر كل العمليات وكأنها تعمل في وقت واحد)</li>
+                    <li>يجب أن يكون q كبيرًا بالنسبة لوقت تبديل السياق</li>
+                    <li>q عادة ١٠-١٠٠ ملي ثانية، تبديل السياق أقل من ١٠ ميكروثانية</li>
+                </ul>
+            </div>
+
+            <h3>مثال: Round Robin (q = ٤)</h3>
+            <table class="process-table">
+                <tr>
+                    <th>العملية</th>
+                    <th>وقت الانفجار</th>
+                </tr>
+                <tr>
+                    <td>P1</td>
+                    <td>٢٤</td>
+                </tr>
+                <tr>
+                    <td>P2</td>
+                    <td>٣</td>
+                </tr>
+                <tr>
+                    <td>P3</td>
+                    <td>٣</td>
+                </tr>
+            </table>
+
+            <div class="gantt-chart">
+                <h4>مخطط جانت (الكم الزمني = ٤):</h4>
+                <div class="gantt-bar">
+                    <div class="process-slot p1" style="flex: 4;">P1</div>
+                    <div class="process-slot p2" style="flex: 3;">P2</div>
+                    <div class="process-slot p3" style="flex: 3;">P3</div>
+                    <div class="process-slot p1" style="flex: 4;">P1</div>
+                    <div class="process-slot p1" style="flex: 4;">P1</div>
+                    <div class="process-slot p1" style="flex: 4;">P1</div>
+                    <div class="process-slot p1" style="flex: 4;">P1</div>
+                    <div class="process-slot p1" style="flex: 4;">P1</div>
+                </div>
+                <div class="time-axis">
+                    <div class="time-mark">٠</div>
+                    <div class="time-mark" style="flex: 4;">٤</div>
+                    <div class="time-mark" style="flex: 3;">٧</div>
+                    <div class="time-mark" style="flex: 3;">١٠</div>
+                    <div class="time-mark" style="flex: 4;">١٤</div>
+                    <div class="time-mark" style="flex: 4;">١٨</div>
+                    <div class="time-mark" style="flex: 4;">٢٢</div>
+                    <div class="time-mark" style="flex: 4;">٢٦</div>
+                    <div class="time-mark" style="flex: 4;">٣٠</div>
+                </div>
+            </div>
+
+            <table class="calculation-table">
+                <tr>
+                    <th>العملية</th>
+                    <th>زمن الانتظار</th>
+                    <th>زمن الإنجاز</th>
+                </tr>
+                <tr>
+                    <td>P1</td>
+                    <td>٦</td>
+                    <td>٣٠</td>
+                </tr>
+                <tr>
+                    <td>P2</td>
+                    <td>٤</td>
+                    <td>٧</td>
+                </tr>
+                <tr>
+                    <td>P3</td>
+                    <td>٧</td>
+                    <td>١٠</td>
+                </tr>
+                <tr>
+                    <th>المتوسط</th>
+                    <th>٥.٦٦</th>
+                    <th>١٥.٦٦</th>
+                </tr>
+            </table>
+
+            <div class="warning-box">
+                <h4>⚠️ اختيار الكم الزمني:</h4>
+                <ul>
+                    <li>صغير جدًا: تبديل سياق كثير، استغلال المعالج يقل</li>
+                    <li>كبير جدًا: يصبح FCFS، زمن استجابة سيئ</li>
+                    <li>قاعدة عامة: ٨٠٪ من انفجارات المعالج يجب أن تكون أقصر من q</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- القسم 8: قائمة انتظار متعددة المستويات -->
+        <section>
+            <h2>٥.٨ جدولة قائمة الانتظار متعددة المستويات</h2>
+            
+            <div class="concept-box">
+                <p>قائمة الانتظار الجاهزة مقسمة إلى قوائم منفصلة بناءً على خصائص العملية.</p>
+            </div>
+
+            <h3>مثال قوائم متعددة:</h3>
+            <div class="queue-level high-priority">عمليات النظام (أعلى أولوية)</div>
+            <div class="queue-level high-priority">عمليات تفاعلية</div>
+            <div class="queue-level medium-priority">عمليات تحرير تفاعلية</div>
+            <div class="queue-level medium-priority">عمليات دفعية</div>
+            <div class="queue-level low-priority">عمليات الطلاب (أقل أولوية)</div>
+
+            <h3>الخصائص:</h3>
+            <ul>
+                <li>كل قائمة لها خوارزمية الجدولة الخاصة بها</li>
+                <li>يجب أن تتم الجدولة بين القوائم:
+                    <ul>
+                        <li>جدولة ذات أولوية ثابتة (احتمال التجويع)</li>
+                        <li>شريحة زمنية بين القوائم</li>
+                    </ul>
+                </li>
+                <li>العملية تُخصص بشكل دائم لقائمة واحدة</li>
+            </ul>
+
+            <h3>قائمة انتظار متعددة المستويات بالتغذية الراجعة</h3>
+            <div class="concept-box">
+                <p>تسمح للعملية بالتنقل بين القوائم. الفكرة هي فصل العمليات وفقًا لخصائص انفجارات المعالج الخاصة بها.</p>
+            </div>
+
+            <h4>مثال: ثلاث قوائم</h4>
+            <ul>
+                <li>Q0 – RR بكم زمني ٨ ملي ثانية</li>
+                <li>Q1 – RR بكم زمني ١٦ ملي ثانية</li>
+                <li>Q2 – FCFS</li>
+            </ul>
+
+            <div class="subsection">
+                <h4>الجدولة:</h4>
+                <ol>
+                    <li>وظيفة جديدة تدخل Q0 (أعلى أولوية)</li>
+                    <li>تحصل على ٨ ملي ثانية؛ إذا لم تنته، تنتقل إلى Q1</li>
+                    <li>في Q1 تحصل على ١٦ ملي ثانية؛ إذا لم تنته، تنتقل إلى Q2</li>
+                    <li>Q2 هي FCFS (أقل أولوية)</li>
+                </ol>
+            </div>
+        </section>
+
+        <!-- القسم 9: مقارنة الخوارزميات -->
+        <section>
+            <h2>٥.٩ مقارنة الخوارزميات</h2>
+            
+            <table>
+                <tr>
+                    <th>الخوارزمية</th>
+                    <th>استباقية</th>
+                    <th>المزايا</th>
+                    <th>العيوب</th>
+                    <th>الأفضل لـ</th>
+                </tr>
+                <tr>
+                    <td><strong>FCFS</strong></td>
+                    <td>لا</td>
+                    <td>بسيطة، عادلة</td>
+                    <td>تأثير القافلة، زمن انتظار سيئ</td>
+                    <td>أنظمة الدفعات</td>
+                </tr>
+                <tr>
+                    <td><strong>SJF</strong></td>
+                    <td>كلاهما</td>
+                    <td>أفضل متوسط زمن انتظار</td>
+                    <td>تجويع، تحتاج معرفة وقت الانفجار</td>
+                    <td>عند معرفة أوقات الانفجار</td>
+                </tr>
+                <tr>
+                    <td><strong>Priority</strong></td>
+                    <td>كلاهما</td>
+                    <td>المهام المهمة أولاً</td>
+                    <td>تجويع</td>
+                    <td>أنظمة الزمن الحقيقي</td>
+                </tr>
+                <tr>
+                    <td><strong>Round Robin</strong></td>
+                    <td>نعم</td>
+                    <td>زمن استجابة جيد، عادلة</td>
+                    <td>زمن إنجاز أعلى</td>
+                    <td>أنظمة المشاركة الزمنية</td>
+                </tr>
+            </table>
+        </section>
+
+        <!-- القسم 10: مسائل أمثلة كاملة -->
+        <section>
+            <h2>٥.١٠ مسألة مثال كامل</h2>
+            
+            <div class="exam-section">
+                <h3>مسألة اختبار CS330</h3>
+                <p>تأمل مجموعة العمليات التالية بوقت وصول ٠:</p>
+                
+                <table class="process-table">
+                    <tr>
+                        <th>العملية</th>
+                        <th>وقت الانفجار</th>
+                        <th>الأولوية</th>
+                    </tr>
+                    <tr>
+                        <td>P1</td>
+                        <td>٢</td>
+                        <td>٢</td>
+                    </tr>
+                    <tr>
+                        <td>P2</td>
+                        <td>١</td>
+                        <td>١</td>
+                    </tr>
+                    <tr>
+                        <td>P3</td>
+                        <td>٨</td>
+                        <td>٤</td>
+                    </tr>
+                    <tr>
+                        <td>P4</td>
+                        <td>٤</td>
+                        <td>٢</td>
+                    </tr>
+                    <tr>
+                        <td>P5</td>
+                        <td>٥</td>
+                        <td>٣</td>
+                    </tr>
+                </table>
+
+                <h4>احسب أوقات الانتظار والإنجاز لـ:</h4>
+                <ol>
+                    <li>جدولة الأولويات (الرقم الأصغر = أولوية أعلى)</li>
+                    <li>Round Robin (q = ٢)</li>
+                    <li>SJF</li>
+                </ol>
+
+                <div class="example-box">
+                    <h4>الحل: جدولة الأولويات</h4>
+                    <p>الترتيب: P2 → P1 → P4 → P5 → P3</p>
+                    <table class="calculation-table">
+                        <tr>
+                            <th>العملية</th>
+                            <th>زمن الانتظار</th>
+                            <th>زمن الإنجاز</th>
+                        </tr>
+                        <tr>
+                            <td>P1</td>
+                            <td>١</td>
+                            <td>٣</td>
+                        </tr>
+                        <tr>
+                            <td>P2</td>
+                            <td>٠</td>
+                            <td>١</td>
+                        </tr>
+                        <tr>
+                            <td>P3</td>
+                            <td>١٢</td>
+                            <td>٢٠</td>
+                        </tr>
+                        <tr>
+                            <td>P4</td>
+                            <td>٣</td>
+                            <td>٧</td>
+                        </tr>
+                        <tr>
+                            <td>P5</td>
+                            <td>٧</td>
+                            <td>١٢</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="example-box">
+                    <h4>الحل: Round Robin (q = ٢)</h4>
+                    <p>الترتيب: P1(٢) → P2(١) → P3(٢) → P4(٢) → P5(٢) → P3(٢) → P4(٢) → P5(٢) → P3(٢) → P5(١) → P3(٢)</p>
+                    <table class="calculation-table">
+                        <tr>
+                            <th>العملية</th>
+                            <th>زمن الانتظار</th>
+                            <th>زمن الإنجاز</th>
+                        </tr>
+                        <tr>
+                            <td>P1</td>
+                            <td>٠</td>
+                            <td>٢</td>
+                        </tr>
+                        <tr>
+                            <td>P2</td>
+                            <td>٢</td>
+                            <td>٣</td>
+                        </tr>
+                        <tr>
+                            <td>P3</td>
+                            <td>١٢</td>
+                            <td>٢٠</td>
+                        </tr>
+                        <tr>
+                            <td>P4</td>
+                            <td>٩</td>
+                            <td>١٣</td>
+                        </tr>
+                        <tr>
+                            <td>P5</td>
+                            <td>١٣</td>
+                            <td>١٨</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="example-box">
+                    <h4>الحل: SJF</h4>
+                    <p>الترتيب: P2 → P1 → P4 → P5 → P3</p>
+                    <table class="calculation-table">
+                        <tr>
+                            <th>العملية</th>
+                            <th>زمن الانتظار</th>
+                            <th>زمن الإنجاز</th>
+                        </tr>
+                        <tr>
+                            <td>P1</td>
+                            <td>١</td>
+                            <td>٣</td>
+                        </tr>
+                        <tr>
+                            <td>P2</td>
+                            <td>٠</td>
+                            <td>١</td>
+                        </tr>
+                        <tr>
+                            <td>P3</td>
+                            <td>١٢</td>
+                            <td>٢٠</td>
+                        </tr>
+                        <tr>
+                            <td>P4</td>
+                            <td>٣</td>
+                            <td>٧</td>
+                        </tr>
+                        <tr>
+                            <td>P5</td>
+                            <td>٧</td>
+                            <td>١٢</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- القسم 11: أسئلة تطبيقية -->
+        <section>
+            <h2>٥.١١ أسئلة تطبيقية على طريقة الاختبارات</h2>
+            
+            <div class="exam-section">
+                <h3>أسئلة اختيار من متعدد</h3>
+                
+                <div class="exam-question">
+                    <p><strong>س١.</strong> أي خوارزمية جدولة غير استباقية؟</p>
+                    <ul class="mcq-options">
+                        <li class="correct-answer">أ) FCFS</li>
+                        <li>ب) Round Robin</li>
+                        <li>ج) الأولويات (استباقية)</li>
+                        <li>د) SRTF</li>
+                    </ul>
+                </div>
+
+                <div class="exam-question">
+                    <p><strong>س٢.</strong> أي خوارزمية جدولة تعطي أفضل متوسط زمن استجابة؟</p>
+                    <ul class="mcq-options">
+                        <li>أ) الأقصر وظيفةً أولاً</li>
+                        <li class="correct-answer">ب) Round Robin</li>
+                        <li>ج) FCFS</li>
+                        <li>د) جدولة الأولويات</li>
+                    </ul>
+                </div>
+
+                <div class="exam-question">
+                    <p><strong>س٣.</strong> إذا كان الكم الزمني صغيرًا جدًا في جدولة RR:</p>
+                    <ul class="mcq-options">
+                        <li class="correct-answer">أ) استغلال المعالج سيقل</li>
+                        <li>ب) الإنتاجية ستزيد</li>
+                        <li>ج) زمن الاستجابة سيسوء</li>
+                        <li>د) ستصبح FCFS</li>
+                    </ul>
+                </div>
+
+                <div class="exam-question">
+                    <p><strong>س٤.</strong> أي مشكلة مرتبطة بجدولة الأولويات؟</p>
+                    <ul class="mcq-options">
+                        <li>أ) تأثير القافلة</li>
+                        <li class="correct-answer">ب) التجويع</li>
+                        <li>ج) زمن استجابة سيئ</li>
+                        <li>د) عبء عالٍ</li>
+                    </ul>
+                </div>
+
+                <div class="exam-question">
+                    <p><strong>س٥.</strong> جدولة SJF مثالية لأنها تعطي:</p>
+                    <ul class="mcq-options">
+                        <li class="correct-answer">أ) أقل متوسط زمن انتظار</li>
+                        <li>ب) أقصى استغلال للمعالج</li>
+                        <li>ج) أفضل زمن استجابة</li>
+                        <li>د) أقصى إنتاجية</li>
+                    </ul>
+                </div>
+
+                <h3>أسئلة إجابة قصيرة</h3>
+                
+                <div class="exam-question">
+                    <p><strong>س٦.</strong> عرّف زمن الإنجاز والإنتاجية. (٣ درجات)</p>
+                    <div class="example-box">
+                        <h4>الإجابة:</h4>
+                        <ul>
+                            <li><strong>زمن الإنجاز:</strong> الفاصل الزمني من وقت تقديم العملية إلى وقت اكتمالها.</li>
+                            <li><strong>الإنتاجية:</strong> عدد العمليات التي تكمل تنفيذها لكل وحدة زمنية.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="exam-question">
+                    <p><strong>س٧.</strong> ما هو تأثير القافلة في جدولة FCFS؟ (٢ درجات)</p>
+                    <div class="example-box">
+                        <h4>الإجابة:</h4>
+                        <p>تأثير القافلة يحدث عندما تعلق العمليات القصيرة خلف عملية طويلة. كل العمليات الأخرى تنتظر عملية واحدة كبيرة لتفرج المعالج، مما يؤدي إلى انخفاض استغلال المعالج والأجهزة.</p>
+                    </div>
+                </div>
+
+                <div class="exam-question">
+                    <p><strong>س٨.</strong> كيف يحل التقادم مشكلة التجويع في جدولة الأولويات؟ (٢ درجات)</p>
+                    <div class="example-box">
+                        <h4>الإجابة:</h4>
+                        <p>التقادم يزيد تدريجيًا أولوية العمليات التي تنتظر في النظام لفترة طويلة. هذا يضمن أن حتى العمليات منخفضة الأولوية ستحصل في النهاية على أولوية عالية كافية ليتم تنفيذها.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- القسم 12: المصطلحات الرئيسية -->
+        <section>
+            <h2>٥.١٢ المصطلحات الرئيسية والتعريفات</h2>
+            
+            <table>
+                <tr>
+                    <th>المصطلح</th>
+                    <th>التعريف</th>
+                </tr>
+                <tr>
+                    <td><strong>انفجار معالج</strong></td>
+                    <td>الوقت الذي تقضيه العملية في التنفيذ في المعالج</td>
+                </tr>
+                <tr>
+                    <td><strong>انفجار إدخال/إخراج</strong></td>
+                    <td>الوقت الذي تقضيه العملية في انتظار عملية إدخال/إخراج</td>
+                </tr>
+                <tr>
+                    <td><strong>جدول المعالج</strong></td>
+                    <td>يختار عملية من قائمة الانتظار الجاهزة للتنفيذ</td>
+                </tr>
+                <tr>
+                    <td><strong>الموزع</strong></td>
+                    <td>يعطي التحكم في المعالج للعملية المختارة</td>
+                </tr>
+                <tr>
+                    <td><strong>كمون التوزيع</strong></td>
+                    <td>الوقت لإيقاف عملية وبدء أخرى</td>
+                </tr>
+                <tr>
+                    <td><strong>استباقي</strong></td>
+                    <td>يمكن مقاطعة العملية أثناء التنفيذ</td>
+                </tr>
+                <tr>
+                    <td><strong>غير استباقي</strong></td>
+                    <td>العملية تعمل حتى الاكتمال أو الإدخال/الإخراج</td>
+                </tr>
+                <tr>
+                    <td><strong>الكم الزمني</strong></td>
+                    <td>شريحة الوقت في جدولة Round Robin</td>
+                </tr>
+                <tr>
+                    <td><strong>تأثير القافلة</strong></td>
+                    <td>عمليات قصيرة تنتظر خلف عملية طويلة</td>
+                </tr>
+                <tr>
+                    <td><strong>التجويع</strong></td>
+                    <td>العملية لا تحصل على وقت معالج أبدًا</td>
+                </tr>
+                <tr>
+                    <td><strong>التقادم</strong></td>
+                    <td>زيادة الأولوية بمرور الوقت</td>
+                </tr>
+                <tr>
+                    <td><strong>مخطط جانت</strong></td>
+                    <td>تمثيل مرئي لجدولة العمليات</td>
+                </tr>
+            </table>
+        </section>
+
+        <!-- أماكن الصور -->
+        <section>
+            <h2>٥.١٣ مخططات من الشرائح</h2>
+            
+            <div class="image-placeholder">
+                <h4>📊 دورة انفجار المعالج والإدخال/الإخراج</h4>
+                <p>[إدراج مخطط يظهر انفجارات المعالج والإدخال/الإخراج المتناوبة]</p>
+            </div>
+
+            <div class="image-placeholder">
+                <h4>📊 عملية الموزع</h4>
+                <p>[إدراج مخطط تبديل الموزع من الشرائح]</p>
+            </div>
+
+            <div class="image-placeholder">
+                <h4>📊 قائمة انتظار متعددة المستويات بالتغذية الراجعة</h4>
+                <p>[إدراج مخطط قائمة انتظار متعددة المستويات]</p>
+            </div>
+
+            <div class="warning-box">
+                <p><strong>ملاحظة:</strong> يرجى توفير المخططات الفعلية من شرائح Chapter_5.pdf لاستبدال هذه العناصر النائبة.</p>
+            </div>
+        </section>
+
+        <footer>
+            <p>CS330 - أنظمة التشغيل</p>
+            <p>الفصل ٥: جدولة المعالج</p>
+            <p><strong>إعداد: شوق العمران</strong></p>
+        </footer>
+    </div>
+</body>
+</html>

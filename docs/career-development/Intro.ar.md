@@ -10,7 +10,7 @@ description: عرض المشاريع والورش ومنهجية التنفيذ 
 
 > **ملخص القسم:** هذا القسم يوضح جودة التنفيذ والأثر العملي والنمو المهني بطريقة مباشرة.
 
-[عرض السيرة الذاتية](../CV.html){ .md-button .md-button--primary }
+[عرض السيرة الذاتية](/career-development/CV.html){ .md-button .md-button--primary }
 [تواصل معي](mailto:inquiry@shoug-tech.com){ .md-button }
 
 ---

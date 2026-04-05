@@ -310,7 +310,7 @@
           ["الخطة الأكاديمية", url("ar/academic-plan-themes/academic-plan/")],
           ["SE201", url("ar/Academics/software-engineering/SE201/Intro/")],
           ["CS340", url("ar/Academics/computer-science/CS340/Intro/")],
-          ["CYS401", url("ar/Academics/cyber-security/CYS401/Intro/")],
+          ["CYS401", url("ar/Academics/cyber-security/CYS401/intro/")],
           ["التطوير المهني", url("ar/career-development/Intro/")],
           ["خدمات Blueprint", url("ar/career-development/services/")],
           ["Blueprint", "https://blueprint.shoug-tech.com/"]
@@ -322,7 +322,7 @@
           ["Academic Plan", url("academic-plan-themes/academic-plan/")],
           ["SE201", url("Academics/software-engineering/SE201/Intro/")],
           ["CS340", url("Academics/computer-science/CS340/Intro/")],
-          ["CYS401", url("Academics/cyber-security/CYS401/Intro/")],
+          ["CYS401", url("Academics/cyber-security/CYS401/intro/")],
           ["Career Development", url("career-development/Intro/")],
           ["Blueprint Services", url("career-development/services/")],
           ["Blueprint", "https://blueprint.shoug-tech.com/"]

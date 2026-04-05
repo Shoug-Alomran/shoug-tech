@@ -1,0 +1,19 @@
+!!! warning "تنبيه"
+    إنذار : تم ترجمة هذه الصفحة باستخدام الذكاء الاصطناعي.
+
+# الفصل الخامس: جدولة المعالج (CPU Scheduling)
+
+هذه الصفحة تحتوي على مادة الفصل الخامس. استخدمها للمراجعة عن أهداف الجدولة، معاييرها، وخوارزميات جدولة المعالج الشائعة.
+
+إذا ما تحمل العرض بشكل صحيح، افتح الفصل بشكل مباشر.
+
+- [افتح الفصل الخامس في صفحة جديدة](/ar/Academics/computer-science/CS330/chapter-5/chapter-5.html)
+
+<div class="iframe-wrap">
+  <iframe
+    src="/ar/Academics/computer-science/CS330/chapter-5/chapter-5.html"
+    title="الفصل الخامس: جدولة المعالج"
+    loading="lazy"
+    referrerpolicy="no-referrer"
+  ></iframe>
+</div>

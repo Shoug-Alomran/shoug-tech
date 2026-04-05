@@ -4,11 +4,11 @@ This page contains the symbols reference material. Use it for quick revision of 
 
 If the embedded view does not load properly, open the page directly.
 
-- [Open Symbols in a new tab](../symbols.html)
+- [Open Symbols in a new tab](/Academics/computer-science/CS340/symbols.html)
 
 <div class="iframe-wrap">
   <iframe
-    src="../symbols.html"
+    src="/Academics/computer-science/CS340/symbols.html"
     title="Symbols Reference"
     loading="lazy"
     referrerpolicy="no-referrer"

@@ -1,0 +1,19 @@
+!!! warning "تنبيه"
+    إنذار : تم ترجمة هذه الصفحة باستخدام الذكاء الاصطناعي.
+
+# الفصل السادس: SQL المتقدم
+
+هذه الصفحة تحتوي على مادة الفصل السادس. استخدمها للمراجعة عن الاستعلامات المتداخلة (nested queries)، التجميع (aggregation)، المشاهدات (views)، والميزات المتقدمة في SQL.
+
+إذا ما تحمل العرض بشكل صحيح، افتح الفصل بشكل مباشر.
+
+- [افتح الفصل السادس في صفحة جديدة](/ar/Academics/computer-science/CS340/chapter-6/chapter-6.html)
+
+<div class="iframe-wrap">
+  <iframe
+    src="/ar/Academics/computer-science/CS340/chapter-6/chapter-6.html"
+    title="الفصل السادس: SQL المتقدم"
+    loading="lazy"
+    referrerpolicy="no-referrer"
+  ></iframe>
+</div>

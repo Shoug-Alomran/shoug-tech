@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الفصل ٢: نموذج ER - خريطة ذهنية</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            color: #e0e0e0;
+            padding: 2rem;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        h1 {
+            font-size: 3rem;
+            background: linear-gradient(135deg, #10b981, #06b6d4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: #94a3b8;
+            font-size: 1.2rem;
+        }
+
+        .node {
+            margin-bottom: 1rem;
+        }
+
+        .node-header {
+            background: linear-gradient(135deg, #10b981, #059669);
+            border-right: 4px solid #34d399;
+            border-left: none;
+            padding: 1rem 1.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .node-header:hover {
+            transform: translateX(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+        }
+
+        .node.level-1 .node-header {
+            background: linear-gradient(135deg, #0d9488, #0f766e);
+            border-right-color: #14b8a6;
+            margin-right: 2rem;
+            margin-left: 0;
+        }
+
+        .node.level-2 .node-header {
+            background: linear-gradient(135deg, #0891b2, #0e7490);
+            border-right-color: #22d3ee;
+            margin-right: 4rem;
+            margin-left: 0;
+        }
+
+        .node.level-3 .node-header {
+            background: linear-gradient(135deg, #0284c7, #0369a1);
+            border-right-color: #38bdf8;
+            margin-right: 6rem;
+            margin-left: 0;
+        }
+
+        .icon {
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .chevron {
+            margin-right: auto;
+            margin-left: 0;
+            transition: transform 0.3s ease;
+            font-size: 1.2rem;
+        }
+
+        .node.open .chevron {
+            transform: rotate(-90deg);
+        }
+
+        .node-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .node-content {
+            display: none;
+            margin-right: 2rem;
+            margin-left: 0;
+            margin-top: 1rem;
+            animation: slideDown 0.3s ease;
+        }
+
+        .node.open .node-content {
+            display: block;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .content-box {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            transition: box-shadow 0.3s ease;
+        }
+
+        .content-box:hover {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .content-title {
+            color: #fbbf24;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.75rem;
+        }
+
+        .content-title.green { color: #4ade80; }
+        .content-title.blue { color: #60a5fa; }
+        .content-title.purple { color: #a78bfa; }
+        .content-title.pink { color: #f472b6; }
+
+        .content-list {
+            list-style: none;
+        }
+
+        .content-list li {
+            color: #cbd5e1;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            padding-right: 1.5rem;
+            position: relative;
+            line-height: 1.6;
+        }
+
+        .content-list li:before {
+            content: "•";
+            color: #fbbf24;
+            font-weight: bold;
+            position: absolute;
+            right: 0;
+            left: auto;
+        }
+
+        .diagram-box {
+            background: linear-gradient(135deg, #374151, #1f2937);
+            border: 1px solid #fbbf24;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .diagram-title {
+            color: #fde68a;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .diagram-content {
+            background: #111827;
+            padding: 1rem;
+            border-radius: 0.25rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            color: #cbd5e1;
+            white-space: pre;
+            overflow-x: auto;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 3rem;
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        .highlight {
+            background: rgba(251, 191, 36, 0.1);
+            padding: 0.2rem 0.4rem;
+            border-radius: 0.25rem;
+            color: #fbbf24;
+            font-weight: 600;
+        }
+    </style>
+  <script src="/javascripts/standalone-theme.js"></script>
+<style id="codex-responsive-html">
+  html { width: 100%; }
+  body {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+  img, svg, video, canvas, iframe {
+    max-width: 100% !important;
+    height: auto;
+  }
+  table {
+    max-width: 100% !important;
+  }
+  .table-wrap, .table-scroll, .overflow-x, .comparison-table, .acm-table, .matrix-wrap {
+    max-width: 100% !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+  }
+  header,
+  main,
+  .header-inner,
+  .hero,
+  .hero-inner,
+  .content,
+  .container,
+  .wrap,
+  .page,
+  .page-shell,
+  .page-wrap,
+  .layout,
+  .content-wrap,
+  .exam-container,
+  .quiz-container,
+  .cheat-sheet,
+  .toc,
+  .section,
+  .section-body,
+  .card,
+  .panel {
+    width: min(100%, calc(100vw - 24px)) !important;
+    max-width: min(1600px, calc(100vw - 24px)) !important;
+  }
+  @media (max-width: 768px) {
+    header,
+    main,
+    .header-inner,
+    .hero,
+    .hero-inner,
+    .content,
+    .container,
+    .wrap,
+    .page,
+    .page-shell,
+    .page-wrap,
+    .layout,
+    .content-wrap,
+    .exam-container,
+    .quiz-container,
+    .cheat-sheet,
+    .toc,
+    .section,
+    .section-body,
+    .card,
+    .panel {
+      width: min(100%, calc(100vw - 16px)) !important;
+      max-width: min(100%, calc(100vw - 16px)) !important;
+    }
+    body {
+      overflow-x: hidden;
+    }
+  }
+</style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>التصميم المفاهيمي (نموذج ER)</h1>
+            <p class="subtitle">الفصل الثاني - دليل كامل لنموذج العلاقات بين الكيانات</p>
+        </header>
+
+        <main id="mindmap">
+            <!-- المحتوى راح يتولد بواسطة JavaScript -->
+        </main>
+
+        <footer>
+            <p>اضغط على أي قسم لتوسيعه/طيّه • مرجع كامل لنموذج ER</p>
+        </footer>
+    </div>
+
+    <script>
+        const mindmapData = [
+            {
+                title: "نظرة عامة على التصميم المفاهيمي",
+                icon: "🗄️",
+                level: 0,
+                open: true,
+                content: [
+                    {
+                        title: "الغرض",
+                        color: "green",
+                        items: [
+                            "تصميم قاعدة البيانات قبل التنفيذ",
+                            "الاتفاق على الهيكل قبل تحديد طريقة التنفيذ",
+                            "نأخذ في الاعتبار: الكيانات اللي بنمثلها، العلاقات، القيود",
+                            "نوصل لتصميم جيد باستخدام معايير رسمية",
+                            "مخططات ER تنترجم إلى مخطط علائقي"
+                        ]
+                    },
+                    {
+                        title: "أسئلة رئيسية",
+                        color: "blue",
+                        items: [
+                            "وش الكيانات اللي لازم تكون جزء من التطبيق؟",
+                            "كيف نربطهم ببعض؟",
+                            "وش القواعد/القيود الموجودة في المجال؟",
+                            "كيف نوصل لتصاميم جيدة؟"
+                        ]
+                    }
+                ]
+            },
+            {
+                title: "المخططات والحالات",
+                icon: "📦",
+                level: 0,
+                open: true,
+                content: [
+                    {
+                        title: "المخطط (الهيكل المنطقي)",
+                        items: [
+                            "تصميم قاعدة البيانات - الهيكل",
+                            "مثال: الطالب يدرس مقرر",
+                            "المخطط المنطقي: التصميم على المستوى المنطقي",
+                            "المخطط المادي: التصميم على مستوى التخزين",
+                            "المخطط الخارجي: طرق عرض لمستخدمين مختلفين",
+                            "المخطط يتغير نادرًا جدًا"
+                        ]
+                    },
+                    {
+                        title: "الحالة (بيانات في لحظة معينة)",
+                        color: "green",
+                        items: [
+                            "البيانات الفعلية في لحظة زمنية محددة",
+                            "ملء قاعدة البيانات بالبيانات = إنشاء حالات",
+                            "حالة قاعدة البيانات تتغير كل ما نحدّثها",
+                            "حالة قاعدة البيانات: لقطة حالية لكل البيانات"
+                        ]
+                    }
+                ]
+            },
+            {
+                title: "الكيانات وأنواع الكيانات",
+                icon: "⬜",
+                level: 0,
+                open: true,
+                content: [
+                    {
+                        title: "كيان",
+                        items: [
+                            "شيء في العالم الحقيقي يمكن تمييزه عن غيره",
+                            "عادةً يُمثَّل بأسماء",
+                            "أمثلة: طالب معين، مقرر معين، مشروع معين",
+                            "له خصائص تصفه"
+                        ]
+                    },
+                    {
+                        title: "نوع الكيان (مجموعة كيانات)",
+                        color: "green",
+                        items: [
+                            "تجميع لكيانات متشابهة",
+                            "مثال: الموظف هو مجموعة كيانات لكل الموظفين",
+                            "كل الكيانات في المجموعة عندها نفس الخصائص",
+                            "كل كيان عنده خاصية مفتاح (معرّف فريد)",
+                            "يظهر في مخططات ER كمستطيل"
+                        ]
+                    },
+                    {
+                        title: "ترميز ER",
+                        isDiagram: true,
+                        content: "[الموظف] ← مستطيل يمثل نوع كيان"
+                    }
+                ]
+            },
+            {
+                title: "الخصائص",
+                icon: "⭕",
+                level: 0,
+                open: true,
+                children: [
+                    {
+                        title: "بسيطة vs مركبة",
+                        icon: "⭕",
+                        level: 1,
+                        content: [
+                            {
+                                title: "خصائص بسيطة",
+                                color: "blue",
+                                items: [
+                                    "قيمة ذرية واحدة",
+                                    "ما تنقسم لأجزاء أصغر",
+                                    "أمثلة: الرقم_الضريبي، الجنس، العمر",
+                                    "تظهر في مخططات ER كشكل بيضاوي"
+                                ]
+                            },
+                            {
+                                title: "خصائص مركبة",
+                                color: "purple",
+                                items: [
+                                    "تقدر تنقسم لأجزاء أصغر",
+                                    "تشكل هرمية",
+                                    "مثال: الاسم (الاسم_الأول، الاسم_الأوسط، الاسم_الأخير)",
+                                    "مثال: العنوان (الشارع(الرقم، اسم_الشارع)، المدينة، المنطقة، الرمز_البريدي)",
+                                    "المكونات تظهر متصلة بالشكل البيضاوي الرئيسي"
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        title: "أحادية vs متعددة القيم",
+                        icon: "⭕",
+                        level: 1,
+                        content: [
+                            {
+                                title: "أحادية القيمة",
+                                color: "blue",
+                                items: [
+                                    "قيمة واحدة لكل كيان",
+                                    "النوع الأكثر شيوعًا",
+                                    "مثال: تاريخ_الميلاد، الرقم_الضريبي"
+                                ]
+                            },
+                            {
+                                title: "خصائص متعددة القيم",
+                                color: "purple",
+                                items: [
+                                    "مجموعة من القيم لنفس الكيان",
+                                    "مثال: ألوان السيارة - {اللون}",
+                                    "مثال: الشهادات الجامعية - {الشهادة_الجامعية}",
+                                    "ممكن يكون لها حدود: {اللون}1..3 (حد أدنى ١، حد أقصى ٣)",
+                                    "تظهر في مخططات ER كشكل بيضاوي مزدوج"
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        title: "مخزنة vs مشتقة",
+                        icon: "⭕",
+                        level: 1,
+                        content: [
+                            {
+                                title: "خصائص مخزنة",
+                                color: "blue",
+                                items: [
+                                    "القيمة مخزنة في قاعدة البيانات",
+                                    "مثال: تاريخ_الميلاد",
+                                    "القيمة الأساسية اللي تُشتق منها قيم ثانية"
+                                ]
+                            },
+                            {
+                                title: "خصائص مشتقة",
+                                color: "purple",
+                                items: [
+                                    "القيمة ممكن تحسب من خصائص ثانية",
+                                    "مثال: العمر (مشتق من تاريخ_الميلاد والتاريخ الحالي)",
+                                    "مثال: عدد_الموظفين (يحسب من العلاقات)",
+                                    "تظهر في مخططات ER كشكل بيضاوي متقطع"
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        title: "خصائص معقدة",
+                        icon: "⭕",
+                        level: 1,
+                        content: [
+                            {
+                                title: "معقدة (متداخلة)",
+                                color: "pink",
+                                items: [
+                                    "دمج بين مركبة ومتعددة القيم",
+                                    "يمكن أن تتداخل بشكل تعسفي (لكن نادر)",
+                                    "مثال: {الدرجات_السابقة(الكلية، السنة، الدرجة، المجال)}",
+                                    "درجات متعددة، كل وحدة فيها ٤ مكونات",
+                                    "عمومًا مو تقنية تصميم جيدة"
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                title: "المفاتيح",
+                icon: "🔑",
+                level: 0,
+                open: true,
+                content: [
+                    {
+                        title: "المفتاح الفائق",
+                        items: [
+                            "مجموعة خصائص SK بحيث ما في صفين عندهم نفس قيمة SK",
+                            "يحدد الكيان بشكل فريد",
+                            "مثال: {الولاية، رقم_السيارة، رقم_الهيكل} للسيارة"
+                        ]
+                    },
+                    {
+                        title: "المفتاح (المفتاح المرشح)",
+                        color: "green",
+                        items: [
+                            "مفتاح فائق أصغر (minimal)",
+                            "حذف أي خاصية → ما يبقى مفتاح فائق",
+                            "مثال: {الولاية، رقم_السيارة} و {رقم_الهيكل} مفاتيح للسيارة",
+                            "المفتاح ⊂ المفتاح_الفائق (كل المفاتيح هي مفاتيح فائقة)"
+                        ]
+                    },
+                    {
+                        title: "المفتاح الأساسي",
+                        color: "blue",
+                        items: [
+                            "مفتاح مرشح نختاره بشكل عشوائي",
+                            "تحته خط في مخططات ER",
+                            "يعطي هوية للصف",
+                            "يستخدم للإشارة إلى الصف من صف ثاني",
+                            "قاعدة: نختار أصغر مفتاح (من ناحية عدد الخصائص)"
+                        ]
+                    },
+                    {
+                        title: "ترميز المفتاح",
+                        isDiagram: true,
+                        content: "[الرقم_الضريبي] ← تحته خط = مفتاح أساسي"
+                    }
+                ]
+            },
+            {
+                title: "العلاقات",
+                icon: "🔗",
+                level: 0,
+                open: true,
+                content: [
+                    {
+                        title: "تعريف العلاقة",
+                        items: [
+                            "تربط ٢+ من الكيانات بمعنى محدد",
+                            "عادةً تُمثَّل بأفعال",
+                            "مثال: الموظف 'يعمل على' مشروع",
+                            "مثال: الموظف 'يدير' قسم",
+                            "يمكن أن يكون لها خصائص (خاصة M:N)"
+                        ]
+                    },
+                    {
+                        title: "نوع العلاقة",
+                        color: "green",
+                        items: [
+                            "تجميع لعلاقات من نفس النوع",
+                            "وصف المخطط للعلاقة",
+                            "يحدد: الاسم، الكيانات المشاركة، القيود",
+                            "يظهر في مخططات ER كشكل معين"
+                        ]
+                    },
+                    {
+                        title: "ترميز ER",
+                        isDiagram: true,
+                        content: "[الموظف] —— ◊يعمل_على◊ —— [المشروع]"
+                    }
+                ],
+                children: [
+                    {
+                        title: "درجة العلاقة (Arity)",
+                        icon: "🌳",
+                        level: 1,
+                        content: [
+                            {
+                                title: "أحادية (تكراري)",
+                                color: "blue",
+                                items: [
+                                    "تربط الكيان بنفسه",
+                                    "تسمى علاقة ذاتية المرجع",
+                                    "مثال: الموظف يشرف على موظف",
+                                    "نحتاج أسماء أدوار عشان نفرق بين المشاركات",
+                                    "مثال: دور المشرف مقابل دور المرؤوس"
+                                ]
+                            },
+                            {
+                                title: "ثنائية",
+                                color: "purple",
+                                items: [
+                                    "النوع الأكثر شيوعًا",
+                                    "تربط نوعين من الكيانات",
+                                    "مثال: الموظف يعمل_في قسم",
+                                    "مثال: الطالب يسجل_في مقرر"
+                                ]
+                            },
+                            {
+                                title: "ثلاثية (n-ary)",
+                                color: "pink",
+                                items: [
+                                    "تربط ثلاثة أنواع كيانات أو أكثر",
+                                    "مثال: المورد يورّد قطعة لمشروع",
+                                    "ما تساوي علاقات ثنائية متعددة",
+                                    "القيود أصعب تحددها (n > 2)",
+                                    "أحيانًا نستخدم كيان ضعيف بدالها"
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        title: "قيود الأصلية (Cardinality)",
+                        icon: "⚠️",
+                        level: 1,
+                        content: [
+                            {
+                                title: "واحد-لواحد (1:1)",
+                                items: [
+                                    "كيان في A → على الأكثر ١ كيان في B",
+                                    "كيان في B → على الأكثر ١ كيان في A",
+                                    "مثال: الموظف يدير قسم",
+                                    "موظف واحد يدير قسم واحد على الأكثر",
+                                    "قسم واحد يديره موظف واحد على الأكثر"
+                                ]
+                            },
+                            {
+                                title: "واحد-لأكثر (1:N)",
+                                color: "green",
+                                items: [
+                                    "كيان في A → أي عدد من الكيانات في B",
+                                    "كيان في B → على الأكثر ١ كيان في A",
+                                    "مثال: القسم فيه موظفين",
+                                    "قسم واحد فيه عدة موظفين",
+                                    "موظف واحد يعمل في قسم واحد"
+                                ]
+                            },
+                            {
+                                title: "أكثر-لواحد (N:1)",
+                                color: "blue",
+                                items: [
+                                    "عكس 1:N",
+                                    "كيان في A → على الأكثر ١ كيان في B",
+                                    "كيان في B → أي عدد في A",
+                                    "مثال: الموظفين يعملون_في قسم"
+                                ]
+                            },
+                            {
+                                title: "أكثر-لأكثر (M:N)",
+                                color: "purple",
+                                items: [
+                                    "كيان في A → أي عدد في B",
+                                    "كيان في B → أي عدد في A",
+                                    "مثال: الموظف يعمل_على مشروع",
+                                    "موظف يعمل على عدة مشاريع",
+                                    "مشروع فيه عدة موظفين يعملون عليه"
+                                ]
+                            },
+                            {
+                                title: "أمثلة على الترميز",
+                                isDiagram: true,
+                                content: `1:1 → [كيان] —١— ◊علاقة◊ —١— [كيان]
+1:N → [جهة_الواحد] —١— ◊علاقة◊ —ن— [جهة_الأكثر]
+M:N → [كيان١] —م— ◊علاقة◊ —ن— [كيان٢]`
+                            }
+                        ]
+                    },
+                    {
+                        title: "قيود المشاركة",
+                        icon: "⚠️",
+                        level: 1,
+                        content: [
+                            {
+                                title: "مشاركة كلية (إجبارية)",
+                                items: [
+                                    "كل كيان لازم يشارك في العلاقة",
+                                    "اعتماد وجودي",
+                                    "تظهر كخط مزدوج في مخططات ER",
+                                    "مثال: كل طالب لازم يكون مسجل في ١ مقرر على الأقل",
+                                    "تسمى أيضًا مشاركة إجبارية"
+                                ]
+                            },
+                            {
+                                title: "مشاركة جزئية (اختيارية)",
+                                color: "green",
+                                items: [
+                                    "الكيان ممكن يشارك أو ما يشارك",
+                                    "ما في اعتماد وجودي",
+                                    "تظهر كخط مفرد في مخططات ER",
+                                    "مثال: المقرر يمكن ما يكون فيه أي طالب مسجل",
+                                    "تسمى أيضًا مشاركة اختيارية"
+                                ]
+                            },
+                            {
+                                title: "الترميز",
+                                isDiagram: true,
+                                content: `[المقرر] — ◊يسجل◊ == [الطالب]
+    ↑خط مفرد     ↑خط مزدوج (إجبارية)`
+                            }
+                        ]
+                    },
+                    {
+                        title: "ترميز (min, max)",
+                        icon: "⚠️",
+                        level: 1,
+                        content: [
+                            {
+                                title: "ترميز بديل للقيود",
+                                items: [
+                                    "كل كيان يشارك بعدد يتراوح بين min و max من العلاقات",
+                                    "الافتراضي: (0,n) - ما في قيد",
+                                    "يجب: min ≤ max، min ≥ 0، max ≥ 1",
+                                    "مشتقة من قيود العالم الحقيقي"
+                                ]
+                            },
+                            {
+                                title: "أمثلة",
+                                color: "blue",
+                                items: [
+                                    "الموظف (0,1) يدير قسم (1,1)",
+                                    "→ الموظف يدير ٠ أو ١ قسم",
+                                    "→ القسم يديره بالضبط ١ موظف",
+                                    "الموظف (1,1) يعمل_في قسم (0,n)",
+                                    "→ الموظف يعمل في قسم واحد بالضبط",
+                                    "→ القسم فيه من ٠ إلى عدد غير محدود من الموظفين"
+                                ]
+                            },
+                            {
+                                title: "قراءة (min,max)",
+                                color: "purple",
+                                items: [
+                                    "نقرأ الأرقام جنب نوع الكيان",
+                                    "ننظر بعيدًا عن نوع الكيان",
+                                    "مثال: (1,1) جنب الموظف في علاقة يدير",
+                                    "→ كل موظف يقدر يدير من ١ إلى ١ من الأقسام"
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                title: "الكيانات الضعيفة",
+                icon: "📦",
+                level: 0,
+                open: true,
+                content: [
+                    {
+                        title: "تعريف",
+                        items: [
+                            "كيان بدون خاصية مفتاح",
+                            "معرَّف بالاعتماد على كيان ثاني",
+                            "يجب أن يشارك في علاقة تعريفية (إجبارية)",
+                            "يُعرَّف بـ: مفتاح جزئي + مفتاح الكيان المالك",
+                            "ما يقدر يوجد بدون الكيان المالك"
+                        ]
+                    },
+                    {
+                        title: "المكونات",
+                        color: "green",
+                        items: [
+                            "المالك (كيان المعرِّف): كيان قوي",
+                            "الكيان الضعيف: الكيان المعتمد",
+                            "علاقة تعريفية: تربطهم",
+                            "المفتاح الجزئي: خاصية (أو خصائص) تعرّف بشكل جزئي"
+                        ]
+                    },
+                    {
+                        title: "مثال: تابع (Dependent)",
+                        color: "blue",
+                        items: [
+                            "التابع كيان ضعيف",
+                            "الموظف هو الكيان المالك",
+                            "تابع_لـ هي العلاقة التعريفية",
+                            "اسم_التابع هو المفتاح الجزئي",
+                            "يُعرَّف بـ: (رقم_الموظف، اسم_التابع)"
+                        ]
+                    },
+                    {
+                        title: "ترميز ER",
+                        isDiagram: true,
+                        content: `╔══════════╗  ═══╬═══  ╔═══════════╗
+║ الموظف  ║ ١     ن  ║  تابع   ║
+╚══════════╝  تابع_لـ  ╚═══════════╝
+↑خط مزدوج = كيان ضعيف
+↑معين مزدوج = علاقة تعريفية`
+                    }
+                ]
+            },
+            {
+                title: "مخططات ER - الاصطلاحات",
+                icon: "📋",
+                level: 0,
+                open: true,
+                content: [
+                    {
+                        title: "تسمية",
+                        items: [
+                            "أسماء لأنواع الكيانات والخصائص",
+                            "أفعال لأنواع العلاقات",
+                            "نختار أسماء توحي بالمعنى",
+                            "نقرأ المخططات من اليمين لليسار، من الأعلى للأسفل",
+                            "أنواع الكيانات: بحروف كبيرة (اختياري)",
+                            "الخصائص: بحرف كبير",
+                            "أسماء الأدوار: بحروف صغيرة"
+                        ]
+                    },
+                    {
+                        title: "ملخص الترميز",
+                        color: "green",
+                        items: [
+                            "مستطيل = نوع كيان",
+                            "مستطيل مزدوج = كيان ضعيف",
+                            "شكل بيضاوي = خاصية",
+                            "شكل بيضاوي مزدوج = خاصية متعددة القيم",
+                            "شكل بيضاوي متقطع = خاصية مشتقة",
+                            "معين = علاقة",
+                            "معين مزدوج = علاقة تعريفية",
+                            "تحته خط = مفتاح أساسي / مفتاح جزئي (خط متقطع)"
+                        ]
+                    }
+                ]
+            },
+            {
+                title: "مثال: قاعدة بيانات الشركة",
+                icon: "🏢",
+                level: 0,
+                content: [
+                    {
+                        title: "المتطلبات",
+                        items: [
+                            "الشركة منظمة إلى أقسام",
+                            "كل قسم: اسم، رقم، مدير، تاريخ بداية الإدارة، مواقع",
+                            "القسم يتحكم في مشاريع",
+                            "كل مشروع: اسم، رقم، موقع واحد",
+                            "الموظف: رقم_ضريبي، عنوان، راتب، جنس، تاريخ_الميلاد",
+                            "الموظف يعمل في ١ قسم، ويعمل على عدة مشاريع",
+                            "نحسب عدد الساعات/أسبوع في كل مشروع",
+                            "نتتبع المشرف المباشر",
+                            "كل موظف عنده تابعين (Dependents)",
+                            "التابع: اسم، جنس، تاريخ_الميلاد، صلة القرابة"
+                        ]
+                    },
+                    {
+                        title: "أنواع الكيانات اللي طلعت",
+                        color: "green",
+                        items: [
+                            "قسم",
+                            "مشروع",
+                            "موظف",
+                            "تابع (كيان ضعيف)"
+                        ]
+                    },
+                    {
+                        title: "أنواع العلاقات",
+                        color: "blue",
+                        items: [
+                            "يعمل_في: موظف إلى قسم (N:1)",
+                            "يدير: موظف إلى قسم (1:1)",
+                            "يتحكم_في: قسم إلى مشروع (1:N)",
+                            "يعمل_على: موظف إلى مشروع (M:N)",
+                            "يشرف_على: موظف إلى موظف (1:N، تكراري)",
+                            "تابع_لـ: موظف إلى تابع (1:N، تعريفية)"
+                        ]
+                    }
+                ]
+            },
+            {
+                title: "إرشادات التصميم",
+                icon: "💡",
+                level: 0,
+                content: [
+                    {
+                        title: "أفضل الممارسات",
+                        items: [
+                            "كيان vs خاصية: استخدم كيان إذا كان له عدة خصائص أو علاقات",
+                            "كيان vs علاقة: نمذج كعلاقة إذا كانت تربط كيانات",
+                            "ثنائي vs ثلاثي: استخدم ثنائي إذا ممكن، وثلاثي إذا ضروري",
+                            "تجنب التكرار: لا تخزن نفس المعلومة في أكثر من مكان",
+                            "اختر الأصلية المناسبة: تعكس قيود العالم الحقيقي",
+                            "استخدم الكيانات الضعيفة: لما الكيان يعتمد على ثاني في تعريفه"
+                        ]
+                    }
+                ]
+            }
+        ];
+
+        function createContentBox(box) {
+            if (box.isDiagram) {
+                return `
+                    <div class="diagram-box">
+                        <div class="diagram-title">
+                            📊 ${box.title}
+                        </div>
+                        <div class="diagram-content">${box.content}</div>
+                    </div>
+                `;
+            }
+
+            return `
+                <div class="content-box">
+                    <div class="content-title ${box.color || ''}">${box.title}</div>
+                    <ul class="content-list">
+                        ${box.items.map(item => `<li>${item}</li>`).join('')}
+                    </ul>
+                </div>
+            `;
+        }
+
+        function createNode(node) {
+            const hasChildren = node.children && node.children.length > 0;
+            const hasContent = node.content && node.content.length > 0;
+            const showChevron = hasChildren || hasContent;
+            
+            let html = `
+                <div class="node level-${node.level} ${node.open ? 'open' : ''}" data-node-id="${Math.random()}">
+                    <div class="node-header">
+                        ${showChevron ? '<span class="chevron">▶</span>' : ''}
+                        <span class="icon">${node.icon}</span>
+                        <span class="node-title">${node.title}</span>
+                    </div>
+                    <div class="node-content">
+            `;
+
+            if (hasContent) {
+                html += node.content.map(box => createContentBox(box)).join('');
+            }
+
+            if (hasChildren) {
+                html += node.children.map(child => createNode(child)).join('');
+            }
+
+            html += `
+                    </div>
+                </div>
+            `;
+
+            return html;
+        }
+
+        // Render mind map
+        const mindmapContainer = document.getElementById('mindmap');
+        mindmapContainer.innerHTML = mindmapData.map(node => createNode(node)).join('');
+
+        // Add click handlers
+        document.querySelectorAll('.node-header').forEach(header => {
+            header.addEventListener('click', (e) => {
+                const node = e.currentTarget.parentElement;
+                node.classList.toggle('open');
+            });
+        });
+    </script>
+</body>
+</html>

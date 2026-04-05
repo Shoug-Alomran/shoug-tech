@@ -1,0 +1,1312 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الفصل ٧: الجمود - CS330</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f4f4f4;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: white;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            margin-bottom: 30px;
+            text-align: center;
+            border-radius: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            color: #667eea;
+            font-size: 1.8em;
+            margin: 35px 0 20px 0;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #764ba2;
+        }
+
+        h3 {
+            color: #7c3aed;
+            font-size: 1.4em;
+            margin: 25px 0 15px 0;
+        }
+
+        /* شبكة شروط الجمود */
+        .conditions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .condition-card {
+            background: white;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .condition-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(102,126,234,0.3);
+        }
+
+        .condition-card h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .condition-number {
+            background: #764ba2;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 10px;
+            font-weight: bold;
+        }
+
+        /* رسم تخصيص الموارد */
+        .rag-container {
+            background: #f8f9ff;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            padding: 30px;
+            margin: 30px 0;
+            text-align: center;
+        }
+
+        .rag-visualization {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        .process-node {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: #667eea;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2em;
+            margin: 10px;
+        }
+
+        .resource-node {
+            width: 80px;
+            height: 80px;
+            background: #764ba2;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2em;
+            margin: 10px;
+        }
+
+        /* أنماط الأسهم */
+        .edge {
+            border-top: 3px solid #333;
+            width: 100px;
+            position: relative;
+            margin: 0 10px;
+        }
+
+        .edge::after {
+            content: '▶';
+            position: absolute;
+            left: -10px;
+            top: -11px;
+            color: #333;
+        }
+
+        /* خوارزمية المصرفي */
+        .banker-container {
+            background: #f0f8ff;
+            border: 2px solid #3498db;
+            border-radius: 10px;
+            padding: 25px;
+            margin: 30px 0;
+        }
+
+        /* الجداول */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        th {
+            background: #667eea;
+            color: white;
+            padding: 15px;
+            text-align: right;
+        }
+
+        td {
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+        }
+
+        tr:nth-child(even) {
+            background: #f8f9ff;
+        }
+
+        /* كتل الأكواد */
+        .code-block {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+        }
+
+        .code-comment {
+            color: #95a5a6;
+        }
+
+        .code-keyword {
+            color: #3498db;
+        }
+
+        /* صندوق المفاهيم */
+        .concept-box {
+            background: #e8f5e9;
+            border-right: 4px solid #4caf50;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .warning-box {
+            background: #fff3cd;
+            border-right: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+        }
+
+        .danger-box {
+            background: #ffebee;
+            border-right: 4px solid #f44336;
+            padding: 15px;
+            margin: 20px 0;
+        }
+
+        /* طرق المنع */
+        .prevention-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .prevention-card {
+            background: linear-gradient(135deg, #667eea15, #764ba215);
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        .prevention-card h4 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        /* تصور التسلسل الآمن */
+        .safe-sequence {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .sequence-step {
+            background: #4caf50;
+            color: white;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 25px;
+            font-weight: bold;
+        }
+
+        .sequence-arrow {
+            font-size: 24px;
+            color: #667eea;
+            margin: 0 10px;
+        }
+
+        /* عرض المصفوفات */
+        .matrix-container {
+            display: inline-block;
+            margin: 10px;
+            padding: 15px;
+            background: white;
+            border: 2px solid #667eea;
+            border-radius: 8px;
+        }
+
+        .matrix-title {
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .matrix {
+            font-family: 'Courier New', monospace;
+        }
+
+        .matrix-row {
+            display: flex;
+            justify-content: center;
+            margin: 5px 0;
+        }
+
+        .matrix-cell {
+            width: 30px;
+            text-align: center;
+            margin: 0 5px;
+        }
+
+        /* تصور اكتشاف الجمود */
+        .detection-visual {
+            background: #fff8dc;
+            border: 2px solid #ffd700;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+        }
+
+        .cycle-indicator {
+            background: #ff6b6b;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            display: inline-block;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+
+        /* طرق الاسترداد */
+        .recovery-methods {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .recovery-option {
+            background: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-right: 4px solid #667eea;
+            border-radius: 5px;
+        }
+
+        /* صندوق الأمثلة */
+        .example-box {
+            background: #e8f8f5;
+            border: 2px solid #27ae60;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        /* قسم الاختبار */
+        .exam-section {
+            background: #fff8dc;
+            border: 2px solid #ffd700;
+            padding: 25px;
+            margin: 30px 0;
+            border-radius: 10px;
+        }
+
+        .exam-question {
+            background: white;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .mcq-options {
+            list-style: none;
+            margin-top: 15px;
+            margin-right: 0;
+        }
+
+        .mcq-options li {
+            background: #f8f9ff;
+            padding: 10px;
+            margin: 8px 0;
+            border-radius: 5px;
+            border-right: 3px solid transparent;
+        }
+
+        .correct-answer {
+            background: #d4edda !important;
+            border-right: 3px solid #28a745 !important;
+        }
+
+        /* مخطط الحالة */
+        .state-diagram {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        .state-box {
+            background: white;
+            border: 2px solid #667eea;
+            padding: 20px;
+            margin: 10px;
+            border-radius: 10px;
+            min-width: 150px;
+            text-align: center;
+        }
+
+        .state-box.safe {
+            background: #d4edda;
+            border-color: #28a745;
+        }
+
+        .state-box.unsafe {
+            background: #fff3cd;
+            border-color: #ffc107;
+        }
+
+        .state-box.deadlock {
+            background: #f8d7da;
+            border-color: #dc3545;
+        }
+
+        /* مكان الصورة */
+        .image-placeholder {
+            background: #95a5a6;
+            color: white;
+            padding: 60px 20px;
+            text-align: center;
+            border-radius: 10px;
+            margin: 20px 0;
+            border: 2px dashed #7f8c8d;
+        }
+
+        .highlight {
+            background: #ffd700;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+
+        /* تصميم متجاوب */
+        @media (max-width: 768px) {
+            .conditions-grid,
+            .prevention-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .rag-visualization {
+                flex-direction: column;
+            }
+        }
+
+        footer {
+            background: #667eea;
+            color: white;
+            text-align: center;
+            padding: 25px;
+            margin-top: 40px;
+            border-radius: 10px;
+        }
+    </style>
+  <script src="/javascripts/standalone-theme.js"></script>
+<style id="codex-responsive-html">
+  html { width: 100%; }
+  body {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+  img, svg, video, canvas, iframe {
+    max-width: 100% !important;
+    height: auto;
+  }
+  table {
+    max-width: 100% !important;
+  }
+  .table-wrap, .table-scroll, .overflow-x, .comparison-table, .acm-table, .matrix-wrap {
+    max-width: 100% !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+  }
+  header,
+  main,
+  .header-inner,
+  .hero,
+  .hero-inner,
+  .content,
+  .container,
+  .wrap,
+  .page,
+  .page-shell,
+  .page-wrap,
+  .layout,
+  .content-wrap,
+  .exam-container,
+  .quiz-container,
+  .cheat-sheet,
+  .toc,
+  .section,
+  .section-body,
+  .card,
+  .panel {
+    width: min(100%, calc(100vw - 24px)) !important;
+    max-width: min(1600px, calc(100vw - 24px)) !important;
+  }
+  @media (max-width: 768px) {
+    header,
+    main,
+    .header-inner,
+    .hero,
+    .hero-inner,
+    .content,
+    .container,
+    .wrap,
+    .page,
+    .page-shell,
+    .page-wrap,
+    .layout,
+    .content-wrap,
+    .exam-container,
+    .quiz-container,
+    .cheat-sheet,
+    .toc,
+    .section,
+    .section-body,
+    .card,
+    .panel {
+      width: min(100%, calc(100vw - 16px)) !important;
+      max-width: min(100%, calc(100vw - 16px)) !important;
+    }
+    body {
+      overflow-x: hidden;
+    }
+  }
+</style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>الفصل ٧: الجمود</h1>
+            <p style="font-size: 1.2em;">CS330 - أنظمة التشغيل</p>
+            <p>الجمود في النظام، المنع، التجنب، الاكتشاف والاسترداد</p>
+        </header>
+
+        <!-- القسم 1: نموذج النظام -->
+        <section>
+            <h2>٧.١ نموذج النظام</h2>
+            
+            <div class="concept-box">
+                <p><span class="highlight">الجمود</span> هو حالة حيث مجموعة من العمليات محجوبة لأن كل عملية تمتلك موردًا وتنتظر موردًا آخر مملوكًا بواسطة عملية أخرى.</p>
+            </div>
+
+            <h3>أنواع الموارد</h3>
+            <ul style="margin-right: 40px;">
+                <li><strong>R1, R2, ..., Rm:</strong> أنواع موارد مختلفة</li>
+                <li><strong>دورات المعالج، مساحة الذاكرة، أجهزة الإدخال/الإخراج</strong></li>
+                <li>كل نوع مورد Ri له <strong>Wi نسخة</strong></li>
+            </ul>
+
+            <h3>استخدام العملية للموارد</h3>
+            <div class="code-block">
+<span class="code-comment">// تسلسل استخدام العملية العادي للموارد:</span>
+1. <span class="code-keyword">طلب</span> - العملية تطلب موردًا
+2. <span class="code-keyword">استخدام</span> - العملية تستخدم المورد
+3. <span class="code-keyword">تحرير</span> - العملية تحرر المورد
+            </div>
+
+            <div class="danger-box">
+                <h4>⚠️ مثال جمود:</h4>
+                <p>عملية P1 تمتلك مورد R1 وتنتظر مورد R2</p>
+                <p>عملية P2 تمتلك مورد R2 وتنتظر مورد R1</p>
+                <p>النتيجة: <strong>كلتا العمليتين تنتظران إلى الأبد!</strong></p>
+            </div>
+        </section>
+
+        <!-- القسم 2: توصيف الجمود -->
+        <section>
+            <h2>٧.٢ توصيف الجمود</h2>
+            
+            <h3>أربعة شروط ضرورية للجمود</h3>
+            <p>الجمود يمكن أن يحدث إذا تحققت <strong>كل الشروط الأربعة</strong> في نفس الوقت:</p>
+            
+            <div class="conditions-grid">
+                <div class="condition-card">
+                    <h4><span class="condition-number">١</span>الاستبعاد المتبادل</h4>
+                    <p>يجب أن يكون مورد واحد على الأقل محتجزًا بطريقة غير قابلة للمشاركة. عملية واحدة فقط في كل مرة يمكنها استخدام المورد.</p>
+                </div>
+                
+                <div class="condition-card">
+                    <h4><span class="condition-number">٢</span>الاحتجاز والانتظار</h4>
+                    <p>يجب أن تحتجز العملية موردًا واحدًا على الأقل وتنتظر للحصول على موارد إضافية محتجزة بواسطة عمليات أخرى.</p>
+                </div>
+                
+                <div class="condition-card">
+                    <h4><span class="condition-number">٣</span>عدم الاستباق</h4>
+                    <p>لا يمكن استباق الموارد؛ يمكن تحرير المورد فقط طواعية بواسطة العملية التي تحتجزه.</p>
+                </div>
+                
+                <div class="condition-card">
+                    <h4><span class="condition-number">٤</span>الانتظار الدائري</h4>
+                    <p>يجب أن توجد مجموعة {P0, P1, ..., Pn} من العمليات المنتظرة بحيث P0 تنتظر P1، P1 تنتظر P2، ...، و Pn تنتظر P0.</p>
+                </div>
+            </div>
+
+            <div class="warning-box">
+                <h4>💡 مهم:</h4>
+                <p>يجب توفر جميع الشروط الأربعة لحدوث الجمود. إذا تمكنا من منع أي شرط واحد من هذه الشروط، يمكننا منع الجمود!</p>
+            </div>
+        </section>
+
+        <!-- القسم 3: رسم تخصيص الموارد -->
+        <section>
+            <h2>٧.٣ رسم تخصيص الموارد</h2>
+            
+            <div class="rag-container">
+                <h3>مكونات رسم تخصيص الموارد</h3>
+                <p>رسم بياني موجه يستخدم لوصف الجمود</p>
+                
+                <div class="rag-visualization">
+                    <div class="process-node">P1</div>
+                    <span class="edge"></span>
+                    <div class="resource-node">R1</div>
+                    <span class="edge"></span>
+                    <div class="process-node">P2</div>
+                </div>
+                
+                <h4>عناصر الرسم:</h4>
+                <ul style="text-align: right; margin-right: 40px;">
+                    <li><strong>الرؤوس:</strong>
+                        <ul>
+                            <li>عُقد العمليات (دوائر): P = {P1, P2, ..., Pn}</li>
+                            <li>عُقد الموارد (مستطيلات): R = {R1, R2, ..., Rm}</li>
+                        </ul>
+                    </li>
+                    <li><strong>الأضلاع:</strong>
+                        <ul>
+                            <li>ضلع طلب: Pi → Rj (عملية تطلب موردًا)</li>
+                            <li>ضلع تخصيص: Rj → Pi (مورد مخصص لعملية)</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="example-box">
+                <h4>قواعد تحليل RAG:</h4>
+                <ul>
+                    <li>إذا لم يكن في الرسم <strong>دورات</strong> → <strong>لا جمود</strong></li>
+                    <li>إذا كان في الرسم دورة:
+                        <ul>
+                            <li>إذا كانت <strong>نسخة واحدة</strong> فقط لكل نوع مورد → <strong>جمود</strong></li>
+                            <li>إذا كان <strong>عدة نسخ</strong> لكل نوع مورد → <strong>احتمال جمود</strong></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="image-placeholder">
+                <h4>📊 أمثلة رسم تخصيص الموارد</h4>
+                <p>[إدراج مخططات RAG تظهر سيناريوهات جمود وبدون جمود]</p>
+            </div>
+        </section>
+
+        <!-- القسم 4: طرق التعامل مع الجمود -->
+        <section>
+            <h2>٧.٤ طرق التعامل مع الجمود</h2>
+            
+            <div class="prevention-grid">
+                <div class="prevention-card">
+                    <h4>١️⃣ منع الجمود</h4>
+                    <p>ضمان أن شرطًا واحدًا على الأقل من الشروط الأربعة لا يمكن أن يتحقق.</p>
+                    <ul>
+                        <li>نهج هيكلي</li>
+                        <li>يمنع الجمود بالتصميم</li>
+                        <li>قد يؤدي لاستخدام منخفض للأجهزة</li>
+                    </ul>
+                </div>
+                
+                <div class="prevention-card">
+                    <h4>٢️⃣ تجنب الجمود</h4>
+                    <p>يتطلب معرفة مسبقة باحتياجات الموارد. النظام يقرر ما إذا كان الطلب يجب أن ينتظر.</p>
+                    <ul>
+                        <li>نهج ديناميكي</li>
+                        <li>يستخدم خوارزمية المصرفي</li>
+                        <li>يحافظ على حالة آمنة</li>
+                    </ul>
+                </div>
+                
+                <div class="prevention-card">
+                    <h4>٣️⃣ اكتشاف الجمود</h4>
+                    <p>السماح بحدوث الجمود، ثم اكتشافه والاسترداد منه.</p>
+                    <ul>
+                        <li>فحص دوري</li>
+                        <li>خوارزمية اكتشاف</li>
+                        <li>إجراءات استرداد</li>
+                    </ul>
+                </div>
+                
+                <div class="prevention-card">
+                    <h4>٤️⃣ تجاهل المشكلة</h4>
+                    <p>خوارزمية النعامة - التظاهر بأن الجمود لا يحدث أبدًا.</p>
+                    <ul>
+                        <li>تستخدم بواسطة معظم أنظمة التشغيل</li>
+                        <li>تدخل يدوي</li>
+                        <li>فعال من حيث التكلفة للجمود النادر</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- القسم 5: منع الجمود -->
+        <section>
+            <h2>٧.٥ منع الجمود</h2>
+            
+            <p>تقييد طرق تقديم طلبات الموارد لضمان أن شرطًا واحدًا على الأقل لا يمكن أن يحدث:</p>
+            
+            <h3>منع كل شرط:</h3>
+            
+            <div class="concept-box">
+                <h4>١. الاستبعاد المتبادل</h4>
+                <p><strong>المنع:</strong> غير عملي لمعظم الموارد. بعض الموارد بطبيعتها غير قابلة للمشاركة (مثل الطابعة).</p>
+                <p><strong>الحل:</strong> استخدام spooling لبعض الموارد (قوائم انتظار الطابعة).</p>
+            </div>
+
+            <div class="concept-box">
+                <h4>٢. الاحتجاز والانتظار</h4>
+                <p><strong>المنع:</strong> ضمان أنه عندما تطلب عملية موردًا، فإنها لا تحتجز أي موارد أخرى.</p>
+                <p><strong>الحلول:</strong></p>
+                <ul>
+                    <li>طلب جميع الموارد في البداية (استخدام منخفض للموارد)</li>
+                    <li>تحرير جميع الموارد قبل طلب موارد جديدة</li>
+                </ul>
+            </div>
+
+            <div class="concept-box">
+                <h4>٣. عدم الاستباق</h4>
+                <p><strong>المنع:</strong> إذا كانت عملية تحتجز موارد وتطلب موردًا آخر لا يمكن تخصيصه فورًا، يتم تحرير جميع الموارد المحتجزة حاليًا.</p>
+                <p><strong>الحدود:</strong> يُطبق فقط على الموارد التي يمكن حفظ حالتها (المعالج، الذاكرة).</p>
+            </div>
+
+            <div class="concept-box">
+                <h4>٤. الانتظار الدائري</h4>
+                <p><strong>المنع:</strong> فرض ترتيب كلي لجميع أنواع الموارد.</p>
+                <p><strong>الحل:</strong> طلب العمليات للموارد بترتيب تصاعدي.</p>
+                
+                <div class="code-block">
+<span class="code-comment">// مثال ترتيب الموارد:</span>
+R1 = محرك شريط (الترتيب = ١)
+R2 = قرص صلب (الترتيب = ٢)
+R3 = طابعة (الترتيب = ٣)
+
+<span class="code-comment">// العملية يجب أن تطلب بالترتيب: R1 → R2 → R3</span>
+<span class="code-comment">// لا يمكن طلب R1 بعد احتجاز R2</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- القسم 6: تجنب الجمود -->
+        <section>
+            <h2>٧.٦ تجنب الجمود</h2>
+            
+            <h3>الحالة الآمنة</h3>
+            <div class="concept-box">
+                <p>الحالة <span class="highlight">آمنة</span> إذا كان بإمكان النظام تخصيص موارد لكل عملية بترتيب ما وتجنب الجمود.</p>
+                <p>النظام في حالة آمنة إذا كان هناك <span class="highlight">تسلسل آمن</span> لجميع العمليات.</p>
+            </div>
+
+            <div class="state-diagram">
+                <div class="state-box safe">
+                    <h4>حالة آمنة</h4>
+                    <p>لا جمود ممكن</p>
+                </div>
+                <span style="font-size: 30px;">→</span>
+                <div class="state-box unsafe">
+                    <h4>حالة غير آمنة</h4>
+                    <p>قد تؤدي لجمود</p>
+                </div>
+                <span style="font-size: 30px;">→</span>
+                <div class="state-box deadlock">
+                    <h4>حالة جمود</h4>
+                    <p>النظام عالق</p>
+                </div>
+            </div>
+
+            <h3>خوارزمية رسم تخصيص الموارد</h3>
+            <p>لنسخة واحدة من كل نوع مورد:</p>
+            <ul style="margin-right: 40px;">
+                <li>إضافة <strong>ضلع مطالبة</strong> Pi → Rj (خط متقطع)</li>
+                <li>ضلع المطالبة يتحول إلى ضلع طلب عندما تطلب العملية المورد</li>
+                <li>ضلع الطلب يتحول إلى ضلع تخصيص عندما يتم تخصيص المورد</li>
+                <li>التحقق من وجود دورات بما في ذلك أضلاع المطالبة</li>
+            </ul>
+
+            <h3>خوارزمية المصرفي</h3>
+            <div class="banker-container">
+                <h4>لعدة نسخ من الموارد</h4>
+                <p>سميت على اسم النظام المصرفي الذي يضمن أن البنك لا يخصص كل النقود.</p>
+                
+                <h4>هياكل البيانات (n عملية، m نوع مورد):</h4>
+                <div style="display: flex; justify-content: space-around; flex-wrap: wrap;">
+                    <div class="matrix-container">
+                        <div class="matrix-title">Available[m]</div>
+                        <div class="matrix">
+                            <div class="matrix-row">
+                                <div class="matrix-cell">٣</div>
+                                <div class="matrix-cell">٣</div>
+                                <div class="matrix-cell">٢</div>
+                            </div>
+                        </div>
+                        <p style="font-size: 0.9em; margin-top: 10px;">الموارد المتاحة</p>
+                    </div>
+                    
+                    <div class="matrix-container">
+                        <div class="matrix-title">Max[n][m]</div>
+                        <div class="matrix">
+                            <div class="matrix-row">
+                                <div class="matrix-cell">٧</div>
+                                <div class="matrix-cell">٥</div>
+                                <div class="matrix-cell">٣</div>
+                            </div>
+                            <div class="matrix-row">
+                                <div class="matrix-cell">٣</div>
+                                <div class="matrix-cell">٢</div>
+                                <div class="matrix-cell">٢</div>
+                            </div>
+                            <div class="matrix-row">
+                                <div class="matrix-cell">٩</div>
+                                <div class="matrix-cell">٠</div>
+                                <div class="matrix-cell">٢</div>
+                            </div>
+                        </div>
+                        <p style="font-size: 0.9em; margin-top: 10px;">الحد الأقصى للطلب</p>
+                    </div>
+                    
+                    <div class="matrix-container">
+                        <div class="matrix-title">Allocation[n][m]</div>
+                        <div class="matrix">
+                            <div class="matrix-row">
+                                <div class="matrix-cell">٠</div>
+                                <div class="matrix-cell">١</div>
+                                <div class="matrix-cell">٠</div>
+                            </div>
+                            <div class="matrix-row">
+                                <div class="matrix-cell">٢</div>
+                                <div class="matrix-cell">٠</div>
+                                <div class="matrix-cell">٠</div>
+                            </div>
+                            <div class="matrix-row">
+                                <div class="matrix-cell">٣</div>
+                                <div class="matrix-cell">٠</div>
+                                <div class="matrix-cell">٢</div>
+                            </div>
+                        </div>
+                        <p style="font-size: 0.9em; margin-top: 10px;">المخصص حاليًا</p>
+                    </div>
+                    
+                    <div class="matrix-container">
+                        <div class="matrix-title">Need[n][m]</div>
+                        <div class="matrix">
+                            <div class="matrix-row">
+                                <div class="matrix-cell">٧</div>
+                                <div class="matrix-cell">٤</div>
+                                <div class="matrix-cell">٣</div>
+                            </div>
+                            <div class="matrix-row">
+                                <div class="matrix-cell">١</div>
+                                <div class="matrix-cell">٢</div>
+                                <div class="matrix-cell">٢</div>
+                            </div>
+                            <div class="matrix-row">
+                                <div class="matrix-cell">٦</div>
+                                <div class="matrix-cell">٠</div>
+                                <div class="matrix-cell">٠</div>
+                            </div>
+                        </div>
+                        <p style="font-size: 0.9em; margin-top: 10px;">الاحتياج = Max - Allocation</p>
+                    </div>
+                </div>
+            </div>
+
+            <h3>خوارزمية الأمان</h3>
+            <div class="code-block">
+<span class="code-comment">// خوارزمية الأمان لإيجاد تسلسل آمن</span>
+١. اجعل Work = Available و Finish[i] = false لكل i
+
+٢. ابحث عن i بحيث:
+   Finish[i] == false و Need[i] ≤ Work
+   إذا لم يوجد i، اذهب للخطوة ٤
+
+٣. Work = Work + Allocation[i]
+   Finish[i] = true
+   اذهب للخطوة ٢
+
+٤. إذا كان Finish[i] == true لكل i،
+   فإن النظام في حالة آمنة
+            </div>
+
+            <div class="example-box">
+                <h4>مثال تسلسل آمن:</h4>
+                <div class="safe-sequence">
+                    <span class="sequence-step">P1</span>
+                    <span class="sequence-arrow">→</span>
+                    <span class="sequence-step">P3</span>
+                    <span class="sequence-arrow">→</span>
+                    <span class="sequence-step">P4</span>
+                    <span class="sequence-arrow">→</span>
+                    <span class="sequence-step">P2</span>
+                    <span class="sequence-arrow">→</span>
+                    <span class="sequence-step">P0</span>
+                </div>
+                <p style="text-align: center; margin-top: 10px;">النظام في حالة آمنة مع هذا الترتيب للتنفيذ</p>
+            </div>
+        </section>
+
+        <!-- القسم 7: اكتشاف الجمود -->
+        <section>
+            <h2>٧.٧ اكتشاف الجمود</h2>
+            
+            <div class="detection-visual">
+                <h3>خوارزمية الاكتشاف</h3>
+                <p>السماح للنظام بالدخول في حالة جمود، ثم اكتشافه والاسترداد منه.</p>
+                
+                <h4>نسخة واحدة من كل نوع مورد:</h4>
+                <ul>
+                    <li>الحفاظ على رسم انتظار</li>
+                    <li>العقد هي العمليات</li>
+                    <li>Pi → Pj إذا كانت Pi تنتظر Pj</li>
+                    <li>التحقق دوريًا من وجود دورات</li>
+                </ul>
+                
+                <div class="cycle-indicator">
+                    🔄 دورة في الرسم = تم اكتشاف جمود!
+                </div>
+            </div>
+
+            <h3>خوارزمية اكتشاف لعدة نسخ</h3>
+            <div class="code-block">
+<span class="code-comment">// مشابهة لخوارزمية المصرفي ولكن للاكتشاف</span>
+١. اجعل Work = Available
+   لكل i من ٠ إلى n-١:
+      إذا كان Allocation[i] ≠ ٠
+         Finish[i] = false
+      وإلا
+         Finish[i] = true
+
+٢. ابحث عن i بحيث:
+   Finish[i] == false و Request[i] ≤ Work
+   
+٣. Work = Work + Allocation[i]
+   Finish[i] = true
+   اذهب للخطوة ٢
+
+٤. إذا كان Finish[i] == false لأي i،
+   فإن النظام في حالة جمود
+   العمليات التي Finish[i] == false هي في حالة جمود
+            </div>
+
+            <h3>متى نستدعي خوارزمية الاكتشاف؟</h3>
+            <ul style="margin-right: 40px;">
+                <li>كم مرة يحتمل حدوث الجمود؟</li>
+                <li>كم عدد العمليات التي ستتأثر؟</li>
+                <li>الخيارات:
+                    <ul>
+                        <li>كل مرة لا يمكن فيها منح طلب فورًا</li>
+                        <li>على فترات زمنية منتظمة</li>
+                        <li>عندما ينخفض استخدام المعالج عن حد معين</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+
+        <!-- القسم 8: الاسترداد من الجمود -->
+        <section>
+            <h2>٧.٨ الاسترداد من الجمود</h2>
+            
+            <div class="recovery-methods">
+                <h3>طرق الاسترداد</h3>
+                
+                <div class="recovery-option">
+                    <h4>الخيار ١: إنهاء العملية</h4>
+                    <ul>
+                        <li><strong>إنهاء جميع العمليات في حالة الجمود</strong>
+                            <ul>
+                                <li>إزالة الجمود فورًا</li>
+                                <li>مكلف - كل العمل ضاع</li>
+                            </ul>
+                        </li>
+                        <li><strong>إنهاء عملية واحدة في كل مرة</strong>
+                            <ul>
+                                <li>التحقق من الجمود بعد كل إنهاء</li>
+                                <li>أقل تكلفة ولكن عبء أكبر</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="recovery-option">
+                    <h4>الخيار ٢: استباق الموارد</h4>
+                    <ul>
+                        <li><strong>اختيار الضحية</strong> - أي الموارد والعمليات نستبق؟</li>
+                        <li><strong>التراجع</strong> - العودة لحالة آمنة، إعادة تشغيل العملية</li>
+                        <li><strong>التجويع</strong> - ضمان أن نفس العملية ليست دائمًا الضحية</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h3>عوامل اختيار الضحية</h3>
+            <table>
+                <tr>
+                    <th>العامل</th>
+                    <th>الاعتبارات</th>
+                </tr>
+                <tr>
+                    <td>الأولوية</td>
+                    <td>عملية ذات أولوية أقل تُختار أولاً</td>
+                </tr>
+                <tr>
+                    <td>الوقت</td>
+                    <td>كم من الوقت حسبت العملية والوقت المتبقي</td>
+                </tr>
+                <tr>
+                    <td>الموارد</td>
+                    <td>الموارد المستخدمة والموارد اللازمة للاكتمال</td>
+                </tr>
+                <tr>
+                    <td>تكلفة التراجع</td>
+                    <td>عدد العمليات التي تحتاج إنهاء</td>
+                </tr>
+                <tr>
+                    <td>تفاعلية/دفعية</td>
+                    <td>العمليات التفاعلية قد تكون لها أولوية أعلى</td>
+                </tr>
+            </table>
+        </section>
+
+        <!-- القسم 9: أمثلة تطبيقية -->
+        <section>
+            <h2>٧.٩ أمثلة تطبيقية</h2>
+            
+            <div class="example-box">
+                <h4>مثال ١: تطبيق خوارزمية المصرفي</h4>
+                <p><strong>المعطيات:</strong> ٥ عمليات (P0-P4)، ٣ أنواع موارد (A=١٠، B=٥، C=٧)</p>
+                
+                <table>
+                    <tr>
+                        <th>العملية</th>
+                        <th>المخصص<br>(A B C)</th>
+                        <th>الحد الأقصى<br>(A B C)</th>
+                        <th>الاحتياج<br>(A B C)</th>
+                    </tr>
+                    <tr>
+                        <td>P0</td>
+                        <td>٠ ١ ٠</td>
+                        <td>٧ ٥ ٣</td>
+                        <td>٧ ٤ ٣</td>
+                    </tr>
+                    <tr>
+                        <td>P1</td>
+                        <td>٢ ٠ ٠</td>
+                        <td>٣ ٢ ٢</td>
+                        <td>١ ٢ ٢</td>
+                    </tr>
+                    <tr>
+                        <td>P2</td>
+                        <td>٣ ٠ ٢</td>
+                        <td>٩ ٠ ٢</td>
+                        <td>٦ ٠ ٠</td>
+                    </tr>
+                    <tr>
+                        <td>P3</td>
+                        <td>٢ ١ ١</td>
+                        <td>٢ ٢ ٢</td>
+                        <td>٠ ١ ١</td>
+                    </tr>
+                    <tr>
+                        <td>P4</td>
+                        <td>٠ ٠ ٢</td>
+                        <td>٤ ٣ ٣</td>
+                        <td>٤ ٣ ١</td>
+                    </tr>
+                </table>
+                
+                <p><strong>المتاح:</strong> A=٣، B=٣، C=٢</p>
+                <p><strong>التسلسل الآمن:</strong> &lt;P1, P3, P4, P2, P0&gt;</p>
+                <p><strong>حالة النظام:</strong> آمنة ✓</p>
+            </div>
+
+            <div class="example-box">
+                <h4>مثال ٢: طلب مورد</h4>
+                <p>إذا طلبت P1 (١،٠،٢):</p>
+                <ol>
+                    <li>تحقق: Request ≤ Need? (١،٠،٢) ≤ (١،٢،٢) ✓</li>
+                    <li>تحقق: Request ≤ Available? (١،٠،٢) ≤ (٣،٣،٢) ✓</li>
+                    <li>التخصيص الافتراضي:
+                        <ul>
+                            <li>Available = (٣،٣،٢) - (١،٠،٢) = (٢،٣،٠)</li>
+                            <li>Allocation[P1] = (٢،٠،٠) + (١،٠،٢) = (٣،٠،٢)</li>
+                            <li>Need[P1] = (١،٢،٢) - (١،٠،٢) = (٠،٢،٠)</li>
+                        </ul>
+                    </li>
+                    <li>تشغيل خوارزمية الأمان → إيجاد تسلسل آمن</li>
+                    <li>إذا كان آمنًا، منح الطلب؛ وإلا رفض</li>
+                </ol>
+            </div>
+        </section>
+
+        <!-- القسم 10: مسائل تطبيقية -->
+        <section>
+            <h2>٧.١٠ مسائل تطبيقية وأسئلة اختبارات</h2>
+            
+            <div class="exam-section">
+                <h3>أسئلة اختيار من متعدد</h3>
+                
+                <div class="exam-question">
+                    <p><strong>س١.</strong> أي مما يلي ليس شرطًا ضروريًا للجمود؟</p>
+                    <ul class="mcq-options">
+                        <li>أ) الاستبعاد المتبادل</li>
+                        <li>ب) الاحتجاز والانتظار</li>
+                        <li>ج) السماح بالاستباق</li>
+                        <li class="correct-answer">ج) السماح بالاستباق</li>
+                    </ul>
+                </div>
+
+                <div class="exam-question">
+                    <p><strong>س٢.</strong> في رسم تخصيص الموارد، الدورة تشير إلى:</p>
+                    <ul class="mcq-options">
+                        <li>أ) دائمًا جمود</li>
+                        <li class="correct-answer">ب) جمود إذا كانت نسخة واحدة، احتمال جمود إذا كانت عدة نسخ</li>
+                        <li>ج) أبدًا جمود</li>
+                        <li>د) النظام آمن</li>
+                    </ul>
+                </div>
+
+                <div class="exam-question">
+                    <p><strong>س٣.</strong> خوارزمية المصرفي تستخدم لـ:</p>
+                    <ul class="mcq-options">
+                        <li>أ) منع الجمود</li>
+                        <li class="correct-answer">ب) تجنب الجمود</li>
+                        <li>ج) اكتشاف الجمود</li>
+                        <li>د) استرداد الجمود</li>
+                    </ul>
+                </div>
+
+                <div class="exam-question">
+                    <p><strong>س٤.</strong> الحالة الآمنة تعني:</p>
+                    <ul class="mcq-options">
+                        <li>أ) النظام في حالة جمود</li>
+                        <li>ب) النظام سيدخل في جمود</li>
+                        <li class="correct-answer">ج) النظام يمكنه تجنب الجمود</li>
+                        <li>د) النظام لا يحتوي عمليات</li>
+                    </ul>
+                </div>
+
+                <div class="exam-question">
+                    <p><strong>س٥.</strong> أي طريقة تمنع الانتظار الدائري؟</p>
+                    <ul class="mcq-options">
+                        <li class="correct-answer">أ) ترتيب الموارد</li>
+                        <li>ب) مشاركة الموارد</li>
+                        <li>ج) إنهاء العملية</li>
+                        <li>د) استباق الموارد</li>
+                    </ul>
+                </div>
+
+                <h3>أسئلة إجابة قصيرة</h3>
+                
+                <div class="exam-question">
+                    <p><strong>س٦.</strong> اشرح الفرق بين منع الجمود وتجنب الجمود.</p>
+                    <div class="example-box">
+                        <h4>الإجابة:</h4>
+                        <p><strong>المنع:</strong> يجعل الجمود مستحيلًا هيكليًا بضمان أن شرطًا واحدًا على الأقل من الشروط الضرورية لا يمكن أن يحدث.</p>
+                        <p><strong>التجنب:</strong> يفحص ديناميكيًا حالة تخصيص الموارد لضمان أن النظام لا يدخل أبدًا في حالة غير آمنة.</p>
+                    </div>
+                </div>
+
+                <div class="exam-question">
+                    <p><strong>س٧.</strong> لدينا ٣ عمليات بالاحتياجات التالية. هل النظام في حالة آمنة؟</p>
+                    <table style="width: auto; margin: 10px auto;">
+                        <tr>
+                            <th>العملية</th>
+                            <th>المخصص</th>
+                            <th>الحد الأقصى</th>
+                        </tr>
+                        <tr>
+                            <td>P0</td>
+                            <td>١</td>
+                            <td>٤</td>
+                        </tr>
+                        <tr>
+                            <td>P1</td>
+                            <td>٢</td>
+                            <td>٣</td>
+                        </tr>
+                        <tr>
+                            <td>P2</td>
+                            <td>٢</td>
+                            <td>٩</td>
+                        </tr>
+                    </table>
+                    <p>المتاح = ٢</p>
+                    
+                    <div class="example-box">
+                        <h4>الحل:</h4>
+                        <p>الاحتياج: P0=٣، P1=١، P2=٧</p>
+                        <p>يمكن تلبية P1 (الاحتياج=١ ≤ المتاح=٢)</p>
+                        <p>بعد P1: المتاح = ٢ + ٢ = ٤</p>
+                        <p>يمكن تلبية P0 (الاحتياج=٣ ≤ المتاح=٤)</p>
+                        <p>بعد P0: المتاح = ٤ + ١ = ٥</p>
+                        <p>لا يمكن تلبية P2 (الاحتياج=٧ > المتاح=٥)</p>
+                        <p><strong>النظام ليس في حالة آمنة</strong></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- القسم 11: المصطلحات الرئيسية -->
+        <section>
+            <h2>٧.١١ المصطلحات الرئيسية والتعريفات</h2>
+            
+            <table>
+                <tr>
+                    <th>المصطلح</th>
+                    <th>التعريف</th>
+                </tr>
+                <tr>
+                    <td><strong>جمود</strong></td>
+                    <td>عمليات محجوبة إلى الأبد تنتظر بعضها البعض</td>
+                </tr>
+                <tr>
+                    <td><strong>جمود حي</strong></td>
+                    <td>عمليات تغير حالتها باستمرار ولكن لا تتقدم</td>
+                </tr>
+                <tr>
+                    <td><strong>تجويع</strong></td>
+                    <td>عملية تنتظر إلى أجل غير مسمى بينما تتقدم عمليات أخرى</td>
+                </tr>
+                <tr>
+                    <td><strong>حالة آمنة</strong></td>
+                    <td>النظام يمكنه تخصيص موارد بدون الدخول في جمود</td>
+                </tr>
+                <tr>
+                    <td><strong>حالة غير آمنة</strong></td>
+                    <td>قد تؤدي لجمود (ليست بالضرورة في جمود)</td>
+                </tr>
+                <tr>
+                    <td><strong>RAG</strong></td>
+                    <td>رسم تخصيص الموارد لتصور تخصيص الموارد</td>
+                </tr>
+                <tr>
+                    <td><strong>خوارزمية المصرفي</strong></td>
+                    <td>خوارزمية تجنب الجمود لعدة نسخ من الموارد</td>
+                </tr>
+                <tr>
+                    <td><strong>رسم انتظار</strong></td>
+                    <td>متغير من RAG لاكتشاف الجمود</td>
+                </tr>
+                <tr>
+                    <td><strong>انتظار دائري</strong></td>
+                    <td>سلسلة دائرية من العمليات تنتظر موارد</td>
+                </tr>
+                <tr>
+                    <td><strong>ترتيب الموارد</strong></td>
+                    <td>تقنية منع بتعيين ترتيب للموارد</td>
+                </tr>
+                <tr>
+                    <td><strong>تراجع</strong></td>
+                    <td>إعادة عملية إلى حالة آمنة سابقة</td>
+                </tr>
+                <tr>
+                    <td><strong>اختيار ضحية</strong></td>
+                    <td>اختيار عملية لإنهائها أو استباقها</td>
+                </tr>
+            </table>
+        </section>
+
+        <!-- أماكن الصور -->
+        <section>
+            <h2>٧.١٢ مخططات من الشرائح</h2>
+            
+            <div class="image-placeholder">
+                <h4>📊 رسم تخصيص الموارد</h4>
+                <p>[إدراج مخطط RAG مع عمليات وموارد]</p>
+            </div>
+
+            <div class="image-placeholder">
+                <h4>📊 RAG مع جمود وبدون جمود</h4>
+                <p>[إدراج مقارنة RAGs مع وبدون دورات]</p>
+            </div>
+
+            <div class="image-placeholder">
+                <h4>📊 حالات آمنة، غير آمنة، وجمود</h4>
+                <p>[إدراج مخطط انتقال الحالة]</p>
+            </div>
+
+            <div class="image-placeholder">
+                <h4>📊 مثال خوارزمية المصرفي</h4>
+                <p>[إدراج تنفيذ خوارزمية المصرفي خطوة بخطوة]</p>
+            </div>
+
+            <div class="warning-box">
+                <p><strong>ملاحظة:</strong> يرجى توفير المخططات الفعلية من مواد المقرر لاستبدال هذه العناصر النائبة.</p>
+            </div>
+        </section>
+
+        <footer>
+            <p>CS330 - أنظمة التشغيل</p>
+            <p>الفصل ٧: الجمود</p>
+            <p><strong>إعداد: شوق العمران</strong></p>
+        </footer>
+    </div>
+</body>
+</html>

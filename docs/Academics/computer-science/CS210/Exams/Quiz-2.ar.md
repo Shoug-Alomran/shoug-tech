@@ -7,11 +7,11 @@
 
 إذا لم يتم تحميل العرض المضمن بشكل صحيح، افتح الاختبار مباشرة.
 
-- [افتح اختبار الفصل الأول في علامة تبويب جديدة](../Quiz-2.html)
+- [افتح اختبار الفصل الأول في علامة تبويب جديدة](/ar/Academics/computer-science/CS210/Exams/Quiz-2.html)
 
 <div class="iframe-wrap">
   <iframe
-    src="../Quiz-2.html"
+    src="/ar/Academics/computer-science/CS210/Exams/Quiz-2.html"
     title="الاختبار الأول"
     loading="lazy"
     referrerpolicy="no-referrer"
