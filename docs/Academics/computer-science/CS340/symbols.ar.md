@@ -7,11 +7,11 @@
 
 إذا ما تحمل العرض بشكل صحيح، افتح الصفحة بشكل مباشر.
 
-- [افتح صفحة الرموز في تبويب جديد](/ar/Academics/computer-science/CS340/symbols.html)
+- [افتح صفحة الرموز في تبويب جديد](../symbols.html)
 
 <div class="iframe-wrap">
   <iframe
-    src="/ar/Academics/computer-science/CS340/symbols.html"
+    src="../symbols.html"
     title="مرجع الرموز"
     loading="lazy"
     referrerpolicy="no-referrer"

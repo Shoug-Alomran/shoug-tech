@@ -10,9 +10,9 @@ Choose the path that matches why you are visiting.
 ## Guided Paths (First-time Visitors)
 
 <div class="hero-actions" markdown>
-[Student Path](Academics/intro.md){ .md-button .md-button--primary }
+[Student Path](Academics/Intro.md){ .md-button .md-button--primary }
 [Instructor Path](career-development/Workshops/index.md){ .md-button }
-[Employer Path](/career-development/intro/){ .md-button }
+[Employer Path](career-development/Intro.md){ .md-button }
 </div>
 
 <div class="grid cards audience-grid" markdown>
@@ -23,9 +23,9 @@ Choose the path that matches why you are visiting.
 
     Get structured notes, chapter summaries, cheat sheets, and quizzes fast.
 
-    - [Open Learn Overview](Academics/intro.md)
+    - [Open Learn Overview](Academics/Intro.md)
     - [View Academic Plan](academic-plan-themes/academic-plan.md)
-    - [Browse Cybersecurity Notes](Academics/cyber-security/intro.md)
+    - [Browse Cybersecurity Notes](Academics/cyber-security/Intro.md)
 
 -   :school: **I am an Instructor**
 
@@ -33,7 +33,7 @@ Choose the path that matches why you are visiting.
 
     Review the quality of organization, curriculum coverage, and learning output.
 
-    - [See Course Notes Structure](Academics/intro.md)
+    - [See Course Notes Structure](Academics/Intro.md)
     - [Read Workshops and Teaching Work](career-development/Workshops/index.md)
     - [Open Academic Disclaimer](policy/academic-disclaimer.md)
 
@@ -43,7 +43,7 @@ Choose the path that matches why you are visiting.
 
     Evaluate practical execution, technical range, and communication quality.
 
-    - [Open Career Overview](/career-development/intro/)
+    - [Open Career Overview](career-development/Intro.md)
     - [View Projects](career-development/projects.md)
     - [Open Resume](career-development/CV.html)
 
@@ -67,7 +67,7 @@ Choose the path that matches why you are visiting.
 
     High-utility notes and cheat sheets from major courses.
 
-    [:octicons-arrow-right-24: Go to Learn](Academics/intro.md)
+    [:octicons-arrow-right-24: Go to Learn](Academics/Intro.md)
 
 -   :link: **Curated Tools & References**
 

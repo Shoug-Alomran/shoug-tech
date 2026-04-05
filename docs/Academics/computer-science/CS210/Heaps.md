@@ -4,11 +4,11 @@ This page contains the material on heaps. Use it for revision of heap structures
 
 If the embedded view does not load properly, open the page directly.
 
-- [Open in a new tab](/Academics/computer-science/CS210/Heaps.html)
+- [Open in a new tab](../Heaps.html)
 
 <div class="iframe-wrap">
   <iframe
-    src="/Academics/computer-science/CS210/Heaps.html"
+    src="../Heaps.html"
     title="Heaps"
     loading="lazy"
     referrerpolicy="no-referrer"

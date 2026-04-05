@@ -11,16 +11,9 @@
   }
 
   function getBase() {
-    // MkDocs Material exposes a scope path in `__md_scope`.
-    // On localized pages this can resolve to `/<repo>/ar/`, so we strip only
-    // the locale suffix and keep the deployment base path.
+    // MkDocs Material base path (GitHub Pages subpath safe)
     try {
-      if (typeof __md_scope !== "undefined" && __md_scope && __md_scope.pathname) {
-        let path = String(__md_scope.pathname).replace(/\/+$/, "");
-        if (path === "/") return "";
-        if (path.endsWith("/ar")) path = path.slice(0, -3) || "/";
-        return path === "/" ? "" : path;
-      }
+      if (typeof __md_get === "function") return __md_get("__base") || "";
     } catch (e) {}
     return "";
   }
@@ -34,14 +27,6 @@
   function policyHref(path) {
     const clean = String(path || "").replace(/^\//, "");
     return url(clean.replace(/\.md$/, "/"));
-  }
-
-  function withBase(path) {
-    const base = getBase();
-    const value = String(path || "");
-    if (!base || !value.startsWith("/") || value.startsWith("//")) return value;
-    if (value === base || value.startsWith(base + "/")) return value;
-    return `${base}${value}`;
   }
 
   function addHeaderCTA() {
@@ -119,56 +104,6 @@
     headerInner.appendChild(wrap);
   }
 
-  function normalizeHeaderTabLinks() {
-    const tabs = Array.from(document.querySelectorAll(".md-tabs__item > .md-tabs__link"));
-    if (!tabs.length) return;
-
-    // Force primary header tabs onto absolute locale-aware routes.
-    // This avoids bad relative resolution from deep pages and keeps the
-    // header stable after browser translation or instant navigation.
-    const targets = isArabic()
-      ? [
-          url("ar/"),
-          url("ar/start-here/"),
-          url("ar/Academics/intro/"),
-          url("ar/career-development/intro/"),
-          url("ar/links/"),
-          url("ar/policy/copyright/"),
-        ]
-      : [
-          url(""),
-          url("start-here/"),
-          url("Academics/intro/"),
-          url("career-development/intro/"),
-          url("links/"),
-          url("policy/copyright/"),
-        ];
-
-    targets.forEach((href, index) => {
-      if (tabs[index]) tabs[index].setAttribute("href", href);
-    });
-  }
-
-  function normalizeRootRelativeContentLinks() {
-    const base = getBase();
-    if (!base) return;
-
-    const patchAttr = (selector, attr) => {
-      document.querySelectorAll(selector).forEach((node) => {
-        const value = node.getAttribute(attr);
-        if (!value) return;
-        const next = withBase(value);
-        if (next !== value) node.setAttribute(attr, next);
-      });
-    };
-
-    patchAttr('a[href^="/"]', "href");
-    patchAttr('iframe[src^="/"]', "src");
-    patchAttr('img[src^="/"]', "src");
-    patchAttr('source[src^="/"]', "src");
-    patchAttr('form[action^="/"]', "action");
-  }
-
   function addFooterBlock() {
     const footer = document.querySelector(".md-footer");
     if (!footer) return;
@@ -222,10 +157,10 @@
 
     // Navigation links
     const homeHref = isArabic() ? url("ar/") : url("");
-    const academicsHref = isArabic() ? url("ar/Academics/intro/") : url("Academics/intro/");
+    const academicsHref = isArabic() ? url("ar/Academics/Intro/") : url("Academics/Intro/");
     const careerHref = isArabic()
-      ? url("ar/career-development/intro/")
-      : url("career-development/intro/");
+      ? url("ar/career-development/me/")
+      : url("career-development/me/");
     const linksHref = isArabic() ? url("ar/links/") : url("links/");
 
     // Policies (moved to repository-level policy folder)
@@ -322,9 +257,7 @@
   }
 
   function run() {
-    normalizeRootRelativeContentLinks();
     addHeaderCTA();
-    normalizeHeaderTabLinks();
     addQuickLinksWidget();
     initSidebarToggles();
     addFooterBlock();
@@ -373,24 +306,24 @@
       ? [
           ["الرئيسية", url("ar/")],
           ["ابدأ من هنا", url("ar/start-here/")],
-          ["نظرة عامة أكاديمية", url("ar/Academics/intro/")],
+          ["نظرة عامة أكاديمية", url("ar/Academics/Intro/")],
           ["الخطة الأكاديمية", url("ar/academic-plan-themes/academic-plan/")],
-          ["SE201", url("ar/Academics/software-engineering/SE201/intro/")],
-          ["CS340", url("ar/Academics/computer-science/CS340/intro/")],
-          ["CYS401", url("ar/Academics/cyber-security/CYS401/intro/")],
-          ["التطوير المهني", url("ar/career-development/intro/")],
+          ["SE201", url("ar/Academics/software-engineering/SE201/Intro/")],
+          ["CS340", url("ar/Academics/computer-science/CS340/Intro/")],
+          ["CYS401", url("ar/Academics/cyber-security/CYS401/Intro/")],
+          ["التطوير المهني", url("ar/career-development/Intro/")],
           ["خدمات Blueprint", url("ar/career-development/services/")],
           ["Blueprint", "https://blueprint.shoug-tech.com/"]
         ]
       : [
           ["Home", url("")],
           ["Start Here", url("start-here/")],
-          ["Academics Overview", url("Academics/intro/")],
+          ["Academics Overview", url("Academics/Intro/")],
           ["Academic Plan", url("academic-plan-themes/academic-plan/")],
-          ["SE201", url("Academics/software-engineering/SE201/intro/")],
-          ["CS340", url("Academics/computer-science/CS340/intro/")],
-          ["CYS401", url("Academics/cyber-security/CYS401/intro/")],
-          ["Career Development", url("career-development/intro/")],
+          ["SE201", url("Academics/software-engineering/SE201/Intro/")],
+          ["CS340", url("Academics/computer-science/CS340/Intro/")],
+          ["CYS401", url("Academics/cyber-security/CYS401/Intro/")],
+          ["Career Development", url("career-development/Intro/")],
           ["Blueprint Services", url("career-development/services/")],
           ["Blueprint", "https://blueprint.shoug-tech.com/"]
         ];

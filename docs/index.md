@@ -16,8 +16,8 @@ This digital garden publishes my structured learning outputs: course notes, tech
 
 <div class="hero-actions" markdown>
 [Start Here](start-here.md){ .md-button .md-button--primary }
-[Browse Learn Hub](Academics/intro.md){ .md-button }
-[View Career Portfolio](/career-development/intro/){ .md-button }
+[Browse Learn Hub](Academics/Intro.md){ .md-button }
+[View Career Portfolio](career-development/Intro.md){ .md-button }
 </div>
 
 </div>
@@ -41,7 +41,7 @@ This digital garden publishes my structured learning outputs: course notes, tech
 
     Structured notes and study assets across Software Engineering, Computer Science, and Cybersecurity.
 
-    [:octicons-arrow-right-24: Open Learn Hub](Academics/intro.md)
+    [:octicons-arrow-right-24: Open Learn Hub](Academics/Intro.md)
 
 -   :shield: **Cybersecurity Track**
 
@@ -49,7 +49,7 @@ This digital garden publishes my structured learning outputs: course notes, tech
 
     Security labs, threat-analysis notes, and practical cybersecurity references.
 
-    [:octicons-arrow-right-24: Open Cybersecurity](Academics/cyber-security/intro.md)
+    [:octicons-arrow-right-24: Open Cybersecurity](Academics/cyber-security/Intro.md)
 
 -   :briefcase: **Career Portfolio**
 
@@ -57,7 +57,7 @@ This digital garden publishes my structured learning outputs: course notes, tech
 
     Selected projects, workshops, and professional documentation.
 
-    [:octicons-arrow-right-24: Open Career](/career-development/intro/)
+    [:octicons-arrow-right-24: Open Career](career-development/Intro.md)
 
 -   :rocket: **Blueprint Studio**
 
@@ -97,9 +97,9 @@ This digital garden publishes my structured learning outputs: course notes, tech
 ## Quick Access
 
 <div class="hero-actions" markdown>
-[SE201 Notes](Academics/software-engineering/SE201/intro.md){ .md-button }
-[CS340 Notes](Academics/computer-science/CS340/intro.md){ .md-button }
-[Cybersecurity (CYS401)](Academics/cyber-security/CYS401/intro.md){ .md-button }
+[SE201 Notes](Academics/software-engineering/SE201/Intro.md){ .md-button }
+[CS340 Notes](Academics/computer-science/CS340/Intro.md){ .md-button }
+[Cybersecurity (CYS401)](Academics/cyber-security/CYS401/Intro.md){ .md-button }
 [Projects](career-development/projects.md){ .md-button }
 [Workshops](career-development/Workshops/index.md){ .md-button }
 [Blueprint Services](career-development/services.md){ .md-button }

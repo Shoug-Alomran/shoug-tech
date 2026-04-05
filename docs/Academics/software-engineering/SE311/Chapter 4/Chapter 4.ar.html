@@ -1,0 +1,1770 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SE311 Chapter 4: Problem Analysis</title>
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    /* ===== Base theme (your original look) ===== */
+    body{
+      font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
+      line-height:1.6;
+      color:#333;
+      background:linear-gradient(135deg,#f093fb 0%,#f5576c 100%);
+      padding:20px;
+      transition: background-color .3s ease, color .3s ease;
+    }
+
+    .container{
+      max-width:1200px;
+      margin:0 auto;
+      background:white;
+      border-radius:15px;
+      box-shadow:0 20px 60px rgba(0,0,0,0.3);
+      overflow:hidden;
+    }
+
+    header{
+      background:linear-gradient(135deg,#f093fb 0%,#f5576c 100%);
+      color:white;
+      padding:40px;
+      text-align:center;
+    }
+
+    header h1{ font-size:2.5em; margin-bottom:10px; }
+    header p{ font-size:1.2em; opacity:.9; }
+
+    .controls{
+      display:flex;
+      justify-content:center;
+      gap:12px;
+      padding:16px 24px;
+      background:rgba(255,255,255,0.6);
+      backdrop-filter: blur(8px);
+      border-bottom:1px solid rgba(0,0,0,0.08);
+    }
+
+    .toggle-btn{
+      background:#ffffff;
+      border:2px solid rgba(0,0,0,0.12);
+      padding:10px 16px;
+      border-radius:10px;
+      cursor:pointer;
+      font-size:15px;
+      color:#222;
+      transition: all .2s ease;
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+    .toggle-btn:hover{
+      transform:translateY(-1px);
+      border-color:#f093fb;
+    }
+    .toggle-btn.active{
+      background:#f093fb;
+      color:#fff;
+      border-color:#f093fb;
+    }
+
+    .content{ padding:40px; }
+
+    .section{
+      margin-bottom:40px;
+      padding:30px;
+      background:#f8f9fa;
+      border-radius:10px;
+      border-left:5px solid #f093fb;
+    }
+
+    h2{
+      color:#f093fb;
+      font-size:2em;
+      margin-bottom:20px;
+      padding-bottom:10px;
+      border-bottom:3px solid #f093fb;
+    }
+
+    h3{
+      color:#f5576c;
+      font-size:1.5em;
+      margin-top:25px;
+      margin-bottom:15px;
+    }
+
+    h4{
+      color:#555;
+      font-size:1.2em;
+      margin-top:20px;
+      margin-bottom:10px;
+    }
+
+    .highlight-box{
+      background:linear-gradient(135deg,#f093fb15 0%,#f5576c15 100%);
+      border-left:4px solid #f093fb;
+      padding:20px;
+      margin:20px 0;
+      border-radius:5px;
+    }
+
+    .tip-box{
+      background:#e8f5e9;
+      border-left:4px solid #4caf50;
+      padding:20px;
+      margin:20px 0;
+      border-radius:5px;
+    }
+
+    .tip-box h4{ color:#2e7d32; margin-top:0; }
+
+    .exam-question{
+      background:#fff3e0;
+      border-left:4px solid #ff9800;
+      padding:20px;
+      margin:20px 0;
+      border-radius:5px;
+    }
+    .exam-question h4{ color:#e65100; margin-top:0; }
+
+    .past-exam{
+      background:#fce4ec;
+      border-left:4px solid #e91e63;
+      padding:20px;
+      margin:20px 0;
+      border-radius:5px;
+    }
+    .past-exam h4{ color:#c2185b; margin-top:0; }
+
+    ul,ol{ margin-left:30px; margin-top:10px; margin-bottom:10px; }
+    li{ margin-bottom:8px; }
+
+    .process-flow{
+      display:flex;
+      justify-content:space-between;
+      flex-wrap:wrap;
+      margin:20px 0;
+    }
+
+    .process-step{
+      flex:1;
+      min-width:180px;
+      background:white;
+      padding:20px;
+      margin:10px;
+      border-radius:8px;
+      box-shadow:0 2px 10px rgba(0,0,0,0.1);
+      text-align:center;
+      position:relative;
+    }
+
+    .process-step::after{
+      content:'→';
+      position:absolute;
+      right:-20px;
+      top:50%;
+      transform:translateY(-50%);
+      font-size:2em;
+      color:#f093fb;
+    }
+    .process-step:last-child::after{ content:''; }
+
+    .template-box{
+      background:#e3f2fd;
+      border:2px solid #2196f3;
+      padding:20px;
+      margin:20px 0;
+      border-radius:5px;
+    }
+    .template-box h4{ color:#1565c0; margin-top:0; }
+
+    .comparison-table{
+      width:100%;
+      border-collapse:collapse;
+      margin:20px 0;
+      box-shadow:0 2px 10px rgba(0,0,0,0.1);
+      background:#fff;
+    }
+
+    .comparison-table th{
+      background:#f093fb;
+      color:white;
+      padding:15px;
+      text-align:left;
+    }
+
+    .comparison-table td{
+      padding:15px;
+      border-bottom:1px solid #ddd;
+      vertical-align:top;
+    }
+
+    .comparison-table tr:nth-child(even){ background:#f8f9fa; }
+
+    .memory-trick{
+      background:#e1f5fe;
+      border-left:4px solid #0288d1;
+      padding:20px;
+      margin:20px 0;
+      border-radius:5px;
+    }
+    .memory-trick h4{ color:#01579b; margin-top:0; }
+
+    .warning-box{
+      background:#fff3cd;
+      border-left:4px solid #ffc107;
+      padding:20px;
+      margin:20px 0;
+      border-radius:5px;
+    }
+    .warning-box h4{ color:#856404; margin-top:0; }
+
+    strong{ color:#f093fb; }
+
+    code{
+      background:#f5f5f5;
+      padding:2px 6px;
+      border-radius:3px;
+      font-family:'Courier New',monospace;
+    }
+
+    .numbered-step{
+      background:white;
+      padding:15px;
+      margin:15px 0;
+      border-left:4px solid #f5576c;
+      border-radius:5px;
+    }
+
+    .numbered-step h4{ color:#f5576c; margin-top:0; }
+
+    /* ===== Language blocks (simple + safe) ===== */
+    .lang-block{ display:none; }
+    .lang-block.active{ display:block; }
+
+    /* ===== RTL tweaks ===== */
+    html[dir="rtl"] body{ text-align:right; }
+    html[dir="rtl"] ul, html[dir="rtl"] ol{ margin-left:0; margin-right:30px; }
+    html[dir="rtl"] .comparison-table th, html[dir="rtl"] .comparison-table td{ text-align:right; }
+    html[dir="rtl"] .section{ border-left:none; border-right:5px solid #f093fb; }
+    html[dir="rtl"] .highlight-box,
+    html[dir="rtl"] .tip-box,
+    html[dir="rtl"] .exam-question,
+    html[dir="rtl"] .past-exam,
+    html[dir="rtl"] .warning-box,
+    html[dir="rtl"] .memory-trick,
+    html[dir="rtl"] .template-box,
+    html[dir="rtl"] .numbered-step{
+      border-left:none;
+      border-right-width:4px;
+      border-right-style:solid;
+    }
+    html[dir="rtl"] .highlight-box{ border-right-color:#f093fb; }
+    html[dir="rtl"] .tip-box{ border-right-color:#4caf50; }
+    html[dir="rtl"] .exam-question{ border-right-color:#ff9800; }
+    html[dir="rtl"] .past-exam{ border-right-color:#e91e63; }
+    html[dir="rtl"] .warning-box{ border-right-color:#ffc107; }
+    html[dir="rtl"] .memory-trick{ border-right-color:#0288d1; }
+    html[dir="rtl"] .template-box{ border-right:2px solid #2196f3; }
+
+    html[dir="rtl"] .process-step::after{
+      content:'←';
+      right:auto;
+      left:-20px;
+    }
+
+    /* ===== AUTO DARK MODE (no toggle button) ===== */
+    @media (prefers-color-scheme: dark){
+      body{
+        color:#e9ecef;
+        background:linear-gradient(135deg,#1f1f1f 0%,#2b2b2b 100%);
+      }
+
+      .container{ background:#1e1e1e; }
+      .controls{ background:rgba(0,0,0,0.25); border-bottom:1px solid rgba(255,255,255,0.12); }
+
+      .toggle-btn{
+        background:#222;
+        color:#e9ecef;
+        border-color:rgba(255,255,255,0.18);
+      }
+      .toggle-btn:hover{ border-color:#f093fb; }
+      .toggle-btn.active{ background:#f093fb; color:#101010; }
+
+      .section{ background:#2a2a2a; }
+
+      h2{ border-bottom-color:#f093fb; }
+      h2,h3,h4,p,li,td,th{ color:#e9ecef; }
+
+      .highlight-box,
+      .tip-box,
+      .exam-question,
+      .past-exam,
+      .warning-box,
+      .memory-trick,
+      .template-box,
+      .numbered-step{
+        background:#2f2f2f !important;
+      }
+
+      .comparison-table{ background:#262626; }
+      .comparison-table tr:nth-child(even){ background:#2b2b2b; }
+      .comparison-table td{ border-bottom:1px solid rgba(255,255,255,0.12); }
+
+      code{ background:#333; color:#e9ecef; }
+    }
+  </style>
+  <script src="/javascripts/standalone-theme.js"></script>
+</head>
+
+<body>
+  <div class="container">
+    <header>
+      <h1>🔍 Problem Analysis</h1>
+      <p>SE 311 - Chapter 4 Complete Study Guide</p>
+    </header>
+
+    <!-- Only control: translation -->
+    <div class="controls">
+      <button class="toggle-btn" id="translateToggle" type="button">
+        🌐 <span id="translateToggleLabel">Translate to Arabic</span>
+      </button>
+    </div>
+
+    <div class="content">
+
+      <!-- ========================= ENGLISH ========================= -->
+      <div id="content-en" class="lang-block active">
+
+        <!-- Introduction -->
+        <div class="section">
+          <h2>🎯 What is Problem Analysis?</h2>
+
+          <div class="highlight-box">
+            <h3>Definition</h3>
+            <p><strong>Problem Analysis</strong> is the process of gaining a better understanding of the problem being solved before development begins.</p>
+
+            <h4>Goal:</h4>
+            <p>Understand the problem deeply before jumping into solutions</p>
+
+            <h4>Key Activities:</h4>
+            <ul>
+              <li>Identify <strong>root cause</strong> of the problem</li>
+              <li>Identify <strong>stakeholders</strong> and their needs</li>
+              <li>Identify <strong>solution boundary</strong></li>
+            </ul>
+          </div>
+
+          <h3>Input & Output</h3>
+
+          <table class="comparison-table">
+            <thead>
+              <tr>
+                <th>Input</th>
+                <th>Output</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Business requirements obtained from stakeholders</td>
+                <td>
+                  • <strong>Product Vision</strong><br />
+                  • <strong>Project Scope</strong>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="memory-trick">
+            <h4>💡 Memory Trick</h4>
+            <p><strong>Problem Analysis = Understanding BEFORE Building</strong></p>
+            <p>Don't jump to solutions! First understand:</p>
+            <ul>
+              <li><strong>Define Product Vision and Project Scope:</strong> Create vision statement describing what product could become and define scope of what current project will address</li>
+              <li><strong>Identify Constraints:</strong> Identify restrictions on solution space including economic, political, technical, system, environmental, and schedule constraints</li>
+            </ul>
+
+            <h4 style="margin-top:16px;">Quick 5W framing</h4>
+            <ul>
+              <li><strong>WHY</strong> we're building it (business opportunity)</li>
+              <li><strong>WHAT</strong> problem we're solving (root cause)</li>
+              <li><strong>WHO</strong> we're building for (stakeholders)</li>
+              <li><strong>WHERE</strong> the boundaries are (scope)</li>
+            </ul>
+          </div>
+
+          <div class="exam-question">
+            <h4>Question 2</h4>
+            <p>What is the difference between product vision and project scope?</p>
+            <p><strong>Answer:</strong></p>
+            <ul>
+              <li><strong>Product Vision:</strong> Describes what the product is about and what it could eventually become. Long-term view that aligns all stakeholders in a common direction. Applies to product as a whole.</li>
+              <li><strong>Project Scope:</strong> Identifies what portion of the ultimate product vision the current project will address. Specific to current release/iteration. Subset of the vision.</li>
+            </ul>
+          </div>
+
+          <div class="exam-question">
+            <h4>Question 3</h4>
+            <p>Explain the concept of "root cause analysis" with an example.</p>
+            <p><strong>Answer:</strong></p>
+            <p>Root cause analysis is finding the underlying causes that may not be immediately apparent. There is often a "problem behind the problem."</p>
+            <p><strong>Example:</strong> If an e-commerce site is not profitable, keep asking why:</p>
+            <ul>
+              <li>Why not profitable? → Low sales</li>
+              <li>Why low sales? → High cart abandonment</li>
+              <li>Why high abandonment? → Complicated checkout</li>
+              <li>Why complicated? → Too many required fields</li>
+              <li>Why too many? → Legacy system requirements</li>
+            </ul>
+            <p>Root cause: Legacy system architecture, not just "low sales"</p>
+          </div>
+
+          <div class="exam-question">
+            <h4>Question 4</h4>
+            <p>What are the six sources of constraints? Provide an example for each.</p>
+            <p><strong>Answer (E-P-T-S-E-S):</strong></p>
+            <ol>
+              <li><strong>Economics:</strong> Example - Budget limited to SAR 500,000</li>
+              <li><strong>Politics:</strong> Example - Must use preferred vendor due to company agreements</li>
+              <li><strong>Technology:</strong> Example - Must use Java because existing systems use it</li>
+              <li><strong>Systems:</strong> Example - Must integrate with legacy SAP system</li>
+              <li><strong>Environment:</strong> Example - Must comply with GDPR regulations</li>
+              <li><strong>Schedule:</strong> Example - Must launch before competitor in Q3</li>
+            </ol>
+          </div>
+
+          <div class="exam-question">
+            <h4>Question 5</h4>
+            <p>Compare and contrast Context Diagrams and Ecosystem Maps.</p>
+            <p><strong>Answer:</strong></p>
+            <table class="comparison-table">
+              <thead>
+                <tr>
+                  <th>Aspect</th>
+                  <th>Context Diagram</th>
+                  <th>Ecosystem Map</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Shows</strong></td>
+                  <td>External entities that directly interface with system</td>
+                  <td>All systems related to system being developed</td>
+                </tr>
+                <tr>
+                  <td><strong>Connections</strong></td>
+                  <td>Only direct connections</td>
+                  <td>Both direct and indirect connections</td>
+                </tr>
+                <tr>
+                  <td><strong>View</strong></td>
+                  <td>From outside only</td>
+                  <td>Broader ecosystem view</td>
+                </tr>
+                <tr>
+                  <td><strong>Detail</strong></td>
+                  <td>No internal features</td>
+                  <td>Shows interactions among systems</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="exam-question">
+            <h4>Question 6</h4>
+            <p>What information should be included in a stakeholder profile?</p>
+            <p><strong>Answer:</strong></p>
+            <ul>
+              <li><strong>Major value or benefit</strong> the stakeholder will receive (improved productivity, cost savings, new capabilities, etc.)</li>
+              <li><strong>Likely attitude</strong> toward the product (enthusiastic, neutral, resistant, etc.)</li>
+              <li><strong>Major features and characteristics</strong> of interest to this stakeholder</li>
+              <li><strong>Known constraints</strong> that must be accommodated for this stakeholder</li>
+            </ul>
+          </div>
+
+          <div class="exam-question">
+            <h4>Question 7</h4>
+            <p>Fill in the Vision Statement template for a university course registration system:</p>
+            <p><strong>Answer:</strong></p>
+            <p><strong>For</strong> university students</p>
+            <p><strong>Who</strong> need to register for courses each semester</p>
+            <p><strong>The</strong> SmartReg System</p>
+            <p><strong>Is</strong> an online course registration platform</p>
+            <p><strong>That</strong> allows students to view available courses, check prerequisites, and register in real-time</p>
+            <p><strong>Unlike</strong> the current manual registration process that requires in-person visits</p>
+            <p><strong>Our product</strong> provides 24/7 access, instant confirmation, and intelligent course recommendations based on degree requirements</p>
+          </div>
+        </div>
+
+        <!-- Real Exam Question -->
+        <div class="section">
+          <h2>🎓 Past Exam Analysis</h2>
+
+          <div class="past-exam">
+            <h4>📌 PAST EXAM - Major 1 (Riyadh Seasons)</h4>
+
+            <p><strong>Full Scenario:</strong> Riyadh Seasons event held annually. Tickets sold traditionally through two agencies. Organizers decided to modernize by selling tickets both traditionally and electronically on festival website. Secure Payment Inc. contracted for online payment security. Upon arrival, customers self-check at terminal to get bracelet with electronic chip. Bracelet can load money for purchasing products without cash, reducing waiting times.</p>
+
+            <p><strong>Q1: List all possible stakeholders (2P)</strong></p>
+            <p><strong>Sample Answer:</strong></p>
+            <ul>
+              <li>Organizers</li>
+              <li>Secure Payment Inc.</li>
+              <li>Customers</li>
+              <li>(Could also include: Event agencies, vendors at venue, technical staff)</li>
+            </ul>
+
+            <p><strong>Q2: What is the goal of developing the new system? (1P)</strong></p>
+            <p><strong>Sample Answer:</strong></p>
+            <ul>
+              <li>To completely modernize the ticket selling system</li>
+              <li>To introduce a system with short queues and low waiting times</li>
+            </ul>
+
+            <p><strong>Analysis Tips:</strong></p>
+            <ul>
+              <li>When identifying stakeholders, think broadly: direct users, indirect beneficiaries, service providers, maintainers</li>
+              <li>Goals should focus on <strong>business benefits</strong>, not technical features</li>
+              <li>Look for words like "modernize," "improve," "reduce" in problem description</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Common Mistakes -->
+        <div class="section">
+          <h2>⚠️ Common Mistakes to Avoid</h2>
+
+          <div class="warning-box">
+            <h4>Mistake 1: Jumping to Solutions Too Early</h4>
+            <p><strong>Problem:</strong> Starting to design before understanding the problem</p>
+            <p><strong>Solution:</strong> Complete all 5 steps of problem analysis first</p>
+          </div>
+
+          <div class="warning-box">
+            <h4>Mistake 2: Accepting Problem at Face Value</h4>
+            <p><strong>Problem:</strong> Not digging for root causes</p>
+            <p><strong>Example:</strong> User says "elevators are too slow" → Real problem might be perception/boredom</p>
+            <p><strong>Solution:</strong> Always ask "Why?" multiple times</p>
+          </div>
+
+          <div class="warning-box">
+            <h4>Mistake 3: Unclear Scope Boundaries</h4>
+            <p><strong>Problem:</strong> Vague about what's in vs. out of scope</p>
+            <p><strong>Result:</strong> Scope creep, budget overruns, missed deadlines</p>
+            <p><strong>Solution:</strong> Be explicit about inclusions AND exclusions</p>
+          </div>
+
+          <div class="warning-box">
+            <h4>Mistake 4: Vision Too Narrow or Too Broad</h4>
+            <p><strong>Problem:</strong> Vision either too limited or unrealistically expansive</p>
+            <p><strong>Solution:</strong> Balance ambition with feasibility; align with business objectives</p>
+          </div>
+
+          <div class="warning-box">
+            <h4>Mistake 5: Ignoring Constraints</h4>
+            <p><strong>Problem:</strong> Planning solution without considering real-world limitations</p>
+            <p><strong>Result:</strong> Infeasible designs, wasted effort</p>
+            <p><strong>Solution:</strong> Identify all constraints early (E-P-T-S-E-S)</p>
+          </div>
+        </div>
+
+        <!-- Tips for Exam Success -->
+        <div class="section">
+          <h2>🎯 Tips for Exam Success</h2>
+
+          <div class="tip-box">
+            <h4>✅ For Problem Analysis Questions</h4>
+            <ol>
+              <li><strong>Read scenario carefully</strong> - underline key information</li>
+              <li><strong>Identify the pain points</strong> - what's not working?</li>
+              <li><strong>Think beyond obvious</strong> - ask "why?" for root causes</li>
+              <li><strong>Consider all stakeholder types</strong> - don't just think of end users</li>
+              <li><strong>Be specific</strong> - avoid vague statements</li>
+            </ol>
+          </div>
+
+          <div class="tip-box">
+            <h4>✅ For Vision Statements</h4>
+            <ul>
+              <li>Follow the template exactly (For, Who, The, Is, That, Unlike, Our product)</li>
+              <li>Make sure each part answers its specific question</li>
+              <li>Focus on <strong>benefits</strong> not features in the "That" section</li>
+              <li>Be specific about competitive advantage in "Our product"</li>
+            </ul>
+          </div>
+
+          <div class="tip-box">
+            <h4>✅ For Stakeholder Questions</h4>
+            <ul>
+              <li>Think in categories: users, customers, maintainers, regulators, vendors</li>
+              <li>Consider both internal and external stakeholders</li>
+              <li>Don't forget indirect stakeholders (affected by system but don't use it)</li>
+              <li>Remember: stakeholder ≠ just users!</li>
+            </ul>
+          </div>
+
+          <div class="tip-box">
+            <h4>✅ For Scope Questions</h4>
+            <ul>
+              <li>Clearly state what IS included (in-scope)</li>
+              <li>Also state what is NOT included (out-of-scope)</li>
+              <li>Use scope representation techniques when appropriate</li>
+              <li>Relate scope to business objectives</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Key Definitions Summary -->
+        <div class="section">
+          <h2>📖 Key Definitions Summary</h2>
+
+          <div class="highlight-box">
+            <table class="comparison-table">
+              <thead>
+                <tr>
+                  <th>Term</th>
+                  <th>Definition</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Problem Analysis</strong></td>
+                  <td>Process of gaining better understanding of problem before development begins</td>
+                </tr>
+                <tr>
+                  <td><strong>Root Cause Analysis</strong></td>
+                  <td>Finding underlying causes that may not be immediately apparent</td>
+                </tr>
+                <tr>
+                  <td><strong>Product Vision</strong></td>
+                  <td>Describes what product is about and what it could eventually become</td>
+                </tr>
+                <tr>
+                  <td><strong>Project Scope</strong></td>
+                  <td>Identifies what portion of vision the current project will address</td>
+                </tr>
+                <tr>
+                  <td><strong>Constraints</strong></td>
+                  <td>Restrictions on solution space that limit ability to deliver solution as envisioned</td>
+                </tr>
+                <tr>
+                  <td><strong>Context Diagram</strong></td>
+                  <td>Shows external entities that directly interface with system</td>
+                </tr>
+                <tr>
+                  <td><strong>Ecosystem Map</strong></td>
+                  <td>Shows all systems related to system being developed and their interactions</td>
+                </tr>
+                <tr>
+                  <td><strong>Feature Tree</strong></td>
+                  <td>Hierarchical breakdown of features into levels of detail</td>
+                </tr>
+                <tr>
+                  <td><strong>Event List</strong></td>
+                  <td>External events that could trigger behavior in system</td>
+                </tr>
+                <tr>
+                  <td><strong>Stakeholder Profile</strong></td>
+                  <td>Description of stakeholder including value received, attitude, interests, constraints</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Five Steps of Problem Analysis -->
+        <div class="section">
+          <h2>📋 Five Steps of Problem Analysis</h2>
+
+          <div class="process-flow">
+            <div class="process-step"><h4>1</h4><p>Gain Agreement on Problem</p></div>
+            <div class="process-step"><h4>2</h4><p>Understand Root Causes</p></div>
+            <div class="process-step"><h4>3</h4><p>Identify Stakeholders</p></div>
+            <div class="process-step"><h4>4</h4><p>Define Vision & Boundary</p></div>
+            <div class="process-step"><h4>5</h4><p>Identify Constraints</p></div>
+          </div>
+
+          <div class="memory-trick">
+            <h4>💡 Memory Acronym: A-R-S-V-C</h4>
+            <p><strong>A</strong>greement on problem</p>
+            <p><strong>R</strong>oot causes</p>
+            <p><strong>S</strong>takeholders</p>
+            <p><strong>V</strong>ision & boundary</p>
+            <p><strong>C</strong>onstraints</p>
+          </div>
+
+          <div class="numbered-step">
+            <h4>Step 1: Gain Agreement on Problem Definition</h4>
+            <p><strong>Purpose:</strong> Ensure all stakeholders agree on what the problem actually is</p>
+
+            <h4>How to Do It:</h4>
+            <ul>
+              <li>Document the problem</li>
+              <li>Seek agreement from stakeholders</li>
+              <li>Ask stakeholders to write problem statements in agreed format</li>
+            </ul>
+
+            <h4>Problem Statement Should Include:</h4>
+            <ul>
+              <li>What the problem is</li>
+              <li>Who is affected by it?</li>
+              <li>What is the impact?</li>
+              <li>Is there a proposed solution?</li>
+              <li>What are key benefits?</li>
+            </ul>
+          </div>
+
+          <div class="numbered-step">
+            <h4>Step 2: Understand Root Causes</h4>
+            <p><strong>Key Concept:</strong> There is often a <strong>problem behind the problem</strong></p>
+
+            <div class="highlight-box">
+              <p><strong>Root Cause Analysis:</strong> Finding underlying causes that may not be immediately apparent</p>
+              <p>Determine recursively what factors contribute to the problem</p>
+            </div>
+
+            <h4>Example: E-commerce Site Not Profitable</h4>
+            <ul>
+              <li>Ask: Why is it not profitable?
+                <ul>
+                  <li>Poor site design?</li>
+                  <li>Bad pricing?</li>
+                  <li>Poor customer management after sale?</li>
+                  <li>Some or all of the above?</li>
+                </ul>
+              </li>
+            </ul>
+
+            <div class="tip-box">
+              <h4>✅ The "5 Whys" Technique</h4>
+              <p>Keep asking "Why?" to dig deeper into root causes</p>
+              <ol>
+                <li>Problem: Website has low sales</li>
+                <li>Why? Users abandon shopping carts</li>
+                <li>Why? Checkout process is confusing</li>
+                <li>Why? Too many steps required</li>
+                <li>Why? System requires creating account first</li>
+                <li>Why? Legacy system limitation</li>
+              </ol>
+              <p><strong>Root Cause:</strong> Legacy system architecture, not just "low sales"</p>
+            </div>
+          </div>
+
+          <div class="numbered-step">
+            <h4>Step 3: Identify Stakeholders</h4>
+
+            <h4>Stakeholder Profile Should Include:</h4>
+            <ul>
+              <li><strong>Major value or benefit</strong> stakeholder will receive (e.g., improved productivity, reduced rework, cost savings, ability to perform new tasks)</li>
+              <li><strong>Likely attitude</strong> toward the product</li>
+              <li><strong>Major features and characteristics</strong> of interest</li>
+              <li><strong>Any known constraints</strong> that must be accommodated</li>
+            </ul>
+
+            <h4>How to Identify Stakeholders?</h4>
+            <p>Ask questions such as:</p>
+            <ul>
+              <li>Who uses the system?</li>
+              <li>Who is the customer?</li>
+              <li>Who is affected by outputs?</li>
+              <li>Who evaluates/approves system?</li>
+              <li>Other external/internal users?</li>
+              <li>Who maintains the system?</li>
+              <li>Anyone who cares? (legal/regulatory, etc.)</li>
+            </ul>
+          </div>
+
+          <div class="numbered-step">
+            <h4>Step 4: Define Product Vision and Project Scope</h4>
+
+            <div class="highlight-box">
+              <h4>Product Vision</h4>
+              <p>Describes what the product is about and what it could eventually become</p>
+              <ul>
+                <li>Aligns all stakeholders in a common direction</li>
+                <li>Long-term view of the product</li>
+              </ul>
+
+              <h4>Project Scope</h4>
+              <p>Identifies what portion of the ultimate long-term product vision the current project will address</p>
+              <ul>
+                <li>Specific to current release/project</li>
+                <li>Subset of the vision</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="numbered-step">
+            <h4>Step 5: Identify Constraints</h4>
+
+            <div class="highlight-box">
+              <p><strong>Constraints:</strong> Restrictions on the solution space that put limitations on the ability to deliver a solution as envisioned</p>
+              <p>Usually non-functional requirements that impose major restrictions on the system</p>
+            </div>
+
+            <h4>Sources of Constraints:</h4>
+            <ul>
+              <li><strong>Economics:</strong> Costs, licensing issues</li>
+              <li><strong>Politics:</strong> Internal/external, interdepartmental issues</li>
+              <li><strong>Technology:</strong> Choice of technology/platform</li>
+              <li><strong>Systems:</strong> Existing system, compatibility issues</li>
+              <li><strong>Environment:</strong> Legal, environmental, security, standards</li>
+              <li><strong>Schedule and resources:</strong> Fixed schedule, team</li>
+            </ul>
+
+            <div class="memory-trick">
+              <h4>💡 Memory Trick: E-P-T-S-E-S</h4>
+              <p><strong>E</strong>conomics</p>
+              <p><strong>P</strong>olitics</p>
+              <p><strong>T</strong>echnology</p>
+              <p><strong>S</strong>ystems</p>
+              <p><strong>E</strong>nvironment</p>
+              <p><strong>S</strong>chedule</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Business Opportunity -->
+        <div class="section">
+          <h2>💼 Business Opportunity</h2>
+
+          <div class="highlight-box">
+            <p>Description of:</p>
+            <ul>
+              <li>Market opportunity</li>
+              <li>Competing market</li>
+              <li>Business problem being solved or improved</li>
+            </ul>
+
+            <h4>Example:</h4>
+            <p>"Exploit the poor security record of a competing product"</p>
+          </div>
+        </div>
+
+        <!-- Business Objectives and Success Criteria -->
+        <div class="section">
+          <h2>🎯 Business Objectives and Success Criteria</h2>
+
+          <div class="highlight-box">
+            <p><strong>Business objectives</strong> should be <strong>quantitative and measurable</strong></p>
+
+            <h4>Examples:</h4>
+            <ul>
+              <li>"Capture a market share of 80% by being recognized as the most secure product through trade journal reviews and consumer surveys"</li>
+              <li>"Achieve positive cash flow on the product within 6 months"</li>
+            </ul>
+          </div>
+
+          <div class="tip-box">
+            <h4>✅ Good Objectives Are SMART</h4>
+            <ul>
+              <li><strong>S</strong>pecific</li>
+              <li><strong>M</strong>easurable</li>
+              <li><strong>A</strong>chievable</li>
+              <li><strong>R</strong>elevant</li>
+              <li><strong>T</strong>ime-bound</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Vision Statement -->
+        <div class="section">
+          <h2>🔭 Vision Statement</h2>
+
+          <div class="template-box">
+            <h4>Vision Statement Template (Moore)</h4>
+            <p><strong>For</strong> [target customer]</p>
+            <p><strong>Who</strong> [statement of need or opportunity]</p>
+            <p><strong>The</strong> [product name]</p>
+            <p><strong>Is</strong> [a product category]</p>
+            <p><strong>That</strong> [key benefit, compelling reason to buy or use]</p>
+            <p><strong>Unlike</strong> [primary competitive alternative, current system, or current business process]</p>
+            <p><strong>Our product</strong> [statement of primary differentiation and advantages]</p>
+          </div>
+
+          <div class="exam-question">
+            <h4>📝 Practice Example</h4>
+            <p><strong>Create a vision statement for an online food delivery app:</strong></p>
+            <p><strong>Answer:</strong></p>
+            <p><strong>For</strong> busy professionals and students</p>
+            <p><strong>Who</strong> need quick access to quality meals without leaving their location</p>
+            <p><strong>The</strong> QuickBite App</p>
+            <p><strong>Is</strong> a mobile food delivery platform</p>
+            <p><strong>That</strong> delivers restaurant-quality meals in under 30 minutes with real-time tracking</p>
+            <p><strong>Unlike</strong> traditional delivery services that take 60+ minutes</p>
+            <p><strong>Our product</strong> uses AI-powered route optimization and a network of local kitchens to guarantee fast delivery</p>
+          </div>
+        </div>
+
+        <!-- Definition of Scope -->
+        <div class="section">
+          <h2>📏 Definition of Scope</h2>
+
+          <div class="highlight-box">
+            <h3>What Scope Defines</h3>
+            <ul>
+              <li>Definition of <strong>solution system boundaries</strong></li>
+              <li>Defines what the system <strong>will or will not do</strong></li>
+              <li>Establishes <strong>realistic stakeholder expectations</strong></li>
+            </ul>
+          </div>
+
+          <h3>Scope During Development</h3>
+
+          <ul>
+            <li>New requirements during development are <strong>evaluated according to the scope</strong></li>
+            <li><strong>In-scope requirements:</strong> Can be incorporated if high priority relative to baseline
+              <ul>
+                <li>Usually implies deferring/canceling other requirements or negotiating new schedule</li>
+              </ul>
+            </li>
+            <li><strong>Out-of-scope requirements:</strong> Should be deferred to following release</li>
+          </ul>
+
+          <div class="warning-box">
+            <h4>⚠️ Scope Creep Warning</h4>
+            <p>Without clear scope definition:</p>
+            <ul>
+              <li>Projects go over budget</li>
+              <li>Schedules slip</li>
+              <li>Team gets overwhelmed</li>
+              <li>Quality suffers</li>
+            </ul>
+            <p><strong>Solution:</strong> Always ask "Is this in scope?" before accepting new requirements</p>
+          </div>
+
+          <div class="past-exam">
+            <h4>📌 PAST EXAM - Major 1 (Riyadh Seasons)</h4>
+            <p><strong>Q: What is the goal of developing the new system?</strong></p>
+            <p><strong>Sample Answer:</strong></p>
+            <ul>
+              <li>To completely modernize the ticket selling system</li>
+              <li>To introduce a system that will have short queues and low waiting times</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Scope Representation Techniques -->
+        <div class="section">
+          <h2>🎨 Scope Representation Techniques</h2>
+
+          <p><strong>Purpose:</strong> Give clear and accurate communication of scope among stakeholders. Important to follow a notation standard.</p>
+
+          <h3>1. Context Diagram</h3>
+
+          <div class="highlight-box">
+            <h4>What It Shows:</h4>
+            <ul>
+              <li>All types of <strong>external entities</strong> that directly interface with the system</li>
+              <li>The system itself (as a single box)</li>
+              <li>Data/information flows between system and external entities</li>
+            </ul>
+
+            <h4>Characteristics:</h4>
+            <ul>
+              <li>Shows <strong>from the outside only</strong></li>
+              <li>No internal features or functions</li>
+              <li>High-level view</li>
+            </ul>
+          </div>
+
+          <h3>2. Ecosystem Map</h3>
+
+          <div class="highlight-box">
+            <h4>What It Shows:</h4>
+            <ul>
+              <li>All systems <strong>related to</strong> the system being developed</li>
+              <li>Interactions <strong>among</strong> them</li>
+              <li>Both direct and indirect connections</li>
+            </ul>
+
+            <h4>Key Difference from Context Diagram:</h4>
+            <ul>
+              <li>Shows systems with <strong>no direct connection</strong> to your system</li>
+              <li>"I take from people or people take from me" - broader view</li>
+            </ul>
+          </div>
+
+          <h3>3. Feature Tree</h3>
+
+          <div class="highlight-box">
+            <h4>What It Shows:</h4>
+            <ul>
+              <li><strong>Hierarchical breakdown</strong> of features</li>
+              <li>Each feature subdivided into further levels of detail</li>
+              <li>Organized like a tree structure</li>
+            </ul>
+
+            <h4>Example Structure:</h4>
+            <ul>
+              <li>Main Feature: User Management
+                <ul>
+                  <li>Sub-feature: Registration
+                    <ul>
+                      <li>Email verification</li>
+                      <li>Profile creation</li>
+                    </ul>
+                  </li>
+                  <li>Sub-feature: Authentication
+                    <ul>
+                      <li>Login</li>
+                      <li>Password reset</li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </div>
+
+          <h3>4. Event Lists</h3>
+
+          <div class="highlight-box">
+            <h4>What It Shows:</h4>
+            <ul>
+              <li><strong>External events</strong> that could trigger behavior in the system</li>
+              <li>Events triggered by <strong>users</strong></li>
+              <li>Events triggered by <strong>time</strong></li>
+            </ul>
+
+            <h4>Examples:</h4>
+            <ul>
+              <li><strong>User-triggered:</strong> Customer clicks "Submit Order"</li>
+              <li><strong>Time-triggered:</strong> End of business day (generate daily report)</li>
+              <li><strong>System-triggered:</strong> Inventory drops below threshold (send alert)</li>
+            </ul>
+          </div>
+
+          <div class="memory-trick">
+            <h4>💡 Memory Trick: C-E-F-E</h4>
+            <p><strong>C</strong>ontext diagram - system from outside</p>
+            <p><strong>E</strong>cosystem map - all related systems</p>
+            <p><strong>F</strong>eature tree - hierarchical breakdown</p>
+            <p><strong>E</strong>vent list - triggers and behaviors</p>
+          </div>
+        </div>
+
+        <!-- Vision and Scope Document -->
+        <div class="section">
+          <h2>📄 Vision and Scope Document</h2>
+
+          <div class="highlight-box">
+            <h3>Contents of Vision & Scope Document</h3>
+
+            <h4>1. Business Requirements</h4>
+            <ul>
+              <li>Business opportunity</li>
+              <li>Business objectives and success criteria</li>
+            </ul>
+
+            <h4>2. Vision of the Solution</h4>
+            <ul>
+              <li>Vision statement</li>
+              <li>Major features</li>
+              <li>Dependencies</li>
+            </ul>
+
+            <h4>3. Scope and Limitations</h4>
+            <ul>
+              <li>Scope of initial release</li>
+              <li>Scope of subsequent releases</li>
+              <li>Limitations and exclusions</li>
+            </ul>
+
+            <h4>4. Business Context</h4>
+            <ul>
+              <li>Stakeholder profiles</li>
+              <li>Project priorities</li>
+              <li>Operating environment</li>
+            </ul>
+
+            <h4>5. Risks!!!</h4>
+            <ul>
+              <li>Technical risks</li>
+              <li>Business risks</li>
+              <li>Resource risks</li>
+            </ul>
+          </div>
+
+          <div class="tip-box">
+            <h4>✅ Why Vision & Scope Document is Important</h4>
+            <ul>
+              <li>Establishes <strong>agreement</strong> among stakeholders</li>
+              <li>Provides <strong>direction</strong> for the project</li>
+              <li>Helps make <strong>scope decisions</strong> (in or out?)</li>
+              <li>Prevents <strong>scope creep</strong></li>
+              <li>Foundation for <strong>requirements elicitation</strong></li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Practice Questions -->
+        <div class="section">
+          <h2>📝 Practice Questions</h2>
+
+          <div class="exam-question">
+            <h4>Question 1</h4>
+            <p>List and briefly explain the five steps of problem analysis.</p>
+            <p><strong>Answer:</strong></p>
+            <ol>
+              <li><strong>Gain Agreement on Problem Definition:</strong> Document the problem and seek agreement from stakeholders on what the problem is, who's affected, impact, and proposed solutions</li>
+              <li><strong>Understand Root Causes:</strong> Find the problem behind the problem through recursive questioning to identify underlying causes</li>
+              <li><strong>Identify Stakeholders:</strong> Determine who uses, maintains, approves, and is affected by the system. Create stakeholder profiles</li>
+              <li><strong>Define Product Vision & Project Scope:</strong> Establish the long-term product direction (vision) and what the current project/release will cover (scope)</li>
+              <li><strong>Identify Constraints:</strong> Identify restrictions on the solution space (economic, political, technical, systems, environment, schedule/resources)</li>
+            </ol>
+          </div>
+        </div>
+
+        <!-- Chapter Summary -->
+        <div class="section">
+          <h2>📚 Chapter Summary</h2>
+
+          <div class="highlight-box">
+            <h3>Key Takeaways</h3>
+            <ul>
+              <li><strong>Problem Analysis</strong> is about understanding before building</li>
+              <li><strong>Five Steps (A-R-S-V-C):</strong> Agreement, Root causes, Stakeholders, Vision/boundary, Constraints</li>
+              <li>Always look for the <strong>problem behind the problem</strong> (root cause)</li>
+              <li><strong>Product Vision</strong> = long-term view; <strong>Project Scope</strong> = current release</li>
+              <li><strong>Vision Statement Template:</strong> For, Who, The, Is, That, Unlike, Our product</li>
+              <li><strong>Constraints (E-P-T-S-E-S):</strong> Economics, Politics, Technology, Systems, Environment, Schedule</li>
+              <li><strong>Scope Representation (C-E-F-E):</strong> Context diagram, Ecosystem map, Feature tree, Event list</li>
+              <li><strong>Stakeholder Profile</strong> includes value, attitude, interests, constraints</li>
+              <li><strong>Vision & Scope Document</strong> contains business requirements, vision, scope, business context, risks</li>
+              <li>Clear scope prevents <strong>scope creep</strong> and helps manage expectations</li>
+              <li>Problem analysis produces <strong>Product Vision and Project Scope</strong> as outputs</li>
+            </ul>
+          </div>
+
+          <div class="memory-trick">
+            <h4>💡 Master Memory Framework</h4>
+            <p><strong>The 5 Steps: A-R-S-V-C</strong></p>
+            <p><strong>Constraints: E-P-T-S-E-S</strong></p>
+            <p><strong>Scope Tools: C-E-F-E</strong></p>
+            <p><strong>Business Objectives: SMART</strong></p>
+            <p><strong>Vision Template: For-Who-The-Is-That-Unlike-Our</strong></p>
+          </div>
+        </div>
+
+        <!-- Final Tips -->
+        <div class="section">
+          <h2>🌟 Final Exam Tips</h2>
+
+          <div class="tip-box">
+            <h4>Before the Exam:</h4>
+            <ul>
+              <li>Memorize the vision statement template</li>
+              <li>Know the 5 steps of problem analysis cold (A-R-S-V-C)</li>
+              <li>Understand the difference between vision and scope</li>
+              <li>Be able to give examples of each type of constraint</li>
+              <li>Practice creating stakeholder profiles</li>
+            </ul>
+          </div>
+
+          <div class="tip-box">
+            <h4>During the Exam:</h4>
+            <ul>
+              <li>Read the scenario thoroughly - highlight key information</li>
+              <li>For stakeholder questions, think broadly (users, vendors, regulators, etc.)</li>
+              <li>For goal questions, focus on business benefits not technical features</li>
+              <li>For root cause questions, ask "why?" multiple times</li>
+              <li>For vision statements, follow the template exactly</li>
+              <li>Be specific and concrete in your answers</li>
+            </ul>
+          </div>
+
+          <div class="highlight-box">
+            <h4>📌 Remember:</h4>
+            <p><strong>"A project without a clearly defined and well-communicated direction invites disaster"</strong></p>
+            <p>Problem analysis is about establishing that clear direction before any code is written!</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========================= ARABIC ========================= -->
+      <div id="content-ar" class="lang-block">
+
+        <!-- مقدمة -->
+        <div class="section">
+          <h2>🎯 ما هو تحليل المشكلة؟</h2>
+
+          <div class="highlight-box">
+            <h3>التعريف</h3>
+            <p><strong>تحليل المشكلة</strong> هو عملية اكتساب فهم أعمق للمشكلة التي سيتم حلّها قبل بدء التطوير.</p>
+
+            <h4>الهدف:</h4>
+            <p>فهم المشكلة بعمق قبل القفز إلى الحلول</p>
+
+            <h4>الأنشطة الأساسية:</h4>
+            <ul>
+              <li>تحديد <strong>السبب الجذري</strong> للمشكلة</li>
+              <li>تحديد <strong>أصحاب المصلحة</strong> واحتياجاتهم</li>
+              <li>تحديد <strong>حدود الحل</strong> (النطاق)</li>
+            </ul>
+          </div>
+
+          <h3>المدخلات والمخرجات</h3>
+
+          <table class="comparison-table">
+            <thead>
+              <tr>
+                <th>المدخل</th>
+                <th>المخرج</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>متطلبات الأعمال التي يتم الحصول عليها من أصحاب المصلحة</td>
+                <td>
+                  • <strong>رؤية المنتج</strong><br />
+                  • <strong>نطاق المشروع</strong>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="memory-trick">
+            <h4>💡 خدعة للتذكّر</h4>
+            <p><strong>تحليل المشكلة = فهم قبل البناء</strong></p>
+            <p>لا تقفزي للحلول! أولاً افهمي:</p>
+            <ul>
+              <li><strong>تحديد رؤية المنتج ونطاق المشروع:</strong> صياغة رؤية توضّح ما يمكن أن يصبح عليه المنتج مستقبلاً وتحديد ما الذي سيغطيه المشروع الحالي</li>
+              <li><strong>تحديد القيود:</strong> تحديد القيود على مساحة الحل (اقتصادية، سياسية، تقنية، أنظمة، بيئية، وجدول زمني/موارد)</li>
+            </ul>
+
+            <h4 style="margin-top:16px;">إطار 5W سريع</h4>
+            <ul>
+              <li><strong>لماذا</strong> نطوّر النظام؟ (فرصة/هدف أعمال)</li>
+              <li><strong>ماذا</strong> نحل؟ (السبب الجذري)</li>
+              <li><strong>لمن</strong> نطوّر؟ (أصحاب المصلحة)</li>
+              <li><strong>أين</strong> حدود الحل؟ (النطاق)</li>
+            </ul>
+          </div>
+
+          <div class="exam-question">
+            <h4>سؤال 2</h4>
+            <p>ما الفرق بين رؤية المنتج ونطاق المشروع؟</p>
+            <p><strong>الإجابة:</strong></p>
+            <ul>
+              <li><strong>رؤية المنتج:</strong> تصف فكرة المنتج وما يمكن أن يصبح عليه مستقبلاً. رؤية طويلة المدى توحّد أصحاب المصلحة على اتجاه واحد وتشمل المنتج ككل.</li>
+              <li><strong>نطاق المشروع:</strong> يحدد الجزء من رؤية المنتج الذي سيتعامل معه المشروع/الإصدار الحالي. نطاق محدد لإصدار أو تكرار معين وهو جزء من الرؤية.</li>
+            </ul>
+          </div>
+
+          <div class="exam-question">
+            <h4>سؤال 3</h4>
+            <p>اشرحي مفهوم "تحليل السبب الجذري" مع مثال.</p>
+            <p><strong>الإجابة:</strong></p>
+            <p>تحليل السبب الجذري يعني البحث عن الأسباب العميقة التي قد لا تكون واضحة من البداية. غالباً توجد "مشكلة خلف المشكلة".</p>
+            <p><strong>مثال:</strong> إذا كان موقع تجارة إلكترونية غير مربح، استمري بسؤال لماذا:</p>
+            <ul>
+              <li>لماذا غير مربح؟ → مبيعات منخفضة</li>
+              <li>لماذا المبيعات منخفضة؟ → هجر سلة التسوق</li>
+              <li>لماذا الهجر مرتفع؟ → خطوات الدفع معقدة</li>
+              <li>لماذا معقدة؟ → حقول إلزامية كثيرة</li>
+              <li>لماذا كثيرة؟ → متطلبات نظام قديم</li>
+            </ul>
+            <p>السبب الجذري: بنية النظام القديم، وليس فقط "مبيعات منخفضة".</p>
+          </div>
+
+          <div class="exam-question">
+            <h4>سؤال 4</h4>
+            <p>ما هي مصادر القيود الستة؟ اذكري مثالاً لكل مصدر.</p>
+            <p><strong>الإجابة (E-P-T-S-E-S):</strong></p>
+            <ol>
+              <li><strong>الاقتصاديات:</strong> مثال — الميزانية محدودة بـ 500,000 ريال</li>
+              <li><strong>السياسات:</strong> مثال — يجب استخدام مورد مفضل بسبب اتفاقيات الشركة</li>
+              <li><strong>التقنية:</strong> مثال — يجب استخدام Java لأن الأنظمة الحالية تعمل بها</li>
+              <li><strong>الأنظمة:</strong> مثال — يجب التكامل مع نظام SAP قديم</li>
+              <li><strong>البيئة/اللوائح:</strong> مثال — الالتزام بتشريعات GDPR</li>
+              <li><strong>الجدول الزمني:</strong> مثال — الإطلاق قبل المنافس في الربع الثالث</li>
+            </ol>
+          </div>
+
+          <div class="exam-question">
+            <h4>سؤال 5</h4>
+            <p>قارني بين مخطط السياق (Context Diagram) وخريطة النظام البيئي (Ecosystem Map).</p>
+            <p><strong>الإجابة:</strong></p>
+            <table class="comparison-table">
+              <thead>
+                <tr>
+                  <th>الجانب</th>
+                  <th>مخطط السياق</th>
+                  <th>خريطة النظام البيئي</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>يعرض</strong></td>
+                  <td>الكيانات الخارجية التي تتفاعل مباشرة مع النظام</td>
+                  <td>كل الأنظمة المرتبطة بالنظام الجاري تطويره</td>
+                </tr>
+                <tr>
+                  <td><strong>الروابط</strong></td>
+                  <td>روابط مباشرة فقط</td>
+                  <td>روابط مباشرة وغير مباشرة</td>
+                </tr>
+                <tr>
+                  <td><strong>المنظور</strong></td>
+                  <td>من خارج النظام فقط</td>
+                  <td>منظور أوسع للنظام البيئي</td>
+                </tr>
+                <tr>
+                  <td><strong>التفاصيل</strong></td>
+                  <td>لا يعرض وظائف داخلية</td>
+                  <td>يعرض تفاعلات بين الأنظمة</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="exam-question">
+            <h4>سؤال 6</h4>
+            <p>ما المعلومات التي يجب أن تتضمنها بطاقة/ملف صاحب المصلحة؟</p>
+            <p><strong>الإجابة:</strong></p>
+            <ul>
+              <li><strong>القيمة أو الفائدة</strong> التي سيحصل عليها (زيادة إنتاجية، تقليل تكلفة، قدرات جديدة...)</li>
+              <li><strong>الاتجاه المتوقع</strong> تجاه المنتج (متحمس، محايد، مقاوم...)</li>
+              <li><strong>الميزات</strong> الأكثر أهمية لهذا صاحب المصلحة</li>
+              <li><strong>القيود المعروفة</strong> التي يجب أخذها بالحسبان</li>
+            </ul>
+          </div>
+
+          <div class="exam-question">
+            <h4>سؤال 7</h4>
+            <p>املئي قالب "بيان الرؤية" لنظام تسجيل مقررات جامعي:</p>
+            <p><strong>الإجابة:</strong></p>
+            <p><strong>لـ</strong> طلاب الجامعة</p>
+            <p><strong>الذين</strong> يحتاجون لتسجيل المقررات كل فصل</p>
+            <p><strong>فإن</strong> نظام SmartReg</p>
+            <p><strong>هو</strong> منصة تسجيل مقررات عبر الإنترنت</p>
+            <p><strong>تتيح</strong> للطلاب استعراض المقررات والتحقق من المتطلبات السابقة والتسجيل لحظياً</p>
+            <p><strong>على عكس</strong> التسجيل اليدوي الذي يتطلب الحضور شخصياً</p>
+            <p><strong>منتجنا</strong> يوفر وصولاً 24/7 وتأكيداً فورياً وتوصيات ذكية بناءً على متطلبات الخطة الدراسية</p>
+          </div>
+        </div>
+
+        <!-- تحليل اختبار سابق -->
+        <div class="section">
+          <h2>🎓 تحليل اختبار سابق</h2>
+
+          <div class="past-exam">
+            <h4>📌 اختبار سابق - ميد 1 (موسم الرياض)</h4>
+
+            <p><strong>السيناريو:</strong> فعالية موسم الرياض تُقام سنوياً. التذاكر كانت تُباع تقليدياً عبر وكالتين. قرر المنظمون التحديث ببيع التذاكر تقليدياً وإلكترونياً عبر موقع المهرجان. تم التعاقد مع Secure Payment Inc. لأمان الدفع الإلكتروني. عند الوصول، يقوم العميل بتسجيل الدخول ذاتياً عبر جهاز للحصول على سوار بشريحة. يمكن شحن السوار وشراء المنتجات بدون نقد لتقليل وقت الانتظار.</p>
+
+            <p><strong>س1: اذكري جميع أصحاب المصلحة المحتملين (2 درجات)</strong></p>
+            <p><strong>إجابة نموذجية:</strong></p>
+            <ul>
+              <li>المنظمون</li>
+              <li>Secure Payment Inc.</li>
+              <li>العملاء</li>
+              <li>(وقد يشمل: وكالات التذاكر، الباعة داخل الموقع، الفريق التقني)</li>
+            </ul>
+
+            <p><strong>س2: ما هدف تطوير النظام الجديد؟ (1 درجة)</strong></p>
+            <p><strong>إجابة نموذجية:</strong></p>
+            <ul>
+              <li>تحديث/تطوير نظام بيع التذاكر بالكامل</li>
+              <li>تقديم نظام يقلل الطوابير ووقت الانتظار</li>
+            </ul>
+
+            <p><strong>نصائح التحليل:</strong></p>
+            <ul>
+              <li>عند تحديد أصحاب المصلحة فكري بشكل واسع: مستخدم مباشر، مستفيد غير مباشر، مزود خدمة، فريق تشغيل وصيانة</li>
+              <li>الأهداف يجب أن تركز على <strong>فائدة أعمال</strong> وليس ميزات تقنية</li>
+              <li>ابحثي عن كلمات مثل: "تحديث"، "تحسين"، "تقليل" داخل النص</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- أخطاء شائعة -->
+        <div class="section">
+          <h2>⚠️ أخطاء شائعة يجب تجنبها</h2>
+
+          <div class="warning-box">
+            <h4>خطأ 1: القفز للحلول مبكراً</h4>
+            <p><strong>المشكلة:</strong> البدء بالتصميم قبل فهم المشكلة</p>
+            <p><strong>الحل:</strong> طبقي خطوات تحليل المشكلة الخمس كاملة أولاً</p>
+          </div>
+
+          <div class="warning-box">
+            <h4>خطأ 2: أخذ المشكلة بظاهرها</h4>
+            <p><strong>المشكلة:</strong> عدم البحث عن الأسباب الجذرية</p>
+            <p><strong>مثال:</strong> المستخدم يقول "المصاعد بطيئة" → قد تكون المشكلة الحقيقية إدراك/ملل أثناء الانتظار</p>
+            <p><strong>الحل:</strong> اسألي "لماذا؟" عدة مرات</p>
+          </div>
+
+          <div class="warning-box">
+            <h4>خطأ 3: حدود نطاق غير واضحة</h4>
+            <p><strong>المشكلة:</strong> غموض ما هو داخل/خارج النطاق</p>
+            <p><strong>النتيجة:</strong> توسع نطاق، تجاوز ميزانية، تأخير</p>
+            <p><strong>الحل:</strong> كوني واضحة في ما هو داخل النطاق وما هو خارج النطاق</p>
+          </div>
+
+          <div class="warning-box">
+            <h4>خطأ 4: رؤية ضيقة جداً أو واسعة جداً</h4>
+            <p><strong>المشكلة:</strong> رؤية محدودة جداً أو طموحة بشكل غير واقعي</p>
+            <p><strong>الحل:</strong> توازن بين الطموح والواقعية وربطها بأهداف الأعمال</p>
+          </div>
+
+          <div class="warning-box">
+            <h4>خطأ 5: تجاهل القيود</h4>
+            <p><strong>المشكلة:</strong> التخطيط للحل دون قيود الواقع</p>
+            <p><strong>النتيجة:</strong> تصميم غير قابل للتنفيذ وإهدار وقت</p>
+            <p><strong>الحل:</strong> حددي القيود مبكراً (E-P-T-S-E-S)</p>
+          </div>
+        </div>
+
+        <!-- نصائح للامتحان -->
+        <div class="section">
+          <h2>🎯 نصائح للنجاح في الاختبار</h2>
+
+          <div class="tip-box">
+            <h4>✅ لأسئلة تحليل المشكلة</h4>
+            <ol>
+              <li><strong>اقرئي السيناريو بعناية</strong> وحددي الكلمات المهمة</li>
+              <li><strong>حددي نقاط الألم</strong> — ما الذي لا يعمل؟</li>
+              <li><strong>فكري أعمق</strong> — اسألي "لماذا؟" للوصول للسبب الجذري</li>
+              <li><strong>فكري في كل أنواع أصحاب المصلحة</strong> وليس فقط المستخدم النهائي</li>
+              <li><strong>كوني محددة</strong> وتجنبي العبارات العامة</li>
+            </ol>
+          </div>
+
+          <div class="tip-box">
+            <h4>✅ لبيانات الرؤية</h4>
+            <ul>
+              <li>اتبعي القالب حرفياً (For, Who, The, Is, That, Unlike, Our product)</li>
+              <li>تأكدي أن كل جزء يجيب على سؤاله</li>
+              <li>ركزي على <strong>الفوائد</strong> وليس الميزات التقنية في جزء That</li>
+              <li>كوني محددة في ميزة التنافس في Our product</li>
+            </ul>
+          </div>
+
+          <div class="tip-box">
+            <h4>✅ لأسئلة أصحاب المصلحة</h4>
+            <ul>
+              <li>فكري بفئات: مستخدمون، عملاء، صيانة وتشغيل، جهات تنظيمية، موردون</li>
+              <li>أصحاب مصلحة داخليين وخارجيين</li>
+              <li>لا تنسي أصحاب المصلحة غير المباشرين</li>
+              <li>تذكري: صاحب مصلحة ≠ مستخدم فقط</li>
+            </ul>
+          </div>
+
+          <div class="tip-box">
+            <h4>✅ لأسئلة النطاق</h4>
+            <ul>
+              <li>اذكري ما هو داخل النطاق (In-scope)</li>
+              <li>واذكري ما هو خارج النطاق (Out-of-scope)</li>
+              <li>استخدمي أدوات تمثيل النطاق عند الحاجة</li>
+              <li>اربطِي النطاق بأهداف الأعمال</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- تعريفات -->
+        <div class="section">
+          <h2>📖 ملخص أهم التعريفات</h2>
+
+          <div class="highlight-box">
+            <table class="comparison-table">
+              <thead>
+                <tr>
+                  <th>المصطلح</th>
+                  <th>التعريف</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>تحليل المشكلة</strong></td>
+                  <td>عملية فهم المشكلة بشكل أفضل قبل بدء التطوير</td>
+                </tr>
+                <tr>
+                  <td><strong>تحليل السبب الجذري</strong></td>
+                  <td>اكتشاف الأسباب العميقة غير الظاهرة مباشرة</td>
+                </tr>
+                <tr>
+                  <td><strong>رؤية المنتج</strong></td>
+                  <td>تصف ما هو المنتج وما قد يصبح عليه مستقبلاً</td>
+                </tr>
+                <tr>
+                  <td><strong>نطاق المشروع</strong></td>
+                  <td>يحدد الجزء من الرؤية الذي يغطيه المشروع الحالي</td>
+                </tr>
+                <tr>
+                  <td><strong>القيود</strong></td>
+                  <td>قيود على مساحة الحل تحد من إمكانية التنفيذ كما هو متصور</td>
+                </tr>
+                <tr>
+                  <td><strong>مخطط السياق</strong></td>
+                  <td>يعرض الكيانات الخارجية التي تتفاعل مباشرة مع النظام</td>
+                </tr>
+                <tr>
+                  <td><strong>خريطة النظام البيئي</strong></td>
+                  <td>تعرض الأنظمة المرتبطة وتفاعلاتها مع النظام</td>
+                </tr>
+                <tr>
+                  <td><strong>شجرة الميزات</strong></td>
+                  <td>تفكيك هرمي للميزات إلى مستويات تفصيلية</td>
+                </tr>
+                <tr>
+                  <td><strong>قائمة الأحداث</strong></td>
+                  <td>أحداث خارجية قد تحفز سلوكاً في النظام</td>
+                </tr>
+                <tr>
+                  <td><strong>ملف صاحب المصلحة</strong></td>
+                  <td>وصف لصاحب المصلحة يشمل القيمة والاتجاه والاهتمامات والقيود</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- الخطوات الخمس -->
+        <div class="section">
+          <h2>📋 الخطوات الخمس لتحليل المشكلة</h2>
+
+          <div class="process-flow">
+            <div class="process-step"><h4>1</h4><p>الاتفاق على تعريف المشكلة</p></div>
+            <div class="process-step"><h4>2</h4><p>فهم الأسباب الجذرية</p></div>
+            <div class="process-step"><h4>3</h4><p>تحديد أصحاب المصلحة</p></div>
+            <div class="process-step"><h4>4</h4><p>تحديد الرؤية والحدود</p></div>
+            <div class="process-step"><h4>5</h4><p>تحديد القيود</p></div>
+          </div>
+
+          <div class="memory-trick">
+            <h4>💡 اختصار للتذكّر: A-R-S-V-C</h4>
+            <p><strong>A</strong> Agreement</p>
+            <p><strong>R</strong> Root causes</p>
+            <p><strong>S</strong> Stakeholders</p>
+            <p><strong>V</strong> Vision & boundary</p>
+            <p><strong>C</strong> Constraints</p>
+          </div>
+
+          <div class="numbered-step">
+            <h4>الخطوة 1: الاتفاق على تعريف المشكلة</h4>
+            <p><strong>الهدف:</strong> توحيد فهم جميع أصحاب المصلحة للمشكلة</p>
+            <h4>كيف؟</h4>
+            <ul>
+              <li>توثيق المشكلة</li>
+              <li>الحصول على اتفاق أصحاب المصلحة</li>
+              <li>طلب كتابة بيان المشكلة بصيغة متفق عليها</li>
+            </ul>
+
+            <h4>بيان المشكلة يتضمن:</h4>
+            <ul>
+              <li>ما هي المشكلة؟</li>
+              <li>من المتأثر؟</li>
+              <li>ما أثرها؟</li>
+              <li>هل هناك حل مقترح؟</li>
+              <li>ما الفوائد المتوقعة؟</li>
+            </ul>
+          </div>
+
+          <div class="numbered-step">
+            <h4>الخطوة 2: فهم الأسباب الجذرية</h4>
+            <p><strong>الفكرة:</strong> غالباً توجد <strong>مشكلة خلف المشكلة</strong></p>
+
+            <div class="highlight-box">
+              <p><strong>تحليل السبب الجذري:</strong> اكتشاف الأسباب العميقة التي لا تظهر مباشرة</p>
+              <p>تحديد العوامل التي تساهم في المشكلة بشكل تكراري</p>
+            </div>
+
+            <div class="tip-box">
+              <h4>✅ تقنية "5 لماذا"</h4>
+              <p>استمري بالسؤال "لماذا؟" للوصول للجذر</p>
+              <ol>
+                <li>المشكلة: مبيعات منخفضة</li>
+                <li>لماذا؟ هجر سلة التسوق</li>
+                <li>لماذا؟ الدفع مربك</li>
+                <li>لماذا؟ خطوات كثيرة</li>
+                <li>لماذا؟ يجب إنشاء حساب أولاً</li>
+                <li>لماذا؟ قيود نظام قديم</li>
+              </ol>
+              <p><strong>السبب الجذري:</strong> بنية النظام القديم</p>
+            </div>
+          </div>
+
+          <div class="numbered-step">
+            <h4>الخطوة 3: تحديد أصحاب المصلحة</h4>
+            <h4>ملف صاحب المصلحة يشمل:</h4>
+            <ul>
+              <li>القيمة/الفائدة المتوقعة</li>
+              <li>الاتجاه المتوقع نحو المنتج</li>
+              <li>الميزات ذات الاهتمام</li>
+              <li>القيود المطلوب استيعابها</li>
+            </ul>
+          </div>
+
+          <div class="numbered-step">
+            <h4>الخطوة 4: تحديد رؤية المنتج ونطاق المشروع</h4>
+            <div class="highlight-box">
+              <h4>رؤية المنتج</h4>
+              <p>تصور طويل المدى لما يمكن أن يصبح عليه المنتج</p>
+              <h4>نطاق المشروع</h4>
+              <p>ما الذي سيغطيه المشروع/الإصدار الحالي من تلك الرؤية</p>
+            </div>
+          </div>
+
+          <div class="numbered-step">
+            <h4>الخطوة 5: تحديد القيود</h4>
+            <div class="highlight-box">
+              <p><strong>القيود:</strong> قيود على مساحة الحل تحد من التنفيذ</p>
+            </div>
+            <div class="memory-trick">
+              <h4>💡 E-P-T-S-E-S</h4>
+              <p>Economics, Politics, Technology, Systems, Environment, Schedule</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- فرصة الأعمال / الأهداف / الرؤية / النطاق / أدوات النطاق / وثيقة الرؤية والنطاق / أسئلة -->
+        <div class="section">
+          <h2>💼 فرصة الأعمال</h2>
+          <div class="highlight-box">
+            <ul>
+              <li>فرصة السوق</li>
+              <li>المنافسون</li>
+              <li>المشكلة التجارية التي سيتم حلها/تحسينها</li>
+            </ul>
+            <h4>مثال:</h4>
+            <p>"استغلال ضعف سجل الأمان لدى منتج منافس"</p>
+          </div>
+        </div>
+
+        <div class="section">
+          <h2>🎯 أهداف الأعمال ومعايير النجاح</h2>
+          <div class="highlight-box">
+            <p>الأهداف الجيدة يجب أن تكون <strong>قابلة للقياس</strong> و<strong>كمّية</strong>.</p>
+            <ul>
+              <li>"تحقيق حصة سوقية 80% عبر الاعتراف بأنه المنتج الأكثر أماناً من خلال مراجعات ومسوحات"</li>
+              <li>"تحقيق تدفق نقدي إيجابي خلال 6 أشهر"</li>
+            </ul>
+          </div>
+          <div class="tip-box">
+            <h4>✅ SMART</h4>
+            <ul>
+              <li>محددة</li>
+              <li>قابلة للقياس</li>
+              <li>قابلة للتحقيق</li>
+              <li>ملائمة</li>
+              <li>مرتبطة بزمن</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="section">
+          <h2>🔭 بيان الرؤية</h2>
+          <div class="template-box">
+            <h4>قالب بيان الرؤية (Moore)</h4>
+            <p><strong>لـ</strong> [العميل المستهدف]</p>
+            <p><strong>الذي</strong> [الحاجة/الفرصة]</p>
+            <p><strong>فإن</strong> [اسم المنتج]</p>
+            <p><strong>هو</strong> [فئة المنتج]</p>
+            <p><strong>الذي</strong> [الفائدة الأساسية]</p>
+            <p><strong>على عكس</strong> [البديل الأساسي/الإجراء الحالي]</p>
+            <p><strong>منتجنا</strong> [التميّز والمزايا]</p>
+          </div>
+        </div>
+
+        <div class="section">
+          <h2>📝 أسئلة تدريب</h2>
+          <div class="exam-question">
+            <h4>سؤال 1</h4>
+            <p>اذكري واشرحي باختصار خطوات تحليل المشكلة الخمس.</p>
+            <p><strong>الإجابة:</strong></p>
+            <ol>
+              <li><strong>الاتفاق على تعريف المشكلة:</strong> توثيق المشكلة وتوحيد الفهم حول من يتأثر والأثر والحلول المقترحة</li>
+              <li><strong>فهم الأسباب الجذرية:</strong> البحث عن السبب الحقيقي خلف المشكلة عبر طرح "لماذا؟" بشكل تكراري</li>
+              <li><strong>تحديد أصحاب المصلحة:</strong> تحديد المستخدمين والمتأثرين والموافقين وفريق الصيانة وبناء ملفات لهم</li>
+              <li><strong>تحديد الرؤية والنطاق:</ actuality> وضع رؤية طويلة المدى وتحديد ما يغطيه الإصدار الحالي</li>
+              <li><strong>تحديد القيود:</strong> قيود اقتصادية/سياسية/تقنية/أنظمة/بيئة/جدول زمني وموارد</li>
+            </ol>
+          </div>
+        </div>
+
+        <div class="section">
+          <h2>📚 ملخص الفصل</h2>
+          <div class="highlight-box">
+            <ul>
+              <li>تحليل المشكلة = فهم قبل بناء</li>
+              <li>الخطوات الخمس: A-R-S-V-C</li>
+              <li>تمييز رؤية المنتج عن نطاق المشروع</li>
+              <li>القيود: E-P-T-S-E-S</li>
+              <li>أدوات تمثيل النطاق: C-E-F-E</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="section">
+          <h2>🌟 نصائح نهائية للاختبار</h2>
+          <div class="tip-box">
+            <h4>قبل الاختبار:</h4>
+            <ul>
+              <li>حفظ قالب بيان الرؤية</li>
+              <li>إتقان A-R-S-V-C</li>
+              <li>إتقان الفرق بين الرؤية والنطاق</li>
+              <li>أمثلة على أنواع القيود</li>
+              <li>التدرب على ملفات أصحاب المصلحة</li>
+            </ul>
+          </div>
+          <div class="tip-box">
+            <h4>أثناء الاختبار:</h4>
+            <ul>
+              <li>قراءة السيناريو جيداً وتحديد الكلمات المفتاحية</li>
+              <li>التفكير بأصحاب مصلحة متعددين</li>
+              <li>التركيز على فوائد الأعمال عند سؤال الهدف</li>
+              <li>طرح "لماذا؟" للوصول للجذر</li>
+              <li>اتباع قالب بيان الرؤية حرفياً</li>
+              <li>إجابات محددة وواضحة</li>
+            </ul>
+          </div>
+          <div class="highlight-box">
+            <h4>📌 تذكري:</h4>
+            <p><strong>"المشروع دون اتجاه واضح ومعلن هو وصفة للفشل"</strong></p>
+            <p>تحليل المشكلة يضع الاتجاه قبل كتابة أي كود.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // One translation toggle: EN <-> AR, button label matches language.
+    const translateToggle = document.getElementById("translateToggle");
+    const translateToggleLabel = document.getElementById("translateToggleLabel");
+    const contentEn = document.getElementById("content-en");
+    const contentAr = document.getElementById("content-ar");
+
+    let isArabic = false;
+
+    function applyLanguage(ar) {
+      isArabic = ar;
+
+      if (isArabic) {
+        document.documentElement.lang = "ar";
+        document.documentElement.dir = "rtl";
+        translateToggleLabel.textContent = "ترجم إلى الإنجليزية";
+        contentEn.classList.remove("active");
+        contentAr.classList.add("active");
+        translateToggle.classList.add("active");
+      } else {
+        document.documentElement.lang = "en";
+        document.documentElement.dir = "ltr";
+        translateToggleLabel.textContent = "Translate to Arabic";
+        contentAr.classList.remove("active");
+        contentEn.classList.add("active");
+        translateToggle.classList.remove("active");
+      }
+    }
+
+    translateToggle.addEventListener("click", () => applyLanguage(!isArabic));
+
+    // Default load in English
+    applyLanguage(false);
+  </script>
+</body>
+</html>

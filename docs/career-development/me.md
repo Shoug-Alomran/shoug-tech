@@ -1,6 +1,6 @@
 # About Me
 
-[View Resume](/career-development/CV.html){ .md-button .md-button--primary }
+[View Resume](../CV.html){ .md-button .md-button--primary }
 [Contact Me](mailto:Shoug.Alomran@Shoug-Tech.com){ .md-button }
 
 ---

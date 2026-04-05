@@ -7,7 +7,7 @@ description: Portfolio context, projects, workshops, and how I execute technical
 
 > **Section summary:** Use this page to evaluate execution quality, project impact, and professional growth evidence.
 
-[View Resume](/career-development/CV.html){ .md-button .md-button--primary }
+[View Resume](../CV.html){ .md-button .md-button--primary }
 [Contact Me](mailto:inquiry@shoug-tech.com){ .md-button }
 
 ---

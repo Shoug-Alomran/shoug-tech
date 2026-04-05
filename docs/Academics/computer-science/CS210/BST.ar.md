@@ -7,11 +7,11 @@
 
 إذا ما تحمل العرض بشكل صحيح، افتح الصفحة بشكل مباشر.
 
-- [افتح في صفحة جديدة](/ar/Academics/computer-science/CS210/BST.html)
+- [افتح في صفحة جديدة](../BST.html)
 
 <div class="iframe-wrap">
   <iframe
-    src="/ar/Academics/computer-science/CS210/BST.html"
+    src="../BST.html"
     title="أشجار البحث الثنائية"
     loading="lazy"
     referrerpolicy="no-referrer"

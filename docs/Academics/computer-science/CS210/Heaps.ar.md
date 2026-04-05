@@ -7,11 +7,11 @@
 
 إذا ما تحمل العرض بشكل صحيح، افتح الصفحة بشكل مباشر.
 
-- [افتح في صفحة جديدة](/ar/Academics/computer-science/CS210/Heaps.html)
+- [افتح في صفحة جديدة](../Heaps.html)
 
 <div class="iframe-wrap">
   <iframe
-    src="/ar/Academics/computer-science/CS210/Heaps.html"
+    src="../Heaps.html"
     title="الأكوام"
     loading="lazy"
     referrerpolicy="no-referrer"

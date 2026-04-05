@@ -7,11 +7,11 @@
 
 إذا ما تحمل العرض بشكل صحيح، افتح الصفحة بشكل مباشر.
 
-- [افتح في صفحة جديدة](/ar/Academics/computer-science/CS210/AVL.html)
+- [افتح في صفحة جديدة](../AVL.html)
 
 <div class="iframe-wrap">
   <iframe
-    src="/ar/Academics/computer-science/CS210/AVL.html"
+    src="../AVL.html"
     title="أشجار AVL"
     loading="lazy"
     referrerpolicy="no-referrer"

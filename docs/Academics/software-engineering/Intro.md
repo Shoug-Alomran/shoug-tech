@@ -25,7 +25,7 @@ quality.
     principles, and testing fundamentals. Includes structured notes,
     summaries, and cheat sheets.
 
-    [:octicons-arrow-right-24: View SE201](SE201/intro.md)
+    [:octicons-arrow-right-24: View SE201](SE201/Intro.md)
 
 -   :triangular_ruler: **SE311 — Software Project Management**
 
@@ -35,7 +35,7 @@ quality.
     assurance, and team-based development practices. Includes notes, quizzes,
     and supporting material.
 
-    [:octicons-arrow-right-24: View SE311](SE311/intro.md)
+    [:octicons-arrow-right-24: View SE311](SE311/Intro.md)
 
 </div>
 

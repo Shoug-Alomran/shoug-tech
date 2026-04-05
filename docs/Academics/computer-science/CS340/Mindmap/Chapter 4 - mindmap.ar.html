@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>النموذج العلائقي - خريطة ذهنية</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+            color: #e0e0e0;
+            padding: 2rem;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        h1 {
+            font-size: 3rem;
+            background: linear-gradient(135deg, #3b82f6, #06b6d4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: #94a3b8;
+            font-size: 1.2rem;
+        }
+
+        .node {
+            margin-bottom: 1rem;
+        }
+
+        .node-header {
+            background: linear-gradient(135deg, #2563eb, #1e40af);
+            border-right: 4px solid #60a5fa;
+            border-left: none;
+            padding: 1.2rem 1.5rem;
+            border-radius: 0.75rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            user-select: none;
+        }
+
+        .node-header:hover {
+            transform: translateX(-5px) scale(1.01);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+        }
+
+        .node-header:active {
+            transform: translateX(-3px) scale(0.99);
+        }
+
+        .node.level-1 .node-header {
+            background: linear-gradient(135deg, #0ea5e9, #0284c7);
+            border-right-color: #38bdf8;
+            margin-right: 2rem;
+            margin-left: 0;
+        }
+
+        .node.level-2 .node-header {
+            background: linear-gradient(135deg, #06b6d4, #0891b2);
+            border-right-color: #22d3ee;
+            margin-right: 4rem;
+            margin-left: 0;
+        }
+
+        .icon {
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .chevron {
+            margin-right: auto;
+            margin-left: 0;
+            transition: transform 0.3s ease;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #93c5fd;
+        }
+
+        .node.open .chevron {
+            transform: rotate(-90deg);
+        }
+
+        .node-title {
+            font-size: 1.15rem;
+            font-weight: 600;
+            flex: 1;
+            letter-spacing: 0.02em;
+        }
+
+        .node-content {
+            display: none;
+            margin-right: 2rem;
+            margin-left: 0;
+            margin-top: 1rem;
+            animation: slideDown 0.3s ease;
+        }
+
+        .node.open .node-content {
+            display: block;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .content-box {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            transition: box-shadow 0.3s ease;
+        }
+
+        .content-box:hover {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .content-title {
+            color: #fbbf24;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.75rem;
+        }
+
+        .content-title.green { color: #4ade80; }
+        .content-title.blue { color: #60a5fa; }
+        .content-title.purple { color: #c084fc; }
+        .content-title.pink { color: #f472b6; }
+        .content-title.orange { color: #fb923c; }
+
+        .content-list {
+            list-style: none;
+        }
+
+        .content-list li {
+            color: #cbd5e1;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            padding-right: 1.5rem;
+            position: relative;
+            line-height: 1.6;
+        }
+
+        .content-list li:before {
+            content: "•";
+            color: #60a5fa;
+            font-weight: bold;
+            position: absolute;
+            right: 0;
+            left: auto;
+        }
+
+        .diagram-box {
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            border: 1px solid #fbbf24;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .diagram-title {
+            color: #fde68a;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .diagram-content {
+            background: #0f172a;
+            padding: 1rem;
+            border-radius: 0.25rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            color: #cbd5e1;
+            white-space: pre-wrap;
+            overflow-x: auto;
+            line-height: 1.5;
+            direction: ltr;
+            text-align: left;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 3rem;
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        .highlight {
+            background: rgba(59, 130, 246, 0.2);
+            padding: 0.2rem 0.4rem;
+            border-radius: 0.25rem;
+            color: #60a5fa;
+            font-weight: 600;
+        }
+    </style>
+  <script src="/javascripts/standalone-theme.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>النموذج العلائقي</h1>
+            <p class="subtitle">الفصل ٤ - العلاقات، القيود وعمليات قاعدة البيانات</p>
+        </header>
+
+        <main id="mindmap"></main>
+
+        <footer>
+            <p>اضغط على أي قسم لتوسيعه/طيّه • مرجع كامل للنموذج العلائقي</p>
+        </footer>
+    </div>
+
+    <script>
+        const data = [
+            {
+                title: "نظرة عامة على النموذج العلائقي",
+                icon: "📊",
+                level: 0,
+                open: true,
+                content: [
+                    {
+                        title: "مقدمة",
+                        items: [
+                            "طرحه Edgar Codd في ١٩٧٠",
+                            "أشهر نموذج قواعد بيانات اليوم",
+                            "بسيط، أنيق، وقوي رياضياً",
+                            "مبني على مفهوم العلاقة الرياضية",
+                            "البيانات تُمثَّل كجداول (علاقات)"
+                        ]
+                    },
+                    {
+                        title: "ثلاث خصائص رئيسية",
+                        color: "green",
+                        items: [
+                            "سهل الفهم والاستخدام (شكل جدولي)",
+                            "استقلالية البيانات المادية: تعديل التخزين دون التأثير على المنطق",
+                            "استقلالية البيانات المنطقية: تعديل المخطط دون تغيير التطبيقات"
+                        ]
+                    }
+                ]
+            },
+            {
+                title: "مراجعة لغات DBMS",
+                icon: "💬",
+                level: 0,
+                open: true,
+                content: [
+                    {
+                        title: "DDL (لغة تعريف البيانات)",
+                        items: [
+                            "تحديد هيكل/مخطط قاعدة البيانات",
+                            "إنشاء الجداول، الفهارس، القيود",
+                            "الأوامر: CREATE, ALTER, DROP, TRUNCATE",
+                            "تخزِّن البيانات الوصفية (معلومات عن البيانات)"
+                        ]
+                    },
+                    {
+                        title: "DML (لغة معالجة البيانات)",
+                        color: "green",
+                        items: [
+                            "الوصول إلى البيانات والتعديل فيها",
+                            "الأوامر: SELECT, INSERT, UPDATE, DELETE",
+                            "لغة تصريحية (ماذا، وليس كيف)",
+                            "تستخدم للاستعلامات وتعديل البيانات"
+                        ]
+                    },
+                    {
+                        title: "DCL (لغة التحكم بالبيانات)",
+                        color: "blue",
+                        items: [
+                            "منح/سحب صلاحيات المستخدمين",
+                            "الأوامر: GRANT, REVOKE",
+                            "التحكم في الوصول إلى البيانات"
+                        ]
+                    },
+                    {
+                        title: "TCL (لغة التحكم بالمعاملات)",
+                        color: "purple",
+                        items: [
+                            "إدارة المعاملات",
+                            "الأوامر: COMMIT, ROLLBACK",
+                            "حفظ أو استعادة حالة قاعدة البيانات"
+                        ]
+                    }
+                ]
+            },
+            {
+                title: "مكونات النموذج العلائقي",
+                icon: "🔧",
+                level: 0,
+                open: true,
+                content: [
+                    {
+                        title: "العلاقة (جزئين)",
+                        items: [
+                            "المخطط (Schema): الهيكل المنطقي (اسم، خصائص، أنواع)",
+                            "الحالة (Instance): البيانات الفعلية (جدول بصفوف وأعمدة)",
+                            "مثال مخطط: موظف(الرقم_الضريبي:string, الاسم:string, تاريخ_الميلاد:date)",
+                            "الحالة: سجلات الموظفين الفعلية"
+                        ]
+                    },
+                    {
+                        title: "مصطلحات أساسية",
+                        color: "blue",
+                        items: [
+                            "Cardinality (عدد الصفوف): عدد الصفوف (tuples)",
+                            "Degree (Arity): عدد الأعمدة (الخصائص)",
+                            "قاعدة البيانات العلائقية: مجموعة من العلاقات",
+                            "مخطط قاعدة البيانات: مجموعة كل مخططات العلاقات",
+                            "حالة قاعدة البيانات: مجموعة كل حالات العلاقات"
+                        ]
+                    },
+                    {
+                        isDiagram: true,
+                        title: "مثال",
+                        content: `علاقة الموظف:
+┌─────┬──────────┬────────────┐
+│ SSN │   Name   │   Salary   │ ← الخصائص
+├─────┼──────────┼────────────┤
+│ 123 │ John     │  50000     │ ← صف (Tuple)
+│ 456 │ Sarah    │  60000     │
+└─────┴──────────┴────────────┘
+  ↑ الدرجة = 3 أعمدة
+  ↑ عدد الصفوف = 2 صفوف`
+                    }
+                ]
+            },
+            {
+                title: "تعريفات رسمية",
+                icon: "📐",
+                level: 0,
+                open: true,
+                content: [
+                    {
+                        title: "مخطط العلاقة",
+                        items: [
+                            "يرمز له R(A₁, A₂, ..., Aₙ)",
+                            "R = اسم العلاقة",
+                            "A₁, A₂, ..., Aₙ = الخصائص",
+                            "كل Aᵢ له نطاق Dᵢ",
+                            "النطاق يحتوي على القيمة الخاصة NULL"
+                        ]
+                    },
+                    {
+                        title: "النطاق (Domain)",
+                        color: "green",
+                        items: [
+                            "مجموعة من القيم الذرية",
+                            "يحدد نوع البيانات للخاصية",
+                            "أمثلة: عدد صحيح، نص، تاريخ",
+                            "يحتوي على NULL (غير معروف/غير منطبق)",
+                            "الخصائص ذرية (غير قابلة للتقسيم)"
+                        ]
+                    },
+                    {
+                        title: "الصف (Tuple)",
+                        color: "blue",
+                        items: [
+                            "مجموعة مرتبة من القيم: t = <v₁, v₂, ..., vₙ>",
+                            "كل vᵢ من نطاق Aᵢ (أو NULL)",
+                            "يمثل كياناً واحداً أو علاقة واحدة",
+                            "الترميز: t[Aᵢ] أو t.Aᵢ للوصول للقيم"
+                        ]
+                    }
+                ]
+            },
+            {
+                title: "المصطلحات غير الرسمية مقابل الرسمية",
+                icon: "📝",
+                level: 0,
+                open: true,
+                content: [
+                    {
+                        isDiagram: true,
+                        title: "مقارنة المصطلحات",
+                        content: `غير رسمي          رسمي
+─────────────────────────────────
+جدول             Relation
+رأس العمود       Attribute
+كل قيم العمود    Domain
+صف               Tuple
+تعريف الجدول     Schema
+جدول مملوء       Instance/State`
+                    }
+                ]
+            },
+            {
+                title: "خصائص العلاقات",
+                icon: "⚙️",
+                level: 0,
+                open: true,
+                content: [
+                    {
+                        title: "خصائص الترتيب",
+                        items: [
+                            "الصفوف غير مرتبة في العلاقة",
+                            "تقدر تظهر بأي ترتيب في الجدول",
+                            "الخصائص مرتبة في المخطط",
+                            "الترتيب مهم: t = <v₁, v₂, ..., vₙ>",
+                            "بديل: صفات ذاتية الوصف {<الاسم, القيمة>}"
+                        ]
+                    },
+                    {
+                        title: "القيم في الصفوف",
+                        color: "green",
+                        items: [
+                            "كل القيم ذرية (غير قابلة للتقسيم)",
+                            "ما في خصائص مركبة أو متعددة القيم",
+                            "هذا هو الشكل الطبيعي الأول (1NF)",
+                            "كل قيمة من نطاق خاصيتها",
+                            "NULL مسموح به إذا ما ممنوع"
+                        ]
+                    },
+                    {
+                        title: "التفسير",
+                        color: "blue",
+                        items: [
+                            "كل علاقة تمثل حقائق",
+                            "حقائق عن كيانات أو علاقات",
+                            "المعنى (الدلالة) لازم يكون واضح",
+                            "كل صف = حالة واحدة",
+                            "العلاقة = مجموعة من الحالات المتشابهة"
+                        ]
+                    }
+                ]
+            },
+            {
+                title: "قيود قاعدة البيانات العلائقية",
+                icon: "🔒",
+                level: 0,
+                open: true,
+                content: [
+                    {
+                        title: "ثلاثة أنواع رئيسية",
+                        items: [
+                            "١. قيود متأصلة/ضمنية: مبنية في النموذج نفسه",
+                            "٢. قيود على المخطط/صريحة: تُعبَّر عنها في المخطط",
+                            "٣. قيود على التطبيق/دلالية: يطبّقها التطبيق",
+                            "القيود تحدد الحالات الصالحة مقابل غير الصالحة",
+                            "يجب أن تنطبق على كل حالات العلاقة الصالحة"
+                        ]
+                    },
+                    {
+                        title: "قيود متأصلة (مبنية في النموذج)",
+                        color: "blue",
+                        items: [
+                            "الصفوف غير مرتبة",
+                            "الخصائص مرتبة",
+                            "ما في صفوف مكررة مسموح بها",
+                            "القيم لازم تكون ذرية",
+                            "مضمنة في تعريف النموذج العلائقي"
+                        ]
+                    }
+                ]
+            },
+            {
+                title: "المفاتيح",
+                icon: "🔑",
+                level: 0,
+                open: true,
+                content: [
+                    {
+                        title: "المفتاح الفائق (Superkey)",
+                        items: [
+                            "مجموعة خصائص SK",
+                            "ما في صفين عندهم نفس قيمة SK",
+                            "يحدد الصفوف بشكل فريد",
+                            "الشرط لازم ينطبق في كل الحالات الصالحة",
+                            "مثال: {SSN, Name} للموظف"
+                        ]
+                    },
+                    {
+                        title: "المفتاح (المفتاح المرشح)",
+                        color: "green",
+                        items: [
+                            "مفتاح فائق أصغر (Minimal)",
+                            "إزالة أي خاصية → ما عاد يكون مفتاح فائق",
+                            "ممكن يكون فيه عدة مفاتيح مرشحة",
+                            "مثال: {SSN} مفتاح للموظف",
+                            "المفتاح ⊆ المفتاح_الفائق (كل المفاتيح مفاتيح فائقة)"
+                        ]
+                    },
+                    {
+                        title: "المفتاح الأساسي (Primary Key)",
+                        color: "blue",
+                        items: [
+                            "نختار مفتاح مرشح واحد ليكون الأساسي",
+                            "تحته خط في ترميز المخطط",
+                            "يعطي هوية للصف",
+                            "يستخدم للإشارة من علاقات أخرى",
+                            "قاعدة: نختار أصغر مفتاح"
+                        ]
+                    },
+                    {
+                        isDiagram: true,
+                        title: "مثال",
+                        content: `سيارة(الولاية, رقم_السجل, رقم_الهيكل, الصنع, الموديل, السنة)
+
+المفاتيح المرشحة:
+  • المفتاح١ = {الولاية, رقم_السجل}
+  • المفتاح٢ = {رقم_الهيكل}
+
+مفاتيح فائقة (أمثلة):
+  • {الولاية, رقم_السجل}          ← مفتاح
+  • {رقم_الهيكل}                   ← مفتاح
+  • {رقم_الهيكل, الصنع}            ← مفتاح فائق
+  • {الولاية, رقم_السجل, الموديل}  ← مفتاح فائق
+
+المفتاح الأساسي: رقم_الهيكل (الأصغر)`
+                    }
+                ]
+            },
+            {
+                title: "قيود النطاق (Domain Constraints)",
+                icon: "📋",
+                level: 0,
+                open: true,
+                content: [
+                    {
+                        title: "تعريف",
+                        items: [
+                            "كل قيمة خاصية لازم تكون من نطاقها",
+                            "أو NULL إذا كان مسموح",
+                            "يفرض صحة نوع البيانات",
+                            "يحدد مدى القيم الصالحة"
+                        ]
+                    },
+                    {
+                        title: "أنواع النطاقات",
+                        color: "green",
+                        items: [
+                            "قياسية: عدد صحيح، حقيقي، نص، منطقي، تاريخ، وقت",
+                            "نصوص بطول ثابت/متغير",
+                            "مدى: العمر بين ٠ و ١٢٠",
+                            "محصور: الحالة في ('نشط', 'غير نشط', 'معلق')",
+                            "يمكن عمل نطاقات مخصصة"
+                        ]
+                    }
+                ]
+            },
+            {
+                title: "قيود NULL",
+                icon: "∅",
+                level: 0,
+                open: true,
+                content: [
+                    {
+                        title: "معاني NULL",
+                        items: [
+                            "١. غير معروف: القيمة موجودة لكن مو معروفة",
+                            "٢. غير متاح: القيمة مخفية",
+                            "٣. غير منطبق: الخاصية ما تنطبق",
+                            "منطق ثلاثي القيم: TRUE, FALSE, UNKNOWN"
+                        ]
+                    },
+                    {
+                        title: "قيد NOT NULL",
+                        color: "blue",
+                        items: [
+                            "يحدد إذا كان NULL مسموح للخاصية",
+                            "مثال: الاسم لازم NOT NULL",
+                            "خصائص المفتاح الأساسي دايم NOT NULL",
+                            "مهم لتكامل البيانات"
+                        ]
+                    }
+                ]
+            },
+            {
+                title: "قيد تكامل الكيان",
+                icon: "✅",
+                level: 0,
+                open: true,
+                content: [
+                    {
+                        title: "القاعدة",
+                        items: [
+                            "المفتاح الأساسي PK لا يمكن أن يكون NULL",
+                            "لا يمكن لأي خاصية في PK أن تحمل NULL",
+                            "ينطبق على كل العلاقات",
+                            "السبب: PK يعرّف الصفوف بشكل فريد",
+                            "t[PK] ≠ NULL لأي صف t"
+                        ]
+                    },
+                    {
+                        title: "المنطق",
+                        color: "purple",
+                        items: [
+                            "المفتاح الأساسي لازم يحدد الصفوف بشكل فريد",
+                            "NULL يعني غير معروف/غير منطبق",
+                            "لا يمكن التعرف على الصف بقيمة غير معروفة",
+                            "يضمن أن كل كيان له هوية",
+                            "أساسي في النموذج العلائقي"
+                        ]
+                    }
+                ]
+            },
+            {
+                title: "قيد التكامل المرجعي",
+                icon: "🔗",
+                level: 0,
+                open: true,
+                content: [
+                    {
+                        title: "مفهوم المفتاح الخارجي",
+                        items: [
+                            "قيد بين علاقتين",
+                            "العلاقة المرجعية R1 فيها مفتاح خارجي FK",
+                            "FK يشير إلى المفتاح الأساسي PK للعلاقة المرجعية R2",
+                            "الصف t1 في R1 يشير إلى t2 في R2 إذا كان t1[FK] = t2[PK]",
+                            "يحافظ على التناسق بين العلاقات"
+                        ]
+                    },
+                    {
+                        title: "القاعدة",
+                        color: "orange",
+                        items: [
+                            "قيمة FK في R1 يجب أن تكون إما:",
+                            "١. تطابق قيمة PK في R2، أو",
+                            "٢. تكون NULL (إذا كان مسموحاً)",
+                            "إذا كانت الحالة ٢: FK يجب ألا يكون جزءًا من PK في R1",
+                            "يمنع المراجع المعلقة (dangling references)"
+                        ]
+                    },
+                    {
+                        isDiagram: true,
+                        title: "مثال",
+                        content: `الموظف                    القسم
+┌─────┬──────┬──────┐       ┌─────────┬────────┐
+│ SSN │ Name │ Dno  │──FK──>│ Dnumber │ Dname  │
+├─────┼──────┼──────┤       ├─────────┼────────┤
+│ 123 │ John │  5   │       │    5    │ Research│
+│ 456 │ Sara │  4   │       │    4    │ Admin  │
+└─────┴──────┴──────┘       └─────────┴────────┘
+
+Dno (FK) لازم تطابق قيمة Dnumber (PK)`
+                    }
+                ]
+            },
+            {
+                title: "عمليات التحديث",
+                icon: "🔄",
+                level: 0,
+                open: true,
+                children: [
+                    {
+                        title: "عمليات INSERT",
+                        icon: "➕",
+                        level: 1,
+                        content: [
+                            {
+                                title: "المخالفات المحتملة",
+                                items: [
+                                    "Domain: قيمة خارج نطاق الخاصية",
+                                    "Key: قيمة PK موجودة مسبقاً",
+                                    "Entity Integrity: PK يساوي NULL",
+                                    "Referential Integrity: FK يشير إلى PK غير موجود"
+                                ]
+                            },
+                            {
+                                title: "إجراءات المخالفة",
+                                color: "orange",
+                                items: [
+                                    "رفض العملية (الأكثر شيوعاً)",
+                                    "إبلاغ المستخدم بالمخالفة",
+                                    "التصحيح تلقائياً إذا أمكن"
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        title: "عمليات DELETE",
+                        icon: "➖",
+                        level: 1,
+                        content: [
+                            {
+                                title: "المخالفات المحتملة",
+                                items: [
+                                    "فقط تخالف التكامل المرجعي",
+                                    "إذا كان PK المحذوف مشار إليه كـ FK في علاقة أخرى",
+                                    "ينشئ مرجعاً معلقاً"
+                                ]
+                            },
+                            {
+                                title: "خيارات المخالفة",
+                                color: "blue",
+                                items: [
+                                    "RESTRICT (رفض): رفض الحذف",
+                                    "CASCADE: حذف الصفوف المرجعية أيضاً",
+                                    "SET NULL: جعل FK = NULL في الصفوف المرجعية",
+                                    "SET DEFAULT: جعل FK = قيمة افتراضية",
+                                    "يجب تحديد الخيار لكل FK أثناء التصميم"
+                                ]
+                            },
+                            {
+                                isDiagram: true,
+                                title: "مثال CASCADE",
+                                content: `حذف الموظف اللي SSN='123'
+
+مع CASCADE:
+  → راح يحذف كل صفوف WORKS_ON اللي Essn='123'
+  → راح يحذف كل صفوف DEPENDENT اللي Essn='123'
+
+مع RESTRICT:
+  → راح يرفض الحذف إذا كان مرجع
+
+مع SET NULL:
+  → راح يخلي Essn=NULL في الصفوف المرجعية`
+                            }
+                        ]
+                    },
+                    {
+                        title: "عمليات UPDATE",
+                        icon: "✏️",
+                        level: 1,
+                        content: [
+                            {
+                                title: "المخالفات المحتملة",
+                                items: [
+                                    "قيد Domain: إذا كانت القيمة خارج النطاق",
+                                    "قيد NOT NULL: إذا وضعنا NULL في خاصية ممنوعة",
+                                    "تحديث PK: يشبه DELETE + INSERT",
+                                    "تحديث FK: قد يخالف التكامل المرجعي",
+                                    "تحديث خاصية عادية: فقط قيود النطاق"
+                                ]
+                            },
+                            {
+                                title: "خيارات تحديث PK",
+                                color: "green",
+                                items: [
+                                    "نفس خيارات DELETE",
+                                    "RESTRICT, CASCADE, SET NULL, SET DEFAULT",
+                                    "CASCADE: نشر PK الجديد لكل مراجع FK",
+                                    "مثال: تحديث Dnumber → ينعكس على كل Dno"
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                title: "مخطط قاعدة البيانات العلائقية",
+                icon: "🗂️",
+                level: 0,
+                open: true,
+                content: [
+                    {
+                        title: "تعريف المخطط",
+                        items: [
+                            "S = {R₁, R₂, ..., Rₙ} + IC",
+                            "S = اسم مخطط قاعدة البيانات",
+                            "R₁, R₂, ..., Rₙ = مخططات العلاقات",
+                            "IC = مجموعة قيود التكامل",
+                            "تحديد كامل لهيكل قاعدة البيانات"
+                        ]
+                    },
+                    {
+                        title: "حالة قاعدة البيانات",
+                        color: "blue",
+                        items: [
+                            "DB = {r₁, r₂, ..., rₘ}",
+                            "كل rᵢ هي حالة (instance) لـ Rᵢ",
+                            "يجب أن تحقق كل القيود في IC",
+                            "حالة صالحة: تحقق كل القيود",
+                            "حالة غير صالحة: تخالف ≥1 قيد"
+                        ]
+                    },
+                    {
+                        isDiagram: true,
+                        title: "مثال: قاعدة بيانات COMPANY",
+                        content: `المخطط:
+  الموظف(الرقم_الضريبي, الاسم, الراتب, رقم_القسم)
+  القسم(رقم_القسم, اسم_القسم, رقم_مدير)
+  المشروع(رقم_المشروع, اسم_المشروع, الموقع, رقم_القسم)
+  يعمل_على(رقم_الموظف, رقم_المشروع, الساعات)
+  التابع(رقم_الموظف, اسم_التابع, الجنس, تاريخ_الميلاد)
+
+القيود (أمثلة):
+  • الرقم_الضريبي هو PK للموظف
+  • رقم_القسم هو PK للقسم
+  • رقم_القسم في الموظف هو FK ← رقم_القسم
+  • رقم_مدير في القسم هو FK ← الرقم_الضريبي`
+                    }
+                ]
+            },
+            {
+                title: "هياكل قواعد البيانات (Architectures)",
+                icon: "🏗️",
+                level: 0,
+                open: true,
+                content: [
+                    {
+                        title: "مركزية",
+                        items: [
+                            "كل شيء في نظام واحد",
+                            "DBMS، العتاد، التطبيقات مع بعض",
+                            "يمكن الوصول عبر أطراف بعيدة",
+                            "كل المعالجة في موقع مركزي"
+                        ]
+                    },
+                    {
+                        title: "طبقتين (عميل-خادم)",
+                        color: "green",
+                        items: [
+                            "العميل: طبقة العرض + منطق التطبيق",
+                            "الخادم: خدمات قاعدة البيانات",
+                            "متصلة عبر الشبكة",
+                            "APIs: ODBC, JDBC للوصول"
+                        ]
+                    },
+                    {
+                        title: "ثلاث طبقات",
+                        color: "blue",
+                        items: [
+                            "الطبقة ١ (العرض): واجهة المستخدم",
+                            "الطبقة ٢ (منطق الأعمال): القواعد والمعالجة",
+                            "الطبقة ٣ (البيانات): إدارة قاعدة البيانات",
+                            "شائعة في تطبيقات الويب",
+                            "أمان أفضل، قابلية توسع، مرونة"
+                        ]
+                    }
+                ]
+            }
+        ];
+
+        function box(b) {
+            if (b.isDiagram) {
+                return `<div class="diagram-box"><div class="diagram-title">📊 ${b.title}</div><div class="diagram-content">${b.content}</div></div>`;
+            }
+            return `<div class="content-box"><div class="content-title ${b.color||''}">${b.title}</div><ul class="content-list">${b.items.map(i=>`<li>${i}</li>`).join('')}</ul></div>`;
+        }
+
+        function node(n) {
+            const show = (n.children && n.children.length) || (n.content && n.content.length);
+            let h = `<div class="node level-${n.level} ${n.open?'open':''}" data-id="${Math.random()}"><div class="node-header">`;
+            if (show) h += '<span class="chevron">▶</span>';
+            h += `<span class="icon">${n.icon}</span><span class="node-title">${n.title}</span></div><div class="node-content">`;
+            if (n.content) h += n.content.map(box).join('');
+            if (n.children) h += n.children.map(node).join('');
+            return h + '</div></div>';
+        }
+
+        document.getElementById('mindmap').innerHTML = data.map(node).join('');
+        document.querySelectorAll('.node-header').forEach(h => {
+            h.addEventListener('click', e => {
+                e.currentTarget.parentElement.classList.toggle('open');
+            });
+        });
+    </script>
+</body>
+</html>

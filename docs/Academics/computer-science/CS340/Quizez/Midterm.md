@@ -4,11 +4,11 @@ This page contains the midterm exam. Use it to review the main topics covered in
 
 If the embedded view does not load properly, open the exam directly.
 
-- [Open the Midterm Exam in a new tab](/Academics/computer-science/CS340/quizez/Midterm.html)
+- [Open the Midterm Exam in a new tab](../Midterm.html)
 
 <div class="iframe-wrap">
   <iframe
-    src="/Academics/computer-science/CS340/quizez/Midterm.html"
+    src="../Midterm.html"
     title="CS340 Midterm Exam"
     loading="lazy"
     referrerpolicy="no-referrer"
