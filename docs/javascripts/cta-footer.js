@@ -11,9 +11,14 @@
   }
 
   function getBase() {
-    // MkDocs Material base path (GitHub Pages subpath safe)
+    // MkDocs Material exposes the site root as `__md_scope`.
+    // On GitHub Pages project sites this becomes `/<repo>/`, while on a
+    // root/custom-domain deploy it is simply `/`.
     try {
-      if (typeof __md_get === "function") return __md_get("__base") || "";
+      if (typeof __md_scope !== "undefined" && __md_scope && __md_scope.pathname) {
+        const path = String(__md_scope.pathname).replace(/\/+$/, "");
+        return path === "/" ? "" : path;
+      }
     } catch (e) {}
     return "";
   }
@@ -27,6 +32,14 @@
   function policyHref(path) {
     const clean = String(path || "").replace(/^\//, "");
     return url(clean.replace(/\.md$/, "/"));
+  }
+
+  function withBase(path) {
+    const base = getBase();
+    const value = String(path || "");
+    if (!base || !value.startsWith("/") || value.startsWith("//")) return value;
+    if (value === base || value.startsWith(base + "/")) return value;
+    return `${base}${value}`;
   }
 
   function addHeaderCTA() {
@@ -132,6 +145,26 @@
     targets.forEach((href, index) => {
       if (tabs[index]) tabs[index].setAttribute("href", href);
     });
+  }
+
+  function normalizeRootRelativeContentLinks() {
+    const base = getBase();
+    if (!base) return;
+
+    const patchAttr = (selector, attr) => {
+      document.querySelectorAll(selector).forEach((node) => {
+        const value = node.getAttribute(attr);
+        if (!value) return;
+        const next = withBase(value);
+        if (next !== value) node.setAttribute(attr, next);
+      });
+    };
+
+    patchAttr('a[href^="/"]', "href");
+    patchAttr('iframe[src^="/"]', "src");
+    patchAttr('img[src^="/"]', "src");
+    patchAttr('source[src^="/"]', "src");
+    patchAttr('form[action^="/"]', "action");
   }
 
   function addFooterBlock() {
@@ -287,6 +320,7 @@
   }
 
   function run() {
+    normalizeRootRelativeContentLinks();
     addHeaderCTA();
     normalizeHeaderTabLinks();
     addQuickLinksWidget();
