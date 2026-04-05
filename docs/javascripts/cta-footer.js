@@ -257,6 +257,7 @@
   }
 
   function run() {
+    normalizeInternalMarkdownLinks();
     addHeaderCTA();
     addQuickLinksWidget();
     initSidebarToggles();
@@ -266,6 +267,36 @@
     syncEmbeddedIframesTheme();
     translateTabs();
     translateSidebarNav();
+  }
+
+  function normalizeInternalMarkdownLinks() {
+    document.querySelectorAll('a[href]').forEach((a) => {
+      const raw = a.getAttribute("href");
+      if (!raw) return;
+      if (raw.startsWith("#") || raw.startsWith("mailto:") || raw.startsWith("tel:") || raw.startsWith("javascript:")) return;
+
+      let parsed;
+      try {
+        parsed = new URL(raw, window.location.href);
+      } catch (e) {
+        return;
+      }
+
+      if (parsed.origin !== window.location.origin) return;
+      if (!/(\.ar)?\.md$/i.test(parsed.pathname)) return;
+
+      parsed.pathname = parsed.pathname
+        .replace(/\.ar\.md$/i, "/")
+        .replace(/\.md$/i, "/")
+        .replace(/\/index\/$/i, "/");
+
+      const normalized = `${parsed.pathname}${parsed.search}${parsed.hash}`;
+      const relative = parsed.origin === window.location.origin
+        ? normalized.replace(window.location.origin, "")
+        : normalized;
+
+      a.setAttribute("href", relative);
+    });
   }
 
   function replaceFooterCredit() {
