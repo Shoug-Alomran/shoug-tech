@@ -27,13 +27,12 @@ quality.
 
     [:octicons-arrow-right-24: View SE201](SE201/intro.md)
 
--   :triangular_ruler: **SE311 — Software Project Management**
+-   :triangular_ruler: **SE311 — Requirements Engineering**
 
     ---
 
-    Project planning, estimation, scheduling, risk management, quality
-    assurance, and team-based development practices. Includes notes, quizzes,
-    and supporting material.
+    Requirements elicitation, analysis, specification, validation, and
+    traceability. Includes notes, quizzes, and supporting material.
 
     [:octicons-arrow-right-24: View SE311](SE311/intro.md)
 
