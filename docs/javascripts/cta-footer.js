@@ -104,6 +104,36 @@
     headerInner.appendChild(wrap);
   }
 
+  function normalizeHeaderTabLinks() {
+    const tabs = Array.from(document.querySelectorAll(".md-tabs__item > .md-tabs__link"));
+    if (!tabs.length) return;
+
+    // Force primary header tabs onto absolute locale-aware routes.
+    // This avoids bad relative resolution from deep pages and keeps the
+    // header stable after browser translation or instant navigation.
+    const targets = isArabic()
+      ? [
+          url("ar/"),
+          url("ar/start-here/"),
+          url("ar/Academics/intro/"),
+          url("ar/career-development/intro/"),
+          url("ar/links/"),
+          url("ar/policy/copyright/"),
+        ]
+      : [
+          url(""),
+          url("start-here/"),
+          url("Academics/intro/"),
+          url("career-development/intro/"),
+          url("links/"),
+          url("policy/copyright/"),
+        ];
+
+    targets.forEach((href, index) => {
+      if (tabs[index]) tabs[index].setAttribute("href", href);
+    });
+  }
+
   function addFooterBlock() {
     const footer = document.querySelector(".md-footer");
     if (!footer) return;
@@ -258,6 +288,7 @@
 
   function run() {
     addHeaderCTA();
+    normalizeHeaderTabLinks();
     addQuickLinksWidget();
     initSidebarToggles();
     addFooterBlock();
