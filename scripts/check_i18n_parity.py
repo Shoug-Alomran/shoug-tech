@@ -11,6 +11,30 @@ def to_arabic_pair(path: Path) -> Path:
     return path.with_name(f"{path.stem}.ar.md")
 
 
+def to_english_pair(path: Path) -> Path:
+    return path.with_name(path.stem[:-3] + ".md")
+
+
+def stale_quiz_alias_target(path: Path) -> Path | None:
+    """Return the canonical quiz Arabic path for stale aliases like chapter-4.ar.md.
+
+    This catches renamed leftovers inside `quizez/` where the English/Arabic pair
+    already exists under `*-quiz.md` / `*-quiz.ar.md`.
+    """
+    if path.parent.name.lower() != "quizez":
+        return None
+
+    english_stem = path.stem[:-3]
+    if english_stem.endswith("-quiz"):
+        return None
+
+    quiz_en = path.with_name(f"{english_stem}-quiz.md")
+    quiz_ar = path.with_name(f"{english_stem}-quiz.ar.md")
+    if quiz_en.exists() and quiz_ar.exists():
+        return quiz_ar
+    return None
+
+
 def make_placeholder_ar(src: Path, docs_root: Path) -> str:
     rel_src = src.relative_to(docs_root).as_posix()
     src_name = src.name
@@ -65,9 +89,15 @@ def main() -> int:
         missing_ar = [p for p in english if str(p) not in arabic]
 
     orphan_ar = []
+    removed_stale_aliases = []
     for path in docs.rglob("*.ar.md"):
-        pair = path.with_name(path.stem[:-3] + ".md")
+        pair = to_english_pair(path)
         if not pair.exists():
+            stale_alias = stale_quiz_alias_target(path)
+            if args.autofix_missing_ar and stale_alias is not None:
+                path.unlink()
+                removed_stale_aliases.append((path, stale_alias))
+                continue
             orphan_ar.append(path)
 
     print("i18n parity report")
@@ -76,6 +106,8 @@ def main() -> int:
     print(f"- Orphan Arabic files: {len(orphan_ar)}")
     if created:
         print(f"- Auto-created Arabic placeholders: {created}")
+    if removed_stale_aliases:
+        print(f"- Removed stale Arabic aliases: {len(removed_stale_aliases)}")
 
     if missing_ar:
         print("\nMissing Arabic:")
@@ -84,7 +116,15 @@ def main() -> int:
     if orphan_ar:
         print("\nOrphan Arabic:")
         for p in orphan_ar:
-            print(f"- {p}")
+            stale_alias = stale_quiz_alias_target(p)
+            if stale_alias is not None:
+                print(f"- {p} (stale alias; canonical file exists at {stale_alias})")
+            else:
+                print(f"- {p}")
+    if removed_stale_aliases:
+        print("\nRemoved stale Arabic aliases:")
+        for old_path, canonical_path in removed_stale_aliases:
+            print(f"- {old_path} -> keep {canonical_path}")
 
     if args.strict and (missing_ar or orphan_ar):
         return 2
