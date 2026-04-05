@@ -157,10 +157,10 @@
 
     // Navigation links
     const homeHref = isArabic() ? url("ar/") : url("");
-    const academicsHref = isArabic() ? url("ar/Academics/Intro/") : url("Academics/Intro/");
+    const academicsHref = isArabic() ? url("ar/Academics/intro/") : url("Academics/intro/");
     const careerHref = isArabic()
-      ? url("ar/career-development/me/")
-      : url("career-development/me/");
+      ? url("ar/career-development/intro/")
+      : url("career-development/intro/");
     const linksHref = isArabic() ? url("ar/links/") : url("links/");
 
     // Policies (moved to repository-level policy folder)
@@ -306,24 +306,24 @@
       ? [
           ["الرئيسية", url("ar/")],
           ["ابدأ من هنا", url("ar/start-here/")],
-          ["نظرة عامة أكاديمية", url("ar/Academics/Intro/")],
+          ["نظرة عامة أكاديمية", url("ar/Academics/intro/")],
           ["الخطة الأكاديمية", url("ar/academic-plan-themes/academic-plan/")],
-          ["SE201", url("ar/Academics/software-engineering/SE201/Intro/")],
-          ["CS340", url("ar/Academics/computer-science/CS340/Intro/")],
+          ["SE201", url("ar/Academics/software-engineering/SE201/intro/")],
+          ["CS340", url("ar/Academics/computer-science/CS340/intro/")],
           ["CYS401", url("ar/Academics/cyber-security/CYS401/intro/")],
-          ["التطوير المهني", url("ar/career-development/Intro/")],
+          ["التطوير المهني", url("ar/career-development/intro/")],
           ["خدمات Blueprint", url("ar/career-development/services/")],
           ["Blueprint", "https://blueprint.shoug-tech.com/"]
         ]
       : [
           ["Home", url("")],
           ["Start Here", url("start-here/")],
-          ["Academics Overview", url("Academics/Intro/")],
+          ["Academics Overview", url("Academics/intro/")],
           ["Academic Plan", url("academic-plan-themes/academic-plan/")],
-          ["SE201", url("Academics/software-engineering/SE201/Intro/")],
-          ["CS340", url("Academics/computer-science/CS340/Intro/")],
+          ["SE201", url("Academics/software-engineering/SE201/intro/")],
+          ["CS340", url("Academics/computer-science/CS340/intro/")],
           ["CYS401", url("Academics/cyber-security/CYS401/intro/")],
-          ["Career Development", url("career-development/Intro/")],
+          ["Career Development", url("career-development/intro/")],
           ["Blueprint Services", url("career-development/services/")],
           ["Blueprint", "https://blueprint.shoug-tech.com/"]
         ];
