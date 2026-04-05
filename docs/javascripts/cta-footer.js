@@ -11,12 +11,14 @@
   }
 
   function getBase() {
-    // MkDocs Material exposes the site root as `__md_scope`.
-    // On GitHub Pages project sites this becomes `/<repo>/`, while on a
-    // root/custom-domain deploy it is simply `/`.
+    // MkDocs Material exposes a scope path in `__md_scope`.
+    // On localized pages this can resolve to `/<repo>/ar/`, so we strip only
+    // the locale suffix and keep the deployment base path.
     try {
       if (typeof __md_scope !== "undefined" && __md_scope && __md_scope.pathname) {
-        const path = String(__md_scope.pathname).replace(/\/+$/, "");
+        let path = String(__md_scope.pathname).replace(/\/+$/, "");
+        if (path === "/") return "";
+        if (path.endsWith("/ar")) path = path.slice(0, -3) || "/";
         return path === "/" ? "" : path;
       }
     } catch (e) {}
