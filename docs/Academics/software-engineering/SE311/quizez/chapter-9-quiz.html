@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SE311 · Chapter 9 Quiz — Nonfunctional Requirements</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Epilogue:ital,wght@0,300;0,400;0,500;0,600;1,300&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f7f4ef;
+  --bg2: #edeae3;
+  --surface: #ffffff;
+  --surface2: #f2efe9;
+  --border: #ddd9cf;
+  --text: #18160f;
+  --text2: #6b6456;
+  --text3: #9c9185;
+  --accent: #d4410a;
+  --accent-dim: #f5e8e3;
+  --green: #1a7a4a;
+  --green-dim: #e2f4eb;
+  --red: #c0290e;
+  --red-dim: #fdecea;
+  --gold: #c47c00;
+  --gold-dim: #fef8e6;
+  --blue: #1a5fa8;
+  --blue-dim: #e6eef8;
+  --shadow-sm: 0 2px 8px rgba(0,0,0,.06);
+  --shadow: 0 4px 20px rgba(0,0,0,.09);
+  --shadow-lg: 0 8px 40px rgba(0,0,0,.13);
+  --r: 14px;
+  --tr: .25s ease;
+}
+[data-theme="dark"] {
+  --bg: #0d0c0a;
+  --bg2: #151310;
+  --surface: #1c1a16;
+  --surface2: #242018;
+  --border: #302c24;
+  --text: #f0ece2;
+  --text2: #a89f8e;
+  --text3: #6b6050;
+  --accent: #f0571c;
+  --accent-dim: #2a1508;
+  --green: #34c274;
+  --green-dim: #0a2218;
+  --red: #f05050;
+  --red-dim: #2a0d0d;
+  --gold: #e8a020;
+  --gold-dim: #2a1e04;
+  --blue: #5b9ef5;
+  --blue-dim: #0d1e38;
+  --shadow-sm: 0 2px 8px rgba(0,0,0,.3);
+  --shadow: 0 4px 20px rgba(0,0,0,.4);
+  --shadow-lg: 0 8px 40px rgba(0,0,0,.5);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Epilogue', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  transition: background var(--tr), color var(--tr);
+  line-height: 1.65;
+}
+
+/* ─── TOPBAR ─── */
+.topbar {
+  position: sticky; top: 0; z-index: 100;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: .75rem 1.5rem;
+  display: flex; align-items: center; justify-content: space-between;
+  box-shadow: var(--shadow-sm);
+  transition: background var(--tr), border-color var(--tr);
+}
+.topbar-left { display: flex; flex-direction: column; gap: .1rem; }
+.course-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .68rem; letter-spacing: .12em;
+  text-transform: uppercase; color: var(--accent); font-weight: 500;
+}
+.topbar h1 { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; }
+
+.topbar-right { display: flex; align-items: center; gap: 1.25rem; }
+.score-pill {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .8rem; padding: .35rem .9rem;
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 999px; color: var(--text2);
+  transition: all var(--tr);
+}
+.score-pill span { color: var(--accent); font-weight: 700; }
+
+/* Dark toggle */
+.mode-toggle { display: flex; align-items: center; gap: .6rem; cursor: pointer; }
+.mode-label { font-size: .75rem; color: var(--text3); font-family: 'JetBrains Mono', monospace; }
+.toggle-track {
+  width: 42px; height: 24px; border-radius: 999px;
+  background: var(--border); position: relative;
+  transition: background var(--tr); cursor: pointer;
+}
+.toggle-track.on { background: var(--accent); }
+.toggle-knob {
+  position: absolute; top: 3px; left: 3px;
+  width: 18px; height: 18px; border-radius: 50%;
+  background: white; transition: transform var(--tr);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; box-shadow: 0 1px 4px rgba(0,0,0,.2);
+}
+.toggle-track.on .toggle-knob { transform: translateX(18px); }
+
+/* ─── HERO ─── */
+.hero {
+  max-width: 860px; margin: 0 auto;
+  padding: 2.5rem 1.5rem 0;
+}
+.hero-chip {
+  display: inline-flex; align-items: center; gap: .4rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .7rem; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--text3); background: var(--surface2);
+  border: 1px solid var(--border); border-radius: 999px;
+  padding: .25rem .75rem; margin-bottom: 1rem;
+}
+.hero h2 {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(1.6rem, 4vw, 2.4rem); font-weight: 800;
+  line-height: 1.2; margin-bottom: .6rem;
+}
+.hero h2 em { font-style: italic; color: var(--accent); }
+.hero p { color: var(--text2); font-size: .95rem; max-width: 580px; }
+
+/* Progress bar */
+.progress-wrap { margin: 1.5rem 0 .3rem; }
+.progress-info { display: flex; justify-content: space-between; font-size: .78rem; color: var(--text3); margin-bottom: .4rem; font-family: 'JetBrains Mono', monospace; }
+.progress-bar { height: 5px; background: var(--border); border-radius: 999px; overflow: hidden; }
+.progress-fill { height: 100%; background: var(--accent); border-radius: 999px; transition: width .5s cubic-bezier(.4,0,.2,1); }
+
+/* ─── QUIZ CONTAINER ─── */
+.quiz-wrap { max-width: 860px; margin: 0 auto; padding: 1.5rem; }
+
+/* ─── QUESTION CARD ─── */
+.q-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 1.6rem 1.8rem;
+  margin-bottom: 1.5rem;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow var(--tr), border-color var(--tr), background var(--tr);
+  position: relative;
+}
+.q-card:hover { box-shadow: var(--shadow); }
+.q-card.correct { border-color: var(--green); box-shadow: 0 0 0 3px color-mix(in srgb, var(--green) 15%, transparent); }
+.q-card.wrong { border-color: var(--red); box-shadow: 0 0 0 3px color-mix(in srgb, var(--red) 15%, transparent); }
+.q-card.partial { border-color: var(--gold); box-shadow: 0 0 0 3px color-mix(in srgb, var(--gold) 15%, transparent); }
+
+.q-header { display: flex; align-items: flex-start; gap: .8rem; margin-bottom: 1rem; }
+.q-num {
+  font-family: 'JetBrains Mono', monospace; font-size: .7rem;
+  color: var(--text3); background: var(--surface2);
+  border: 1px solid var(--border); border-radius: 6px;
+  padding: .2rem .55rem; white-space: nowrap; margin-top: .1rem;
+  transition: background var(--tr);
+}
+.q-badges { display: flex; gap: .4rem; flex-wrap: wrap; align-items: center; }
+.badge {
+  font-family: 'JetBrains Mono', monospace; font-size: .63rem;
+  letter-spacing: .08em; text-transform: uppercase;
+  padding: .18rem .55rem; border-radius: 999px; font-weight: 500;
+}
+.badge.mcq { background: var(--blue-dim); color: var(--blue); }
+.badge.tf { background: var(--gold-dim); color: var(--gold); }
+.badge.write { background: var(--accent-dim); color: var(--accent); }
+.badge.past { background: var(--gold-dim); color: var(--gold); border: 1px solid var(--gold); }
+.badge.pts { background: var(--surface2); color: var(--text3); border: 1px solid var(--border); }
+
+.q-text {
+  font-size: 1rem; font-weight: 500; color: var(--text);
+  line-height: 1.55; margin-bottom: 1.1rem;
+}
+
+/* ─── MCQ OPTIONS ─── */
+.options { display: flex; flex-direction: column; gap: .55rem; }
+.option {
+  display: flex; align-items: center; gap: .8rem;
+  padding: .75rem 1rem; border-radius: 10px;
+  border: 1.5px solid var(--border);
+  cursor: pointer; transition: all .18s ease;
+  background: var(--surface);
+  user-select: none;
+}
+.option:hover:not(.locked) { border-color: var(--accent); background: var(--accent-dim); }
+.option.selected:not(.locked) { border-color: var(--accent); background: var(--accent-dim); }
+.option.correct-ans { border-color: var(--green); background: var(--green-dim); }
+.option.wrong-ans { border-color: var(--red); background: var(--red-dim); }
+.option.locked { cursor: default; }
+.opt-letter {
+  width: 26px; height: 26px; border-radius: 6px;
+  background: var(--surface2); border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'JetBrains Mono', monospace; font-size: .75rem; font-weight: 500;
+  color: var(--text2); flex-shrink: 0; transition: all .18s;
+}
+.option.correct-ans .opt-letter { background: var(--green); color: white; border-color: var(--green); }
+.option.wrong-ans .opt-letter { background: var(--red); color: white; border-color: var(--red); }
+.option.selected:not(.locked) .opt-letter { background: var(--accent); color: white; border-color: var(--accent); }
+.opt-text { font-size: .92rem; color: var(--text); }
+
+/* ─── TRUE/FALSE ─── */
+.tf-options { display: flex; gap: .75rem; }
+.tf-btn {
+  flex: 1; padding: .75rem; border-radius: 10px;
+  border: 1.5px solid var(--border); background: var(--surface);
+  cursor: pointer; font-family: 'Syne', sans-serif;
+  font-weight: 700; font-size: .95rem; text-align: center;
+  transition: all .18s ease; color: var(--text2);
+}
+.tf-btn:hover:not(.locked) { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
+.tf-btn.selected:not(.locked) { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
+.tf-btn.correct-ans { border-color: var(--green); color: var(--green); background: var(--green-dim); }
+.tf-btn.wrong-ans { border-color: var(--red); color: var(--red); background: var(--red-dim); }
+.tf-btn.locked { cursor: default; }
+
+/* ─── WRITING QUESTION ─── */
+.write-area {
+  width: 100%; min-height: 110px; resize: vertical;
+  border: 1.5px solid var(--border); border-radius: 10px;
+  padding: .85rem 1rem; font-family: 'Epilogue', sans-serif;
+  font-size: .92rem; color: var(--text); background: var(--surface2);
+  outline: none; transition: border-color var(--tr), background var(--tr);
+  line-height: 1.6;
+}
+.write-area:focus { border-color: var(--accent); }
+.write-area:disabled { opacity: .7; cursor: not-allowed; }
+.write-meta {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-top: .5rem; margin-bottom: .75rem;
+}
+.write-hint { font-size: .78rem; color: var(--text3); font-family: 'JetBrains Mono', monospace; }
+.keyword-track { display: flex; gap: .3rem; flex-wrap: wrap; }
+.kw-pill {
+  font-family: 'JetBrains Mono', monospace; font-size: .65rem;
+  padding: .15rem .5rem; border-radius: 999px;
+  background: var(--surface2); border: 1px solid var(--border);
+  color: var(--text3); transition: all .2s;
+}
+.kw-pill.hit { background: var(--green-dim); border-color: var(--green); color: var(--green); }
+.model-answer {
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 10px; padding: 1rem 1.2rem;
+  font-size: .88rem; color: var(--text2); margin-top: .75rem;
+  display: none;
+  border-left: 3px solid var(--accent);
+}
+.model-answer strong { color: var(--accent); display: block; font-size: .73rem; text-transform: uppercase; letter-spacing: .1em; margin-bottom: .4rem; font-family: 'JetBrains Mono', monospace; }
+.model-answer ul { padding-left: 1.2rem; }
+.model-answer li { margin: .3rem 0; }
+
+/* ─── SUBMIT BTN ─── */
+.q-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 1rem; gap: .75rem; flex-wrap: wrap; }
+.submit-btn {
+  padding: .55rem 1.4rem; border-radius: 8px;
+  background: var(--accent); color: white; border: none;
+  font-family: 'Syne', sans-serif; font-weight: 700; font-size: .88rem;
+  cursor: pointer; transition: all .18s ease;
+  letter-spacing: .02em;
+}
+.submit-btn:hover { opacity: .88; transform: translateY(-1px); }
+.submit-btn:disabled { opacity: .4; cursor: not-allowed; transform: none; }
+.submit-btn.submitted { background: var(--surface2); color: var(--text3); border: 1px solid var(--border); }
+
+/* ─── FEEDBACK ─── */
+.feedback {
+  display: none; margin-top: 1rem;
+  padding: 1rem 1.2rem; border-radius: 10px;
+  font-size: .88rem; line-height: 1.55;
+  border-left: 3px solid transparent;
+  animation: slideDown .25s ease;
+}
+@keyframes slideDown { from { opacity:0; transform:translateY(-6px); } to { opacity:1; transform:translateY(0); } }
+.feedback.correct-fb { background: var(--green-dim); border-color: var(--green); color: var(--text); }
+.feedback.wrong-fb { background: var(--red-dim); border-color: var(--red); color: var(--text); }
+.feedback.partial-fb { background: var(--gold-dim); border-color: var(--gold); color: var(--text); }
+.fb-icon { font-size: 1.1rem; margin-right: .4rem; }
+.fb-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: .92rem; margin-bottom: .3rem; display: flex; align-items: center; }
+.fb-body { color: var(--text2); }
+.fb-body ul { padding-left: 1.2rem; margin-top: .35rem; }
+.fb-body li { margin: .25rem 0; }
+.fb-score-tag {
+  display: inline-flex; font-family: 'JetBrains Mono', monospace; font-size: .72rem;
+  padding: .2rem .6rem; border-radius: 999px; margin-left: auto;
+}
+.fb-score-tag.full { background: var(--green-dim); color: var(--green); }
+.fb-score-tag.partial-s { background: var(--gold-dim); color: var(--gold); }
+.fb-score-tag.zero { background: var(--red-dim); color: var(--red); }
+
+/* ─── RESULTS PANEL ─── */
+.results-panel {
+  display: none; max-width: 860px; margin: 0 auto;
+  padding: 0 1.5rem 4rem;
+}
+.results-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--r); padding: 2.5rem 2rem;
+  text-align: center; box-shadow: var(--shadow-lg);
+  position: relative; overflow: hidden;
+}
+.results-card::before {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 50% 0%, color-mix(in srgb, var(--accent) 8%, transparent) 0%, transparent 70%);
+  pointer-events: none;
+}
+.results-score {
+  font-family: 'Syne', sans-serif; font-size: 4rem; font-weight: 800;
+  color: var(--accent); line-height: 1;
+}
+.results-score span { font-size: 1.5rem; color: var(--text3); }
+.results-label { font-size: 1.1rem; color: var(--text2); margin: .5rem 0 1.5rem; }
+.grade-badge {
+  display: inline-block; font-family: 'Syne', sans-serif;
+  font-size: 1.4rem; font-weight: 800; padding: .5rem 2rem;
+  border-radius: 999px; margin-bottom: 1.5rem;
+}
+.results-breakdown {
+  display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; margin: 1.5rem 0;
+}
+.rb-item { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: .85rem; }
+.rb-num { font-family: 'Syne', sans-serif; font-size: 1.5rem; font-weight: 800; }
+.rb-label { font-size: .78rem; color: var(--text3); }
+.retry-btn {
+  padding: .7rem 2rem; background: var(--accent); color: white;
+  border: none; border-radius: 8px; font-family: 'Syne', sans-serif;
+  font-weight: 700; font-size: 1rem; cursor: pointer;
+  transition: all .18s; margin-top: .5rem;
+}
+.retry-btn:hover { opacity: .88; transform: translateY(-2px); }
+
+/* ─── NAV FOOTER ─── */
+.quiz-nav {
+  max-width: 860px; margin: 0 auto;
+  padding: 0 1.5rem 1.5rem;
+  display: flex; justify-content: flex-end; gap: .75rem;
+}
+.nav-btn {
+  padding: .6rem 1.4rem; border-radius: 8px; font-family: 'Syne', sans-serif;
+  font-weight: 700; font-size: .88rem; cursor: pointer; transition: all .18s;
+}
+.nav-finish { background: var(--accent); color: white; border: none; }
+.nav-finish:hover { opacity: .88; }
+
+/* ─── SECTION DIVIDER ─── */
+.section-divider {
+  max-width: 860px; margin: .5rem auto 0; padding: 0 1.5rem;
+  display: flex; align-items: center; gap: 1rem;
+}
+.sd-line { flex: 1; height: 1px; background: var(--border); }
+.sd-label {
+  font-family: 'JetBrains Mono', monospace; font-size: .7rem;
+  text-transform: uppercase; letter-spacing: .12em; color: var(--text3);
+  white-space: nowrap;
+}
+
+@media (max-width:580px) {
+  .q-card { padding: 1.2rem; }
+  .results-breakdown { grid-template-columns: 1fr 1fr; }
+  .tf-options { flex-direction: column; }
+}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<header class="topbar">
+  <div class="topbar-left">
+    <span class="course-label">SE311 · Chapter 9</span>
+    <h1>Nonfunctional Requirements Quiz</h1>
+  </div>
+  <div class="topbar-right">
+    <div class="score-pill">Score: <span id="liveScore">0</span> / <span id="totalPts">0</span></div>
+    <div class="mode-toggle" onclick="toggleTheme()">
+      <span class="mode-label" id="modeLabel">LIGHT</span>
+      <div class="toggle-track" id="toggleTrack">
+        <div class="toggle-knob" id="toggleKnob">☀️</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-chip">📋 20 Questions · Mixed Format</div>
+  <h2>Test Your Knowledge:<br><em>NFRs, Quality Attributes & Constraints</em></h2>
+  <p>Answer all questions, then check your results. Writing questions use keyword detection — aim to include the key concepts in your answer.</p>
+  <div class="progress-wrap">
+    <div class="progress-info">
+      <span id="progLabel">0 of 20 answered</span>
+      <span id="progPct">0%</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+  </div>
+</div>
+
+<div class="quiz-wrap" id="quizWrap"></div>
+<div class="quiz-nav"><button class="nav-btn nav-finish" onclick="finishQuiz()">Finish & See Results →</button></div>
+<div class="results-panel" id="resultsPanel"></div>
+
+<script>
+// ═══════════════════════════════════════════════
+// QUIZ DATA
+// ═══════════════════════════════════════════════
+const questions = [
+
+/* ── SECTION 1: Fundamentals ── */
+{
+  section: "Fundamentals",
+  type: "mcq", pts: 1,
+  q: "Which of the following best describes the relationship between Quality Attributes and Nonfunctional Requirements (NFRs)?",
+  options: [
+    "Quality attributes and NFRs are exactly the same thing.",
+    "Quality attributes are a subset of NFRs; NFRs also include constraints and external interface requirements.",
+    "NFRs are a subset of quality attributes.",
+    "Constraints and quality attributes are the same category."
+  ],
+  correct: 1,
+  explanation: "NFRs have three categories: (1) Quality Attributes — the "–ilities" like performance and security, (2) External Interfaces — connections to the outside world, and (3) Constraints — restrictions on developer choices. Quality attributes alone do NOT equal all NFRs."
+},
+{
+  section: "Fundamentals",
+  type: "tf", pts: 1,
+  q: "\"The system shall be user-friendly\" is a well-written nonfunctional requirement that can be used directly in development.",
+  correct: false,
+  explanation: "This violates the SMART principle. 'User-friendly' is subjective and unmeasurable — a tester cannot objectively verify it. A well-written NFR must be Specific, Measurable, Attainable, Relevant, and Time-sensitive. Example rewrite: 'A new user shall complete checkout in under 4 minutes without assistance 95% of the time.'"
+},
+{
+  section: "Fundamentals",
+  type: "mcq", pts: 1,
+  q: "The heating system story (a system that met all stated requirements but was too loud for a training room) illustrates which key principle about NFRs?",
+  options: [
+    "Technical specifications always override user comfort.",
+    "Users have unstated, implicit quality expectations that must be actively elicited during requirements gathering.",
+    "Noise is a functional requirement, not an NFR.",
+    "Requirements engineers should only document what users explicitly state."
+  ],
+  correct: 1,
+  explanation: "The heating story perfectly demonstrates that users have implicit quality expectations they don't think to mention. The BA's job is to surface these unstated needs through proactive elicitation — asking about all quality dimensions, not just functionality."
+},
+{
+  section: "Fundamentals",
+  type: "mcq", pts: 1,
+  past: true,
+  q: "Which of the following is NOT a nonfunctional requirement?",
+  options: [
+    "The system shall process payments within 2 seconds.",
+    "Only open source software under the GNU GPL may be used.",
+    "The user shall be able to purchase tickets online.",
+    "The system shall be available 99% of weekday hours."
+  ],
+  correct: 2,
+  explanation: "\"The user shall be able to purchase tickets online\" is a FUNCTIONAL requirement — it describes WHAT the system does. The others are NFRs: option A is a performance attribute, option B is a constraint, and option D is an availability attribute."
+},
+
+/* ── SECTION 2: Classification ── */
+{
+  section: "Classification",
+  type: "mcq", pts: 1,
+  q: "Which quality attribute is classified as INTERNAL (important to developers, not directly visible to users)?",
+  options: ["Availability", "Security", "Scalability", "Robustness"],
+  correct: 2,
+  explanation: "Scalability is an internal quality attribute — it concerns how the system grows to handle more load, which is mainly a developer/architect concern. External attributes (visible to users) include Availability, Security, Robustness, Performance, Reliability, Safety, Usability, Integrity, Interoperability, and Installability."
+},
+{
+  section: "Classification",
+  type: "mcq", pts: 1,
+  q: "An airport check-in kiosk is used infrequently by travelers who are strangers to the interface, and it handles payment transactions. Which pair of quality attributes should be prioritized HIGHEST for this system?",
+  options: [
+    "Efficiency and Portability",
+    "Usability and Security",
+    "Modifiability and Scalability",
+    "Reliability and Verifiability"
+  ],
+  correct: 1,
+  explanation: "The textbook uses this exact airport kiosk example. Usability is critical because most users encounter it infrequently and need to operate it without training. Security is critical because it handles payments. This is Step 2 of the quality attribute exploration method — reducing the list based on project context."
+},
+{
+  section: "Classification",
+  type: "tf", pts: 1,
+  q: "Security is sometimes considered a subset of Integrity because some security requirements are intended to prevent unauthorized access to data.",
+  correct: true,
+  explanation: "TRUE — The textbook explicitly states this. Both integrity and security aim to protect data: integrity prevents data loss/corruption (from any source), while security specifically prevents unauthorized human access. Since unauthorized access can lead to data corruption or loss, security falls within integrity's scope."
+},
+{
+  section: "Classification",
+  type: "mcq", pts: 1,
+  past: true,
+  q: "From the Riyadh Seasons case study — which of the following is a NON-FUNCTIONAL requirement? (Past Exam — Major 1)",
+  options: [
+    "The customer shall be able to self-check in at the terminal using their ticket.",
+    "Upon self-check-in, the system shall issue the customer a bracelet with an electronic chip.",
+    "The online payment service shall complete transactions securely with no unauthorized access.",
+    "The system shall allow customers to load money onto their bracelets."
+  ],
+  correct: 2,
+  explanation: "Option C is a Security quality attribute (NFR) — it describes HOW WELL the system performs (securely), not WHAT it does. Options A, B, and D are all functional requirements — they describe specific behaviors and actions the system must perform."
+},
+
+/* ── SECTION 3: Specific Quality Attributes ── */
+{
+  section: "Quality Attributes Deep Dive",
+  type: "mcq", pts: 1,
+  q: "\"Reliability is a lagging indicator.\" What does this mean?",
+  options: [
+    "Reliability requirements are always added late in the project.",
+    "You cannot determine whether a system has achieved its reliability requirements until it has been in operation for a period of time.",
+    "Reliability is less important than other quality attributes.",
+    "Reliability requirements lag behind performance requirements in priority."
+  ],
+  correct: 1,
+  explanation: "Reliability measures the probability of executing without failure over time. Unlike performance (which you can test immediately), you can't verify reliability until the system has been running in the real world for enough time to observe failure rates. This is why reliability requirements like MTBF (Mean Time Between Failures) are measured retrospectively."
+},
+{
+  section: "Quality Attributes Deep Dive",
+  type: "mcq", pts: 1,
+  q: "Which requirement example best demonstrates the quality attribute of ROBUSTNESS?",
+  options: [
+    "The system shall be available at least 99% of weekdays between 8 AM and 6 PM.",
+    "If the text editor fails before the user saves, it shall recover the file contents from at most one minute prior to the failure.",
+    "No more than 5 experimental runs out of 1,000 can be lost due to software failures.",
+    "The system shall lock a user account after 3 failed login attempts within 5 minutes."
+  ],
+  correct: 1,
+  explanation: "Option B is the textbook's own example for ROBUSTNESS — it's about graceful recovery from an unexpected failure. Option A is Availability. Option C is Reliability (MTBF-related). Option D is Security. Robustness = how well the system handles and recovers from unexpected conditions."
+},
+{
+  section: "Quality Attributes Deep Dive",
+  type: "mcq", pts: 1,
+  q: "What is the key difference between Availability and Reliability?",
+  options: [
+    "They are the same quality attribute with different names.",
+    "Availability measures uptime percentage (accounts for repair time), while Reliability measures the probability of not failing over a period.",
+    "Reliability measures uptime percentage, while Availability is about graceful recovery.",
+    "Availability is an internal attribute; Reliability is external."
+  ],
+  correct: 1,
+  explanation: "Availability = MTBF / (MTBF + MTTR) — the percentage of time the system is operational, which accounts for how quickly it recovers. Reliability = probability of NOT failing over a given time period. A system can be reliable (fails rarely) but have low availability (takes very long to restart after a failure)."
+},
+{
+  section: "Quality Attributes Deep Dive",
+  type: "tf", pts: 1,
+  q: "Specifying \"100% availability\" is a valid, best-practice quality requirement for mission-critical systems.",
+  correct: false,
+  explanation: "FALSE — The textbook explicitly warns against this. 100% availability is impossible to achieve and extremely expensive to pursue. Even \"five 9s\" (99.999%) — only 5 minutes 15 seconds of downtime per year — contributed to 25% of one system's total costs and virtually doubled hardware costs. Always specify realistic availability windows with maintenance exceptions."
+},
+{
+  section: "Quality Attributes Deep Dive",
+  type: "mcq", pts: 1,
+  q: "Which performance dimension does this requirement address? \"At least 98% of the time, the trading system shall update the transaction status display within 1 second after the completion of each trade.\"",
+  options: ["Data capacity", "Response time with probability constraint", "Throughput", "Dynamic capacity"],
+  correct: 1,
+  explanation: "This requirement specifies RESPONSE TIME (update within 1 second) with a probability constraint (at least 98% of the time). It's not throughput (transactions per second), not data capacity (records stored), and not dynamic capacity (concurrent users)."
+},
+
+/* ── SECTION 4: Writing Quality ── */
+{
+  section: "Writing Quality Requirements",
+  type: "mcq", pts: 1,
+  past: true,
+  q: "Which requirement below is correctly written and verifiable? (Past Exam — Quiz 2 Style)",
+  options: [
+    "The system should be as fast as possible.",
+    "The system shall be secure and handle all failures gracefully.",
+    "A trained user shall submit a chemical request in an average of 3 minutes, and a maximum of 5 minutes 95% of the time.",
+    "The app must be user-friendly and available whenever needed."
+  ],
+  correct: 2,
+  explanation: "Option C is the textbook's own example of a well-written usability requirement. It passes SMART: Specific (chemical request), Measurable (3 min avg, 5 min max), Attainable, Relevant, Time-specific (95% of the time). Options A and D have vague/unverifiable terms. Option B combines two requirements using 'and' (a writing pitfall) and contains 'all failures' (wishful thinking)."
+},
+{
+  section: "Writing Quality Requirements",
+  type: "mcq", pts: 1,
+  q: "Why should you avoid the phrase \"if possible\" in a requirement, such as \"Corporate project charge numbers should be validated online, if possible\"?",
+  options: [
+    "It's grammatically incorrect.",
+    "It creates an escape clause — developers may skip the requirement, and it doesn't specify what to do when validation isn't possible.",
+    "Online validation is never possible.",
+    "It should say 'shall' instead of 'should'."
+  ],
+  correct: 1,
+  explanation: "\"If possible\" is an escape clause — it makes the requirement optional and unverifiable. The textbook explicitly identifies this as a 'writing pitfall to avoid.' When you're unsure if something can be delivered, use TBD (To Be Determined) instead. The requirement also fails to specify what to do when the condition (validation unavailable) occurs."
+},
+
+/* ── SECTION 5: Constraints ── */
+{
+  section: "Constraints",
+  type: "mcq", pts: 1,
+  q: "A stakeholder says: \"The search results must appear in a dropdown list.\" As a BA, what should you recognize about this statement?",
+  options: [
+    "This is a clear functional requirement and should be documented as-is.",
+    "This is a security constraint.",
+    "This may be a solution idea embedded as a requirement — the BA should identify the underlying need and document the dropdown as a design constraint if truly required.",
+    "This is an external interface requirement."
+  ],
+  correct: 2,
+  explanation: "The textbook warns that users often present 'requirements' that are actually solution ideas containing an embedded design constraint. The BA's job is to detect this — ask WHY they need dropdown results, understand the underlying search need, and then document the functional requirement with the dropdown as a constraint (only if truly necessary)."
+},
+{
+  section: "Constraints",
+  type: "mcq", pts: 1,
+  q: "Which of the following is a CONSTRAINT rather than a quality attribute requirement?",
+  options: [
+    "The system shall be available 99.5% of scheduled hours.",
+    "The application must use Microsoft .NET framework 4.5.",
+    "The system shall recover file contents from within 1 minute of an unexpected failure.",
+    "95% of new users shall complete registration without assistance."
+  ],
+  correct: 1,
+  explanation: "\"The application must use Microsoft .NET framework 4.5\" is an architecture/implementation constraint — it restricts the developer's design choices without describing a user-observable quality. Options A and C are quality attribute requirements (availability and robustness). Option D is a usability requirement."
+},
+
+/* ── SECTION 6: Trade-offs ── */
+{
+  section: "Trade-offs & Prioritization",
+  type: "tf", pts: 1,
+  q: "Increasing security always has a positive effect on system performance.",
+  correct: false,
+  explanation: "FALSE — Security and performance often conflict. Adding security layers (encryption, multi-factor auth, audit logging, access control checks) introduces overhead and latency, which can degrade performance. This is a classic trade-off. If security is prioritized higher than performance in your quality attribute matrix, you accept the performance penalty."
+},
+
+/* ── SECTION 7: Writing Questions ── */
+{
+  section: "Written Response",
+  type: "write", pts: 3,
+  past: true,
+  q: "Explain the five-step method for exploring quality attributes in a requirements engineering process. (Past Exam — Final Exam Style, 3pts)",
+  keywords: ["taxonomy","stakeholders","prioritize","pairwise","elicit","smart","specific","measurable","expectations","reduce","attributes","list"],
+  minKeywords: 5,
+  model: [
+    "Step 1 — Start with a broad taxonomy: Review all possible quality attributes to avoid overlooking any important dimension.",
+    "Step 2 — Reduce the list with stakeholders: Work with a cross-section of stakeholders to identify which attributes matter most for this specific project context.",
+    "Step 3 — Prioritize the attributes: Use pairwise ranking ('If I could have only one, which would I take?'). This also tells you how to resolve conflicts between attributes.",
+    "Step 4 — Elicit specific expectations: Ask targeted, domain-specific questions. Guide users through scenarios — they can't answer 'What are your reliability requirements?' but can answer scenario-based questions.",
+    "Step 5 — Specify using SMART: Write well-structured, Specific, Measurable, Attainable, Relevant, and Time-sensitive requirements. Avoid vague terms like 'user-friendly' or '24×7 available.'"
+  ],
+  explanation: "The 5-step method ensures quality attributes are systematically identified, prioritized, and correctly specified. Most requirements failures happen because steps 1-4 are skipped and engineers jump straight to writing vague quality statements."
+},
+{
+  section: "Written Response",
+  type: "write", pts: 3,
+  past: true,
+  q: "Distinguish between Reliability and Robustness as quality attributes. Why is Reliability called a 'lagging indicator'? Provide one concrete example requirement for each. (Past Exam — Midterm Style, 3pts)",
+  keywords: ["reliability","robustness","failure","recover","graceful","lagging","mtbf","probability","unexpected","conditions","invalid","operation"],
+  minKeywords: 4,
+  model: [
+    "Reliability: The probability of the software executing without failure for a specific period. Measures how rarely the system fails.",
+    "Example: 'No more than 5 experimental runs out of 1,000 can be lost because of software failures.'",
+    "Robustness: The degree to which a system continues to function properly when confronted with invalid inputs, hardware defects, attacks, or unexpected conditions. It's about graceful recovery.",
+    "Example: 'If the text editor fails before the user saves, it shall recover the file contents from at most one minute prior to the failure.'",
+    "Reliability is a 'lagging indicator' because you cannot verify it until the system has been operating in the real world for enough time to observe actual failure rates — unlike performance which can be tested immediately."
+  ],
+  explanation: "Key distinction: Reliability = doesn't fail often. Robustness = handles failure gracefully when it does happen. A fragile system can be reliable until it meets one edge case, then crashes catastrophically. A robust system fails 'softly' and recovers."
+},
+{
+  section: "Written Response",
+  type: "write", pts: 2,
+  past: true,
+  q: "What problems do requirements engineers face when collecting and specifying quality requirements? Name at least three. (Past Exam — Major 1, 2pts)",
+  keywords: ["expertise","implicit","unstated","vague","verifiable","measurable","conflicting","conflict","availability","stakeholder","trade-off","lagging","subjective","specify","ambiguous"],
+  minKeywords: 3,
+  model: [
+    "1. Lack of domain expertise: Requirements engineers may not have the specialized knowledge needed to evaluate certain quality expectations precisely (e.g., understanding what 'reliable' means in a medical device).",
+    "2. Implicit/unstated expectations: Users often have quality expectations they don't mention because they seem 'obvious' — like the noise in the heating system story. The BA must proactively elicit these.",
+    "3. Difficulty making requirements verifiable and measurable: Vague terms like 'user-friendly', 'fast', or 'secure' are hard to convert into objectively testable requirements.",
+    "4. Conflicting quality attributes: Improving one attribute (e.g., security) can degrade another (e.g., performance). Trade-off decisions require stakeholder negotiation.",
+    "5. Reliability as a lagging indicator: Some quality attributes (like reliability) can't be verified until the system has been in real operation — making upfront specification feel uncertain."
+  ],
+  explanation: "The textbook discusses general problems with the requirements process, and quality requirements compound these because they are harder to specify precisely than functional requirements."
+}
+];
+
+// ═══════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════
+let answers = {};
+let submitted = {};
+let totalPts = questions.reduce((s,q)=>s+q.pts,0);
+let isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+document.getElementById('totalPts').textContent = totalPts;
+
+// ═══════════════════════════════════════════════
+// THEME
+// ═══════════════════════════════════════════════
+function applyTheme() {
+  document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+  const track = document.getElementById('toggleTrack');
+  const knob = document.getElementById('toggleKnob');
+  const label = document.getElementById('modeLabel');
+  track.classList.toggle('on', isDark);
+  knob.textContent = isDark ? '🌙' : '☀️';
+  label.textContent = isDark ? 'DARK' : 'LIGHT';
+}
+function toggleTheme() { isDark = !isDark; applyTheme(); }
+applyTheme();
+
+// ═══════════════════════════════════════════════
+// RENDER QUIZ
+// ═══════════════════════════════════════════════
+function render() {
+  const wrap = document.getElementById('quizWrap');
+  wrap.innerHTML = '';
+  let lastSection = '';
+  questions.forEach((q, i) => {
+    if (q.section !== lastSection) {
+      lastSection = q.section;
+      const div = document.createElement('div');
+      div.className = 'section-divider';
+      div.innerHTML = `<div class="sd-line"></div><div class="sd-label">${q.section}</div><div class="sd-line"></div>`;
+      wrap.appendChild(div);
+    }
+    wrap.appendChild(buildCard(q, i));
+  });
+}
+
+function buildCard(q, i) {
+  const card = document.createElement('div');
+  card.className = 'q-card';
+  card.id = `card-${i}`;
+
+  const typeLabel = q.type === 'mcq' ? 'MCQ' : q.type === 'tf' ? 'True / False' : 'Written';
+  const typeCls = q.type === 'mcq' ? 'mcq' : q.type === 'tf' ? 'tf' : 'write';
+
+  let pastBadge = q.past ? `<span class="badge past">📝 Past Exam</span>` : '';
+  card.innerHTML = `
+    <div class="q-header">
+      <span class="q-num">Q${i+1}</span>
+      <div class="q-badges">
+        <span class="badge ${typeCls}">${typeLabel}</span>
+        ${pastBadge}
+        <span class="badge pts">${q.pts} pt${q.pts>1?'s':''}</span>
+      </div>
+    </div>
+    <div class="q-text">${q.q}</div>
+    <div id="input-${i}">${buildInput(q,i)}</div>
+    <div class="q-footer">
+      <div id="feedback-${i}" class="feedback"></div>
+      <button class="submit-btn" id="sbtn-${i}" onclick="checkAnswer(${i})">Check Answer</button>
+    </div>
+  `;
+  return card;
+}
+
+function buildInput(q, i) {
+  if (q.type === 'mcq') {
+    return `<div class="options">${q.options.map((o,j)=>`
+      <div class="option" id="opt-${i}-${j}" onclick="selectMCQ(${i},${j})">
+        <div class="opt-letter">${String.fromCharCode(65+j)}</div>
+        <div class="opt-text">${o}</div>
+      </div>`).join('')}</div>`;
+  }
+  if (q.type === 'tf') {
+    return `<div class="tf-options">
+      <div class="tf-btn" id="tf-${i}-true" onclick="selectTF(${i},true)">✓ True</div>
+      <div class="tf-btn" id="tf-${i}-false" onclick="selectTF(${i},false)">✗ False</div>
+    </div>`;
+  }
+  if (q.type === 'write') {
+    const pills = q.keywords.map(k=>`<span class="kw-pill" id="kw-${i}-${k}">${k}</span>`).join('');
+    return `
+      <textarea class="write-area" id="write-${i}" placeholder="Write your answer here..." oninput="liveDetect(${i})"></textarea>
+      <div class="write-meta">
+        <span class="write-hint">Keywords detected:</span>
+        <div class="keyword-track">${pills}</div>
+      </div>
+      <div class="model-answer" id="model-${i}">
+        <strong>📖 Model Answer</strong>
+        <ul>${q.model.map(m=>`<li>${m}</li>`).join('')}</ul>
+      </div>`;
+  }
+}
+
+function selectMCQ(qi, j) {
+  if (submitted[qi]) return;
+  answers[qi] = j;
+  document.querySelectorAll(`[id^="opt-${qi}-"]`).forEach(el => el.classList.remove('selected'));
+  document.getElementById(`opt-${qi}-${j}`).classList.add('selected');
+  updateProgress();
+}
+
+function selectTF(qi, val) {
+  if (submitted[qi]) return;
+  answers[qi] = val;
+  document.getElementById(`tf-${qi}-true`).classList.remove('selected');
+  document.getElementById(`tf-${qi}-false`).classList.remove('selected');
+  document.getElementById(`tf-${qi}-${val}`).classList.add('selected');
+  updateProgress();
+}
+
+function liveDetect(qi) {
+  const q = questions[qi];
+  const text = document.getElementById(`write-${qi}`).value.toLowerCase();
+  q.keywords.forEach(k => {
+    const el = document.getElementById(`kw-${qi}-${k}`);
+    if (el) el.classList.toggle('hit', text.includes(k.toLowerCase()));
+  });
+  updateProgress();
+}
+
+// ═══════════════════════════════════════════════
+// CHECKING
+// ═══════════════════════════════════════════════
+function checkAnswer(qi) {
+  if (submitted[qi]) return;
+  const q = questions[qi];
+  const card = document.getElementById(`card-${qi}`);
+  const fb = document.getElementById(`feedback-${qi}`);
+  const btn = document.getElementById(`sbtn-${qi}`);
+
+  let earned = 0;
+  let isCorrect = false;
+  let isPartial = false;
+  let fbClass = '';
+  let fbTitle = '';
+  let fbBody = '';
+
+  if (q.type === 'mcq') {
+    if (answers[qi] === undefined) { alert('Please select an answer first!'); return; }
+    isCorrect = answers[qi] === q.correct;
+    earned = isCorrect ? q.pts : 0;
+
+    q.options.forEach((_,j) => {
+      const el = document.getElementById(`opt-${qi}-${j}`);
+      el.classList.add('locked');
+      if (j === q.correct) el.classList.add('correct-ans');
+      else if (j === answers[qi] && !isCorrect) el.classList.add('wrong-ans');
+    });
+
+    fbClass = isCorrect ? 'correct-fb' : 'wrong-fb';
+    fbTitle = isCorrect ? '✅ Correct!' : '❌ Incorrect';
+    fbBody = `<div class="fb-body">${q.explanation}</div>`;
+
+  } else if (q.type === 'tf') {
+    if (answers[qi] === undefined) { alert('Please select True or False!'); return; }
+    isCorrect = answers[qi] === q.correct;
+    earned = isCorrect ? q.pts : 0;
+
+    ['true','false'].forEach(v => {
+      const el = document.getElementById(`tf-${qi}-${v}`);
+      el.classList.add('locked');
+      const val = v === 'true';
+      if (val === q.correct) el.classList.add('correct-ans');
+      else if (val === answers[qi] && !isCorrect) el.classList.add('wrong-ans');
+    });
+
+    fbClass = isCorrect ? 'correct-fb' : 'wrong-fb';
+    fbTitle = isCorrect ? '✅ Correct!' : `❌ Incorrect — The answer is ${q.correct ? 'TRUE' : 'FALSE'}`;
+    fbBody = `<div class="fb-body">${q.explanation}</div>`;
+
+  } else if (q.type === 'write') {
+    const text = (document.getElementById(`write-${qi}`).value || '').toLowerCase();
+    if (text.trim().length < 10) { alert('Please write a proper answer first!'); return; }
+    const hits = q.keywords.filter(k => text.includes(k.toLowerCase())).length;
+    const ratio = hits / q.minKeywords;
+    document.getElementById(`write-${qi}`).disabled = true;
+    document.getElementById(`model-${qi}`).style.display = 'block';
+
+    if (ratio >= 1) {
+      earned = q.pts; isCorrect = true;
+      fbClass = 'correct-fb';
+      fbTitle = `✅ Excellent! ${hits}/${q.keywords.length} keywords detected.`;
+    } else if (ratio >= 0.5) {
+      earned = Math.round(q.pts * 0.5); isPartial = true;
+      fbClass = 'partial-fb';
+      fbTitle = `⚡ Partial Credit — ${hits}/${q.keywords.length} keywords detected.`;
+    } else {
+      earned = 0;
+      fbClass = 'wrong-fb';
+      fbTitle = `❌ Needs More Detail — ${hits}/${q.keywords.length} keywords found.`;
+    }
+    fbBody = `<div class="fb-body">${q.explanation}<br><br>Review the model answer above for key concepts to include.</div>`;
+  }
+
+  // Update card
+  card.classList.add(isCorrect ? 'correct' : isPartial ? 'partial' : 'wrong');
+  submitted[qi] = true;
+  answers[`score-${qi}`] = earned;
+
+  const scoreTag = `<span class="fb-score-tag ${isCorrect?'full':isPartial?'partial-s':'zero'}">${earned}/${q.pts}pts</span>`;
+  fb.innerHTML = `<div class="fb-title">${fbTitle} ${scoreTag}</div>${fbBody}`;
+  fb.className = `feedback ${fbClass}`;
+  fb.style.display = 'block';
+
+  btn.disabled = true;
+  btn.textContent = 'Submitted';
+  btn.classList.add('submitted');
+
+  updateScore();
+  updateProgress();
+}
+
+// ═══════════════════════════════════════════════
+// PROGRESS & SCORE
+// ═══════════════════════════════════════════════
+function updateProgress() {
+  const answered = Object.keys(submitted).length + Object.keys(answers).filter(k=>!k.startsWith('score')).filter(k=>!submitted[k]).length;
+  const total = questions.length;
+  const pct = Math.round((Object.keys(submitted).length / total) * 100);
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progLabel').textContent = `${Object.keys(submitted).length} of ${total} submitted`;
+  document.getElementById('progPct').textContent = pct + '%';
+}
+
+function updateScore() {
+  const s = Object.keys(answers).filter(k=>k.startsWith('score')).reduce((a,k)=>a+answers[k],0);
+  document.getElementById('liveScore').textContent = s;
+}
+
+// ═══════════════════════════════════════════════
+// RESULTS
+// ═══════════════════════════════════════════════
+function finishQuiz() {
+  const unsubmitted = questions.filter((_,i)=>!submitted[i]);
+  if (unsubmitted.length > 0) {
+    const go = confirm(`You have ${unsubmitted.length} unanswered question(s). Finish anyway? (They will score 0)`);
+    if (!go) return;
+  }
+
+  const totalScore = Object.keys(answers).filter(k=>k.startsWith('score')).reduce((a,k)=>a+answers[k],0);
+  const pct = Math.round((totalScore/totalPts)*100);
+  const correct = Object.keys(answers).filter(k=>k.startsWith('score') && answers[k] === questions[parseInt(k.split('-')[1])].pts).length;
+  const partial = Object.keys(answers).filter(k=>k.startsWith('score') && answers[k] > 0 && answers[k] < questions[parseInt(k.split('-')[1])].pts).length;
+  const wrong = questions.length - correct - partial;
+
+  let grade, gradeColor;
+  if (pct >= 90) { grade='A'; gradeColor='var(--green)'; }
+  else if (pct >= 80) { grade='B'; gradeColor='var(--blue)'; }
+  else if (pct >= 70) { grade='C'; gradeColor='var(--gold)'; }
+  else if (pct >= 60) { grade='D'; gradeColor='var(--accent)'; }
+  else { grade='F'; gradeColor='var(--red)'; }
+
+  const msg = pct>=90?"Outstanding! You've mastered Chapter 9 NFRs.":pct>=75?"Great work! Review the missed questions above.":pct>=60?"Good effort. Focus on quality attribute distinctions.":"Keep studying — revisit the quality attribute definitions and examples.";
+
+  document.querySelector('.quiz-nav').style.display = 'none';
+  const panel = document.getElementById('resultsPanel');
+  panel.innerHTML = `
+    <div class="results-card">
+      <div class="results-score">${totalScore}<span>/${totalPts}</span></div>
+      <div class="results-label">${pct}% — ${msg}</div>
+      <div class="grade-badge" style="background:color-mix(in srgb, ${gradeColor} 15%, transparent);color:${gradeColor};border:2px solid ${gradeColor}">Grade: ${grade}</div>
+      <div class="results-breakdown">
+        <div class="rb-item"><div class="rb-num" style="color:var(--green)">${correct}</div><div class="rb-label">Correct</div></div>
+        <div class="rb-item"><div class="rb-num" style="color:var(--gold)">${partial}</div><div class="rb-label">Partial</div></div>
+        <div class="rb-item"><div class="rb-num" style="color:var(--red)">${wrong}</div><div class="rb-label">Missed</div></div>
+      </div>
+      <p style="color:var(--text3);font-size:.85rem;margin-bottom:1rem">Scroll up to review explanations for each question.</p>
+      <button class="retry-btn" onclick="retryQuiz()">↺ Retry Quiz</button>
+    </div>`;
+  panel.style.display = 'block';
+  panel.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+function retryQuiz() {
+  answers = {}; submitted = {};
+  document.getElementById('liveScore').textContent = '0';
+  document.getElementById('resultsPanel').style.display = 'none';
+  document.querySelector('.quiz-nav').style.display = 'flex';
+  render();
+  updateProgress();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+// INIT
+render();
+updateProgress();
+</script>
+</body>
+</html>

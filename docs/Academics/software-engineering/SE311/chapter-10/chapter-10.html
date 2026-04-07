@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chapter 10 — Requirements Prioritization | SE311</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f8f6f2;
+    --surface: #ffffff;
+    --surface2: #f0ece4;
+    --surface3: #e8e2d8;
+    --border: #ddd7cc;
+    --text: #1c1916;
+    --text-muted: #6e6660;
+    --text-light: #9a9390;
+    --accent: #c0390a;
+    --accent-soft: #fde9e2;
+    --blue: #1a5c8a;
+    --blue-soft: #ddeaf5;
+    --green: #237a4f;
+    --green-soft: #d5f0e2;
+    --gold: #a8760c;
+    --gold-soft: #fdf1d0;
+    --purple: #5a3ea0;
+    --purple-soft: #ece7f8;
+    --teal: #147a78;
+    --teal-soft: #d0f0ef;
+    --shadow-sm: 0 1px 6px rgba(0,0,0,0.06);
+    --shadow: 0 3px 16px rgba(0,0,0,0.09);
+    --radius: 16px;
+    --radius-sm: 10px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #131110;
+      --surface: #1d1b18;
+      --surface2: #242220;
+      --surface3: #2e2b28;
+      --border: #383430;
+      --text: #ede9e3;
+      --text-muted: #9a9490;
+      --text-light: #6a6460;
+      --accent: #e8603a;
+      --accent-soft: #3a1808;
+      --blue: #5aaad8;
+      --blue-soft: #0c2236;
+      --green: #4ec87a;
+      --green-soft: #0c2e1a;
+      --gold: #e0b040;
+      --gold-soft: #2a1e08;
+      --purple: #9a7ee0;
+      --purple-soft: #1e1438;
+      --teal: #3ecece;
+      --teal-soft: #062626;
+      --shadow-sm: 0 1px 6px rgba(0,0,0,0.3);
+      --shadow: 0 3px 16px rgba(0,0,0,0.4);
+    }
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior:smooth; }
+  body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif; font-size:15px; line-height:1.75; min-height:100vh; }
+
+  /* TOPBAR */
+  .topbar { position:sticky; top:0; z-index:200; background:var(--surface); border-bottom:1px solid var(--border); height:54px; display:flex; align-items:center; justify-content:space-between; padding:0 28px; box-shadow:var(--shadow-sm); }
+  .topbar-brand { font-family:'DM Mono',monospace; font-size:12px; font-weight:500; color:var(--text-muted); letter-spacing:.1em; }
+  .topbar-brand span { color:var(--accent); }
+  .topbar-nav { display:flex; gap:4px; flex-wrap:wrap; }
+  .topbar-nav a { font-size:12px; font-weight:500; color:var(--text-muted); text-decoration:none; padding:4px 10px; border-radius:20px; transition:all .18s; }
+  .topbar-nav a:hover { color:var(--accent); background:var(--accent-soft); }
+
+  /* HERO */
+  .hero { max-width:920px; margin:0 auto; padding:64px 28px 48px; }
+  .hero-chip { display:inline-flex; align-items:center; gap:6px; background:var(--text); color:var(--bg); font-family:'DM Mono',monospace; font-size:10px; font-weight:500; letter-spacing:.14em; text-transform:uppercase; padding:4px 12px; border-radius:20px; margin-bottom:20px; }
+  .hero h1 { font-family:'Playfair Display',serif; font-size:clamp(38px,6vw,62px); font-weight:900; line-height:1.08; letter-spacing:-.025em; margin-bottom:14px; }
+  .hero h1 em { font-style:normal; color:var(--accent); }
+  .hero-sub { font-size:16px; color:var(--text-muted); max-width:600px; margin-bottom:32px; }
+  .hero-stats { display:flex; gap:32px; flex-wrap:wrap; padding-top:24px; border-top:1px solid var(--border); }
+  .stat-num { font-family:'Playfair Display',serif; font-size:30px; font-weight:700; color:var(--accent); line-height:1; }
+  .stat-label { font-size:11px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.08em; font-weight:500; margin-top:3px; }
+
+  /* CONTENT */
+  .content { max-width:920px; margin:0 auto; padding:0 28px 100px; }
+
+  /* SECTION */
+  .section { margin-bottom:60px; animation:fadeUp .45s ease both; }
+  .section:nth-child(1){animation-delay:.05s}.section:nth-child(2){animation-delay:.1s}
+  .section:nth-child(3){animation-delay:.15s}.section:nth-child(4){animation-delay:.2s}
+  .section:nth-child(5){animation-delay:.25s}.section:nth-child(6){animation-delay:.3s}
+  .section:nth-child(7){animation-delay:.35s}.section:nth-child(8){animation-delay:.4s}
+  .section:nth-child(9){animation-delay:.45s}.section:nth-child(10){animation-delay:.5s}
+  @keyframes fadeUp { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
+
+  .section-header { display:flex; align-items:center; gap:12px; margin-bottom:22px; padding-bottom:14px; border-bottom:2px solid var(--border); }
+  .section-num { font-family:'DM Mono',monospace; font-size:11px; font-weight:500; color:var(--text-light); background:var(--surface2); padding:3px 9px; border-radius:20px; flex-shrink:0; }
+  .section-title { font-family:'Playfair Display',serif; font-size:22px; font-weight:700; letter-spacing:-.01em; }
+
+  /* CARDS */
+  .card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:22px 24px; box-shadow:var(--shadow-sm); margin-bottom:16px; }
+  .card-title { font-weight:600; font-size:14px; margin-bottom:10px; display:flex; align-items:center; gap:8px; }
+  .card-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:16px; }
+  @media(max-width:620px){.card-grid{grid-template-columns:1fr}}
+  .card-accent  { border-left:4px solid var(--accent);  background:var(--accent-soft);  }
+  .card-blue    { border-left:4px solid var(--blue);    background:var(--blue-soft);    }
+  .card-green   { border-left:4px solid var(--green);   background:var(--green-soft);   }
+  .card-gold    { border-left:4px solid var(--gold);    background:var(--gold-soft);    }
+  .card-purple  { border-left:4px solid var(--purple);  background:var(--purple-soft);  }
+  .card-teal    { border-left:4px solid var(--teal);    background:var(--teal-soft);    }
+
+  /* BADGES */
+  .badge { display:inline-flex; align-items:center; font-family:'DM Mono',monospace; font-size:10px; font-weight:500; letter-spacing:.08em; text-transform:uppercase; padding:2px 8px; border-radius:12px; vertical-align:middle; margin-left:6px; }
+  .badge-exam   { background:var(--gold-soft);   color:var(--gold);   border:1px solid var(--gold);   }
+  .badge-key    { background:var(--purple-soft); color:var(--purple); border:1px solid var(--purple); }
+  .badge-opt    { background:var(--surface2);    color:var(--text-muted); border:1px solid var(--border); }
+
+  /* CALLOUT */
+  .callout { display:flex; gap:14px; align-items:flex-start; padding:16px 18px; border-radius:var(--radius-sm); margin:18px 0; }
+  .callout-icon { font-size:20px; flex-shrink:0; margin-top:2px; }
+  .callout-body { flex:1; font-size:14px; }
+  .callout-title { font-weight:600; font-size:13px; margin-bottom:5px; }
+  .callout-blue   { background:var(--blue-soft);   border-left:3px solid var(--blue);   }
+  .callout-green  { background:var(--green-soft);  border-left:3px solid var(--green);  }
+  .callout-gold   { background:var(--gold-soft);   border-left:3px solid var(--gold);   }
+  .callout-red    { background:var(--accent-soft); border-left:3px solid var(--accent); }
+  .callout-purple { background:var(--purple-soft); border-left:3px solid var(--purple); }
+  .callout-teal   { background:var(--teal-soft);   border-left:3px solid var(--teal);   }
+
+  /* LISTS */
+  ul.styled { list-style:none; display:flex; flex-direction:column; gap:8px; }
+  ul.styled li { display:flex; gap:10px; align-items:flex-start; font-size:14px; }
+  ul.styled li::before { content:''; flex-shrink:0; width:6px; height:6px; border-radius:50%; background:var(--accent); margin-top:8px; }
+  ul.styled.blue   li::before { background:var(--blue); }
+  ul.styled.green  li::before { background:var(--green); }
+  ul.styled.gold   li::before { background:var(--gold); }
+  ul.styled.purple li::before { background:var(--purple); }
+  ul.styled.teal   li::before { background:var(--teal); }
+
+  /* TABLE */
+  .table-wrap { overflow-x:auto; margin:16px 0; border-radius:var(--radius-sm); border:1px solid var(--border); }
+  table { width:100%; border-collapse:collapse; font-size:13.5px; }
+  th { background:var(--surface2); color:var(--text); font-weight:600; text-align:left; padding:10px 14px; border-bottom:2px solid var(--border); font-size:12px; letter-spacing:.04em; text-transform:uppercase; }
+  td { padding:10px 14px; border-bottom:1px solid var(--border); vertical-align:top; }
+  tr:last-child td { border-bottom:none; }
+  tr:nth-child(even) td { background:var(--surface2); }
+  td.hi { color:var(--green); font-weight:600; }
+  td.lo { color:var(--accent); font-weight:500; }
+
+  /* MONO */
+  .mono { font-family:'DM Mono',monospace; font-size:12.5px; background:var(--surface2); border:1px solid var(--border); padding:2px 7px; border-radius:6px; color:var(--accent); }
+
+  /* PRO/CON */
+  .procon { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:12px 0; }
+  @media(max-width:580px){.procon{grid-template-columns:1fr}}
+  .procon-box { border-radius:var(--radius-sm); padding:13px 15px; }
+  .procon-box.pro { background:var(--green-soft); border:1px solid var(--green); }
+  .procon-box.con { background:var(--accent-soft); border:1px solid var(--accent); }
+  .procon-title { font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.07em; margin-bottom:7px; }
+  .procon-box.pro .procon-title { color:var(--green); }
+  .procon-box.con .procon-title { color:var(--accent); }
+
+  /* TECHNIQUE CARD */
+  .technique { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:24px 26px; margin-bottom:20px; box-shadow:var(--shadow-sm); }
+  .technique-header { display:flex; align-items:center; gap:12px; margin-bottom:16px; }
+  .technique-num { width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:'Playfair Display',serif; font-size:18px; font-weight:700; color:#fff; flex-shrink:0; }
+  .technique-title { font-family:'Playfair Display',serif; font-size:18px; font-weight:700; }
+
+  /* KANO TABLE */
+  .kano-table { border-radius:var(--radius-sm); overflow:hidden; border:2px solid var(--border); margin:14px 0; }
+  .kano-table table { font-size:12.5px; }
+  .kano-table th { font-size:11px; padding:8px 10px; }
+  .kano-table td { padding:8px 10px; text-align:center; font-weight:500; }
+  .kano-basic       { background:var(--blue-soft);   color:var(--blue);   }
+  .kano-performance { background:var(--green-soft);  color:var(--green);  }
+  .kano-excitement  { background:var(--gold-soft);   color:var(--gold);   }
+  .kano-indiff      { background:var(--surface2);    color:var(--text-muted); }
+  .kano-reverse     { background:var(--accent-soft); color:var(--accent); }
+  .kano-q           { background:var(--purple-soft); color:var(--purple); }
+
+  /* MATRIX (Three-level) */
+  .matrix-2x2 { display:grid; grid-template-columns:1fr 1fr; gap:0; border:2px solid var(--border); border-radius:var(--radius-sm); overflow:hidden; margin:14px 0; }
+  .matrix-cell { padding:20px 18px; text-align:center; border:1px solid var(--border); }
+  .matrix-label { font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.07em; margin-bottom:6px; }
+  .matrix-val { font-family:'Playfair Display',serif; font-size:26px; font-weight:900; }
+  .cell-h { background:var(--green-soft); }
+  .cell-m { background:var(--gold-soft); }
+  .cell-l { background:var(--accent-soft); }
+  .cell-d { background:var(--surface3); }
+  .matrix-header { display:grid; grid-template-columns:80px 1fr 1fr; font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.06em; color:var(--text-muted); margin-bottom:4px; text-align:center; }
+  .matrix-axis { display:grid; grid-template-rows:1fr 1fr; font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.06em; color:var(--text-muted); text-align:right; align-items:center; padding-right:10px; }
+  .matrix-wrap { display:grid; grid-template-columns:auto 1fr; gap:0; margin:14px 0; }
+
+  /* 80-20 RULE */
+  .rule-8020 { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin:14px 0; }
+  @media(max-width:580px){.rule-8020{grid-template-columns:1fr}}
+  .rule-box { border-radius:var(--radius-sm); padding:18px 20px; text-align:center; border:2px solid; }
+  .rule-box.twenty { border-color:var(--accent); background:var(--accent-soft); }
+  .rule-box.eighty { border-color:var(--green); background:var(--green-soft); }
+  .rule-pct { font-family:'Playfair Display',serif; font-size:48px; font-weight:900; line-height:1; }
+  .rule-box.twenty .rule-pct { color:var(--accent); }
+  .rule-box.eighty .rule-pct { color:var(--green); }
+  .rule-desc { font-size:13px; font-weight:500; margin-top:6px; color:var(--text-muted); }
+
+  /* FORMULA BOX */
+  .formula { background:var(--surface2); border:2px solid var(--border); border-radius:var(--radius-sm); padding:16px 20px; text-align:center; font-family:'DM Mono',monospace; font-size:14px; color:var(--text); margin:14px 0; line-height:2; }
+  .formula .frac { color:var(--accent); font-size:16px; font-weight:500; }
+
+  /* TIPS */
+  .tips-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:14px; }
+  @media(max-width:620px){.tips-grid{grid-template-columns:1fr}}
+  .tip-item { background:var(--green-soft); border:1px solid var(--green); border-radius:var(--radius-sm); padding:14px 16px; }
+  .tip-label { font-size:11px; font-weight:600; color:var(--green); text-transform:uppercase; letter-spacing:.08em; margin-bottom:5px; }
+  .tip-text { font-size:13px; color:var(--text); }
+
+  /* QUICK REF */
+  .quick-ref { background:var(--surface); border:2px solid var(--accent); border-radius:var(--radius); padding:24px 26px; margin-bottom:40px; }
+  .quick-ref-title { font-family:'Playfair Display',serif; font-size:18px; font-weight:700; margin-bottom:16px; color:var(--accent); }
+  .qr-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  @media(max-width:580px){.qr-grid{grid-template-columns:1fr}}
+  .qr-item { background:var(--surface2); border-radius:var(--radius-sm); padding:10px 14px; }
+  .qr-term { font-weight:600; color:var(--accent); margin-bottom:2px; font-size:13px; }
+  .qr-def  { color:var(--text-muted); font-size:12.5px; }
+
+  /* DIVIDER */
+  .divider { border:none; border-top:1px solid var(--border); margin:32px 0; }
+
+  /* OPTIONAL PILL */
+  .opt-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:10px; margin-top:14px; }
+  @media(max-width:700px){.opt-grid{grid-template-columns:1fr 1fr}}
+  .opt-item { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-sm); padding:14px 12px; text-align:center; }
+  .opt-icon { font-size:22px; margin-bottom:6px; }
+  .opt-text { font-size:12px; font-weight:500; color:var(--text); }
+
+  /* FOOTER */
+  footer { background:var(--surface); border-top:1px solid var(--border); padding:24px 28px; text-align:center; font-size:12.5px; color:var(--text-muted); }
+  footer strong { color:var(--text); }
+  .course-tag { display:inline-block; font-family:'DM Mono',monospace; font-size:11px; background:var(--accent); color:#fff; padding:2px 10px; border-radius:20px; margin-bottom:6px; }
+
+  /* SCROLL TOP */
+  .scroll-top { position:fixed; bottom:28px; right:28px; z-index:100; width:40px; height:40px; background:var(--accent); color:#fff; border-radius:50%; border:none; cursor:pointer; font-size:18px; display:flex; align-items:center; justify-content:center; box-shadow:var(--shadow); transition:transform .2s; }
+  .scroll-top:hover { transform:translateY(-3px); }
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<nav class="topbar">
+  <div class="topbar-brand">SE311 &middot; <span>Ch.10</span> &middot; Requirements Prioritization</div>
+  <div class="topbar-nav">
+    <a href="#why">Why?</a>
+    <a href="#triage">Triage</a>
+    <a href="#scales">Scales</a>
+    <a href="#wiegers">Wiegers</a>
+    <a href="#kano">Kano</a>
+    <a href="#three">3-Level</a>
+    <a href="#other">Other</a>
+    <a href="#optional">Optional</a>
+    <a href="#studytips">Study Tips</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="hero-chip">&#128200; SE311 &middot; Study Guide &middot; Chapter 10</div>
+  <h1>Requirements<br><em>Prioritization</em></h1>
+  <p class="hero-sub">Deciding which requirements matter most — and when. With limited time, budget, and resources, prioritization is the skill that separates a deliverable product from a failed one.</p>
+  <div class="hero-stats">
+    <div><div class="stat-num">4</div><div class="stat-label">Main Techniques</div></div>
+    <div><div class="stat-num">80/20</div><div class="stat-label">Pareto Rule</div></div>
+    <div><div class="stat-num">5</div><div class="stat-label">Kano Categories</div></div>
+    <div><div class="stat-num">4</div><div class="stat-label">Wiegers Dimensions</div></div>
+  </div>
+</header>
+
+<main class="content">
+
+  <!-- QUICK REF -->
+  <div class="quick-ref">
+    <div class="quick-ref-title">&#9889; Quick Reference &mdash; Key Terms</div>
+    <div class="qr-grid">
+      <div class="qr-item"><div class="qr-term">Triage</div><div class="qr-def">Another word for requirements prioritization &mdash; deciding what gets implemented and when</div></div>
+      <div class="qr-item"><div class="qr-term">80-20 Rule (Pareto)</div><div class="qr-def">80% of value comes from 20% of features. Focus on the impactful 20%</div></div>
+      <div class="qr-item"><div class="qr-term">Wiegers' Method</div><div class="qr-def">Semi-quantitative: uses Benefit, Penalty, Cost, and Risk with weights and a formula</div></div>
+      <div class="qr-item"><div class="qr-term">Kano Model</div><div class="qr-def">Groups requirements by customer perception: Basic, Performance, Excitement, Indifferent, Reverse</div></div>
+      <div class="qr-item"><div class="qr-term">Three-Level Scale</div><div class="qr-def">Subjective High/Medium/Low based on Importance &times; Urgency</div></div>
+      <div class="qr-item"><div class="qr-term">Prioritization Scales</div><div class="qr-def">Simple urgency/importance scales: High, Medium, Low or Essential, Conditional, Optional</div></div>
+    </div>
+  </div>
+
+  <!-- ═══ SECTION 1: WHY PRIORITIZE ═══ -->
+  <section class="section" id="why">
+    <div class="section-header">
+      <span class="section-num">01</span>
+      <h2 class="section-title">Why Prioritize Requirements?</h2>
+    </div>
+
+    <p>Requirements prioritization is necessary because <strong>resources are always limited</strong> and you can rarely implement everything. Here are the core difficulties:</p>
+
+    <div class="card-grid" style="margin-top:14px;">
+      <div class="card card-accent">
+        <div class="card-title">&#128683; Structural Difficulties</div>
+        <ul class="styled" style="font-size:13.5px;">
+          <li>Too many requirements from too many sources</li>
+          <li>Resources are limited (budget, time, people)</li>
+          <li>Developers may not know the <strong>business value</strong> of requirements</li>
+          <li>Clients may not know the <strong>implementation complexity</strong></li>
+          <li>Companies often lack systematic data and metrics to support prioritization</li>
+          <li>Often done manually, informally, on an ad-hoc basis</li>
+        </ul>
+      </div>
+      <div class="card card-gold">
+        <div class="card-title">&#128101; Human &amp; Political Difficulties</div>
+        <ul class="styled gold" style="font-size:13.5px;">
+          <li>Different stakeholders have <strong>conflicting</strong> goals and priorities</li>
+          <li>Some stakeholders' decisions carry <strong>more weight</strong> than others</li>
+          <li>Difficult to establish and communicate priorities</li>
+          <li>Attitude problem: <em>"No need for priorities, we can do everything!"</em> &mdash; until the deadline arrives</li>
+          <li>When the deadline approaches, requirements get cut chaotically instead of strategically</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="callout callout-blue">
+      <div class="callout-icon">&#128161;</div>
+      <div class="callout-body">
+        <div class="callout-title">What Prioritization Must Help You Do</div>
+        Make acceptable trade-offs among <strong>value, cost, and time-to-market</strong> &middot; Allocate resources based on importance &middot; Determine <em>when</em> a requirement should become part of the product &middot; Offer the right product at the right time.
+      </div>
+    </div>
+
+    <!-- 80-20 Rule -->
+    <p style="font-weight:600; font-size:15px; margin-top:20px; margin-bottom:12px;">The 80-20 Rule (Pareto Principle) <span class="badge badge-key">IMPORTANT</span></p>
+
+    <div class="rule-8020">
+      <div class="rule-box twenty">
+        <div class="rule-pct">20%</div>
+        <div class="rule-desc">of functionalities provide</div>
+        <div style="font-size:22px; font-weight:700; color:var(--accent); margin-top:4px;">80% of revenues</div>
+      </div>
+      <div class="rule-box eighty">
+        <div class="rule-pct">80%</div>
+        <div class="rule-desc">of functionalities provide only</div>
+        <div style="font-size:22px; font-weight:700; color:var(--green); margin-top:4px;">20% of value</div>
+      </div>
+    </div>
+
+    <div class="table-wrap" style="margin-top:4px;">
+      <table>
+        <tr><th>20% of Cause</th><th>80% of Effect</th></tr>
+        <tr><td>Criminals</td><td>Crimes</td></tr>
+        <tr><td>Drivers</td><td>Accidents</td></tr>
+        <tr><td>Factories</td><td>Pollution</td></tr>
+        <tr><td>Company products</td><td>Overall sales</td></tr>
+        <tr><td>Employees</td><td>Accomplished results</td></tr>
+      </table>
+    </div>
+
+    <div class="callout callout-red" style="margin-top:6px;">
+      <div class="callout-icon">&#128683;</div>
+      <div class="callout-body">
+        <div class="callout-title">The 80% Trap</div>
+        The remaining 80% of functionalities offer a <strong>lower return on investment</strong> while adding delays, development costs, and maintenance costs. <em>Think of MS Word &mdash; how many features do you actually use?</em> The challenge is finding and focusing on the impactful 20%.
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ SECTION 2: TRIAGE ═══ -->
+  <section class="section" id="triage">
+    <div class="section-header">
+      <span class="section-num">02</span>
+      <h2 class="section-title">Requirements Triage</h2>
+    </div>
+
+    <p>Requirements prioritization is also called <strong>triage</strong> &mdash; a medical term for sorting patients by urgency. In RE it means deciding which requirements really matter and which should be implemented in the current release.</p>
+
+    <div class="card card-blue">
+      <div class="card-title">&#9889; Requirements Triage Process &mdash; Must Be</div>
+      <ul class="styled blue" style="font-size:13.5px;">
+        <li><strong>Simple and fast</strong> for industry adoption</li>
+        <li><strong>Accurate and reliable</strong> results</li>
+        <li>Consider the <strong>value</strong> of requirements to stakeholders (maximize)</li>
+        <li>Consider the <strong>cost</strong> of implementation (minimize)</li>
+        <li>Consider <strong>time to market</strong> (minimize)</li>
+        <li>Important to agree on <strong>requirements granularity</strong> first (e.g., use cases, features, or detailed functional requirements)</li>
+      </ul>
+    </div>
+
+    <div class="callout callout-gold">
+      <div class="callout-icon">&#128269;</div>
+      <div class="callout-body">
+        <div class="callout-title">High Value, Low Cost = Top Priority</div>
+        The highest priority requirements are those that provide the <strong>largest fraction of total product value</strong> at the <strong>smallest fraction of total cost</strong>. Visualize a Cost vs. Value matrix and target the high-value, low-cost quadrant.
+      </div>
+    </div>
+
+    <div class="callout callout-teal">
+      <div class="callout-icon">&#127968;</div>
+      <div class="callout-body">
+        <div class="callout-title">Volvo Car Example &mdash; Cost Complexity vs. Customer Value</div>
+        Volvo mapped car components on a matrix of Customer Value (Y-axis) vs. Cost Complexity (X-axis). Components in the top-left (high value, low cost) were prioritized as "Platform Strategy / Profitable Proliferation." Components in the bottom-right (low value, high cost) were flagged to avoid. This is a real-world application of the triage principle.
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ SECTION 3: PRIORITIZATION SCALES ═══ -->
+  <section class="section" id="scales">
+    <div class="section-header">
+      <span class="section-num">03</span>
+      <h2 class="section-title">1st Technique &mdash; Prioritization Scales</h2>
+    </div>
+
+    <p>The simplest technique: define criteria and a scale, then assign every requirement a rating. Two commonly used dimensions are <strong>Urgency</strong> and <strong>Importance</strong>.</p>
+
+    <div class="card-grid" style="margin-top:14px;">
+      <div class="card card-blue">
+        <div class="card-title">&#9201; Urgency Scale</div>
+        <ul class="styled blue" style="font-size:13.5px;">
+          <li><strong>High</strong> &mdash; Mission critical; required for next release</li>
+          <li><strong>Medium</strong> &mdash; Supports necessary operations; required eventually but could wait</li>
+          <li><strong>Low</strong> &mdash; Functional or quality enhancement; nice to have if resources permit</li>
+        </ul>
+      </div>
+      <div class="card card-green">
+        <div class="card-title">&#11088; Importance Scale</div>
+        <ul class="styled green" style="font-size:13.5px;">
+          <li><strong>Essential</strong> &mdash; Product unacceptable unless these requirements are satisfied</li>
+          <li><strong>Conditional</strong> &mdash; Would enhance the product but product is acceptable without it</li>
+          <li><strong>Optional</strong> &mdash; Functions that may or may not be worthwhile</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="callout callout-blue">
+      <div class="callout-icon">&#128161;</div>
+      <div class="callout-body">
+        <div class="callout-title">Small Projects vs. Large Projects</div>
+        On a <strong>small project</strong>, stakeholders can agree informally on priorities. On <strong>large or contentious projects</strong> with many stakeholders, a more structured approach is needed to remove emotion, politics, and guesswork from the process.
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ SECTION 4: WIEGERS ═══ -->
+  <section class="section" id="wiegers">
+    <div class="section-header">
+      <span class="section-num">04</span>
+      <h2 class="section-title">2nd Technique &mdash; Wiegers' Prioritization <span class="badge badge-key">KEY</span></h2>
+    </div>
+
+    <p>A <strong>semi-quantitative analytical approach</strong> to requirements prioritization based on value, cost, and risk. Relies on estimating <em>relative</em> priorities rather than absolute ones.</p>
+
+    <div class="card card-blue" style="margin-bottom:16px;">
+      <div class="card-title">&#128202; The 4 Dimensions (each scored 0&ndash;9)</div>
+      <div class="card-grid" style="margin:0;">
+        <div>
+          <ul class="styled blue" style="font-size:13.5px;">
+            <li><strong>Relative Benefit</strong> &mdash; value gained by having this requirement</li>
+            <li><strong>Relative Penalty</strong> &mdash; harm to stakeholders if requirement is NOT included</li>
+          </ul>
+        </div>
+        <div>
+          <ul class="styled blue" style="font-size:13.5px;">
+            <li><strong>Relative Cost</strong> &mdash; effort to implement this requirement</li>
+            <li><strong>Relative Risk</strong> &mdash; technical and other risks involved</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="formula">
+      <div style="font-size:12px; color:var(--text-muted); margin-bottom:8px; font-family:'DM Sans',sans-serif;">Wiegers Priority Formula</div>
+      <div class="frac">Priority = Value% &divide; ( (Cost% &times; CostWeight) + (Risk% &times; RiskWeight) )</div>
+      <div style="font-size:12px; color:var(--text-muted); margin-top:8px; font-family:'DM Sans',sans-serif;">Value% = (Benefit &times; BenefitWeight + Penalty &times; PenaltyWeight) / TotalValue &middot; Relative Weights: Benefit=2, Penalty=1, Cost=1, Risk=0.5</div>
+    </div>
+
+    <p style="font-weight:600; margin-bottom:10px;">Chemical Tracking System Example:</p>
+    <div class="table-wrap">
+      <table>
+        <tr>
+          <th>Feature</th>
+          <th>Rel. Benefit</th>
+          <th>Rel. Penalty</th>
+          <th>Value %</th>
+          <th>Rel. Cost</th>
+          <th>Cost %</th>
+          <th>Rel. Risk</th>
+          <th>Risk %</th>
+          <th style="color:var(--accent);">Priority</th>
+        </tr>
+        <tr><td>1. Query vendor order status</td><td>5</td><td>3</td><td>8.4</td><td>2</td><td>4.8</td><td>1</td><td>3.0</td><td class="hi">1.345 &#9650;</td></tr>
+        <tr><td>2. Generate stockroom inventory</td><td>9</td><td>7</td><td>16.2</td><td>5</td><td>11.9</td><td>3</td><td>9.1</td><td>0.987</td></tr>
+        <tr><td>4. Print chemical safety datasheet</td><td>2</td><td>1</td><td>3.2</td><td>1</td><td>2.4</td><td>1</td><td>3.0</td><td>0.833</td></tr>
+        <tr><td>8. Search vendor catalogs</td><td>9</td><td>8</td><td>16.9</td><td>7</td><td>16.7</td><td>8</td><td>24.2</td><td class="lo">0.586 &#9660;</td></tr>
+        <tr><td>10. Import from drawing tools</td><td>7</td><td>4</td><td>11.7</td><td>9</td><td>21.4</td><td>7</td><td>21.2</td><td class="lo">0.365 &#9660;</td></tr>
+      </table>
+    </div>
+    <p style="font-size:12.5px; color:var(--text-muted); margin-top:4px;">Feature #1 has the highest priority (1.345) despite moderate benefit &mdash; because its cost and risk are very low. Feature #10 has the lowest priority (0.365) because it has high cost AND high risk.</p>
+
+    <div class="procon" style="margin-top:14px;">
+      <div class="procon-box pro">
+        <div class="procon-title">&#10004; Strengths</div>
+        <ul class="styled green" style="font-size:13px;">
+          <li>Systematic and analytical &mdash; removes some emotion and politics</li>
+          <li>Considers multiple dimensions simultaneously</li>
+          <li>Produces ranked, comparable priorities</li>
+          <li>Can be adapted with different weights for different projects</li>
+        </ul>
+      </div>
+      <div class="procon-box con">
+        <div class="procon-title">&#10008; Limitations</div>
+        <ul class="styled" style="font-size:13px;">
+          <li>Still limited by ability to properly estimate values</li>
+          <li>Interdependent requirements difficult to treat individually</li>
+          <li>Inconsistencies between individual stakeholder estimates</li>
+          <li>Requires adaptation and calibration per project</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Volere Prioritization -->
+    <div class="card card-teal" style="margin-top:6px;">
+      <div class="card-title">&#128203; Volere Prioritization Spreadsheet</div>
+      <p style="font-size:13.5px; margin-bottom:10px;">A weighted spreadsheet approach using 4 factors totaling 100% weight:</p>
+      <div class="table-wrap" style="margin:0;">
+        <table>
+          <tr><th>Factor</th><th>Weight</th><th>Description</th></tr>
+          <tr><td><strong>Value to Customer</strong></td><td>40%</td><td>How much does the customer want this?</td></tr>
+          <tr><td><strong>Value to Business</strong></td><td>20%</td><td>How much will the business benefit?</td></tr>
+          <tr><td><strong>Minimize Implementation Cost</strong></td><td>10%</td><td>Lower cost = higher priority contribution</td></tr>
+          <tr><td><strong>Ease of Implementation</strong></td><td>30%</td><td>Technical and organizational ease</td></tr>
+        </table>
+      </div>
+      <p style="font-size:12.5px; color:var(--text-muted); margin-top:8px;">Priority Rating = Sum of (score &times; weight%) for each factor. Higher score = higher priority. In the example, Requirement 6 scored highest at 6.9.</p>
+    </div>
+  </section>
+
+  <!-- ═══ SECTION 5: KANO ═══ -->
+  <section class="section" id="kano">
+    <div class="section-header">
+      <span class="section-num">05</span>
+      <h2 class="section-title">3rd Technique &mdash; Kano Surveys <span class="badge badge-key">KEY</span></h2>
+    </div>
+
+    <p>The <strong>Kano Model</strong> groups requirements based on <em>customer perception</em> in order to select requirements that deliver the greatest customer satisfaction. It uses a survey with paired questions.</p>
+
+    <!-- Kano 5 Categories -->
+    <div class="card-grid" style="margin-top:14px;">
+      <div class="card" style="border-left:4px solid var(--blue);">
+        <div class="card-title" style="color:var(--blue);">&#128309; Basic</div>
+        <p style="font-size:13.5px; margin:0;">Requirements the customer <strong>takes for granted</strong>. If absent, extreme dissatisfaction. If present, no extra satisfaction (expected). <em>Example: a car must have brakes.</em></p>
+      </div>
+      <div class="card" style="border-left:4px solid var(--green);">
+        <div class="card-title" style="color:var(--green);">&#128200; Performance</div>
+        <p style="font-size:13.5px; margin:0;">Requirements the customer <strong>specifically asked for</strong>. More = better satisfaction. <em>Example: better fuel economy = happier customer.</em></p>
+      </div>
+      <div class="card" style="border-left:4px solid var(--gold);">
+        <div class="card-title" style="color:var(--gold);">&#129321; Excitement</div>
+        <p style="font-size:13.5px; margin:0;">Requirements the customer <strong>does not request or expect</strong>. Surprise and delight when present, no dissatisfaction if absent. <em>Example: unexpected premium feature.</em></p>
+      </div>
+      <div class="card" style="border-left:4px solid var(--text-muted);">
+        <div class="card-title" style="color:var(--text-muted);">&#128284; Indifferent</div>
+        <p style="font-size:13.5px; margin:0;">Requirements the customer <strong>does not care about</strong>. Present or absent &mdash; makes no difference to satisfaction.</p>
+      </div>
+      <div class="card card-accent" style="grid-column:1/-1;">
+        <div class="card-title" style="color:var(--accent);">&#128534; Reverse</div>
+        <p style="font-size:13.5px; margin:0;">"Requirements" the customer <strong>actively dislikes</strong>. Including them causes dissatisfaction. These should be avoided entirely.</p>
+      </div>
+    </div>
+
+    <p style="font-weight:600; margin-top:20px; margin-bottom:8px;">How Kano Surveys Work:</p>
+    <div class="card card-blue" style="margin-bottom:14px;">
+      <div class="card-title">&#10067; The Two Questions for Each Requirement</div>
+      <div style="font-size:13.5px;">
+        <p style="margin-bottom:8px;"><strong>Functional question:</strong> "What is your reaction if this requirement <em>IS</em> included in the product?"</p>
+        <p style="margin-bottom:12px;"><strong>Dysfunctional question:</strong> "What is your reaction if this requirement is <em>NOT</em> included?"</p>
+        <p style="margin-bottom:6px;"><strong>For each, possible answers are:</strong></p>
+        <div style="display:flex; flex-wrap:wrap; gap:8px;">
+          <span class="mono">I like it</span>
+          <span class="mono">I expect it</span>
+          <span class="mono">I am neutral</span>
+          <span class="mono">I can tolerate it</span>
+          <span class="mono">I dislike it</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Kano Conclusions Table -->
+    <p style="font-weight:600; margin-bottom:10px;">Kano Conclusions Matrix:</p>
+    <div class="kano-table table-wrap">
+      <table>
+        <tr>
+          <th rowspan="2" style="background:var(--surface3);">Functional &#8595;<br>Dysfunctional &#8594;</th>
+          <th>Like</th><th>Expect</th><th>Neutral</th><th>Tolerate</th><th>Dislike</th>
+        </tr>
+        <tr>
+          <td class="kano-q">Like</td>
+          <td class="kano-q">Questionable</td>
+          <td class="kano-excitement">Excitement</td>
+          <td class="kano-excitement">Excitement</td>
+          <td class="kano-excitement">Excitement</td>
+          <td class="kano-performance">Performance</td>
+        </tr>
+        <tr>
+          <td class="kano-reverse">Expect</td>
+          <td class="kano-reverse">Reverse</td>
+          <td class="kano-q">Questionable</td>
+          <td class="kano-indiff">Indifferent</td>
+          <td class="kano-indiff">Indifferent</td>
+          <td class="kano-basic">Basic</td>
+        </tr>
+        <tr>
+          <td class="kano-reverse">Neutral</td>
+          <td class="kano-reverse">Reverse</td>
+          <td class="kano-indiff">Indifferent</td>
+          <td class="kano-indiff">Indifferent</td>
+          <td class="kano-indiff">Indifferent</td>
+          <td class="kano-basic">Basic</td>
+        </tr>
+        <tr>
+          <td class="kano-reverse">Tolerate</td>
+          <td class="kano-reverse">Reverse</td>
+          <td class="kano-indiff">Indifferent</td>
+          <td class="kano-indiff">Indifferent</td>
+          <td class="kano-q">Questionable</td>
+          <td class="kano-basic">Basic</td>
+        </tr>
+        <tr>
+          <td class="kano-reverse">Dislike</td>
+          <td class="kano-reverse">Reverse</td>
+          <td class="kano-reverse">Reverse</td>
+          <td class="kano-reverse">Reverse</td>
+          <td class="kano-reverse">Reverse</td>
+          <td class="kano-q">Questionable</td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="callout callout-green" style="margin-top:6px;">
+      <div class="callout-icon">&#127942;</div>
+      <div class="callout-body">
+        <div class="callout-title">Priority Order of Kano Categories</div>
+        <strong>Basic &gt; Performance &gt; Excitement &gt; Indifferent &gt; Reverse</strong>
+        <br>Always satisfy Basic requirements first (table stakes), then Performance, then Excitement (delighters). Ignore Indifferent. Avoid Reverse.
+      </div>
+    </div>
+
+    <div class="callout callout-gold">
+      <div class="callout-icon">&#128161;</div>
+      <div class="callout-body">
+        <div class="callout-title">Memory Trick &mdash; Kano BPEIR</div>
+        <strong>B</strong>asic (take for granted) &middot; <strong>P</strong>erformance (asked for) &middot; <strong>E</strong>xcitement (unexpected delight) &middot; <strong>I</strong>ndifferent (don't care) &middot; <strong>R</strong>everse (hate it). Remember: <em>"Be Perfectly Excited, Ignore Reverse."</em>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ SECTION 6: THREE-LEVEL SCALE ═══ -->
+  <section class="section" id="three">
+    <div class="section-header">
+      <span class="section-num">06</span>
+      <h2 class="section-title">4th Technique &mdash; Three-Level Scale <span class="badge badge-key">KEY</span></h2>
+    </div>
+
+    <p>Groups requirements into <strong>High, Medium, and Low</strong> priority based on two dimensions: <strong>Importance</strong> (does the customer need it?) and <strong>Urgency</strong> (do they need it in the next release?).</p>
+
+    <div class="callout callout-red">
+      <div class="callout-icon">&#9888;&#65039;</div>
+      <div class="callout-body">
+        <div class="callout-title">Important Caveat</div>
+        This scale is <strong>subjective and imprecise</strong>. Stakeholders must agree on what each level means <em>before</em> using it. Without agreement, the labels mean different things to different people.
+      </div>
+    </div>
+
+    <!-- 2x2 matrix -->
+    <p style="font-weight:600; margin:16px 0 8px;">The Importance &times; Urgency Matrix:</p>
+    <div style="display:grid; grid-template-columns:auto 1fr; gap:0; max-width:500px; margin:0 auto 16px;">
+      <div style="display:grid; grid-template-rows:40px 1fr 1fr; align-items:center;">
+        <div></div>
+        <div style="font-size:11px; font-weight:600; color:var(--text-muted); text-transform:uppercase; writing-mode:vertical-rl; transform:rotate(180deg); text-align:center; padding:0 8px;">Urgent</div>
+        <div style="font-size:11px; font-weight:600; color:var(--text-muted); text-transform:uppercase; writing-mode:vertical-rl; transform:rotate(180deg); text-align:center; padding:0 8px;">Not Urgent</div>
+      </div>
+      <div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; text-align:center; font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.06em; color:var(--text-muted); padding-bottom:4px;">
+          <div>Important</div><div>Not Important</div>
+        </div>
+        <div class="matrix-2x2">
+          <div class="matrix-cell cell-h">
+            <div class="matrix-label" style="color:var(--green);">High Priority</div>
+            <div class="matrix-val" style="color:var(--green); font-size:36px;">H</div>
+            <div style="font-size:11px; color:var(--text-muted); margin-top:4px;">Implement now</div>
+          </div>
+          <div class="matrix-cell cell-d">
+            <div class="matrix-label" style="color:var(--text-muted);">&#9760; Don't Do These!</div>
+            <div style="font-size:30px; margin-top:4px;">&#128128;</div>
+            <div style="font-size:11px; color:var(--text-muted); margin-top:4px;">Urgent but not important</div>
+          </div>
+          <div class="matrix-cell cell-m">
+            <div class="matrix-label" style="color:var(--gold);">Medium Priority</div>
+            <div class="matrix-val" style="color:var(--gold); font-size:36px;">M</div>
+            <div style="font-size:11px; color:var(--text-muted); margin-top:4px;">Important, next release</div>
+          </div>
+          <div class="matrix-cell cell-l">
+            <div class="matrix-label" style="color:var(--accent);">Low Priority</div>
+            <div class="matrix-val" style="color:var(--accent); font-size:36px;">L</div>
+            <div style="font-size:11px; color:var(--text-muted); margin-top:4px;">Neither urgent nor important</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card-grid">
+      <div class="card card-green">
+        <div class="card-title">&#128994; High Priority</div>
+        <ul class="styled green" style="font-size:13.5px;">
+          <li>Both <strong>important AND urgent</strong></li>
+          <li>Must be in the next release or that release is <strong>not shippable</strong></li>
+          <li>Contractual or compliance obligations may dictate inclusion</li>
+        </ul>
+      </div>
+      <div class="card card-accent">
+        <div class="card-title">&#128128; 4th Quadrant (Urgent + Not Important)</div>
+        <ul class="styled" style="font-size:13.5px;">
+          <li>Appear urgent to some stakeholders but don't achieve business objectives</li>
+          <li><strong>Don't waste time on these</strong> &mdash; they don't add sufficient value</li>
+          <li>Either set to Low priority or <strong>scrub them entirely</strong></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card card-gold" style="margin-top:6px;">
+      <div class="card-title">&#128260; Iterative Prioritization &mdash; When Too Many Are "High"</div>
+      <ul class="styled gold" style="font-size:13.5px;">
+        <li>Include the priority of each requirement in your SRS</li>
+        <li>Perform prioritization <strong>iteratively</strong>, especially on large projects</li>
+        <li>If the number of high-priority requirements is excessive, <strong>re-prioritize the high group</strong> to divide them into 3 sub-classes: Highest, Higher, High</li>
+        <li>"Highest" becomes your new top priority; "Higher" and "High" merge with your original medium requirements</li>
+        <li>High priority definition: <em>"Must be in the next release or that release is not shippable"</em></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ═══ SECTION 7: OTHER CRITERIA ═══ -->
+  <section class="section" id="other">
+    <div class="section-header">
+      <span class="section-num">07</span>
+      <h2 class="section-title">Other Criteria to Consider</h2>
+    </div>
+
+    <p>The cost/benefit approach is good but sometimes insufficient. These additional criteria should be considered when prioritizing:</p>
+
+    <div class="card-grid" style="margin-top:14px;">
+      <div class="card">
+        <div class="card-title">&#128181; Financial</div>
+        <ul class="styled" style="font-size:13.5px;">
+          <li>Cost of implementation &mdash; how much to develop?</li>
+          <li>Value to customer &mdash; how much does the customer want it?</li>
+          <li>Value to company &mdash; how much will the business benefit?</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title">&#9201; Time &amp; Technical</div>
+        <ul class="styled" style="font-size:13.5px;">
+          <li>Time to implement &mdash; how long to deliver?</li>
+          <li>Ease of implementation at the <strong>technical level</strong></li>
+          <li>Ease of implementation at the <strong>organizational level</strong> (business process changes)</li>
+        </ul>
+      </div>
+      <div class="card" style="grid-column:1/-1;">
+        <div class="card-title">&#9878; Legal &amp; Strategic</div>
+        <ul class="styled" style="font-size:13.5px;">
+          <li>Obligation to external authority &mdash; laws, standards, patents, compliance requirements</li>
+          <li>Strategic competitive advantage &mdash; differentiating the product in the market</li>
+          <li>Risk &mdash; ISO 31000: "the effect of uncertainty on objectives" (includes positive AND negative outcomes)</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="callout callout-blue">
+      <div class="callout-icon">&#128220;</div>
+      <div class="callout-body">
+        <div class="callout-title">Risk (ISO 31000:2009)</div>
+        Risk is no longer just "probability of loss" &mdash; it's the <strong>"effect of uncertainty on objectives"</strong>, which means risk includes <em>both negative threats and positive opportunities</em>. In prioritization: identify, characterize uncertainty (threats/opportunities), assess susceptibility, determine potential damage/gain &times; probability, and identify ways to reduce negative risks.
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ SECTION 8: OPTIONAL TECHNIQUES ═══ -->
+  <section class="section" id="optional">
+    <div class="section-header">
+      <span class="section-num">08</span>
+      <h2 class="section-title">Optional Self-Study Techniques <span class="badge badge-opt">OPTIONAL</span></h2>
+    </div>
+
+    <p>These techniques are listed as optional self-study in the slides but are worth knowing:</p>
+
+    <div class="opt-grid">
+      <div class="opt-item">
+        <div class="opt-icon">&#128308;</div>
+        <div class="opt-text">In or Out</div>
+        <div style="font-size:11px; color:var(--text-muted); margin-top:4px;">Binary: is each requirement in scope or out?</div>
+      </div>
+      <div class="opt-item">
+        <div class="opt-icon">&#9878;</div>
+        <div class="opt-text">Pairwise Comparison &amp; Rank Ordering</div>
+        <div style="font-size:11px; color:var(--text-muted); margin-top:4px;">Compare every requirement pair by pair</div>
+      </div>
+      <div class="opt-item">
+        <div class="opt-icon">&#129526;</div>
+        <div class="opt-text">MoSCoW</div>
+        <div style="font-size:11px; color:var(--text-muted); margin-top:4px;">Must / Should / Could / Won't</div>
+      </div>
+      <div class="opt-item">
+        <div class="opt-icon">&#128181;</div>
+        <div class="opt-text">$100 Method</div>
+        <div style="font-size:11px; color:var(--text-muted); margin-top:4px;">Distribute $100 among requirements</div>
+      </div>
+      <div class="opt-item">
+        <div class="opt-icon">&#128202;</div>
+        <div class="opt-text">AHP (Analytic Hierarchy Process)</div>
+        <div style="font-size:11px; color:var(--text-muted); margin-top:4px;">Mathematical multi-criteria approach</div>
+      </div>
+    </div>
+
+    <div class="card card-teal" style="margin-top:14px;">
+      <div class="card-title">&#128187; Commercial Tool: TeamBLUE Focal Point</div>
+      <ul class="styled teal" style="font-size:13.5px;">
+        <li>Decision support and portfolio management tool</li>
+        <li>Pairwise comparisons of features with dynamic algorithm (reduces pairs based on responses)</li>
+        <li>Creation and validation of web questionnaires</li>
+        <li>Detection of inconsistency between answers</li>
+        <li>Priorities for different markets, represented in various ways</li>
+        <li>Integrates with IBM DOORS (requirements management tool)</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ═══ SECTION 9: COMPARISON TABLE ═══ -->
+  <section class="section">
+    <div class="section-header">
+      <span class="section-num">09</span>
+      <h2 class="section-title">Techniques Comparison Summary</h2>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <tr>
+          <th>#</th>
+          <th>Technique</th>
+          <th>Type</th>
+          <th>Best For</th>
+          <th>Key Limitation</th>
+        </tr>
+        <tr>
+          <td><strong>1</strong></td>
+          <td><strong>Prioritization Scales</strong><br><span style="font-size:12px; color:var(--text-muted);">Urgency/Importance</span></td>
+          <td>Subjective</td>
+          <td>Small teams, quick decisions, early-stage projects</td>
+          <td>Imprecise; stakeholders must agree on meaning of each level</td>
+        </tr>
+        <tr>
+          <td><strong>2</strong></td>
+          <td><strong>Wiegers' Prioritization</strong><br><span style="font-size:12px; color:var(--text-muted);">Value / Cost / Risk formula</span></td>
+          <td>Semi-quantitative</td>
+          <td>Large projects needing analytical, formula-based ranking</td>
+          <td>Requires calibration; still depends on estimates; interdependencies are hard</td>
+        </tr>
+        <tr>
+          <td><strong>3</strong></td>
+          <td><strong>Kano Surveys</strong><br><span style="font-size:12px; color:var(--text-muted);">Customer perception model</span></td>
+          <td>Survey-based</td>
+          <td>Customer-facing products; understanding satisfaction drivers</td>
+          <td>Time-consuming survey; requires a representative customer sample</td>
+        </tr>
+        <tr>
+          <td><strong>4</strong></td>
+          <td><strong>Three-Level Scale</strong><br><span style="font-size:12px; color:var(--text-muted);">H/M/L &times; Importance/Urgency</span></td>
+          <td>Subjective</td>
+          <td>Most projects; iterative; easy to communicate to stakeholders</td>
+          <td>Subjective; "High" bucket can get bloated without iterative refinement</td>
+        </tr>
+      </table>
+    </div>
+  </section>
+
+  <!-- ═══ SECTION 10: STUDY TIPS ═══ -->
+  <section class="section" id="studytips">
+    <div class="section-header">
+      <span class="section-num">10</span>
+      <h2 class="section-title">Study Tips &amp; Memorization Tricks &#129504;</h2>
+    </div>
+
+    <div class="tips-grid">
+      <div class="tip-item">
+        <div class="tip-label">&#128161; 80-20 Is a Mindset</div>
+        <div class="tip-text">Remember: 20% of features = 80% of value. Your job in prioritization is to find and protect that 20%. The other 80% add cost and delay.</div>
+      </div>
+      <div class="tip-item">
+        <div class="tip-label">&#128161; Triage = Medical Analogy</div>
+        <div class="tip-text">Triage comes from medicine &mdash; sorting patients by urgency. In RE, you triage requirements: critical ones first, nice-to-haves later or never.</div>
+      </div>
+      <div class="tip-item">
+        <div class="tip-label">&#128161; Wiegers Formula Shortcut</div>
+        <div class="tip-text">Priority = Value / (Cost + Risk). High value + low cost + low risk = top priority. Use weights: Benefit &times; 2, Penalty &times; 1, Cost &times; 1, Risk &times; 0.5.</div>
+      </div>
+      <div class="tip-item">
+        <div class="tip-label">&#128161; Kano BPEIR</div>
+        <div class="tip-text">"Be Perfectly Excited, Ignore Reverse." Basic &gt; Performance &gt; Excitement &gt; Indifferent &gt; Reverse. The survey uses functional + dysfunctional question pairs.</div>
+      </div>
+      <div class="tip-item">
+        <div class="tip-label">&#128161; 3-Level = Importance &times; Urgency</div>
+        <div class="tip-text">High = Important AND Urgent. Medium = Important, Not Urgent. Low = Not Important, Not Urgent. 4th quadrant (Urgent, Not Important) = AVOID &mdash; that's the skull quadrant.</div>
+      </div>
+      <div class="tip-item">
+        <div class="tip-label">&#128161; When Too Many Are "High"</div>
+        <div class="tip-text">Prioritize the prioritized! Re-run the 3-level scale on your High group to get Highest/Higher/High. Then "Higher" and "High" drop down to become Medium.</div>
+      </div>
+      <div class="tip-item">
+        <div class="tip-label">&#128161; Kano: Basic vs. Performance</div>
+        <div class="tip-text">Basic = taken for granted (absence = disaster, presence = neutral). Performance = the more the better (linear). Excitement = surprise delight (presence = joy, absence = fine).</div>
+      </div>
+      <div class="tip-item">
+        <div class="tip-label">&#128161; Small vs. Large Projects</div>
+        <div class="tip-text">Small project = informal agreement is fine. Large/contentious project = use structured analytical methods (Wiegers, Kano) to remove emotion and politics.</div>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <div class="card card-purple">
+      <div class="card-title" style="font-size:15px;">&#127919; Exam-Likely Questions for Chapter 10</div>
+      <ul class="styled purple" style="font-size:13.5px;">
+        <li>What is requirements prioritization and why is it necessary?</li>
+        <li>What does the 80-20 rule mean in the context of requirements prioritization?</li>
+        <li>What is "triage" in the context of RE? What must the triage process ensure?</li>
+        <li>What are the 4 dimensions of Wiegers' prioritization and the formula?</li>
+        <li>What are the 5 Kano categories? How are they ordered by priority?</li>
+        <li>How does a Kano survey work? What are the two question types asked?</li>
+        <li>What does the Kano conclusions matrix produce?</li>
+        <li>Explain the Three-Level Scale (H/M/L) using the Importance &times; Urgency matrix.</li>
+        <li>What should you do with requirements in the "Urgent but Not Important" quadrant?</li>
+        <li>What do you do when too many requirements are classified as High priority?</li>
+        <li>What are the difficulties of requirements prioritization?</li>
+        <li>What is the ISO 31000 definition of risk and how does it differ from the traditional definition?</li>
+      </ul>
+    </div>
+  </section>
+
+</main>
+
+<!-- FOOTER -->
+<footer>
+  <div class="course-tag">SE311 &middot; Software Requirements Engineering</div><br>
+  <strong>Chapter 10 &mdash; Requirements Prioritization</strong><br>
+  Prepared by: <strong>Shoug Alomran</strong>
+</footer>
+
+<button class="scroll-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Back to top">&#8593;</button>
+
+</body>
+</html>
