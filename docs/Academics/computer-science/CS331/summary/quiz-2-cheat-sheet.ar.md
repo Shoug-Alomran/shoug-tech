@@ -9,11 +9,11 @@
 
 إذا لم يتم تحميل العرض المضمّن بشكل صحيح، افتحي ورقة الغش مباشرة.
 
-- [افتحي ورقة غش الاختبار الثاني في صفحة جديدة](quiz-2-cheat-sheet.html)
+- [افتحي ورقة غش الاختبار الثاني في صفحة جديدة](../quiz-2-cheat-sheet.html)
 
 <div class="iframe-wrap">
   <iframe
-    src="quiz-2-cheat-sheet.html"
+    src="../quiz-2-cheat-sheet.html"
     title="ورقة غش الاختبار الثاني"
     loading="lazy"
     referrerpolicy="no-referrer"
