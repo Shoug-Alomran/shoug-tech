@@ -43,6 +43,16 @@ performance, structure, and correctness — not just how to write code.
 
     [:octicons-arrow-right-24: View CS330](CS330/Intro.md)
 
+-   :satellite: **CS331 — Data Communications and Computer Networks**
+
+    ---
+
+    Networking models, physical and data link layers, subnetting, transport,
+    and application-layer concepts. Includes course overview and study
+    material.
+
+    [:octicons-arrow-right-24: View CS331](CS331/intro.md)
+
 -   :floppy_disk: **CS340 — Introduction to Database Systems**
 
     ---

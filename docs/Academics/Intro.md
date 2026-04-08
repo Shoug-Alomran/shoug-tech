@@ -45,6 +45,13 @@ description: Course map for software engineering, computer science, and cybersec
 
     [:octicons-arrow-right-24: CS330 Overview](computer-science/CS330/intro.md)
 
+-  ### **CS331 — Data Communications and Networks**
+
+    Layered models, subnetting, protocols, and network devices. Includes a
+    course overview and study material.
+
+    [:octicons-arrow-right-24: CS331 Overview](computer-science/CS331/intro.md)
+
 - ###  **CS340 — Database Systems**
 
     SQL, relational model, transactions, NoSQL. Notes, mind maps, cheat sheets, quizzes.
