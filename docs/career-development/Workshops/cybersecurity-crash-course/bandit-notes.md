@@ -2,32 +2,137 @@
 
 ← [Back to Workshop Overview](overview.md)
 
-**Wargame:** [overthewire.org/wargames/bandit](https://overthewire.org/wargames/bandit/)  
-**Completed:** January 2026 · **Levels:** 0 → 33
+<div class="report-intro">
+  <p class="report-intro__eyebrow">Cybersecurity Lab Notes</p>
+  <p class="report-intro__summary">
+    A complete Bandit walkthrough from Level 0 to Level 33, preserving every
+    command, explanation, password, and screenshot while packaging the notes in
+    a cleaner workshop-report format.
+  </p>
+</div>
 
-**Objective:** Gain familiarity with Linux commands, networking, file permissions,
-version control, and privilege escalation through incremental challenges.
+<div class="grid cards" markdown>
 
----
+-   :joystick: **Wargame**
+
+    [OverTheWire Bandit](https://overthewire.org/wargames/bandit/)
+
+-   :calendar: **Completed**
+
+    January 2026
+
+-   :material-shield-check-outline: **Coverage**
+
+    Levels 0 → 33
+
+-   :material-console-line: **Core Objective**
+
+    Build fluency in Linux, networking, file permissions, Git, and privilege
+    escalation through hands-on problem solving.
+
+</div>
 
 ## Quick Navigation
 
-| Levels | Focus |
-|---|---|
-| [0 – 3](#level-0) | SSH, basic file reading, hidden files |
-| [4 – 6](#level-4--level-5) | File types, find command, filesystem search |
-| [7 – 9](#level-7--level-8) | grep, sort/uniq, strings |
-| [10 – 12](#level-10--level-11) | Base64, ROT13, compression layers |
-| [13 – 16](#level-13--level-14) | SSH keys, netcat, SSL/TLS, port scanning |
-| [17 – 20](#level-17--level-18) | diff, bashrc bypass, setuid binaries |
-| [21 – 24](#level-21--level-22) | Cron jobs, MD5 hashing, brute force |
-| [25 – 27](#level-25--level-26) | Shell escape, vim exploit, SUID |
-| [27 – 31](#level-27--level-28) | Git history, branches, tags, hooks |
-| [32 – 33](#level-32--level-33) | Uppercase shell bypass |
+<div class="grid cards" markdown>
+
+-   :material-console-line: **Levels 0 – 3**
+
+    SSH, basic file reading, hidden files
+
+    [Jump to early levels](#phase-1)
+
+-   :material-file-search: **Levels 4 – 6**
+
+    File types, `find`, filesystem-wide search
+
+    [Jump to filesystem levels](#phase-2)
+
+-   :material-filter-outline: **Levels 7 – 9**
+
+    `grep`, `sort`, `uniq`, `strings`
+
+    [Jump to text-hunting levels](#phase-3)
+
+-   :material-lock-open-variant-outline: **Levels 10 – 12**
+
+    Base64, ROT13, layered compression
+
+    [Jump to decoding levels](#phase-4)
+
+-   :material-lan-connect: **Levels 13 – 16**
+
+    SSH keys, `nc`, SSL/TLS, port scanning
+
+    [Jump to networking levels](#phase-5)
+
+-   :material-key-chain-variant: **Levels 17 – 20**
+
+    `diff`, `.bashrc` bypass, setuid binaries
+
+    [Jump to access-control levels](#phase-6)
+
+-   :material-clock-outline: **Levels 21 – 24**
+
+    Cron jobs, MD5-derived paths, brute force
+
+    [Jump to automation levels](#phase-7)
+
+-   :material-open-in-app: **Levels 25 – 27**
+
+    Restricted shell escape, `vim` exploit, SUID
+
+    [Jump to escape levels](#phase-8)
+
+-   :material-source-branch: **Levels 27 – 31**
+
+    Git history, branches, tags, hooks
+
+    [Jump to Git levels](#phase-9)
+
+-   :material-arrow-expand-up: **Levels 32 – 33**
+
+    Uppercase shell bypass
+
+    [Jump to final levels](#phase-10)
+
+</div>
 
 ---
 
-## Level 0
+## Report Highlights
+
+<div class="grid cards" markdown>
+
+-   :material-target-account: **Why This Matters**
+
+    These notes show not just the final answers, but the reasoning path:
+    enumeration, validation, exploitation, and proof of access.
+
+-   :material-tools: **Tooling Spectrum**
+
+    The walkthrough spans `ssh`, `cat`, `find`, `grep`, `strings`, `base64`,
+    `tr`, `xxd`, `nc`, `openssl`, `nmap`, cron inspection, and Git forensics.
+
+-   :material-school: **Workshop Value**
+
+    Bandit turns command-line theory into repeatable habits for CTF work,
+    systems troubleshooting, and secure engineering.
+
+</div>
+
+---
+
+<section class="lab-phase" id="phase-1">
+  <p class="lab-phase__eyebrow">Phase 1</p>
+  <h3 class="lab-phase__title">Access, Files, and First Linux Habits</h3>
+  <p class="lab-phase__summary">
+    Levels 0 through 3 establish the rhythm of Bandit: connect, enumerate,
+    inspect filenames carefully, and read exactly what the system gives you.
+  </p>
+</section>
+
+## Level 0 { #level-0 .level-hero }
 
 **Goal**
 Connect to the Bandit server using SSH and retrieve the password for the next level.
@@ -48,12 +153,15 @@ ssh bandit0@bandit.labs.overthewire.org -p 2220
 `bandit0`
 
 ??? example "Screenshot"
-    ![Level 0 Screenshot](./pics/Level 0.png)
+    <figure class="report-shot">
+      <img src="./pics/Level%200.png" alt="Level 0 Screenshot">
+      <figcaption>Initial SSH access into the Bandit environment.</figcaption>
+    </figure>
 
 
 ---
 
-## Level 0 → Level 1
+## Level 0 → Level 1 { #level-0-1 .level-hero }
 
 **Goal**
 Locate the file containing the password for the next level and use it to authenticate as bandit1.
@@ -76,11 +184,14 @@ cat readme
 `ZjLjTmM6FvvyrNrb2rfNWOZ0TA6ip5If`
 
 ??? example "Screenshot"
-    ![Level 0 → Level 1 Screenshot](./pics/Level 0 → Level 1.png)
+    <figure class="report-shot">
+      <img src="./pics/Level%200%20→%20Level%201.png" alt="Level 0 to Level 1 Screenshot">
+      <figcaption>Reading the `readme` file to capture the next credential.</figcaption>
+    </figure>
 
 ---
 
-## Level 1 → Level 2
+## Level 1 → Level 2 { #level-1-2 .level-hero }
 
 **Goal**
 Read a file named `-` which requires special handling due to the special character.
@@ -101,11 +212,14 @@ cat ./-
 `263JGJPfgU6LdtEvgfWU1XP5yac29mFx`
 
 ??? example "Screenshot"
-    ![Level 1 → Level 2 Screenshot](./pics/Level 1 → Level 2.png)
+    <figure class="report-shot">
+      <img src="./pics/Level%201%20→%20Level%202.png" alt="Level 1 to Level 2 Screenshot">
+      <figcaption>Using `./-` so the filename is treated as a real path.</figcaption>
+    </figure>
 
 ---
 
-## Level 2 → Level 3
+## Level 2 → Level 3 { #level-2-3 .level-hero }
 
 **Goal**
 Read a file containing spaces in its name that also begins with dashes.
@@ -128,11 +242,14 @@ cat -- "--spaces in this filename--"
 `MNk8KNH3USiio41PRUEoDFPqFxLPlSmx`
 
 ??? example "Screenshot"
-    ![Level 2 → Level 3 Screenshot](./pics/Level 2 →Level 3.png)
+    <figure class="report-shot">
+      <img src="./pics/Level%202%20→Level%203.png" alt="Level 2 to Level 3 Screenshot">
+      <figcaption>Handling a filename that begins with dashes and contains spaces.</figcaption>
+    </figure>
 
 ---
 
-## Level 3 → Level 4
+## Level 3 → Level 4 { #level-3-4 .level-hero }
 
 **Goal**
 Locate and read a hidden file inside the `inhere` directory.
@@ -158,7 +275,17 @@ cat "...Hiding-From-You"
 
 ---
 
-## Level 4 → Level 5
+<section class="lab-phase" id="phase-2">
+  <p class="lab-phase__eyebrow">Phase 2</p>
+  <h3 class="lab-phase__title">Filesystem Discovery and Targeted Search</h3>
+  <p class="lab-phase__summary">
+    Levels 4 through 6 shift from basic reading into selective discovery:
+    identify human-readable files, search by file properties, and query the
+    wider filesystem safely.
+  </p>
+</section>
+
+## Level 4 → Level 5 { #level-4-5 .level-hero }
 
 **Goal**
 Locate and read the password from the only human-readable file among several files in the `inhere` directory.
@@ -182,11 +309,14 @@ cat ./-file07
 `4oQYVPkXZOOEO5pTW8IFB8jLXxXGUQw`
 
 ??? example "Screenshot"
-    ![Level 4 → Level 5 Screenshot](./pics/Level 4 → Level 5.png)
+    <figure class="report-shot">
+      <img src="./pics/Level%204%20→%20Level%205.png" alt="Level 4 to Level 5 Screenshot">
+      <figcaption>Using `file` output to isolate the only human-readable target.</figcaption>
+    </figure>
 
 ---
 
-## Level 5 → Level 6
+## Level 5 → Level 6 { #level-5-6 .level-hero }
 
 **Goal**
 Find the password stored in a file with specific properties: human-readable, 1033 bytes in size, not executable.
@@ -210,11 +340,14 @@ cat ./maybehere07/.file2
 `HWasnPhtq9AVKe0dmk45knq0vcUahz0E6G`
 
 ??? example "Screenshot"
-    ![Level 5 → Level 6 Screenshot](./pics/Level 5 → Level 6.png)
+    <figure class="report-shot">
+      <img src="./pics/Level%205%20→%20Level%206.png" alt="Level 5 to Level 6 Screenshot">
+      <figcaption>Searching recursively for the one file matching the required size.</figcaption>
+    </figure>
 
 ---
 
-## Level 6 → Level 7
+## Level 6 → Level 7 { #level-6-7 .level-hero }
 
 **Goal**
 Locate a file anywhere on the system owned by user `bandit7`, group `bandit6`, and exactly 33 bytes in size.
@@ -236,11 +369,23 @@ cat /var/lib/dpkg/info/bandit7.password
 `z7WtoNQU2XfjmMtKjX3iql6i6cA99Ce`
 
 ??? example "Screenshot"
-    ![Level 6 → Level 7 Screenshot](./pics/Level 6 → Level 7.png)
+    <figure class="report-shot">
+      <img src="./pics/Level%206%20→%20Level%207.png" alt="Level 6 to Level 7 Screenshot">
+      <figcaption>Finding the system-owned password file with constrained search filters.</figcaption>
+    </figure>
 
 ---
 
-## Level 7 → Level 8
+<section class="lab-phase" id="phase-3">
+  <p class="lab-phase__eyebrow">Phase 3</p>
+  <h3 class="lab-phase__title">Text Extraction and Signal Hunting</h3>
+  <p class="lab-phase__summary">
+    Levels 7 through 9 build pattern-recognition skills with `grep`, `sort`,
+    `uniq`, and `strings`, turning noisy files into readable evidence.
+  </p>
+</section>
+
+## Level 7 → Level 8 { #level-7-8 .level-hero }
 
 **Goal**
 Find the password stored in `data.txt` next to the word "millionth".
@@ -261,11 +406,14 @@ grep "millionth" data.txt
 `dfwvzFQi4mU0wFnNbFOe9ROwskMLg7eEc`
 
 ??? example "Screenshot"
-    ![Level 7 → Level 8 Screenshot](./pics/Level 7 → Level 8.png)
+    <figure class="report-shot">
+      <img src="./pics/Level%207%20→%20Level%208.png" alt="Level 7 to Level 8 Screenshot">
+      <figcaption>Pinpointing the keyword match inside `data.txt` with `grep`.</figcaption>
+    </figure>
 
 ---
 
-## Level 8 → Level 9
+## Level 8 → Level 9 { #level-8-9 .level-hero }
 
 **Goal**
 Find the password in `data.txt` that is the only line occurring exactly once.
@@ -285,11 +433,14 @@ sort data.txt | uniq -u
 `4CKMh1Jl9IbUIZZPXDQGamal4xvAgOJIM`
 
 ??? example "Screenshot"
-    ![Level 8 → Level 9 Screenshot](./pics/Level 8 → Level 9.png)
+    <figure class="report-shot">
+      <img src="./pics/Level%208%20→%20Level%209.png" alt="Level 8 to Level 9 Screenshot">
+      <figcaption>Sorting the file so `uniq -u` can expose the only unique line.</figcaption>
+    </figure>
 
 ---
 
-## Level 9 → Level 10
+## Level 9 → Level 10 { #level-9-10 .level-hero }
 
 **Goal**
 Extract the password from a binary file. The password is human-readable and preceded by several `=` characters.
@@ -311,11 +462,23 @@ strings data.txt | grep '='
 `FGUVW5ilLVJrxX9kMYMMnlN4MgbpfMiqey`
 
 ??? example "Screenshot"
-    ![Level 9 → Level 10 Screenshot](./pics/Level 9 → Level 10.png)
+    <figure class="report-shot">
+      <img src="./pics/Level%209%20→%20Level%2010.png" alt="Level 9 to Level 10 Screenshot">
+      <figcaption>Extracting readable strings from binary content before filtering them.</figcaption>
+    </figure>
 
 ---
 
-## Level 10 → Level 11
+<section class="lab-phase" id="phase-4">
+  <p class="lab-phase__eyebrow">Phase 4</p>
+  <h3 class="lab-phase__title">Decoding and Layered File Analysis</h3>
+  <p class="lab-phase__summary">
+    Levels 10 through 12 focus on translation and transformation: Base64,
+    ROT13, and nested compression chains that require repeated file-type checks.
+  </p>
+</section>
+
+## Level 10 → Level 11 { #level-10-11 .level-hero }
 
 **Goal**
 Extract the password from a file containing Base64 encoded data.
@@ -339,11 +502,14 @@ cat data.txt | base64 -d
 `dtR173fZKb0RRsDFSGsg2RWnpNVj3qRr`
 
 ??? example "Screenshot"
-    ![Level 10 → Level 11 Screenshot](./pics/Level 10 → Level 11.png)
+    <figure class="report-shot">
+      <img src="./pics/Level%2010%20→%20Level%2011.png" alt="Level 10 to Level 11 Screenshot">
+      <figcaption>Decoding Base64 content back into human-readable output.</figcaption>
+    </figure>
 
 ---
 
-## Level 11 → Level 12
+## Level 11 → Level 12 { #level-11-12 .level-hero }
 
 **Goal**
 Decode text stored in `data.txt` that is encoded using ROT13.
@@ -366,11 +532,14 @@ cat data.txt | tr 'A-Za-z' 'N-ZA-Mn-za-m'
 `7x16WNeHIi5YkIhWsfFIqoognUTyj9Q4`
 
 ??? example "Screenshot"
-    ![Level 11 → Level 12 Screenshot](./pics/Level 11 → Level 12.png)
+    <figure class="report-shot">
+      <img src="./pics/Level%2011%20→%20Level%2012.png" alt="Level 11 to Level 12 Screenshot">
+      <figcaption>Applying ROT13 with `tr` to recover the original text.</figcaption>
+    </figure>
 
 ---
 
-## Level 12 → Level 13
+## Level 12 → Level 13 { #level-12-13 .level-hero }
 
 **Goal**
 Extract the password from a repeatedly compressed hex-dumped file.
@@ -405,11 +574,24 @@ file data.bin
 `FO9dwdCWjbaiIh0h8J2eUKs2vdTDwAn`
 
 ??? example "Screenshot"
-    ![Level 12 → Level 13 Screenshot](./pics/Level 12 → Level 13.png)
+    <figure class="report-shot">
+      <img src="./pics/Level%2012%20→%20Level%2013.png" alt="Level 12 to Level 13 Screenshot">
+      <figcaption>Peeling back compression layers one format at a time.</figcaption>
+    </figure>
 
 ---
 
-## Level 13 → Level 14
+<section class="lab-phase" id="phase-5">
+  <p class="lab-phase__eyebrow">Phase 5</p>
+  <h3 class="lab-phase__title">Network Services, TLS, and Port Recon</h3>
+  <p class="lab-phase__summary">
+    Levels 13 through 16 move from local inspection into remote interaction:
+    SSH key auth, plaintext sockets, encrypted services, and port scanning to
+    find the right target.
+  </p>
+</section>
+
+## Level 13 → Level 14 { #level-13-14 .level-hero }
 
 **Goal**
 Use the provided private SSH key to log in as bandit14.
@@ -433,7 +615,7 @@ No password required — access to the bandit14 account is the goal.
 
 ---
 
-## Level 14 → Level 15
+## Level 14 → Level 15 { #level-14-15 .level-hero }
 
 **Goal**
 Retrieve the password for bandit15 by sending the current level's password to port 30000 on localhost.
@@ -455,11 +637,14 @@ nc localhost 30000
 `8xCjnmgoKbgGLhHFAZ1GE5Tmu4M2tKJQo`
 
 ??? example "Screenshot"
-    ![Level 14 → Level 15 Screenshot](./pics/Level 14 → Level 15.png)
+    <figure class="report-shot">
+      <img src="./pics/Level%2014%20→%20Level%2015.png" alt="Level 14 to Level 15 Screenshot">
+      <figcaption>Submitting the current password over a local netcat session.</figcaption>
+    </figure>
 
 ---
 
-## Level 15 → Level 16
+## Level 15 → Level 16 { #level-15-16 .level-hero }
 
 **Goal**
 Retrieve the Level 16 password by submitting the current password to port 30001 using SSL/TLS encryption.
@@ -484,11 +669,14 @@ openssl s_client -connect localhost:30001
 `kSkvUpMQ7lBYyCM4GBPvCvT1BfWRy0Dx`
 
 ??? example "Screenshot"
-    ![Level 15 → Level 16 Screenshot](./pics/Level 15 → Level 16.png)
+    <figure class="report-shot">
+      <img src="./pics/Level%2015%20→%20Level%2016.png" alt="Level 15 to Level 16 Screenshot">
+      <figcaption>Using an SSL/TLS session instead of plain TCP for the next secret.</figcaption>
+    </figure>
 
 ---
 
-## Level 16 → Level 17
+## Level 16 → Level 17 { #level-16-17 .level-hero }
 
 **Goal**
 Find the correct SSL-enabled port between 31000–32000 and submit the password to retrieve credentials for bandit17.
@@ -522,11 +710,24 @@ openssl s_client -connect localhost:31790
 RSA Private Key (used for SSH authentication)
 
 ??? example "Screenshot"
-    ![Level 16 → Level 17 Screenshot](./pics/Level 16 → Level 17.png)
+    <figure class="report-shot">
+      <img src="./pics/Level%2016%20→%20Level%2017.png" alt="Level 16 to Level 17 Screenshot">
+      <figcaption>Recon results leading to the SSL-enabled port that returns the SSH key.</figcaption>
+    </figure>
 
 ---
 
-## Level 17 → Level 18
+<section class="lab-phase" id="phase-6">
+  <p class="lab-phase__eyebrow">Phase 6</p>
+  <h3 class="lab-phase__title">Diffing, Shell Bypass, and Controlled Privilege Use</h3>
+  <p class="lab-phase__summary">
+    Levels 17 through 20 highlight access-control edge cases: changed files,
+    non-interactive shell entry, SUID helpers, and daemon interaction across
+    multiple terminals.
+  </p>
+</section>
+
+## Level 17 → Level 18 { #level-17-18 .level-hero }
 
 **Goal**
 Compare two files to find the password that has changed.
@@ -547,12 +748,20 @@ diff passwords.old passwords.new
 `x2gLTTjFwMOhQ8oWNbMN362QKxfRqGl0`
 
 **Screenshots**
-![Level 17 → Level 18 Screenshot 1](./pics/Level 17 → Level 18.png)
-![Level 17 → Level 18 Screenshot 2](./pics/Level 17 → Level 18_2.png)
+<div class="report-shot-grid">
+  <figure class="report-shot">
+    <img src="./pics/Level%2017%20→%20Level%2018.png" alt="Level 17 to Level 18 Screenshot 1">
+    <figcaption>Comparing the old and new password files with `diff`.</figcaption>
+  </figure>
+  <figure class="report-shot">
+    <img src="./pics/Level%2017%20→%20Level%2018_2.png" alt="Level 17 to Level 18 Screenshot 2">
+    <figcaption>The changed line reveals the credential for the next level.</figcaption>
+  </figure>
+</div>
 
 ---
 
-## Level 18 → Level 19
+## Level 18 → Level 19 { #level-18-19 .level-hero }
 
 **Goal**
 The password is in a file named `readme`, but logging in normally triggers a modified `.bashrc` that immediately terminates the session.
@@ -572,11 +781,14 @@ ssh bandit18@bandit.labs.overthewire.org -p 2220 cat readme
 `cGWpMaKXVwDUNgPAVJbWYuGHVn9zl3j8`
 
 ??? example "Screenshot"
-    ![Level 18 → Level 19 Screenshot](./pics/Level 18 → Level 19.png)
+    <figure class="report-shot">
+      <img src="./pics/Level%2018%20→%20Level%2019.png" alt="Level 18 to Level 19 Screenshot">
+      <figcaption>Bypassing the sabotaged interactive shell with a direct SSH command.</figcaption>
+    </figure>
 
 ---
 
-## Level 19 → Level 20
+## Level 19 → Level 20 { #level-19-20 .level-hero }
 
 **Goal**
 Use a setuid binary to access the next level password.
@@ -602,11 +814,14 @@ ls -l
 `0qXahG8ZjOVMN9Ghs7iOWsCfZyXOUbYO`
 
 ??? example "Screenshot"
-    ![Level 19 → Level 20 Screenshot](./pics/Level 19 → Level 20.png)
+    <figure class="report-shot">
+      <img src="./pics/Level%2019%20→%20Level%2020.png" alt="Level 19 to Level 20 Screenshot">
+      <figcaption>Using the setuid helper to read the next password file safely.</figcaption>
+    </figure>
 
 ---
 
-## Level 20 → Level 21
+## Level 20 → Level 21 { #level-20-21 .level-hero }
 
 **Goal**
 Use the `suconnect` binary to retrieve the password by setting up a listener and client connection.
@@ -635,11 +850,24 @@ nc -l -p 1234
 `EeoULMCra2q0dSkYj561DX7s1CpBuOBt`
 
 ??? example "Screenshot"
-    ![Level 20 → Level 21 Screenshot](./pics/Level 20 → Level 21.png)
+    <figure class="report-shot">
+      <img src="./pics/Level%2020%20→%20Level%2021.png" alt="Level 20 to Level 21 Screenshot">
+      <figcaption>Listener and client coordination to validate the current credential.</figcaption>
+    </figure>
 
 ---
 
-## Level 21 → Level 22
+<section class="lab-phase" id="phase-7">
+  <p class="lab-phase__eyebrow">Phase 7</p>
+  <h3 class="lab-phase__title">Cron Jobs, Derived Paths, and Automation Abuse</h3>
+  <p class="lab-phase__summary">
+    Levels 21 through 24 are all about scheduled execution: read the cron
+    configuration, inspect the helper script, predict the output path, and
+    weaponize automation against itself.
+  </p>
+</section>
+
+## Level 21 → Level 22 { #level-21-22 .level-hero }
 
 **Goal**
 Investigate a cron job that runs automatically and retrieve the password it writes.
@@ -663,11 +891,14 @@ cat /tmp/t7O6lds9S0RqQh9aMcz6ShpAoZKF7fgv
 `tRae0UfB9v0UzbCdn9cY0gQnds9GF58Q`
 
 ??? example "Screenshot"
-    ![Level 21 → Level 22 Screenshot](./pics/Level 21 → Level 22.png)
+    <figure class="report-shot">
+      <img src="./pics/Level%2021%20→%20Level%2022.png" alt="Level 21 to Level 22 Screenshot">
+      <figcaption>Tracing the cron job output file to the leaked password.</figcaption>
+    </figure>
 
 ---
 
-## Level 22 → Level 23
+## Level 22 → Level 23 { #level-22-23 .level-hero }
 
 **Goal**
 Understand a cron script that uses MD5 hashing to create dynamic filenames, then retrieve the password.
@@ -695,11 +926,14 @@ cat /tmp/<hash>
 `0Zf11ioIjMVN551jX3CmStKLYqjk54Ga`
 
 ??? example "Screenshot"
-    ![Level 22 → Level 23 Screenshot](./pics/Level 22 → Level 23.png)
+    <figure class="report-shot">
+      <img src="./pics/Level%2022%20→%20Level%2023.png" alt="Level 22 to Level 23 Screenshot">
+      <figcaption>Reproducing the MD5-based filename used by the scheduled script.</figcaption>
+    </figure>
 
 ---
 
-## Level 23 → Level 24
+## Level 23 → Level 24 { #level-23-24 .level-hero }
 
 **Goal**
 Exploit a cron job that executes and deletes scripts from a specific directory.
@@ -734,11 +968,14 @@ cat /tmp/b24pass
 `gb8KRRCsshuZXI0tUuR6ypOFjiZbf3G8`
 
 ??? example "Screenshot"
-    ![Level 23 → Level 24 Screenshot](./pics/Level 23 → Level 24.png)
+    <figure class="report-shot">
+      <img src="./pics/Level%2023%20→%20Level%2024.png" alt="Level 23 to Level 24 Screenshot">
+      <figcaption>Dropping an executable payload into the watched spool directory.</figcaption>
+    </figure>
 
 ---
 
-## Level 24 → Level 25
+## Level 24 → Level 25 { #level-24-25 .level-hero }
 
 **Goal**
 Brute-force a 4-digit PIN by submitting password and PIN combinations to a daemon on port 30002.
@@ -767,12 +1004,30 @@ done | nc localhost 30002
 `iCi86ttT4KSNe1armKiwbQNmB3YJP3q4`
 
 **Screenshots**
-![Level 24 → Level 25 Screenshot 1](./pics/Level 24 → Level 25.png)
-![Level 24 → Level 25 Screenshot 2](./pics/Level 24 → Level 25_2.png)
+<div class="report-shot-grid">
+  <figure class="report-shot">
+    <img src="./pics/Level%2024%20→%20Level%2025.png" alt="Level 24 to Level 25 Screenshot 1">
+    <figcaption>Generating all zero-padded PIN attempts in a single stream.</figcaption>
+  </figure>
+  <figure class="report-shot">
+    <img src="./pics/Level%2024%20→%20Level%2025_2.png" alt="Level 24 to Level 25 Screenshot 2">
+    <figcaption>The daemon eventually returns the valid next-level password.</figcaption>
+  </figure>
+</div>
 
 ---
 
-## Level 25 → Level 26
+<section class="lab-phase" id="phase-8">
+  <p class="lab-phase__eyebrow">Phase 8</p>
+  <h3 class="lab-phase__title">Restricted Shell Escapes and Binary-Assisted Access</h3>
+  <p class="lab-phase__summary">
+    Levels 25 and 26 demonstrate how usability features become attack paths:
+    pager escapes, editor shell access, and setuid helpers chained together for
+    privilege transfer.
+  </p>
+</section>
+
+## Level 25 → Level 26 { #level-25-26 .level-hero }
 
 **Goal**
 Access the bandit26 account which uses a custom shell that immediately logs out. Exploit terminal size and pager behavior to gain access.
@@ -814,11 +1069,14 @@ cat /etc/bandit_pass/bandit26
 `s0773xxkk0MXfdqOfPRVr9L3jJBUOgCZ`
 
 ??? example "Screenshot"
-    ![Level 25 → Level 26 Screenshot](./pics/Level 25 → Level 26.png)
+    <figure class="report-shot">
+      <img src="./pics/Level%2025%20→%20Level%2026.png" alt="Level 25 to Level 26 Screenshot">
+      <figcaption>Triggering the pager path that leads from `more` into `vim` and then a shell.</figcaption>
+    </figure>
 
 ---
 
-## Level 26 → Level 27
+## Level 26 → Level 27 { #level-26-27 .level-hero }
 
 **Goal**
 Having escaped the restricted shell, use a setuid binary to retrieve the bandit27 password.
@@ -839,11 +1097,24 @@ ls -la
 `upsNCc7vzaRDx6oZC6GiR6ERwe1MowGB`
 
 ??? example "Screenshot"
-    ![Level 26 → Level 27 Screenshot](./pics/Level 26 → Level 27.png)
+    <figure class="report-shot">
+      <img src="./pics/Level%2026%20→%20Level%2027.png" alt="Level 26 to Level 27 Screenshot">
+      <figcaption>Using the setuid helper after escaping the restricted environment.</figcaption>
+    </figure>
 
 ---
 
-## Level 27 → Level 28
+<section class="lab-phase" id="phase-9">
+  <p class="lab-phase__eyebrow">Phase 9</p>
+  <h3 class="lab-phase__title">Git Reconnaissance and Repository Secrets</h3>
+  <p class="lab-phase__summary">
+    Levels 27 through 31 turn Git into the attack surface: clone repos, inspect
+    history, search alternate branches, reveal tag contents, and trigger remote
+    hooks to exfiltrate secrets.
+  </p>
+</section>
+
+## Level 27 → Level 28 { #level-27-28 .level-hero }
 
 **Goal**
 Clone a Git repository and retrieve the password from its contents.
@@ -866,11 +1137,14 @@ cat README
 `Yz9IpL0sBcCeuG7m9uQFt8ZNpS4HZRcN`
 
 ??? example "Screenshot"
-    ![Level 27 → Level 28 Screenshot](./pics/Level 27 → Level 28.png)
+    <figure class="report-shot">
+      <img src="./pics/Level%2027%20→%20Level%2028.png" alt="Level 27 to Level 28 Screenshot">
+      <figcaption>Cloning the repository and reading the exposed secret from its contents.</figcaption>
+    </figure>
 
 ---
 
-## Level 28 → Level 29
+## Level 28 → Level 29 { #level-28-29 .level-hero }
 
 **Goal**
 Clone a Git repository and analyze its commit history to find a leaked password.
@@ -899,11 +1173,14 @@ git log -p
 `4pT1t5DENaYuqnqvadYs1oE4QLCdjmJ7`
 
 ??? example "Screenshot"
-    ![Level 28 → Level 29 Screenshot](./pics/Level 28 → Level 29.png)
+    <figure class="report-shot">
+      <img src="./pics/Level%2028%20→%20Level%2029.png" alt="Level 28 to Level 29 Screenshot">
+      <figcaption>Using commit history and diffs to recover redacted credentials.</figcaption>
+    </figure>
 
 ---
 
-## Level 29 → Level 30
+## Level 29 → Level 30 { #level-29-30 .level-hero }
 
 **Goal**
 Clone a Git repository and check non-default branches to find the password.
@@ -933,11 +1210,14 @@ cat README.md
 `qp30ex3VLz5MDG1n91YowTv4Q8l7CDZL`
 
 ??? example "Screenshot"
-    ![Level 29 → Level 30 Screenshot](./pics/Level 29 → Level 30.png)
+    <figure class="report-shot">
+      <img src="./pics/Level%2029%20→%20Level%2030.png" alt="Level 29 to Level 30 Screenshot">
+      <figcaption>Switching away from the default branch to locate the real password.</figcaption>
+    </figure>
 
 ---
 
-## Level 30 → Level 31
+## Level 30 → Level 31 { #level-30-31 .level-hero }
 
 **Goal**
 Clone a Git repository and examine Git tags to find the password.
@@ -962,11 +1242,14 @@ git show secret
 `fb5S2xb7bRyFmAvQYQGEqsbhVyJqhnDy`
 
 ??? example "Screenshot"
-    ![Level 30 → Level 31 Screenshot](./pics/Level 30 → Level 31.png)
+    <figure class="report-shot">
+      <img src="./pics/Level%2030%20→%20Level%2031.png" alt="Level 30 to Level 31 Screenshot">
+      <figcaption>Inspecting the `secret` tag to reveal hidden repository data.</figcaption>
+    </figure>
 
 ---
 
-## Level 31 → Level 32
+## Level 31 → Level 32 { #level-31-32 .level-hero }
 
 **Goal**
 Push a specific file to a remote Git repository to trigger a validation hook that returns the password.
@@ -997,11 +1280,24 @@ git push origin master
 `3O9RfhqyAlVBEZpVb6LYStshZoqoSx5K`
 
 ??? example "Screenshot"
-    ![Level 31 → Level 32 Screenshot](./pics/Level 31 → Level 32.png)
+    <figure class="report-shot">
+      <img src="./pics/Level%2031%20→%20Level%2032.png" alt="Level 31 to Level 32 Screenshot">
+      <figcaption>Force-adding the required file so the remote validation hook executes.</figcaption>
+    </figure>
 
 ---
 
-## Level 32 → Level 33
+<section class="lab-phase" id="phase-10">
+  <p class="lab-phase__eyebrow">Phase 10</p>
+  <h3 class="lab-phase__title">Final Restricted-Shell Bypass</h3>
+  <p class="lab-phase__summary">
+    The last level is short but memorable: the shell mutates normal commands, so
+    the win comes from exploiting expansion behavior instead of typing a command
+    name directly.
+  </p>
+</section>
+
+## Level 32 → Level 33 { #level-32-33 .level-hero }
 
 **Goal**
 Escape the "uppercase shell" that converts all input to uppercase, preventing normal command execution.
@@ -1034,58 +1330,87 @@ cat /etc/bandit_pass/bandit33
 `tQdtbs5D5i2vJwkO8mEyYEyTL8izoeJ0`
 
 ??? example "Screenshot"
-    ![Level 32 → Level 33 Screenshot](./pics/Level 32 → Level 33.png)
+    <figure class="report-shot">
+      <img src="./pics/Level%2032%20→%20Level%2033.png" alt="Level 32 to Level 33 Screenshot">
+      <figcaption>Escaping the uppercase shell by expanding `$0` into a normal shell path.</figcaption>
+    </figure>
 
 ---
 
 ## Completion
 
-**Levels completed:** 0 → 33 ✓
+<div class="grid cards" markdown>
+
+-   :material-trophy-outline: **Levels Completed**
+
+    0 → 33
+
+-   :material-check-decagram-outline: **Status**
+
+    Complete
+
+-   :material-notebook-check-outline: **Outcome**
+
+    Full walkthrough documented with commands, explanations, screenshots, and
+    next-level credentials.
+
+</div>
 
 ---
 
 ## Key Concepts Summary
 
-### Linux Fundamentals
-- File navigation and manipulation
-- Hidden files and special characters in filenames
-- File permissions and ownership
-- Process privileges and setuid binaries
+<div class="grid cards" markdown>
 
-### Text Processing
-- Pattern matching with `grep`
-- Sorting and filtering with `sort` and `uniq`
-- Extracting strings from binary files
-- Encoding and decoding (Base64, ROT13)
+-   :material-folder-cog-outline: **Linux Fundamentals**
 
-### Compression & Archiving
-- Multiple compression formats (gzip, bzip2, tar)
-- Hex dump reversal
-- Iterative decompression
+    - File navigation and manipulation
+    - Hidden files and special characters in filenames
+    - File permissions and ownership
+    - Process privileges and setuid binaries
 
-### Networking
-- TCP connections with netcat
-- SSL/TLS connections with OpenSSL
-- Port scanning with nmap
-- Client-server communication
+-   :material-text-search: **Text Processing**
 
-### Automation & Scheduling
-- Cron job analysis
-- Script-based privilege escalation
-- Brute-force automation
+    - Pattern matching with `grep`
+    - Sorting and filtering with `sort` and `uniq`
+    - Extracting strings from binary files
+    - Encoding and decoding (Base64, ROT13)
 
-### Version Control (Git)
-- Repository cloning
-- Commit history analysis
-- Branch management
-- Tag inspection
-- Remote repository interaction
+-   :material-archive-outline: **Compression & Archiving**
 
-### Privilege Escalation
-- Setuid binary exploitation
-- Shell escaping techniques
-- Restricted shell bypass
-- Pager and editor abuse
+    - Multiple compression formats (`gzip`, `bzip2`, `tar`)
+    - Hex dump reversal
+    - Iterative decompression
+
+-   :material-access-point-network: **Networking**
+
+    - TCP connections with `netcat`
+    - SSL/TLS connections with OpenSSL
+    - Port scanning with `nmap`
+    - Client-server communication
+
+-   :material-timer-cog-outline: **Automation & Scheduling**
+
+    - Cron job analysis
+    - Script-based privilege escalation
+    - Brute-force automation
+
+-   :material-git: **Version Control (Git)**
+
+    - Repository cloning
+    - Commit history analysis
+    - Branch management
+    - Tag inspection
+    - Remote repository interaction
+
+-   :material-lock-open-check-outline: **Privilege Escalation**
+
+    - Setuid binary exploitation
+    - Shell escaping techniques
+    - Restricted shell bypass
+    - Pager and editor abuse
+
+</div>
 
 ---
 
