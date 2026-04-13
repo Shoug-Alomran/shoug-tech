@@ -7,7 +7,7 @@
 ---
 
 ??? note "بوستر الورشة"
-    ![بوستر الورشة](../pics/poster.png)
+    ![بوستر الورشة](/ar/career-development/Workshops/My-Journey-as-a-Student-Tutor/pics/poster.png)
 
 | | |
 |---|---|

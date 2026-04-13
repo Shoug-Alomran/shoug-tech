@@ -4,11 +4,11 @@ This page contains the Chapter 2 quiz. Use it to review security foundations, th
 
 If the embedded view does not load properly, open the quiz directly.
 
-- [Open Chapter 2 Quiz in a new tab](../Chapter-2-Quiz.html)
+- [Open Chapter 2 Quiz in a new tab](/Academics/cyber-security/CYS401/Quizez/Chapter-2-Quiz.html)
 
 <div class="iframe-wrap">
   <iframe
-    src="../Chapter-2-Quiz.html"
+    src="/Academics/cyber-security/CYS401/Quizez/Chapter-2-Quiz.html"
     title="CYS401 Chapter 2 Quiz"
     loading="lazy"
     referrerpolicy="no-referrer"

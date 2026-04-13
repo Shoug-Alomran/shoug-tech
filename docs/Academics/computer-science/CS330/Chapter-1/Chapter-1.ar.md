@@ -7,11 +7,11 @@
 
 إذا ما تحمل العرض بشكل صحيح، افتح الفصل بشكل مباشر.
 
-- [افتح الفصل الأول في صفحة جديدة](../Chapter-1.html)
+- [افتح الفصل الأول في صفحة جديدة](/ar/Academics/computer-science/CS330/Chapter-1/Chapter-1.html)
 
 <div class="iframe-wrap">
   <iframe
-    src="../Chapter-1.html"
+    src="/ar/Academics/computer-science/CS330/Chapter-1/Chapter-1.html"
     title="الفصل الأول: مقدمة في أنظمة التشغيل"
     loading="lazy"
     referrerpolicy="no-referrer"

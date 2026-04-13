@@ -4,11 +4,11 @@ This page contains the Chapter 7 quiz. Use it to review security design principl
 
 If the embedded view does not load properly, open the quiz directly.
 
-- [Open Chapter 7 Quiz in a new tab](../Chapter-7-Quiz.html)
+- [Open Chapter 7 Quiz in a new tab](/Academics/cyber-security/CYS401/Quizez/Chapter-7-Quiz.html)
 
 <div class="iframe-wrap">
   <iframe
-    src="../Chapter-7-Quiz.html"
+    src="/Academics/cyber-security/CYS401/Quizez/Chapter-7-Quiz.html"
     title="CYS401 Chapter 7 Quiz"
     loading="lazy"
     referrerpolicy="no-referrer"

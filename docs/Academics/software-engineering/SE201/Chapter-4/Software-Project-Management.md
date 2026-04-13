@@ -4,11 +4,11 @@ This page contains the Chapter 4 material. Use it for revision of project planni
 
 If the embedded view does not load properly, open the chapter directly.
 
-- [Open Chapter 4 in a new tab](../Software-Project-Management.html)
+- [Open Chapter 4 in a new tab](/Academics/software-engineering/SE201/Chapter-4/Software-Project-Management.html)
 
 <div class="iframe-wrap">
   <iframe
-    src="../Software-Project-Management.html"
+    src="/Academics/software-engineering/SE201/Chapter-4/Software-Project-Management.html"
     title="Chapter 4 Software Project Management"
     loading="lazy"
     referrerpolicy="no-referrer"

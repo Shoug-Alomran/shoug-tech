@@ -7,11 +7,11 @@
 
 إذا ما تحمل العرض بشكل صحيح، افتح الملف بشكل مباشر.
 
-- [افتح الأسئلة المجمعة في صفحة جديدة](../Compiled-MCQs.html)
+- [افتح الأسئلة المجمعة في صفحة جديدة](/ar/Academics/software-engineering/SE201/Compiled-MCQs.html)
 
 <div class="iframe-wrap">
   <iframe
-    src="../Compiled-MCQs.html"
+    src="/ar/Academics/software-engineering/SE201/Compiled-MCQs.html"
     title="SE201 - أسئلة اختيار من متعدد مجمعة"
     loading="lazy"
     referrerpolicy="no-referrer"

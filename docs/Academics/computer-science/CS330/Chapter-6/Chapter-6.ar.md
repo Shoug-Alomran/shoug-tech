@@ -7,11 +7,11 @@
 
 إذا ما تحمل العرض بشكل صحيح، افتح الفصل بشكل مباشر.
 
-- [افتح الفصل السادس في صفحة جديدة](../Chapter-6.html)
+- [افتح الفصل السادس في صفحة جديدة](/ar/Academics/computer-science/CS330/Chapter-6/Chapter-6.html)
 
 <div class="iframe-wrap">
   <iframe
-    src="../Chapter-6.html"
+    src="/ar/Academics/computer-science/CS330/Chapter-6/Chapter-6.html"
     title="الفصل السادس: التزامن"
     loading="lazy"
     referrerpolicy="no-referrer"

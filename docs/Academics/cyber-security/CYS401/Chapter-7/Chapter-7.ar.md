@@ -7,11 +7,11 @@
 
 إذا ما تحمل العرض بشكل صحيح، افتح الفصل بشكل مباشر.
 
-- [افتح الفصل السابع في صفحة جديدة](../Chapter-7.html)
+- [افتح الفصل السابع في صفحة جديدة](/ar/Academics/cyber-security/CYS401/Chapter-7/Chapter-7.html)
 
 <div class="iframe-wrap">
   <iframe
-    src="../Chapter-7.html"
+    src="/ar/Academics/cyber-security/CYS401/Chapter-7/Chapter-7.html"
     title="CYS401 · أساسيات الأمن السيبراني · الفصل السابع: مبادئ تصميم الأمن، النماذج، والقدرات"
     loading="lazy"
     referrerpolicy="no-referrer"

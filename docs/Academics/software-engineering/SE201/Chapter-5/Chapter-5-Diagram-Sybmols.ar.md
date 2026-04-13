@@ -7,11 +7,11 @@
 
 إذا ما تحمل العرض بشكل صحيح، افتح الفصل بشكل مباشر.
 
-- [افتح الفصل الخامس: رموز المخططات في صفحة جديدة](../Chapter-5-Diagram-Sybmols.html)
+- [افتح الفصل الخامس: رموز المخططات في صفحة جديدة](/ar/Academics/software-engineering/SE201/Chapter-5/Chapter-5-Diagram-Sybmols.html)
 
 <div class="iframe-wrap">
   <iframe
-    src="../Chapter-5-Diagram-Sybmols.html"
+    src="/ar/Academics/software-engineering/SE201/Chapter-5/Chapter-5-Diagram-Sybmols.html"
     title="الفصل الخامس: رموز المخططات"
     loading="lazy"
     referrerpolicy="no-referrer"

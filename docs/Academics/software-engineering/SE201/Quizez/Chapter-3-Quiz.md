@@ -4,11 +4,11 @@ This page contains the Chapter 3 quiz. Use it to review agile values and princip
 
 If the embedded view does not load properly, open the quiz directly.
 
-- [Open Chapter 3 Quiz in a new tab](../Chapter-3-Quiz.html)
+- [Open Chapter 3 Quiz in a new tab](/Academics/software-engineering/SE201/Quizez/Chapter-3-Quiz.html)
 
 <div class="iframe-wrap">
   <iframe
-    src="../Chapter-3-Quiz.html"
+    src="/Academics/software-engineering/SE201/Quizez/Chapter-3-Quiz.html"
     title="SE201 Chapter 3 Quiz"
     loading="lazy"
     referrerpolicy="no-referrer"

@@ -4,11 +4,11 @@ This page contains the Chapter 5 material. Use it for revision of SQL data defin
 
 If the embedded view does not load properly, open the chapter directly.
 
-- [Open Chapter 5 in a new tab](../Chapter-5.html)
+- [Open Chapter 5 in a new tab](/Academics/computer-science/CS340/Chapter-5/Chapter-5.html)
 
 <div class="iframe-wrap">
   <iframe
-    src="../Chapter-5.html"
+    src="/Academics/computer-science/CS340/Chapter-5/Chapter-5.html"
     title="Chapter 5 SQL Fundamentals"
     loading="lazy"
     referrerpolicy="no-referrer"

@@ -4,11 +4,11 @@ This page contains the Chapter 2 material. Use it for revision of sets, function
 
 If the embedded view does not load properly, open the chapter directly.
 
-- [Open Chapter 2 in a new tab](../Basic-Structures.html)
+- [Open Chapter 2 in a new tab](/Academics/computer-science/CS285/Chapter-2/Basic-Structures.html)
 
 <div class="iframe-wrap">
   <iframe
-    src="../Basic-Structures.html"
+    src="/Academics/computer-science/CS285/Chapter-2/Basic-Structures.html"
     title="Chapter 2 Basic Structures Sets Functions Sequences and Sums"
     loading="lazy"
     referrerpolicy="no-referrer"

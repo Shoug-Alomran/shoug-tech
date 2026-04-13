@@ -4,11 +4,11 @@
 
     If the embedded view does not load properly, open the quiz directly.
 
-    - [Open Chapter 5 Quiz in a new tab](../Chapter-5-Quiz.html)
+    - [Open Chapter 5 Quiz in a new tab](/Academics/computer-science/CS340/quizez/Chapter-5-Quiz.html)
 
     <div class="iframe-wrap">
     <iframe
-        src="../Chapter-5-Quiz.html"
+        src="/Academics/computer-science/CS340/quizez/Chapter-5-Quiz.html"
         title="CS340 Chapter 5 Quiz"
         loading="lazy"
         referrerpolicy="no-referrer"

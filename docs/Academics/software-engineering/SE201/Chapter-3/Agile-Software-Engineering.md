@@ -4,11 +4,11 @@ This page contains the Chapter 3 material. Use it for revision of agile values a
 
 If the embedded view does not load properly, open the chapter directly.
 
-- [Open Chapter 3 in a new tab](../Agile-Software-Engineering.html)
+- [Open Chapter 3 in a new tab](/Academics/software-engineering/SE201/Chapter-3/Agile-Software-Engineering.html)
 
 <div class="iframe-wrap">
   <iframe
-    src="../Agile-Software-Engineering.html"
+    src="/Academics/software-engineering/SE201/Chapter-3/Agile-Software-Engineering.html"
     title="Chapter 3 Agile Software Engineering"
     loading="lazy"
     referrerpolicy="no-referrer"

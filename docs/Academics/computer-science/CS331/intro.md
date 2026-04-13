@@ -116,7 +116,7 @@ Wireshark.
 
 This section currently includes your uploaded HTML resource for revision:
 
-- [Quiz 2 Cheat Sheet](../summary/quiz-2-cheat-sheet.html)
+- [Quiz 2 Cheat Sheet](/Academics/computer-science/CS331/summary/quiz-2-cheat-sheet.html)
 
 More notes, summaries, and supporting material can be added here over time as
 the course content grows.

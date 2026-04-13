@@ -4,11 +4,11 @@ This page contains the Chapter 6 material. Use it for revision of basic counting
 
 If the embedded view does not load properly, open the chapter directly.
 
-- [Open Chapter 6 in a new tab](../Counting.html)
+- [Open Chapter 6 in a new tab](/Academics/computer-science/CS285/Chapter-6/Counting.html)
 
 <div class="iframe-wrap">
   <iframe
-    src="../Counting.html"
+    src="/Academics/computer-science/CS285/Chapter-6/Counting.html"
     title="Chapter 6 Counting"
     loading="lazy"
     referrerpolicy="no-referrer"

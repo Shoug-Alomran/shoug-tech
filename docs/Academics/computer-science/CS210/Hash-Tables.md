@@ -4,11 +4,11 @@ This page contains the material on hash tables. Use it for revision of hash func
 
 If the embedded view does not load properly, open the page directly.
 
-- [Open in a new tab](../Hash-Tables.html)
+- [Open in a new tab](/Academics/computer-science/CS210/Hash-Tables.html)
 
 <div class="iframe-wrap">
   <iframe
-    src="../Hash-Tables.html"
+    src="/Academics/computer-science/CS210/Hash-Tables.html"
     title="Hash Tables"
     loading="lazy"
     referrerpolicy="no-referrer"

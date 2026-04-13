@@ -7,11 +7,11 @@
 
 إذا ما تحمل العرض بشكل صحيح، افتح الفصل بشكل مباشر.
 
-- [افتح الفصل الثاني في صفحة جديدة](../Software-Processes.html)
+- [افتح الفصل الثاني في صفحة جديدة](/ar/Academics/software-engineering/SE201/Chapter-2/Software-Processes.html)
 
 <div class="iframe-wrap">
   <iframe
-    src="../Software-Processes.html"
+    src="/ar/Academics/software-engineering/SE201/Chapter-2/Software-Processes.html"
     title="الفصل الثاني: عمليات هندسة البرمجيات"
     loading="lazy"
     referrerpolicy="no-referrer"

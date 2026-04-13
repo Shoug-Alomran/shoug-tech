@@ -7,11 +7,11 @@
 
 إذا ما تحمل العرض بشكل صحيح، افتح الفصل بشكل مباشر.
 
-- [افتح الفصل الثامن في صفحة جديدة](../Chapter-8.html)
+- [افتح الفصل الثامن في صفحة جديدة](/ar/Academics/computer-science/CS330/Chapter-8/Chapter-8.html)
 
 <div class="iframe-wrap">
   <iframe
-    src="../Chapter-8.html"
+    src="/ar/Academics/computer-science/CS330/Chapter-8/Chapter-8.html"
     title="الفصل الثامن: إدارة الذاكرة"
     loading="lazy"
     referrerpolicy="no-referrer"

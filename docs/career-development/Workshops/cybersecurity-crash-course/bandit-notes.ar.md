@@ -50,7 +50,7 @@ ssh bandit0@bandit.labs.overthewire.org -p 2220
 `bandit0`
 
 ??? example "لقطة شاشة"
-    ![المستوى 0](../pics/Level-0.png)
+    ![المستوى 0](/ar/career-development/Workshops/cybersecurity-crash-course/pics/Level-0.png)
 
 
 ---
@@ -78,7 +78,7 @@ cat readme
 `ZjLjTmM6FvvyrNrb2rfNWOZ0TA6ip5If`
 
 ??? example "لقطة شاشة"
-    ![المستوى 0 ← المستوى 1](../pics/Level-0-→-Level-1.png)
+    ![المستوى 0 ← المستوى 1](/ar/career-development/Workshops/cybersecurity-crash-course/pics/Level-0-→-Level-1.png)
 
 ---
 
@@ -103,7 +103,7 @@ cat ./-
 `263JGJPfgU6LdtEvgfWU1XP5yac29mFx`
 
 ??? example "لقطة شاشة"
-    ![المستوى 1 ← المستوى 2](../pics/Level-1-→-Level-2.png)
+    ![المستوى 1 ← المستوى 2](/ar/career-development/Workshops/cybersecurity-crash-course/pics/Level-1-→-Level-2.png)
 
 ---
 
@@ -130,7 +130,7 @@ cat -- "--spaces in this filename--"
 `MNk8KNH3USiio41PRUEoDFPqFxLPlSmx`
 
 ??? example "لقطة شاشة"
-    ![المستوى 2 ←المستوى 3](../pics/Level-2-→Level-3.png)
+    ![المستوى 2 ←المستوى 3](/ar/career-development/Workshops/cybersecurity-crash-course/pics/Level-2-→Level-3.png)
 
 ---
 
@@ -184,7 +184,7 @@ cat ./-file07
 `4oQYVPkXZOOEO5pTW8IFB8jLXxXGUQw`
 
 ??? example "لقطة شاشة"
-    ![المستوى 4 ← المستوى 5](../pics/Level-4-→-Level-5.png)
+    ![المستوى 4 ← المستوى 5](/ar/career-development/Workshops/cybersecurity-crash-course/pics/Level-4-→-Level-5.png)
 
 ---
 
@@ -212,7 +212,7 @@ cat ./maybehere07/.file2
 `HWasnPhtq9AVKe0dmk45knq0vcUahz0E6G`
 
 ??? example "لقطة شاشة"
-    ![المستوى 5 ← المستوى 6](../pics/Level-5-→-Level-6.png)
+    ![المستوى 5 ← المستوى 6](/ar/career-development/Workshops/cybersecurity-crash-course/pics/Level-5-→-Level-6.png)
 
 ---
 
@@ -238,7 +238,7 @@ cat /var/lib/dpkg/info/bandit7.password
 `z7WtoNQU2XfjmMtKjX3iql6i6cA99Ce`
 
 ??? example "لقطة شاشة"
-    ![المستوى 6 ← المستوى 7](../pics/Level-6-→-Level-7.png)
+    ![المستوى 6 ← المستوى 7](/ar/career-development/Workshops/cybersecurity-crash-course/pics/Level-6-→-Level-7.png)
 
 ---
 
@@ -263,7 +263,7 @@ grep "millionth" data.txt
 `dfwvzFQi4mU0wFnNbFOe9ROwskMLg7eEc`
 
 ??? example "لقطة شاشة"
-    ![المستوى 7 ← المستوى 8](../pics/Level-7-→-Level-8.png)
+    ![المستوى 7 ← المستوى 8](/ar/career-development/Workshops/cybersecurity-crash-course/pics/Level-7-→-Level-8.png)
 
 ---
 
@@ -287,7 +287,7 @@ sort data.txt | uniq -u
 `4CKMh1Jl9IbUIZZPXDQGamal4xvAgOJIM`
 
 ??? example "لقطة شاشة"
-    ![المستوى 8 ← المستوى 9](../pics/Level-8-→-Level-9.png)
+    ![المستوى 8 ← المستوى 9](/ar/career-development/Workshops/cybersecurity-crash-course/pics/Level-8-→-Level-9.png)
 
 ---
 
@@ -313,7 +313,7 @@ strings data.txt | grep '='
 `FGUVW5ilLVJrxX9kMYMMnlN4MgbpfMiqey`
 
 ??? example "لقطة شاشة"
-    ![المستوى 9 ← المستوى 10](../pics/Level-9-→-Level-10.png)
+    ![المستوى 9 ← المستوى 10](/ar/career-development/Workshops/cybersecurity-crash-course/pics/Level-9-→-Level-10.png)
 
 ---
 
@@ -341,7 +341,7 @@ cat data.txt | base64 -d
 `dtR173fZKb0RRsDFSGsg2RWnpNVj3qRr`
 
 ??? example "لقطة شاشة"
-    ![المستوى 10 ← المستوى 11](../pics/Level-10-→-Level-11.png)
+    ![المستوى 10 ← المستوى 11](/ar/career-development/Workshops/cybersecurity-crash-course/pics/Level-10-→-Level-11.png)
 
 ---
 
@@ -368,7 +368,7 @@ cat data.txt | tr 'A-Za-z' 'N-ZA-Mn-za-m'
 `7x16WNeHIi5YkIhWsfFIqoognUTyj9Q4`
 
 ??? example "لقطة شاشة"
-    ![المستوى 11 ← المستوى 12](../pics/Level-11-→-Level-12.png)
+    ![المستوى 11 ← المستوى 12](/ar/career-development/Workshops/cybersecurity-crash-course/pics/Level-11-→-Level-12.png)
 
 ---
 
@@ -407,7 +407,7 @@ file data.bin
 `FO9dwdCWjbaiIh0h8J2eUKs2vdTDwAn`
 
 ??? example "لقطة شاشة"
-    ![المستوى 12 ← المستوى 13](../pics/Level-12-→-Level-13.png)
+    ![المستوى 12 ← المستوى 13](/ar/career-development/Workshops/cybersecurity-crash-course/pics/Level-12-→-Level-13.png)
 
 ---
 
@@ -457,7 +457,7 @@ nc localhost 30000
 `8xCjnmgoKbgGLhHFAZ1GE5Tmu4M2tKJQo`
 
 ??? example "لقطة شاشة"
-    ![المستوى 14 ← المستوى 15](../pics/Level-14-→-Level-15.png)
+    ![المستوى 14 ← المستوى 15](/ar/career-development/Workshops/cybersecurity-crash-course/pics/Level-14-→-Level-15.png)
 
 ---
 
@@ -486,7 +486,7 @@ openssl s_client -connect localhost:30001
 `kSkvUpMQ7lBYyCM4GBPvCvT1BfWRy0Dx`
 
 ??? example "لقطة شاشة"
-    ![المستوى 15 ← المستوى 16](../pics/Level-15-→-Level-16.png)
+    ![المستوى 15 ← المستوى 16](/ar/career-development/Workshops/cybersecurity-crash-course/pics/Level-15-→-Level-16.png)
 
 ---
 
@@ -524,7 +524,7 @@ openssl s_client -connect localhost:31790
 مفتاح RSA خاص (يستخدم للدخول عبر SSH)
 
 ??? example "لقطة شاشة"
-    ![المستوى 16 ← المستوى 17](../pics/Level-16-→-Level-17.png)
+    ![المستوى 16 ← المستوى 17](/ar/career-development/Workshops/cybersecurity-crash-course/pics/Level-16-→-Level-17.png)
 
 ---
 
@@ -549,8 +549,8 @@ diff passwords.old passwords.new
 `x2gLTTjFwMOhQ8oWNbMN362QKxfRqGl0`
 
 **لقطات شاشة**
-![المستوى 17 ← المستوى 18 لقطة 1](../pics/Level-17-→-Level-18.png)
-![المستوى 17 ← المستوى 18 لقطة 2](../pics/Level-17-→-Level-18_2.png)
+![المستوى 17 ← المستوى 18 لقطة 1](/ar/career-development/Workshops/cybersecurity-crash-course/pics/Level-17-→-Level-18.png)
+![المستوى 17 ← المستوى 18 لقطة 2](/ar/career-development/Workshops/cybersecurity-crash-course/pics/Level-17-→-Level-18_2.png)
 
 ---
 
@@ -574,7 +574,7 @@ ssh bandit18@bandit.labs.overthewire.org -p 2220 cat readme
 `cGWpMaKXVwDUNgPAVJbWYuGHVn9zl3j8`
 
 ??? example "لقطة شاشة"
-    ![المستوى 18 ← المستوى 19](../pics/Level-18-→-Level-19.png)
+    ![المستوى 18 ← المستوى 19](/ar/career-development/Workshops/cybersecurity-crash-course/pics/Level-18-→-Level-19.png)
 
 ---
 
@@ -604,7 +604,7 @@ ls -l
 `0qXahG8ZjOVMN9Ghs7iOWsCfZyXOUbYO`
 
 ??? example "لقطة شاشة"
-    ![المستوى 19 ← المستوى 20](../pics/Level-19-→-Level-20.png)
+    ![المستوى 19 ← المستوى 20](/ar/career-development/Workshops/cybersecurity-crash-course/pics/Level-19-→-Level-20.png)
 
 ---
 
@@ -637,7 +637,7 @@ nc -l -p 1234
 `EeoULMCra2q0dSkYj561DX7s1CpBuOBt`
 
 ??? example "لقطة شاشة"
-    ![المستوى 20 ← المستوى 21](../pics/Level-20-→-Level-21.png)
+    ![المستوى 20 ← المستوى 21](/ar/career-development/Workshops/cybersecurity-crash-course/pics/Level-20-→-Level-21.png)
 
 ---
 
@@ -665,7 +665,7 @@ cat /tmp/t7O6lds9S0RqQh9aMcz6ShpAoZKF7fgv
 `tRae0UfB9v0UzbCdn9cY0gQnds9GF58Q`
 
 ??? example "لقطة شاشة"
-    ![المستوى 21 ← المستوى 22](../pics/Level-21-→-Level-22.png)
+    ![المستوى 21 ← المستوى 22](/ar/career-development/Workshops/cybersecurity-crash-course/pics/Level-21-→-Level-22.png)
 
 ---
 
@@ -697,7 +697,7 @@ cat /tmp/<hash>
 `0Zf11ioIjMVN551jX3CmStKLYqjk54Ga`
 
 ??? example "لقطة شاشة"
-    ![المستوى 22 ← المستوى 23](../pics/Level-22-→-Level-23.png)
+    ![المستوى 22 ← المستوى 23](/ar/career-development/Workshops/cybersecurity-crash-course/pics/Level-22-→-Level-23.png)
 
 ---
 
@@ -736,7 +736,7 @@ cat /tmp/b24pass
 `gb8KRRCsshuZXI0tUuR6ypOFjiZbf3G8`
 
 ??? example "لقطة شاشة"
-    ![المستوى 23 ← المستوى 24](../pics/Level-23-→-Level-24.png)
+    ![المستوى 23 ← المستوى 24](/ar/career-development/Workshops/cybersecurity-crash-course/pics/Level-23-→-Level-24.png)
 
 ---
 
@@ -769,8 +769,8 @@ done | nc localhost 30002
 `iCi86ttT4KSNe1armKiwbQNmB3YJP3q4`
 
 **لقطات شاشة**
-![المستوى 24 ← المستوى 25 لقطة 1](../pics/Level-24-→-Level-25.png)
-![المستوى 24 ← المستوى 25 لقطة 2](../pics/Level-24-→-Level-25_2.png)
+![المستوى 24 ← المستوى 25 لقطة 1](/ar/career-development/Workshops/cybersecurity-crash-course/pics/Level-24-→-Level-25.png)
+![المستوى 24 ← المستوى 25 لقطة 2](/ar/career-development/Workshops/cybersecurity-crash-course/pics/Level-24-→-Level-25_2.png)
 
 ---
 
@@ -816,7 +816,7 @@ cat /etc/bandit_pass/bandit26
 `s0773xxkk0MXfdqOfPRVr9L3jJBUOgCZ`
 
 ??? example "لقطة شاشة"
-    ![المستوى 25 ← المستوى 26](../pics/Level-25-→-Level-26.png)
+    ![المستوى 25 ← المستوى 26](/ar/career-development/Workshops/cybersecurity-crash-course/pics/Level-25-→-Level-26.png)
 
 ---
 
@@ -841,7 +841,7 @@ ls -la
 `upsNCc7vzaRDx6oZC6GiR6ERwe1MowGB`
 
 ??? example "لقطة شاشة"
-    ![المستوى 26 ← المستوى 27](../pics/Level-26-→-Level-27.png)
+    ![المستوى 26 ← المستوى 27](/ar/career-development/Workshops/cybersecurity-crash-course/pics/Level-26-→-Level-27.png)
 
 ---
 
@@ -868,7 +868,7 @@ cat README
 `Yz9IpL0sBcCeuG7m9uQFt8ZNpS4HZRcN`
 
 ??? example "لقطة شاشة"
-    ![المستوى 27 ← المستوى 28](../pics/Level-27-→-Level-28.png)
+    ![المستوى 27 ← المستوى 28](/ar/career-development/Workshops/cybersecurity-crash-course/pics/Level-27-→-Level-28.png)
 
 ---
 
@@ -899,7 +899,7 @@ git log -p
 `4pT1t5DENaYuqnqvadYs1oE4QLCdjmJ7`
 
 ??? example "لقطة شاشة"
-    ![المستوى 28 ← المستوى 29](../pics/Level-28-→-Level-29.png)
+    ![المستوى 28 ← المستوى 29](/ar/career-development/Workshops/cybersecurity-crash-course/pics/Level-28-→-Level-29.png)
 
 ---
 
@@ -933,7 +933,7 @@ cat README.md
 `qp30ex3VLz5MDG1n91YowTv4Q8l7CDZL`
 
 ??? example "لقطة شاشة"
-    ![المستوى 29 ← المستوى 30](../pics/Level-29-→-Level-30.png)
+    ![المستوى 29 ← المستوى 30](/ar/career-development/Workshops/cybersecurity-crash-course/pics/Level-29-→-Level-30.png)
 
 ---
 
@@ -962,7 +962,7 @@ git show secret
 `fb5S2xb7bRyFmAvQYQGEqsbhVyJqhnDy`
 
 ??? example "لقطة شاشة"
-    ![المستوى 30 ← المستوى 31](../pics/Level-30-→-Level-31.png)
+    ![المستوى 30 ← المستوى 31](/ar/career-development/Workshops/cybersecurity-crash-course/pics/Level-30-→-Level-31.png)
 
 ---
 
@@ -997,7 +997,7 @@ git push origin master
 `3O9RfhqyAlVBEZpVb6LYStshZoqoSx5K`
 
 ??? example "لقطة شاشة"
-    ![المستوى 31 ← المستوى 32](../pics/Level-31-→-Level-32.png)
+    ![المستوى 31 ← المستوى 32](/ar/career-development/Workshops/cybersecurity-crash-course/pics/Level-31-→-Level-32.png)
 
 ---
 
@@ -1032,7 +1032,7 @@ cat /etc/bandit_pass/bandit33
 `tQdtbs5D5i2vJwkO8mEyYEyTL8izoeJ0`
 
 ??? example "لقطة شاشة"
-    ![المستوى 32 ← المستوى 33](../pics/Level-32-→-Level-33.png)
+    ![المستوى 32 ← المستوى 33](/ar/career-development/Workshops/cybersecurity-crash-course/pics/Level-32-→-Level-33.png)
 
 ---
 

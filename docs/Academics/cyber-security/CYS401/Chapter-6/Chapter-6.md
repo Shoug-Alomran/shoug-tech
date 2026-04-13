@@ -4,11 +4,11 @@ This page contains the Chapter 6 material. Use it for revision of asymmetric cry
 
 If the embedded view does not load properly, open the chapter directly.
 
-- [Open Chapter 6 in a new tab](../Chapter-6.html)
+- [Open Chapter 6 in a new tab](/Academics/cyber-security/CYS401/Chapter-6/Chapter-6.html)
 
 <div class="iframe-wrap">
   <iframe
-    src="../Chapter-6.html"
+    src="/Academics/cyber-security/CYS401/Chapter-6/Chapter-6.html"
     title="CYS401 · Fundamentals of Cybersecurity · Chapter 6: Asymmetric Cryptography & PKI"
     loading="lazy"
     referrerpolicy="no-referrer"

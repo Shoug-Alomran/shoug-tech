@@ -7,11 +7,11 @@
 
 إذا ما تحمل العرض بشكل صحيح، افتح الفصل بشكل مباشر.
 
-- [افتح الفصل السادس في صفحة جديدة](../Counting.html)
+- [افتح الفصل السادس في صفحة جديدة](/ar/Academics/computer-science/CS285/Chapter-6/Counting.html)
 
 <div class="iframe-wrap">
   <iframe
-    src="../Counting.html"
+    src="/ar/Academics/computer-science/CS285/Chapter-6/Counting.html"
     title="الفصل السادس: العد"
     loading="lazy"
     referrerpolicy="no-referrer"

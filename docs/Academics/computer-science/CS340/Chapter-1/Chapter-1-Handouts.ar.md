@@ -7,11 +7,11 @@
 
 إذا ما تحمل العرض بشكل صحيح، افتح المذكرات بشكل مباشر.
 
-- [افتح مذكرات الفصل الأول في صفحة جديدة](../Chapter-1-Handouts.html)
+- [افتح مذكرات الفصل الأول في صفحة جديدة](/ar/Academics/computer-science/CS340/Chapter-1/Chapter-1-Handouts.html)
 
 <div class="iframe-wrap">
   <iframe
-    src="../Chapter-1-Handouts.html"
+    src="/ar/Academics/computer-science/CS340/Chapter-1/Chapter-1-Handouts.html"
     title="مذكرات CS340 - الفصل الأول"
     loading="lazy"
     referrerpolicy="no-referrer"

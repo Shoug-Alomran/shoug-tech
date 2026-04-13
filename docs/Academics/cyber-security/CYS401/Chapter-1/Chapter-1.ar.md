@@ -7,11 +7,11 @@
 
 إذا ما تحمل العرض بشكل صحيح، افتح الفصل بشكل مباشر.
 
-- [افتح الفصل الأول في صفحة جديدة](../Chapter-1.html)
+- [افتح الفصل الأول في صفحة جديدة](/ar/Academics/cyber-security/CYS401/Chapter-1/Chapter-1.html)
 
 <div class="iframe-wrap">
   <iframe
-    src="../Chapter-1.html"
+    src="/ar/Academics/cyber-security/CYS401/Chapter-1/Chapter-1.html"
     title="CYS401 - الفصل الأول: مقدمة في الأمن السيبراني"
     loading="lazy"
     referrerpolicy="no-referrer"

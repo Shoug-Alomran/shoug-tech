@@ -4,11 +4,11 @@ This page contains the Chapter 6 material. Use it for revision of race condition
 
 If the embedded view does not load properly, open the chapter directly.
 
-- [Open Chapter 6 in a new tab](../Chapter-6.html)
+- [Open Chapter 6 in a new tab](/Academics/computer-science/CS330/Chapter-6/Chapter-6.html)
 
 <div class="iframe-wrap">
   <iframe
-    src="../Chapter-6.html"
+    src="/Academics/computer-science/CS330/Chapter-6/Chapter-6.html"
     title="Chapter 6 Synchronization"
     loading="lazy"
     referrerpolicy="no-referrer"

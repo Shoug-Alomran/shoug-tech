@@ -4,11 +4,11 @@ This page contains the Chapter 6 quiz. Use it to review asymmetric cryptography,
 
 If the embedded view does not load properly, open the quiz directly.
 
-- [Open Chapter 6 Quiz in a new tab](../Chapter-6-Quiz.html)
+- [Open Chapter 6 Quiz in a new tab](/Academics/cyber-security/CYS401/Quizez/Chapter-6-Quiz.html)
 
 <div class="iframe-wrap">
   <iframe
-    src="../Chapter-6-Quiz.html"
+    src="/Academics/cyber-security/CYS401/Quizez/Chapter-6-Quiz.html"
     title="CYS401 Chapter 6 Quiz"
     loading="lazy"
     referrerpolicy="no-referrer"

@@ -7,11 +7,11 @@
 
 إذا ما تحمل العرض بشكل صحيح، افتح الفصل بشكل مباشر.
 
-- [افتح الفصل الثاني في صفحة جديدة](../Chapter-2.html)
+- [افتح الفصل الثاني في صفحة جديدة](/ar/Academics/cyber-security/CYS401/Chapter-2/Chapter-2.html)
 
 <div class="iframe-wrap">
   <iframe
-    src="../Chapter-2.html"
+    src="/ar/Academics/cyber-security/CYS401/Chapter-2/Chapter-2.html"
     title="CYS401 - الفصل الثاني: أسس ومبادئ الأمن"
     loading="lazy"
     referrerpolicy="no-referrer"

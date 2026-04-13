@@ -7,11 +7,11 @@
 
 إذا ما تحمل العرض بشكل صحيح، افتح الفصل بشكل مباشر.
 
-- [افتح الفصل الثامن في صفحة جديدة](../Advanced-Counting.html)
+- [افتح الفصل الثامن في صفحة جديدة](/ar/Academics/computer-science/CS285/Chapter-8/Advanced-Counting.html)
 
 <div class="iframe-wrap">
   <iframe
-    src="../Advanced-Counting.html"
+    src="/ar/Academics/computer-science/CS285/Chapter-8/Advanced-Counting.html"
     title="الفصل الثامن: تقنيات العد المتقدمة"
     loading="lazy"
     referrerpolicy="no-referrer"

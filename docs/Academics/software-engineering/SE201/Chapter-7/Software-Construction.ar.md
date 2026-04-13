@@ -7,11 +7,11 @@
 
 إذا ما تحمل العرض بشكل صحيح، افتح الفصل بشكل مباشر.
 
-- [افتح الفصل السابع في صفحة جديدة](../Software-Construction.html)
+- [افتح الفصل السابع في صفحة جديدة](/ar/Academics/software-engineering/SE201/Chapter-7/Software-Construction.html)
 
 <div class="iframe-wrap">
   <iframe
-    src="../Software-Construction.html"
+    src="/ar/Academics/software-engineering/SE201/Chapter-7/Software-Construction.html"
     title="الفصل السابع: بناء البرمجيات"
     loading="lazy"
     referrerpolicy="no-referrer"

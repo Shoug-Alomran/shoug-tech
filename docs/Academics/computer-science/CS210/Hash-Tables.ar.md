@@ -7,11 +7,11 @@
 
 إذا ما تحمل العرض بشكل صحيح، افتح الصفحة بشكل مباشر.
 
-- [افتح في صفحة جديدة](../Hash-Tables.html)
+- [افتح في صفحة جديدة](/ar/Academics/computer-science/CS210/Hash-Tables.html)
 
 <div class="iframe-wrap">
   <iframe
-    src="../Hash-Tables.html"
+    src="/ar/Academics/computer-science/CS210/Hash-Tables.html"
     title="جداول التجزئة"
     loading="lazy"
     referrerpolicy="no-referrer"

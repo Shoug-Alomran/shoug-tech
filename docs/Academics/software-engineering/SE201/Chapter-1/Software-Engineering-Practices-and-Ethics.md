@@ -4,11 +4,11 @@ This page contains the Chapter 1 material. Use it for revision of software engin
 
 If the embedded view does not load properly, open the chapter directly.
 
-- [Open Chapter 1 in a new tab](../Software-Engineering-Practices-and-Ethics.html)
+- [Open Chapter 1 in a new tab](/Academics/software-engineering/SE201/Chapter-1/Software-Engineering-Practices-and-Ethics.html)
 
 <div class="iframe-wrap">
   <iframe
-    src="../Software-Engineering-Practices-and-Ethics.html"
+    src="/Academics/software-engineering/SE201/Chapter-1/Software-Engineering-Practices-and-Ethics.html"
     title="Chapter 1 Software Engineering Practices and Ethics"
     loading="lazy"
     referrerpolicy="no-referrer"

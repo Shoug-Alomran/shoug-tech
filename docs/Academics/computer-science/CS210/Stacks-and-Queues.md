@@ -4,11 +4,11 @@ This page contains the material on stacks and queues. Use it for revision of LIF
 
 If the embedded view does not load properly, open the page directly.
 
-- [Open in a new tab](../Stacks-and-Queues.html)
+- [Open in a new tab](/Academics/computer-science/CS210/Stacks-and-Queues.html)
 
 <div class="iframe-wrap">
   <iframe
-    src="../Stacks-and-Queues.html"
+    src="/Academics/computer-science/CS210/Stacks-and-Queues.html"
     title="Stacks and Queues"
     loading="lazy"
     referrerpolicy="no-referrer"

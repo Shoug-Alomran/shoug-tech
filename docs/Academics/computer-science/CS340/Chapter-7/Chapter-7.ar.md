@@ -7,11 +7,11 @@
 
 إذا ما تحمل العرض بشكل صحيح، افتح الفصل بشكل مباشر.
 
-- [افتح الفصل السابع في صفحة جديدة](../Chapter-7.html)
+- [افتح الفصل السابع في صفحة جديدة](/ar/Academics/computer-science/CS340/Chapter-7/Chapter-7.html)
 
 <div class="iframe-wrap">
   <iframe
-    src="../Chapter-7.html"
+    src="/ar/Academics/computer-science/CS340/Chapter-7/Chapter-7.html"
     title="الفصل السابع: تصميم قواعد البيانات والتطبيع"
     loading="lazy"
     referrerpolicy="no-referrer"

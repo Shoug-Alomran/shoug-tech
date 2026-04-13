@@ -7,11 +7,11 @@
 
 إذا ما تحمل العرض بشكل صحيح، افتح الفصل بشكل مباشر.
 
-- [افتح الفصل الخامس في صفحة جديدة](../Chapter-5.html)
+- [افتح الفصل الخامس في صفحة جديدة](/ar/Academics/cyber-security/CYS401/Chapter-5/Chapter-5.html)
 
 <div class="iframe-wrap">
   <iframe
-    src="../Chapter-5.html"
+    src="/ar/Academics/cyber-security/CYS401/Chapter-5/Chapter-5.html"
     title="CYS401 · أساسيات الأمن السيبراني · الفصل الخامس: التشفير"
     loading="lazy"
     referrerpolicy="no-referrer"

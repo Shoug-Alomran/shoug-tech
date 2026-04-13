@@ -7,11 +7,11 @@
 
 إذا ما تحمل العرض بشكل صحيح، افتح الاختبار بشكل مباشر.
 
-- [افتح اختبار الفصل الثاني في صفحة جديدة](../Chapter-2-Quiz.html)
+- [افتح اختبار الفصل الثاني في صفحة جديدة](/ar/Academics/computer-science/CS330/Quizez/Chapter-2-Quiz.html)
 
 <div class="iframe-wrap">
   <iframe
-    src="../Chapter-2-Quiz.html"
+    src="/ar/Academics/computer-science/CS330/Quizez/Chapter-2-Quiz.html"
     title="اختبار الفصل الثاني"
     loading="lazy"
     referrerpolicy="no-referrer"

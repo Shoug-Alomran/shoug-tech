@@ -4,11 +4,11 @@ This page contains the Chapter 5 material. Use it for revision of functional and
 
 If the embedded view does not load properly, open the chapter directly.
 
-- [Open Chapter 5 in a new tab](../Requirements-Engineering.html)
+- [Open Chapter 5 in a new tab](/Academics/software-engineering/SE201/Chapter-5/Requirements-Engineering.html)
 
 <div class="iframe-wrap">
   <iframe
-    src="../Requirements-Engineering.html"
+    src="/Academics/software-engineering/SE201/Chapter-5/Requirements-Engineering.html"
     title="Chapter 5 Requirements Engineering"
     loading="lazy"
     referrerpolicy="no-referrer"

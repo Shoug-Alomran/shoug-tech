@@ -7,11 +7,11 @@
 
 إذا ما تحمل العرض بشكل صحيح، افتح الفصل بشكل مباشر.
 
-- [افتح الفصل السادس في صفحة جديدة](../Software-Design.html)
+- [افتح الفصل السادس في صفحة جديدة](/ar/Academics/software-engineering/SE201/Chapter-6/Software-Design.html)
 
 <div class="iframe-wrap">
   <iframe
-    src="../Software-Design.html"
+    src="/ar/Academics/software-engineering/SE201/Chapter-6/Software-Design.html"
     title="الفصل السادس: تصميم البرمجيات"
     loading="lazy"
     referrerpolicy="no-referrer"

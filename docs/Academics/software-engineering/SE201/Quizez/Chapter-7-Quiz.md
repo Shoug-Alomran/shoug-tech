@@ -4,11 +4,11 @@ This page contains the Chapter 7 quiz. Use it to review software construction to
 
 If the embedded view does not load properly, open the quiz directly.
 
-- [Open Chapter 7 Quiz in a new tab](../Chapter-7-Quiz.html)
+- [Open Chapter 7 Quiz in a new tab](/Academics/software-engineering/SE201/Quizez/Chapter-7-Quiz.html)
 
 <div class="iframe-wrap">
   <iframe
-    src="../Chapter-7-Quiz.html"
+    src="/Academics/software-engineering/SE201/Quizez/Chapter-7-Quiz.html"
     title="SE201 Chapter 7 Quiz"
     loading="lazy"
     referrerpolicy="no-referrer"

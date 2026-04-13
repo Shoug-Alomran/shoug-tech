@@ -7,11 +7,11 @@
 
 إذا ما تحمل العرض بشكل صحيح، افتح الخريطة الذهنية بشكل مباشر.
 
-- [افتح الخريطة الذهنية للفصل الأول في صفحة جديدة](../Chapter-1-mindmap.html)
+- [افتح الخريطة الذهنية للفصل الأول في صفحة جديدة](/ar/Academics/computer-science/CS340/Mindmap/Chapter-1-mindmap.html)
 
 <div class="iframe-wrap">
   <iframe
-    src="../Chapter-1-mindmap.html"
+    src="/ar/Academics/computer-science/CS340/Mindmap/Chapter-1-mindmap.html"
     title="CS340 - الخريطة الذهنية للفصل الأول"
     loading="lazy"
     referrerpolicy="no-referrer"

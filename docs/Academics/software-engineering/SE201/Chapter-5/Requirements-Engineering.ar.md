@@ -7,11 +7,11 @@
 
 إذا ما تحمل العرض بشكل صحيح، افتح الفصل بشكل مباشر.
 
-- [افتح الفصل الخامس في صفحة جديدة](../Requirements-Engineering.html)
+- [افتح الفصل الخامس في صفحة جديدة](/ar/Academics/software-engineering/SE201/Chapter-5/Requirements-Engineering.html)
 
 <div class="iframe-wrap">
   <iframe
-    src="../Requirements-Engineering.html"
+    src="/ar/Academics/software-engineering/SE201/Chapter-5/Requirements-Engineering.html"
     title="الفصل الخامس: هندسة المتطلبات"
     loading="lazy"
     referrerpolicy="no-referrer"

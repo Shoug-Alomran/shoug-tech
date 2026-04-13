@@ -7,11 +7,11 @@
 
 إذا ما تحمل العرض بشكل صحيح، افتح الفصل بشكل مباشر.
 
-- [افتح الفصل الثامن في صفحة جديدة](../Software-Testing.html)
+- [افتح الفصل الثامن في صفحة جديدة](/ar/Academics/software-engineering/SE201/Chapter-8/Software-Testing.html)
 
 <div class="iframe-wrap">
   <iframe
-    src="../Software-Testing.html"
+    src="/ar/Academics/software-engineering/SE201/Chapter-8/Software-Testing.html"
     title="الفصل الثامن: اختبار البرمجيات"
     loading="lazy"
     referrerpolicy="no-referrer"

@@ -4,11 +4,11 @@ This page contains the Chapter 7 material. Use it for revision of security desig
 
 If the embedded view does not load properly, open the chapter directly.
 
-- [Open Chapter 7 in a new tab](../Chapter-7.html)
+- [Open Chapter 7 in a new tab](/Academics/cyber-security/CYS401/Chapter-7/Chapter-7.html)
 
 <div class="iframe-wrap">
   <iframe
-    src="../Chapter-7.html"
+    src="/Academics/cyber-security/CYS401/Chapter-7/Chapter-7.html"
     title="CYS401 · Fundamentals of Cybersecurity · Chapter 7: Principles of Security Design, Models, and Capabilities"
     loading="lazy"
     referrerpolicy="no-referrer"

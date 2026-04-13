@@ -4,11 +4,11 @@ This page contains the Chapter 8 material. Use it for revision of memory allocat
 
 If the embedded view does not load properly, open the chapter directly.
 
-- [Open Chapter 8 in a new tab](../Chapter-8.html)
+- [Open Chapter 8 in a new tab](/Academics/computer-science/CS330/Chapter-8/Chapter-8.html)
 
 <div class="iframe-wrap">
   <iframe
-    src="../Chapter-8.html"
+    src="/Academics/computer-science/CS330/Chapter-8/Chapter-8.html"
     title="Chapter 8 Memory Management"
     loading="lazy"
     referrerpolicy="no-referrer"

@@ -4,7 +4,7 @@
 ---
 
 ??? note "Workshop Poster"
-    ![Workshop Poster](../pics/poster.png)
+    ![Workshop Poster](/career-development/Workshops/My-Journey-as-a-Student-Tutor/pics/poster.png)
 
 | | |
 |---|---|

@@ -4,11 +4,11 @@ This page contains the Chapter 3 quiz. Use it to review threat modeling concepts
 
 If the embedded view does not load properly, open the quiz directly.
 
-- [Open Chapter 3 Quiz in a new tab](../Chapter-3-Quiz.html)
+- [Open Chapter 3 Quiz in a new tab](/Academics/cyber-security/CYS401/Quizez/Chapter-3-Quiz.html)
 
 <div class="iframe-wrap">
   <iframe
-    src="../Chapter-3-Quiz.html"
+    src="/Academics/cyber-security/CYS401/Quizez/Chapter-3-Quiz.html"
     title="CYS401 Chapter 3 Quiz"
     loading="lazy"
     referrerpolicy="no-referrer"

@@ -4,11 +4,11 @@ This page contains the Chapter 9 material. Use it for revision of converting ER 
 
 If the embedded view does not load properly, open the chapter directly.
 
-- [Open Chapter 9 in a new tab](../Chapter-9.html)
+- [Open Chapter 9 in a new tab](/Academics/computer-science/CS340/Chapter-9/Chapter-9.html)
 
 <div class="iframe-wrap">
   <iframe
-    src="../Chapter-9.html"
+    src="/Academics/computer-science/CS340/Chapter-9/Chapter-9.html"
     title="Chapter 9 ER to Relational Mapping"
     loading="lazy"
     referrerpolicy="no-referrer"

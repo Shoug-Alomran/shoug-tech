@@ -7,11 +7,11 @@
 
 إذا ما تحمل العرض بشكل صحيح، افتح الدليل بشكل مباشر.
 
-- [افتح الدليل في صفحة جديدة](../Complete-UML-%26-Software-Engineering-Diagrams-Guide.html)
+- [افتح الدليل في صفحة جديدة](/ar/Academics/software-engineering/SE201/Complete-UML-%26-Software-Engineering-Diagrams-Guide.html)
 
 <div class="iframe-wrap">
   <iframe
-    src="../Complete-UML-%26-Software-Engineering-Diagrams-Guide.html"
+    src="/ar/Academics/software-engineering/SE201/Complete-UML-%26-Software-Engineering-Diagrams-Guide.html"
     title="الدليل الكامل لمخططات UML وهندسة البرمجيات"
     loading="lazy"
     referrerpolicy="no-referrer"

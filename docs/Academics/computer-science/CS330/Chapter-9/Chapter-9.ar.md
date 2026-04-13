@@ -7,11 +7,11 @@
 
 إذا ما تحمل العرض بشكل صحيح، افتح الفصل بشكل مباشر.
 
-- [افتح الفصل التاسع في صفحة جديدة](../Chapter-9.html)
+- [افتح الفصل التاسع في صفحة جديدة](/ar/Academics/computer-science/CS330/Chapter-9/Chapter-9.html)
 
 <div class="iframe-wrap">
   <iframe
-    src="../Chapter-9.html"
+    src="/ar/Academics/computer-science/CS330/Chapter-9/Chapter-9.html"
     title="الفصل التاسع: الذاكرة الافتراضية"
     loading="lazy"
     referrerpolicy="no-referrer"

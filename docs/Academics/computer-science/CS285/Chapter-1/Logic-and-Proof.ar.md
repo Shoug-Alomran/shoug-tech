@@ -7,11 +7,11 @@
 
 إذا ما تحمل العرض بشكل صحيح، افتح الفصل بشكل مباشر.
 
-- [افتح الفصل الأول في صفحة جديدة](../Logic-and-Proof.html)
+- [افتح الفصل الأول في صفحة جديدة](/ar/Academics/computer-science/CS285/Chapter-1/Logic-and-Proof.html)
 
 <div class="iframe-wrap">
   <iframe
-    src="../Logic-and-Proof.html"
+    src="/ar/Academics/computer-science/CS285/Chapter-1/Logic-and-Proof.html"
     title="الفصل الأول: الأسس - المنطق، المجموعات، والدوال"
     loading="lazy"
     referrerpolicy="no-referrer"

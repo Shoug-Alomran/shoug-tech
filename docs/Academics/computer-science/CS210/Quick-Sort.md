@@ -4,11 +4,11 @@ This page contains the material on quick sort. Use it for revision of the quick 
 
 If the embedded view does not load properly, open the page directly.
 
-- [Open in a new tab](../Quick-Sort.html)
+- [Open in a new tab](/Academics/computer-science/CS210/Quick-Sort.html)
 
 <div class="iframe-wrap">
   <iframe
-    src="../Quick-Sort.html"
+    src="/Academics/computer-science/CS210/Quick-Sort.html"
     title="Quick Sort"
     loading="lazy"
     referrerpolicy="no-referrer"

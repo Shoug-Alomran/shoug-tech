@@ -4,11 +4,11 @@ This page contains the Chapter 4 quiz. Use it to review protection of informatio
 
 If the embedded view does not load properly, open the quiz directly.
 
-- [Open Chapter 4 Quiz in a new tab](../Chapter-4-Quiz.html)
+- [Open Chapter 4 Quiz in a new tab](/Academics/cyber-security/CYS401/Quizez/Chapter-4-Quiz.html)
 
 <div class="iframe-wrap">
   <iframe
-    src="../Chapter-4-Quiz.html"
+    src="/Academics/cyber-security/CYS401/Quizez/Chapter-4-Quiz.html"
     title="CYS401 Chapter 4 Quiz"
     loading="lazy"
     referrerpolicy="no-referrer"

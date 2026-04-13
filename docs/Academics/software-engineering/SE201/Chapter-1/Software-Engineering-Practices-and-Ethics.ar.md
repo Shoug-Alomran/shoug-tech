@@ -7,11 +7,11 @@
 
 إذا ما تحمل العرض بشكل صحيح، افتح الفصل بشكل مباشر.
 
-- [افتح الفصل الأول في صفحة جديدة](../Software-Engineering-Practices-and-Ethics.html)
+- [افتح الفصل الأول في صفحة جديدة](/ar/Academics/software-engineering/SE201/Chapter-1/Software-Engineering-Practices-and-Ethics.html)
 
 <div class="iframe-wrap">
   <iframe
-    src="../Software-Engineering-Practices-and-Ethics.html"
+    src="/ar/Academics/software-engineering/SE201/Chapter-1/Software-Engineering-Practices-and-Ethics.html"
     title="الفصل الأول: ممارسات وأخلاقيات هندسة البرمجيات"
     loading="lazy"
     referrerpolicy="no-referrer"

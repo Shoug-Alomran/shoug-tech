@@ -4,11 +4,11 @@ This page contains the diagram symbols reference material. Use it for revision o
 
 If the embedded view does not load properly, open the chapter directly.
 
-- [Open Chapter 5 Diagram Symbols in a new tab](../Chapter-5-Diagram-Sybmols.html)
+- [Open Chapter 5 Diagram Symbols in a new tab](/Academics/software-engineering/SE201/Chapter-5/Chapter-5-Diagram-Sybmols.html)
 
 <div class="iframe-wrap">
   <iframe
-    src="../Chapter-5-Diagram-Sybmols.html"
+    src="/Academics/software-engineering/SE201/Chapter-5/Chapter-5-Diagram-Sybmols.html"
     title="Chapter 5 Diagram Symbols"
     loading="lazy"
     referrerpolicy="no-referrer"

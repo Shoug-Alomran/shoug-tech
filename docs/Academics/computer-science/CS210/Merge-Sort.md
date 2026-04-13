@@ -4,11 +4,11 @@ This page contains the material on merge sort. Use it for revision of the merge 
 
 If the embedded view does not load properly, open the page directly.
 
-- [Open in a new tab](../Merge-Sort.html)
+- [Open in a new tab](/Academics/computer-science/CS210/Merge-Sort.html)
 
 <div class="iframe-wrap">
   <iframe
-    src="../Merge-Sort.html"
+    src="/Academics/computer-science/CS210/Merge-Sort.html"
     title="Merge Sort"
     loading="lazy"
     referrerpolicy="no-referrer"

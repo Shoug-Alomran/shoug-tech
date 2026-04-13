@@ -7,11 +7,11 @@
 
 إذا ما تحمل العرض بشكل صحيح، افتح الفصل بشكل مباشر.
 
-- [افتح الفصل الثالث في صفحة جديدة](../Agile-Software-Engineering.html)
+- [افتح الفصل الثالث في صفحة جديدة](/ar/Academics/software-engineering/SE201/Chapter-3/Agile-Software-Engineering.html)
 
 <div class="iframe-wrap">
   <iframe
-    src="../Agile-Software-Engineering.html"
+    src="/ar/Academics/software-engineering/SE201/Chapter-3/Agile-Software-Engineering.html"
     title="الفصل الثالث: هندسة البرمجيات الرشيقة"
     loading="lazy"
     referrerpolicy="no-referrer"

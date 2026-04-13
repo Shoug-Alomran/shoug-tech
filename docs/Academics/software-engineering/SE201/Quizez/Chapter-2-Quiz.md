@@ -4,11 +4,11 @@ This page contains the Chapter 2 quiz. Use it to review software process models,
 
 If the embedded view does not load properly, open the quiz directly.
 
-- [Open Chapter 2 Quiz in a new tab](../Chapter-2-Quiz.html)
+- [Open Chapter 2 Quiz in a new tab](/Academics/software-engineering/SE201/Quizez/Chapter-2-Quiz.html)
 
 <div class="iframe-wrap">
   <iframe
-    src="../Chapter-2-Quiz.html"
+    src="/Academics/software-engineering/SE201/Quizez/Chapter-2-Quiz.html"
     title="SE201 Chapter 2 Quiz"
     loading="lazy"
     referrerpolicy="no-referrer"

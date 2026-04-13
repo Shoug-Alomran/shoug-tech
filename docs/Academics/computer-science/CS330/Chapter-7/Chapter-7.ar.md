@@ -7,11 +7,11 @@
 
 إذا ما تحمل العرض بشكل صحيح، افتح الصفحة بشكل مباشر.
 
-- [افتح الجمود في صفحة جديدة](../Chapter-7.html)
+- [افتح الجمود في صفحة جديدة](/ar/Academics/computer-science/CS330/Chapter-7/Chapter-7.html)
 
 <div class="iframe-wrap">
   <iframe
-    src="../Chapter-7.html"
+    src="/ar/Academics/computer-science/CS330/Chapter-7/Chapter-7.html"
     title="ملحق: الجمود (الفصل السابع من الكتاب)"
     loading="lazy"
     referrerpolicy="no-referrer"

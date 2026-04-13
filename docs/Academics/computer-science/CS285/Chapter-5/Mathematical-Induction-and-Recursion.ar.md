@@ -7,11 +7,11 @@
 
 إذا ما تحمل العرض بشكل صحيح، افتح الفصل بشكل مباشر.
 
-- [افتح الفصل الخامس في صفحة جديدة](../Mathematical-Induction-and-Recursion.html)
+- [افتح الفصل الخامس في صفحة جديدة](/ar/Academics/computer-science/CS285/Chapter-5/Mathematical-Induction-and-Recursion.html)
 
 <div class="iframe-wrap">
   <iframe
-    src="../Mathematical-Induction-and-Recursion.html"
+    src="/ar/Academics/computer-science/CS285/Chapter-5/Mathematical-Induction-and-Recursion.html"
     title="الفصل الخامس: الاستقراء الرياضي والاستدعاء الذاتي"
     loading="lazy"
     referrerpolicy="no-referrer"

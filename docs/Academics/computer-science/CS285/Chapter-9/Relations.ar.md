@@ -7,11 +7,11 @@
 
 إذا ما تحمل العرض بشكل صحيح، افتح الفصل بشكل مباشر.
 
-- [افتح الفصل التاسع في صفحة جديدة](../Relations.html)
+- [افتح الفصل التاسع في صفحة جديدة](/ar/Academics/computer-science/CS285/Chapter-9/Relations.html)
 
 <div class="iframe-wrap">
   <iframe
-    src="../Relations.html"
+    src="/ar/Academics/computer-science/CS285/Chapter-9/Relations.html"
     title="الفصل التاسع: العلاقات"
     loading="lazy"
     referrerpolicy="no-referrer"

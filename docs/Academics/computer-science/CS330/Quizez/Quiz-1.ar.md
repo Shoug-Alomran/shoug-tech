@@ -7,11 +7,11 @@
 
 إذا ما تحمل العرض بشكل صحيح، افتح الاختبار بشكل مباشر.
 
-- [افتح الاختبار الأول في صفحة جديدة](../Quiz-1.html)
+- [افتح الاختبار الأول في صفحة جديدة](/ar/Academics/computer-science/CS330/Quizez/Quiz-1.html)
 
 <div class="iframe-wrap">
   <iframe
-    src="../Quiz-1.html"
+    src="/ar/Academics/computer-science/CS330/Quizez/Quiz-1.html"
     title="الاختبار الأول"
     loading="lazy"
     referrerpolicy="no-referrer"

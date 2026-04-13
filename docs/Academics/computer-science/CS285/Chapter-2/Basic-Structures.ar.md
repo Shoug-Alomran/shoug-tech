@@ -7,11 +7,11 @@
 
 إذا ما تحمل العرض بشكل صحيح، افتح الفصل بشكل مباشر.
 
-- [افتح الفصل الثاني في صفحة جديدة](../Basic-Structures.html)
+- [افتح الفصل الثاني في صفحة جديدة](/ar/Academics/computer-science/CS285/Chapter-2/Basic-Structures.html)
 
 <div class="iframe-wrap">
   <iframe
-    src="../Basic-Structures.html"
+    src="/ar/Academics/computer-science/CS285/Chapter-2/Basic-Structures.html"
     title="الفصل الثاني: الهياكل الأساسية - المجموعات، الدوال، المتتابعات، والمجاميع"
     loading="lazy"
     referrerpolicy="no-referrer"

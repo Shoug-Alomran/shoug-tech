@@ -4,11 +4,11 @@ This page contains the Chapter 3 material. Use it for revision of processes, pro
 
 If the embedded view does not load properly, open the chapter directly.
 
-- [Open Chapter 3 in a new tab](../Chapter-3.html)
+- [Open Chapter 3 in a new tab](/Academics/computer-science/CS330/Chapter-3/Chapter-3.html)
 
 <div class="iframe-wrap">
   <iframe
-    src="../Chapter-3.html"
+    src="/Academics/computer-science/CS330/Chapter-3/Chapter-3.html"
     title="Chapter 3 Process Management"
     loading="lazy"
     referrerpolicy="no-referrer"

@@ -4,11 +4,11 @@ This page contains the course cheat sheet. Use it for quick revision of key defi
 
 If the embedded view does not load properly, open the cheat sheet directly.
 
-- [Open the Cheat Sheet in a new tab](../Cheat-Sheet.html)
+- [Open the Cheat Sheet in a new tab](/Academics/software-engineering/SE201/Cheat-Sheet.html)
 
 <div class="iframe-wrap">
   <iframe
-    src="../Cheat-Sheet.html"
+    src="/Academics/software-engineering/SE201/Cheat-Sheet.html"
     title="Cheat Sheet"
     loading="lazy"
     referrerpolicy="no-referrer"

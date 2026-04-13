@@ -7,11 +7,11 @@
 
 إذا ما تحمل العرض بشكل صحيح، افتح الفصل بشكل مباشر.
 
-- [افتح الفصل الرابع في صفحة جديدة](../Chapter-4.html)
+- [افتح الفصل الرابع في صفحة جديدة](/ar/Academics/cyber-security/CYS401/Chapter-4/Chapter-4.html)
 
 <div class="iframe-wrap">
   <iframe
-    src="../Chapter-4.html"
+    src="/ar/Academics/cyber-security/CYS401/Chapter-4/Chapter-4.html"
     title="CYS401 · أساسيات الأمن السيبراني · الفصل الرابع: حماية الأصول المعلوماتية"
     loading="lazy"
     referrerpolicy="no-referrer"

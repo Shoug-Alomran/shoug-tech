@@ -7,11 +7,11 @@
 
 إذا ما تحمل العرض بشكل صحيح، افتح الفصل بشكل مباشر.
 
-- [افتح الفصل الثالث في صفحة جديدة](../Chapter-3.html)
+- [افتح الفصل الثالث في صفحة جديدة](/ar/Academics/cyber-security/CYS401/Chapter-3/Chapter-3.html)
 
 <div class="iframe-wrap">
   <iframe
-    src="../Chapter-3.html"
+    src="/ar/Academics/cyber-security/CYS401/Chapter-3/Chapter-3.html"
     title="CYS401 - الفصل الثالث: نمذجة التهديدات"
     loading="lazy"
     referrerpolicy="no-referrer"

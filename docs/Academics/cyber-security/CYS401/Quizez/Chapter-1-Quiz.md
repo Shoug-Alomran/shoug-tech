@@ -4,11 +4,11 @@ This page contains the Chapter 1 quiz. Use it to review core cybersecurity conce
 
 If the embedded view does not load properly, open the quiz directly.
 
-- [Open Chapter 1 Quiz in a new tab](../Chapter-1-Quiz.html)
+- [Open Chapter 1 Quiz in a new tab](/Academics/cyber-security/CYS401/Quizez/Chapter-1-Quiz.html)
 
 <div class="iframe-wrap">
   <iframe
-    src="../Chapter-1-Quiz.html"
+    src="/Academics/cyber-security/CYS401/Quizez/Chapter-1-Quiz.html"
     title="CYS401 Chapter 1 Quiz"
     loading="lazy"
     referrerpolicy="no-referrer"

@@ -7,11 +7,11 @@
 
 إذا ما تحمل العرض بشكل صحيح، افتح الاختبار بشكل مباشر.
 
-- [افتح اختبار الفصل الخامس في صفحة جديدة](../Chapter-5-Quiz.html)
+- [افتح اختبار الفصل الخامس في صفحة جديدة](/ar/Academics/computer-science/CS340/quizez/Chapter-5-Quiz.html)
 
 <div class="iframe-wrap">
   <iframe
-    src="../Chapter-5-Quiz.html"
+    src="/ar/Academics/computer-science/CS340/quizez/Chapter-5-Quiz.html"
     title="CS340 - اختبار الفصل الخامس"
     loading="lazy"
     referrerpolicy="no-referrer"

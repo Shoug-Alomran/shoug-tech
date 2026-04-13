@@ -4,11 +4,11 @@ This page contains the Chapter 4 material. Use it for revision of integers, divi
 
 If the embedded view does not load properly, open the chapter directly.
 
-- [Open Chapter 4 in a new tab](../Number-Theory-and-Cryptography.html)
+- [Open Chapter 4 in a new tab](/Academics/computer-science/CS285/Chapter-4/Number-Theory-and-Cryptography.html)
 
 <div class="iframe-wrap">
   <iframe
-    src="../Number-Theory-and-Cryptography.html"
+    src="/Academics/computer-science/CS285/Chapter-4/Number-Theory-and-Cryptography.html"
     title="Chapter 4 Number Theory and Cryptography"
     loading="lazy"
     referrerpolicy="no-referrer"

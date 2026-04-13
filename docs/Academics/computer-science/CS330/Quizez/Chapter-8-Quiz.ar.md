@@ -7,11 +7,11 @@
 
 إذا ما تحمل العرض بشكل صحيح، افتح الاختبار بشكل مباشر.
 
-- [افتح اختبار الفصل الثامن في صفحة جديدة](../Chapter-8-Quiz.html)
+- [افتح اختبار الفصل الثامن في صفحة جديدة](/ar/Academics/computer-science/CS330/Quizez/Chapter-8-Quiz.html)
 
 <div class="iframe-wrap">
   <iframe
-    src="../Chapter-8-Quiz.html"
+    src="/ar/Academics/computer-science/CS330/Quizez/Chapter-8-Quiz.html"
     title="اختبار الفصل الثامن"
     loading="lazy"
     referrerpolicy="no-referrer"

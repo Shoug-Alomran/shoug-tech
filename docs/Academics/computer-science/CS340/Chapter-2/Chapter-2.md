@@ -4,11 +4,11 @@
 
   If the embedded view does not load properly, open the chapter directly.
 
-  - [Open Chapter 2 in a new tab](../Chapter-2.html)
+  - [Open Chapter 2 in a new tab](/Academics/computer-science/CS340/Chapter-2/Chapter-2.html)
 
   <div class="iframe-wrap">
     <iframe
-      src="../Chapter-2.html"
+      src="/Academics/computer-science/CS340/Chapter-2/Chapter-2.html"
       title="Chapter 2 Database System Concepts and Architecture"
       loading="lazy"
       referrerpolicy="no-referrer"

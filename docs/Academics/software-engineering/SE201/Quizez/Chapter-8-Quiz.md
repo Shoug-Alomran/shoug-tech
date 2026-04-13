@@ -4,11 +4,11 @@ This page contains the Chapter 8 quiz. Use it to review software testing concept
 
 If the embedded view does not load properly, open the quiz directly.
 
-- [Open Chapter 8 Quiz in a new tab](../Chapter-8-Quiz.html)
+- [Open Chapter 8 Quiz in a new tab](/Academics/software-engineering/SE201/Quizez/Chapter-8-Quiz.html)
 
 <div class="iframe-wrap">
   <iframe
-    src="../Chapter-8-Quiz.html"
+    src="/Academics/software-engineering/SE201/Quizez/Chapter-8-Quiz.html"
     title="SE201 Chapter 8 Quiz"
     loading="lazy"
     referrerpolicy="no-referrer"
