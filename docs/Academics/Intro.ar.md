@@ -22,7 +22,7 @@ description: خريطة المواد لهندسة البرمجيات وعلوم 
 
     الاستخراج، التحليل، المواصفات، التحقق. يشمل ورقة غش واختبارات تدريبية.
 
-    [:octicons-arrow-right-24: نظرة عامة على SE311](software-engineering/SE311/intro/)
+    [:octicons-arrow-right-24: نظرة عامة على SE311](software-engineering/SE311/intro.md)
 
 </div>
 

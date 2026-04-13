@@ -45,7 +45,7 @@ Choose the path that matches why you are visiting.
 
     - [Open Career Overview](career-development/Intro.md)
     - [View Projects](career-development/projects.md)
-    - [Open Resume](career-development/CV.html)
+    - [Open Resume](/career-development/CV.html)
 
 </div>
 

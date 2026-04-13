@@ -100,9 +100,9 @@ hide:
 ## روابط سريعة
 
 <div class="hero-actions" markdown>
-[ملخصات SE201](Academics/software-engineering/SE201/Intro.md){ .md-button }
-[ملخصات CS340](Academics/computer-science/CS340/Intro.md){ .md-button }
-[مادة CYS401](Academics/cyber-security/CYS401/Intro.md){ .md-button }
+[ملخصات SE201](Academics/software-engineering/SE201/intro.md){ .md-button }
+[ملخصات CS340](Academics/computer-science/CS340/intro.md){ .md-button }
+[مادة CYS401](Academics/cyber-security/CYS401/intro.md){ .md-button }
 [المشاريع](career-development/projects.md){ .md-button }
 [ورش العمل](career-development/Workshops/index.md){ .md-button }
 [خدمات Blueprint](career-development/services.md){ .md-button }

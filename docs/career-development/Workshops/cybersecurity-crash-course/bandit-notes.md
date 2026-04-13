@@ -154,7 +154,7 @@ ssh bandit0@bandit.labs.overthewire.org -p 2220
 
 ??? example "Screenshot"
     <figure class="report-shot">
-      <img src="../pics/Level 0.png" alt="Level 0 Screenshot">
+      <img src="../pics/Level-0.png" alt="Level 0 Screenshot">
       <figcaption>Initial SSH access into the Bandit environment.</figcaption>
     </figure>
 
@@ -185,7 +185,7 @@ cat readme
 
 ??? example "Screenshot"
     <figure class="report-shot">
-      <img src="../pics/Level 0 → Level 1.png" alt="Level 0 to Level 1 Screenshot">
+      <img src="../pics/Level-0-→-Level-1.png" alt="Level 0 to Level 1 Screenshot">
       <figcaption>Reading the `readme` file to capture the next credential.</figcaption>
     </figure>
 
@@ -213,7 +213,7 @@ cat ./-
 
 ??? example "Screenshot"
     <figure class="report-shot">
-      <img src="../pics/Level 1 → Level 2.png" alt="Level 1 to Level 2 Screenshot">
+      <img src="../pics/Level-1-→-Level-2.png" alt="Level 1 to Level 2 Screenshot">
       <figcaption>Using `./-` so the filename is treated as a real path.</figcaption>
     </figure>
 
@@ -243,7 +243,7 @@ cat -- "--spaces in this filename--"
 
 ??? example "Screenshot"
     <figure class="report-shot">
-      <img src="../pics/Level 2 →Level 3.png" alt="Level 2 to Level 3 Screenshot">
+      <img src="../pics/Level-2-→Level-3.png" alt="Level 2 to Level 3 Screenshot">
       <figcaption>Handling a filename that begins with dashes and contains spaces.</figcaption>
     </figure>
 
@@ -310,7 +310,7 @@ cat ./-file07
 
 ??? example "Screenshot"
     <figure class="report-shot">
-      <img src="../pics/Level 4 → Level 5.png" alt="Level 4 to Level 5 Screenshot">
+      <img src="../pics/Level-4-→-Level-5.png" alt="Level 4 to Level 5 Screenshot">
       <figcaption>Using `file` output to isolate the only human-readable target.</figcaption>
     </figure>
 
@@ -341,7 +341,7 @@ cat ./maybehere07/.file2
 
 ??? example "Screenshot"
     <figure class="report-shot">
-      <img src="../pics/Level 5 → Level 6.png" alt="Level 5 to Level 6 Screenshot">
+      <img src="../pics/Level-5-→-Level-6.png" alt="Level 5 to Level 6 Screenshot">
       <figcaption>Searching recursively for the one file matching the required size.</figcaption>
     </figure>
 
@@ -370,7 +370,7 @@ cat /var/lib/dpkg/info/bandit7.password
 
 ??? example "Screenshot"
     <figure class="report-shot">
-      <img src="../pics/Level 6 → Level 7.png" alt="Level 6 to Level 7 Screenshot">
+      <img src="../pics/Level-6-→-Level-7.png" alt="Level 6 to Level 7 Screenshot">
       <figcaption>Finding the system-owned password file with constrained search filters.</figcaption>
     </figure>
 
@@ -407,7 +407,7 @@ grep "millionth" data.txt
 
 ??? example "Screenshot"
     <figure class="report-shot">
-      <img src="../pics/Level 7 → Level 8.png" alt="Level 7 to Level 8 Screenshot">
+      <img src="../pics/Level-7-→-Level-8.png" alt="Level 7 to Level 8 Screenshot">
       <figcaption>Pinpointing the keyword match inside `data.txt` with `grep`.</figcaption>
     </figure>
 
@@ -434,7 +434,7 @@ sort data.txt | uniq -u
 
 ??? example "Screenshot"
     <figure class="report-shot">
-      <img src="../pics/Level 8 → Level 9.png" alt="Level 8 to Level 9 Screenshot">
+      <img src="../pics/Level-8-→-Level-9.png" alt="Level 8 to Level 9 Screenshot">
       <figcaption>Sorting the file so `uniq -u` can expose the only unique line.</figcaption>
     </figure>
 
@@ -463,7 +463,7 @@ strings data.txt | grep '='
 
 ??? example "Screenshot"
     <figure class="report-shot">
-      <img src="../pics/Level 9 → Level 10.png" alt="Level 9 to Level 10 Screenshot">
+      <img src="../pics/Level-9-→-Level-10.png" alt="Level 9 to Level 10 Screenshot">
       <figcaption>Extracting readable strings from binary content before filtering them.</figcaption>
     </figure>
 
@@ -503,7 +503,7 @@ cat data.txt | base64 -d
 
 ??? example "Screenshot"
     <figure class="report-shot">
-      <img src="../pics/Level 10 → Level 11.png" alt="Level 10 to Level 11 Screenshot">
+      <img src="../pics/Level-10-→-Level-11.png" alt="Level 10 to Level 11 Screenshot">
       <figcaption>Decoding Base64 content back into human-readable output.</figcaption>
     </figure>
 
@@ -533,7 +533,7 @@ cat data.txt | tr 'A-Za-z' 'N-ZA-Mn-za-m'
 
 ??? example "Screenshot"
     <figure class="report-shot">
-      <img src="../pics/Level 11 → Level 12.png" alt="Level 11 to Level 12 Screenshot">
+      <img src="../pics/Level-11-→-Level-12.png" alt="Level 11 to Level 12 Screenshot">
       <figcaption>Applying ROT13 with `tr` to recover the original text.</figcaption>
     </figure>
 
@@ -575,7 +575,7 @@ file data.bin
 
 ??? example "Screenshot"
     <figure class="report-shot">
-      <img src="../pics/Level 12 → Level 13.png" alt="Level 12 to Level 13 Screenshot">
+      <img src="../pics/Level-12-→-Level-13.png" alt="Level 12 to Level 13 Screenshot">
       <figcaption>Peeling back compression layers one format at a time.</figcaption>
     </figure>
 
@@ -638,7 +638,7 @@ nc localhost 30000
 
 ??? example "Screenshot"
     <figure class="report-shot">
-      <img src="../pics/Level 14 → Level 15.png" alt="Level 14 to Level 15 Screenshot">
+      <img src="../pics/Level-14-→-Level-15.png" alt="Level 14 to Level 15 Screenshot">
       <figcaption>Submitting the current password over a local netcat session.</figcaption>
     </figure>
 
@@ -670,7 +670,7 @@ openssl s_client -connect localhost:30001
 
 ??? example "Screenshot"
     <figure class="report-shot">
-      <img src="../pics/Level 15 → Level 16.png" alt="Level 15 to Level 16 Screenshot">
+      <img src="../pics/Level-15-→-Level-16.png" alt="Level 15 to Level 16 Screenshot">
       <figcaption>Using an SSL/TLS session instead of plain TCP for the next secret.</figcaption>
     </figure>
 
@@ -711,7 +711,7 @@ RSA Private Key (used for SSH authentication)
 
 ??? example "Screenshot"
     <figure class="report-shot">
-      <img src="../pics/Level 16 → Level 17.png" alt="Level 16 to Level 17 Screenshot">
+      <img src="../pics/Level-16-→-Level-17.png" alt="Level 16 to Level 17 Screenshot">
       <figcaption>Recon results leading to the SSL-enabled port that returns the SSH key.</figcaption>
     </figure>
 
@@ -750,11 +750,11 @@ diff passwords.old passwords.new
 **Screenshots**
 <div class="report-shot-grid">
   <figure class="report-shot">
-    <img src="../pics/Level 17 → Level 18.png" alt="Level 17 to Level 18 Screenshot 1">
+    <img src="../pics/Level-17-→-Level-18.png" alt="Level 17 to Level 18 Screenshot 1">
     <figcaption>Comparing the old and new password files with `diff`.</figcaption>
   </figure>
   <figure class="report-shot">
-    <img src="../pics/Level 17 → Level 18_2.png" alt="Level 17 to Level 18 Screenshot 2">
+    <img src="../pics/Level-17-→-Level-18_2.png" alt="Level 17 to Level 18 Screenshot 2">
     <figcaption>The changed line reveals the credential for the next level.</figcaption>
   </figure>
 </div>
@@ -782,7 +782,7 @@ ssh bandit18@bandit.labs.overthewire.org -p 2220 cat readme
 
 ??? example "Screenshot"
     <figure class="report-shot">
-      <img src="../pics/Level 18 → Level 19.png" alt="Level 18 to Level 19 Screenshot">
+      <img src="../pics/Level-18-→-Level-19.png" alt="Level 18 to Level 19 Screenshot">
       <figcaption>Bypassing the sabotaged interactive shell with a direct SSH command.</figcaption>
     </figure>
 
@@ -815,7 +815,7 @@ ls -l
 
 ??? example "Screenshot"
     <figure class="report-shot">
-      <img src="../pics/Level 19 → Level 20.png" alt="Level 19 to Level 20 Screenshot">
+      <img src="../pics/Level-19-→-Level-20.png" alt="Level 19 to Level 20 Screenshot">
       <figcaption>Using the setuid helper to read the next password file safely.</figcaption>
     </figure>
 
@@ -851,7 +851,7 @@ nc -l -p 1234
 
 ??? example "Screenshot"
     <figure class="report-shot">
-      <img src="../pics/Level 20 → Level 21.png" alt="Level 20 to Level 21 Screenshot">
+      <img src="../pics/Level-20-→-Level-21.png" alt="Level 20 to Level 21 Screenshot">
       <figcaption>Listener and client coordination to validate the current credential.</figcaption>
     </figure>
 
@@ -892,7 +892,7 @@ cat /tmp/t7O6lds9S0RqQh9aMcz6ShpAoZKF7fgv
 
 ??? example "Screenshot"
     <figure class="report-shot">
-      <img src="../pics/Level 21 → Level 22.png" alt="Level 21 to Level 22 Screenshot">
+      <img src="../pics/Level-21-→-Level-22.png" alt="Level 21 to Level 22 Screenshot">
       <figcaption>Tracing the cron job output file to the leaked password.</figcaption>
     </figure>
 
@@ -927,7 +927,7 @@ cat /tmp/<hash>
 
 ??? example "Screenshot"
     <figure class="report-shot">
-      <img src="../pics/Level 22 → Level 23.png" alt="Level 22 to Level 23 Screenshot">
+      <img src="../pics/Level-22-→-Level-23.png" alt="Level 22 to Level 23 Screenshot">
       <figcaption>Reproducing the MD5-based filename used by the scheduled script.</figcaption>
     </figure>
 
@@ -969,7 +969,7 @@ cat /tmp/b24pass
 
 ??? example "Screenshot"
     <figure class="report-shot">
-      <img src="../pics/Level 23 → Level 24.png" alt="Level 23 to Level 24 Screenshot">
+      <img src="../pics/Level-23-→-Level-24.png" alt="Level 23 to Level 24 Screenshot">
       <figcaption>Dropping an executable payload into the watched spool directory.</figcaption>
     </figure>
 
@@ -1006,11 +1006,11 @@ done | nc localhost 30002
 **Screenshots**
 <div class="report-shot-grid">
   <figure class="report-shot">
-    <img src="../pics/Level 24 → Level 25.png" alt="Level 24 to Level 25 Screenshot 1">
+    <img src="../pics/Level-24-→-Level-25.png" alt="Level 24 to Level 25 Screenshot 1">
     <figcaption>Generating all zero-padded PIN attempts in a single stream.</figcaption>
   </figure>
   <figure class="report-shot">
-    <img src="../pics/Level 24 → Level 25_2.png" alt="Level 24 to Level 25 Screenshot 2">
+    <img src="../pics/Level-24-→-Level-25_2.png" alt="Level 24 to Level 25 Screenshot 2">
     <figcaption>The daemon eventually returns the valid next-level password.</figcaption>
   </figure>
 </div>
@@ -1070,7 +1070,7 @@ cat /etc/bandit_pass/bandit26
 
 ??? example "Screenshot"
     <figure class="report-shot">
-      <img src="../pics/Level 25 → Level 26.png" alt="Level 25 to Level 26 Screenshot">
+      <img src="../pics/Level-25-→-Level-26.png" alt="Level 25 to Level 26 Screenshot">
       <figcaption>Triggering the pager path that leads from `more` into `vim` and then a shell.</figcaption>
     </figure>
 
@@ -1098,7 +1098,7 @@ ls -la
 
 ??? example "Screenshot"
     <figure class="report-shot">
-      <img src="../pics/Level 26 → Level 27.png" alt="Level 26 to Level 27 Screenshot">
+      <img src="../pics/Level-26-→-Level-27.png" alt="Level 26 to Level 27 Screenshot">
       <figcaption>Using the setuid helper after escaping the restricted environment.</figcaption>
     </figure>
 
@@ -1138,7 +1138,7 @@ cat README
 
 ??? example "Screenshot"
     <figure class="report-shot">
-      <img src="../pics/Level 27 → Level 28.png" alt="Level 27 to Level 28 Screenshot">
+      <img src="../pics/Level-27-→-Level-28.png" alt="Level 27 to Level 28 Screenshot">
       <figcaption>Cloning the repository and reading the exposed secret from its contents.</figcaption>
     </figure>
 
@@ -1174,7 +1174,7 @@ git log -p
 
 ??? example "Screenshot"
     <figure class="report-shot">
-      <img src="../pics/Level 28 → Level 29.png" alt="Level 28 to Level 29 Screenshot">
+      <img src="../pics/Level-28-→-Level-29.png" alt="Level 28 to Level 29 Screenshot">
       <figcaption>Using commit history and diffs to recover redacted credentials.</figcaption>
     </figure>
 
@@ -1211,7 +1211,7 @@ cat README.md
 
 ??? example "Screenshot"
     <figure class="report-shot">
-      <img src="../pics/Level 29 → Level 30.png" alt="Level 29 to Level 30 Screenshot">
+      <img src="../pics/Level-29-→-Level-30.png" alt="Level 29 to Level 30 Screenshot">
       <figcaption>Switching away from the default branch to locate the real password.</figcaption>
     </figure>
 
@@ -1243,7 +1243,7 @@ git show secret
 
 ??? example "Screenshot"
     <figure class="report-shot">
-      <img src="../pics/Level 30 → Level 31.png" alt="Level 30 to Level 31 Screenshot">
+      <img src="../pics/Level-30-→-Level-31.png" alt="Level 30 to Level 31 Screenshot">
       <figcaption>Inspecting the `secret` tag to reveal hidden repository data.</figcaption>
     </figure>
 
@@ -1281,7 +1281,7 @@ git push origin master
 
 ??? example "Screenshot"
     <figure class="report-shot">
-      <img src="../pics/Level 31 → Level 32.png" alt="Level 31 to Level 32 Screenshot">
+      <img src="../pics/Level-31-→-Level-32.png" alt="Level 31 to Level 32 Screenshot">
       <figcaption>Force-adding the required file so the remote validation hook executes.</figcaption>
     </figure>
 
@@ -1331,7 +1331,7 @@ cat /etc/bandit_pass/bandit33
 
 ??? example "Screenshot"
     <figure class="report-shot">
-      <img src="../pics/Level 32 → Level 33.png" alt="Level 32 to Level 33 Screenshot">
+      <img src="../pics/Level-32-→-Level-33.png" alt="Level 32 to Level 33 Screenshot">
       <figcaption>Escaping the uppercase shell by expanding `$0` into a normal shell path.</figcaption>
     </figure>
 

@@ -20,12 +20,12 @@
 
   function url(path) {
     const base = getBase().replace(/\/$/, ""); // remove trailing slash
-    const clean = String(path || "").replace(/^\//, ""); // remove leading slash
+    const clean = String(path || "").replace(/^\//,-""); // remove leading slash
     return `${base}/${clean}`.replace(/\/+$/, "/"); // ensure ends with /
   }
 
   function policyHref(path) {
-    const clean = String(path || "").replace(/^\//, "");
+    const clean = String(path || "").replace(/^\//,-"");
     return url(clean.replace(/\.md$/, "/"));
   }
 
@@ -43,7 +43,7 @@
     const leftToggle = document.createElement("button");
     leftToggle.type = "button";
     leftToggle.className = "header-icon-btn header-toggle-btn header-toggle-left";
-    leftToggle.setAttribute("aria-label", isArabic() ? "إخفاء/إظهار القائمة الجانبية اليسرى" : "Toggle left sidebar");
+    leftToggle.setAttribute("aria-label", isArabic() ? "إخفاء/إظهار-القائمة-الجانبية-اليسرى" : "Toggle left sidebar");
     leftToggle.setAttribute("title", isArabic() ? "القائمة اليسرى" : "Left sidebar");
     leftToggle.innerHTML = `
       <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
@@ -54,7 +54,7 @@
     const rightToggle = document.createElement("button");
     rightToggle.type = "button";
     rightToggle.className = "header-icon-btn header-toggle-btn header-toggle-right";
-    rightToggle.setAttribute("aria-label", isArabic() ? "إخفاء/إظهار جدول المحتويات" : "Toggle table of contents");
+    rightToggle.setAttribute("aria-label", isArabic() ? "إخفاء/إظهار-جدول-المحتويات" : "Toggle table of contents");
     rightToggle.setAttribute("title", isArabic() ? "جدول المحتويات" : "Table of contents");
     rightToggle.innerHTML = `
       <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
@@ -543,7 +543,7 @@
   }
 
   function syncEmbeddedIframesTheme() {
-    const iframes = document.querySelectorAll(".md-content iframe");
+    const iframes = document.querySelectorAll(".md-content-iframe");
     if (!iframes.length) return;
 
     iframes.forEach((iframe) => {
@@ -561,7 +561,7 @@
     if (!target || typeof MutationObserver === "undefined") return;
 
     new MutationObserver(() => {
-      document.querySelectorAll(".md-content iframe").forEach((iframe) => applyThemeToIframe(iframe));
+      document.querySelectorAll(".md-content-iframe").forEach((iframe) => applyThemeToIframe(iframe));
     }).observe(target, {
       attributes: true,
       attributeFilter: ["data-md-color-scheme"]
@@ -570,10 +570,10 @@
 
   function initRevealMotion() {
     const selectors = [
-      ".md-typeset .grid.cards > ul > li",
+      ".md-typeset.grid.cards->-ul->-li",
       ".home-hero__text",
       ".value-strip",
-      ".md-typeset > h1"
+      ".md-typeset->-h1"
     ];
 
     const nodes = document.querySelectorAll(selectors.join(","));
@@ -635,7 +635,7 @@
       "Services": "الخدمات"
     };
 
-    document.querySelectorAll(".md-nav--primary .md-nav__link").forEach((a) => {
+    document.querySelectorAll(".md-nav-primary.md-nav__link").forEach((a) => {
       const t = a.textContent.trim();
       if (map[t]) a.textContent = map[t];
     });

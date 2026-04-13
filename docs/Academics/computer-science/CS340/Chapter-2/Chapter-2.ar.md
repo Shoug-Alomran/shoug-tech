@@ -1,0 +1,19 @@
+!!! warning "تنبيه"
+    إنذار : تم ترجمة هذه الصفحة باستخدام الذكاء الاصطناعي.
+
+# الفصل الثاني: مفاهيم وبنية أنظمة قواعد البيانات
+
+هذه الصفحة تحتوي على مادة الفصل الثاني. استخدمها للمراجعة عن مفاهيم نظام قاعدة البيانات، نماذج البيانات (data models)، المخططات (schemas)، وبنية نظام إدارة قواعد البيانات (DBMS architecture).
+
+إذا ما تحمل العرض بشكل صحيح، افتح الفصل بشكل مباشر.
+
+- [افتح الفصل الثاني في صفحة جديدة](/Academics/computer-science/CS340/Chapter-2/Chapter-2.html)
+
+<div class="iframe-wrap">
+  <iframe
+    src="/Academics/computer-science/CS340/Chapter-2/Chapter-2.html"
+    title="الفصل الثاني: مفاهيم وبنية أنظمة قواعد البيانات"
+    loading="lazy"
+    referrerpolicy="no-referrer"
+  ></iframe>
+</div>

@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
-"""Check EN/AR Markdown parity for mkdocs-static-i18n suffix structure."""
+"""Check-EN/AR-Markdown-parity-for-mkdocs-static-i18n-suffix-structure."""
 
 from __future__ import annotations
 
 import argparse
 from pathlib import Path
+from urllib.parse import quote
 
 
 def to_arabic_pair(path: Path) -> Path:
@@ -35,20 +36,30 @@ def stale_quiz_alias_target(path: Path) -> Path | None:
     return None
 
 
+def page_href_for_markdown(src: Path, docs_root: Path) -> str:
+    rel = src.relative_to(docs_root)
+    stemmed = rel.with_suffix("")
+    parts = list(stemmed.parts)
+    if parts and parts[-1] == "index":
+        parts = parts[:-1]
+    encoded = "/".join(quote(part) for part in parts)
+    return f"/{encoded}/" if encoded else "/"
+
+
 def make_placeholder_ar(src: Path, docs_root: Path) -> str:
     rel_src = src.relative_to(docs_root).as_posix()
-    src_name = src.name
+    english_href = page_href_for_markdown(src, docs_root)
     return (
         "> ⚠️ هذه الصفحة قيد الترجمة إلى العربية.\n\n"
         "> This page is pending Arabic localization.\n\n"
-        f"[View English version](./{src_name})\n\n"
+        f"[View English version]({english_href})\n\n"
         "---\n\n"
-        f"<!-- Auto-generated to satisfy EN/AR parity for: {rel_src} -->\n"
+        f"<!-Auto-generated-to-satisfy-EN/AR-parity-for:-{rel_src}->\n"
     )
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Check English/Arabic markdown parity.")
+    parser = argparse.ArgumentParser(description="Check-English/Arabic-markdown-parity.")
     parser.add_argument("--docs-dir", default="docs", help="Docs root directory")
     parser.add_argument("--strict", action="store_true", help="Exit non-zero on any mismatch")
     parser.add_argument(

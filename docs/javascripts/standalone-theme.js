@@ -17,8 +17,31 @@
     return (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) ? "dark" : "light";
   }
 
+  function readStoredScheme() {
+    try {
+      if (typeof window.__md_get === "function") {
+        var palette = window.__md_get("__palette");
+        var scheme = palette && palette.color && palette.color.scheme;
+        if (scheme === "slate") return "dark";
+        if (scheme === "default") return "light";
+      }
+    } catch (e) {}
+
+    try {
+      var raw = localStorage.getItem("__palette");
+      if (!raw) return null;
+
+      var parsed = JSON.parse(raw);
+      var storedScheme = parsed && parsed.color && parsed.color.scheme;
+      if (storedScheme === "slate") return "dark";
+      if (storedScheme === "default") return "light";
+    } catch (e) {}
+
+    return null;
+  }
+
   function resolveTheme() {
-    return readParentScheme() || readSystemTheme();
+    return readParentScheme() || readStoredScheme() || readSystemTheme();
   }
 
   function ensureFallbackStyle() {
@@ -97,13 +120,15 @@
   if (window.MutationObserver) {
     try {
       var pdoc = window.parent && window.parent.document;
-      var parentBody = pdoc && pdoc.body;
-      if (parentBody) {
-        new MutationObserver(sync).observe(parentBody, {
+      var targets = [pdoc && pdoc.body, pdoc && pdoc.documentElement];
+
+      targets.forEach(function (target) {
+        if (!target) return;
+        new MutationObserver(sync).observe(target, {
           attributes: true,
           attributeFilter: ["data-md-color-scheme"]
         });
-      }
+      });
     } catch (e) {}
   }
 })();

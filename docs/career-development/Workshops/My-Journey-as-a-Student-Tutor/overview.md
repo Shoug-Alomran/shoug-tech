@@ -4,7 +4,7 @@
 ---
 
 ??? note "Workshop Poster"
-    ![Workshop Poster](pics/poster.png)
+    ![Workshop Poster](../pics/poster.png)
 
 | | |
 |---|---|

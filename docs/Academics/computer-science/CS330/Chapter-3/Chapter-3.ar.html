@@ -1,0 +1,1387 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الفصل ٣: العمليات - CS330</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f4f4f4;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: white;
+        }
+
+        header {
+            background: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%);
+            color: white;
+            padding: 40px;
+            margin-bottom: 30px;
+            text-align: center;
+            border-radius: 10px;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            color: #0072ff;
+            font-size: 1.8em;
+            margin: 35px 0 20px 0;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #00c6ff;
+        }
+
+        h3 {
+            color: #00a2ff;
+            font-size: 1.4em;
+            margin: 25px 0 15px 0;
+        }
+
+        /* مخطط حالة العملية */
+        .state-diagram {
+            display: flex;
+            justify-content: center;
+            margin: 30px 0;
+            padding: 30px;
+            background: #f8f9ff;
+            border-radius: 10px;
+        }
+
+        .state-container {
+            position: relative;
+            width: 600px;
+            height: 400px;
+        }
+
+        .state-box {
+            position: absolute;
+            padding: 20px 30px;
+            background: #3498db;
+            color: white;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: bold;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .state-new {
+            top: 50px;
+            left: 50px;
+            background: #2ecc71;
+        }
+
+        .state-ready {
+            top: 50px;
+            left: 250px;
+            background: #f39c12;
+        }
+
+        .state-running {
+            top: 50px;
+            right: 50px;
+            background: #e74c3c;
+        }
+
+        .state-waiting {
+            bottom: 100px;
+            left: 250px;
+            background: #9b59b6;
+        }
+
+        .state-terminated {
+            bottom: 50px;
+            right: 50px;
+            background: #95a5a6;
+        }
+
+        .arrow {
+            position: absolute;
+            font-size: 20px;
+            color: #34495e;
+        }
+
+        /* مخطط PCB */
+        .pcb-diagram {
+            display: flex;
+            justify-content: center;
+            margin: 30px 0;
+        }
+
+        .pcb-structure {
+            border: 3px solid #2c3e50;
+            border-radius: 10px;
+            overflow: hidden;
+            width: 400px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .pcb-field {
+            padding: 15px;
+            text-align: center;
+            font-weight: bold;
+            border-bottom: 2px solid #2c3e50;
+        }
+
+        .pcb-field:nth-child(odd) {
+            background: #ecf0f1;
+        }
+
+        .pcb-field:nth-child(even) {
+            background: #bdc3c7;
+        }
+
+        .pcb-field:last-child {
+            border-bottom: none;
+        }
+
+        /* تصور تبديل السياق */
+        .context-switch {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin: 30px 0;
+            padding: 30px;
+            background: #f0f8ff;
+            border-radius: 10px;
+        }
+
+        .process-block {
+            padding: 30px;
+            background: #3498db;
+            color: white;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: bold;
+            min-width: 150px;
+        }
+
+        .os-block {
+            padding: 20px;
+            background: #e74c3c;
+            color: white;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .switch-arrow {
+            font-size: 30px;
+            color: #2c3e50;
+        }
+
+        /* تصور قوائم الانتظار */
+        .queue-diagram {
+            margin: 30px 0;
+            padding: 20px;
+            background: #f8f9ff;
+            border-radius: 10px;
+        }
+
+        .queue {
+            display: flex;
+            align-items: center;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .queue-label {
+            background: #2c3e50;
+            color: white;
+            padding: 15px;
+            border-radius: 0 5px 5px 0;
+            min-width: 120px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .queue-item {
+            background: #3498db;
+            color: white;
+            padding: 10px 15px;
+            margin-right: 10px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        /* مقارنة IPC */
+        .ipc-comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .ipc-method {
+            padding: 25px;
+            border-radius: 10px;
+            border: 2px solid #ddd;
+        }
+
+        .shared-memory {
+            background: #e8f8f5;
+            border-color: #27ae60;
+        }
+
+        .message-passing {
+            background: #fef5e7;
+            border-color: #f39c12;
+        }
+
+        /* كتل الأكواد */
+        .code-block {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+        }
+
+        .code-comment {
+            color: #95a5a6;
+        }
+
+        .code-keyword {
+            color: #3498db;
+        }
+
+        /* الجداول */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        th {
+            background: #0072ff;
+            color: white;
+            padding: 15px;
+            text-align: right;
+        }
+
+        td {
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+        }
+
+        tr:nth-child(even) {
+            background: #f8f9ff;
+        }
+
+        /* صندوق المفاهيم */
+        .concept-box {
+            background: #f0f8ff;
+            border-right: 4px solid #0072ff;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .highlight {
+            background: #ffd700;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+
+        /* صندوق الأمثلة */
+        .example-box {
+            background: #e8f8f5;
+            border: 2px solid #27ae60;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        /* صندوق التحذير */
+        .warning-box {
+            background: #fff3cd;
+            border-right: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+        }
+
+        /* قسم الاختبار */
+        .exam-section {
+            background: #fff8dc;
+            border: 2px solid #ffd700;
+            padding: 25px;
+            margin: 30px 0;
+            border-radius: 10px;
+        }
+
+        .exam-question {
+            background: white;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .mcq-options {
+            list-style: none;
+            margin-top: 15px;
+            margin-right: 0;
+        }
+
+        .mcq-options li {
+            background: #f8f9ff;
+            padding: 10px;
+            margin: 8px 0;
+            border-radius: 5px;
+            border-right: 3px solid transparent;
+        }
+
+        .correct-answer {
+            background: #d4edda !important;
+            border-right: 3px solid #28a745 !important;
+        }
+
+        /* مكان الصورة */
+        .image-placeholder {
+            background: #95a5a6;
+            color: white;
+            padding: 60px 20px;
+            text-align: center;
+            border-radius: 10px;
+            margin: 20px 0;
+            border: 2px dashed #7f8c8d;
+        }
+
+        /* بطاقات العمليات */
+        .process-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .process-card {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+        }
+
+        .process-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .process-card h4 {
+            color: #0072ff;
+            margin-bottom: 10px;
+        }
+
+        footer {
+            background: #0072ff;
+            color: white;
+            text-align: center;
+            padding: 25px;
+            margin-top: 40px;
+            border-radius: 10px;
+        }
+
+        .subsection {
+            margin-right: 20px;
+            padding-right: 20px;
+            border-right: 2px solid #ecf0f1;
+        }
+
+        /* شجرة إنشاء العمليات */
+        .tree-diagram {
+            display: flex;
+            justify-content: center;
+            margin: 30px 0;
+        }
+
+        .tree-node {
+            text-align: center;
+            padding: 10px 20px;
+            background: #3498db;
+            color: white;
+            border-radius: 8px;
+            margin: 0 10px;
+            position: relative;
+        }
+
+        .tree-children {
+            display: flex;
+            justify-content: center;
+            margin-top: 30px;
+        }
+    </style>
+  <script>
+    (function () {
+      var root = document.documentElement;
+
+      function readParentScheme() {
+        try {
+          if (!window.parent || !window.parent.document) return null;
+          var pdoc = window.parent.document;
+          var scheme = (pdoc.body && pdoc.body.getAttribute("data-md-color-scheme")) ||
+                       (pdoc.documentElement && pdoc.documentElement.getAttribute("data-md-color-scheme"));
+          if (scheme === "slate") return "dark";
+          if (scheme === "default") return "light";
+        } catch (e) {}
+        return null;
+      }
+
+      function readStoredScheme() {
+        try {
+          var raw = window.localStorage && window.localStorage.getItem("__palette");
+          if (!raw) return null;
+          var parsed = JSON.parse(raw);
+          var scheme = parsed && parsed.color && parsed.color.scheme;
+          if (scheme === "slate") return "dark";
+          if (scheme === "default") return "light";
+        } catch (e) {}
+        return null;
+      }
+
+      function readSystemTheme() {
+        return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+      }
+
+      function resolveTheme() {
+        return readParentScheme() || readStoredScheme() || readSystemTheme();
+      }
+
+      function ensureFallbackStyle() {
+        var id = "standalone-dark-fallback";
+        if (document.getElementById(id)) return;
+
+        var style = document.createElement("style");
+        style.id = id;
+        style.textContent = [
+          "html[data-theme='dark'], html[data-theme='dark'] :root {",
+          "  --white: #111827 !important;",
+          "  --card: #111827 !important;",
+          "  --surface: #111827 !important;",
+          "  --background: #0b1020 !important;",
+          "  --bg: #0b1020 !important;",
+          "  --light-bg: #1f2937 !important;",
+          "  --text-color: #e5e7eb !important;",
+          "  --text: #e5e7eb !important;",
+          "  --text-light: #cbd5e1 !important;",
+          "  --ink: #e5e7eb !important;",
+          "  --ink-1: #e5e7eb !important;",
+          "  --ink-2: #cbd5e1 !important;",
+          "  --primary-color: #e5e7eb !important;",
+          "  --primary: #e5e7eb !important;",
+          "  --primary-dark: #cbd5e1 !important;",
+          "  --secondary: #60a5fa !important;",
+          "  --secondary-color: #60a5fa !important;",
+          "  --accent: #f59e0b !important;",
+          "  --accent-color: #f59e0b !important;",
+          "  --border: #374151 !important;",
+          "}",
+          "html[data-theme='dark'] { color-scheme: dark; }",
+          "html[data-theme='light'] { color-scheme: light; }",
+          "html[data-theme='dark'] body { background: #0b1020 !important; color: #e5e7eb !important; }",
+          "html[data-theme='dark'] .container, html[data-theme='dark'] main, html[data-theme='dark'] section, html[data-theme='dark'] article, html[data-theme='dark'] aside, html[data-theme='dark'] nav, html[data-theme='dark'] header, html[data-theme='dark'] footer, html[data-theme='dark'] .content, html[data-theme='dark'] .card, html[data-theme='dark'] .panel, html[data-theme='dark'] .box, html[data-theme='dark'] .wrapper, html[data-theme='dark'] .question, html[data-theme='dark'] .question-card, html[data-theme='dark'] .question-block, html[data-theme='dark'] .quiz-container, html[data-theme='dark'] .chapter, html[data-theme='dark'] .section, html[data-theme='dark'] .topic-card, html[data-theme='dark'] .exam-question, html[data-theme='dark'] .process-structure, html[data-theme='dark'] .solution-card, html[data-theme='dark'] .memory-section, html[data-theme='dark'] .memory-layout, html[data-theme='dark'] .page-table-container, html[data-theme='dark'] .result-box, html[data-theme='dark'] .feedback, html[data-theme='dark'] .mock-answer, html[data-theme='dark'] .answer-box, html[data-theme='dark'] [class*='-card'], html[data-theme='dark'] [class*='-box'], html[data-theme='dark'] [class*='-panel'], html[data-theme='dark'] [class*='-section'], html[data-theme='dark'] [class*='-container'], html[data-theme='dark'] [class*='-wrapper'], html[data-theme='dark'] [class*='-content'], html[data-theme='dark'] [class*='-table'], html[data-theme='dark'] [class*='-grid'], html[data-theme='dark'] [class*='-diagram'], html[data-theme='dark'] [class*='-item'] { background: #111827 !important; color: #e5e7eb !important; border-color: #374151 !important; }",
+          "html[data-theme='dark'] .learning-outcomes, html[data-theme='dark'] .clo-box, html[data-theme='dark'] .highlight, html[data-theme='dark'] .key-point, html[data-theme='dark'] .warning, html[data-theme='dark'] .principle, html[data-theme='dark'] .timeline-item, html[data-theme='dark'] .stat-card, html[data-theme='dark'] .metric-card, html[data-theme='dark'] .summary-card, html[data-theme='dark'] .concept-box, html[data-theme='dark'] .example-box, html[data-theme='dark'] .exam-section, html[data-theme='dark'] .diagram-container, html[data-theme='dark'] .critical-section-diagram, html[data-theme='dark'] .race-condition-box, html[data-theme='dark'] .key-concept, html[data-theme='dark'] .tip, html[data-theme='dark'] .exam-example, html[data-theme='dark'] .formula, html[data-theme='dark'] .ipc-section, html[data-theme='dark'] .scheduling-box, html[data-theme='dark'] .deadlock-box, html[data-theme='dark'] .memory-box, html[data-theme='dark'] .frame-box, html[data-theme='dark'] .page-box, html[data-theme='dark'] .option, html[data-theme='dark'] .tf-option, html[data-theme='dark'] .mcq-options li { background: #1f2937 !important; color: #e5e7eb !important; border-color: #4b5563 !important; }",
+          "html[data-theme='dark'] h1, html[data-theme='dark'] h2, html[data-theme='dark'] h3, html[data-theme='dark'] h4, html[data-theme='dark'] h5, html[data-theme='dark'] h6, html[data-theme='dark'] p, html[data-theme='dark'] li, html[data-theme='dark'] dt, html[data-theme='dark'] dd, html[data-theme='dark'] span, html[data-theme='dark'] div, html[data-theme='dark'] label { color: #e5e7eb !important; }",
+          "html[data-theme='dark'] a { color: #c4b5fd !important; }",
+          "html[data-theme='dark'] strong, html[data-theme='dark'] b { color: #f8fafc !important; }",
+          "html[data-theme='dark'] table { background: #0f172a !important; color: #e5e7eb !important; }",
+          "html[data-theme='dark'] th { background: #1f2937 !important; color: #f8fafc !important; }",
+          "html[data-theme='dark'] td { background: #111827 !important; color: #e5e7eb !important; border-color: #374151 !important; }",
+          "html[data-theme='dark'] tr:nth-child(even) td, html[data-theme='dark'] tr:nth-child(even) th { background: #172033 !important; }",
+          "html[data-theme='dark'] pre, html[data-theme='dark'] code, html[data-theme='dark'] .formula { background: #111827 !important; color: #e5e7eb !important; border-color: #374151 !important; }",
+          "html[data-theme='dark'] input, html[data-theme='dark'] textarea, html[data-theme='dark'] select, html[data-theme='dark'] button { background: #1f2937 !important; color: #f8fafc !important; border-color: #4b5563 !important; }",
+          "html[data-theme='dark'] hr { border-color: #374151 !important; }",
+          "html[data-theme='dark'] svg text { fill: #e5e7eb !important; }"
+        ].join("\n");
+
+        (document.head || document.documentElement).appendChild(style);
+      }
+
+      function applyTheme(theme) {
+        var dark = theme === "dark";
+        root.setAttribute("data-theme", dark ? "dark" : "light");
+        root.classList.toggle("dark", dark);
+        root.classList.toggle("light", !dark);
+        if (document.body) {
+          document.body.classList.toggle("dark", dark);
+          document.body.classList.toggle("light", !dark);
+        }
+      }
+
+      function sync() {
+        ensureFallbackStyle();
+        applyTheme(resolveTheme());
+      }
+
+      sync();
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", sync);
+      }
+
+      var media = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
+      if (media) {
+        if (media.addEventListener) media.addEventListener("change", sync);
+        else if (media.addListener) media.addListener(sync);
+      }
+
+      window.addEventListener("storage", function (event) {
+        if (event.key === "__palette") sync();
+      });
+
+      if (window.MutationObserver) {
+        try {
+          var pdoc = window.parent && window.parent.document;
+          var parentBody = pdoc && pdoc.body;
+          var parentRoot = pdoc && pdoc.documentElement;
+          if (parentBody) {
+            new MutationObserver(sync).observe(parentBody, {
+              attributes: true,
+              attributeFilter: ["data-md-color-scheme"]
+            });
+          }
+          if (parentRoot) {
+            new MutationObserver(sync).observe(parentRoot, {
+              attributes: true,
+              attributeFilter: ["data-md-color-scheme"]
+            });
+          }
+        } catch (e) {}
+      }
+    })();
+  </script>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>الفصل ٣: العمليات</h1>
+            <p style="font-size: 1.2em;">CS330 - أنظمة التشغيل</p>
+            <p>مفهوم العملية، الجدولة، الاتصال بين العمليات، والإدارة</p>
+        </header>
+
+        <!-- القسم 1: مفهوم العملية -->
+        <section>
+            <h2>٣.١ مفهوم العملية</h2>
+
+            <div class="concept-box">
+                <p><span class="highlight">العملية</span> هي برنامج قيد التنفيذ. هي وحدة العمل في معظم الأنظمة. العملية أكثر من مجرد كود البرنامج (قسم النص)؛ فهي تشمل النشاط الحالي الممثل بواسطة عداد البرنامج ومسجلات المعالج.</p>
+            </div>
+
+            <h3>البرنامج مقابل العملية</h3>
+            <table>
+                <tr>
+                    <th>البرنامج</th>
+                    <th>العملية</th>
+                </tr>
+                <tr>
+                    <td>كيان خامل مخزّن على القرص</td>
+                    <td>كيان نشط مع عداد برنامج</td>
+                </tr>
+                <tr>
+                    <td>ملف تنفيذي (كود)</td>
+                    <td>برنامج تم تحميله في الذاكرة</td>
+                </tr>
+                <tr>
+                    <td>ثابت</td>
+                    <td>ديناميكي، له حالة</td>
+                </tr>
+                <tr>
+                    <td>برنامج واحد</td>
+                    <td>يمكن أن يكون له عمليات متعددة</td>
+                </tr>
+            </table>
+
+            <h3>العملية في الذاكرة</h3>
+            <div class="concept-box">
+                <p>العملية تتضمن:</p>
+                <ul>
+                    <li><strong>قسم النص:</strong> كود البرنامج</li>
+                    <li><strong>قسم البيانات:</strong> المتغيرات العامة</li>
+                    <li><strong>الكومة (Heap):</strong> ذاكرة تُخصص ديناميكيًا أثناء التشغيل</li>
+                    <li><strong>المكدس (Stack):</strong> بيانات مؤقتة (معاملات الدوال، عناوين العودة، متغيرات محلية)</li>
+                </ul>
+            </div>
+
+            <div class="warning-box">
+                <h4>⚠️ مهم:</h4>
+                <p>قسم النص والبيانات لهما حجم ثابت، بينما الكومة والمكدس يمكن أن ينموا ديناميكيًا. المكدس والكومة ينموان تجاه بعضهما ولكن يجب ألا يتداخلا!</p>
+            </div>
+        </section>
+
+        <!-- القسم 2: حالات العملية -->
+        <section>
+            <h2>٣.٢ حالات العملية</h2>
+
+            <div class="concept-box">
+                <p>أثناء تنفيذ العملية، تتغير حالتها. يمكن أن تكون العملية في إحدى الحالات التالية:</p>
+            </div>
+
+            <div class="state-diagram">
+                <div style="text-align: center;">
+                    <h4>نموذج العملية الخماسي الحالات</h4>
+                    <svg width="600" height="400" style="margin-top: 20px;">
+                        <!-- مربعات الحالات -->
+                        <rect x="50" y="50" width="100" height="50" fill="#2ecc71" rx="5" />
+                        <text x="100" y="80" text-anchor="middle" fill="white" font-weight="bold">جديدة</text>
+
+                        <rect x="200" y="50" width="100" height="50" fill="#f39c12" rx="5" />
+                        <text x="250" y="80" text-anchor="middle" fill="white" font-weight="bold">جاهزة</text>
+
+                        <rect x="350" y="50" width="100" height="50" fill="#e74c3c" rx="5" />
+                        <text x="400" y="80" text-anchor="middle" fill="white" font-weight="bold">قيد التشغيل</text>
+
+                        <rect x="200" y="200" width="100" height="50" fill="#9b59b6" rx="5" />
+                        <text x="250" y="230" text-anchor="middle" fill="white" font-weight="bold">منتظرة</text>
+
+                        <rect x="350" y="300" width="100" height="50" fill="#95a5a6" rx="5" />
+                        <text x="400" y="330" text-anchor="middle" fill="white" font-weight="bold">منتهية</text>
+
+                        <!-- الأسهم مع التسميات -->
+                        <defs>
+                            <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+                                <polygon points="0 0, 10 3, 0 6" fill="#34495e" />
+                            </marker>
+                        </defs>
+
+                        <!-- جديدة إلى جاهزة -->
+                        <line x1="150" y1="75" x2="200" y2="75" stroke="#34495e" stroke-width="2"
+                            marker-end="url(#arrowhead)" />
+                        <text x="175" y="65" text-anchor="middle" font-size="12">قبول</text>
+
+                        <!-- جاهزة إلى قيد التشغيل -->
+                        <line x1="300" y1="75" x2="350" y2="75" stroke="#34495e" stroke-width="2"
+                            marker-end="url(#arrowhead)" />
+                        <text x="325" y="65" text-anchor="middle" font-size="12">توزيع</text>
+
+                        <!-- قيد التشغيل إلى جاهزة -->
+                        <path d="M 380 50 Q 325 20 270 50" stroke="#34495e" stroke-width="2" fill="none"
+                            marker-end="url(#arrowhead)" />
+                        <text x="325" y="30" text-anchor="middle" font-size="12">مقاطعة</text>
+
+                        <!-- قيد التشغيل إلى منتظرة -->
+                        <line x1="380" y1="100" x2="270" y2="200" stroke="#34495e" stroke-width="2"
+                            marker-end="url(#arrowhead)" />
+                        <text x="340" y="145" text-anchor="middle" font-size="12">إدخال/إخراج أو انتظار</text>
+
+                        <!-- منتظرة إلى جاهزة -->
+                        <line x1="250" y1="200" x2="250" y2="100" stroke="#34495e" stroke-width="2"
+                            marker-end="url(#arrowhead)" />
+                        <text x="200" y="150" text-anchor="middle" font-size="12">اكتمال الإدخال/الإخراج</text>
+
+                        <!-- قيد التشغيل إلى منتهية -->
+                        <line x1="400" y1="100" x2="400" y2="300" stroke="#34495e" stroke-width="2"
+                            marker-end="url(#arrowhead)" />
+                        <text x="420" y="200" text-anchor="middle" font-size="12">خروج</text>
+                    </svg>
+                </div>
+            </div>
+
+            <table>
+                <tr>
+                    <th>الحالة</th>
+                    <th>الوصف</th>
+                </tr>
+                <tr>
+                    <td><strong>جديدة</strong></td>
+                    <td>العملية قيد الإنشاء</td>
+                </tr>
+                <tr>
+                    <td><strong>جاهزة</strong></td>
+                    <td>العملية تنتظر أن تُسند إلى معالج</td>
+                </tr>
+                <tr>
+                    <td><strong>قيد التشغيل</strong></td>
+                    <td>يتم تنفيذ التعليمات</td>
+                </tr>
+                <tr>
+                    <td><strong>منتظرة</strong></td>
+                    <td>العملية تنتظر حدوث حدث ما (اكتمال إدخال/إخراج أو إشارة)</td>
+                </tr>
+                <tr>
+                    <td><strong>منتهية</strong></td>
+                    <td>العملية أنهت تنفيذها</td>
+                </tr>
+            </table>
+
+            <div class="exam-section">
+                <h4>📝 سؤال اختبار (من اختبار CS330 النهائي):</h4>
+                <div class="exam-question">
+                    <p><strong>س:</strong> عملية في الحالة 'قيد التشغيل' يمكن أن تنتقل إلى أي من الحالات التالية؟</p>
+                    <div class="example-box">
+                        <p><strong>الإجابة:</strong> العملية قيد التشغيل يمكن أن تنتقل إلى:</p>
+                        <ul>
+                            <li>(١) حالة منتهية (اكتمال العملية)</li>
+                            <li>(٢) حالة منتظرة (طلب إدخال/إخراج)</li>
+                            <li>(٣) حالة جاهزة (مقاطعة/انتهاء شريحة الوقت)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- القسم 3: كتلة التحكم في العملية -->
+        <section>
+            <h2>٣.٣ كتلة التحكم في العملية (PCB)</h2>
+
+            <div class="concept-box">
+                <p>كل عملية يتم تمثيلها في نظام التشغيل بواسطة <span class="highlight">كتلة التحكم في العملية (PCB)</span>، وتسمى أيضًا كتلة التحكم في المهمة (TCB). تحتوي PCB على كل المعلومات المرتبطة بعملية محددة.</p>
+            </div>
+
+            <div class="pcb-diagram">
+                <div class="pcb-structure">
+                    <div class="pcb-field">حالة العملية</div>
+                    <div class="pcb-field">رقم العملية (PID)</div>
+                    <div class="pcb-field">عداد البرنامج</div>
+                    <div class="pcb-field">مسجلات المعالج</div>
+                    <div class="pcb-field">معلومات جدولة المعالج</div>
+                    <div class="pcb-field">معلومات إدارة الذاكرة</div>
+                    <div class="pcb-field">معلومات المحاسبة</div>
+                    <div class="pcb-field">معلومات حالة الإدخال/الإخراج</div>
+                </div>
+            </div>
+
+            <h3>تفاصيل معلومات PCB:</h3>
+            <table>
+                <tr>
+                    <th>الحقل</th>
+                    <th>يحتوي على</th>
+                </tr>
+                <tr>
+                    <td><strong>حالة العملية</strong></td>
+                    <td>جديدة، جاهزة، قيد التشغيل، منتظرة، منتهية</td>
+                </tr>
+                <tr>
+                    <td><strong>عداد البرنامج</strong></td>
+                    <td>عنوان التعليمات التالية للتنفيذ</td>
+                </tr>
+                <tr>
+                    <td><strong>مسجلات المعالج</strong></td>
+                    <td>محتويات كل المسجلات الخاصة بالعملية</td>
+                </tr>
+                <tr>
+                    <td><strong>معلومات جدولة المعالج</strong></td>
+                    <td>الأولوية، مؤشرات قوائم الجدولة</td>
+                </tr>
+                <tr>
+                    <td><strong>إدارة الذاكرة</strong></td>
+                    <td>جداول الصفحات، حدود الذاكرة، جداول القطاعات</td>
+                </tr>
+                <tr>
+                    <td><strong>معلومات المحاسبة</strong></td>
+                    <td>وقت المعالج المستخدم، الوقت المنقضي، حدود الوقت</td>
+                </tr>
+                <tr>
+                    <td><strong>حالة الإدخال/الإخراج</strong></td>
+                    <td>قائمة أجهزة الإدخال/الإخراج المخصصة، الملفات المفتوحة</td>
+                </tr>
+            </table>
+
+            <div class="warning-box">
+                <h4>⚠️ نقاط رئيسية:</h4>
+                <ul>
+                    <li>PCB يُبنى عند إنشاء العملية</li>
+                    <li>PCB يتضمن مؤشرًا لإدارة قوائم الانتظار</li>
+                    <li>PCB يحفظ معلومات العملية أثناء تبديل السياق</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- القسم 4: جدولة العمليات -->
+        <section>
+            <h2>٣.٤ جدولة العمليات</h2>
+
+            <div class="concept-box">
+                <p><span class="highlight">جدول العمليات</span> يختار من بين العمليات المتاحة للتنفيذ التالي على نواة المعالج. الهدف هو زيادة استغلال المعالج لأقصى حد وتبديل العمليات على المعالج بسرعة.</p>
+            </div>
+
+            <h3>قوائم الانتظار للجدولة</h3>
+            <div class="queue-diagram">
+                <div class="queue">
+                    <div class="queue-label">قائمة الانتظار الجاهزة</div>
+                    <div class="queue-item">PCB₇</div>
+                    <div class="queue-item">PCB₂</div>
+                    <div class="queue-item">PCB₅</div>
+                    <div class="queue-item">→</div>
+                </div>
+                <div class="queue">
+                    <div class="queue-label">قائمة الانتظار المنتظرة</div>
+                    <div class="queue-item">PCB₃</div>
+                    <div class="queue-item">PCB₁₄</div>
+                    <div class="queue-item">PCB₆</div>
+                    <div class="queue-item">→</div>
+                </div>
+            </div>
+
+            <div class="concept-box">
+                <h4>أنواع قوائم انتظار الجدولة:</h4>
+                <ul>
+                    <li><strong>قائمة الانتظار الجاهزة:</strong> مجموعة كل العمليات في الذاكرة الرئيسية، الجاهزة والمنتظرة للتنفيذ</li>
+                    <li><strong>قوائم الانتظار المنتظرة:</strong> مجموعة العمليات المنتظرة لحدث (مثل إدخال/إخراج)</li>
+                    <li><strong>قوائم انتظار الأجهزة:</strong> مجموعة العمليات المنتظرة لجهاز إدخال/إخراج معين</li>
+                </ul>
+                <p>العمليات تنتقل بين القوائم المختلفة خلال عمرها.</p>
+            </div>
+
+            <h3>أنواع الجدولة</h3>
+            <table>
+                <tr>
+                    <th>نوع الجدولة</th>
+                    <th>الوظيفة</th>
+                    <th>التكرار</th>
+                </tr>
+                <tr>
+                    <td><strong>طويلة المدى</strong></td>
+                    <td>تختار العمليات من مجموعة الوظائف لتحميلها في الذاكرة</td>
+                    <td>غير متكرر (ثواني، دقائق)</td>
+                </tr>
+                <tr>
+                    <td><strong>قصيرة المدى</strong></td>
+                    <td>تختار من قائمة الانتظار الجاهزة للتنفيذ على المعالج</td>
+                    <td>متكرر جدًا (أجزاء من الثانية)</td>
+                </tr>
+                <tr>
+                    <td><strong>متوسطة المدى</strong></td>
+                    <td>المبادلة - تزيل العملية من الذاكرة مؤقتًا</td>
+                    <td>عند الحاجة</td>
+                </tr>
+            </table>
+
+            <div class="image-placeholder">
+                <h4>📊 تمثيل جدولة العمليات</h4>
+                <img src="./Images/Process-Scheduling.png"
+                    alt="مخطط-يظهر-التدفق-بين-قائمة-الانتظار-الجاهزة،-المعالج،-وقوائم-انتظار-الإدخال/الإخراج">
+                <p>يظهر التدفق بين قائمة الانتظار الجاهزة، المعالج، وقوائم انتظار الإدخال/الإخراج</p>
+            </div>
+        </section>
+
+        <!-- القسم 5: تبديل السياق -->
+        <section>
+            <h2>٣.٥ تبديل السياق</h2>
+
+            <div class="concept-box">
+                <p>عندما يبدل المعالج إلى عملية أخرى، يجب على النظام حفظ حالة العملية القديمة وتحميل الحالة المحفوظة للعملية الجديدة عبر <span class="highlight">تبديل السياق</span>.</p>
+            </div>
+
+            <div class="context-switch">
+                <div class="process-block">عملية P₀<br>قيد التنفيذ</div>
+                <span class="switch-arrow">→</span>
+                <div class="os-block">
+                    نظام التشغيل<br>
+                    <small>١. حفظ الحالة في PCB₀<br>
+                        ٢. إعادة تحميل الحالة من PCB₁</small>
+                </div>
+                <span class="switch-arrow">→</span>
+                <div class="process-block">عملية P₁<br>قيد التنفيذ</div>
+            </div>
+
+            <div class="warning-box">
+                <h4>⚠️ عبء تبديل السياق:</h4>
+                <ul>
+                    <li>وقت تبديل السياق هو عبء خالص - لا عمل مفيد أثناء التبديل</li>
+                    <li>الوقت يعتمد على دعم العتاد</li>
+                    <li>الأوقات النموذجية: أقل من ١٠ ميكروثانية</li>
+                    <li>نظام تشغيل أكثر تعقيدًا و PCB أكبر → وقت تبديل أطول</li>
+                    <li>بعض العتاد يوفر مجموعات مسجلات متعددة لتسريع التبديل</li>
+                </ul>
+            </div>
+
+            <div class="exam-section">
+                <h4>📝 سؤال تطبيقي:</h4>
+                <div class="exam-question">
+                    <p><strong>س:</strong> صف الإجراءات التي تقوم بها النواة لتبديل السياق بين العمليات.</p>
+                    <div class="example-box">
+                        <p><strong>الإجابة:</strong></p>
+                        <ol>
+                            <li>حفظ سياق العملية الحالية (عداد البرنامج، مؤشر المكدس، المسجلات) في PCB الخاص بها</li>
+                            <li>تحديث حالة PCB (قيد التشغيل → جاهزة/منتظرة)</li>
+                            <li>نقل PCB إلى قائمة الانتظار المناسبة</li>
+                            <li>اختيار عملية أخرى من قائمة الانتظار الجاهزة</li>
+                            <li>تحديث حالة PCB للعملية الجديدة (جاهزة → قيد التشغيل)</li>
+                            <li>استعادة السياق من PCB الجديد إلى المعالج</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- القسم 6: إنشاء العمليات -->
+        <section>
+            <h2>٣.٦ العمليات على العمليات</h2>
+
+            <h3>إنشاء العمليات</h3>
+            <div class="concept-box">
+                <p>يمكن لعملية أن تنشئ عدة عمليات جديدة. العملية المنشئة هي <span class="highlight">الأم</span>، والعمليات الجديدة هي <span class="highlight">الابنة</span>، مكونة شجرة من العمليات.</p>
+            </div>
+
+            <h4>خيارات مشاركة الموارد:</h4>
+            <ul>
+                <li>الأم والأبناء يشاركون كل الموارد</li>
+                <li>الأبناء يشاركون مجموعة فرعية من موارد الأم</li>
+                <li>الأم والابن لا يشاركان أي موارد</li>
+            </ul>
+
+            <h4>خيارات التنفيذ:</h4>
+            <ul>
+                <li>الأم والأبناء يتنفذون بشكل متزامن</li>
+                <li>الأم تنتظر حتى ينتهي الأبناء</li>
+            </ul>
+
+            <h4>خيارات مساحة العنوان:</h4>
+            <ul>
+                <li>الابن نسخة من الأم (نفس البرنامج والبيانات)</li>
+                <li>الابن يحمل برنامجًا جديدًا</li>
+            </ul>
+
+            <h3>إنشاء العمليات في يونكس</h3>
+            <div class="code-block">
+                <span class="code-comment">// مثال إنشاء عملية في لغة C</span>
+                #include &lt;stdio.h&gt;
+                #include &lt;unistd.h&gt;
+                #include &lt;sys/wait.h&gt;
+
+                int main() {
+                <span class="code-keyword">pid_t</span> pid;
+
+                <span class="code-comment">// fork() تنشئ عملية جديدة</span>
+                pid = <span class="code-keyword">fork</span>();
+
+                if (pid < 0) { <span class="code-comment">// حدث خطأ</span>
+                    fprintf(stderr, "فشل Fork\n");
+                    return 1;
+                    }
+                    else if (pid == 0) { <span class="code-comment">// العملية الابنة</span>
+                    printf("العملية الابنة: PID = %d\n", getpid());
+
+                    <span class="code-comment">// exec() تستبدل مساحة ذاكرة العملية</span>
+                    execlp("/bin/ls", "ls", NULL);
+                    }
+                    else { <span class="code-comment">// العملية الأم</span>
+                    printf("العملية الأم: PID = %d\n", getpid());
+                    printf("PID الابنة = %d\n", pid);
+
+                    <span class="code-comment">// wait() انتظار اكتمال الابنة</span>
+                    wait(NULL);
+                    printf("الابنة اكتملت\n");
+                    }
+
+                    return 0;
+                    }
+            </div>
+
+            <div class="exam-section">
+                <h4>📝 سؤال اختبار (واجب CS330):</h4>
+                <div class="exam-question">
+                    <p><strong>س:</strong> ما هو الناتج عند الأسطر A, B, C, و D؟ (افترض PID الأم = ٢٦٠٠، PID الابنة = ٢٦٠٣)</p>
+                    <div class="code-block">
+                        pid = fork();
+                        if (pid == 0) { <span class="code-comment">/* العملية الابنة */</span>
+                        pid1 = getpid();
+                        printf("الابنة: pid = %d", pid); <span class="code-comment">/* A */</span>
+                        printf("الابنة: pid1 = %d", pid1); <span class="code-comment">/* B */</span>
+                        } else { <span class="code-comment">/* العملية الأم */</span>
+                        pid1 = getpid();
+                        printf("الأم: pid = %d", pid); <span class="code-comment">/* C */</span>
+                        printf("الأم: pid1 = %d", pid1);<span class="code-comment">/* D */</span>
+                        }
+                    </div>
+                    <div class="example-box">
+                        <p><strong>الإجابة:</strong></p>
+                        <ul>
+                            <li>السطر A: الابنة: pid = ٠</li>
+                            <li>السطر B: الابنة: pid1 = ٢٦٠٣</li>
+                            <li>السطر C: الأم: pid = ٢٦٠٣</li>
+                            <li>السطر D: الأم: pid1 = ٢٦٠٠</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <h3>إنهاء العمليات</h3>
+            <div class="concept-box">
+                <p>تنتهي العملية عندما تنتهي من تنفيذ آخر عبارة لها وتستدعي استدعاء النظام <code>exit()</code>.</p>
+            </div>
+
+            <h4>العملية قد تنتهي بسبب:</h4>
+            <ul>
+                <li>خروج عادي (طوعي)</li>
+                <li>خروج بسبب خطأ (طوعي)</li>
+                <li>خطأ فادح (غير طوعي)</li>
+                <li>قتلها بواسطة عملية أخرى (غير طوعي)</li>
+            </ul>
+
+            <h4>الأم قد تنهي الابنة بسبب:</h4>
+            <ul>
+                <li>الابنة تجاوزت الموارد المخصصة</li>
+                <li>المهمة الموكلة للابنة لم تعد مطلوبة</li>
+                <li>الأم تخرج (إنهاء متتالي)</li>
+            </ul>
+        </section>
+
+        <!-- القسم 7: الاتصال بين العمليات -->
+        <section>
+            <h2>٣.٧ الاتصال بين العمليات (IPC)</h2>
+
+            <div class="concept-box">
+                <p>العمليات قد تكون <span class="highlight">مستقلة</span> أو <span class="highlight">متعاونة</span>. العمليات المتعاونة تحتاج آليات IPC لتبادل البيانات والمعلومات.</p>
+            </div>
+
+            <h3>أسباب تعاون العمليات:</h3>
+            <div class="process-grid">
+                <div class="process-card">
+                    <h4>📊 مشاركة المعلومات</h4>
+                    <p>عدة مستخدمين قد يحتاجون نفس المعلومات</p>
+                </div>
+                <div class="process-card">
+                    <h4>⚡ تسريع الحسابات</h4>
+                    <p>تقسيم المهمة إلى مهام فرعية تعمل بالتوازي</p>
+                </div>
+                <div class="process-card">
+                    <h4>🧩 نمطية</h4>
+                    <p>تقسيم وظائف النظام إلى عمليات منفصلة</p>
+                </div>
+                <div class="process-card">
+                    <h4>🎯 سهولة</h4>
+                    <p>المستخدم قد يعمل على مهام متعددة في وقت واحد</p>
+                </div>
+            </div>
+
+            <h3>نماذج IPC</h3>
+            <div class="ipc-comparison">
+                <div class="ipc-method shared-memory">
+                    <h4>🔗 الذاكرة المشتركة</h4>
+                    <ul>
+                        <li>العمليات تشارك منطقة من الذاكرة</li>
+                        <li>سريع - لا تدخل من النواة بعد الإعداد</li>
+                        <li>يحتاج مزامنة</li>
+                        <li>جيد لكميات كبيرة من البيانات</li>
+                    </ul>
+                    <div class="code-block" style="margin-top: 15px;">
+                        <span class="code-comment">// مثال منتج</span>
+                        while (true) {
+                        <span class="code-comment">/* إنتاج عنصر */</span>
+                        while (((in + 1) % BUFFER_SIZE) == out)
+                        ; <span class="code-comment">/* المخزن مؤقت ممتلئ - انتظار */</span>
+                        buffer[in] = next_produced;
+                        in = (in + 1) % BUFFER_SIZE;
+                        }
+                    </div>
+                </div>
+                <div class="ipc-method message-passing">
+                    <h4>✉️ تمرير الرسائل</h4>
+                    <ul>
+                        <li>تبادل الرسائل بين العمليات</li>
+                        <li>أبطأ - يحتاج استدعاءات نظام</li>
+                        <li>لا حاجة لذاكرة مشتركة</li>
+                        <li>جيد للأنظمة الموزعة</li>
+                    </ul>
+                    <div class="code-block" style="margin-top: 15px;">
+                        <span class="code-comment">// عمليات تمرير الرسائل</span>
+                        send(message); <span class="code-comment">// إرسال رسالة</span>
+                        receive(message); <span class="code-comment">// استقبال رسالة</span>
+
+                        <span class="code-comment">// حجم الرسالة:</span>
+                        <span class="code-comment">// - حجم ثابت</span>
+                        <span class="code-comment">// - حجم متغير</span>
+                    </div>
+                </div>
+            </div>
+
+            <h3>تنفيذ تمرير الرسائل</h3>
+            <table>
+                <tr>
+                    <th>الجانب</th>
+                    <th>الخيارات</th>
+                </tr>
+                <tr>
+                    <td><strong>التسمية</strong></td>
+                    <td>
+                        • مباشرة: send(P, message), receive(Q, message)<br>
+                        • غير مباشرة: عبر صناديق بريد/منافذ
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>المزامنة</strong></td>
+                    <td>
+                        • متزامنة (حجب)<br>
+                        • غير متزامنة (عدم حجب)
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>التخزين المؤقت</strong></td>
+                    <td>
+                        • سعة صفرية (لا تخزين مؤقت)<br>
+                        • سعة محدودة (مخزن مؤقت محدود)<br>
+                        • سعة غير محدودة (مخزن مؤقت غير محدود)
+                    </td>
+                </tr>
+            </table>
+
+            <h3>IPC في يونكس: الأنابيب</h3>
+            <div class="code-block">
+                <span class="code-comment">// مثال أنبوب في C</span>
+                #include &lt;stdio.h&gt;
+                #include &lt;unistd.h&gt;
+
+                int main() {
+                int fd[2]; <span class="code-comment">// معرفات ملفات للأنبوب</span>
+                pid_t pid;
+                char write_msg[] = "مرحبا من الأم";
+                char read_msg[100];
+
+                <span class="code-comment">// إنشاء أنبوب</span>
+                if (pipe(fd) < 0) { fprintf(stderr, "فشل الأنبوب" ); return 1; } pid=fork(); if (pid> 0) { <span
+                        class="code-comment">// العملية الأم</span>
+                    close(fd[0]); <span class="code-comment">// إغلاق نهاية القراءة</span>
+                    write(fd[1], write_msg, strlen(write_msg) + 1);
+                    close(fd[1]);
+                    }
+                    else { <span class="code-comment">// العملية الابنة</span>
+                    close(fd[1]); <span class="code-comment">// إغلاق نهاية الكتابة</span>
+                    read(fd[0], read_msg, 100);
+                    printf("الابنة قرأت: %s\n", read_msg);
+                    close(fd[0]);
+                    }
+
+                    return 0;
+                    }
+            </div>
+
+            <div class="warning-box">
+                <h4>⚠️ حدود الأنابيب:</h4>
+                <ul>
+                    <li>أحادي الاتجاه - البيانات تتدفق في اتجاه واحد</li>
+                    <li>يمكن استخدامها فقط بين العمليات ذات الصلة</li>
+                    <li>توجد فقط أثناء تواصل العمليات</li>
+                    <li>للتواصل ثنائي الاتجاه، استخدم أنبوبين</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- القسم 8: التواصل في أنظمة العميل-خادم -->
+        <section>
+            <h2>٣.٨ التواصل في أنظمة العميل-خادم</h2>
+
+            <h3>طرق التواصل:</h3>
+            <div class="process-grid">
+                <div class="process-card">
+                    <h4>🔌 المقابس (Sockets)</h4>
+                    <p>نقطة نهاية للتواصل. تُعرف بعنوان IP + رقم المنفذ.</p>
+                </div>
+                <div class="process-card">
+                    <h4>📡 استدعاء الإجراءات عن بُعد (RPC)</h4>
+                    <p>يسمح باستدعاء إجراءات على أنظمة بعيدة كما لو كانت محلية.</p>
+                </div>
+                <div class="process-card">
+                    <h4>🚪 استدعاء الطرق عن بُعد (RMI)</h4>
+                    <p>آلية جافا مشابهة لـ RPC لاستدعاء طرق على كائنات بعيدة.</p>
+                </div>
+            </div>
+
+            <h3>التواصل بالمقابس</h3>
+            <div class="code-block">
+                <span class="code-comment">// مثال مقبس (مبسط)</span>
+                <span class="code-comment">// جانب الخادم</span>
+                int server_socket = socket(AF_INET, SOCK_STREAM, 0);
+                bind(server_socket, address, sizeof(address));
+                listen(server_socket, 3);
+                int new_socket = accept(server_socket, address, addrlen);
+                read(new_socket, buffer, 1024);
+
+                <span class="code-comment">// جانب العميل</span>
+                int client_socket = socket(AF_INET, SOCK_STREAM, 0);
+                connect(client_socket, address, sizeof(address));
+                send(client_socket, message, strlen(message), 0);
+            </div>
+        </section>
+
+        <!-- القسم 9: مسائل تطبيقية -->
+        <section>
+            <h2>٣.٩ أسئلة تطبيقية على طريقة الاختبارات</h2>
+
+            <div class="exam-section">
+                <h3>أسئلة اختيار من متعدد</h3>
+
+                <div class="exam-question">
+                    <p><strong>س١.</strong> أي من التالي لا يُخزّن في PCB؟</p>
+                    <ul class="mcq-options">
+                        <li>أ) عداد البرنامج</li>
+                        <li>ب) مسجلات المعالج</li>
+                        <li class="correct-answer">ج) الكود المصدري للبرنامج</li>
+                        <li>د) حالة العملية</li>
+                    </ul>
+                </div>
+
+                <div class="exam-question">
+                    <p><strong>س٢.</strong> الهدف الرئيسي من تعدد البرمجة هو تحسين:</p>
+                    <ul class="mcq-options">
+                        <li class="correct-answer">أ) استغلال المعالج</li>
+                        <li>ب) استخدام الذاكرة</li>
+                        <li>ج) زمن استجابة المستخدم</li>
+                        <li>د) أمان النظام</li>
+                    </ul>
+                </div>
+
+                <div class="exam-question">
+                    <p><strong>س٣.</strong> عندما تنشئ عملية عملية جديدة باستخدام fork()، أي مما يلي يتم مشاركته؟</p>
+                    <ul class="mcq-options">
+                        <li>أ) المكدس</li>
+                        <li>ب) الكومة</li>
+                        <li class="correct-answer">ج) أقسام الذاكرة المشتركة</li>
+                        <li>د) عداد البرنامج</li>
+                    </ul>
+                </div>
+
+                <div class="exam-question">
+                    <p><strong>س٤.</strong> وقت تبديل السياق هو:</p>
+                    <ul class="mcq-options">
+                        <li class="correct-answer">أ) عبء خالص</li>
+                        <li>ب) وقت حساب مفيد</li>
+                        <li>ج) وقت إدخال/إخراج</li>
+                        <li>د) وقت مستخدم</li>
+                    </ul>
+                </div>
+
+                <h3>أسئلة إجابة قصيرة</h3>
+
+                <div class="exam-question">
+                    <p><strong>س٥.</strong> اشرح الفرق بين الجدولة طويلة المدى، متوسطة المدى، وقصيرة المدى. (٦ درجات)</p>
+                    <div class="example-box">
+                        <h4>الإجابة:</h4>
+                        <ul>
+                            <li><strong>طويلة المدى (جدول الوظائف):</strong> تختار العمليات من مجموعة الوظائف لتحميلها في الذاكرة. تتحكم في درجة تعدد البرمجة. تُنفذ بشكل غير متكرر.</li>
+                            <li><strong>متوسطة المدى (مبادل):</strong> تزيل العمليات من الذاكرة مؤقتًا (مبادلة) لتقليل درجة تعدد البرمجة. يمكن إعادة إدخال العملية لاحقًا.</li>
+                            <li><strong>قصيرة المدى (جدول المعالج):</strong> تختار من قائمة الانتظار الجاهزة أي عملية تنفذ تاليًا على المعالج. تُنفذ بشكل متكرر جدًا (أجزاء من الثانية).</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="exam-question">
+                    <p><strong>س٦.</strong> كم عدد العمليات التي ينشئها هذا البرنامج؟ (٤ درجات)</p>
+                    <div class="code-block">
+                        for (int i = 0; i < 4; i++) fork();
+                    </div>
+                    <div class="example-box">
+                        <h4>الإجابة:</h4>
+                        <p>٢⁴ = ١٦ عملية إجمالًا (بما في ذلك العملية الأم الأولية)</p>
+                        <p>كل fork() تضاعف عدد العمليات.</p>
+                    </div>
+                </div>
+
+                <div class="exam-question">
+                    <p><strong>س٧.</strong> ماذا يحدث عندما يحدث تبديل سياق إذا كان السياق الجديد محملًا بالفعل في مجموعة مسجلات؟ (٣ درجات)</p>
+                    <div class="example-box">
+                        <h4>الإجابة:</h4>
+                        <p>إذا وفر العتاد مجموعات مسجلات متعددة وكان السياق الجديد محملًا بالفعل، فإن تبديل السياق يكون أسرع بكثير - فقط تبديل المؤشر إلى مجموعة المسجلات النشطة. لا حاجة لحفظ/استعادة قيم المسجلات من/إلى الذاكرة.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- القسم 10: المصطلحات الرئيسية -->
+        <section>
+            <h2>٣.١٠ المصطلحات الرئيسية والتعريفات</h2>
+
+            <table>
+                <tr>
+                    <th>المصطلح</th>
+                    <th>التعريف</th>
+                </tr>
+                <tr>
+                    <td><strong>عملية</strong></td>
+                    <td>برنامج قيد التنفيذ؛ كيان نشط مع عداد برنامج</td>
+                </tr>
+                <tr>
+                    <td><strong>PCB</strong></td>
+                    <td>كتلة التحكم في العملية - هيكل بيانات يحتوي معلومات العملية</td>
+                </tr>
+                <tr>
+                    <td><strong>تبديل السياق</strong></td>
+                    <td>حفظ حالة عملية وتحميل حالة عملية أخرى</td>
+                </tr>
+                <tr>
+                    <td><strong>fork()</strong></td>
+                    <td>استدعاء نظام ينشئ عملية جديدة (ابنة) في يونكس</td>
+                </tr>
+                <tr>
+                    <td><strong>exec()</strong></td>
+                    <td>استدعاء نظام يستبدل ذاكرة العملية ببرنامج جديد</td>
+                </tr>
+                <tr>
+                    <td><strong>wait()</strong></td>
+                    <td>استدعاء نظام حيث تنتظر الأم اكتمال الابنة</td>
+                </tr>
+                <tr>
+                    <td><strong>IPC</strong></td>
+                    <td>الاتصال بين العمليات - آليات لتعاون العمليات</td>
+                </tr>
+                <tr>
+                    <td><strong>أنبوب</strong></td>
+                    <td>قناة اتصال أحادية الاتجاه بين العمليات</td>
+                </tr>
+                <tr>
+                    <td><strong>قائمة الانتظار الجاهزة</strong></td>
+                    <td>قائمة العمليات الجاهزة والمنتظرة للتنفيذ</td>
+                </tr>
+                <tr>
+                    <td><strong>درجة تعدد البرمجة</strong></td>
+                    <td>عدد العمليات في الذاكرة</td>
+                </tr>
+            </table>
+        </section>
+
+        <!-- أماكن الصور -->
+        <section>
+            <h2>٣.١١ مخططات من الشرائح</h2>
+
+            <div class="image-placeholder">
+                <h4>📊 مخطط حالة العملية</h4>
+                <img src="Images/Process-State-Diagram.png" alt="مخطط حالة العملية">
+            </div>
+
+            <div class="image-placeholder">
+                <h4>📊 هيكل PCB</h4>
+                <img src="Images/PCB-Structure.png" alt="مخطط هيكل PCB">
+            </div>
+
+            <div class="image-placeholder">
+                <h4>📊 خط زمني لتبديل السياق</h4>
+                <img src="Images/Context-Switch-Timeline.png"
+                    alt="مخطط خط زمني يظهر تبديل السياق بين عملية P0 و P1">
+            </div>
+
+            <div class="image-placeholder">
+                <h4>📊 هيكل قوائم الانتظار الجاهزة والمنتظرة</h4>
+                <img src="Images/Ready-and-Wait-Queue-Structure.png"
+                    alt="مخطط هيكل قائمة مرتبطة لقائمة الانتظار الجاهزة وقائمة الانتظار المنتظرة">
+            </div>
+        </section>
+
+        <footer>
+            <p>CS330 - أنظمة التشغيل</p>
+            <p>الفصل ٣: العمليات</p>
+            <p><strong>إعداد: شوق العمران</strong></p>
+        </footer>
+    </div>
+</body>
+
+</html>
