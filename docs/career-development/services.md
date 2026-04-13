@@ -15,9 +15,9 @@ last_updated: 2026-03-02
     <span class="page-hero__ref">studio://packages</span>
   </div>
   <div class="page-hero__body">
-    <h1 class="page-hero__title">Base Package + Structured Add-Ons</h1>
+    <h1 class="page-hero__title">Static websites that look sharp and stay easy to maintain</h1>
     <p class="page-hero__summary">
-      Blueprint Studio builds clean, static websites for portfolios, course hubs, documentation, and professional pages, designed for clarity and long-term maintainability.
+      Blueprint Studio builds polished static websites for portfolios, academic documentation, and workshops, with a strong focus on clarity, structure, and a confident first impression.
     </p>
     <p class="page-hero__scope">
       Service scope: static websites only • fast, secure, low-maintenance • no backend/SaaS builds
@@ -40,7 +40,7 @@ Best for students and early-career professionals who need:
 - Organized content hierarchy
 - Mobile-friendly layout
 
-Primary goal: help reviewers and recruiters evaluate your work quickly.
+Primary goal: help reviewers and recruiters understand your value in minutes, not after digging through clutter.
 
 ### 2. Academic Documentation Websites
 
@@ -53,7 +53,7 @@ Typical structure includes:
 - Reference and appendix organization
 - Submission-ready structure
 
-Primary goal: improve review clarity and support formal evaluation flow.
+Primary goal: improve review clarity and present academic work with a cleaner, more credible structure.
 
 ### 3. Workshop and Course Pages
 
@@ -64,7 +64,25 @@ Designed for instructors and organizers who need:
 - Participant guidance flow
 - Clear session logistics
 
-Primary goal: reduce confusion and improve participant readiness.
+Primary goal: reduce confusion, improve readiness, and give participants one clear place to find everything.
+
+## Why This Style Works
+
+- Clear hierarchy instead of crowded pages
+- Fast-loading static delivery with low maintenance
+- Strong structure for long-term updates
+- Thoughtful mobile behavior, not desktop-only layouts
+- Visual polish without unnecessary complexity
+
+## Typical Deliverables
+
+Every project is scoped to produce a usable, review-ready website. Typical deliverables include:
+
+- A clear landing page with purposeful calls to action
+- Organized navigation and page structure
+- Responsive layout for desktop and mobile
+- Clean deployment to a static host
+- Handover guidance for future edits
 
 ## Delivery Principles
 
@@ -74,6 +92,22 @@ Every project is built with:
 - Clean structure that is easy to maintain
 - Clear revision control and content organization
 - Practical layouts that work on desktop and mobile
+
+## Process
+
+1. Scope the website type, page count, and deadline.
+2. Organize the content into a clean structure before visual polish.
+3. Build the site with a clear visual direction and mobile-friendly layout.
+4. Review details, refine the copy, and prepare the final deployment.
+
+## Good Fit
+
+Blueprint is a strong fit if you want:
+
+- A portfolio that feels more credible and professional
+- Academic or capstone documentation that is easier to review
+- A workshop page that reduces participant confusion
+- A static website you can maintain without platform complexity
 
 ## Service Boundaries
 
@@ -110,3 +144,5 @@ If you want a fast estimate, send:
 - Number of pages
 - Deadline
 - Whether you need a custom domain
+
+You can also include the main goal, for example: "I want recruiters to understand my projects quickly" or "I need my capstone documentation to feel cleaner and more professional."

@@ -19,6 +19,6 @@
 
     ورشة بدعوة كمتحدثة عن التوجيه، التنظيم التعليمي، والنمو المهني. موثقة مع خط زمني كامل، تحليل المهارات، التقييمات المستلمة، وتأمل شخصي.
 
-    [:octicons-arrow-right-24: عرض الورشة](My Journey as a Student Tutor/overview.md)
+    [:octicons-arrow-right-24: عرض الورشة](My-Journey-as-a-Student-Tutor/overview.md)
 
 </div>

@@ -8,11 +8,11 @@ hide:
 <div class="home-hero" markdown>
 <div class="home-hero__text" markdown>
 
-# Build, Learn, and Share With Clarity
+# Security-minded engineering, documented beautifully
 
-I am **Shoug Fawaz Alomran**, a Software Engineering and Cybersecurity student at Prince Sultan University.
+I am **Shoug Fawaz Alomran**, a Software Engineering and Cybersecurity student at Prince Sultan University building a body of work around secure systems, technical documentation, and practical teaching.
 
-This digital garden publishes my structured learning outputs: course notes, technical projects, workshop material, and practical resources.
+This digital garden is both a **portfolio** and a **living knowledge base**: featured projects, course notes, workshop material, and practical resources designed to be genuinely useful.
 
 <div class="hero-actions" markdown>
 [Start Here](start-here.md){ .md-button .md-button--primary }
@@ -25,9 +25,51 @@ This digital garden publishes my structured learning outputs: course notes, tech
 
 <div class="value-strip" markdown>
 
-- :mortar_board: **For Students:** Organized notes, summaries, and quizzes
-- :school: **For Instructors:** Structured documentation and teaching evidence
-- :briefcase: **For Employers:** Projects, workshops, and professional readiness
+- :shield: **Security + Engineering:** attacker-minded thinking paired with structured delivery
+- :books: **Documentation That Proves Work:** not just claims, but systems, notes, and artifacts
+- :briefcase: **Career-Ready Proof:** projects, workshops, and public technical communication
+
+</div>
+
+## Why This Site Stands Out
+
+<div class="grid cards" markdown>
+
+-   :trophy: **Proof, Not Just Claims**
+
+    I publish real project sites, technical writeups, study systems, and workshop material so visitors can evaluate execution quality directly.
+
+-   :test_tube: **Hands-On Technical Range**
+
+    My work spans software engineering, cybersecurity, databases, systems, and structured academic documentation.
+
+-   :speaking_head: **Clear Technical Communication**
+
+    I care about making complex work readable, teachable, and usable for students, instructors, and employers.
+
+</div>
+
+## Featured Highlights
+
+<div class="grid cards" markdown>
+
+-   :rocket: **SE311 Requirements Analysis**
+
+    A formal software requirements engineering project with modeling, traceability, and structured release planning.
+
+    [:octicons-arrow-right-24: View Project Work](career-development/projects.md)
+
+-   :lock: **Cybersecurity Track**
+
+    Security-focused notes, labs, and workshop documentation that show both technical curiosity and disciplined structure.
+
+    [:octicons-arrow-right-24: Explore Security Work](Academics/cyber-security/Intro.md)
+
+-   :microphone: **Workshops and Teaching**
+
+    Public-facing evidence of how I explain technical ideas, mentor others, and turn learning into useful artifacts.
+
+    [:octicons-arrow-right-24: See Workshops](career-development/Workshops/index.md)
 
 </div>
 
@@ -97,9 +139,9 @@ This digital garden publishes my structured learning outputs: course notes, tech
 ## Quick Access
 
 <div class="hero-actions" markdown>
-[SE201 Notes](Academics/software-engineering/SE201/Intro.md){ .md-button }
-[CS340 Notes](Academics/computer-science/CS340/Intro.md){ .md-button }
-[Cybersecurity (CYS401)](Academics/cyber-security/CYS401/Intro.md){ .md-button }
+[SE201 Notes](Academics/software-engineering/SE201/intro.md){ .md-button }
+[CS340 Notes](Academics/computer-science/CS340/intro.md){ .md-button }
+[Cybersecurity (CYS401)](Academics/cyber-security/CYS401/intro.md){ .md-button }
 [Projects](career-development/projects.md){ .md-button }
 [Workshops](career-development/Workshops/index.md){ .md-button }
 [Blueprint Services](career-development/services.md){ .md-button }

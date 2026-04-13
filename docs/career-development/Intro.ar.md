@@ -10,7 +10,7 @@ description: عرض المشاريع والورش ومنهجية التنفيذ 
 
 > **ملخص القسم:** هذا القسم يوضح جودة التنفيذ والأثر العملي والنمو المهني بطريقة مباشرة.
 
-[عرض السيرة الذاتية](../CV.html){ .md-button .md-button--primary }
+[عرض السيرة الذاتية](./CV.html){ .md-button .md-button--primary }
 [تواصل معي](mailto:inquiry@shoug-tech.com){ .md-button }
 
 ---
@@ -86,7 +86,7 @@ description: عرض المشاريع والورش ومنهجية التنفيذ 
 
     ورشة بدعوة كمتحدثة. تغطي التوجيه، التواصل، التنظيم التعليمي، والنمو المهني. موثقة مع خط زمني كامل، تحليل المهارات، التقييمات، وتأمل شخصي.
 
-    [:octicons-arrow-right-24: عرض الورشة](./Workshops/My Journey as a Student Tutor/overview.md)
+    [:octicons-arrow-right-24: عرض الورشة](./Workshops/My-Journey-as-a-Student-Tutor/overview.md)
 
 -   :lock: **دورة الأمن السيبراني المكثفة**
 
