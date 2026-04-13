@@ -52,6 +52,12 @@ through the steps an attacker might take against a system or network.
 
     [:octicons-arrow-right-24: View Topics](topics.md)
 
+-   :open_book: **Handouts**
+
+    Download the workshop PDFs, including the session handout and Bandit notes.
+
+    [:octicons-arrow-right-24: View Handouts](handouts.md)
+
 -  :computer: **Labs & Bandit Notes**
 
     Hands-on lab work and full Bandit walkthrough notes.
