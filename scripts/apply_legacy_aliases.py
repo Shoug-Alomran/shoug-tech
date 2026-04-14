@@ -8,7 +8,9 @@ source tree itself fully hyphenated.
 from __future__ import annotations
 
 import json
+import re
 import shutil
+import subprocess
 from pathlib import Path
 
 
@@ -67,11 +69,149 @@ def write_redirect(old_path: Path, new_url: str) -> None:
     )
 
 
+def normalize_rel(rel: str) -> str:
+    """Normalize legacy/current paths so safe rename pairs compare equally."""
+    parts = rel.replace("\\", "/").split("/")
+    normalized_parts: list[str] = []
+
+    for part in parts:
+        # Normalize Arabic filename suffix variants like `page.ar.html` vs `page-ar.html`.
+        part = re.sub(r"\.ar(?=\.(?:md|html)$)", "-ar", part)
+
+        if "." in part:
+            stem, ext = part.rsplit(".", 1)
+            stem = re.sub(r"[\s_-]+", "-", stem.strip()).strip("-").lower()
+            normalized_parts.append(f"{stem}.{ext.lower()}")
+        else:
+            part = re.sub(r"[\s_-]+", "-", part.strip()).strip("-").lower()
+            normalized_parts.append(part)
+
+    return "/".join(normalized_parts)
+
+
+def load_manual_mapping() -> dict[str, str]:
+    if not MAP_PATH.exists():
+        return {}
+
+    raw_mapping = json.loads(MAP_PATH.read_text(encoding="utf-8"))
+    return {old: new for old, new in raw_mapping.items() if old != new}
+
+
+def load_git_rename_mapping() -> dict[str, str]:
+    """Derive legacy aliases from git rename history for docs/ files.
+
+    We only accept rename pairs whose normalized old/new paths still match after
+    space/hyphen cleanup. This keeps genuine filename migrations while rejecting
+    noisy rename-detection false positives from git history.
+    """
+
+    try:
+        output = subprocess.check_output(
+            ["git", "log", "--name-status", "--diff-filter=R", "--format="],
+            cwd=ROOT,
+            text=True,
+        )
+    except (FileNotFoundError, subprocess.CalledProcessError):
+        return {}
+
+    rename_map: dict[str, str] = {}
+
+    for line in output.splitlines():
+        if not line.startswith("R"):
+            continue
+
+        parts = line.split("\t")
+        if len(parts) != 3:
+            continue
+
+        _, old_raw, new_raw = parts
+        if not old_raw.startswith("docs/") or not new_raw.startswith("docs/"):
+            continue
+
+        old_rel = old_raw[len("docs/") :]
+        new_rel = new_raw[len("docs/") :]
+
+        if (ROOT / "docs" / old_rel).exists():
+            continue
+        if not (ROOT / "docs" / new_rel).exists():
+            continue
+        if normalize_rel(old_rel) != normalize_rel(new_rel):
+            continue
+
+        rename_map.setdefault(old_rel, new_rel)
+
+    return rename_map
+
+
+def split_component(part: str) -> tuple[str, str]:
+    if part.endswith(".ar.md"):
+        return part[: -len(".ar.md")], ".ar.md"
+    if part.endswith(".ar.html"):
+        return part[: -len(".ar.html")], ".ar.html"
+    if part.endswith("-ar.html"):
+        return part[: -len("-ar.html")], ".ar.html"
+    if part.endswith("-ar.md"):
+        return part[: -len("-ar.md")], ".ar.md"
+    if "." in part:
+        stem, ext = part.rsplit(".", 1)
+        return stem, f".{ext}"
+    return part, ""
+
+
+def legacy_component_variant(part: str, *, title_case: bool) -> str:
+    stem, suffix = split_component(part)
+    stem = stem.replace("-", " ")
+    if title_case and stem == stem.lower():
+        stem = stem.title()
+    return f"{stem}{suffix}"
+
+
+def load_spacing_heuristic_mapping() -> dict[str, str]:
+    """Fallback aliases for common space-to-hyphen filename migrations."""
+
+    heuristic_map: dict[str, str] = {}
+
+    for path in (ROOT / "docs").rglob("*"):
+        if not path.is_file():
+            continue
+
+        rel = path.relative_to(ROOT / "docs").as_posix()
+        parts = rel.split("/")
+
+        candidates: set[str] = set()
+
+        for title_case in (False, True):
+            candidate = "/".join(
+                legacy_component_variant(part, title_case=title_case) for part in parts
+            )
+            candidates.add(candidate)
+
+        # Preserve the old `.ar.html` suffix style for standalone Arabic HTML pages.
+        if rel.endswith("-ar.html"):
+            candidates.add(rel[: -len("-ar.html")] + ".ar.html")
+
+        for candidate in candidates:
+            if candidate == rel:
+                continue
+            if (ROOT / "docs" / candidate).exists():
+                continue
+            heuristic_map.setdefault(candidate, rel)
+
+    return heuristic_map
+
+
 def main() -> int:
-    if not MAP_PATH.exists() or not SITE.exists():
+    if not SITE.exists():
         return 0
 
-    mapping = json.loads(MAP_PATH.read_text(encoding="utf-8"))
+    mapping = load_git_rename_mapping()
+    mapping.update(load_spacing_heuristic_mapping())
+    mapping.update(load_manual_mapping())
+
+    if not mapping:
+        print("[legacy-aliases] no legacy mappings found")
+        return 0
+
     created_redirects = 0
     copied_assets = 0
 
@@ -91,6 +231,7 @@ def main() -> int:
         shutil.copy2(new_site, old_site)
         copied_assets += 1
 
+    print(f"[legacy-aliases] mappings: {len(mapping)}")
     print(f"[legacy-aliases] redirects: {created_redirects}")
     print(f"[legacy-aliases] copied assets: {copied_assets}")
     return 0
