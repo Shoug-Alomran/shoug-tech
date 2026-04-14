@@ -1,0 +1,1651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ER → Relational Mapping Cheat Sheet | CS 340</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f5f2eb;
+    --surface: #ffffff;
+    --surface2: #f0ede6;
+    --border: #d8d2c4;
+    --text: #1a1814;
+    --text2: #5c5650;
+    --text3: #8a847c;
+    --accent: #c85a2a;
+    --accent2: #2a6ec8;
+    --accent3: #2a9e5c;
+    --accent4: #9b2ac8;
+    --accent5: #c8a42a;
+    --tag-bg: #fdf5f2;
+    --tag-border: #e8c4b4;
+    --code-bg: #f0ede6;
+    --shadow: 0 2px 12px rgba(0,0,0,0.08);
+    --shadow-lg: 0 8px 32px rgba(0,0,0,0.12);
+    --radius: 12px;
+  }
+
+  [data-theme="dark"] {
+    --bg: #0f0e0d;
+    --surface: #1a1916;
+    --surface2: #221f1c;
+    --border: #2e2b26;
+    --text: #f0ede8;
+    --text2: #a09a92;
+    --text3: #68625c;
+    --accent: #e8794a;
+    --accent2: #5a9ee8;
+    --accent3: #4ec87c;
+    --accent4: #c24ae8;
+    --accent5: #e8c84a;
+    --tag-bg: #261e1a;
+    --tag-border: #4a2e1e;
+    --code-bg: #221f1c;
+    --shadow: 0 2px 12px rgba(0,0,0,0.4);
+    --shadow-lg: 0 8px 32px rgba(0,0,0,0.5);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    transition: background 0.3s, color 0.3s;
+  }
+
+  /* HEADER */
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    backdrop-filter: blur(8px);
+  }
+
+  .header-left { display: flex; align-items: center; gap: 14px; }
+  .logo-chip {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    background: var(--accent);
+    color: #fff;
+    padding: 4px 10px;
+    border-radius: 4px;
+  }
+  .header-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .toggle-btn {
+    width: 48px; height: 26px;
+    border-radius: 13px;
+    border: 1.5px solid var(--border);
+    background: var(--surface2);
+    cursor: pointer;
+    position: relative;
+    transition: all 0.3s;
+    flex-shrink: 0;
+  }
+  .toggle-btn::after {
+    content: '';
+    position: absolute;
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: var(--accent);
+    top: 3px; left: 3px;
+    transition: transform 0.3s;
+  }
+  [data-theme="dark"] .toggle-btn::after { transform: translateX(22px); }
+
+  /* HERO */
+  .hero {
+    padding: 48px 32px 32px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .hero-eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 10px;
+  }
+  .hero h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(28px, 4vw, 44px);
+    font-weight: 800;
+    line-height: 1.1;
+    color: var(--text);
+    margin-bottom: 12px;
+  }
+  .hero h1 span { color: var(--accent); }
+  .hero p {
+    font-size: 16px;
+    color: var(--text2);
+    max-width: 620px;
+  }
+
+  /* QUICK NAV */
+  .quick-nav {
+    max-width: 1100px;
+    margin: 0 auto 12px;
+    padding: 0 32px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .nav-pill {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    padding: 6px 12px;
+    border-radius: 20px;
+    border: 1.5px solid var(--border);
+    background: var(--surface);
+    color: var(--text2);
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+  .nav-pill:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* MAIN */
+  main {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 8px 32px 64px;
+    display: flex;
+    flex-direction: column;
+    gap: 36px;
+  }
+
+  /* SECTION */
+  section { scroll-margin-top: 80px; }
+
+  .section-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 18px;
+    color: var(--text);
+  }
+
+  /* CARD */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    box-shadow: var(--shadow);
+    transition: background 0.3s, border-color 0.3s;
+  }
+
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+  }
+
+  .card-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* SYMBOL BOX */
+  .symbol-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    background: var(--surface2);
+    margin-bottom: 8px;
+    font-size: 13px;
+  }
+  .symbol {
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 600;
+    font-size: 15px;
+    min-width: 30px;
+    text-align: center;
+  }
+
+  /* ACCENT BADGES */
+  .badge {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    padding: 3px 8px;
+    border-radius: 4px;
+    text-transform: uppercase;
+  }
+  .badge-red { background: #fde8e0; color: #c85a2a; }
+  .badge-blue { background: #e0eafd; color: #2a6ec8; }
+  .badge-green { background: #e0fde8; color: #2a9e5c; }
+  .badge-purple { background: #f0e0fd; color: #9b2ac8; }
+  .badge-yellow { background: #fdf5e0; color: #9b7a0a; }
+  [data-theme="dark"] .badge-red { background: #3d1e12; color: #e8794a; }
+  [data-theme="dark"] .badge-blue { background: #122035; color: #5a9ee8; }
+  [data-theme="dark"] .badge-green { background: #122a1c; color: #4ec87c; }
+  [data-theme="dark"] .badge-purple { background: #2a1235; color: #c24ae8; }
+  [data-theme="dark"] .badge-yellow { background: #2a2212; color: #e8c84a; }
+
+  /* DECISION TREE - BIG VISUAL */
+  .decision-tree {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 32px;
+    box-shadow: var(--shadow-lg);
+  }
+
+  .dt-question {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 18px;
+    padding: 14px 20px;
+    border-radius: 10px;
+    border: 2.5px solid var(--accent);
+    display: inline-block;
+    margin-bottom: 24px;
+    color: var(--accent);
+  }
+
+  .dt-branches {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+  }
+
+  .dt-branch {
+    border-radius: 10px;
+    border: 2px solid var(--border);
+    overflow: hidden;
+  }
+  .dt-branch-header {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 10px 14px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .dt-branch-body { padding: 14px; font-size: 13px; line-height: 1.7; }
+  .dt-branch-body code { 
+    font-family: 'IBM Plex Mono', monospace; 
+    font-size: 12px;
+    background: var(--code-bg);
+    padding: 2px 5px;
+    border-radius: 3px;
+  }
+
+  .branch-11 { border-color: #9b2ac8; }
+  .branch-11 .dt-branch-header { background: #9b2ac8; color: white; }
+  .branch-1n { border-color: #2a6ec8; }
+  .branch-1n .dt-branch-header { background: #2a6ec8; color: white; }
+  .branch-mn { border-color: #c85a2a; }
+  .branch-mn .dt-branch-header { background: #c85a2a; color: white; }
+  .branch-weak { border-color: #2a9e5c; }
+  .branch-weak .dt-branch-header { background: #2a9e5c; color: white; }
+  .branch-multi { border-color: #c8a42a; }
+  .branch-multi .dt-branch-header { background: #c8a42a; color: white; }
+
+  [data-theme="dark"] .branch-11 { border-color: #c24ae8; }
+  [data-theme="dark"] .branch-11 .dt-branch-header { background: #c24ae8; }
+  [data-theme="dark"] .branch-1n { border-color: #5a9ee8; }
+  [data-theme="dark"] .branch-1n .dt-branch-header { background: #5a9ee8; }
+  [data-theme="dark"] .branch-mn { border-color: #e8794a; }
+  [data-theme="dark"] .branch-mn .dt-branch-header { background: #e8794a; }
+  [data-theme="dark"] .branch-weak { border-color: #4ec87c; }
+  [data-theme="dark"] .branch-weak .dt-branch-header { background: #4ec87c; }
+  [data-theme="dark"] .branch-multi { border-color: #e8c84a; }
+  [data-theme="dark"] .branch-multi .dt-branch-header { background: #e8c84a; }
+
+  /* RULE CARD */
+  .rule-card {
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+
+  .rule-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .rule-number {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--accent);
+    min-width: 36px;
+  }
+
+  .rule-header-text { flex: 1; }
+  .rule-name {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+  }
+  .rule-subtitle { font-size: 12px; color: var(--text2); margin-top: 2px; }
+
+  .rule-body { padding: 20px; background: var(--surface); }
+  .rule-body p { font-size: 13.5px; color: var(--text2); margin-bottom: 14px; }
+
+  .rule-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  @media (max-width: 640px) { .rule-row { grid-template-columns: 1fr; } }
+
+  .rule-box {
+    background: var(--surface2);
+    border-radius: 8px;
+    padding: 14px;
+  }
+  .rule-box-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 8px;
+  }
+
+  /* TABLE DISPLAY */
+  .table-display {
+    background: var(--code-bg);
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    line-height: 1.8;
+    margin-top: 10px;
+    border: 1px solid var(--border);
+  }
+  .table-display .tname { color: var(--accent); font-weight: 600; }
+  .table-display .pk { text-decoration: underline; color: var(--accent2); }
+  .table-display .fk { color: var(--accent3); font-style: italic; }
+  .table-display .attr { color: var(--text); }
+  .table-display .comment { color: var(--text3); }
+
+  /* FK/PK KEY */
+  .key-legend {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-top: 14px;
+  }
+  .key-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+  .key-dot {
+    width: 10px; height: 10px;
+    border-radius: 2px;
+  }
+
+  /* DIAGRAM */
+  .diagram-box {
+    background: var(--surface2);
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    margin-bottom: 14px;
+    border: 1px solid var(--border);
+  }
+
+  .er-diagram {
+    display: inline-flex;
+    align-items: center;
+    gap: 0;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .er-entity {
+    background: var(--surface);
+    border: 2px solid var(--text);
+    border-radius: 4px;
+    padding: 8px 16px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+  }
+
+  .er-relation {
+    background: var(--surface);
+    border: 2px solid var(--text);
+    transform: rotate(45deg);
+    width: 44px; height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 -2px;
+    flex-shrink: 0;
+  }
+  .er-relation-text {
+    transform: rotate(-45deg);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 9px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .er-line {
+    height: 2px;
+    background: var(--text);
+    width: 32px;
+    flex-shrink: 0;
+  }
+  .er-line-double {
+    height: 2px;
+    background: var(--text);
+    width: 32px;
+    flex-shrink: 0;
+    border-top: 2px solid var(--text);
+    border-bottom: 2px solid var(--text);
+    height: 6px;
+    background: transparent;
+  }
+  .er-cardinality {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--accent);
+    padding: 0 4px;
+    flex-shrink: 0;
+  }
+
+  .er-weak-entity {
+    background: var(--surface);
+    border: 2px solid var(--text);
+    border-radius: 4px;
+    padding: 8px 16px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    outline: 3px solid var(--text);
+    outline-offset: 3px;
+  }
+  .er-weak-relation {
+    background: var(--surface);
+    border: 2px solid var(--text);
+    transform: rotate(45deg);
+    width: 44px; height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 -2px;
+    flex-shrink: 0;
+    outline: 3px solid var(--text);
+    outline-offset: 3px;
+  }
+
+  /* STEPS */
+  .steps { display: flex; flex-direction: column; gap: 12px; }
+  .step {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+  }
+  .step-num {
+    background: var(--accent);
+    color: white;
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 600;
+    font-size: 13px;
+    min-width: 28px; height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .step-content { flex: 1; font-size: 13.5px; }
+  .step-content strong { font-weight: 600; color: var(--text); }
+
+  /* ALERT */
+  .alert {
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 13px;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    margin-top: 10px;
+  }
+  .alert-warn { background: #fdf5e0; border: 1px solid #e8c84a; color: #7a5a00; }
+  .alert-info { background: #e0eafd; border: 1px solid #5a9ee8; color: #1a3a6a; }
+  .alert-tip { background: #e0fde8; border: 1px solid #4ec87c; color: #0a3a1c; }
+  [data-theme="dark"] .alert-warn { background: #2a2212; border-color: #6a4a00; color: #e8c84a; }
+  [data-theme="dark"] .alert-info { background: #0a1828; border-color: #1a4a8a; color: #5a9ee8; }
+  [data-theme="dark"] .alert-tip { background: #0a2212; border-color: #1a6a3a; color: #4ec87c; }
+
+  /* FULL WIDTH VISUAL */
+  .comparison-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 0;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+  @media (max-width: 700px) { .comparison-grid { grid-template-columns: 1fr; } }
+
+  .cg-col { background: var(--surface); }
+  .cg-col:not(:last-child) { border-right: 1px solid var(--border); }
+  .cg-header {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    text-align: center;
+  }
+  .cg-body { padding: 16px; font-size: 12.5px; line-height: 1.75; color: var(--text2); }
+  .cg-body ul { padding-left: 14px; }
+  .cg-body li { margin-bottom: 4px; }
+  .cg-body code { 
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    background: var(--code-bg);
+    padding: 1px 4px;
+    border-radius: 3px;
+    color: var(--text);
+  }
+
+  /* FULL EXAMPLE */
+  .example-full {
+    background: var(--surface);
+    border: 2px solid var(--accent);
+    border-radius: var(--radius);
+    padding: 28px;
+    box-shadow: var(--shadow-lg);
+  }
+  .example-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 10px;
+  }
+  .example-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 20px;
+  }
+
+  hr.divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 8px 0 16px;
+  }
+
+  /* CHECKLIST */
+  .checklist { list-style: none; padding: 0; }
+  .checklist li {
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 4px;
+    background: var(--surface2);
+  }
+  .checklist li::before {
+    content: '✓';
+    font-weight: 700;
+    color: var(--accent3);
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 600px) {
+    header { padding: 12px 16px; }
+    .hero, .quick-nav, main { padding-left: 16px; padding-right: 16px; }
+    .card-grid { grid-template-columns: 1fr; }
+  }
+
+  /* SCROLL BEHAVIOR */
+  html { scroll-behavior: smooth; }
+
+  /* DIVIDER HEADING */
+  .big-step-label {
+    font-family: 'Syne', sans-serif;
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--accent);
+    margin-right: 8px;
+  }
+</style>
+</head>
+<body data-theme="light">
+
+<header>
+  <div class="header-left">
+    <span class="logo-chip">CS 340</span>
+    <span class="header-title">ER → Relational Mapping Cheat Sheet</span>
+  </div>
+  <button class="toggle-btn" onclick="toggleTheme()" title="Toggle dark/light mode" aria-label="Toggle theme"></button>
+</header>
+
+<div class="hero">
+  <div class="hero-eyebrow">Chapter 05 — Quick Reference</div>
+  <h1>Look at a diagram.<br><span>Know what to do.</span></h1>
+  <p>Every symbol, line, and shape in an ER/EER diagram maps to a specific relational pattern. This cheat sheet tells you exactly what to do when you see each one.</p>
+</div>
+
+<div class="quick-nav">
+  <a class="nav-pill" href="#symbols">Symbols</a>
+  <a class="nav-pill" href="#decision">Decision Flow</a>
+  <a class="nav-pill" href="#steps">Mapping Steps</a>
+  <a class="nav-pill" href="#fk-pk">FK & PK Rules</a>
+  <a class="nav-pill" href="#specialization">EER (Specialization)</a>
+  <a class="nav-pill" href="#unions">Union Types</a>
+  <a class="nav-pill" href="#ddl">DDL Templates</a>
+  <a class="nav-pill" href="#example">Full Example</a>
+</div>
+
+<main>
+
+  <!-- ── SYMBOLS ───────────────────────────── -->
+  <section id="symbols">
+    <div class="section-label">What you see in diagrams</div>
+    <div class="section-title">ER Diagram Symbol Guide</div>
+
+    <div class="card-grid">
+
+      <div class="card">
+        <div class="card-title">🔲 Shapes = Entities &amp; Relations</div>
+        <div class="symbol-row">
+          <div class="symbol" style="background:var(--surface2);border:2px solid var(--text);border-radius:3px;width:44px;height:24px;display:flex;align-items:center;justify-content:center;font-size:10px;font-family:'DM Sans'">□</div>
+          <div><strong>Rectangle</strong> — Regular (strong) entity. Makes its own table.</div>
+        </div>
+        <div class="symbol-row">
+          <div class="symbol" style="background:var(--surface2);border:2px solid var(--text);border-radius:3px;outline:3px solid var(--text);outline-offset:3px;width:44px;height:24px;display:flex;align-items:center;justify-content:center;font-size:10px;">□□</div>
+          <div><strong>Double Rectangle</strong> — Weak entity. Must borrow its identity.</div>
+        </div>
+        <div class="symbol-row">
+          <div class="symbol" style="transform:rotate(45deg);background:var(--surface2);border:2px solid var(--text);width:32px;height:32px;margin:6px;">◇</div>
+          <div><strong>Diamond</strong> — Relationship. May or may not get its own table.</div>
+        </div>
+        <div class="symbol-row">
+          <div class="symbol" style="transform:rotate(45deg);background:var(--surface2);border:2px solid var(--text);outline:3px solid var(--text);outline-offset:3px;width:32px;height:32px;margin:6px;">◇</div>
+          <div><strong>Double Diamond</strong> — Identifying relationship (for weak entity).</div>
+        </div>
+        <div class="symbol-row">
+          <div class="symbol">○</div>
+          <div><strong>Oval</strong> — Attribute. Becomes a column in the entity's table.</div>
+        </div>
+        <div class="symbol-row">
+          <div class="symbol">⊙</div>
+          <div><strong>Double Oval</strong> — Multivalued attribute. Gets its own table (Step 6).</div>
+        </div>
+        <div class="symbol-row">
+          <div class="symbol" style="font-size:12px">- - -</div>
+          <div><strong>Dashed oval</strong> — Derived attribute. Usually not stored; skip or compute.</div>
+        </div>
+        <div class="symbol-row">
+          <div class="symbol" style="text-decoration:underline;font-size:12px">ID</div>
+          <div><strong>Underlined attribute</strong> — Key attribute → becomes Primary Key.</div>
+        </div>
+        <div class="symbol-row">
+          <div class="symbol" style="text-decoration:underline;text-decoration-style:dashed;font-size:12px">ID</div>
+          <div><strong>Dashed-underlined</strong> — Partial key of a weak entity. Part of composite PK.</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🔗 Lines = Participation &amp; Cardinality</div>
+        <div class="symbol-row">
+          <div class="symbol">—</div>
+          <div><strong>Single line</strong> — Partial participation. Entity may NOT participate (0 or more).</div>
+        </div>
+        <div class="symbol-row">
+          <div class="symbol">=</div>
+          <div><strong>Double line</strong> — Total participation. Entity MUST participate (at least one).</div>
+        </div>
+        <div class="symbol-row">
+          <div class="symbol" style="color:var(--accent2)"><strong>1</strong></div>
+          <div><strong>Label "1"</strong> — At most one. On either side of a relationship diamond.</div>
+        </div>
+        <div class="symbol-row">
+          <div class="symbol" style="color:var(--accent)"><strong>N or M</strong></div>
+          <div><strong>Label "N" or "M"</strong> — Many. That side can have multiple instances.</div>
+        </div>
+        <div class="symbol-row">
+          <div class="symbol" style="font-size:12px">(1,1)</div>
+          <div><strong>(min, max) notation</strong> — Exactly 1. Always total + exactly-one-side.</div>
+        </div>
+        <div class="symbol-row">
+          <div class="symbol" style="font-size:12px">(0,n)</div>
+          <div><strong>(0, n)</strong> — Zero or more. That entity is optional (partial).</div>
+        </div>
+        <div class="symbol-row">
+          <div class="symbol" style="font-size:12px">(1,n)</div>
+          <div><strong>(1, n)</strong> — At least one, many max. Total + many.</div>
+        </div>
+
+        <div class="alert alert-info" style="margin-top:12px">
+          <span>ℹ️</span>
+          <span><strong>Read (min, max) away from the entity:</strong> Stand at the entity, look away toward the relationship. The numbers describe how many relationships that entity participates in.</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🌐 EER Extra Symbols</div>
+        <div class="symbol-row">
+          <div class="symbol">⊂ ○ ⊂</div>
+          <div><strong>Circle with lines</strong> — Specialization/Generalization hierarchy. Superclass-subclass.</div>
+        </div>
+        <div class="symbol-row">
+          <div class="symbol" style="color:var(--accent)"><strong>d</strong></div>
+          <div><strong>"d" in circle</strong> — Disjoint. Entity can belong to AT MOST ONE subclass.</div>
+        </div>
+        <div class="symbol-row">
+          <div class="symbol" style="color:var(--accent2)"><strong>o</strong></div>
+          <div><strong>"o" in circle</strong> — Overlapping. Entity can belong to MULTIPLE subclasses at once.</div>
+        </div>
+        <div class="symbol-row">
+          <div class="symbol" style="font-size:18px">⊃ ∪</div>
+          <div><strong>∪ symbol (or circle with arc)</strong> — Union/Category type. Subclass of multiple different superclasses.</div>
+        </div>
+        <div class="symbol-row">
+          <div class="symbol">=</div>
+          <div><strong>Double line to circle</strong> — Total specialization. Every superclass member IS in a subclass.</div>
+        </div>
+        <div class="symbol-row">
+          <div class="symbol">—</div>
+          <div><strong>Single line to circle</strong> — Partial specialization. Superclass member may not be in any subclass.</div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── DECISION FLOW ───────────────────────────── -->
+  <section id="decision">
+    <div class="section-label">The core question</div>
+    <div class="section-title">When You See a Relationship — What Do You Do?</div>
+
+    <div class="decision-tree">
+      <div class="dt-question">❓ What kind of relationship is this?</div>
+      <div class="dt-branches">
+
+        <div class="dt-branch branch-11">
+          <div class="dt-branch-header">1 : 1 &nbsp;&nbsp; (One-to-One)</div>
+          <div class="dt-branch-body">
+            <strong>No new table needed.</strong><br><br>
+            Put the FK in one of the two tables. Choose based on participation:
+            <ul style="margin-top:8px;padding-left:16px">
+              <li><strong>One side is TOTAL</strong> → FK goes in the total-participation entity (Foreign Key approach, most common)</li>
+              <li><strong>Both TOTAL</strong> → Merge both entities into one table</li>
+              <li><strong>Both PARTIAL</strong> → Create a 3rd cross-reference table</li>
+            </ul>
+            <br>Include relationship attributes in whichever table gets the FK.
+          </div>
+        </div>
+
+        <div class="dt-branch branch-1n">
+          <div class="dt-branch-header">1 : N &nbsp;&nbsp; (One-to-Many)</div>
+          <div class="dt-branch-body">
+            <strong>No new table needed.</strong><br><br>
+            FK goes in the <strong>N-side entity</strong> (the "many" side).<br><br>
+            The FK references the PK of the 1-side entity.<br><br>
+            Include relationship attributes in the N-side table.<br><br>
+            <span style="color:var(--accent2)">Why N-side? Because putting FK on the 1-side would force multi-valued attributes (bad!).</span>
+          </div>
+        </div>
+
+        <div class="dt-branch branch-mn">
+          <div class="dt-branch-header">M : N &nbsp;&nbsp; (Many-to-Many)</div>
+          <div class="dt-branch-body">
+            <strong>Always create a NEW table.</strong><br><br>
+            New relationship table contains:
+            <ul style="margin-top:8px;padding-left:16px">
+              <li>FK → PK of Entity A</li>
+              <li>FK → PK of Entity B</li>
+              <li>Both FKs together = Composite PK</li>
+              <li>All relationship attributes</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="dt-branch branch-weak">
+          <div class="dt-branch-header">Weak Entity</div>
+          <div class="dt-branch-body">
+            <strong>New table for the weak entity.</strong><br><br>
+            Table contains:
+            <ul style="margin-top:8px;padding-left:16px">
+              <li>PK of owner entity (as FK)</li>
+              <li>Partial key of weak entity</li>
+              <li>Composite PK = {owner PK + partial key}</li>
+              <li>All other attributes</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="dt-branch branch-multi">
+          <div class="dt-branch-header">Multivalued Attribute</div>
+          <div class="dt-branch-body">
+            <strong>Always create a NEW table.</strong><br><br>
+            New table contains:
+            <ul style="margin-top:8px;padding-left:16px">
+              <li>The multivalued attribute (as column)</li>
+              <li>FK → PK of the entity that owns it</li>
+              <li>Composite PK = {attribute + FK}</li>
+            </ul>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ── MAPPING STEPS ───────────────────────────── -->
+  <section id="steps">
+    <div class="section-label">The official algorithm</div>
+    <div class="section-title">9-Step Mapping Algorithm</div>
+
+    <div style="display:flex;flex-direction:column;gap:14px">
+
+      <!-- Step 1 -->
+      <div class="rule-card">
+        <div class="rule-header" style="background:var(--surface)">
+          <div class="rule-number">01</div>
+          <div class="rule-header-text">
+            <div class="rule-name">Regular (Strong) Entity Types</div>
+            <div class="rule-subtitle">Rectangle with single border → straightforward table</div>
+          </div>
+          <span class="badge badge-blue">Always</span>
+        </div>
+        <div class="rule-body">
+          <p>Every regular entity becomes its own table. Include all simple attributes. For composite attributes, include only the leaf-level simple parts (not the composite itself).</p>
+          <div class="rule-row">
+            <div class="rule-box">
+              <div class="rule-box-label">What to include</div>
+              <div class="steps">
+                <div class="step"><div class="step-num">1</div><div class="step-content">All <strong>simple attributes</strong> → columns</div></div>
+                <div class="step"><div class="step-num">2</div><div class="step-content">Composite attributes → <strong>expand into leaf parts</strong>, drop the composite itself</div></div>
+                <div class="step"><div class="step-num">3</div><div class="step-content">Underlined attribute → <strong>Primary Key</strong></div></div>
+                <div class="step"><div class="step-num">4</div><div class="step-content">Derived attribute (dashed oval) → usually <strong>skip</strong> it</div></div>
+              </div>
+            </div>
+            <div class="rule-box">
+              <div class="rule-box-label">Result schema</div>
+              <div class="table-display">
+                <span class="tname">EMPLOYEE</span>(<br>
+                &nbsp;&nbsp;<span class="pk">SSN</span>,<br>
+                &nbsp;&nbsp;<span class="attr">Fname</span>, <span class="attr">Minit</span>, <span class="attr">Lname</span>, <span class="comment">← from composite Name</span><br>
+                &nbsp;&nbsp;<span class="attr">Street</span>, <span class="attr">City</span>, <span class="attr">State</span>, <span class="comment">← from composite Address</span><br>
+                &nbsp;&nbsp;<span class="attr">Salary</span>, <span class="attr">Bdate</span>, <span class="attr">Sex</span><br>
+                )
+              </div>
+              <div class="key-legend">
+                <div class="key-item"><div class="key-dot" style="background:var(--accent2)"></div>underlined = PK</div>
+                <div class="key-item"><div class="key-dot" style="background:var(--text3)"></div>dashed = skip</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="rule-card">
+        <div class="rule-header" style="background:var(--surface)">
+          <div class="rule-number">02</div>
+          <div class="rule-header-text">
+            <div class="rule-name">Weak Entity Types</div>
+            <div class="rule-subtitle">Double-bordered rectangle + double-diamond relationship</div>
+          </div>
+          <span class="badge badge-green">Always</span>
+        </div>
+        <div class="rule-body">
+          <p>Weak entities can't be identified alone — they need their owner. Their PK is always a composite key made of the owner's PK plus their own partial key.</p>
+          <div class="rule-row">
+            <div class="rule-box">
+              <div class="rule-box-label">Formula</div>
+              <div class="steps">
+                <div class="step"><div class="step-num">1</div><div class="step-content">Create a table for the weak entity</div></div>
+                <div class="step"><div class="step-num">2</div><div class="step-content">Add <strong>owner's PK as FK</strong> in this table</div></div>
+                <div class="step"><div class="step-num">3</div><div class="step-content">Composite PK = <strong>{owner PK + partial key}</strong></div></div>
+                <div class="step"><div class="step-num">4</div><div class="step-content">Add all other attributes</div></div>
+              </div>
+            </div>
+            <div class="rule-box">
+              <div class="rule-box-label">Example: DEPENDENT is weak, EMPLOYEE is owner</div>
+              <div class="table-display">
+                <span class="tname">DEPENDENT</span>(<br>
+                &nbsp;&nbsp;<span class="pk"><span class="fk">Essn</span></span>, <span class="comment">← FK to EMPLOYEE.SSN</span><br>
+                &nbsp;&nbsp;<span class="pk">Dependent_name</span>, <span class="comment">← partial key</span><br>
+                &nbsp;&nbsp;<span class="attr">Sex</span>, <span class="attr">Bdate</span>, <span class="attr">Relationship</span><br>
+                )<br>
+                <span style="color:var(--text3)">PK = {Essn, Dependent_name}</span>
+              </div>
+            </div>
+          </div>
+          <div class="alert alert-warn">
+            ⚠️ The weak entity must have <strong>total participation</strong> in the identifying relationship — always look for that double line!
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="rule-card">
+        <div class="rule-header" style="background:var(--surface)">
+          <div class="rule-number">03</div>
+          <div class="rule-header-text">
+            <div class="rule-name">Binary 1:1 Relationship</div>
+            <div class="rule-subtitle">When both sides show "1" — three sub-approaches</div>
+          </div>
+          <span class="badge badge-purple">Choose one of 3</span>
+        </div>
+        <div class="rule-body">
+          <div class="comparison-grid" style="margin-bottom:14px">
+            <div class="cg-col">
+              <div class="cg-header" style="background:#f0e0fd;color:#9b2ac8">Approach A: Foreign Key<br><small style="font-weight:400;font-size:11px">Most common ✓</small></div>
+              <div class="cg-body">
+                <strong>Use when:</strong> One side is TOTAL, other is PARTIAL<br><br>
+                FK goes in the <strong>TOTAL-participation entity</strong>.<br><br>
+                <code>DEPARTMENT(Dnumber, Dname, Mgr_ssn FK, Mgr_start_date)</code><br><br>
+                Department has total participation in MANAGES → gets the FK to Employee.
+              </div>
+            </div>
+            <div class="cg-col">
+              <div class="cg-header" style="background:#e0fde8;color:#2a9e5c">Approach B: Merged Table<br><small style="font-weight:400;font-size:11px">Both TOTAL</small></div>
+              <div class="cg-body">
+                <strong>Use when:</strong> Both sides are TOTAL (double lines both sides)<br><br>
+                Merge both entities and the relationship into <strong>one single table</strong>.<br><br>
+                Include all attributes from both + relationship attributes.<br><br>
+                Choose either entity's PK as the combined PK.
+              </div>
+            </div>
+            <div class="cg-col">
+              <div class="cg-header" style="background:#e0eafd;color:#2a6ec8">Approach C: Cross-Reference<br><small style="font-weight:400;font-size:11px">Both PARTIAL</small></div>
+              <div class="cg-body">
+                <strong>Use when:</strong> Both sides are PARTIAL (single lines both sides)<br><br>
+                Create a <strong>3rd relationship table</strong> with both FKs.<br><br>
+                <code>MANAGES(Essn FK, Dnumber FK, Start_date)</code><br><br>
+                PK = either FK (since it's 1:1, either is unique).
+              </div>
+            </div>
+          </div>
+          <div class="alert alert-tip">💡 <strong>Exam tip:</strong> Default to Approach A unless told otherwise. Always put FK on the total-participation side to minimize NULLs.</div>
+        </div>
+      </div>
+
+      <!-- Step 4 -->
+      <div class="rule-card">
+        <div class="rule-header" style="background:var(--surface)">
+          <div class="rule-number">04</div>
+          <div class="rule-header-text">
+            <div class="rule-name">Binary 1:N Relationship</div>
+            <div class="rule-subtitle">One side shows "1", other shows "N" — FK on the N side</div>
+          </div>
+          <span class="badge badge-blue">Always FK on N-side</span>
+        </div>
+        <div class="rule-body">
+          <p>This is the most common relationship. The rule is simple: <strong>FK always goes in the entity on the N-side (many side)</strong>. The FK references the PK of the 1-side entity.</p>
+          <div class="rule-row">
+            <div class="rule-box">
+              <div class="rule-box-label">Why N-side? Visual explanation</div>
+              <div style="font-size:12.5px;color:var(--text2);line-height:1.8">
+                If you put FK in the 1-side:<br>
+                One CUSTOMER row would need to store <em>many</em> order IDs → multi-valued → ILLEGAL in relational model.<br><br>
+                If you put FK in the N-side:<br>
+                Each ORDER row has exactly <em>one</em> customer ID → clean, atomic. ✓
+              </div>
+            </div>
+            <div class="rule-box">
+              <div class="rule-box-label">Example: CUSTOMER (1) → ORDER (N)</div>
+              <div class="table-display">
+                <span class="tname">CUSTOMER</span>(<span class="pk">CustomerID</span>, Name)<br>
+                <span class="tname">ORDER</span>(<br>
+                &nbsp;&nbsp;<span class="pk">OrderID</span>,<br>
+                &nbsp;&nbsp;OrderDate,<br>
+                &nbsp;&nbsp;<span class="fk">CustomerID</span> <span class="comment">← FK to CUSTOMER</span><br>
+                )
+              </div>
+              <div class="alert alert-tip" style="margin-top:10px">Include any relationship attributes in the N-side table.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 5 -->
+      <div class="rule-card">
+        <div class="rule-header" style="background:var(--surface)">
+          <div class="rule-number">05</div>
+          <div class="rule-header-text">
+            <div class="rule-name">Binary M:N Relationship</div>
+            <div class="rule-subtitle">Both sides show "M" or "N" — always a new relationship table</div>
+          </div>
+          <span class="badge badge-red">New table always</span>
+        </div>
+        <div class="rule-body">
+          <p>Many-to-many cannot be expressed with just two tables — you MUST create a third relationship table (junction/associative table).</p>
+          <div class="rule-row">
+            <div class="rule-box">
+              <div class="rule-box-label">What the new table contains</div>
+              <div class="steps">
+                <div class="step"><div class="step-num">1</div><div class="step-content">FK → PK of Entity A</div></div>
+                <div class="step"><div class="step-num">2</div><div class="step-content">FK → PK of Entity B</div></div>
+                <div class="step"><div class="step-num">3</div><div class="step-content">Composite PK = {FK-A + FK-B}</div></div>
+                <div class="step"><div class="step-num">4</div><div class="step-content">All relationship attributes become columns</div></div>
+              </div>
+            </div>
+            <div class="rule-box">
+              <div class="rule-box-label">Example: EMPLOYEE (M) WORKS_ON (N) PROJECT</div>
+              <div class="table-display">
+                <span class="tname">EMPLOYEE</span>(<span class="pk">SSN</span>, Name)<br>
+                <span class="tname">PROJECT</span>(<span class="pk">Pnumber</span>, Pname)<br><br>
+                <span class="tname">WORKS_ON</span>(<br>
+                &nbsp;&nbsp;<span class="pk"><span class="fk">Essn</span></span>, <span class="comment">← FK to EMPLOYEE</span><br>
+                &nbsp;&nbsp;<span class="pk"><span class="fk">Pno</span></span>, <span class="comment">← FK to PROJECT</span><br>
+                &nbsp;&nbsp;<span class="attr">Hours</span> <span class="comment">← relationship attribute</span><br>
+                )<br>
+                <span style="color:var(--text3)">PK = {Essn, Pno}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 6 -->
+      <div class="rule-card">
+        <div class="rule-header" style="background:var(--surface)">
+          <div class="rule-number">06</div>
+          <div class="rule-header-text">
+            <div class="rule-name">Multivalued Attributes</div>
+            <div class="rule-subtitle">Double-oval attribute → always its own table</div>
+          </div>
+          <span class="badge badge-yellow">New table always</span>
+        </div>
+        <div class="rule-body">
+          <p>A double-oval (multivalued attribute) like "Locations" of a department cannot be stored as a column. It violates 1NF. Always extract it into a new table.</p>
+          <div class="rule-row">
+            <div class="rule-box">
+              <div class="rule-box-label">Formula</div>
+              <div class="steps">
+                <div class="step"><div class="step-num">1</div><div class="step-content">New table for the attribute</div></div>
+                <div class="step"><div class="step-num">2</div><div class="step-content">Add the attribute as a column</div></div>
+                <div class="step"><div class="step-num">3</div><div class="step-content">Add entity's PK as FK</div></div>
+                <div class="step"><div class="step-num">4</div><div class="step-content">Composite PK = {attribute + FK}</div></div>
+              </div>
+            </div>
+            <div class="rule-box">
+              <div class="rule-box-label">Example: DEPARTMENT has {Locations}</div>
+              <div class="table-display">
+                <span class="tname">DEPARTMENT</span>(<span class="pk">Dnumber</span>, Dname)<br><br>
+                <span class="tname">DEPT_LOCATIONS</span>(<br>
+                &nbsp;&nbsp;<span class="pk"><span class="fk">Dnumber</span></span>, <span class="comment">← FK to DEPARTMENT</span><br>
+                &nbsp;&nbsp;<span class="pk">Dlocation</span> <span class="comment">← the multivalued attr</span><br>
+                )<br>
+                <span style="color:var(--text3)">PK = {Dnumber, Dlocation}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 7 -->
+      <div class="rule-card">
+        <div class="rule-header" style="background:var(--surface)">
+          <div class="rule-number">07</div>
+          <div class="rule-header-text">
+            <div class="rule-name">N-ary (Ternary+) Relationships</div>
+            <div class="rule-subtitle">Diamond connecting 3+ entities → always a new table</div>
+          </div>
+          <span class="badge badge-red">New table always</span>
+        </div>
+        <div class="rule-body">
+          <p>When a diamond touches 3 or more entity rectangles, create a new relationship table. The PK is typically the combination of ALL foreign keys.</p>
+          <div class="rule-row">
+            <div class="rule-box">
+              <div class="rule-box-label">Formula</div>
+              <div class="steps">
+                <div class="step"><div class="step-num">1</div><div class="step-content">New relationship table</div></div>
+                <div class="step"><div class="step-num">2</div><div class="step-content">FK → PK of each participating entity</div></div>
+                <div class="step"><div class="step-num">3</div><div class="step-content">PK = combination of all FKs (unless one side is 1, then exclude that FK from PK)</div></div>
+                <div class="step"><div class="step-num">4</div><div class="step-content">Add all relationship attributes</div></div>
+              </div>
+            </div>
+            <div class="rule-box">
+              <div class="rule-box-label">Example: SUPPLIER supplies PART to PROJECT</div>
+              <div class="table-display">
+                <span class="tname">SUPPLY</span>(<br>
+                &nbsp;&nbsp;<span class="pk"><span class="fk">Sname</span></span>, <span class="comment">← FK to SUPPLIER</span><br>
+                &nbsp;&nbsp;<span class="pk"><span class="fk">PartNo</span></span>, <span class="comment">← FK to PART</span><br>
+                &nbsp;&nbsp;<span class="pk"><span class="fk">ProjName</span></span>, <span class="comment">← FK to PROJECT</span><br>
+                &nbsp;&nbsp;<span class="attr">Quantity</span><br>
+                )<br>
+                <span style="color:var(--text3)">PK = {Sname, PartNo, ProjName}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── FK & PK RULES ───────────────────────────── -->
+  <section id="fk-pk">
+    <div class="section-label">The key rules</div>
+    <div class="section-title">Primary Keys &amp; Foreign Keys — The Full Rulebook</div>
+
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-title" style="color:var(--accent2)">🔑 Primary Key (PK) Rules</div>
+        <ul class="checklist">
+          <li>Strong entity → its underlined attribute is PK</li>
+          <li>Composite key in ER → combine those attributes as composite PK</li>
+          <li>Weak entity → {owner's PK} + {partial key}</li>
+          <li>M:N relationship table → {FK-A + FK-B} (both FKs combined)</li>
+          <li>Multivalued attribute table → {attribute + entity FK}</li>
+          <li>N-ary table → all FKs combined (usually)</li>
+          <li>1:1 merged table → either entity's PK (choose one)</li>
+          <li>1:1 cross-reference table → either FK (since 1:1, unique)</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="card-title" style="color:var(--accent3)">🔗 Foreign Key (FK) Rules</div>
+        <ul class="checklist">
+          <li>FK references the PK of another table (must match)</li>
+          <li>1:1 (total one side) → FK in the total-participation entity</li>
+          <li>1:N → FK in the N-side (many side) entity</li>
+          <li>M:N table → has TWO FKs, one to each entity</li>
+          <li>Weak entity → FK is the owner's PK (also part of PK here)</li>
+          <li>Multivalued table → FK is the owning entity's PK</li>
+          <li>FK can be NULL only if participation is PARTIAL on that side</li>
+          <li>Rename FK if needed to avoid naming conflicts (e.g., Essn, Dno)</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="card-title" style="color:var(--accent)">⚠️ NULL in Foreign Keys</div>
+        <div style="font-size:13.5px;color:var(--text2);line-height:1.8">
+          <div class="symbol-row">
+            <div class="badge badge-green">PARTIAL</div>
+            <div>FK <strong>can be NULL</strong> — entity doesn't have to participate</div>
+          </div>
+          <div class="symbol-row">
+            <div class="badge badge-red">TOTAL</div>
+            <div>FK <strong>cannot be NULL</strong> — entity must participate (NOT NULL)</div>
+          </div>
+          <br>
+          <strong>Example:</strong> If EMPLOYEE has partial participation in MANAGES (not every employee manages), the FK Dept_managed in EMPLOYEE can be NULL for non-managers.
+          <div class="alert alert-warn" style="margin-top:12px">
+            ⚠️ Prefer putting FK on the total-participation side to reduce NULLs.
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🔄 Unary (Self-Referencing) Relationships</div>
+        <div style="font-size:13.5px;color:var(--text2);line-height:1.8;margin-bottom:12px">
+          When a diamond connects back to the SAME entity type:
+        </div>
+        <div class="rule-box" style="margin-bottom:12px">
+          <div class="rule-box-label">1:N Unary (e.g., EMPLOYEE supervises EMPLOYEE)</div>
+          <div class="table-display">
+            <span class="tname">EMPLOYEE</span>(<br>
+            &nbsp;&nbsp;<span class="pk">SSN</span>, Name, ...,<br>
+            &nbsp;&nbsp;<span class="fk">Super_SSN</span> <span class="comment">← FK to EMPLOYEE.SSN</span><br>
+            )<br>
+            <span style="color:var(--text3)">FK references OWN table's PK. NULL for top-level.</span>
+          </div>
+        </div>
+        <div class="rule-box">
+          <div class="rule-box-label">M:N Unary (e.g., ITEM contains ITEM)</div>
+          <div class="table-display">
+            <span class="tname">ITEM</span>(<span class="pk">Item_No</span>, Name)<br>
+            <span class="tname">COMPONENT</span>(<br>
+            &nbsp;&nbsp;<span class="pk"><span class="fk">Component_No</span></span>, <span class="comment">← FK to ITEM</span><br>
+            &nbsp;&nbsp;<span class="pk"><span class="fk">Item_No</span></span>, <span class="comment">← FK to ITEM</span><br>
+            &nbsp;&nbsp;<span class="attr">Quantity</span><br>
+            )
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── SPECIALIZATION ───────────────────────────── -->
+  <section id="specialization">
+    <div class="section-label">EER Extended Concepts</div>
+    <div class="section-title">Specialization &amp; Generalization — 4 Mapping Options</div>
+
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-title">When you see a hierarchy with a circle (d or o)</div>
+      <p style="font-size:13.5px;color:var(--text2);margin-bottom:16px">You have a superclass C with m subclasses {S1, S2, …, Sm}. Choose ONE of the four options based on the constraints shown in the diagram.</p>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px">
+
+        <div style="border-radius:10px;border:2px solid var(--accent4);overflow:hidden">
+          <div style="background:var(--accent4);color:white;padding:10px 14px;font-family:'Syne',sans-serif;font-weight:700;font-size:13px">Option 8A — Multiple tables, all of them</div>
+          <div style="padding:14px;font-size:12.5px;color:var(--text2);line-height:1.8;background:var(--surface)">
+            <strong>Use when:</strong> Any constraint (works always)<br><br>
+            Create table for <strong>superclass C</strong> + separate table for <strong>each subclass</strong>.<br><br>
+            Each subclass table has: PK (same as superclass PK) + subclass-specific attributes.<br>
+            Subclass PK is also a FK to superclass.<br><br>
+            <div class="table-display" style="font-size:11px">
+              <span class="tname">EMPLOYEE</span>(<span class="pk">SSN</span>, Name, ...)<br>
+              <span class="tname">SECRETARY</span>(<span class="pk"><span class="fk">SSN</span></span>, TypingSpeed)<br>
+              <span class="tname">ENGINEER</span>(<span class="pk"><span class="fk">SSN</span></span>, EngType)
+            </div>
+          </div>
+        </div>
+
+        <div style="border-radius:10px;border:2px solid var(--accent3);overflow:hidden">
+          <div style="background:var(--accent3);color:white;padding:10px 14px;font-family:'Syne',sans-serif;font-weight:700;font-size:13px">Option 8B — Subclasses only</div>
+          <div style="padding:14px;font-size:12.5px;color:var(--text2);line-height:1.8;background:var(--surface)">
+            <strong>Use when:</strong> Total specialization only (double line)<br><br>
+            NO superclass table. Each subclass gets superclass attributes copied in.<br><br>
+            Works because every superclass member is guaranteed to be in a subclass.<br><br>
+            <div class="table-display" style="font-size:11px">
+              <span class="tname">CAR</span>(<span class="pk">VIN</span>, Make, Year, MaxPassengers)<br>
+              <span class="tname">TRUCK</span>(<span class="pk">VIN</span>, Make, Year, Tonnage)<br>
+              <span class="comment">← both inherit VEHICLE's attrs</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="border-radius:10px;border:2px solid var(--accent2);overflow:hidden">
+          <div style="background:var(--accent2);color:white;padding:10px 14px;font-family:'Syne',sans-serif;font-weight:700;font-size:13px">Option 8C — Single table + type column</div>
+          <div style="padding:14px;font-size:12.5px;color:var(--text2);line-height:1.8;background:var(--surface)">
+            <strong>Use when:</strong> Disjoint subclasses<br><br>
+            One big table with ALL attributes from ALL subclasses + a "type" discriminator column.<br><br>
+            Many NULLs for attributes that don't apply.<br><br>
+            <div class="table-display" style="font-size:11px">
+              <span class="tname">EMPLOYEE</span>(<span class="pk">SSN</span>, Name, ...,<br>
+              &nbsp;&nbsp;<span class="attr">JobType</span>, <span class="comment">← 'Secretary'/'Engineer'</span><br>
+              &nbsp;&nbsp;<span class="attr">TypingSpeed</span>, <span class="attr">EngType</span>)
+            </div>
+          </div>
+        </div>
+
+        <div style="border-radius:10px;border:2px solid var(--accent5);overflow:hidden">
+          <div style="background:var(--accent5);color:var(--bg);padding:10px 14px;font-family:'Syne',sans-serif;font-weight:700;font-size:13px">Option 8D — Single table + boolean flags</div>
+          <div style="padding:14px;font-size:12.5px;color:var(--text2);line-height:1.8;background:var(--surface)">
+            <strong>Use when:</strong> Overlapping subclasses (o in circle)<br><br>
+            One table + one boolean flag column per subclass (1=belongs, 0=doesn't).<br><br>
+            Entity can be both (Mflag=1 AND Pflag=1).<br><br>
+            <div class="table-display" style="font-size:11px">
+              <span class="tname">PART</span>(<span class="pk">PartNo</span>, Name, ...,<br>
+              &nbsp;&nbsp;<span class="attr">Mflag</span>, <span class="comment">← 1 if manufactured</span><br>
+              &nbsp;&nbsp;<span class="attr">Pflag</span>, <span class="comment">← 1 if purchased</span><br>
+              &nbsp;&nbsp;<span class="attr">ManufacturedBy</span>, <span class="attr">PurchasedFrom</span>)
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="alert alert-tip" style="margin-top:16px">
+        💡 <strong>Choosing the right option:</strong> Total specialization? Use 8B (clean, no superclass needed). Disjoint? Use 8A or 8C. Overlapping? Use 8D. When in doubt, 8A always works.
+      </div>
+    </div>
+  </section>
+
+  <!-- ── UNION TYPES ───────────────────────────── -->
+  <section id="unions">
+    <div class="section-label">Step 9</div>
+    <div class="section-title">Union Types (Categories) — Step 9</div>
+
+    <div class="card">
+      <div class="card-title">∪ Union Type — Subclass of multiple different superclasses</div>
+      <p style="font-size:13.5px;color:var(--text2);margin-bottom:16px">A category (UNION type) is when one subclass can belong to one of several different entity types. Example: OWNER can be a PERSON, BANK, or COMPANY — but not all at once.</p>
+
+      <div class="rule-row">
+        <div class="rule-box">
+          <div class="rule-box-label">Key insight: different superclasses = different keys</div>
+          <div style="font-size:13px;color:var(--text2);line-height:1.8">
+            Because PERSON, BANK, and COMPANY all have different PKs, we can't inherit a single key.<br><br>
+            Solution: Create a <strong>surrogate key</strong> — a new artificial identifier for the category table.<br><br>
+            Each superclass entity gets the surrogate key added as a FK (to link back to the category).
+          </div>
+        </div>
+        <div class="rule-box">
+          <div class="rule-box-label">Example: OWNER category</div>
+          <div class="table-display">
+            <span class="tname">PERSON</span>(<span class="pk">SSN</span>, Name, <span class="fk">OwnerID FK</span>)<br>
+            <span class="tname">BANK</span>(<span class="pk">BankCode</span>, Name, <span class="fk">OwnerID FK</span>)<br>
+            <span class="tname">COMPANY</span>(<span class="pk">CompNo</span>, Name, <span class="fk">OwnerID FK</span>)<br><br>
+            <span class="tname">OWNER</span>(<span class="pk">OwnerID</span>, Address)<br>
+            <span class="comment">← surrogate key! own new PK</span>
+          </div>
+          <div class="alert alert-info" style="margin-top:10px">
+            ℹ️ If all superclasses share the same PK attribute, you can use that instead of a surrogate key.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── DDL TEMPLATES ───────────────────────────── -->
+  <section id="ddl">
+    <div class="section-label">Write the code</div>
+    <div class="section-title">DDL Templates — Copy &amp; Adapt</div>
+
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-title">🏛️ Create Table — Basic</div>
+        <div class="table-display" style="font-size:12px;line-height:2">
+          CREATE TABLE <span class="tname">TableName</span> (<br>
+          &nbsp;&nbsp;<span class="pk">col1</span> INT NOT NULL,<br>
+          &nbsp;&nbsp;col2 VARCHAR(50) NOT NULL,<br>
+          &nbsp;&nbsp;col3 DATE,<br>
+          &nbsp;&nbsp;PRIMARY KEY (<span class="pk">col1</span>)<br>
+          );
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🔗 Add Foreign Key</div>
+        <div class="table-display" style="font-size:12px;line-height:2">
+          CREATE TABLE <span class="tname">Order</span> (<br>
+          &nbsp;&nbsp;<span class="pk">OrderID</span> INT NOT NULL,<br>
+          &nbsp;&nbsp;<span class="fk">CustID</span> INT,<br>
+          &nbsp;&nbsp;PRIMARY KEY (<span class="pk">OrderID</span>),<br>
+          &nbsp;&nbsp;FOREIGN KEY (<span class="fk">CustID</span>)<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;REFERENCES Customer(<span class="pk">CustID</span>)<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;ON DELETE CASCADE<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;ON UPDATE CASCADE<br>
+          );
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🔑 Composite Primary Key</div>
+        <div class="table-display" style="font-size:12px;line-height:2">
+          CREATE TABLE <span class="tname">WORKS_ON</span> (<br>
+          &nbsp;&nbsp;<span class="pk fk">Essn</span> CHAR(9) NOT NULL,<br>
+          &nbsp;&nbsp;<span class="pk fk">Pno</span> INT NOT NULL,<br>
+          &nbsp;&nbsp;Hours DECIMAL(3,1),<br>
+          &nbsp;&nbsp;PRIMARY KEY (<span class="pk">Essn, Pno</span>),<br>
+          &nbsp;&nbsp;FOREIGN KEY (<span class="fk">Essn</span>)<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;REFERENCES EMPLOYEE(SSN),<br>
+          &nbsp;&nbsp;FOREIGN KEY (<span class="fk">Pno</span>)<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;REFERENCES PROJECT(Pnumber)<br>
+          );
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📋 Data Types Quick Reference</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:12px;font-family:'IBM Plex Mono',monospace">
+          <div class="symbol-row" style="grid-column:1/-1;background:var(--code-bg);font-size:11px"><strong>Type</strong>&nbsp;&nbsp;<span style="color:var(--text3)">Use for</span></div>
+          <span style="color:var(--accent2)">INT</span><span style="color:var(--text2)">whole numbers, IDs</span>
+          <span style="color:var(--accent2)">CHAR(n)</span><span style="color:var(--text2)">fixed-length strings</span>
+          <span style="color:var(--accent2)">VARCHAR(n)</span><span style="color:var(--text2)">variable strings</span>
+          <span style="color:var(--accent2)">DATE</span><span style="color:var(--text2)">YYYY-MM-DD</span>
+          <span style="color:var(--accent2)">DECIMAL(m,d)</span><span style="color:var(--text2)">money, hours</span>
+          <span style="color:var(--accent2)">BOOLEAN</span><span style="color:var(--text2)">flags (8D option)</span>
+          <span style="color:var(--accent2)">ENUM(...)</span><span style="color:var(--text2)">type discriminator</span>
+          <span style="color:var(--accent2)">FLOAT/DOUBLE</span><span style="color:var(--text2)">decimals</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🛠️ DDL Constraint Keywords</div>
+        <div class="symbol-row"><code style="font-family:'IBM Plex Mono';font-size:12px;color:var(--accent2)">NOT NULL</code><span style="font-size:13px">Column must have a value</span></div>
+        <div class="symbol-row"><code style="font-family:'IBM Plex Mono';font-size:12px;color:var(--accent2)">UNIQUE</code><span style="font-size:13px">No duplicate values (candidate key)</span></div>
+        <div class="symbol-row"><code style="font-family:'IBM Plex Mono';font-size:12px;color:var(--accent2)">DEFAULT val</code><span style="font-size:13px">Value if none provided</span></div>
+        <div class="symbol-row"><code style="font-family:'IBM Plex Mono';font-size:12px;color:var(--accent2)">ON DELETE CASCADE</code><span style="font-size:13px">Delete child rows when parent deleted</span></div>
+        <div class="symbol-row"><code style="font-family:'IBM Plex Mono';font-size:12px;color:var(--accent2)">ON DELETE SET NULL</code><span style="font-size:13px">Set FK to NULL when parent deleted</span></div>
+        <div class="symbol-row"><code style="font-family:'IBM Plex Mono';font-size:12px;color:var(--accent2)">ON DELETE RESTRICT</code><span style="font-size:13px">Reject deletion if child rows exist</span></div>
+        <div class="symbol-row"><code style="font-family:'IBM Plex Mono';font-size:12px;color:var(--accent2)">CHECK (condition)</code><span style="font-size:13px">Enforce a custom rule on values</span></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">✏️ ALTER & DROP</div>
+        <div class="table-display" style="font-size:12px;line-height:2">
+          <span class="comment">-- Add a column</span><br>
+          ALTER TABLE T ADD col INT;<br><br>
+          <span class="comment">-- Modify a column</span><br>
+          ALTER TABLE T MODIFY col VARCHAR(100);<br><br>
+          <span class="comment">-- Drop a column</span><br>
+          ALTER TABLE T DROP COLUMN col;<br><br>
+          <span class="comment">-- Drop entire table</span><br>
+          DROP TABLE T;<br><br>
+          <span class="comment">-- Clear all rows, keep table</span><br>
+          TRUNCATE TABLE T;
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── FULL EXAMPLE ───────────────────────────── -->
+  <section id="example">
+    <div class="section-label">Putting it all together</div>
+    <div class="section-title">Complete Walkthrough Example</div>
+
+    <div class="example-full">
+      <div class="example-label">Worked Example</div>
+      <div class="example-title">Company Database — ER → Relational</div>
+
+      <p style="font-size:13.5px;color:var(--text2);margin-bottom:20px">Given: EMPLOYEE, DEPARTMENT, PROJECT, DEPENDENT entities with WORKS_FOR (1:N), MANAGES (1:1), WORKS_ON (M:N), CONTROLS (1:N), SUPERVISION (1:N unary), DEPENDENTS_OF (weak) relationships.</p>
+
+      <hr class="divider">
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px">
+
+        <div>
+          <div class="rule-box-label" style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--text3);margin-bottom:8px">Step 1 — Strong Entities</div>
+          <div class="table-display" style="font-size:12px;line-height:1.9">
+            <span class="tname">EMPLOYEE</span>(<span class="pk">SSN</span>, Fname, Minit, Lname, Address, Salary, Bdate, Sex)<br><br>
+            <span class="tname">DEPARTMENT</span>(<span class="pk">Dnumber</span>, Dname)<br><br>
+            <span class="tname">PROJECT</span>(<span class="pk">Pnumber</span>, Pname, Plocation)
+          </div>
+        </div>
+
+        <div>
+          <div class="rule-box-label" style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--text3);margin-bottom:8px">Step 2 — Weak Entity</div>
+          <div class="table-display" style="font-size:12px;line-height:1.9">
+            <span class="tname">DEPENDENT</span>(<br>
+            &nbsp;&nbsp;<span class="pk fk">Essn</span>, <span class="comment">← FK → EMPLOYEE.SSN</span><br>
+            &nbsp;&nbsp;<span class="pk">Dep_name</span>, <span class="comment">← partial key</span><br>
+            &nbsp;&nbsp;Sex, Bdate, Relationship<br>
+            )<br>
+            <span class="comment">PK = {Essn, Dep_name}</span>
+          </div>
+        </div>
+
+        <div>
+          <div class="rule-box-label" style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--text3);margin-bottom:8px">Step 3 — 1:1 MANAGES (FK approach)</div>
+          <div class="table-display" style="font-size:12px;line-height:1.9">
+            <span class="comment">DEPARTMENT has total participation</span><br>
+            <span class="comment">→ FK goes in DEPARTMENT</span><br><br>
+            <span class="tname">DEPARTMENT</span>(<span class="pk">Dnumber</span>, Dname,<br>
+            &nbsp;&nbsp;<span class="fk">Mgr_ssn</span>, <span class="comment">← FK→EMPLOYEE.SSN</span><br>
+            &nbsp;&nbsp;Mgr_start_date)
+          </div>
+        </div>
+
+        <div>
+          <div class="rule-box-label" style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--text3);margin-bottom:8px">Step 4 — 1:N WORKS_FOR &amp; CONTROLS</div>
+          <div class="table-display" style="font-size:12px;line-height:1.9">
+            <span class="comment">N-side gets FK:</span><br>
+            <span class="tname">EMPLOYEE</span>(..., <span class="fk">Dno</span>)<br>
+            <span class="comment">← FK → DEPARTMENT.Dnumber</span><br><br>
+            <span class="tname">PROJECT</span>(..., <span class="fk">Dnum</span>)<br>
+            <span class="comment">← FK → DEPARTMENT.Dnumber</span>
+          </div>
+        </div>
+
+        <div>
+          <div class="rule-box-label" style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--text3);margin-bottom:8px">Step 4 — 1:N Unary SUPERVISION</div>
+          <div class="table-display" style="font-size:12px;line-height:1.9">
+            <span class="comment">Self-FK on same table:</span><br>
+            <span class="tname">EMPLOYEE</span>(...,<br>
+            &nbsp;&nbsp;<span class="fk">Super_ssn</span>)<br>
+            <span class="comment">← FK → EMPLOYEE.SSN</span><br>
+            <span class="comment">NULL for top-level supervisors</span>
+          </div>
+        </div>
+
+        <div>
+          <div class="rule-box-label" style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--text3);margin-bottom:8px">Step 5 — M:N WORKS_ON</div>
+          <div class="table-display" style="font-size:12px;line-height:1.9">
+            <span class="comment">New table required:</span><br>
+            <span class="tname">WORKS_ON</span>(<br>
+            &nbsp;&nbsp;<span class="pk fk">Essn</span>, <span class="comment">← FK→EMPLOYEE.SSN</span><br>
+            &nbsp;&nbsp;<span class="pk fk">Pno</span>, <span class="comment">← FK→PROJECT.Pnumber</span><br>
+            &nbsp;&nbsp;Hours<br>
+            )<br>
+            <span class="comment">PK = {Essn, Pno}</span>
+          </div>
+        </div>
+
+        <div>
+          <div class="rule-box-label" style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--text3);margin-bottom:8px">Step 6 — Multivalued {Locations}</div>
+          <div class="table-display" style="font-size:12px;line-height:1.9">
+            <span class="comment">New table required:</span><br>
+            <span class="tname">DEPT_LOCATIONS</span>(<br>
+            &nbsp;&nbsp;<span class="pk fk">Dnumber</span>, <span class="comment">← FK→DEPT</span><br>
+            &nbsp;&nbsp;<span class="pk">Dlocation</span><br>
+            )<br>
+            <span class="comment">PK = {Dnumber, Dlocation}</span>
+          </div>
+        </div>
+
+      </div>
+
+      <hr class="divider" style="margin-top:20px">
+      <div class="rule-box-label" style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--text3);margin-bottom:14px">Final Relation Count: 7 tables total</div>
+
+      <div class="table-display" style="font-size:12.5px;line-height:2.1">
+        <span class="tname">EMPLOYEE</span>(<span class="pk">SSN</span>, Fname, Minit, Lname, Address, Salary, Bdate, Sex, <span class="fk">Dno</span>, <span class="fk">Super_ssn</span>)<br>
+        <span class="tname">DEPARTMENT</span>(<span class="pk">Dnumber</span>, Dname, <span class="fk">Mgr_ssn</span>, Mgr_start_date)<br>
+        <span class="tname">PROJECT</span>(<span class="pk">Pnumber</span>, Pname, Plocation, <span class="fk">Dnum</span>)<br>
+        <span class="tname">DEPENDENT</span>(<span class="pk fk">Essn</span>, <span class="pk">Dep_name</span>, Sex, Bdate, Relationship)<br>
+        <span class="tname">WORKS_ON</span>(<span class="pk fk">Essn</span>, <span class="pk fk">Pno</span>, Hours)<br>
+        <span class="tname">DEPT_LOCATIONS</span>(<span class="pk fk">Dnumber</span>, <span class="pk">Dlocation</span>)
+      </div>
+
+      <div class="key-legend" style="margin-top:14px">
+        <div class="key-item"><div class="key-dot" style="background:var(--accent2)"></div><span style="text-decoration:underline">underlined</span> = Primary Key</div>
+        <div class="key-item"><div class="key-dot" style="background:var(--accent3)"></div><em style="color:var(--accent3)">italic green</em> = Foreign Key</div>
+        <div class="key-item"><div class="key-dot" style="background:var(--accent)"></div><span style="color:var(--accent)">orange name</span> = Table name</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── SUMMARY CHECKLIST ───────────────────────────── -->
+  <section>
+    <div class="section-label">Before you submit</div>
+    <div class="section-title">Mapping Checklist — Don't Forget Anything</div>
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-title">✅ Every entity</div>
+        <ul class="checklist">
+          <li>Strong entity → table with all simple attributes</li>
+          <li>Composite attribute expanded into simple parts</li>
+          <li>Derived attribute skipped (not stored)</li>
+          <li>Multivalued attribute gets its OWN table (Step 6)</li>
+          <li>Weak entity → combined PK with owner's PK</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title">✅ Every relationship</div>
+        <ul class="checklist">
+          <li>1:1 → FK approach (total side gets FK)</li>
+          <li>1:N → FK in N-side entity</li>
+          <li>M:N → new relationship table, composite PK</li>
+          <li>N-ary → new table, all entity PKs as FKs</li>
+          <li>Unary 1:N → self-referencing FK same table</li>
+          <li>Unary M:N → new table, two FKs to same entity</li>
+          <li>Relationship attributes included correctly</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title">✅ Keys &amp; Constraints</div>
+        <ul class="checklist">
+          <li>Every table has a Primary Key defined</li>
+          <li>All FKs reference existing PKs</li>
+          <li>Total participation → NOT NULL on that FK</li>
+          <li>Partial participation → FK can be NULL</li>
+          <li>EER hierarchy mapped with correct option (8A/B/C/D)</li>
+          <li>Union type has surrogate key if PKs differ</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<script>
+function toggleTheme() {
+  const body = document.body;
+  body.dataset.theme = body.dataset.theme === 'dark' ? 'light' : 'dark';
+  localStorage.setItem('theme', body.dataset.theme);
+}
+
+// Load saved theme
+const saved = localStorage.getItem('theme');
+if (saved) document.body.dataset.theme = saved;
+else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+  document.body.dataset.theme = 'dark';
+}
+</script>
+</body>
+</html>
