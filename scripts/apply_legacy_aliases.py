@@ -17,6 +17,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 SITE = ROOT / "site"
 MAP_PATH = ROOT / "scripts" / "legacy-docs-path-map.json"
+ASSET_SUFFIXES = {".png", ".jpg", ".jpeg", ".gif", ".svg", ".webp", ".pdf", ".pptx"}
 
 
 def docs_rel_to_site_path(rel: str) -> Path:
@@ -200,6 +201,44 @@ def load_spacing_heuristic_mapping() -> dict[str, str]:
     return heuristic_map
 
 
+def write_redirect_for_markdown_alias(rel: str) -> bool:
+    path = Path(rel)
+    name = path.name
+
+    if name.endswith(".ar.md"):
+        stem = name[: -len(".ar.md")]
+        old_site = SITE / "ar" / path.parent / f"{stem}.html"
+    elif path.suffix == ".md":
+        old_site = SITE / path.parent / f"{path.stem}.html"
+    else:
+        return False
+
+    new_site = docs_rel_to_site_path(rel)
+    if old_site.exists() or not new_site.exists():
+        return False
+
+    write_redirect(old_site, site_path_to_url(new_site))
+    return True
+
+
+def write_ar_asset_mirror(rel: str) -> bool:
+    path = Path(rel)
+    if path.suffix.lower() not in ASSET_SUFFIXES:
+        return False
+    if rel.startswith("ar/"):
+        return False
+
+    new_site = SITE / rel
+    old_site = SITE / "ar" / rel
+
+    if old_site.exists() or not new_site.exists():
+        return False
+
+    old_site.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(new_site, old_site)
+    return True
+
+
 def main() -> int:
     if not SITE.exists():
         return 0
@@ -230,6 +269,18 @@ def main() -> int:
         old_site.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(new_site, old_site)
         copied_assets += 1
+
+    for path in (ROOT / "docs").rglob("*"):
+        if not path.is_file():
+            continue
+
+        rel = path.relative_to(ROOT / "docs").as_posix()
+
+        if write_redirect_for_markdown_alias(rel):
+            created_redirects += 1
+
+        if write_ar_asset_mirror(rel):
+            copied_assets += 1
 
     print(f"[legacy-aliases] mappings: {len(mapping)}")
     print(f"[legacy-aliases] redirects: {created_redirects}")

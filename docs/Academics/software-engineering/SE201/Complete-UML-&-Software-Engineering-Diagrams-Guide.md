@@ -4,11 +4,11 @@ This page contains a comprehensive guide to UML and software engineering diagram
 
 If the embedded view does not load properly, open the guide directly.
 
-- [Open the guide in a new tab](/Academics/software-engineering/SE201/Complete-UML-%26-Software-Engineering-Diagrams-Guide.html)
+- [Open the guide in a new tab](/Academics/software-engineering/SE201/Complete-UML-&-Software-Engineering-Diagrams-Guide.html)
 
 <div class="iframe-wrap">
   <iframe
-    src="/Academics/software-engineering/SE201/Complete-UML-%26-Software-Engineering-Diagrams-Guide.html"
+    src="/Academics/software-engineering/SE201/Complete-UML-&-Software-Engineering-Diagrams-Guide.html"
     title="Complete UML and Software Engineering Diagrams Guide"
     loading="lazy"
     referrerpolicy="no-referrer"
