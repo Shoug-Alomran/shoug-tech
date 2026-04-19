@@ -1,0 +1,2155 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CS330 — Operating Systems Explorer</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@300;400;600&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0a0f;
+            --bg2: #11111a;
+            --bg3: #1a1a2e;
+            --surface: #16213e;
+            --surface2: #1f2b4a;
+            --border: rgba(100, 150, 255, 0.15);
+            --accent: #4f8aff;
+            --accent2: #7c3aed;
+            --accent3: #06d6a0;
+            --accent4: #f72585;
+            --accent5: #ffd166;
+            --text: #e8eaf6;
+            --text2: #8892b0;
+            --glow: rgba(79, 138, 255, 0.3);
+            --glow2: rgba(124, 58, 237, 0.3);
+        }
+
+        [data-theme="light"] {
+            --bg: #f0f2f8;
+            --bg2: #e4e8f5;
+            --bg3: #d8dff0;
+            --surface: #ffffff;
+            --surface2: #f5f7ff;
+            --border: rgba(79, 138, 255, 0.2);
+            --text: #1a1a2e;
+            --text2: #4a5568;
+            --glow: rgba(79, 138, 255, 0.15);
+            --glow2: rgba(124, 58, 237, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Syne', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+            transition: background 0.4s, color 0.4s;
+        }
+
+        /* PARTICLES */
+        #particles {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: var(--accent);
+            border-radius: 50%;
+            opacity: 0;
+            animation: float-particle linear infinite;
+        }
+
+        @keyframes float-particle {
+            0% {
+                transform: translateY(100vh) translateX(0);
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 0.6;
+            }
+
+            90% {
+                opacity: 0.3;
+            }
+
+            100% {
+                transform: translateY(-10vh) translateX(30px);
+                opacity: 0;
+            }
+        }
+
+        /* HEADER */
+        header {
+            position: relative;
+            z-index: 10;
+            padding: 28px 48px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border);
+            backdrop-filter: blur(20px);
+            background: rgba(10, 10, 15, 0.6);
+        }
+
+        [data-theme="light"] header {
+            background: rgba(240, 242, 248, 0.8);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .logo-icon {
+            width: 42px;
+            height: 42px;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            font-weight: 600;
+            color: white;
+            animation: pulse-logo 3s ease-in-out infinite;
+        }
+
+        @keyframes pulse-logo {
+
+            0%,
+            100% {
+                box-shadow: 0 0 0 0 var(--glow);
+            }
+
+            50% {
+                box-shadow: 0 0 0 12px transparent;
+            }
+        }
+
+        .logo-text h1 {
+            font-size: 20px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .logo-text p {
+            font-size: 11px;
+            color: var(--text2);
+            font-family: 'JetBrains Mono', monospace;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .view-tabs {
+            display: flex;
+            background: var(--bg3);
+            border-radius: 10px;
+            padding: 4px;
+            gap: 2px;
+            border: 1px solid var(--border);
+        }
+
+        .view-tab {
+            padding: 8px 20px;
+            border-radius: 7px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--text2);
+            border: none;
+            background: none;
+            font-family: 'Syne', sans-serif;
+        }
+
+        .view-tab.active {
+            background: var(--accent);
+            color: white;
+            box-shadow: 0 0 20px var(--glow);
+        }
+
+        .view-tab:not(.active):hover {
+            color: var(--text);
+            background: var(--surface2);
+        }
+
+        .theme-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            transition: all 0.2s;
+        }
+
+        .theme-btn:hover {
+            border-color: var(--accent);
+            box-shadow: 0 0 16px var(--glow);
+        }
+
+        /* MAIN LAYOUT */
+        .main-container {
+            position: relative;
+            z-index: 5;
+            display: grid;
+            grid-template-columns: 1fr 420px;
+            gap: 0;
+            min-height: calc(100vh - 90px);
+        }
+
+        /* LEFT PANEL */
+        .left-panel {
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .view-section {
+            display: none;
+            width: 100%;
+        }
+
+        .view-section.active {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* LAPTOP SHELL */
+        .laptop-shell {
+            width: 580px;
+            max-width: 100%;
+            filter: drop-shadow(0 40px 80px rgba(79, 138, 255, 0.2));
+            animation: float-laptop 6s ease-in-out infinite;
+        }
+
+        @keyframes float-laptop {
+
+            0%,
+            100% {
+                transform: translateY(0px) rotateX(2deg);
+            }
+
+            50% {
+                transform: translateY(-12px) rotateX(0deg);
+            }
+        }
+
+        /* LAPTOP BODY */
+        .laptop-body {
+            background: linear-gradient(160deg, #1e2132, #13161f);
+            border-radius: 18px 18px 10px 10px;
+            padding: 20px 20px 16px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            position: relative;
+        }
+
+        [data-theme="light"] .laptop-body {
+            background: linear-gradient(160deg, #c8ccd8, #b0b5c8);
+            border: 1px solid rgba(0, 0, 0, 0.15);
+        }
+
+        /* INTERNAL VIEW */
+        .internal-view {
+            background: #080c14;
+            border-radius: 10px;
+            padding: 18px;
+            min-height: 320px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(79, 138, 255, 0.1);
+        }
+
+        [data-theme="light"] .internal-view {
+            background: #1a1f30;
+        }
+
+        /* PCB BOARD */
+        .pcb-board {
+            background: #0d1f0d;
+            border-radius: 8px;
+            width: 100%;
+            height: 100%;
+            min-height: 290px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid #1a3a1a;
+        }
+
+        /* PCB TRACES */
+        .pcb-trace {
+            position: absolute;
+            background: rgba(0, 200, 80, 0.15);
+            border-radius: 2px;
+            pointer-events: none;
+        }
+
+        /* COMPONENTS ON BOARD */
+        .hw-component {
+            position: absolute;
+            cursor: pointer;
+            transition: all 0.25s;
+            z-index: 10;
+        }
+
+        .hw-component:hover {
+            transform: scale(1.08);
+            z-index: 20;
+        }
+
+        .chip {
+            border-radius: 6px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            font-weight: 600;
+            color: white;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            padding: 6px 4px;
+            gap: 3px;
+            position: relative;
+            overflow: hidden;
+            letter-spacing: 0.3px;
+        }
+
+        .chip::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), transparent);
+            pointer-events: none;
+        }
+
+        .chip .chip-icon {
+            font-size: 16px;
+            line-height: 1;
+        }
+
+        .chip .chip-label {
+            font-size: 8px;
+            opacity: 0.8;
+        }
+
+        /* GLOW ACTIVE */
+        .hw-component.selected .chip {
+            box-shadow: 0 0 0 2px var(--accent), 0 0 30px var(--glow);
+        }
+
+        .hw-component:hover .chip {
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.15);
+        }
+
+        /* DATA FLOW LINES */
+        .data-line {
+            position: absolute;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 5;
+        }
+
+        .data-line .pulse {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            animation: data-flow 2s linear infinite;
+            opacity: 0;
+        }
+
+        @keyframes data-flow {
+            0% {
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 1;
+            }
+
+            90% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0;
+            }
+        }
+
+        /* ACTIVE ANIMATION ON CHIP */
+        @keyframes chip-glow {
+
+            0%,
+            100% {
+                box-shadow: 0 0 8px currentColor;
+            }
+
+            50% {
+                box-shadow: 0 0 24px currentColor;
+            }
+        }
+
+        /* BUS LINES ON PCB */
+        .bus-line {
+            position: absolute;
+            background: linear-gradient(90deg, transparent, var(--bus-color), transparent);
+            height: 2px;
+            border-radius: 1px;
+            animation: bus-pulse 2s ease-in-out infinite;
+            pointer-events: none;
+            z-index: 4;
+            opacity: 0.4;
+        }
+
+        .bus-line.vertical {
+            width: 2px;
+            height: auto;
+            background: linear-gradient(180deg, transparent, var(--bus-color), transparent);
+        }
+
+        @keyframes bus-pulse {
+
+            0%,
+            100% {
+                opacity: 0.2;
+            }
+
+            50% {
+                opacity: 0.7;
+            }
+        }
+
+        /* SOFTWARE VIEW */
+        .sw-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .sw-layer {
+            padding: 18px 24px;
+            cursor: pointer;
+            transition: all 0.25s;
+            position: relative;
+            overflow: hidden;
+            border-left: 4px solid transparent;
+        }
+
+        .sw-layer::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            transition: opacity 0.25s;
+        }
+
+        .sw-layer:hover::before {
+            opacity: 1;
+        }
+
+        .sw-layer:hover {
+            transform: translateX(6px);
+        }
+
+        .sw-layer.selected {
+            border-left-color: var(--layer-color);
+        }
+
+        .sw-layer.selected::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: var(--layer-color);
+            opacity: 0.06;
+            pointer-events: none;
+        }
+
+        .sw-layer-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 4px;
+        }
+
+        .sw-layer-icon {
+            font-size: 22px;
+        }
+
+        .sw-layer-name {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--layer-color);
+        }
+
+        .sw-layer-sub {
+            font-size: 11px;
+            color: var(--text2);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .sw-layer-items {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+
+        .sw-tag {
+            font-size: 10px;
+            padding: 3px 10px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.06);
+            color: var(--text2);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            font-family: 'JetBrains Mono', monospace;
+            transition: all 0.2s;
+        }
+
+        .sw-layer.selected .sw-tag {
+            background: var(--layer-color);
+            color: white;
+            opacity: 0.8;
+        }
+
+        /* SEPARATOR BETWEEN LAYERS */
+        .layer-arrow {
+            display: flex;
+            justify-content: center;
+            color: var(--text2);
+            font-size: 18px;
+            padding: 2px 0;
+            animation: arrow-bounce 2s ease-in-out infinite;
+            opacity: 0.5;
+        }
+
+        @keyframes arrow-bounce {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(3px);
+            }
+        }
+
+        /* RIGHT PANEL - INFO */
+        .right-panel {
+            border-left: 1px solid var(--border);
+            background: var(--bg2);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .info-header {
+            padding: 28px 28px 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .info-breadcrumb {
+            font-size: 11px;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--text2);
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .info-title {
+            font-size: 24px;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 6px;
+        }
+
+        .info-subtitle {
+            font-size: 12px;
+            color: var(--text2);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .info-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px 28px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .info-body::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .info-body::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .info-body::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 2px;
+        }
+
+        .info-section {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .info-section-title {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--accent);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .info-desc {
+            font-size: 14px;
+            line-height: 1.7;
+            color: var(--text2);
+        }
+
+        .info-desc strong {
+            color: var(--text);
+        }
+
+        .info-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .info-tag {
+            font-size: 11px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            border: 1px solid;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 600;
+        }
+
+        .related-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .related-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 14px;
+            border-radius: 8px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 13px;
+        }
+
+        .related-item:hover {
+            border-color: var(--accent);
+            background: var(--surface2);
+        }
+
+        .related-item .rel-icon {
+            font-size: 16px;
+        }
+
+        .quiz-box {
+            background: linear-gradient(135deg, rgba(79, 138, 255, 0.08), rgba(124, 58, 237, 0.08));
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        .quiz-q {
+            font-size: 13px;
+            line-height: 1.6;
+            color: var(--text);
+            margin-bottom: 12px;
+        }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .quiz-opt {
+            padding: 8px 14px;
+            border-radius: 8px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            cursor: pointer;
+            font-size: 12px;
+            font-family: 'JetBrains Mono', monospace;
+            transition: all 0.2s;
+            color: var(--text2);
+        }
+
+        .quiz-opt:hover {
+            border-color: var(--accent);
+            color: var(--text);
+        }
+
+        .quiz-opt.correct {
+            border-color: var(--accent3);
+            background: rgba(6, 214, 160, 0.1);
+            color: var(--accent3);
+        }
+
+        .quiz-opt.wrong {
+            border-color: var(--accent4);
+            background: rgba(247, 37, 133, 0.1);
+            color: var(--accent4);
+        }
+
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            gap: 14px;
+            color: var(--text2);
+            text-align: center;
+            padding: 40px;
+        }
+
+        .empty-state .icon {
+            font-size: 48px;
+            opacity: 0.4;
+            animation: pulse-icon 3s ease-in-out infinite;
+        }
+
+        @keyframes pulse-icon {
+
+            0%,
+            100% {
+                opacity: 0.3;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 0.6;
+                transform: scale(1.05);
+            }
+        }
+
+        .empty-state p {
+            font-size: 14px;
+            line-height: 1.6;
+            max-width: 240px;
+        }
+
+        /* LEGEND */
+        .legend {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-top: 16px;
+            justify-content: center;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            color: var(--text2);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .legend-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 3px;
+        }
+
+        /* ANIMATED CIRCUIT LINES ON PCB */
+        @keyframes circuit-flow {
+            0% {
+                stroke-dashoffset: 200;
+            }
+
+            100% {
+                stroke-dashoffset: 0;
+            }
+        }
+
+        .circuit-svg {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .circuit-path {
+            fill: none;
+            stroke-dasharray: 8 4;
+            animation: circuit-flow 3s linear infinite;
+            opacity: 0.25;
+        }
+
+        /* TOOLTIP */
+        .hw-tooltip {
+            position: absolute;
+            background: var(--bg);
+            border: 1px solid var(--accent);
+            border-radius: 8px;
+            padding: 6px 10px;
+            font-size: 11px;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--accent);
+            pointer-events: none;
+            z-index: 100;
+            white-space: nowrap;
+            opacity: 0;
+            transform: translateY(-4px);
+            transition: all 0.15s;
+            bottom: calc(100% + 6px);
+            left: 50%;
+            transform: translateX(-50%) translateY(-4px);
+        }
+
+        .hw-component:hover .hw-tooltip {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* LAPTOP BASE */
+        .laptop-base {
+            background: linear-gradient(180deg, #1a1d29, #0f111a);
+            height: 14px;
+            border-radius: 0 0 14px 14px;
+            margin-top: 2px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-top: none;
+            position: relative;
+        }
+
+        [data-theme="light"] .laptop-base {
+            background: linear-gradient(180deg, #b0b5c8, #9a9fb5);
+        }
+
+        .laptop-notch {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 6px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 6px 6px 0 0;
+        }
+
+        /* LAPTOP SCREEN AREA */
+        .laptop-screen-frame {
+            background: #080c14;
+            border-radius: 8px;
+            padding: 3px;
+            margin-bottom: 12px;
+            border: 1px solid rgba(79, 138, 255, 0.05);
+        }
+
+        .laptop-cam {
+            text-align: center;
+            margin-bottom: 8px;
+        }
+
+        .cam-dot {
+            width: 6px;
+            height: 6px;
+            background: #333;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        /* FLASH ANIMATION */
+        @keyframes flash-in {
+            0% {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .info-header,
+        .info-body {
+            animation: flash-in 0.3s ease;
+        }
+
+        /* PROGRESS BAR */
+        .progress-bar {
+            height: 3px;
+            background: var(--bg3);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-top: 6px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 2px;
+            animation: progress-animate 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes progress-animate {
+            0% {
+                opacity: 0.6;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
+        /* SPEED BADGES */
+        .speed-row {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .speed-badge {
+            font-size: 10px;
+            font-family: 'JetBrains Mono', monospace;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 900px) {
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+
+            .right-panel {
+                border-left: none;
+                border-top: 1px solid var(--border);
+                min-height: 400px;
+            }
+
+            .laptop-shell {
+                width: 100%;
+            }
+
+            header {
+                padding: 16px 20px;
+            }
+
+            .left-panel {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="particles"></div>
+
+    <header>
+        <div class="logo">
+            <div class="logo-icon">OS</div>
+            <div class="logo-text">
+                <h1>CS330 Explorer</h1>
+                <p>Operating Systems — Visual Guide</p>
+            </div>
+        </div>
+        <div class="header-right">
+            <div class="view-tabs">
+                <button class="view-tab active" onclick="switchView('hardware')">⚙️ Hardware</button>
+                <button class="view-tab" onclick="switchView('software')">🧠 Software</button>
+            </div>
+            <button class="theme-btn" onclick="toggleTheme()" title="Toggle theme">🌙</button>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <div class="left-panel">
+
+            <!-- HARDWARE VIEW -->
+            <div class="view-section active" id="view-hardware">
+                <div class="laptop-shell">
+                    <div class="laptop-body">
+                        <div class="laptop-cam">
+                            <div class="cam-dot"></div>
+                        </div>
+                        <div class="laptop-screen-frame">
+                            <div class="internal-view">
+                                <div class="pcb-board" id="pcb-board">
+
+                                    <!-- SVG Circuit Lines -->
+                                    <svg class="circuit-svg" viewBox="0 0 540 280" preserveAspectRatio="none">
+                                        <!-- Bus lines -->
+                                        <path class="circuit-path" d="M270 40 L270 240" stroke="#4f8aff"
+                                            stroke-width="3" />
+                                        <path class="circuit-path" d="M100 140 L440 140" stroke="#06d6a0"
+                                            stroke-width="2" />
+                                        <path class="circuit-path" d="M200 80 L200 200" stroke="#ffd166"
+                                            stroke-width="1.5" />
+                                        <path class="circuit-path" d="M350 80 L350 200" stroke="#f72585"
+                                            stroke-width="1.5" />
+                                        <path class="circuit-path" d="M120 100 L420 100" stroke="#7c3aed"
+                                            stroke-width="1.5" />
+                                        <path class="circuit-path" d="M80 60 L80 220" stroke="#4f8aff"
+                                            stroke-width="1" />
+                                        <path class="circuit-path" d="M460 60 L460 220" stroke="#4f8aff"
+                                            stroke-width="1" />
+                                        <path class="circuit-path" d="M130 180 L400 180" stroke="#06d6a0"
+                                            stroke-width="1" />
+                                        <!-- Corner dots -->
+                                        <circle cx="270" cy="140" r="4" fill="#4f8aff" opacity="0.5" />
+                                        <circle cx="200" cy="140" r="3" fill="#ffd166" opacity="0.5" />
+                                        <circle cx="350" cy="140" r="3" fill="#f72585" opacity="0.5" />
+                                        <circle cx="270" cy="100" r="3" fill="#7c3aed" opacity="0.5" />
+                                    </svg>
+
+                                    <!-- CPU -->
+                                    <div class="hw-component" style="left:38%;top:28%;transform:translate(-50%,-50%)"
+                                        onclick="showInfo('cpu')">
+                                        <div class="chip"
+                                            style="width:90px;height:80px;background:linear-gradient(135deg,#1a2a4a,#0d1a30);border-color:rgba(79,138,255,0.5)">
+                                            <div class="chip-icon">🔲</div>
+                                            <div style="font-size:11px;font-weight:700;color:#4f8aff">CPU</div>
+                                            <div class="chip-label">Core i7</div>
+                                        </div>
+                                        <div class="hw-tooltip">Central Processing Unit</div>
+                                    </div>
+
+                                    <!-- Registers -->
+                                    <div class="hw-component" style="left:26%;top:22%;transform:translate(-50%,-50%)"
+                                        onclick="showInfo('registers')">
+                                        <div class="chip"
+                                            style="width:58px;height:44px;background:linear-gradient(135deg,#2a1a3a,#1a0d25);border-color:rgba(124,58,237,0.6)">
+                                            <div style="font-size:10px">📋</div>
+                                            <div style="font-size:9px;color:#7c3aed;font-weight:700">REGS</div>
+                                        </div>
+                                        <div class="hw-tooltip">CPU Registers</div>
+                                    </div>
+
+                                    <!-- Cache L1/L2 -->
+                                    <div class="hw-component" style="left:52%;top:18%;transform:translate(-50%,-50%)"
+                                        onclick="showInfo('cache')">
+                                        <div class="chip"
+                                            style="width:70px;height:42px;background:linear-gradient(135deg,#1a3a2a,#0d251a);border-color:rgba(6,214,160,0.5)">
+                                            <div style="font-size:10px">⚡</div>
+                                            <div style="font-size:9px;color:#06d6a0;font-weight:700">CACHE</div>
+                                            <div class="chip-label">L1/L2/L3</div>
+                                        </div>
+                                        <div class="hw-tooltip">CPU Cache (L1/L2/L3)</div>
+                                    </div>
+
+                                    <!-- RAM sticks -->
+                                    <div class="hw-component" style="left:68%;top:20%;transform:translate(-50%,-50%)"
+                                        onclick="showInfo('ram')">
+                                        <div class="chip"
+                                            style="width:64px;height:86px;background:linear-gradient(135deg,#1a2a1a,#0d1a0d);border-color:rgba(6,214,160,0.4);flex-direction:column">
+                                            <div style="font-size:12px">🟩</div>
+                                            <div style="font-size:9px;color:#06d6a0;font-weight:700">RAM</div>
+                                            <div class="chip-label">8–64 GB</div>
+                                            <div class="chip-label">DDR4/5</div>
+                                        </div>
+                                        <div class="hw-tooltip">Main Memory (RAM)</div>
+                                    </div>
+
+                                    <!-- Second RAM stick -->
+                                    <div class="hw-component" style="left:78%;top:20%;transform:translate(-50%,-50%)"
+                                        onclick="showInfo('ram')">
+                                        <div class="chip"
+                                            style="width:64px;height:86px;background:linear-gradient(135deg,#1a2a1a,#0d1a0d);border-color:rgba(6,214,160,0.4)">
+                                            <div style="font-size:12px">🟩</div>
+                                            <div style="font-size:9px;color:#06d6a0;font-weight:700">RAM</div>
+                                            <div class="chip-label">Slot 2</div>
+                                        </div>
+                                        <div class="hw-tooltip">RAM Slot 2</div>
+                                    </div>
+
+                                    <!-- NVMe SSD -->
+                                    <div class="hw-component" style="left:60%;top:50%;transform:translate(-50%,-50%)"
+                                        onclick="showInfo('ssd')">
+                                        <div class="chip"
+                                            style="width:100px;height:38px;background:linear-gradient(135deg,#2a1f0a,#1a1305);border-color:rgba(255,209,102,0.5);flex-direction:row;gap:6px">
+                                            <div style="font-size:12px">💾</div>
+                                            <div>
+                                                <div style="font-size:9px;color:#ffd166;font-weight:700">NVMe SSD</div>
+                                                <div class="chip-label">512GB-2TB</div>
+                                            </div>
+                                        </div>
+                                        <div class="hw-tooltip">NVMe SSD (Secondary Storage)</div>
+                                    </div>
+
+                                    <!-- HDD -->
+                                    <div class="hw-component" style="left:20%;top:75%;transform:translate(-50%,-50%)"
+                                        onclick="showInfo('hdd')">
+                                        <div class="chip"
+                                            style="width:80px;height:50px;background:linear-gradient(135deg,#2a1a0a,#1a1005);border-color:rgba(255,140,0,0.4)">
+                                            <div style="font-size:14px">🖴</div>
+                                            <div style="font-size:9px;color:#ff8c00;font-weight:700">HDD</div>
+                                            <div class="chip-label">Magnetic Disk</div>
+                                        </div>
+                                        <div class="hw-tooltip">Hard Disk Drive</div>
+                                    </div>
+
+                                    <!-- GPU -->
+                                    <div class="hw-component" style="left:40%;top:70%;transform:translate(-50%,-50%)"
+                                        onclick="showInfo('gpu')">
+                                        <div class="chip"
+                                            style="width:90px;height:60px;background:linear-gradient(135deg,#2a0a2a,#1a051a);border-color:rgba(247,37,133,0.5)">
+                                            <div style="font-size:16px">🎮</div>
+                                            <div style="font-size:9px;color:#f72585;font-weight:700">GPU</div>
+                                            <div class="chip-label">Graphics</div>
+                                        </div>
+                                        <div class="hw-tooltip">GPU / Graphics Processor</div>
+                                    </div>
+
+                                    <!-- Chipset / System Bus -->
+                                    <div class="hw-component" style="left:38%;top:48%;transform:translate(-50%,-50%)"
+                                        onclick="showInfo('bus')">
+                                        <div class="chip"
+                                            style="width:80px;height:52px;background:linear-gradient(135deg,#1a1a2a,#0d0d1a);border-color:rgba(79,138,255,0.3)">
+                                            <div style="font-size:12px">🔌</div>
+                                            <div style="font-size:9px;color:#4f8aff;font-weight:700">CHIPSET</div>
+                                            <div class="chip-label">System Bus</div>
+                                        </div>
+                                        <div class="hw-tooltip">Chipset / System Bus</div>
+                                    </div>
+
+                                    <!-- MMU -->
+                                    <div class="hw-component" style="left:22%;top:42%;transform:translate(-50%,-50%)"
+                                        onclick="showInfo('mmu')">
+                                        <div class="chip"
+                                            style="width:60px;height:44px;background:linear-gradient(135deg,#0a2a2a,#051a1a);border-color:rgba(6,214,160,0.4)">
+                                            <div style="font-size:10px">🗺️</div>
+                                            <div style="font-size:9px;color:#06d6a0;font-weight:700">MMU</div>
+                                        </div>
+                                        <div class="hw-tooltip">Memory Management Unit</div>
+                                    </div>
+
+                                    <!-- DMA Controller -->
+                                    <div class="hw-component" style="left:18%;top:57%;transform:translate(-50%,-50%)"
+                                        onclick="showInfo('dma')">
+                                        <div class="chip"
+                                            style="width:58px;height:44px;background:linear-gradient(135deg,#1a2a0a,#0d1a05);border-color:rgba(100,200,50,0.4)">
+                                            <div style="font-size:10px">↔️</div>
+                                            <div style="font-size:9px;color:#64c832;font-weight:700">DMA</div>
+                                        </div>
+                                        <div class="hw-tooltip">DMA Controller</div>
+                                    </div>
+
+                                    <!-- Interrupt Controller -->
+                                    <div class="hw-component" style="left:58%;top:72%;transform:translate(-50%,-50%)"
+                                        onclick="showInfo('interrupt')">
+                                        <div class="chip"
+                                            style="width:70px;height:44px;background:linear-gradient(135deg,#2a0a1a,#1a0510);border-color:rgba(247,37,133,0.4)">
+                                            <div style="font-size:10px">⚠️</div>
+                                            <div style="font-size:9px;color:#f72585;font-weight:700">IRQ CTRL</div>
+                                        </div>
+                                        <div class="hw-tooltip">Interrupt Controller</div>
+                                    </div>
+
+                                    <!-- TLB -->
+                                    <div class="hw-component" style="left:28%;top:58%;transform:translate(-50%,-50%)"
+                                        onclick="showInfo('tlb')">
+                                        <div class="chip"
+                                            style="width:56px;height:40px;background:linear-gradient(135deg,#0a1a2a,#05100d);border-color:rgba(79,138,255,0.4)">
+                                            <div style="font-size:10px">🔍</div>
+                                            <div style="font-size:9px;color:#4f8aff;font-weight:700">TLB</div>
+                                        </div>
+                                        <div class="hw-tooltip">Translation Lookaside Buffer</div>
+                                    </div>
+
+                                    <!-- I/O Ports -->
+                                    <div class="hw-component" style="left:77%;top:62%;transform:translate(-50%,-50%)"
+                                        onclick="showInfo('io')">
+                                        <div class="chip"
+                                            style="width:66px;height:52px;background:linear-gradient(135deg,#2a2a0a,#1a1a05);border-color:rgba(255,209,102,0.3)">
+                                            <div style="font-size:12px">🔌</div>
+                                            <div style="font-size:9px;color:#ffd166;font-weight:700">I/O PORTS</div>
+                                            <div class="chip-label">USB/SATA</div>
+                                        </div>
+                                        <div class="hw-tooltip">I/O Ports & Controllers</div>
+                                    </div>
+
+                                    <!-- Timer -->
+                                    <div class="hw-component" style="left:78%;top:42%;transform:translate(-50%,-50%)"
+                                        onclick="showInfo('timer')">
+                                        <div class="chip"
+                                            style="width:52px;height:38px;background:linear-gradient(135deg,#1a0a2a,#100519);border-color:rgba(200,100,255,0.4)">
+                                            <div style="font-size:10px">⏱️</div>
+                                            <div style="font-size:9px;color:#c864ff;font-weight:700">TIMER</div>
+                                        </div>
+                                        <div class="hw-tooltip">Hardware Timer</div>
+                                    </div>
+
+                                    <!-- Battery/Power -->
+                                    <div class="hw-component" style="left:88%;top:55%;transform:translate(-50%,-50%)"
+                                        onclick="showInfo('power')">
+                                        <div class="chip"
+                                            style="width:44px;height:56px;background:linear-gradient(135deg,#0a2a0a,#051505);border-color:rgba(50,200,50,0.4)">
+                                            <div style="font-size:14px">🔋</div>
+                                            <div style="font-size:8px;color:#32c832;font-weight:700">PWR</div>
+                                        </div>
+                                        <div class="hw-tooltip">Power / Battery</div>
+                                    </div>
+
+                                </div><!-- end pcb-board -->
+                            </div><!-- end internal-view -->
+                        </div><!-- end screen-frame -->
+                    </div><!-- end laptop-body -->
+                    <div class="laptop-base">
+                        <div class="laptop-notch"></div>
+                    </div>
+                </div><!-- end laptop-shell -->
+
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-dot" style="background:#4f8aff"></div>CPU/Bus
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-dot" style="background:#06d6a0"></div>Memory
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-dot" style="background:#ffd166"></div>Storage
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-dot" style="background:#f72585"></div>I/O
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-dot" style="background:#7c3aed"></div>Control
+                    </div>
+                </div>
+            </div>
+
+            <!-- SOFTWARE VIEW -->
+            <div class="view-section" id="view-software">
+                <div style="text-align:center;margin-bottom:24px">
+                    <div
+                        style="font-size:13px;color:var(--text2);font-family:'JetBrains Mono',monospace;letter-spacing:2px;text-transform:uppercase">
+                        OS Software Stack — Click any layer</div>
+                </div>
+                <div class="sw-stack" id="sw-stack">
+
+                    <div class="sw-layer"
+                        style="--layer-color:#ffd166;background:linear-gradient(135deg,rgba(255,209,102,0.04),transparent);border-radius:12px 12px 0 0"
+                        onclick="showSoftwareInfo('user')">
+                        <div class="sw-layer-header">
+                            <div class="sw-layer-icon">👤</div>
+                            <div>
+                                <div class="sw-layer-name">User Applications</div>
+                                <div class="sw-layer-sub">Highest privilege level 3 (user mode)</div>
+                            </div>
+                        </div>
+                        <div class="sw-layer-items">
+                            <span class="sw-tag">Web Browser</span>
+                            <span class="sw-tag">Text Editor</span>
+                            <span class="sw-tag">Games</span>
+                            <span class="sw-tag">Compilers</span>
+                            <span class="sw-tag">Databases</span>
+                        </div>
+                    </div>
+
+                    <div class="layer-arrow">↓</div>
+
+                    <div class="sw-layer"
+                        style="--layer-color:#4f8aff;background:linear-gradient(135deg,rgba(79,138,255,0.04),transparent)"
+                        onclick="showSoftwareInfo('syscall')">
+                        <div class="sw-layer-header">
+                            <div class="sw-layer-icon">📞</div>
+                            <div>
+                                <div class="sw-layer-name">System Call Interface</div>
+                                <div class="sw-layer-sub">Bridge between user & kernel (API / POSIX)</div>
+                            </div>
+                        </div>
+                        <div class="sw-layer-items">
+                            <span class="sw-tag">fork()</span>
+                            <span class="sw-tag">exec()</span>
+                            <span class="sw-tag">wait()</span>
+                            <span class="sw-tag">exit()</span>
+                            <span class="sw-tag">open()</span>
+                            <span class="sw-tag">read()</span>
+                            <span class="sw-tag">write()</span>
+                        </div>
+                    </div>
+
+                    <div class="layer-arrow">↓</div>
+
+                    <div class="sw-layer"
+                        style="--layer-color:#7c3aed;background:linear-gradient(135deg,rgba(124,58,237,0.04),transparent)"
+                        onclick="showSoftwareInfo('process')">
+                        <div class="sw-layer-header">
+                            <div class="sw-layer-icon">⚙️</div>
+                            <div>
+                                <div class="sw-layer-name">Process Management</div>
+                                <div class="sw-layer-sub">Scheduler, PCB, context switch, IPC</div>
+                            </div>
+                        </div>
+                        <div class="sw-layer-items">
+                            <span class="sw-tag">PCB</span>
+                            <span class="sw-tag">Ready Queue</span>
+                            <span class="sw-tag">FCFS</span>
+                            <span class="sw-tag">SJF</span>
+                            <span class="sw-tag">Round Robin</span>
+                            <span class="sw-tag">Priority</span>
+                        </div>
+                    </div>
+
+                    <div class="layer-arrow">↓</div>
+
+                    <div class="sw-layer"
+                        style="--layer-color:#06d6a0;background:linear-gradient(135deg,rgba(6,214,160,0.04),transparent)"
+                        onclick="showSoftwareInfo('memory')">
+                        <div class="sw-layer-header">
+                            <div class="sw-layer-icon">🧠</div>
+                            <div>
+                                <div class="sw-layer-name">Memory Management</div>
+                                <div class="sw-layer-sub">Paging, segmentation, virtual memory</div>
+                            </div>
+                        </div>
+                        <div class="sw-layer-items">
+                            <span class="sw-tag">Page Table</span>
+                            <span class="sw-tag">TLB</span>
+                            <span class="sw-tag">Demand Paging</span>
+                            <span class="sw-tag">LRU</span>
+                            <span class="sw-tag">FIFO</span>
+                            <span class="sw-tag">OPT</span>
+                        </div>
+                    </div>
+
+                    <div class="layer-arrow">↓</div>
+
+                    <div class="sw-layer"
+                        style="--layer-color:#f72585;background:linear-gradient(135deg,rgba(247,37,133,0.04),transparent)"
+                        onclick="showSoftwareInfo('sync')">
+                        <div class="sw-layer-header">
+                            <div class="sw-layer-icon">🔒</div>
+                            <div>
+                                <div class="sw-layer-name">Synchronization</div>
+                                <div class="sw-layer-sub">Semaphores, mutexes, monitors, deadlock</div>
+                            </div>
+                        </div>
+                        <div class="sw-layer-items">
+                            <span class="sw-tag">Semaphore</span>
+                            <span class="sw-tag">Mutex</span>
+                            <span class="sw-tag">Monitor</span>
+                            <span class="sw-tag">Peterson's</span>
+                            <span class="sw-tag">Deadlock</span>
+                        </div>
+                    </div>
+
+                    <div class="layer-arrow">↓</div>
+
+                    <div class="sw-layer"
+                        style="--layer-color:#ffd166;background:linear-gradient(135deg,rgba(255,209,102,0.04),transparent)"
+                        onclick="showSoftwareInfo('filesystem')">
+                        <div class="sw-layer-header">
+                            <div class="sw-layer-icon">📁</div>
+                            <div>
+                                <div class="sw-layer-name">File System</div>
+                                <div class="sw-layer-sub">Allocation, directories, free space</div>
+                            </div>
+                        </div>
+                        <div class="sw-layer-items">
+                            <span class="sw-tag">Contiguous</span>
+                            <span class="sw-tag">Linked</span>
+                            <span class="sw-tag">Indexed</span>
+                            <span class="sw-tag">FAT</span>
+                            <span class="sw-tag">inode</span>
+                            <span class="sw-tag">Bitmap</span>
+                        </div>
+                    </div>
+
+                    <div class="layer-arrow">↓</div>
+
+                    <div class="sw-layer"
+                        style="--layer-color:#4f8aff;background:linear-gradient(135deg,rgba(79,138,255,0.06),transparent);border-radius:0 0 12px 12px"
+                        onclick="showSoftwareInfo('kernel')">
+                        <div class="sw-layer-header">
+                            <div class="sw-layer-icon">⚡</div>
+                            <div>
+                                <div class="sw-layer-name">Kernel / Hardware Abstraction</div>
+                                <div class="sw-layer-sub">Ring 0 — full privilege — Device drivers, interrupts</div>
+                            </div>
+                        </div>
+                        <div class="sw-layer-items">
+                            <span class="sw-tag">Monolithic</span>
+                            <span class="sw-tag">Microkernel</span>
+                            <span class="sw-tag">Modules</span>
+                            <span class="sw-tag">Device Drivers</span>
+                            <span class="sw-tag">ISR</span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div><!-- end left-panel -->
+
+        <!-- RIGHT PANEL -->
+        <div class="right-panel">
+            <div id="info-content">
+                <div class="empty-state">
+                    <div class="icon">👆</div>
+                    <p>Click any component to explore how it works in the context of CS330</p>
+                    <div
+                        style="font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--text2);margin-top:8px;opacity:0.6">
+                        Switch between Hardware & Software views using the tabs above</div>
+                </div>
+            </div>
+        </div>
+
+    </div><!-- end main-container -->
+
+    <script>
+        // ─── THEME ───────────────────────────────────────
+        const themeBtn = document.querySelector('.theme-btn');
+        function toggleTheme() {
+            const isDark = !document.documentElement.hasAttribute('data-theme');
+            if (isDark) {
+                document.documentElement.setAttribute('data-theme', 'light');
+                themeBtn.textContent = '🌙';
+            } else {
+                document.documentElement.removeAttribute('data-theme');
+                themeBtn.textContent = '☀️';
+            }
+        }
+
+        // ─── PARTICLES ───────────────────────────────────
+        const pcont = document.getElementById('particles');
+        for (let i = 0; i < 30; i++) {
+            const p = document.createElement('div');
+            p.className = 'particle';
+            p.style.left = Math.random() * 100 + '%';
+            p.style.animationDuration = (8 + Math.random() * 12) + 's';
+            p.style.animationDelay = (-Math.random() * 20) + 's';
+            p.style.width = p.style.height = (1 + Math.random() * 2) + 'px';
+            p.style.opacity = Math.random() * 0.6;
+            const colors = ['#4f8aff', '#7c3aed', '#06d6a0', '#f72585', '#ffd166'];
+            p.style.background = colors[Math.floor(Math.random() * colors.length)];
+            pcont.appendChild(p);
+        }
+
+        // ─── VIEW SWITCH ─────────────────────────────────
+        function switchView(view) {
+            document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.view-tab').forEach(t => t.classList.remove('active'));
+            document.getElementById('view-' + view).classList.add('active');
+            event.currentTarget.classList.add('active');
+            // clear info panel
+            setEmpty();
+            // clear selections
+            document.querySelectorAll('.hw-component').forEach(c => c.classList.remove('selected'));
+            document.querySelectorAll('.sw-layer').forEach(l => l.classList.remove('selected'));
+        }
+
+        function setEmpty() {
+            document.getElementById('info-content').innerHTML = `
+    <div class="empty-state">
+      <div class="icon">👆</div>
+      <p>Click any component to explore how it works in the context of CS330</p>
+      <div style="font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--text2);margin-top:8px;opacity:0.6">Switch between Hardware & Software views using the tabs above</div>
+    </div>`;
+        }
+
+        // ─── DATA ────────────────────────────────────────
+        const hwData = {
+            cpu: {
+                title: 'CPU — Central Processing Unit',
+                subtitle: 'The brain of the computer',
+                color: '#4f8aff',
+                icon: '🔲',
+                what: `The CPU is the core processing unit that <strong>fetches, decodes, and executes instructions</strong>. In CS330, the OS must manage CPU time among many competing processes — this is called <strong>CPU Scheduling</strong>. The CPU can run in two modes:<br><br>
+    • <strong>User Mode (bit=1)</strong> — limited privileges, running your app<br>
+    • <strong>Kernel Mode (bit=0)</strong> — full privilege, running OS code<br><br>
+    This <strong>dual-mode operation</strong> protects the OS from buggy or malicious user programs. A <strong>timer</strong> prevents any process from monopolizing the CPU.`,
+                speed: [{ label: '~3–5 GHz', color: '#4f8aff' }, { label: 'Nanoseconds', color: '#7c3aed' }],
+                tags: [{ text: 'Fetch-Execute', color: '#4f8aff' }, { text: 'Dual Mode', color: '#7c3aed' }, { text: 'Scheduling', color: '#06d6a0' }, { text: 'Interrupts', color: '#f72585' }],
+                related: [
+                    { icon: '📋', label: 'CPU Registers — fastest storage', key: 'registers' },
+                    { icon: '⚡', label: 'Cache — speeds up memory access', key: 'cache' },
+                    { icon: '⏱️', label: 'Timer — prevents CPU monopoly', key: 'timer' },
+                    { icon: '🗺️', label: 'MMU — translates addresses', key: 'mmu' },
+                ],
+                quiz: {
+                    q: 'What does the mode bit = 0 indicate?',
+                    opts: ['User Mode', 'Kernel Mode', 'Idle Mode', 'Debug Mode'],
+                    ans: 1
+                }
+            },
+            registers: {
+                title: 'CPU Registers',
+                subtitle: 'Fastest storage — inside the CPU chip',
+                color: '#7c3aed',
+                icon: '📋',
+                what: `Registers are tiny, <strong>ultra-fast storage locations inside the CPU</strong>. They are the ONLY place where computation actually happens. Key registers in OS context:<br><br>
+    • <strong>Program Counter (PC)</strong> — address of the NEXT instruction to execute<br>
+    • <strong>Stack Pointer (SP)</strong> — top of the current stack<br>
+    • <strong>General Registers</strong> — hold operands and results<br>
+    • <strong>Mode Bit Register</strong> — 0=kernel, 1=user<br><br>
+    During a <strong>context switch</strong>, ALL register values are saved to the PCB (Process Control Block) in RAM, so the process can resume exactly where it left off.`,
+                speed: [{ label: '<1 ns', color: '#7c3aed' }, { label: '~8–256 bytes', color: '#06d6a0' }],
+                tags: [{ text: 'Program Counter', color: '#7c3aed' }, { text: 'Stack Pointer', color: '#4f8aff' }, { text: 'Context Switch', color: '#f72585' }],
+                related: [
+                    { icon: '🔲', label: 'CPU — registers live inside it', key: 'cpu' },
+                    { icon: '⚡', label: 'Cache — next level up', key: 'cache' },
+                ],
+                quiz: {
+                    q: 'During a context switch, register values are saved to:',
+                    opts: ['The cache', 'The disk', 'The PCB in RAM', 'The TLB'],
+                    ans: 2
+                }
+            },
+            cache: {
+                title: 'CPU Cache (L1 / L2 / L3)',
+                subtitle: 'Fast intermediate memory between CPU and RAM',
+                color: '#06d6a0',
+                icon: '⚡',
+                what: `Cache is <strong>fast memory that sits between the CPU registers and RAM</strong>. It stores frequently used data/instructions to avoid slow RAM accesses. The hierarchy:<br><br>
+    • <strong>L1 Cache</strong> — built into the CPU core, ~32KB, ~1ns<br>
+    • <strong>L2 Cache</strong> — per-core or shared, ~256KB, ~5ns<br>
+    • <strong>L3 Cache</strong> — shared among cores, ~8–32MB, ~20ns<br><br>
+    <strong>Caching principle</strong>: When a process needs data, it checks L1 → L2 → L3 → RAM → Disk. The OS uses the <strong>TLB</strong> (a cache for page table entries) to speed up virtual-to-physical address translation. <strong>EAT = h×(TLB+Mem) + (1-h)×(TLB+2×Mem)</strong>`,
+                speed: [{ label: 'L1: ~1ns', color: '#06d6a0' }, { label: 'L3: ~20ns', color: '#4f8aff' }],
+                tags: [{ text: 'L1/L2/L3', color: '#06d6a0' }, { text: 'Hit Ratio', color: '#4f8aff' }, { text: 'EAT Formula', color: '#7c3aed' }],
+                related: [
+                    { icon: '🔍', label: 'TLB — cache for page table', key: 'tlb' },
+                    { icon: '🧠', label: 'RAM — slower, bigger', key: 'ram' },
+                ],
+                quiz: {
+                    q: 'If TLB hit ratio = 80%, TLB access = 20ns, memory = 100ns, what is EAT?',
+                    opts: ['140 ns', '120 ns', '100 ns', '160 ns'],
+                    ans: 0
+                }
+            },
+            ram: {
+                title: 'RAM — Main Memory',
+                subtitle: 'Primary volatile storage accessible by CPU',
+                color: '#06d6a0',
+                icon: '🟩',
+                what: `RAM is the <strong>only large storage the CPU can directly access</strong>. Programs and their data MUST be in RAM to execute. Key CS330 concepts:<br><br>
+    • <strong>Logical vs Physical addresses</strong> — CPU generates logical addresses; the MMU translates them to physical ones<br>
+    • <strong>Paging</strong> — RAM divided into fixed-size <em>frames</em>; process pages mapped via page table<br>
+    • <strong>Segmentation</strong> — divided into variable-size segments (code, stack, heap, data)<br>
+    • <strong>Fragmentation</strong> — Internal (wasted space inside allocation) vs External (scattered free space)<br>
+    • <strong>EAT without TLB</strong> = 2 × memory access time (once for page table, once for data)`,
+                speed: [{ label: '~100 ns', color: '#06d6a0' }, { label: 'Volatile', color: '#f72585' }, { label: '8–64 GB', color: '#4f8aff' }],
+                tags: [{ text: 'Paging', color: '#06d6a0' }, { text: 'Segmentation', color: '#7c3aed' }, { text: 'Fragmentation', color: '#f72585' }, { text: 'Page Table', color: '#4f8aff' }],
+                related: [
+                    { icon: '🗺️', label: 'MMU — translates logical to physical', key: 'mmu' },
+                    { icon: '🔍', label: 'TLB — speeds up page table lookups', key: 'tlb' },
+                    { icon: '💾', label: 'SSD/HDD — backing store', key: 'ssd' },
+                ],
+                quiz: {
+                    q: 'Paging eliminates which type of fragmentation?',
+                    opts: ['Internal', 'External', 'Both', 'Neither'],
+                    ans: 1
+                }
+            },
+            mmu: {
+                title: 'MMU — Memory Management Unit',
+                subtitle: 'Hardware that translates logical to physical addresses',
+                color: '#06d6a0',
+                icon: '🗺️',
+                what: `The MMU is a hardware component (often built into the CPU) that <strong>translates every logical (virtual) address to a physical address</strong> at runtime. This is how virtual memory works.<br><br>
+    • CPU generates a <strong>logical address</strong> = Page# + Offset<br>
+    • MMU uses the <strong>Page Table</strong> (or TLB) to find the Frame#<br>
+    • Physical address = Frame# × Page_size + Offset<br><br>
+    The <strong>Relocation Register</strong> (in simple schemes) holds the base physical address and is added to every logical address. The <strong>Limit Register</strong> ensures a process cannot access beyond its allocated space — if it tries, a trap is generated.`,
+                speed: [{ label: 'Inline with CPU', color: '#06d6a0' }],
+                tags: [{ text: 'Address Translation', color: '#06d6a0' }, { text: 'Relocation Reg', color: '#4f8aff' }, { text: 'Limit Reg', color: '#f72585' }, { text: 'Virtual Memory', color: '#7c3aed' }],
+                related: [
+                    { icon: '🔍', label: 'TLB — caches page table entries', key: 'tlb' },
+                    { icon: '🧠', label: 'RAM — target of translation', key: 'ram' },
+                    { icon: '🔲', label: 'CPU — generates logical addresses', key: 'cpu' },
+                ],
+                quiz: {
+                    q: 'Segment #2 has base=90, limit=500. Is logical address <2, 450> valid?',
+                    opts: ['Yes — 450 < 500, physical = 90+450=540', 'No — illegal access', 'Yes but only in kernel mode', 'Depends on TLB'],
+                    ans: 0
+                }
+            },
+            tlb: {
+                title: 'TLB — Translation Lookaside Buffer',
+                subtitle: 'A cache for page table entries',
+                color: '#4f8aff',
+                icon: '🔍',
+                what: `The TLB is a <strong>small, fast hardware cache</strong> that stores recently used page-table entries. Instead of going to RAM for every page lookup, the CPU first checks the TLB.<br><br>
+    <strong>TLB Hit</strong>: page# found in TLB → access time = TLB_time + Memory_time<br>
+    <strong>TLB Miss</strong>: not found → access time = TLB_time + 2×Memory_time (once for page table, once for data)<br><br>
+    <strong>EAT formula</strong>:<br>
+    EAT = h×(c+m) + (1-h)×(c+2m)<br>
+    where h = hit ratio, c = TLB access, m = memory access<br><br>
+    Typically 64–1024 entries. Hit ratios are usually 90–98%.`,
+                speed: [{ label: '~5–20 ns', color: '#4f8aff' }, { text: 'Hit ratio 90–98%', color: '#06d6a0' }],
+                tags: [{ text: 'EAT', color: '#4f8aff' }, { text: 'Hit Ratio', color: '#06d6a0' }, { text: 'Page Table Cache', color: '#7c3aed' }],
+                related: [
+                    { icon: '🗺️', label: 'MMU — uses TLB for translation', key: 'mmu' },
+                    { icon: '⚡', label: 'Cache — same concept, different level', key: 'cache' },
+                ],
+                quiz: {
+                    q: 'TLB=10ns, Memory=50ns, Hit ratio=90%. What is EAT?',
+                    opts: ['65 ns', '55 ns', '100 ns', '60 ns'],
+                    ans: 0
+                }
+            },
+            ssd: {
+                title: 'NVMe SSD — Solid State Drive',
+                subtitle: 'Fast non-volatile secondary storage',
+                color: '#ffd166',
+                icon: '💾',
+                what: `SSDs are <strong>non-volatile, fast secondary storage</strong> that persist data even when powered off. In CS330:<br><br>
+    • <strong>Secondary storage</strong> for programs and data when not in RAM<br>
+    • <strong>Backing store for virtual memory</strong> — when RAM is full, pages are swapped to disk (though mobile OS doesn't do this due to limited write cycles)<br>
+    • File systems live on disk: contiguous, linked, indexed allocation<br>
+    • <strong>NVMe interface</strong> connects via PCIe, speeds ~3–7 GB/s<br><br>
+    <strong>EAT with page faults</strong> = (1-p)×memory_access + p×page_fault_service_time`,
+                speed: [{ label: '~200–500 μs', color: '#ffd166' }, { label: 'Non-volatile', color: '#06d6a0' }, { label: '3–7 GB/s', color: '#4f8aff' }],
+                tags: [{ text: 'Non-volatile', color: '#06d6a0' }, { text: 'Swap Space', color: '#ffd166' }, { text: 'File System', color: '#4f8aff' }],
+                related: [
+                    { icon: '🖴', label: 'HDD — slower magnetic alternative', key: 'hdd' },
+                    { icon: '🧠', label: 'RAM — volatile but faster', key: 'ram' },
+                ],
+                quiz: {
+                    q: 'Why don\'t mobile OSes (iOS/Android) support swapping to storage?',
+                    opts: ['CPUs are too slow', 'Flash memory has limited write cycles & limited capacity', 'RAM is always enough', 'Swapping is not needed'],
+                    ans: 1
+                }
+            },
+            hdd: {
+                title: 'HDD — Hard Disk Drive',
+                subtitle: 'Magnetic rotating secondary storage',
+                color: '#ff8c00',
+                icon: '🖴',
+                what: `HDDs store data on <strong>magnetic spinning platters</strong>. Key CS330 concepts:<br><br>
+    • Disk surface = <strong>tracks</strong> subdivided into <strong>sectors</strong><br>
+    • Access time = <strong>Seek time</strong> (move arm) + <strong>Rotational latency</strong> + Transfer time<br>
+    • Typical access time: <strong>~8ms</strong><br><br>
+    <strong>File system allocation</strong> on disk:<br>
+    • Contiguous — simple but external fragmentation<br>
+    • Linked — no fragmentation, but no random access<br>
+    • Indexed (inode) — random access, overhead of index block<br><br>
+    <strong>Free space management</strong>: Bit vector, linked list, grouping, counting.`,
+                speed: [{ label: '~8 ms', color: '#ff8c00' }, { label: 'Non-volatile', color: '#06d6a0' }, { label: '7200 RPM', color: '#ffd166' }],
+                tags: [{ text: 'Seek Time', color: '#ff8c00' }, { text: 'Rotational Latency', color: '#ffd166' }, { text: 'Tracks/Sectors', color: '#4f8aff' }],
+                related: [
+                    { icon: '💾', label: 'SSD — faster solid state', key: 'ssd' },
+                    { icon: '🧠', label: 'RAM — much faster but volatile', key: 'ram' },
+                ],
+                quiz: {
+                    q: 'Which file allocation method supports random access but has index overhead?',
+                    opts: ['Contiguous', 'Linked', 'Indexed', 'FAT'],
+                    ans: 2
+                }
+            },
+            gpu: {
+                title: 'GPU — Graphics Processing Unit',
+                subtitle: 'Massively parallel processor for graphics & compute',
+                color: '#f72585',
+                icon: '🎮',
+                what: `The GPU is a <strong>specialized processor</strong> with thousands of small cores designed for parallel computation. In OS context:<br><br>
+    • Managed via a <strong>device driver</strong> that abstracts hardware details<br>
+    • OS communicates via a <strong>device controller</strong><br>
+    • GPU has its own dedicated VRAM (Video RAM)<br>
+    • Uses <strong>DMA</strong> to transfer data to/from main memory without CPU involvement<br>
+    • A <strong>framebuffer</strong> maps GPU memory to pixels on screen<br><br>
+    Data parallelism (splitting data across many cores) is related to the CS330 concept of task parallelism in threads.`,
+                speed: [{ label: 'Parallel compute', color: '#f72585' }, { label: 'VRAM: ~256GB/s', color: '#7c3aed' }],
+                tags: [{ text: 'Device Driver', color: '#f72585' }, { text: 'DMA', color: '#4f8aff' }, { text: 'Framebuffer', color: '#06d6a0' }],
+                related: [
+                    { icon: '↔️', label: 'DMA — transfers data without CPU', key: 'dma' },
+                    { icon: '🔌', label: 'I/O Controller — handles device comms', key: 'io' },
+                ],
+                quiz: {
+                    q: 'DMA controllers generate a CPU interrupt:',
+                    opts: ['For every byte transferred', 'At the start only', 'Only when the entire block transfer is complete', 'Never'],
+                    ans: 2
+                }
+            },
+            bus: {
+                title: 'System Bus / Chipset',
+                subtitle: 'The communication highway connecting all components',
+                color: '#4f8aff',
+                icon: '🔌',
+                what: `The <strong>system bus</strong> is the set of electrical pathways that connect all hardware components. The Chipset manages communication between them. Buses carry:<br><br>
+    • <strong>Data Bus</strong> — actual data being transferred<br>
+    • <strong>Address Bus</strong> — which memory/device location<br>
+    • <strong>Control Bus</strong> — read/write signals, interrupts<br><br>
+    Modern systems use specialized buses: <strong>PCIe</strong> (GPU, NVMe), <strong>SATA</strong> (HDDs), <strong>USB</strong> (peripherals). The OS uses device drivers to abstract bus details. In CS330, understanding the bus helps explain why <strong>DMA</strong> is used — it avoids saturating the CPU with byte-by-byte transfers.`,
+                speed: [{ label: 'PCIe: ~64 GB/s', color: '#4f8aff' }, { label: 'USB: ~10 Gbps', color: '#7c3aed' }],
+                tags: [{ text: 'Data Bus', color: '#4f8aff' }, { text: 'Address Bus', color: '#7c3aed' }, { text: 'PCIe', color: '#06d6a0' }],
+                related: [
+                    { icon: '↔️', label: 'DMA — uses bus without CPU', key: 'dma' },
+                    { icon: '⚠️', label: 'Interrupt Controller — signals via bus', key: 'interrupt' },
+                ],
+                quiz: {
+                    q: 'Which bus type connects modern NVMe SSDs for maximum speed?',
+                    opts: ['SATA', 'USB', 'PCIe', 'ISA'],
+                    ans: 2
+                }
+            },
+            dma: {
+                title: 'DMA — Direct Memory Access',
+                subtitle: 'Transfers data without constant CPU involvement',
+                color: '#64c832',
+                icon: '↔️',
+                what: `DMA allows I/O devices (disk, network, GPU) to <strong>transfer data directly to/from RAM without the CPU being involved for every byte</strong>. This is critical for high-speed I/O.<br><br>
+    <strong>Without DMA</strong>: CPU fetches every byte → wastes CPU cycles<br>
+    <strong>With DMA</strong>:<br>
+    1. CPU tells DMA controller: "copy X bytes from disk to address Y"<br>
+    2. DMA does the transfer while CPU does other work<br>
+    3. DMA interrupts CPU when done (one interrupt per block!)<br><br>
+    CS330 exam tip: <em>"Only one interrupt is generated per block rather than one per byte"</em>`,
+                speed: [{ label: '1 interrupt/block', color: '#64c832' }, { label: 'CPU freed', color: '#06d6a0' }],
+                tags: [{ text: 'Block Transfer', color: '#64c832' }, { text: 'Interrupt on done', color: '#f72585' }, { text: 'High-speed I/O', color: '#4f8aff' }],
+                related: [
+                    { icon: '⚠️', label: 'Interrupt Controller — DMA signals completion', key: 'interrupt' },
+                    { icon: '🔲', label: 'CPU — freed during DMA transfer', key: 'cpu' },
+                ],
+                quiz: {
+                    q: 'DMA is especially efficient for:',
+                    opts: ['Single byte I/O', 'Large block data transfers', 'CPU arithmetic', 'Cache management'],
+                    ans: 1
+                }
+            },
+            interrupt: {
+                title: 'Interrupt Controller (IRQ)',
+                subtitle: 'Hardware signals that alert the CPU to events',
+                color: '#f72585',
+                icon: '⚠️',
+                what: `Interrupts are the mechanism by which hardware signals the CPU that <strong>something needs attention</strong>. Without interrupts, the CPU would have to constantly poll devices (wasting cycles).<br><br>
+    <strong>Types</strong>:<br>
+    • <strong>Hardware interrupts</strong> — from devices (keyboard, disk done, DMA done)<br>
+    • <strong>Software interrupts / Traps</strong> — from programs (system calls, divide by zero)<br>
+    • <strong>Exceptions</strong> — illegal instruction, page fault<br><br>
+    <strong>Interrupt Vector Table</strong>: maps interrupt numbers to their <strong>ISR (Interrupt Service Routine)</strong> addresses. The OS is <em>interrupt-driven</em> — it waits for events rather than polling.`,
+                speed: [{ label: 'Immediate response', color: '#f72585' }],
+                tags: [{ text: 'ISR', color: '#f72585' }, { text: 'Interrupt Vector', color: '#4f8aff' }, { text: 'Traps', color: '#7c3aed' }, { text: 'Polling alt', color: '#06d6a0' }],
+                related: [
+                    { icon: '↔️', label: 'DMA — generates completion interrupt', key: 'dma' },
+                    { icon: '⏱️', label: 'Timer — generates timer interrupts', key: 'timer' },
+                    { icon: '🔲', label: 'CPU — handles the interrupt', key: 'cpu' },
+                ],
+                quiz: {
+                    q: 'A software-generated interrupt caused by an error or user request is called:',
+                    opts: ['Hardware interrupt', 'DMA request', 'Trap/Exception', 'Polling'],
+                    ans: 2
+                }
+            },
+            timer: {
+                title: 'Hardware Timer',
+                subtitle: 'Prevents processes from monopolizing the CPU',
+                color: '#c864ff',
+                icon: '⏱️',
+                what: `The hardware timer is a crucial OS mechanism. It <strong>generates an interrupt at fixed intervals</strong> to prevent any user process from running forever.<br><br>
+    <strong>How it works</strong>:<br>
+    1. OS sets timer before scheduling a process<br>
+    2. Timer counts down<br>
+    3. When it hits 0 → generates interrupt<br>
+    4. OS regains control, can switch to another process<br><br>
+    This is the foundation of <strong>preemptive scheduling</strong> (Round Robin, Priority Preemptive, SJF Preemptive). Without a timer, a process in an infinite loop would never release the CPU. Timer interrupts also implement <strong>time quantum</strong> in Round Robin scheduling.`,
+                speed: [{ label: 'Programmable interval', color: '#c864ff' }],
+                tags: [{ text: 'Preemption', color: '#c864ff' }, { text: 'Round Robin', color: '#4f8aff' }, { text: 'Time Quantum', color: '#06d6a0' }],
+                related: [
+                    { icon: '⚠️', label: 'Interrupt Controller — timer fires via IRQ', key: 'interrupt' },
+                    { icon: '🔲', label: 'CPU — regains control on timer interrupt', key: 'cpu' },
+                ],
+                quiz: {
+                    q: 'The timer interrupt is essential to implement which scheduling policy?',
+                    opts: ['FCFS', 'Non-preemptive SJF', 'Round Robin (preemptive)', 'None'],
+                    ans: 2
+                }
+            },
+            io: {
+                title: 'I/O Ports & Controllers',
+                subtitle: 'Interface between CPU and external devices',
+                color: '#ffd166',
+                icon: '🔌',
+                what: `I/O controllers are hardware circuits that manage communication between the CPU and devices (keyboard, mouse, disk, network, USB). Each controller has:<br><br>
+    • <strong>Data Buffer</strong> — temporarily holds data being transferred<br>
+    • <strong>Status Registers</strong> — indicate if device is busy/ready/error<br>
+    • <strong>Command Registers</strong> — CPU writes commands here<br><br>
+    The OS provides a <strong>device driver</strong> for each controller — a software module that abstracts the hardware. The <strong>device controller</strong> in charge of a specific I/O device type communicates via the system bus. Each device controller is in charge of a specific I/O device type.`,
+                speed: [{ label: 'Varies by device', color: '#ffd166' }],
+                tags: [{ text: 'Device Driver', color: '#ffd166' }, { text: 'Data Buffer', color: '#4f8aff' }, { text: 'Status Regs', color: '#7c3aed' }],
+                related: [
+                    { icon: '↔️', label: 'DMA — used by fast I/O controllers', key: 'dma' },
+                    { icon: '⚠️', label: 'Interrupt — device signals completion', key: 'interrupt' },
+                ],
+                quiz: {
+                    q: 'What role does a device driver play in the OS?',
+                    opts: ['Replaces the device hardware', 'Provides uniform interface between controller & kernel', 'Manages CPU scheduling', 'Handles network protocols'],
+                    ans: 1
+                }
+            },
+            power: {
+                title: 'Power Management / Battery',
+                subtitle: 'Energy management for the system',
+                color: '#32c832',
+                icon: '🔋',
+                what: `Power management is handled by both hardware and the OS. Key aspects:<br><br>
+    • <strong>ACPI</strong> (Advanced Configuration and Power Interface) — standard interface between OS and hardware power control<br>
+    • OS can put devices to sleep to save power<br>
+    • <strong>Mobile OSes</strong> (Android/iOS) must be very power-conscious — this affects why they don't support full swapping to storage<br>
+    • Battery-backed RAM (NVRAM) can preserve certain OS state during power loss<br><br>
+    The OS is responsible for power allocation as part of <strong>resource management</strong>.`,
+                speed: [{ label: 'System-wide', color: '#32c832' }],
+                tags: [{ text: 'ACPI', color: '#32c832' }, { text: 'Resource Mgmt', color: '#4f8aff' }, { text: 'Mobile OS', color: '#f72585' }],
+                related: [
+                    { icon: '💾', label: 'SSD — low power vs HDD', key: 'ssd' },
+                ],
+                quiz: {
+                    q: 'Why do mobile OSes avoid swapping to storage?',
+                    opts: ['RAM is always sufficient', 'Limited flash capacity and write cycles', 'CPUs are too slow', 'No file system support'],
+                    ans: 1
+                }
+            }
+        };
+
+        const swData = {
+            user: {
+                title: 'User Applications',
+                subtitle: 'Ring 3 — Highest layer, least privilege',
+                color: '#ffd166',
+                icon: '👤',
+                what: `User applications are programs written by developers that run in <strong>user mode (mode bit = 1)</strong>, with no direct hardware access. They must request OS services through <strong>system calls</strong>.<br><br>
+    Examples from CS330: word processors, compilers, web browsers, database systems, video games.<br><br>
+    <strong>Process creation</strong> from user space uses fork()/exec(). Applications cannot execute privileged instructions. If they try → <strong>trap to OS</strong> → process terminated.<br><br>
+    The OS provides a safe, isolated environment for each user application — each gets its own address space through virtual memory.`,
+                tags: [{ text: 'User Mode', color: '#ffd166' }, { text: 'Isolation', color: '#4f8aff' }, { text: 'Virtual Address Space', color: '#06d6a0' }],
+                related: ['syscall', 'process', 'memory'],
+                quiz: {
+                    q: 'A user program tries to execute a privileged instruction. What happens?',
+                    opts: ['It executes normally', 'OS allows it with permission', 'Trap to OS, process terminated', 'CPU ignores the instruction'],
+                    ans: 2
+                }
+            },
+            syscall: {
+                title: 'System Call Interface',
+                subtitle: 'The controlled gateway into the kernel',
+                color: '#4f8aff',
+                icon: '📞',
+                what: `System calls are the <strong>programmatic interface between user programs and the OS kernel</strong>. When a program calls fork() or read(), it's using a system call.<br><br>
+    <strong>How it works</strong>:<br>
+    1. User program calls API function (e.g., printf → write())<br>
+    2. Parameters passed via registers, stack, or memory block<br>
+    3. System call number loaded<br>
+    4. <strong>Mode switch: user mode → kernel mode</strong> (trap instruction)<br>
+    5. Kernel executes the system call<br>
+    6. Returns result, mode switches back<br><br>
+    <strong>6 categories</strong>: Process control, File management, Device management, Information maintenance, Communications, Protection`,
+                tags: [{ text: 'POSIX API', color: '#4f8aff' }, { text: 'Mode Switch', color: '#f72585' }, { text: 'Win32 API', color: '#7c3aed' }, { text: 'Trap', color: '#06d6a0' }],
+                related: ['user', 'kernel', 'process'],
+                quiz: {
+                    q: 'Which system call creates a new child process in UNIX?',
+                    opts: ['exec()', 'wait()', 'fork()', 'exit()'],
+                    ans: 2
+                }
+            },
+            process: {
+                title: 'Process Management',
+                subtitle: 'CPU scheduling, PCB, context switching, IPC',
+                color: '#7c3aed',
+                icon: '⚙️',
+                what: `<strong>Process = program in execution</strong>. Has: text section, stack, heap, data section, program counter.<br><br>
+    <strong>Process states</strong>: New → Ready → Running → Waiting → Terminated<br><br>
+    <strong>PCB</strong> stores: state, PC, registers, scheduling info, memory info, I/O status, accounting info<br><br>
+    <strong>Scheduling algorithms</strong>:<br>
+    • <strong>FCFS</strong> — convoy effect, non-preemptive<br>
+    • <strong>SJF</strong> — optimal average wait, but needs prediction<br>
+    • <strong>Round Robin</strong> — time quantum, good response time<br>
+    • <strong>Priority</strong> — starvation solved by aging<br>
+    • <strong>Multilevel Feedback Queue</strong> — most sophisticated<br><br>
+    <strong>Context switch</strong> = save PCB₁, load PCB₂ — pure overhead`,
+                tags: [{ text: 'PCB', color: '#7c3aed' }, { text: 'FCFS', color: '#4f8aff' }, { text: 'SJF', color: '#06d6a0' }, { text: 'Round Robin', color: '#f72585' }, { text: 'fork()', color: '#ffd166' }],
+                related: ['syscall', 'sync', 'memory'],
+                quiz: {
+                    q: 'Which scheduling algorithm gives minimum average waiting time for a given set of processes?',
+                    opts: ['FCFS', 'Round Robin', 'SJF (non-preemptive)', 'Priority'],
+                    ans: 2
+                }
+            },
+            memory: {
+                title: 'Memory Management',
+                subtitle: 'Paging, segmentation, virtual memory, page replacement',
+                color: '#06d6a0',
+                icon: '🧠',
+                what: `The OS must manage memory allocation among competing processes.<br><br>
+    <strong>Paging</strong>: Divide physical memory into frames, logical into pages. Page table maps page→frame. No external fragmentation but causes internal fragmentation.<br><br>
+    <strong>Segmentation</strong>: Variable-size segments. Logical address = &lt;seg#, offset&gt;. External fragmentation possible.<br><br>
+    <strong>Virtual Memory / Demand Paging</strong>: Only load pages when needed. Page fault → swap in from disk.<br><br>
+    <strong>Page replacement algorithms</strong>:<br>
+    • <strong>FIFO</strong> — oldest page out (Belady's anomaly!)<br>
+    • <strong>LRU</strong> — least recently used (approximates OPT)<br>
+    • <strong>Optimal</strong> — replace page used farthest in future (theoretical)<br><br>
+    <strong>Thrashing</strong>: process spends more time swapping than executing → decrease multiprogramming degree`,
+                tags: [{ text: 'Page Table', color: '#06d6a0' }, { text: 'Page Fault', color: '#f72585' }, { text: 'LRU', color: '#4f8aff' }, { text: 'Thrashing', color: '#ffd166' }, { text: 'EAT', color: '#7c3aed' }],
+                related: ['process', 'filesystem', 'kernel'],
+                quiz: {
+                    q: 'Which page replacement algorithm suffers from Belady\'s Anomaly?',
+                    opts: ['LRU', 'Optimal', 'FIFO', 'Clock'],
+                    ans: 2
+                }
+            },
+            sync: {
+                title: 'Process Synchronization',
+                subtitle: 'Semaphores, mutexes, monitors, critical sections',
+                color: '#f72585',
+                icon: '🔒',
+                what: `When processes share data, <strong>race conditions</strong> can cause corruption. Synchronization ensures orderly access.<br><br>
+    <strong>Critical Section Problem</strong> — solution must satisfy:<br>
+    1. <strong>Mutual Exclusion</strong> — only one process in CS at a time<br>
+    2. <strong>Progress</strong> — selection can't be postponed indefinitely<br>
+    3. <strong>Bounded Waiting</strong> — no starvation<br><br>
+    <strong>Semaphore S</strong>: integer variable, only wait() and signal() allowed<br>
+    • wait(S): S-- if S&lt;0 → block<br>
+    • signal(S): S++ if any waiting → wake one<br><br>
+    <strong>Deadlock</strong>: circular wait for resources that only each other can release.<br>
+    <strong>Starvation</strong>: process never gets resource — solved by aging.`,
+                tags: [{ text: 'Semaphore', color: '#f72585' }, { text: 'Mutex', color: '#4f8aff' }, { text: 'Monitor', color: '#7c3aed' }, { text: 'Deadlock', color: '#ffd166' }, { text: 'Peterson', color: '#06d6a0' }],
+                related: ['process', 'kernel'],
+                quiz: {
+                    q: 'For deadlock to occur, which of these is NOT required?',
+                    opts: ['Mutual exclusion', 'Hold and wait', 'Circular wait', 'Preemption'],
+                    ans: 3
+                }
+            },
+            filesystem: {
+                title: 'File System',
+                subtitle: 'Files, directories, allocation, free space management',
+                color: '#ffd166',
+                icon: '📁',
+                what: `The file system provides an <strong>abstraction over raw disk blocks</strong>, letting users see files and directories instead of sector addresses.<br><br>
+    <strong>Allocation methods</strong>:<br>
+    • <strong>Contiguous</strong>: simple, fast sequential access; external fragmentation, hard to grow<br>
+    • <strong>Linked</strong>: no fragmentation, but only sequential access (follow pointers)<br>
+    • <strong>Indexed (inode)</strong>: random access, index block overhead — used in UNIX!<br><br>
+    <strong>Directory structures</strong>: Single-level, Two-level, Tree (most common), Acyclic Graph<br><br>
+    <strong>Free space management</strong>:<br>
+    • Bit vector (bitmap): block i free if bit=1<br>
+    • Linked list of free blocks<br>
+    • Grouping: store n free block addresses in first free block`,
+                tags: [{ text: 'inode', color: '#ffd166' }, { text: 'Contiguous', color: '#4f8aff' }, { text: 'Linked', color: '#06d6a0' }, { text: 'Bitmap', color: '#7c3aed' }, { text: 'FAT', color: '#f72585' }],
+                related: ['kernel', 'memory'],
+                quiz: {
+                    q: 'How many disk I/O operations to add a block to the END of a linked-allocated file (100 blocks)?',
+                    opts: ['1', '3', '100', '101'],
+                    ans: 1
+                }
+            },
+            kernel: {
+                title: 'Kernel & Hardware Abstraction',
+                subtitle: 'Ring 0 — The core of the OS',
+                color: '#4f8aff',
+                icon: '⚡',
+                what: `The kernel is <strong>"the one program running at all times"</strong>. It runs in kernel mode with full hardware access.<br><br>
+    <strong>Kernel architectures</strong>:<br>
+    • <strong>Monolithic</strong>: all OS services in one binary (Linux). Fast but any bug can crash the whole OS<br>
+    • <strong>Microkernel</strong>: only essential services in kernel (IPC, basic memory, CPU scheduling). Rest in user space. More reliable, easier to port. Slower due to message passing<br>
+    • <strong>Layered</strong>: each layer uses only services of lower layers<br>
+    • <strong>Modules</strong>: loadable kernel modules — Linux style, flexible<br>
+    • <strong>Hybrid</strong>: Windows (mostly monolithic + microkernel subsystems)<br><br>
+    Device drivers live in the kernel and provide a <strong>uniform interface</strong> between hardware and OS.`,
+                tags: [{ text: 'Monolithic', color: '#4f8aff' }, { text: 'Microkernel', color: '#7c3aed' }, { text: 'Device Driver', color: '#06d6a0' }, { text: 'Ring 0', color: '#f72585' }],
+                related: ['syscall', 'process', 'memory'],
+                quiz: {
+                    q: 'Which kernel design removes nonessential components from the kernel into user space?',
+                    opts: ['Monolithic', 'Layered', 'Microkernel', 'Modular'],
+                    ans: 2
+                }
+            }
+        };
+
+        // ─── SHOW HARDWARE INFO ───────────────────────────
+        function showInfo(key) {
+            const d = hwData[key];
+            if (!d) return;
+            document.querySelectorAll('.hw-component').forEach(c => c.classList.remove('selected'));
+
+            const panel = document.getElementById('info-content');
+            const speedHtml = (d.speed || []).map(s =>
+                `<span class="speed-badge" style="background:${s.color}22;color:${s.color};border:1px solid ${s.color}44">${s.label || s.text || ''}</span>`
+            ).join('');
+            const tagsHtml = (d.tags || []).map(t =>
+                `<span class="info-tag" style="color:${t.color};border-color:${t.color}44;background:${t.color}11">${t.text}</span>`
+            ).join('');
+            const relatedHtml = (d.related || []).map(r =>
+                `<div class="related-item" onclick="showInfo('${r.key}')"><span class="rel-icon">${r.icon}</span><span>${r.label}</span><span style="margin-left:auto;color:var(--text2);font-size:10px">→</span></div>`
+            ).join('');
+            const quizHtml = d.quiz ? `
+    <div class="info-section">
+      <div class="info-section-title">🎯 Quick Quiz</div>
+      <div class="quiz-box">
+        <div class="quiz-q">${d.quiz.q}</div>
+        <div class="quiz-options">
+          ${d.quiz.opts.map((o, i) => `<div class="quiz-opt" onclick="checkQuiz(this, ${i}, ${d.quiz.ans})">${String.fromCharCode(65 + i)}. ${o}</div>`).join('')}
+        </div>
+      </div>
+    </div>` : '';
+
+            panel.innerHTML = `
+    <div class="info-header">
+      <div class="info-breadcrumb">Hardware View → ${d.icon}</div>
+      <div class="info-title" style="color:${d.color}">${d.title}</div>
+      <div class="info-subtitle">${d.subtitle}</div>
+      ${speedHtml ? `<div class="speed-row" style="margin-top:10px">${speedHtml}</div>` : ''}
+    </div>
+    <div class="info-body">
+      <div class="info-section">
+        <div class="info-section-title">What It Does</div>
+        <div class="info-desc">${d.what}</div>
+      </div>
+      <div class="info-section">
+        <div class="info-section-title">Key Concepts</div>
+        <div class="info-tags">${tagsHtml}</div>
+      </div>
+      ${relatedHtml ? `<div class="info-section"><div class="info-section-title">Related Components</div><div class="related-list">${relatedHtml}</div></div>` : ''}
+      ${quizHtml}
+    </div>`;
+        }
+
+        // ─── SHOW SOFTWARE INFO ───────────────────────────
+        function showSoftwareInfo(key) {
+            const d = swData[key];
+            if (!d) return;
+            document.querySelectorAll('.sw-layer').forEach(l => l.classList.remove('selected'));
+
+            const panel = document.getElementById('info-content');
+            const tagsHtml = (d.tags || []).map(t =>
+                `<span class="info-tag" style="color:${t.color};border-color:${t.color}44;background:${t.color}11">${t.text}</span>`
+            ).join('');
+            const relatedHtml = (d.related || []).map(r => {
+                const rel = swData[r];
+                if (!rel) return '';
+                return `<div class="related-item" onclick="showSoftwareInfo('${r}')"><span class="rel-icon">${rel.icon}</span><span>${rel.title}</span><span style="margin-left:auto;color:var(--text2);font-size:10px">→</span></div>`;
+            }).join('');
+            const quizHtml = d.quiz ? `
+    <div class="info-section">
+      <div class="info-section-title">🎯 Quick Quiz</div>
+      <div class="quiz-box">
+        <div class="quiz-q">${d.quiz.q}</div>
+        <div class="quiz-options">
+          ${d.quiz.opts.map((o, i) => `<div class="quiz-opt" onclick="checkQuiz(this, ${i}, ${d.quiz.ans})">${String.fromCharCode(65 + i)}. ${o}</div>`).join('')}
+        </div>
+      </div>
+    </div>` : '';
+
+            panel.innerHTML = `
+    <div class="info-header">
+      <div class="info-breadcrumb">Software View → ${d.icon}</div>
+      <div class="info-title" style="color:${d.color}">${d.title}</div>
+      <div class="info-subtitle">${d.subtitle}</div>
+    </div>
+    <div class="info-body">
+      <div class="info-section">
+        <div class="info-section-title">How It Works</div>
+        <div class="info-desc">${d.what}</div>
+      </div>
+      <div class="info-section">
+        <div class="info-section-title">Key Concepts</div>
+        <div class="info-tags">${tagsHtml}</div>
+      </div>
+      ${relatedHtml ? `<div class="info-section"><div class="info-section-title">Related Layers</div><div class="related-list">${relatedHtml}</div></div>` : ''}
+      ${quizHtml}
+    </div>`;
+
+            // mark selected layer
+            const layers = document.querySelectorAll('.sw-layer');
+            const idx = ['user', 'syscall', 'process', 'memory', 'sync', 'filesystem', 'kernel'].indexOf(key);
+            if (idx >= 0 && layers[idx]) layers[idx].classList.add('selected');
+        }
+
+        // ─── QUIZ CHECK ───────────────────────────────────
+        function checkQuiz(el, idx, correct) {
+            const opts = el.parentElement.querySelectorAll('.quiz-opt');
+            opts.forEach((o, i) => {
+                o.classList.remove('correct', 'wrong');
+                o.onclick = null; // disable after answer
+                if (i === correct) o.classList.add('correct');
+                else if (i === idx && idx !== correct) o.classList.add('wrong');
+            });
+        }
+
+        // ─── ANIMATED BUS PULSES ─────────────────────────
+        function animatePCB() {
+            const board = document.getElementById('pcb-board');
+            if (!board) return;
+            setInterval(() => {
+                const dot = document.createElement('div');
+                dot.style.cssText = `
+      position:absolute;
+      width:6px;height:6px;border-radius:50%;
+      background:${['#4f8aff', '#06d6a0', '#ffd166', '#f72585', '#7c3aed'][Math.floor(Math.random() * 5)]};
+      left:${Math.random() * 80 + 10}%;
+      top:${Math.random() * 80 + 10}%;
+      pointer-events:none;
+      z-index:50;
+      animation:pulse-dot 0.8s ease-out forwards;
+    `;
+                board.appendChild(dot);
+                setTimeout(() => dot.remove(), 800);
+            }, 600);
+        }
+
+        const style2 = document.createElement('style');
+        style2.textContent = `@keyframes pulse-dot {
+  0% { transform:scale(0); opacity:1; }
+  100% { transform:scale(3); opacity:0; }
+}`;
+        document.head.appendChild(style2);
+
+        animatePCB();
+    </script>
+</body>
+
+</html>
