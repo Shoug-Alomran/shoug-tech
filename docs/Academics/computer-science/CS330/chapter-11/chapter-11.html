@@ -1,0 +1,1518 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CS330 — Chapter 11: File-System Interface</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Source+Code+Pro:wght@400;600&family=Lato:wght@300;400;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg: #f7f4ee;
+            --surface: #ffffff;
+            --surface2: #f0ece3;
+            --text: #1a1410;
+            --text-muted: #6b5f50;
+            --accent: #c0392b;
+            --accent2: #e67e22;
+            --accent3: #27ae60;
+            --accent4: #2980b9;
+            --border: #d4c9b8;
+            --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            --highlight: #fff3cd;
+            --highlight-border: #f0c040;
+            --tip-bg: #e8f5e9;
+            --tip-border: #27ae60;
+            --warn-bg: #fdecea;
+            --warn-border: #c0392b;
+            --q-bg: #e8f0fe;
+            --q-border: #2980b9;
+            --tag-bg: #fde8e8;
+            --tag-text: #c0392b;
+        }
+
+        [data-theme="dark"] {
+            --bg: #0f0d0b;
+            --surface: #1a1714;
+            --surface2: #252018;
+            --text: #f0ece3;
+            --text-muted: #9a8f80;
+            --accent: #e74c3c;
+            --accent2: #f39c12;
+            --accent3: #2ecc71;
+            --accent4: #3498db;
+            --border: #3a3228;
+            --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+            --highlight: #3d3010;
+            --highlight-border: #b8960c;
+            --tip-bg: #0d2618;
+            --tip-border: #2ecc71;
+            --warn-bg: #2d0d0a;
+            --warn-border: #e74c3c;
+            --q-bg: #0d1a30;
+            --q-border: #3498db;
+            --tag-bg: #3d0f0f;
+            --tag-text: #e74c3c;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Lato', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        /* ── HEADER ── */
+        header {
+            background: var(--text);
+            color: var(--bg);
+            padding: 3rem 2rem 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient(45deg, transparent, transparent 20px, rgba(255, 255, 255, 0.02) 20px, rgba(255, 255, 255, 0.02) 40px);
+        }
+
+        .header-inner {
+            max-width: 900px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .chapter-label {
+            font-family: 'Source Code Pro', monospace;
+            font-size: 0.75rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--accent2);
+            margin-bottom: 0.5rem;
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 1rem;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            opacity: 0.7;
+            max-width: 600px;
+        }
+
+        /* ── THEME TOGGLE ── */
+        .toggle-wrap {
+            position: fixed;
+            top: 1.2rem;
+            right: 1.5rem;
+            z-index: 999;
+        }
+
+        .theme-btn {
+            background: var(--surface);
+            border: 2px solid var(--border);
+            color: var(--text);
+            border-radius: 50px;
+            padding: 0.4rem 1rem;
+            cursor: pointer;
+            font-family: 'Source Code Pro', monospace;
+            font-size: 0.78rem;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .theme-btn:hover {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        /* ── NAV / TOC ── */
+        .toc-bar {
+            background: var(--surface2);
+            border-bottom: 2px solid var(--border);
+            padding: 0.8rem 1rem;
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .toc-bar a {
+            font-family: 'Source Code Pro', monospace;
+            font-size: 0.72rem;
+            text-decoration: none;
+            color: var(--text-muted);
+            padding: 0.25rem 0.6rem;
+            border-radius: 4px;
+            border: 1px solid var(--border);
+            transition: all 0.2s;
+        }
+
+        .toc-bar a:hover {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        /* ── MAIN LAYOUT ── */
+        main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem 4rem;
+        }
+
+        /* ── SECTION HEADINGS ── */
+        .section {
+            margin-bottom: 3rem;
+            scroll-margin-top: 60px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 3px solid var(--accent);
+        }
+
+        .section-num {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            font-weight: 900;
+            color: var(--accent);
+            opacity: 0.3;
+            line-height: 1;
+        }
+
+        h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.6rem;
+            font-weight: 700;
+        }
+
+        h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin: 1.5rem 0 0.75rem;
+            color: var(--accent2);
+        }
+
+        /* ── CARD ── */
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 1.25rem;
+            box-shadow: var(--card-shadow);
+            transition: background 0.3s, border 0.3s;
+        }
+
+        /* ── HIGHLIGHT BOX ── */
+        .highlight-box {
+            background: var(--highlight);
+            border-left: 4px solid var(--highlight-border);
+            border-radius: 0 8px 8px 0;
+            padding: 1rem 1.25rem;
+            margin: 1rem 0;
+            font-size: 0.95rem;
+        }
+
+        .highlight-box strong {
+            color: var(--accent2);
+        }
+
+        /* ── TIP BOX ── */
+        .tip {
+            background: var(--tip-bg);
+            border-left: 4px solid var(--tip-border);
+            border-radius: 0 8px 8px 0;
+            padding: 1rem 1.25rem;
+            margin: 1rem 0;
+            font-size: 0.92rem;
+        }
+
+        .tip-label {
+            font-family: 'Source Code Pro', monospace;
+            font-size: 0.7rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--tip-border);
+            font-weight: 700;
+            margin-bottom: 0.3rem;
+        }
+
+        /* ── WARN BOX ── */
+        .warn {
+            background: var(--warn-bg);
+            border-left: 4px solid var(--warn-border);
+            border-radius: 0 8px 8px 0;
+            padding: 1rem 1.25rem;
+            margin: 1rem 0;
+            font-size: 0.92rem;
+        }
+
+        .warn-label {
+            font-family: 'Source Code Pro', monospace;
+            font-size: 0.7rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--warn-border);
+            font-weight: 700;
+            margin-bottom: 0.3rem;
+        }
+
+        /* ── TABLE ── */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            font-size: 0.9rem;
+        }
+
+        th {
+            background: var(--text);
+            color: var(--bg);
+            font-family: 'Source Code Pro', monospace;
+            font-size: 0.78rem;
+            letter-spacing: 0.05em;
+            padding: 0.6rem 1rem;
+            text-align: left;
+        }
+
+        td {
+            padding: 0.6rem 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        tr:nth-child(even) td {
+            background: var(--surface2);
+        }
+
+        tr:hover td {
+            background: var(--highlight);
+        }
+
+        /* ── GRID 2 COL ── */
+        .grid2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        @media (max-width: 600px) {
+            .grid2 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ── TAGS ── */
+        .tag {
+            display: inline-block;
+            background: var(--tag-bg);
+            color: var(--tag-text);
+            font-family: 'Source Code Pro', monospace;
+            font-size: 0.68rem;
+            padding: 0.15rem 0.5rem;
+            border-radius: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-left: 0.5rem;
+            vertical-align: middle;
+        }
+
+        .tag.green {
+            background: var(--tip-bg);
+            color: var(--tip-border);
+        }
+
+        .tag.blue {
+            background: var(--q-bg);
+            color: var(--q-border);
+        }
+
+        /* ── Q&A ── */
+        .qa-section {
+            margin-top: 1rem;
+        }
+
+        .qa-title {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.2rem;
+        }
+
+        .qa-title h2 {
+            color: var(--accent4);
+        }
+
+        .qa-title .section-num {
+            color: var(--accent4);
+        }
+
+        details {
+            background: var(--surface);
+            border: 1px solid var(--q-border);
+            border-radius: 8px;
+            margin-bottom: 0.8rem;
+            overflow: hidden;
+            transition: all 0.2s;
+        }
+
+        details[open] {
+            box-shadow: 0 0 0 2px var(--q-border);
+        }
+
+        summary {
+            cursor: pointer;
+            padding: 1rem 1.25rem;
+            font-weight: 700;
+            font-size: 0.95rem;
+            list-style: none;
+            display: flex;
+            gap: 0.75rem;
+            align-items: flex-start;
+            user-select: none;
+            background: var(--q-bg);
+        }
+
+        summary::-webkit-details-marker {
+            display: none;
+        }
+
+        summary::before {
+            content: '▶';
+            font-size: 0.65rem;
+            margin-top: 0.3rem;
+            flex-shrink: 0;
+            color: var(--accent4);
+            transition: transform 0.2s;
+        }
+
+        details[open] summary::before {
+            transform: rotate(90deg);
+        }
+
+        .answer {
+            padding: 1rem 1.25rem;
+            border-top: 1px solid var(--border);
+            font-size: 0.93rem;
+            line-height: 1.7;
+        }
+
+        .answer .correct {
+            display: inline-block;
+            background: var(--tip-bg);
+            color: var(--tip-border);
+            font-family: 'Source Code Pro', monospace;
+            font-size: 0.78rem;
+            padding: 0.1rem 0.5rem;
+            border-radius: 4px;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+
+        .answer ul {
+            padding-left: 1.2rem;
+            margin-top: 0.5rem;
+        }
+
+        .answer li {
+            margin-bottom: 0.3rem;
+        }
+
+        /* ── MEMORY PALACE ── */
+        .memory-palace {
+            background: linear-gradient(135deg, var(--surface2) 0%, var(--surface) 100%);
+            border: 2px dashed var(--accent2);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1.25rem 0;
+        }
+
+        .memory-palace h4 {
+            font-family: 'Playfair Display', serif;
+            color: var(--accent2);
+            margin-bottom: 0.75rem;
+            font-size: 1.05rem;
+        }
+
+        /* ── MNEMONIC BADGE ── */
+        .mnemonic {
+            font-family: 'Source Code Pro', monospace;
+            font-size: 1.4rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            color: var(--accent);
+            background: var(--surface2);
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            display: inline-block;
+            margin: 0.5rem 0;
+        }
+
+        /* ── VISUAL DIAGRAM ── */
+        .diagram {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            font-family: 'Source Code Pro', monospace;
+            font-size: 0.82rem;
+            overflow-x: auto;
+            white-space: pre;
+            line-height: 1.6;
+        }
+
+        /* ── BADGE ROW ── */
+        .badge-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin: 0.5rem 0;
+        }
+
+        .badge {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 0.3rem 0.75rem;
+            font-size: 0.85rem;
+            font-weight: 700;
+        }
+
+        .badge.red {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .badge.orange {
+            border-color: var(--accent2);
+            color: var(--accent2);
+        }
+
+        .badge.green {
+            border-color: var(--accent3);
+            color: var(--accent3);
+        }
+
+        .badge.blue {
+            border-color: var(--accent4);
+            color: var(--accent4);
+        }
+
+        /* ── FOOTER ── */
+        footer {
+            background: var(--text);
+            color: var(--bg);
+            text-align: center;
+            padding: 2rem;
+            font-family: 'Source Code Pro', monospace;
+            font-size: 0.8rem;
+            opacity: 0.9;
+        }
+
+        footer span {
+            color: var(--accent2);
+            font-weight: 700;
+        }
+
+        p {
+            margin-bottom: 0.75rem;
+        }
+
+        ul,
+        ol {
+            padding-left: 1.4rem;
+            margin-bottom: 0.75rem;
+        }
+
+        li {
+            margin-bottom: 0.3rem;
+        }
+
+        code {
+            font-family: 'Source Code Pro', monospace;
+            font-size: 0.85em;
+            background: var(--surface2);
+            padding: 0.1em 0.35em;
+            border-radius: 3px;
+            border: 1px solid var(--border);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .section {
+            animation: fadeIn 0.4s ease both;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="toggle-wrap">
+        <button class="theme-btn" onclick="toggleTheme()">
+            <span id="theme-icon">🌙</span> <span id="theme-label">Dark</span>
+        </button>
+    </div>
+
+    <header>
+        <div class="header-inner">
+            <div class="chapter-label">CS330 · Operating Systems · Chapter 11</div>
+            <h1>File-System Interface</h1>
+            <p class="subtitle">File concepts, access methods, directory structures, and file protection — everything
+                you need to master the FS interface layer.</p>
+        </div>
+    </header>
+
+    <nav class="toc-bar">
+        <a href="#file-concept">📄 File Concept</a>
+        <a href="#access-methods">🔍 Access Methods</a>
+        <a href="#directory">📁 Directory Structure</a>
+        <a href="#protection">🔒 Protection</a>
+        <a href="#tips">💡 Tips & Tricks</a>
+        <a href="#qanda">📝 Past Exam Q&A</a>
+    </nav>
+
+    <main>
+
+        <!-- ══════════════════════════════════════════════════════ -->
+        <!-- SECTION 1: FILE CONCEPT                               -->
+        <!-- ══════════════════════════════════════════════════════ -->
+        <section class="section" id="file-concept">
+            <div class="section-header">
+                <div class="section-num">01</div>
+                <h2>File Concept</h2>
+            </div>
+
+            <div class="card">
+                <p>A <strong>file</strong> is a collection of related data, normally stored on secondary storage. It is
+                    the smallest unit of <em>nameable</em> storage from the user's perspective. The OS provides a
+                    <strong>uniform logical view</strong> of stored information regardless of the physical medium.</p>
+                <div class="highlight-box">
+                    <strong>Key idea:</strong> Files hide the complexity of physical storage. Users and programs work
+                    with logical files; the OS maps them to physical blocks on disk.
+                </div>
+            </div>
+
+            <h3>File Attributes <span class="tag">Memorize</span></h3>
+            <div class="card">
+                <table>
+                    <tr>
+                        <th>Attribute</th>
+                        <th>Description</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Name</strong></td>
+                        <td>The only info stored in human-readable form</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Type</strong></td>
+                        <td>Needed for systems that support different file types</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Location</strong></td>
+                        <td>Pointer to file location on the device</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Size</strong></td>
+                        <td>Current file size in bytes, words, or blocks</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Protection</strong></td>
+                        <td>Controls who can read, write, execute</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Time, date, user ID</strong></td>
+                        <td>For protection, security, and usage monitoring</td>
+                    </tr>
+                </table>
+                <div class="memory-palace">
+                    <h4>🧠 Mnemonic — File Attributes</h4>
+                    <div class="mnemonic">N-T-L-S-P-T</div>
+                    <p><strong>N</strong>ame · <strong>T</strong>ype · <strong>L</strong>ocation · <strong>S</strong>ize
+                        · <strong>P</strong>rotection · <strong>T</strong>ime/User</p>
+                    <p style="font-size:0.88rem; margin-top:0.5rem;">Think: "<em>Navigating The Library Saves Plenty of
+                            Time</em>"</p>
+                </div>
+            </div>
+
+            <h3>File Types</h3>
+            <div class="grid2">
+                <div class="card">
+                    <strong>Data Files</strong>
+                    <ul>
+                        <li>Numeric data</li>
+                        <li>Character data</li>
+                        <li>Binary data</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <strong>Program Files</strong>
+                    <ul>
+                        <li>Source files (.c, .java)</li>
+                        <li>Object files (.o)</li>
+                        <li>Executable files (.exe)</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="tip">
+                <div class="tip-label">💡 Remember</div>
+                File type is indicated by <strong>extension</strong> (e.g. <code>.txt</code>, <code>.exe</code>). The OS
+                uses extensions to decide what to do with a file (e.g. run it, open it with an editor).
+            </div>
+
+            <h3>File Operations <span class="tag">Exam Favourite</span></h3>
+            <div class="card">
+                <p>The OS must provide <strong>6 basic operations</strong> on files:</p>
+                <div class="badge-row">
+                    <div class="badge red">Create</div>
+                    <div class="badge red">Write</div>
+                    <div class="badge orange">Read</div>
+                    <div class="badge orange">Seek</div>
+                    <div class="badge green">Delete</div>
+                    <div class="badge blue">Truncate</div>
+                </div>
+                <p style="margin-top:0.75rem;">Two additional important operations:</p>
+                <div class="badge-row">
+                    <div class="badge blue">Open(Fᵢ)</div>
+                    <div class="badge blue">Close(Fᵢ)</div>
+                </div>
+                <div class="highlight-box" style="margin-top:0.75rem;">
+                    <strong>Open vs Close:</strong> <code>Open(Fᵢ)</code> searches the directory on disk and moves the
+                    FCB (file control block) entry into memory. <code>Close(Fᵢ)</code> moves the in-memory FCB entry
+                    back to disk.
+                </div>
+                <div class="memory-palace">
+                    <h4>🧠 Mnemonic — 6 Basic Operations</h4>
+                    <div class="mnemonic">C-W-R-S-D-T</div>
+                    <p><strong>C</strong>reate · <strong>W</strong>rite · <strong>R</strong>ead · <strong>S</strong>eek
+                        · <strong>D</strong>elete · <strong>T</strong>runcate</p>
+                    <p style="font-size:0.88rem; margin-top:0.5rem;">"<em>Clever Writers Really Seek Dramatic
+                            Titles</em>"</p>
+                </div>
+            </div>
+
+            <h3>Open Files — Key Data Structures <span class="tag">Important</span></h3>
+            <div class="card">
+                <p>To avoid repeated directory searches, the OS keeps an <strong>open-file table</strong> in memory.</p>
+                <table>
+                    <tr>
+                        <th>Data Item</th>
+                        <th>Purpose</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Open-file table</strong></td>
+                        <td>Contains info about all currently open files</td>
+                    </tr>
+                    <tr>
+                        <td><strong>File pointer</strong></td>
+                        <td>Tracks last read/write position — <em>per process</em></td>
+                    </tr>
+                    <tr>
+                        <td><strong>File-open count</strong></td>
+                        <td>Counts how many processes have file open; when 0, file is removed from table</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Disk location</strong></td>
+                        <td>Location of file on disk — kept in memory to avoid repeated disk access</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Access rights</strong></td>
+                        <td>Per-process access mode (read, write, etc.)</td>
+                    </tr>
+                </table>
+                <div class="warn">
+                    <div class="warn-label">⚠️ Common Mistake</div>
+                    The file pointer is <em>per-process</em>. Multiple processes can have the same file open
+                    simultaneously with <em>different</em> file pointers.
+                </div>
+            </div>
+
+            <h3>File Structure</h3>
+            <div class="card">
+                <p>Files can have different internal structures that the OS must understand:</p>
+                <div class="badge-row">
+                    <div class="badge red">None (sequence of bytes)</div>
+                    <div class="badge orange">Simple record (lines, fixed/variable length)</div>
+                    <div class="badge blue">Complex Structures (formatted docs, relocatable load files)</div>
+                </div>
+                <div class="tip">
+                    <div class="tip-label">💡 Trick</div>
+                    The OS requires executable files to have a <strong>specific structure</strong> so it knows where to
+                    load them in memory and where the first instruction is. Other file structures are left to the
+                    programmer.
+                </div>
+            </div>
+        </section>
+
+        <!-- ══════════════════════════════════════════════════════ -->
+        <!-- SECTION 2: ACCESS METHODS                             -->
+        <!-- ══════════════════════════════════════════════════════ -->
+        <section class="section" id="access-methods">
+            <div class="section-header">
+                <div class="section-num">02</div>
+                <h2>Access Methods</h2>
+            </div>
+
+            <div class="card">
+                <p>How can information stored in files be accessed and read into memory? There are two primary methods
+                    and one derived method:</p>
+            </div>
+
+            <div class="grid2">
+                <div class="card">
+                    <h3 style="margin-top:0; color:var(--accent3);">Sequential Access</h3>
+                    <p>Information is processed in order — one record after another, like a tape.</p>
+                    <div class="badge-row">
+                        <div class="badge green">Most common</div>
+                    </div>
+                    <p style="margin-top:0.5rem;">Used by: compilers, editors, word processors.</p>
+                    <div class="diagram">read → read → read → read
+                        ← rewind ←</div>
+                </div>
+                <div class="card">
+                    <h3 style="margin-top:0; color:var(--accent4);">Direct (Random) Access</h3>
+                    <p>Fixed-length logical records. Programs can read/write records <em>in any order</em> with no
+                        restrictions.</p>
+                    <div class="badge-row">
+                        <div class="badge blue">Databases</div>
+                    </div>
+                    <p style="margin-top:0.5rem;">File = numbered sequence of blocks.</p>
+                    <div class="diagram">read(block 5) → read(block 1)
+                        → write(block 9)</div>
+                </div>
+            </div>
+
+            <h3>Other Access Methods — Index-Based</h3>
+            <div class="card">
+                <p>Built on top of direct access by creating an <strong>index</strong> for the file.</p>
+                <ul>
+                    <li><strong>Index file</strong> stores pointers into the main data file.</li>
+                    <li>For <em>large</em> files, a <strong>primary index</strong> points to <strong>secondary
+                            indices</strong>, which point to actual data.</li>
+                    <li>Example: IBM's ISAM (Indexed Sequential Access Method).</li>
+                </ul>
+                <div class="diagram">Primary Index → Secondary Index → Data Items
+                    [small] [medium] [large file]</div>
+                <div class="tip">
+                    <div class="tip-label">💡 Analogy</div>
+                    Think of it like a book's <strong>Table of Contents → Chapter headings → Actual text</strong>.
+                    Two-level indexing allows fast lookup even for massive files.
+                </div>
+            </div>
+        </section>
+
+        <!-- ══════════════════════════════════════════════════════ -->
+        <!-- SECTION 3: DIRECTORY STRUCTURE                        -->
+        <!-- ══════════════════════════════════════════════════════ -->
+        <section class="section" id="directory">
+            <div class="section-header">
+                <div class="section-num">03</div>
+                <h2>Directory Structure</h2>
+            </div>
+
+            <div class="card">
+                <p>A <strong>directory</strong> is a collection of nodes containing information about all files. Both
+                    the directory structure and the files reside on disk.</p>
+                <div class="highlight-box">
+                    <strong>File-System Structure:</strong> Disk → Partitions → Each partition has its own directory →
+                    Files within. A typical partition includes a boot block, volume info, directory, and file data.
+                </div>
+            </div>
+
+            <h3>Operations on Directories</h3>
+            <div class="card">
+                <div class="badge-row">
+                    <div class="badge red">Search</div>
+                    <div class="badge red">Create</div>
+                    <div class="badge orange">Delete</div>
+                    <div class="badge orange">List</div>
+                    <div class="badge green">Rename</div>
+                    <div class="badge blue">Traverse</div>
+                </div>
+            </div>
+
+            <h3>Directory Organization Goals</h3>
+            <div class="grid2">
+                <div class="card">
+                    <strong>Efficiency</strong><br>
+                    Locate a file quickly.
+                </div>
+                <div class="card">
+                    <strong>Naming</strong><br>
+                    Two users can have same name for different files. Same file can have several names.
+                </div>
+                <div class="card">
+                    <strong>Grouping</strong><br>
+                    Logical grouping by properties (e.g. all Java programs).
+                </div>
+                <div class="card">
+                    <strong>Convenience</strong><br>
+                    Easy for users to navigate and find files.
+                </div>
+            </div>
+
+            <h3>Types of Directory Structures <span class="tag">Exam Favourite</span></h3>
+
+            <!-- Single Level -->
+            <div class="card">
+                <h3 style="margin-top:0; color:var(--accent);">① Single-Level Directory</h3>
+                <p>All files are in the <em>same</em> directory. Simple to support and understand.</p>
+                <div class="diagram">[ Dir: file1, file2, file3, ... fileN ]</div>
+                <div class="warn">
+                    <div class="warn-label">⚠️ Limitations</div>
+                    <ul>
+                        <li><strong>Naming problem</strong>: All files need unique names (conflicts when users share the
+                            system).</li>
+                        <li><strong>Grouping problem</strong>: No way to logically group related files.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Two Level -->
+            <div class="card">
+                <h3 style="margin-top:0; color:var(--accent2);">② Two-Level Directory</h3>
+                <p>Separate directory for each user. A <strong>Master File Directory (MFD)</strong> is searched at
+                    login; each user has their own <strong>User File Directory (UFD)</strong>.</p>
+                <div class="diagram">MFD
+                    ├── User1: [file_a, file_b]
+                    ├── User2: [file_a, file_c]
+                    └── User3: [file_x]</div>
+                <div class="badge-row">
+                    <div class="badge green">✓ Same filename for different users</div>
+                    <div class="badge green">✓ Efficient searching</div>
+                </div>
+                <div class="warn">
+                    <div class="warn-label">⚠️ Limitation</div>
+                    Isolates users — problem when users want to cooperate and share files. No grouping capability.
+                </div>
+            </div>
+
+            <!-- Tree Structured -->
+            <div class="card">
+                <h3 style="margin-top:0; color:var(--accent3);">③ Tree-Structured Directories</h3>
+                <p>Most common. A tree has a <strong>root directory</strong> and every file has a <strong>unique path
+                        name</strong>.</p>
+                <div class="diagram">/
+                    ├── spell/
+                    │ └── mail/
+                    │ ├── prog
+                    │ ├── copy
+                    │ └── count
+                    └── docs/
+                    └── report.txt</div>
+                <div class="badge-row">
+                    <div class="badge green">✓ Efficient searching</div>
+                    <div class="badge green">✓ Grouping capability</div>
+                </div>
+                <table style="margin-top:0.75rem;">
+                    <tr>
+                        <th>Path Type</th>
+                        <th>Description</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Absolute path</strong></td>
+                        <td>Begins at root → full path down → file</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Relative path</strong></td>
+                        <td>Defines path from the <em>current directory</em></td>
+                    </tr>
+                </table>
+                <div class="tip">
+                    <div class="tip-label">💡 Remember</div>
+                    <strong>Current directory</strong>: Where most files of current interest live. Commands like
+                    <code>mkdir</code> and <code>rm</code> operate relative to current dir. In UNIX, <code>rm -r</code>
+                    removes an entire subtree!
+                </div>
+            </div>
+
+            <!-- Acyclic Graph -->
+            <div class="card">
+                <h3 style="margin-top:0; color:var(--accent4);">④ Acyclic-Graph Directories</h3>
+                <p>Allows directories to <strong>share</strong> subdirectories and files. Changes made by one user are
+                    immediately visible to the other.</p>
+                <div class="diagram">User1/dict ──────────────────┐
+                    shared_file
+                    User2/spell ─────────────────┘</div>
+                <p style="margin-top:0.75rem;">Two implementation approaches:</p>
+                <div class="badge-row">
+                    <div class="badge blue">Links (symbolic pointers to real path)</div>
+                    <div class="badge orange">Duplicate file information</div>
+                </div>
+                <div class="warn">
+                    <div class="warn-label">⚠️ Problems</div>
+                    <ul>
+                        <li><strong>Aliasing problem</strong>: A file can have multiple absolute path names.</li>
+                        <li><strong>Dangling pointer</strong>: If someone deletes the shared file, others' links break.
+                        </li>
+                        <li><strong>Solution</strong>: Delete only the link, OR preserve file until all references are
+                            deleted (reference count = 0 → then delete).</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- General Graph -->
+            <div class="card">
+                <h3 style="margin-top:0; color:var(--text-muted);">⑤ General Graph Directory</h3>
+                <p>If links to subdirectories (not just files) are allowed, cycles can form. This complicates deletion.
+                </p>
+                <div class="warn">
+                    <div class="warn-label">⚠️ Problems with Cycles</div>
+                    <ul>
+                        <li>Reference count may never reach 0 even when no external reference exists.</li>
+                        <li>Requires <strong>garbage collection</strong> to find and free truly unreachable files.</li>
+                        <li>Or use a <strong>cycle detection algorithm</strong> every time a new link is added.</li>
+                    </ul>
+                </div>
+                <div class="tip">
+                    <div class="tip-label">💡 Simple Solution</div>
+                    Allow links <strong>only to files</strong>, not subdirectories. This keeps the structure acyclic.
+                </div>
+            </div>
+
+            <div class="memory-palace">
+                <h4>🧠 Mnemonic — Directory Types in Order</h4>
+                <div class="mnemonic">S-T-T-A-G</div>
+                <p><strong>S</strong>ingle · <strong>T</strong>wo-level · <strong>T</strong>ree ·
+                    <strong>A</strong>cyclic · <strong>G</strong>raph</p>
+                <p style="font-size:0.88rem; margin-top:0.5rem;">"<em>Students Tend To Ace General exams</em>" — each
+                    adds more power but more complexity!</p>
+                <table style="margin-top:0.75rem; font-size:0.85rem;">
+                    <tr>
+                        <th>Type</th>
+                        <th>Naming ✓</th>
+                        <th>Grouping ✓</th>
+                        <th>Sharing ✓</th>
+                    </tr>
+                    <tr>
+                        <td>Single-level</td>
+                        <td>✗</td>
+                        <td>✗</td>
+                        <td>✗</td>
+                    </tr>
+                    <tr>
+                        <td>Two-level</td>
+                        <td>✓</td>
+                        <td>✗</td>
+                        <td>Limited</td>
+                    </tr>
+                    <tr>
+                        <td>Tree</td>
+                        <td>✓</td>
+                        <td>✓</td>
+                        <td>✗</td>
+                    </tr>
+                    <tr>
+                        <td>Acyclic graph</td>
+                        <td>✓</td>
+                        <td>✓</td>
+                        <td>✓</td>
+                    </tr>
+                    <tr>
+                        <td>General graph</td>
+                        <td>✓</td>
+                        <td>✓</td>
+                        <td>✓</td>
+                    </tr>
+                </table>
+            </div>
+        </section>
+
+        <!-- ══════════════════════════════════════════════════════ -->
+        <!-- SECTION 4: PROTECTION                                 -->
+        <!-- ══════════════════════════════════════════════════════ -->
+        <section class="section" id="protection">
+            <div class="section-header">
+                <div class="section-num">04</div>
+                <h2>File Protection</h2>
+            </div>
+
+            <div class="card">
+                <p>Protection is needed so that users cannot accidentally or deliberately destroy someone else's
+                    information. The OS must control which operations each user can perform on each file.</p>
+                <div class="highlight-box">
+                    <strong>Controlled operations include:</strong> Read · Write · Execute · Append · Delete · List
+                </div>
+            </div>
+
+            <h3>Access Lists and Groups <span class="tag">Exam Favourite</span></h3>
+            <div class="card">
+                <p>An <strong>Access-Control List (ACL)</strong> specifies username + type of access allowed for each
+                    user.</p>
+                <div class="warn">
+                    <div class="warn-label">⚠️ Problems with Full ACL</div>
+                    <ul>
+                        <li>Length: Must list ALL users with access.</li>
+                        <li>List construction is tedious.</li>
+                        <li>Variable-size directory entries are complicated to manage.</li>
+                    </ul>
+                </div>
+
+                <h3 style="margin-top:1rem; color:var(--accent3);">UNIX-Style Three-Class Solution</h3>
+                <p>Group all users into three classes. Much simpler — only 9 bits needed per file.</p>
+                <table>
+                    <tr>
+                        <th>Class</th>
+                        <th>Who</th>
+                        <th>Permissions (RWX)</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Owner</strong></td>
+                        <td>The file's creator</td>
+                        <td><code>rwx = 111</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Group</strong></td>
+                        <td>Users in the same group</td>
+                        <td><code>rw- = 110</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Universe</strong></td>
+                        <td>All other users</td>
+                        <td><code>r-- = 100</code></td>
+                    </tr>
+                </table>
+                <div class="diagram">Example UNIX permissions: rwxr-xr--
+                    → Owner: rwx (can read, write, execute)
+                    → Group: r-x (can read and execute)
+                    → Others: r-- (can only read)</div>
+                <div class="memory-palace">
+                    <h4>🧠 Mnemonic — UNIX Permission Classes</h4>
+                    <div class="mnemonic">O-G-U</div>
+                    <p><strong>O</strong>wner · <strong>G</strong>roup · <strong>U</strong>niverse (World)</p>
+                    <p style="font-size:0.88rem; margin-top:0.5rem;">"<em>Only Good Users</em>" can access (in
+                        decreasing privilege).</p>
+                    <p style="font-size:0.88rem;">Remember: <strong>R=4, W=2, X=1</strong>. So <code>rwx = 7</code>,
+                        <code>rw- = 6</code>, <code>r-- = 4</code>. File <code>chmod 755</code> = Owner: 7 (rwx), Group:
+                        5 (r-x), Others: 5 (r-x).</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ══════════════════════════════════════════════════════ -->
+        <!-- SECTION 5: TIPS & TRICKS                              -->
+        <!-- ══════════════════════════════════════════════════════ -->
+        <section class="section" id="tips">
+            <div class="section-header">
+                <div class="section-num">05</div>
+                <h2>Tips, Tricks & Exam Strategy</h2>
+            </div>
+
+            <div class="card">
+                <h3 style="margin-top:0;">🎯 Most Tested Concepts</h3>
+                <div class="badge-row">
+                    <div class="badge red">Directory Types & Differences</div>
+                    <div class="badge red">Access Methods (Sequential vs Direct)</div>
+                    <div class="badge orange">UNIX RWX Permissions</div>
+                    <div class="badge orange">Open File Table entries</div>
+                    <div class="badge blue">Dangling pointer problem</div>
+                    <div class="badge blue">File Operations list</div>
+                </div>
+            </div>
+
+            <div class="grid2">
+                <div class="tip">
+                    <div class="tip-label">💡 Directory Shortcuts</div>
+                    <ul>
+                        <li><strong>Single-level</strong> = Naming problem (no duplicate names)</li>
+                        <li><strong>Two-level</strong> = Isolation problem (can't cooperate)</li>
+                        <li><strong>Tree</strong> = Current working directory concept</li>
+                        <li><strong>Acyclic</strong> = Dangling pointer + reference count</li>
+                        <li><strong>General graph</strong> = Garbage collection needed</li>
+                    </ul>
+                </div>
+                <div class="tip">
+                    <div class="tip-label">💡 Access Method Rules</div>
+                    <ul>
+                        <li><strong>Sequential</strong> = tapes, compilers, editors</li>
+                        <li><strong>Direct</strong> = databases, large immediate lookups</li>
+                        <li><strong>Indexed</strong> = built on top of direct access</li>
+                        <li>Direct access requires <em>fixed-length</em> records</li>
+                        <li>Sequential access = one record after another</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="warn">
+                <div class="warn-label">⚠️ Don't Confuse</div>
+                <strong>Delete vs Truncate:</strong> <code>Delete</code> removes the file AND its entry from the
+                directory. <code>Truncate</code> erases the file <em>contents</em> but <strong>keeps the file and its
+                    attributes</strong> (name, protection, etc.). The file still exists — just empty!
+            </div>
+
+            <div class="tip">
+                <div class="tip-label">💡 File Pointer Facts</div>
+                The <strong>file pointer</strong> is stored in the <em>per-process open-file table</em>, NOT in the
+                system-wide open-file table. This is because different processes reading the same file need their own
+                positions — like different people reading different pages of the same book.
+            </div>
+
+            <div class="card">
+                <h3 style="margin-top:0;">📊 Quick Comparison Table</h3>
+                <table>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Sequential</th>
+                        <th>Direct</th>
+                        <th>Indexed</th>
+                    </tr>
+                    <tr>
+                        <td>Record size</td>
+                        <td>Variable</td>
+                        <td>Fixed</td>
+                        <td>Variable or fixed</td>
+                    </tr>
+                    <tr>
+                        <td>Access order</td>
+                        <td>In order only</td>
+                        <td>Any order</td>
+                        <td>Any order (via index)</td>
+                    </tr>
+                    <tr>
+                        <td>Use case</td>
+                        <td>Compilers, editors</td>
+                        <td>Databases</td>
+                        <td>Large structured files</td>
+                    </tr>
+                    <tr>
+                        <td>Speed</td>
+                        <td>Slow (must scan)</td>
+                        <td>Fast</td>
+                        <td>Very fast</td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="memory-palace">
+                <h4>🧠 Big Picture Memory Map</h4>
+                <div class="diagram">FILE SYSTEM INTERFACE
+                    │
+                    ├── FILE CONCEPT
+                    │ ├── Attributes: N-T-L-S-P-T
+                    │ ├── Operations: C-W-R-S-D-T + Open/Close
+                    │ └── Open-file table (per-process + system-wide)
+                    │
+                    ├── ACCESS METHODS
+                    │ ├── Sequential (tape model, in-order)
+                    │ ├── Direct (random, fixed-length records)
+                    │ └── Indexed (built on direct, for large files)
+                    │
+                    ├── DIRECTORY STRUCTURE
+                    │ ├── Single → Two → Tree → Acyclic → Graph
+                    │ └── Goals: Efficiency, Naming, Grouping
+                    │
+                    └── PROTECTION
+                    ├── ACL (full list — complex)
+                    └── UNIX: Owner | Group | Universe (RWX)</div>
+            </div>
+        </section>
+
+        <!-- ══════════════════════════════════════════════════════ -->
+        <!-- SECTION 6: PAST EXAM Q&A                              -->
+        <!-- ══════════════════════════════════════════════════════ -->
+        <section class="section" id="qanda">
+            <div class="section-header qa-title">
+                <div class="section-num" style="color:var(--accent4);">06</div>
+                <h2 style="color:var(--accent4);">Past Exam Questions & Answers</h2>
+            </div>
+
+            <div class="card" style="border-color: var(--accent4); margin-bottom:1.5rem;">
+                <p>These questions are drawn from past CS330 exams and quizzes. Click any question to reveal the answer
+                    and explanation.</p>
+            </div>
+
+            <!-- MCQ -->
+            <h3>Multiple Choice Questions</h3>
+
+            <details>
+                <summary><span class="tag blue">MCQ</span> Which operation removes all file contents but keeps its
+                    attributes?</summary>
+                <div class="answer">
+                    <div class="correct">✓ ANSWER: Truncate</div>
+                    <p><strong>Explanation:</strong> <code>Truncate</code> erases the contents of a file but keeps all
+                        its attributes (name, location, protection, etc.) in the directory entry. The file still exists
+                        — it just becomes empty.</p>
+                    <ul>
+                        <li>Delete = removes file AND its directory entry entirely</li>
+                        <li>Close = moves FCB from memory back to disk</li>
+                        <li>Seek = repositions the read/write pointer</li>
+                    </ul>
+                </div>
+            </details>
+
+            <details>
+                <summary><span class="tag blue">MCQ</span> Which access method reads data in order, record after record?
+                </summary>
+                <div class="answer">
+                    <div class="correct">✓ ANSWER: Sequential Access</div>
+                    <p><strong>Explanation:</strong> Sequential access processes information in order — one record after
+                        another, like a tape. It is the most common access method used by compilers and editors.</p>
+                    <p>Direct access (random access) allows programs to read/write records in any order.</p>
+                </div>
+            </details>
+
+            <details>
+                <summary><span class="tag blue">MCQ</span> Which directory structure allows the same file to appear
+                    under multiple path names?</summary>
+                <div class="answer">
+                    <div class="correct">✓ ANSWER: Acyclic Graph Directory</div>
+                    <p><strong>Explanation:</strong> In an acyclic-graph directory, files can be shared via
+                        <strong>links</strong>. A single file can appear under multiple path names because different
+                        directories can point to the same inode/FCB. This is known as the <strong>aliasing
+                            problem</strong>.</p>
+                    <ul>
+                        <li>Tree directories: each file has exactly one path (no sharing)</li>
+                        <li>Acyclic graphs: sharing is possible via links → multiple paths</li>
+                    </ul>
+                </div>
+            </details>
+
+            <details>
+                <summary><span class="tag blue">MCQ</span> Which directory structure requires all file names to be
+                    unique (globally)?</summary>
+                <div class="answer">
+                    <div class="correct">✓ ANSWER: Single-Level Directory</div>
+                    <p><strong>Explanation:</strong> In a single-level directory, all files are in the same directory.
+                        Since there is no separation between users, every file must have a globally unique name. This is
+                        the <strong>naming problem</strong> of single-level directories.</p>
+                </div>
+            </details>
+
+            <details>
+                <summary><span class="tag blue">MCQ</span> Which type of users does the UNIX protection model define?
+                </summary>
+                <div class="answer">
+                    <div class="correct">✓ ANSWER: Owner, Group, Universe</div>
+                    <p><strong>Explanation:</strong> UNIX uses a 3-class model instead of a full ACL for simplicity:</p>
+                    <ul>
+                        <li><strong>Owner</strong>: The user who created/owns the file</li>
+                        <li><strong>Group</strong>: Users belonging to the same group as the file</li>
+                        <li><strong>Universe (World/Others)</strong>: All remaining users</li>
+                    </ul>
+                    <p>Each class gets 3 permission bits: R (read=4), W (write=2), X (execute=1).</p>
+                </div>
+            </details>
+
+            <details>
+                <summary><span class="tag blue">MCQ</span> Which file operation repositions the read/write pointer
+                    within the file?</summary>
+                <div class="answer">
+                    <div class="correct">✓ ANSWER: Seek</div>
+                    <p><strong>Explanation:</strong> The <code>Seek</code> operation searches the directory for the
+                        appropriate entry and repositions the current-file-position pointer to a given value. It does
+                        not transfer any data.</p>
+                </div>
+            </details>
+
+            <details>
+                <summary><span class="tag blue">MCQ</span> When the file-open count reaches zero, the OS does what?
+                </summary>
+                <div class="answer">
+                    <div class="correct">✓ ANSWER: Removes the entry from the open-file table</div>
+                    <p><strong>Explanation:</strong> The <strong>file-open count</strong> tracks how many processes
+                        currently have a file open. When the last process closes the file, the count drops to 0 and the
+                        OS removes the file's entry from the open-file table. The file is <em>not deleted</em> — it just
+                        no longer needs an in-memory entry.</p>
+                </div>
+            </details>
+
+            <!-- Short Answer / Conceptual -->
+            <h3>Conceptual / Short Answer</h3>
+
+            <details>
+                <summary><span class="tag">Short Answer</span> What is the main difference between Single-Level and
+                    Two-Level directory structures? What problem does the Two-Level design solve?</summary>
+                <div class="answer">
+                    <div class="correct">✓ Model Answer</div>
+                    <p><strong>Single-level:</strong> All files reside in one shared directory. Problem: All file names
+                        must be globally unique (naming problem), and there is no way to group related files (grouping
+                        problem).</p>
+                    <p><strong>Two-level:</strong> Each user has their own User File Directory (UFD), managed by a
+                        Master File Directory (MFD) at the top. This solves the <strong>naming problem</strong> —
+                        different users can have files with the same name because they live in separate UFDs. It also
+                        provides efficient searching. However, it still lacks <strong>grouping capability</strong>
+                        within a user's directory and <strong>isolates users</strong> (hard to share files between
+                        them).</p>
+                </div>
+            </details>
+
+            <details>
+                <summary><span class="tag">Short Answer</span> What is a dangling pointer in the context of
+                    acyclic-graph directories? How does the OS solve this problem?</summary>
+                <div class="answer">
+                    <div class="correct">✓ Model Answer</div>
+                    <p>A <strong>dangling pointer</strong> occurs when a shared file is deleted (one user removes it),
+                        but other users/directories still have links pointing to it. Those links now point to a
+                        non-existent file — they "dangle."</p>
+                    <p><strong>Solutions:</strong></p>
+                    <ul>
+                        <li><strong>Delete only the link</strong>, not the actual file. The original file remains until
+                            all links are removed.</li>
+                        <li><strong>Reference counting</strong>: Maintain a count of how many links point to the file.
+                            Only physically delete the file when the reference count reaches 0.</li>
+                    </ul>
+                </div>
+            </details>
+
+            <details>
+                <summary><span class="tag">Short Answer</span> What does the open-file table contain? Why is a
+                    per-process table needed in addition to the system-wide table?</summary>
+                <div class="answer">
+                    <div class="correct">✓ Model Answer</div>
+                    <p><strong>System-wide open-file table:</strong> Contains a copy of the FCB (file control block) of
+                        every open file, the open-count, and the disk location of the file. Shared across all processes.
+                    </p>
+                    <p><strong>Per-process open-file table:</strong> Contains the file pointer (current read/write
+                        position), access rights, and a pointer into the system-wide table. This is per-process because
+                        different processes reading the same file need their own independent position pointer.</p>
+                    <p>The two-table design avoids redundancy (FCB stored once) while supporting independent file
+                        positions per process.</p>
+                </div>
+            </details>
+
+            <details>
+                <summary><span class="tag">Short Answer</span> Describe Sequential Access and Direct Access. Give one
+                    real-world use case for each.</summary>
+                <div class="answer">
+                    <div class="correct">✓ Model Answer</div>
+                    <p><strong>Sequential Access:</strong> Information is processed in order — one record after another.
+                        You can read forward or rewind to the beginning, but you cannot jump to an arbitrary record.
+                        Like a tape. <em>Use case: Compilers reading source code, log files being processed.</em></p>
+                    <p><strong>Direct (Random) Access:</strong> The file consists of fixed-length logical records. A
+                        program can read or write any record in any order without restriction — you can jump directly to
+                        record N. <em>Use case: Database systems needing immediate access to specific records (e.g. look
+                            up employee #5000 directly).</em></p>
+                </div>
+            </details>
+
+            <details>
+                <summary><span class="tag">Short Answer</span> A file has UNIX permissions rwxr-x--x. What can the
+                    Owner, Group, and Others do?</summary>
+                <div class="answer">
+                    <div class="correct">✓ Model Answer</div>
+                    <table>
+                        <tr>
+                            <th>Class</th>
+                            <th>Bits</th>
+                            <th>Permissions</th>
+                        </tr>
+                        <tr>
+                            <td>Owner</td>
+                            <td>rwx</td>
+                            <td>Can read, write, AND execute</td>
+                        </tr>
+                        <tr>
+                            <td>Group</td>
+                            <td>r-x</td>
+                            <td>Can read and execute, but NOT write</td>
+                        </tr>
+                        <tr>
+                            <td>Others</td>
+                            <td>--x</td>
+                            <td>Can ONLY execute — cannot read or write</td>
+                        </tr>
+                    </table>
+                    <p>In octal: Owner=7, Group=5, Others=1 → <code>chmod 751</code></p>
+                </div>
+            </details>
+
+            <details>
+                <summary><span class="tag">Short Answer</span> What are the six basic file operations the OS must
+                    support?</summary>
+                <div class="answer">
+                    <div class="correct">✓ Model Answer</div>
+                    <ol>
+                        <li><strong>Create</strong>: Find space in the file system and make a directory entry for the
+                            new file.</li>
+                        <li><strong>Write</strong>: System call specifying the file name and info to be written.</li>
+                        <li><strong>Read</strong>: System call specifying the file name and where to put the next block.
+                        </li>
+                        <li><strong>Seek</strong>: Reposition the current-file-position pointer within the file.</li>
+                        <li><strong>Delete</strong>: Search directory for named file, erase the directory entry, release
+                            file space.</li>
+                        <li><strong>Truncate</strong>: Erase contents of file but keep its attributes (file still
+                            exists, just empty).</li>
+                    </ol>
+                    <p>Plus two critical operations: <strong>Open(Fᵢ)</strong> and <strong>Close(Fᵢ)</strong> — used
+                        before/after accessing files to manage the open-file table.</p>
+                </div>
+            </details>
+
+            <details>
+                <summary><span class="tag">Short Answer</span> Why are ACLs problematic in practice, and what simpler
+                    solution does UNIX use?</summary>
+                <div class="answer">
+                    <div class="correct">✓ Model Answer</div>
+                    <p><strong>ACL Problems:</strong></p>
+                    <ul>
+                        <li>The list can be very long (must list every user who can access the file).</li>
+                        <li>The set of users may not be known in advance.</li>
+                        <li>Variable-size directory entries complicate space management.</li>
+                    </ul>
+                    <p><strong>UNIX Solution:</strong> Condense all users into three classes — <strong>Owner</strong>,
+                        <strong>Group</strong>, and <strong>Universe</strong> — and assign three permission bits (R, W,
+                        X) to each class. This gives 9 bits total per file, which is compact and efficient.</p>
+                </div>
+            </details>
+
+        </section>
+
+    </main>
+
+    <footer>
+        <p>CS330 Operating Systems · Chapter 11: File-System Interface</p>
+        <p style="margin-top:0.5rem;">Prepared for <span>Shoug Alomran</span> · Based on Silberschatz, Galvin & Gagne —
+            Operating System Concepts, 10th Ed.</p>
+        <p style="margin-top:0.5rem; opacity:0.5;">All rights belong to their respective owners.</p>
+    </footer>
+
+    <script>
+        let dark = false;
+        function toggleTheme() {
+            dark = !dark;
+            document.documentElement.setAttribute('data-theme', dark ? 'dark' : '');
+            document.getElementById('theme-icon').textContent = dark ? '☀️' : '🌙';
+            document.getElementById('theme-label').textContent = dark ? 'Light' : 'Dark';
+        }
+    </script>
+</body>
+
+</html>

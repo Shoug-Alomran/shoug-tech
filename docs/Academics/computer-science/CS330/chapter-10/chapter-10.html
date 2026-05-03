@@ -1,0 +1,1726 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CS330 · Chapter 10 · Mass Storage Structure</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=IBM+Plex+Mono:wght@400;500&family=Lora:ital,wght@0,400;0,500;1,400&display=swap"
+    rel="stylesheet">
+  <style>
+    :root[data-theme="dark"] {
+      --bg: #0d0f14;
+      --bg2: #13161e;
+      --bg3: #1a1e28;
+      --border: #252a38;
+      --text: #e8eaf0;
+      --text-muted: #8891aa;
+      --accent: #6c8fff;
+      --accent2: #ff7c5c;
+      --accent3: #4ecb8a;
+      --accent4: #f7c948;
+      --accent5: #c67fff;
+      --card-bg: #181c28;
+      --tip-bg: #0d1a28;
+      --warn-bg: #1a1208;
+      --success-bg: #0d1a14;
+      --tag-bg: #1e2540;
+      --shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
+      --code-bg: #1e2235;
+    }
+
+    :root[data-theme="light"] {
+      --bg: #f5f6fa;
+      --bg2: #ffffff;
+      --bg3: #eef0f8;
+      --border: #dde0ef;
+      --text: #1a1d2e;
+      --text-muted: #5a607a;
+      --accent: #3a5ecc;
+      --accent2: #d94f2f;
+      --accent3: #1a8a56;
+      --accent4: #c09000;
+      --accent5: #7a30b8;
+      --card-bg: #ffffff;
+      --tip-bg: #e8f0ff;
+      --warn-bg: #fff8e6;
+      --success-bg: #e8f8ef;
+      --tag-bg: #e5eaff;
+      --shadow: 0 4px 24px rgba(0, 0, 0, 0.1);
+      --code-bg: #eef0fa;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Lora', Georgia, serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      transition: background 0.3s, color 0.3s;
+      min-height: 100vh;
+    }
+
+    /* ─── HEADER ─── */
+    header {
+      background: var(--bg2);
+      border-bottom: 2px solid var(--border);
+      padding: 0 2rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+      box-shadow: var(--shadow);
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .chapter-badge {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.7rem;
+      background: var(--accent);
+      color: #fff;
+      padding: 3px 10px;
+      border-radius: 20px;
+      letter-spacing: 0.08em;
+      font-weight: 500;
+    }
+
+    header h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .theme-toggle {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 7px 16px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.75rem;
+      transition: all 0.2s;
+      letter-spacing: 0.05em;
+    }
+
+    .theme-toggle:hover {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+
+    /* ─── NAV PILLS ─── */
+    .nav-pills {
+      background: var(--bg2);
+      border-bottom: 1px solid var(--border);
+      padding: 0 2rem;
+      display: flex;
+      gap: 0.25rem;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .nav-pills::-webkit-scrollbar {
+      display: none;
+    }
+
+    .pill {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.72rem;
+      padding: 10px 16px;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      white-space: nowrap;
+      color: var(--text-muted);
+      transition: all 0.2s;
+      text-decoration: none;
+      display: block;
+    }
+
+    .pill:hover {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+
+    /* ─── HERO ─── */
+    .hero {
+      background: linear-gradient(135deg, var(--bg2) 0%, var(--bg3) 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 3rem 2rem 2.5rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -40%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 600px;
+      height: 300px;
+      background: radial-gradient(ellipse, rgba(108, 143, 255, 0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--accent);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 0.75rem;
+    }
+
+    .hero h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(1.8rem, 4vw, 2.6rem);
+      font-weight: 800;
+      line-height: 1.15;
+      margin-bottom: 0.75rem;
+    }
+
+    .hero h2 span {
+      color: var(--accent);
+    }
+
+    .hero p {
+      color: var(--text-muted);
+      max-width: 600px;
+      margin: 0 auto;
+      font-size: 0.95rem;
+    }
+
+    .meta-pills {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 1.5rem;
+    }
+
+    .meta-pill {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.68rem;
+      padding: 4px 12px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      background: var(--tag-bg);
+      color: var(--text-muted);
+    }
+
+    /* ─── MAIN ─── */
+    main {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 2.5rem 1.5rem 4rem;
+    }
+
+    /* ─── SECTION HEADINGS ─── */
+    .section-heading {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.35rem;
+      font-weight: 700;
+      margin: 2.5rem 0 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+    }
+
+    .section-heading .icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+
+    .icon-blue {
+      background: rgba(108, 143, 255, 0.15);
+    }
+
+    .icon-orange {
+      background: rgba(255, 124, 92, 0.15);
+    }
+
+    .icon-green {
+      background: rgba(78, 203, 138, 0.15);
+    }
+
+    .icon-yellow {
+      background: rgba(247, 201, 72, 0.15);
+    }
+
+    .icon-purple {
+      background: rgba(198, 127, 255, 0.15);
+    }
+
+    /* ─── CARDS ─── */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+      box-shadow: var(--shadow);
+      transition: border-color 0.2s;
+    }
+
+    .card:hover {
+      border-color: var(--accent);
+    }
+
+    .card h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 0.65rem;
+      color: var(--accent);
+    }
+
+    .card p,
+    .card li {
+      font-size: 0.92rem;
+      color: var(--text);
+      line-height: 1.7;
+    }
+
+    .card ul {
+      padding-left: 1.2rem;
+    }
+
+    .card li {
+      margin-bottom: 0.3rem;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    @media(max-width: 640px) {
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* ─── CALLOUTS ─── */
+    .tip,
+    .warn,
+    .success,
+    .info {
+      border-radius: 10px;
+      padding: 1rem 1.2rem;
+      margin: 1rem 0;
+      font-size: 0.9rem;
+      border-left: 4px solid;
+    }
+
+    .tip {
+      background: var(--tip-bg);
+      border-color: var(--accent);
+    }
+
+    .warn {
+      background: var(--warn-bg);
+      border-color: var(--accent4);
+    }
+
+    .success {
+      background: var(--success-bg);
+      border-color: var(--accent3);
+    }
+
+    .info {
+      background: var(--bg3);
+      border-color: var(--accent5);
+    }
+
+    .tip strong,
+    .warn strong,
+    .success strong,
+    .info strong {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
+      display: block;
+      margin-bottom: 0.4rem;
+    }
+
+    .tip strong {
+      color: var(--accent);
+    }
+
+    .warn strong {
+      color: var(--accent4);
+    }
+
+    .success strong {
+      color: var(--accent3);
+    }
+
+    .info strong {
+      color: var(--accent5);
+    }
+
+    /* ─── TABLE ─── */
+    .table-wrap {
+      overflow-x: auto;
+      margin: 1rem 0;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+    }
+
+    th {
+      background: var(--bg3);
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.75rem;
+      letter-spacing: 0.07em;
+      padding: 10px 14px;
+      text-align: left;
+      color: var(--accent);
+      border-bottom: 1px solid var(--border);
+    }
+
+    td {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text);
+      vertical-align: top;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:hover td {
+      background: var(--bg3);
+    }
+
+    /* ─── CODE ─── */
+    code {
+      font-family: 'IBM Plex Mono', monospace;
+      background: var(--code-bg);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.83em;
+      color: var(--accent2);
+    }
+
+    /* ─── FORMULA BOX ─── */
+    .formula {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem 1.5rem;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.88rem;
+      margin: 1rem 0;
+      text-align: center;
+      letter-spacing: 0.03em;
+      color: var(--accent3);
+    }
+
+    /* ─── ALGORITHM COMPARISON ─── */
+    .algo-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.1rem;
+      border-top: 3px solid;
+      margin-bottom: 0.75rem;
+    }
+
+    .algo-card h4 {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .algo-card p,
+    .algo-card li {
+      font-size: 0.88rem;
+      line-height: 1.6;
+    }
+
+    .algo-card ul {
+      padding-left: 1.1rem;
+    }
+
+    .algo-fcfs {
+      border-top-color: var(--accent);
+    }
+
+    .algo-sstf {
+      border-top-color: var(--accent2);
+    }
+
+    .algo-scan {
+      border-top-color: var(--accent3);
+    }
+
+    .algo-cscan {
+      border-top-color: var(--accent4);
+    }
+
+    .algo-look {
+      border-top-color: var(--accent5);
+    }
+
+    /* ─── MEMORY AID ─── */
+    .memory-aid {
+      background: linear-gradient(135deg, rgba(108, 143, 255, 0.08) 0%, rgba(198, 127, 255, 0.08) 100%);
+      border: 1px solid var(--accent5);
+      border-radius: 12px;
+      padding: 1.2rem 1.4rem;
+      margin: 1rem 0;
+    }
+
+    .memory-aid h4 {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--accent5);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+    }
+
+    .memory-aid p {
+      font-size: 0.9rem;
+    }
+
+    .memory-aid .big-text {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--accent5);
+      letter-spacing: 0.05em;
+      margin-bottom: 0.3rem;
+    }
+
+    /* ─── QA SECTION ─── */
+    .qa-item {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      margin-bottom: 0.75rem;
+      overflow: hidden;
+    }
+
+    .qa-q {
+      padding: 1rem 1.2rem;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 1rem;
+      font-weight: 500;
+      font-size: 0.92rem;
+      transition: background 0.2s;
+    }
+
+    .qa-q:hover {
+      background: var(--bg3);
+    }
+
+    .qa-q::after {
+      content: '＋';
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 1rem;
+      color: var(--accent);
+      flex-shrink: 0;
+      line-height: 1.6;
+    }
+
+    .qa-item.open .qa-q::after {
+      content: '－';
+    }
+
+    .qa-source {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.65rem;
+      background: var(--tag-bg);
+      color: var(--accent);
+      padding: 2px 7px;
+      border-radius: 10px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .qa-a {
+      display: none;
+      padding: 0 1.2rem 1rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.9rem;
+      line-height: 1.7;
+      color: var(--text-muted);
+      padding-top: 0.75rem;
+    }
+
+    .qa-a strong {
+      color: var(--accent3);
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.8rem;
+      display: block;
+      margin-bottom: 0.3rem;
+    }
+
+    .qa-item.open .qa-a {
+      display: block;
+    }
+
+    /* ─── TIMELINE ─── */
+    .timeline {
+      position: relative;
+      padding-left: 1.5rem;
+      margin: 1rem 0;
+    }
+
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 6px;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: var(--border);
+    }
+
+    .tl-item {
+      position: relative;
+      margin-bottom: 1.2rem;
+    }
+
+    .tl-item::before {
+      content: '';
+      position: absolute;
+      left: -1.5rem;
+      top: 0.45rem;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 0 3px var(--bg);
+    }
+
+    .tl-item h4 {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.92rem;
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+    }
+
+    .tl-item p {
+      font-size: 0.87rem;
+      color: var(--text-muted);
+    }
+
+    /* ─── DISK ANIMATION ─── */
+    .disk-vis {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      text-align: center;
+      margin: 1rem 0;
+    }
+
+    .disk-svg {
+      margin: 0 auto;
+      display: block;
+    }
+
+    /* ─── SEPARATOR ─── */
+    hr {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 2rem 0;
+    }
+
+    /* ─── FOOTER ─── */
+    footer {
+      background: var(--bg2);
+      border-top: 1px solid var(--border);
+      padding: 1.5rem 2rem;
+      text-align: center;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      letter-spacing: 0.05em;
+    }
+
+    footer span {
+      color: var(--accent);
+    }
+
+    /* ─── PROGRESS BAR ─── */
+    .progress-bar {
+      position: fixed;
+      top: 64px;
+      left: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent), var(--accent5));
+      z-index: 99;
+      transition: width 0.1s;
+      width: 0%;
+    }
+
+    /* ─── DISK SCHEDULING VISUAL ─── */
+    .schedule-track {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.78rem;
+      background: var(--code-bg);
+      border-radius: 8px;
+      padding: 0.8rem 1rem;
+      margin: 0.5rem 0;
+      overflow-x: auto;
+      white-space: nowrap;
+      color: var(--text-muted);
+    }
+
+    .schedule-track strong {
+      color: var(--accent2);
+    }
+
+    p {
+      margin-bottom: 0.5rem;
+    }
+
+    ul {
+      margin-bottom: 0.5rem;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .card,
+    .tip,
+    .warn,
+    .success,
+    .info,
+    .algo-card,
+    .qa-item {
+      animation: fadeInUp 0.4s ease both;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="progress-bar" id="progressBar"></div>
+
+  <header>
+    <div class="header-left">
+      <span class="chapter-badge">CH · 10</span>
+      <h1>Mass Storage Structure</h1>
+    </div>
+    <button class="theme-toggle" onclick="toggleTheme()">☀ Light Mode</button>
+  </header>
+
+  <nav class="nav-pills">
+    <a class="pill" href="#overview">Overview</a>
+    <a class="pill" href="#disk-structure">Disk Structure</a>
+    <a class="pill" href="#performance">Performance</a>
+    <a class="pill" href="#scheduling">Disk Scheduling</a>
+    <a class="pill" href="#algorithms">Algorithms</a>
+    <a class="pill" href="#other-storage">Other Storage</a>
+    <a class="pill" href="#raid">RAID</a>
+    <a class="pill" href="#tips">Tips & Tricks</a>
+    <a class="pill" href="#qa">Past Exam Q&A</a>
+  </nav>
+
+  <div class="hero">
+    <div class="hero-label">CS330 · Operating Systems · Prince Sultan University</div>
+    <h2>Chapter 10: <span>Mass Storage</span> Structure</h2>
+    <p>How operating systems manage physical disks — from spinning platters to scheduling algorithms that minimize head
+      movement.</p>
+    <div class="meta-pills">
+      <span class="meta-pill">📀 Magnetic Disks</span>
+      <span class="meta-pill">⚡ SSDs</span>
+      <span class="meta-pill">📐 Disk Scheduling</span>
+      <span class="meta-pill">🛡 RAID</span>
+      <span class="meta-pill">📊 Access Time</span>
+    </div>
+  </div>
+
+  <main>
+
+    <!-- ─── OVERVIEW ─── -->
+    <section id="overview">
+      <div class="section-heading">
+        <div class="icon icon-blue">🗺</div>
+        Chapter Overview
+      </div>
+
+      <div class="tip">
+        <strong>🎯 BIG PICTURE</strong>
+        This chapter answers: <em>"How does the OS talk to physical storage?"</em> — it covers the hardware structure of
+        disks, how access time is calculated, and how the OS decides the order to serve disk requests to minimize wasted
+        movement.
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <h3>🗂 What You'll Learn</h3>
+          <ul>
+            <li>Physical structure of magnetic disks & SSDs</li>
+            <li>How access time is calculated (seek + rotation + transfer)</li>
+            <li>Disk scheduling algorithms (FCFS, SSTF, SCAN, C-SCAN, LOOK, C-LOOK)</li>
+            <li>RAID levels and why they exist</li>
+            <li>Boot block & bad block management</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>🔗 Connections to Other Chapters</h3>
+          <ul>
+            <li><strong>Ch 8–9 (Memory/VM):</strong> Swap space lives on disk</li>
+            <li><strong>Ch 11–12 (File Systems):</strong> Files are stored on disk; allocation methods use disk blocks
+            </li>
+            <li><strong>Ch 3 (Processes):</strong> I/O-bound vs CPU-bound processes — I/O often means disk</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── DISK STRUCTURE ─── -->
+    <section id="disk-structure">
+      <div class="section-heading">
+        <div class="icon icon-orange">💿</div>
+        Magnetic Disk Structure
+      </div>
+
+      <div class="card">
+        <h3>Anatomy of a Hard Disk (HDD)</h3>
+        <p>Understanding the physical layout is key to understanding <em>why</em> access time has multiple components.
+        </p>
+      </div>
+
+      <!-- Visual disk diagram using SVG -->
+      <div class="disk-vis">
+        <svg class="disk-svg" width="340" height="220" viewBox="0 0 340 220">
+          <!-- Platter circles -->
+          <circle cx="170" cy="110" r="100" fill="none" stroke="#6c8fff" stroke-width="2" opacity="0.3" />
+          <circle cx="170" cy="110" r="80" fill="none" stroke="#6c8fff" stroke-width="1.5" opacity="0.25" />
+          <circle cx="170" cy="110" r="60" fill="none" stroke="#6c8fff" stroke-width="1.5" opacity="0.2" />
+          <circle cx="170" cy="110" r="40" fill="none" stroke="#6c8fff" stroke-width="1.5" opacity="0.15" />
+          <circle cx="170" cy="110" r="20" fill="none" stroke="#6c8fff" stroke-width="1" opacity="0.1" />
+          <!-- Filled platter -->
+          <circle cx="170" cy="110" r="100" fill="rgba(108,143,255,0.05)" stroke="#252a38" stroke-width="2" />
+          <!-- Track highlight -->
+          <circle cx="170" cy="110" r="70" fill="none" stroke="#ff7c5c" stroke-width="3" stroke-dasharray="6 4"
+            opacity="0.7" />
+          <!-- Arm -->
+          <line x1="170" y1="110" x2="255" y2="48" stroke="#4ecb8a" stroke-width="3" stroke-linecap="round" />
+          <circle cx="255" cy="48" r="6" fill="#4ecb8a" />
+          <!-- Center spindle -->
+          <circle cx="170" cy="110" r="8" fill="#6c8fff" />
+          <!-- Sector wedges -->
+          <line x1="170" y1="110" x2="270" y2="110" stroke="#252a38" stroke-width="1" opacity="0.4" />
+          <line x1="170" y1="110" x2="220" y2="23" stroke="#252a38" stroke-width="1" opacity="0.4" />
+          <line x1="170" y1="110" x2="120" y2="23" stroke="#252a38" stroke-width="1" opacity="0.4" />
+          <line x1="170" y1="110" x2="70" y2="110" stroke="#252a38" stroke-width="1" opacity="0.4" />
+          <line x1="170" y1="110" x2="120" y2="197" stroke="#252a38" stroke-width="1" opacity="0.4" />
+          <line x1="170" y1="110" x2="220" y2="197" stroke="#252a38" stroke-width="1" opacity="0.4" />
+          <!-- Labels -->
+          <text x="275" y="115" font-family="IBM Plex Mono" font-size="10" fill="#8891aa">Track</text>
+          <text x="260" y="42" font-family="IBM Plex Mono" font-size="10" fill="#4ecb8a">Head</text>
+          <text x="175" y="108" font-family="IBM Plex Mono" font-size="9" fill="#6c8fff"
+            text-anchor="middle">Spindle</text>
+          <text x="185" y="72" font-family="IBM Plex Mono" font-size="9" fill="#8891aa">Sector</text>
+          <!-- Orange track label -->
+          <text x="120" y="53" font-family="IBM Plex Mono" font-size="9" fill="#ff7c5c">Cylinder</text>
+        </svg>
+        <p style="font-size:0.8rem; color:var(--text-muted); margin-top:0.5rem; font-family:'IBM Plex Mono',monospace;">
+          Conceptual view of a magnetic disk platter</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <h3>📐 Key Terms</h3>
+          <ul>
+            <li><strong>Platter:</strong> Circular disk coated with magnetic material</li>
+            <li><strong>Track:</strong> Concentric ring on a platter surface</li>
+            <li><strong>Sector:</strong> Smallest addressable unit (usually 512B or 4KB)</li>
+            <li><strong>Cylinder:</strong> All tracks at the same radius across all platters</li>
+            <li><strong>Read/Write Head:</strong> Reads/writes data as platter spins under it</li>
+            <li><strong>Disk Arm:</strong> Moves head radially across platters</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>🖥️ OS + User View</h3>
+          <ul>
+            <li><strong>User sees:</strong> Files and folders</li>
+            <li><strong>OS sees:</strong> Array of logical blocks</li>
+            <li><strong>Disk sees:</strong> Sectors on tracks on cylinders</li>
+          </ul>
+          <div class="formula" style="text-align:left; margin-top:0.75rem;">
+            Logical Block → (Cylinder, Track, Sector)
+          </div>
+          <p style="font-size:0.85rem; color:var(--text-muted); margin-top:0.5rem;">The disk controller maps logical
+            block numbers to physical locations.</p>
+        </div>
+      </div>
+
+      <div class="tip">
+        <strong>💡 MEMORY TIP — "Cylinder = Tower"</strong>
+        Think of a cylinder as a <em>tower of tracks</em> — all the tracks directly above and below each other on every
+        platter. When we say "seek to cylinder 50," we mean move the arm so all heads are at track 50 on every platter
+        simultaneously.
+      </div>
+
+      <div class="section-heading" style="margin-top:2rem;">
+        <div class="icon icon-green">⚡</div>
+        SSDs vs Magnetic Disks
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Feature</th>
+              <th>Magnetic HDD</th>
+              <th>SSD (Solid-State)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Moving Parts</td>
+              <td>Yes (arm, platters)</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>Access Time</td>
+              <td>~3–12 ms</td>
+              <td>~0.1 ms</td>
+            </tr>
+            <tr>
+              <td>Volatile?</td>
+              <td>No</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>Fragmentation Issue</td>
+              <td>Yes (seek time)</td>
+              <td>No (random access same speed)</td>
+            </tr>
+            <tr>
+              <td>Price per GB</td>
+              <td>Cheaper</td>
+              <td>More expensive</td>
+            </tr>
+            <tr>
+              <td>Lifespan</td>
+              <td>Limited by mechanical wear</td>
+              <td>Limited write cycles</td>
+            </tr>
+            <tr>
+              <td>Suitable for Scheduling?</td>
+              <td>Yes — head movement matters</td>
+              <td>Less critical — no seek time</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="warn">
+        <strong>⚠ EXAM TRAP</strong>
+        SSDs are <strong>faster and nonvolatile</strong> — this exact combination came up in Quiz 1! Don't confuse
+        "nonvolatile" with "slow" — that's RAM vs disk confusion. SSDs are fast AND nonvolatile.
+      </div>
+    </section>
+
+    <!-- ─── PERFORMANCE ─── -->
+    <section id="performance">
+      <div class="section-heading">
+        <div class="icon icon-yellow">⏱</div>
+        Disk Access Time
+      </div>
+
+      <div class="card">
+        <h3>The Three Components of Access Time</h3>
+        <p>Every disk access has three time costs. Understanding each component is critical for exam calculations.</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="algo-card algo-fcfs" style="border-top-color: var(--accent2);">
+          <h4>① Seek Time</h4>
+          <p>Time to move the disk arm to the correct <strong>cylinder (track)</strong>. This is the <em>dominant</em>
+            and most variable cost. Disk scheduling algorithms focus on minimizing this.</p>
+        </div>
+        <div class="algo-card algo-sstf" style="border-top-color: var(--accent4);">
+          <h4>② Rotational Latency</h4>
+          <p>Time for the desired <strong>sector</strong> to rotate under the read/write head. On average, this is
+            <em>half</em> of one full rotation.</p>
+          <div class="formula" style="margin-top:0.5rem; font-size:0.78rem;">
+            Avg Latency = ½ × (1/RPM) × 60,000 ms
+          </div>
+        </div>
+      </div>
+      <div class="algo-card" style="border-top: 3px solid var(--accent3);">
+        <h4>③ Transfer Time</h4>
+        <p>Time to actually read/write the data once the head is in position. Usually the fastest component.</p>
+        <div class="formula" style="margin-top:0.5rem; font-size:0.78rem;">
+          Transfer Time = Data Size / Transfer Rate
+        </div>
+      </div>
+
+      <div class="formula" style="margin: 1.2rem 0;">
+        Total Access Time = Seek Time + Rotational Latency + Transfer Time
+      </div>
+
+      <div class="success">
+        <strong>✅ EXAMPLE (common exam style)</strong>
+        If a disk spins at 7200 RPM: Average rotational latency = ½ × (1/7200) × 60,000 ≈ <strong>4.17 ms</strong>. A
+        typical seek time might be 5–10 ms, making seek + rotation the main bottleneck.
+      </div>
+
+      <div class="memory-aid">
+        <h4>🧠 Memory Aid</h4>
+        <div class="big-text">S · R · T</div>
+        <p><strong>S</strong>eek → <strong>R</strong>otate → <strong>T</strong>ransfer — like a journey: <em>travel to
+            the city → wait for the right street → pick up the package.</em></p>
+      </div>
+    </section>
+
+    <!-- ─── DISK SCHEDULING ─── -->
+    <section id="scheduling">
+      <div class="section-heading">
+        <div class="icon icon-purple">🗓</div>
+        Disk Scheduling — Why It Matters
+      </div>
+
+      <div class="card">
+        <h3>The Problem</h3>
+        <p>Multiple processes request disk I/O simultaneously. The OS must decide the <em>order</em> to serve them.
+          Since <strong>seek time</strong> is the biggest cost, a smart order can save huge amounts of time.</p>
+        <div class="tip" style="margin-top:0.75rem;">
+          <strong>💡 ANALOGY</strong>
+          Imagine an elevator with people requesting different floors. A naive elevator serves requests in arrival order
+          (FCFS) — a smart one sweeps up then down (SCAN). Disk scheduling works exactly like an elevator!
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Setting the Stage</h3>
+        <p>All algorithms are evaluated on:</p>
+        <ul>
+          <li><strong>Total head movement</strong> (in cylinders) — lower is better</li>
+          <li><strong>Throughput</strong> — requests served per time unit</li>
+          <li><strong>Fairness</strong> — no request waits forever</li>
+        </ul>
+        <p style="margin-top:0.5rem;">📌 We always track: <em>current head position</em>, <em>queue of pending
+            requests</em>, and sometimes <em>direction of movement</em>.</p>
+      </div>
+    </section>
+
+    <!-- ─── ALGORITHMS ─── -->
+    <section id="algorithms">
+      <div class="section-heading">
+        <div class="icon icon-blue">⚙</div>
+        Disk Scheduling Algorithms
+      </div>
+
+      <div class="warn">
+        <strong>⚠ EXAM FOCUS</strong>
+        You must be able to: (1) draw the head movement path, (2) calculate total cylinders traversed, for ALL
+        algorithms. Practice with the examples below!
+      </div>
+
+      <!-- Reference setup -->
+      <div class="card">
+        <h3>📋 Reference Example (used throughout)</h3>
+        <p>Queue: <code>98, 183, 37, 122, 14, 124, 65, 67</code></p>
+        <p>Initial head position: <code>53</code> | Disk: <code>0–199</code></p>
+        <p style="font-size:0.85rem; color:var(--text-muted);">This is the classic textbook example from Silberschatz
+          Ch.10</p>
+      </div>
+
+      <!-- FCFS -->
+      <div class="algo-card algo-fcfs">
+        <h4>1. FCFS — First-Come, First-Served</h4>
+        <p><strong>Rule:</strong> Serve requests in the order they arrive. No reordering.</p>
+        <div class="schedule-track">53 → <strong>98</strong> → <strong>183</strong> → <strong>37</strong> →
+          <strong>122</strong> → <strong>14</strong> → <strong>124</strong> → <strong>65</strong> → <strong>67</strong>
+        </div>
+        <p><strong>Total movement:</strong> |98−53| + |183−98| + |37−183| + ... = <strong>640 cylinders</strong></p>
+        <ul style="margin-top:0.5rem;">
+          <li>✅ Simple, fair (no starvation)</li>
+          <li>❌ Worst performance — head zigzags across disk</li>
+        </ul>
+        <div class="memory-aid" style="margin-top:0.75rem;">
+          <h4>🧠 Remember</h4>
+          <p>FCFS = First Come First Served = <em>no optimization at all</em> = like serving a restaurant table by table
+            in order of who called first, even if they're all the way across town.</p>
+        </div>
+      </div>
+
+      <!-- SSTF -->
+      <div class="algo-card algo-sstf">
+        <h4>2. SSTF — Shortest Seek Time First</h4>
+        <p><strong>Rule:</strong> Always serve the request <em>closest to the current head position</em>.</p>
+        <div class="schedule-track">53 → <strong>65</strong> → <strong>67</strong> → <strong>37</strong> →
+          <strong>14</strong> → <strong>98</strong> → <strong>122</strong> → <strong>124</strong> → <strong>183</strong>
+        </div>
+        <p><strong>Total movement:</strong> 236 cylinders</p>
+        <ul style="margin-top:0.5rem;">
+          <li>✅ Much better than FCFS</li>
+          <li>❌ <strong>Starvation possible</strong> — requests far from head may never get served</li>
+          <li>❌ Not optimal (greedy approach)</li>
+        </ul>
+        <div class="warn" style="margin-top:0.75rem;">
+          <strong>⚠ KEY EXAM POINT</strong>
+          SSTF can cause starvation — a request at cylinder 5 might wait forever if new requests keep arriving near
+          cylinder 50. This is SSTF's critical flaw.
+        </div>
+        <div class="memory-aid" style="margin-top:0.75rem;">
+          <h4>🧠 SSTF ≈ SJF for disks</h4>
+          <p>Just like SJF scheduling picks the shortest CPU burst, SSTF picks the shortest seek distance. Same concept,
+            same starvation problem!</p>
+        </div>
+      </div>
+
+      <!-- SCAN -->
+      <div class="algo-card algo-scan">
+        <h4>3. SCAN — The Elevator Algorithm</h4>
+        <p><strong>Rule:</strong> Head moves in one direction, serving all requests along the way, then <em>reverses
+            direction</em> at the end (or last request) and sweeps back.</p>
+        <div class="schedule-track">53 → <strong>65</strong> → <strong>67</strong> → <strong>98</strong> →
+          <strong>122</strong> → <strong>124</strong> → <strong>183</strong> → [199] → <strong>37</strong> →
+          <strong>14</strong></div>
+        <p><strong>Total movement:</strong> ~236 cylinders (much less than FCFS)</p>
+        <ul style="margin-top:0.5rem;">
+          <li>✅ No starvation — head eventually reaches every cylinder</li>
+          <li>✅ Better throughput than FCFS</li>
+          <li>❌ Requests just behind the head wait for a full sweep</li>
+        </ul>
+        <div class="memory-aid" style="margin-top:0.75rem;">
+          <h4>🧠 Think: Elevator</h4>
+          <p>An elevator goes UP serving all floors, reaches top, comes back DOWN. The disk head does the same across
+            cylinders 0–199.</p>
+        </div>
+      </div>
+
+      <!-- C-SCAN -->
+      <div class="algo-card algo-cscan">
+        <h4>4. C-SCAN — Circular SCAN</h4>
+        <p><strong>Rule:</strong> Like SCAN, but when the head reaches the end, it <em>immediately jumps back to the
+            beginning</em> without serving requests on the return trip. Only serves one direction.</p>
+        <div class="schedule-track">53 → <strong>65</strong> → <strong>67</strong> → <strong>98</strong> →
+          <strong>122</strong> → <strong>124</strong> → <strong>183</strong> → [199] → [0] → <strong>14</strong> →
+          <strong>37</strong></div>
+        <ul style="margin-top:0.5rem;">
+          <li>✅ More uniform waiting time than SCAN</li>
+          <li>✅ No starvation</li>
+          <li>❌ Jump from end to beginning counts as head movement</li>
+        </ul>
+        <div class="memory-aid" style="margin-top:0.75rem;">
+          <h4>🧠 C-SCAN = One-Way Street</h4>
+          <p>SCAN = elevator going up AND down. C-SCAN = only going up, teleports back to ground floor. More fair
+            because requests near cylinder 0 aren't always last.</p>
+        </div>
+      </div>
+
+      <!-- LOOK -->
+      <div class="algo-card algo-look">
+        <h4>5. LOOK & C-LOOK</h4>
+        <p><strong>LOOK:</strong> Like SCAN but doesn't go all the way to the end of the disk — only goes as far as the
+          <em>last request</em> in that direction, then reverses.</p>
+        <p style="margin-top:0.4rem;"><strong>C-LOOK:</strong> Like C-SCAN but only goes to the last request, then jumps
+          to the first request (not cylinder 0).</p>
+        <ul style="margin-top:0.5rem;">
+          <li>✅ More efficient than SCAN/C-SCAN — no unnecessary travel to disk edge</li>
+          <li>✅ Commonly used in practice</li>
+        </ul>
+        <div class="memory-aid" style="margin-top:0.75rem;">
+          <h4>🧠 LOOK vs SCAN — "Look Before You Go"</h4>
+          <p>SCAN goes to the wall. LOOK <em>looks ahead</em> and stops at the last request. Saves travel time at the
+            edges.</p>
+        </div>
+      </div>
+
+      <!-- Summary Table -->
+      <div class="section-heading" style="margin-top:2rem; font-size:1.1rem;">
+        📊 Algorithm Comparison Table
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Algorithm</th>
+              <th>Strategy</th>
+              <th>Starvation?</th>
+              <th>Performance</th>
+              <th>Best For</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>FCFS</code></td>
+              <td>Arrival order</td>
+              <td>No</td>
+              <td>Worst</td>
+              <td>Light loads only</td>
+            </tr>
+            <tr>
+              <td><code>SSTF</code></td>
+              <td>Nearest cylinder first</td>
+              <td>⚠ Yes</td>
+              <td>Good</td>
+              <td>Low-latency if load is clustered</td>
+            </tr>
+            <tr>
+              <td><code>SCAN</code></td>
+              <td>Elevator sweep, reverses at edge</td>
+              <td>No</td>
+              <td>Good</td>
+              <td>Heavy loads</td>
+            </tr>
+            <tr>
+              <td><code>C-SCAN</code></td>
+              <td>One-way sweep, jump to start</td>
+              <td>No</td>
+              <td>Good, uniform</td>
+              <td>Uniform waiting time needed</td>
+            </tr>
+            <tr>
+              <td><code>LOOK</code></td>
+              <td>Like SCAN, stops at last request</td>
+              <td>No</td>
+              <td>Better than SCAN</td>
+              <td>General purpose</td>
+            </tr>
+            <tr>
+              <td><code>C-LOOK</code></td>
+              <td>Like C-SCAN, jumps to first request</td>
+              <td>No</td>
+              <td>Best practical</td>
+              <td>General purpose — most used</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="success">
+        <strong>✅ SELECTION RULE (exam answer)</strong>
+        The best algorithm depends on number and distribution of requests. For <strong>heavy disk I/O</strong>,
+        SCAN/C-SCAN/LOOK are preferred. FCFS is only acceptable for <strong>very light loads</strong> where simplicity
+        matters more.
+      </div>
+    </section>
+
+    <!-- ─── OTHER STORAGE ─── -->
+    <section id="other-storage">
+      <div class="section-heading">
+        <div class="icon icon-orange">💾</div>
+        Other Storage Technologies
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <h3>🔌 Swap Space (Swap Partition)</h3>
+          <ul>
+            <li>Section of disk used as <strong>extension of RAM</strong></li>
+            <li>Pages swapped out to swap space when memory is full</li>
+            <li>Much slower than RAM — causes <strong>thrashing</strong> if overused</li>
+            <li>OS manages its own swap-space allocation separately from the file system</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>🔴 Boot Block (Bootstrap)</h3>
+          <ul>
+            <li>Located in a fixed location on disk (usually first sector)</li>
+            <li>Contains the <strong>bootstrap loader</strong> — loads the OS</li>
+            <li>ROM/EPROM on motherboard points CPU to boot block</li>
+            <li>Also called <strong>Master Boot Record (MBR)</strong></li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>⚠ Bad Blocks</h3>
+          <ul>
+            <li>Physical sectors that are damaged and can't reliably store data</li>
+            <li><strong>Simple approach:</strong> Flag bad blocks in FAT so OS avoids them</li>
+            <li><strong>Advanced approach:</strong> <em>Sector sparing</em> — disk controller secretly remaps bad blocks
+              to spare sectors</li>
+            <li><em>Slip sparing</em> — reassign all sectors to skip the bad one</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>📼 Tertiary Storage</h3>
+          <ul>
+            <li>Tapes, optical disks (CD/DVD), removable drives</li>
+            <li>Very slow but cheap and portable</li>
+            <li>Used for <strong>archival/backup</strong> storage</li>
+            <li>Accessed sequentially (tapes) or near-randomly (optical)</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── RAID ─── -->
+    <section id="raid">
+      <div class="section-heading">
+        <div class="icon icon-green">🛡</div>
+        RAID — Redundant Array of Independent Disks
+      </div>
+
+      <div class="card">
+        <h3>Why RAID?</h3>
+        <p>A single disk can fail. RAID spreads data across multiple disks to improve <strong>reliability</strong>
+          and/or <strong>performance</strong>. Two key techniques: <em>redundancy</em> (copies) and <em>striping</em>
+          (parallelism).</p>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>RAID Level</th>
+              <th>Name</th>
+              <th>Technique</th>
+              <th>Fault Tolerance</th>
+              <th>Performance</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>RAID 0</strong></td>
+              <td>Striping</td>
+              <td>Data spread across disks, no redundancy</td>
+              <td>❌ None</td>
+              <td>⚡ Best (parallel reads/writes)</td>
+            </tr>
+            <tr>
+              <td><strong>RAID 1</strong></td>
+              <td>Mirroring</td>
+              <td>Full copy on each disk</td>
+              <td>✅ Excellent (N-1 failures)</td>
+              <td>Read fast, write same as 1 disk</td>
+            </tr>
+            <tr>
+              <td><strong>RAID 4</strong></td>
+              <td>Block-level striping + dedicated parity</td>
+              <td>One disk stores parity blocks</td>
+              <td>✅ 1 failure</td>
+              <td>Parity disk is bottleneck</td>
+            </tr>
+            <tr>
+              <td><strong>RAID 5</strong></td>
+              <td>Distributed parity</td>
+              <td>Parity distributed across all disks</td>
+              <td>✅ 1 failure</td>
+              <td>✅ Good balance</td>
+            </tr>
+            <tr>
+              <td><strong>RAID 6</strong></td>
+              <td>Double parity</td>
+              <td>Two parity blocks per stripe</td>
+              <td>✅ 2 failures</td>
+              <td>Good, more overhead</td>
+            </tr>
+            <tr>
+              <td><strong>RAID 10</strong></td>
+              <td>Stripe of Mirrors</td>
+              <td>RAID 0 + RAID 1 combined</td>
+              <td>✅ Excellent</td>
+              <td>⚡ Excellent</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="grid-2">
+        <div class="tip">
+          <strong>💡 RAID 0 TRICK</strong>
+          RAID 0 is all about speed, zero protection. "0 protection." If one disk fails, ALL data is lost. Great for
+          scratch disks, terrible for important data.
+        </div>
+        <div class="success">
+          <strong>✅ RAID 5 = The Sweet Spot</strong>
+          RAID 5 is the most commonly used in practice. It balances storage efficiency, fault tolerance, and
+          performance. Distributed parity = no single bottleneck disk.
+        </div>
+      </div>
+
+      <div class="memory-aid">
+        <h4>🧠 RAID Levels Mnemonic</h4>
+        <div class="big-text">0·1·5·6·10</div>
+        <p><strong>0</strong> = Zero protection (speed only) &nbsp;|&nbsp; <strong>1</strong> = One full mirror
+          &nbsp;|&nbsp; <strong>5</strong> = Five-star balance &nbsp;|&nbsp; <strong>6</strong> = Six is safer (2
+          parity) &nbsp;|&nbsp; <strong>10</strong> = Best of both worlds (stripe + mirror)</p>
+      </div>
+    </section>
+
+    <!-- ─── TIPS ─── -->
+    <section id="tips">
+      <div class="section-heading">
+        <div class="icon icon-yellow">✨</div>
+        Study Tips & Tricks
+      </div>
+
+      <div class="card">
+        <h3>🎯 How to Tackle Disk Scheduling Problems</h3>
+        <ol style="padding-left:1.2rem; font-size:0.92rem; line-height:2;">
+          <li>Write out the request queue and starting head position clearly</li>
+          <li>For SCAN/C-SCAN/LOOK/C-LOOK: establish the <strong>initial direction</strong></li>
+          <li>Draw the sequence of head movements step by step</li>
+          <li>Compute |difference| between consecutive positions and sum them</li>
+          <li>Remember: only SSTF can cause <strong>starvation</strong></li>
+        </ol>
+      </div>
+
+      <div class="grid-2">
+        <div class="memory-aid">
+          <h4>🧠 The "Elevator" Map</h4>
+          <div style="font-family:'IBM Plex Mono',monospace; font-size:0.85rem; line-height:1.8;">
+            FCFS → <span style="color:var(--accent2);">No Order</span><br>
+            SSTF → <span style="color:var(--accent4);">Nearest First</span><br>
+            SCAN → <span style="color:var(--accent3);">↑ then ↓ (to edge)</span><br>
+            C-SCAN → <span style="color:var(--accent);">↑ always, jump ↩</span><br>
+            LOOK → <span style="color:var(--accent5);">↑ then ↓ (to last req)</span><br>
+            C-LOOK → <span style="color:var(--accent3);">↑ always, jump to first req</span>
+          </div>
+        </div>
+        <div class="memory-aid">
+          <h4>🧠 Disk Structure ABC</h4>
+          <div style="font-family:'IBM Plex Mono',monospace; font-size:0.85rem; line-height:1.8;">
+            <span style="color:var(--accent);">S</span>ector = smallest unit<br>
+            <span style="color:var(--accent2);">T</span>rack = ring on platter<br>
+            <span style="color:var(--accent3);">C</span>ylinder = stack of tracks<br>
+            <span style="color:var(--accent4);">P</span>latter = the disk<br>
+            <span style="color:var(--accent5);">A</span>rm = moves head radially
+          </div>
+        </div>
+      </div>
+
+      <div class="timeline">
+        <div class="tl-item">
+          <h4>What OSes Use in Practice</h4>
+          <p>Linux uses a variant of <strong>C-LOOK (deadline scheduler)</strong> with a real-time deadline to prevent
+            starvation. Windows uses similar priority-based disk scheduling.</p>
+        </div>
+        <div class="tl-item">
+          <h4>SSD Scheduling</h4>
+          <p>SSDs don't need seek optimization since there's no moving head. FCFS or simple FIFO is often used with
+            SSDs, because random access costs the same as sequential.</p>
+        </div>
+        <div class="tl-item">
+          <h4>Access Time Formula — Always Draw It</h4>
+          <p>In exams, if asked about access time, write: <code>Total = Seek + Rotation + Transfer</code>. Identify
+            which value you're given and what you need to calculate.</p>
+        </div>
+        <div class="tl-item">
+          <h4>RAID Questions</h4>
+          <p>Know RAID 0 (no fault tolerance, max speed), RAID 1 (mirroring), RAID 5 (distributed parity, best balance).
+            These three appear most in exams.</p>
+        </div>
+      </div>
+
+      <div class="info">
+        <strong>📌 CONNECT TO FINAL EXAM</strong>
+        The Final Exam sample (fe_Solution_211.pdf) asked to evaluate FCFS, SSTF, SCAN, and C-LOOK on the same disk
+        queue. Be ready to do all four on any given queue. The most common asks: (1) write the order, (2) total
+        cylinders moved, (3) which is best.
+      </div>
+    </section>
+
+    <!-- ─── Q&A ─── -->
+    <section id="qa">
+      <div class="section-heading">
+        <div class="icon icon-purple">📝</div>
+        Past Exam Questions &amp; Answers
+      </div>
+
+      <div class="tip">
+        <strong>💡 HOW TO USE THIS SECTION</strong>
+        Try to answer each question before clicking to reveal the answer. These are drawn from actual PSU CS330 past
+        exams and final exam samples.
+      </div>
+
+      <!-- Q1 -->
+      <div class="qa-item" onclick="toggleQA(this)">
+        <div class="qa-q">
+          <span>Q1. Which statement about SSDs compared to magnetic disks is correct?<br><span
+              style="font-size:0.82rem; color:var(--text-muted);">(a) Faster but volatile &nbsp; (b) Faster and
+              nonvolatile &nbsp; (c) Slower but cheaper &nbsp; (d) Larger and volatile</span></span>
+          <span class="qa-source">Quiz 1</span>
+        </div>
+        <div class="qa-a">
+          <strong>✅ ANSWER: (b) Faster and nonvolatile</strong>
+          SSDs have no moving parts so access time is ~0.1ms vs ~5–10ms for HDDs. They retain data without power
+          (nonvolatile) because they use flash memory. They are more expensive per GB than HDDs, not cheaper.
+        </div>
+      </div>
+
+      <!-- Q2 -->
+      <div class="qa-item" onclick="toggleQA(this)">
+        <div class="qa-q">
+          <span>Q2. In disk scheduling, what is the "Convoy Effect" and which algorithm suffers from it?</span>
+          <span class="qa-source">Concept</span>
+        </div>
+        <div class="qa-a">
+          <strong>✅ ANSWER: FCFS suffers from the convoy effect</strong>
+          When a request at a far cylinder arrives first, all subsequent requests (even those very close to the current
+          head) must wait. The head "convoys" all the way to the distant cylinder first. This is why FCFS has the worst
+          performance for disk scheduling — similar to the convoy effect in CPU scheduling (FCFS, long job first).
+        </div>
+      </div>
+
+      <!-- Q3 -->
+      <div class="qa-item" onclick="toggleQA(this)">
+        <div class="qa-q">
+          <span>Q3. Given disk queue: 69, 1212, 296, 1800, 669, 1618, 356, 723, 1965, 1681. Head at 1150, previous at
+            1805. Using FCFS — which direction does the algorithm move first? What is the first request served?</span>
+          <span class="qa-source">Final Sample</span>
+        </div>
+        <div class="qa-a">
+          <strong>✅ ANSWER: FCFS serves 69 first (first in queue)</strong>
+          FCFS ignores the current head position or previous position entirely. It simply serves requests in arrival
+          order: 69 → 1212 → 296 → 1800 → 669 → 1618 → 356 → 723 → 1965 → 1681. The head must travel all over the disk —
+          worst performance.
+        </div>
+      </div>
+
+      <!-- Q4 -->
+      <div class="qa-item" onclick="toggleQA(this)">
+        <div class="qa-q">
+          <span>Q4. For the same queue (Head at 1150, moving toward higher cylinders), apply SSTF. What is the order of
+            service? Why might this cause a problem?</span>
+          <span class="qa-source">Final Sample</span>
+        </div>
+        <div class="qa-a">
+          <strong>✅ ANSWER (SSTF):</strong>
+          From 1150, nearest is 1212, then 1618, then 1681, then 1800, then 1965, then back to 723, 669, 356, 296, 69.
+          SSTF greedy approach gives good performance but can <strong>starve requests at far cylinders</strong> if new
+          nearby requests keep arriving. In this example, cylinder 69 waits a long time.
+        </div>
+      </div>
+
+      <!-- Q5 -->
+      <div class="qa-item" onclick="toggleQA(this)">
+        <div class="qa-q">
+          <span>Q5. Apply SCAN to: Queue 69, 1212, 296, 1800, 669, 1618, 356, 723, 1965, 1681. Head at 1150, moving
+            toward higher numbers. Write the sequence and explain when direction reverses.</span>
+          <span class="qa-source">Final Sample</span>
+        </div>
+        <div class="qa-a">
+          <strong>✅ ANSWER (SCAN):</strong>
+          Moving toward higher: 1150 → 1212 → 1618 → 1681 → 1800 → 1965 → [1999, edge] → reverses → 723 → 669 → 356 →
+          296 → 69. The head reaches disk edge (1999) then sweeps back. SCAN prevents starvation — every request is
+          served within one full sweep. Much better total movement than FCFS.
+        </div>
+      </div>
+
+      <!-- Q6 -->
+      <div class="qa-item" onclick="toggleQA(this)">
+        <div class="qa-q">
+          <span>Q6. What is the difference between SCAN and C-SCAN? Between LOOK and C-LOOK?</span>
+          <span class="qa-source">Concept</span>
+        </div>
+        <div class="qa-a">
+          <strong>✅ ANSWER:</strong>
+          <strong>SCAN vs C-SCAN:</strong> SCAN reverses direction at the disk edge and serves requests on the way back.
+          C-SCAN goes one direction only — when it reaches the end, it jumps back to the beginning (cylinder 0) without
+          serving requests on the return. C-SCAN gives more uniform wait times.
+          <br><br>
+          <strong>LOOK vs C-LOOK:</strong> LOOK is like SCAN but stops at the last request (doesn't go all the way to
+          the disk edge). C-LOOK is like C-SCAN but jumps to the first pending request instead of cylinder 0. Both LOOK
+          variants are more efficient than SCAN/C-SCAN.
+        </div>
+      </div>
+
+      <!-- Q7 -->
+      <div class="qa-item" onclick="toggleQA(this)">
+        <div class="qa-q">
+          <span>Q7. A disk has 2000 cylinders (0–1999). Head is at cylinder 1150, previous was at 1805. Queue: 69, 1212,
+            296, 1800, 669, 1618, 356, 723, 1965, 1681. Which algorithm gives the best (minimum) total head
+            movement?</span>
+          <span class="qa-source">Final Sample</span>
+        </div>
+        <div class="qa-a">
+          <strong>✅ ANSWER: C-LOOK typically gives the least total movement in practice.</strong>
+          Approximate totals: FCFS ≈ 7081 | SSTF ≈ 1745 | SCAN ≈ 1745 (similar) | C-LOOK ≈ similar to SCAN but slightly
+          less since it doesn't go all the way to 0. In general, SSTF, SCAN, and C-LOOK all dramatically outperform
+          FCFS. The "best" is C-LOOK in practice for balanced loads.
+        </div>
+      </div>
+
+      <!-- Q8 -->
+      <div class="qa-item" onclick="toggleQA(this)">
+        <div class="qa-q">
+          <span>Q8. What are the three components of disk access time? Which one is the focus of disk scheduling
+            algorithms?</span>
+          <span class="qa-source">Concept</span>
+        </div>
+        <div class="qa-a">
+          <strong>✅ ANSWER:</strong>
+          The three components are: (1) <strong>Seek time</strong> — moving arm to the correct cylinder, (2)
+          <strong>Rotational latency</strong> — waiting for the sector to rotate under the head, (3) <strong>Transfer
+            time</strong> — reading/writing the actual data.
+          <br><br>
+          Disk scheduling algorithms focus on minimizing <strong>seek time</strong> because it is the largest and most
+          variable component. Rotational latency and transfer time are fixed by disk hardware and cannot be controlled
+          by the OS.
+        </div>
+      </div>
+
+      <!-- Q9 -->
+      <div class="qa-item" onclick="toggleQA(this)">
+        <div class="qa-q">
+          <span>Q9. Which RAID level provides both striping and mirroring for maximum performance and fault tolerance?
+            Which RAID level provides NO fault tolerance?</span>
+          <span class="qa-source">Concept</span>
+        </div>
+        <div class="qa-a">
+          <strong>✅ ANSWER:</strong>
+          <strong>RAID 10 (or RAID 1+0)</strong> combines striping (RAID 0) with mirroring (RAID 1) for both maximum
+          performance and excellent fault tolerance. It requires 2× the disk space.
+          <br><br>
+          <strong>RAID 0</strong> provides NO fault tolerance — it only uses striping. If one disk fails, ALL data is
+          lost. "RAID 0 = Zero protection."
+        </div>
+      </div>
+
+      <!-- Q10 -->
+      <div class="qa-item" onclick="toggleQA(this)">
+        <div class="qa-q">
+          <span>Q10. A file consists of 30 disk blocks (0 to 29). A block is inserted in the middle (as the 15th block).
+            Using linked allocation, how many disk read and write I/O operations are needed?</span>
+          <span class="qa-source">Final Exam Sample</span>
+        </div>
+        <div class="qa-a">
+          <strong>✅ ANSWER: 15 reads + 2 writes</strong>
+          In linked allocation, to insert as the 15th block, you must follow the chain from block 0 all the way to block
+          14 — that's <strong>15 reads</strong> (blocks 0 through 14). Then you need <strong>2 writes</strong>: one to
+          update the pointer in block 14 to point to the new block, and one to write the new block itself with its
+          pointer to the former 15th block. This shows a major disadvantage of linked allocation — sequential traversal
+          is required.
+        </div>
+      </div>
+
+      <!-- Q11 -->
+      <div class="qa-item" onclick="toggleQA(this)">
+        <div class="qa-q">
+          <span>Q11. What are the disadvantages of contiguous disk allocation? (Give 3)</span>
+          <span class="qa-source">Final Exam Sample</span>
+        </div>
+        <div class="qa-a">
+          <strong>✅ ANSWER:</strong>
+          (1) <strong>External fragmentation:</strong> Over time, free space becomes scattered in small holes too small
+          for new files. Compaction is needed but expensive.<br>
+          (2) <strong>File size estimation:</strong> Must know file size in advance to allocate contiguous space. Hard
+          for output files whose size isn't known ahead.<br>
+          (3) <strong>Files cannot grow:</strong> If adjacent space is taken, the file must be moved entirely to find a
+          larger contiguous area.
+        </div>
+      </div>
+
+      <!-- Q12 -->
+      <div class="qa-item" onclick="toggleQA(this)">
+        <div class="qa-q">
+          <span>Q12. Why do disk scheduling algorithms matter less for SSDs than HDDs?</span>
+          <span class="qa-source">Concept</span>
+        </div>
+        <div class="qa-a">
+          <strong>✅ ANSWER:</strong>
+          SSDs have no moving mechanical parts — there is <strong>no disk arm</strong> to seek and <strong>no spinning
+            platter</strong> to wait for rotation. Therefore, seek time and rotational latency are essentially zero.
+          Random access to any location takes approximately the same time as sequential access. Since seek time
+          minimization is the entire point of algorithms like SCAN and SSTF, those algorithms offer little benefit for
+          SSDs. Simple FIFO/FCFS is often used instead.
+        </div>
+      </div>
+
+    </section>
+
+    <hr>
+
+    <div class="info">
+      <strong>📚 CHAPTER SUMMARY</strong>
+      Chapter 10 bridges the gap between how users see storage (files & folders) and how it's physically organized
+      (cylinders, tracks, sectors). The key insight is that <strong>seek time dominates disk access</strong>, so
+      intelligent scheduling of disk requests dramatically improves performance. For modern SSDs, this physical concern
+      disappears — but understanding it is fundamental to OS design.
+    </div>
+
+  </main>
+
+  <footer>
+    <div>CS330 · Operating Systems · Prince Sultan University</div>
+    <div style="margin-top:0.4rem;">Prepared for <span>Shoug Alomran</span> · Chapter 10: Mass Storage Structure</div>
+    <div style="margin-top:0.4rem; opacity:0.5;">Silberschatz, Galvin & Gagne — Operating System Concepts, 10th Edition
+    </div>
+  </footer>
+
+  <script>
+    function toggleTheme() {
+      const html = document.documentElement;
+      const btn = document.querySelector('.theme-toggle');
+      if (html.getAttribute('data-theme') === 'dark') {
+        html.setAttribute('data-theme', 'light');
+        btn.textContent = '🌙 Dark Mode';
+      } else {
+        html.setAttribute('data-theme', 'dark');
+        btn.textContent = '☀ Light Mode';
+      }
+    }
+
+    function toggleQA(el) {
+      el.classList.toggle('open');
+    }
+
+    // Progress bar
+    window.addEventListener('scroll', () => {
+      const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+      const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const scrolled = (winScroll / height) * 100;
+      document.getElementById('progressBar').style.width = scrolled + '%';
+    });
+
+    // Smooth scroll for nav pills
+    document.querySelectorAll('.pill').forEach(pill => {
+      pill.addEventListener('click', e => {
+        e.preventDefault();
+        const id = pill.getAttribute('href').slice(1);
+        document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+  </script>
+</body>
+
+</html>
