@@ -1,0 +1,2138 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CS330 · Chapter 12 · File-System Implementation</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        /* ══════════════════════════════════
+     THEME TOKENS
+  ══════════════════════════════════ */
+        :root[data-theme="dark"] {
+            --bg: #0e0c09;
+            --bg2: #141108;
+            --bg3: #1c1710;
+            --border: #2a2418;
+            --text: #ede8df;
+            --muted: #7a7060;
+            --accent: #d4943a;
+            /* warm amber */
+            --accent2: #e06060;
+            /* terracotta */
+            --accent3: #6abf85;
+            /* sage */
+            --accent4: #5ba8d4;
+            /* steel blue */
+            --accent5: #b87fd4;
+            /* violet */
+            --card: #181309;
+            --code-bg: #1e1a10;
+            --tip-bg: #1a1508;
+            --warn-bg: #1a0d0d;
+            --ok-bg: #0d1a10;
+            --info-bg: #0d1219;
+            --tag: #221d10;
+            --shadow: 0 6px 32px rgba(0, 0, 0, 0.6);
+            --glow: 0 0 24px rgba(212, 148, 58, 0.15);
+        }
+
+        :root[data-theme="light"] {
+            --bg: #faf7f2;
+            --bg2: #ffffff;
+            --bg3: #f3ede2;
+            --border: #e2d8c8;
+            --text: #1c1710;
+            --muted: #7a6f5a;
+            --accent: #b8731e;
+            --accent2: #c04040;
+            --accent3: #2d8a52;
+            --accent4: #2a72a8;
+            --accent5: #7040b0;
+            --card: #ffffff;
+            --code-bg: #f0ead8;
+            --tip-bg: #fff8eb;
+            --warn-bg: #fff0f0;
+            --ok-bg: #f0faf4;
+            --info-bg: #f0f6ff;
+            --tag: #f5eedd;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            --glow: none;
+        }
+
+        /* ══════════════════════════════════
+     RESET & BASE
+  ══════════════════════════════════ */
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.75;
+            min-height: 100vh;
+            transition: background .3s, color .3s;
+        }
+
+        /* ══════════════════════════════════
+     READING PROGRESS
+  ══════════════════════════════════ */
+        #bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            z-index: 200;
+            background: linear-gradient(90deg, var(--accent), var(--accent2));
+            width: 0;
+            transition: width .08s linear;
+        }
+
+        /* ══════════════════════════════════
+     HEADER
+  ══════════════════════════════════ */
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: var(--bg2);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+            height: 60px;
+            box-shadow: var(--shadow);
+        }
+
+        .hd-left {
+            display: flex;
+            align-items: center;
+            gap: .8rem;
+        }
+
+        .ch-tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .68rem;
+            font-weight: 500;
+            background: var(--accent);
+            color: #fff;
+            padding: 3px 10px;
+            border-radius: 4px;
+            letter-spacing: .1em;
+        }
+
+        header h1 {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 1rem;
+            font-weight: 700;
+            letter-spacing: .01em;
+        }
+
+        .toggle {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .72rem;
+            cursor: pointer;
+            background: var(--bg3);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 6px 14px;
+            border-radius: 4px;
+            transition: all .2s;
+            letter-spacing: .05em;
+        }
+
+        .toggle:hover {
+            background: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
+        }
+
+        /* ══════════════════════════════════
+     SUBNAV
+  ══════════════════════════════════ */
+        .subnav {
+            background: var(--bg2);
+            border-bottom: 1px solid var(--border);
+            padding: 0 2rem;
+            display: flex;
+            gap: 0;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+
+        .subnav::-webkit-scrollbar {
+            display: none;
+        }
+
+        .subnav a {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .7rem;
+            padding: 10px 18px;
+            white-space: nowrap;
+            color: var(--muted);
+            border-bottom: 2px solid transparent;
+            text-decoration: none;
+            transition: all .2s;
+            display: block;
+        }
+
+        .subnav a:hover {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+        }
+
+        /* ══════════════════════════════════
+     HERO — editorial masthead style
+  ══════════════════════════════════ */
+        .hero {
+            background: var(--bg2);
+            border-bottom: 3px solid var(--accent);
+            padding: 3.5rem 2rem 2.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::after {
+            content: '12';
+            position: absolute;
+            right: -1rem;
+            top: -1.5rem;
+            font-family: 'Playfair Display', serif;
+            font-size: 14rem;
+            font-weight: 900;
+            line-height: 1;
+            color: var(--accent);
+            opacity: .04;
+            pointer-events: none;
+            user-select: none;
+        }
+
+        .hero-kicker {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .7rem;
+            color: var(--accent);
+            letter-spacing: .18em;
+            text-transform: uppercase;
+            margin-bottom: .8rem;
+        }
+
+        .hero h2 {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: clamp(2rem, 5vw, 3.2rem);
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: .75rem;
+            max-width: 700px;
+        }
+
+        .hero h2 em {
+            color: var(--accent);
+            font-style: italic;
+        }
+
+        .hero .sub {
+            color: var(--muted);
+            font-size: .95rem;
+            max-width: 580px;
+            line-height: 1.65;
+        }
+
+        .hero-chips {
+            display: flex;
+            gap: .5rem;
+            flex-wrap: wrap;
+            margin-top: 1.5rem;
+        }
+
+        .chip {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .67rem;
+            padding: 4px 12px;
+            border-radius: 3px;
+            border: 1px solid var(--border);
+            background: var(--tag);
+            color: var(--muted);
+            letter-spacing: .04em;
+        }
+
+        /* ══════════════════════════════════
+     MAIN LAYOUT
+  ══════════════════════════════════ */
+        main {
+            max-width: 920px;
+            margin: 0 auto;
+            padding: 2.5rem 1.5rem 5rem;
+        }
+
+        /* ══════════════════════════════════
+     SECTION TITLES
+  ══════════════════════════════════ */
+        .sec-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin: 3rem 0 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: .7rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: .6rem;
+        }
+
+        .sec-title .ico {
+            width: 34px;
+            height: 34px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+
+        .ico-a {
+            background: rgba(212, 148, 58, .15);
+        }
+
+        .ico-b {
+            background: rgba(224, 96, 96, .15);
+        }
+
+        .ico-c {
+            background: rgba(106, 191, 133, .15);
+        }
+
+        .ico-d {
+            background: rgba(91, 168, 212, .15);
+        }
+
+        .ico-e {
+            background: rgba(184, 127, 212, .15);
+        }
+
+        /* ══════════════════════════════════
+     CARDS
+  ══════════════════════════════════ */
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.4rem 1.6rem;
+            margin-bottom: 1rem;
+            box-shadow: var(--shadow);
+            transition: border-color .2s, box-shadow .2s;
+        }
+
+        .card:hover {
+            border-color: var(--accent);
+            box-shadow: var(--glow);
+        }
+
+        .card h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: .6rem;
+        }
+
+        .card p,
+        .card li {
+            font-size: .91rem;
+            line-height: 1.75;
+        }
+
+        .card ul,
+        .card ol {
+            padding-left: 1.3rem;
+        }
+
+        .card li {
+            margin-bottom: .28rem;
+        }
+
+        .g2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .g3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 1rem;
+        }
+
+        @media(max-width:680px) {
+
+            .g2,
+            .g3 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ══════════════════════════════════
+     CALLOUTS
+  ══════════════════════════════════ */
+        .tip,
+        .warn,
+        .ok,
+        .info {
+            border-radius: 6px;
+            padding: 1rem 1.2rem;
+            margin: 1rem 0;
+            font-size: .9rem;
+            border-left: 4px solid;
+        }
+
+        .tip {
+            background: var(--tip-bg);
+            border-color: var(--accent);
+        }
+
+        .warn {
+            background: var(--warn-bg);
+            border-color: var(--accent2);
+        }
+
+        .ok {
+            background: var(--ok-bg);
+            border-color: var(--accent3);
+        }
+
+        .info {
+            background: var(--info-bg);
+            border-color: var(--accent4);
+        }
+
+        .tip strong {
+            color: var(--accent);
+        }
+
+        .warn strong {
+            color: var(--accent2);
+        }
+
+        .ok strong {
+            color: var(--accent3);
+        }
+
+        .info strong {
+            color: var(--accent4);
+        }
+
+        .tip strong,
+        .warn strong,
+        .ok strong,
+        .info strong {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .72rem;
+            letter-spacing: .08em;
+            display: block;
+            margin-bottom: .35rem;
+        }
+
+        /* ══════════════════════════════════
+     TABLES
+  ══════════════════════════════════ */
+        .tw {
+            overflow-x: auto;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            margin: 1rem 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: .87rem;
+        }
+
+        th {
+            background: var(--bg3);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .72rem;
+            letter-spacing: .06em;
+            padding: 10px 14px;
+            text-align: left;
+            color: var(--accent);
+            border-bottom: 1px solid var(--border);
+        }
+
+        td {
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--border);
+            vertical-align: top;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background: var(--bg3);
+        }
+
+        .yes {
+            color: var(--accent3);
+            font-weight: 600;
+        }
+
+        .no {
+            color: var(--accent2);
+            font-weight: 600;
+        }
+
+        /* ══════════════════════════════════
+     CODE / FORMULA
+  ══════════════════════════════════ */
+        code {
+            font-family: 'JetBrains Mono', monospace;
+            background: var(--code-bg);
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: .82em;
+            color: var(--accent2);
+        }
+
+        .formula {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: .85rem 1.2rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .85rem;
+            margin: .75rem 0;
+            color: var(--accent3);
+            text-align: center;
+            letter-spacing: .03em;
+        }
+
+        .formula.left {
+            text-align: left;
+        }
+
+        /* ══════════════════════════════════
+     MEMORY AID BOXES
+  ══════════════════════════════════ */
+        .mem {
+            background: linear-gradient(135deg, rgba(212, 148, 58, .07), rgba(184, 127, 212, .07));
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.1rem 1.3rem;
+            margin: .9rem 0;
+        }
+
+        .mem-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .68rem;
+            color: var(--accent5);
+            letter-spacing: .12em;
+            text-transform: uppercase;
+            margin-bottom: .4rem;
+        }
+
+        .mem-big {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.7rem;
+            font-weight: 900;
+            color: var(--accent);
+            margin-bottom: .3rem;
+            letter-spacing: .04em;
+        }
+
+        .mem p {
+            font-size: .88rem;
+            line-height: 1.6;
+        }
+
+        /* ══════════════════════════════════
+     ALLOCATION METHOD CARDS
+  ══════════════════════════════════ */
+        .alloc-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.2rem 1.4rem;
+            border-top: 4px solid;
+            margin-bottom: .85rem;
+        }
+
+        .alloc-card h4 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: .5rem;
+        }
+
+        .alloc-card p,
+        .alloc-card li {
+            font-size: .88rem;
+            line-height: 1.7;
+        }
+
+        .alloc-card ul {
+            padding-left: 1.1rem;
+            margin-top: .4rem;
+        }
+
+        .ac1 {
+            border-top-color: var(--accent);
+        }
+
+        .ac2 {
+            border-top-color: var(--accent4);
+        }
+
+        .ac3 {
+            border-top-color: var(--accent3);
+        }
+
+        /* ══════════════════════════════════
+     DISK BLOCK VISUAL
+  ══════════════════════════════════ */
+        .block-row {
+            display: flex;
+            gap: 3px;
+            flex-wrap: wrap;
+            margin: .75rem 0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .72rem;
+        }
+
+        .blk {
+            width: 36px;
+            height: 36px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 500;
+            flex-shrink: 0;
+        }
+
+        .blk-used {
+            background: rgba(212, 148, 58, .25);
+            color: var(--accent);
+            border: 1px solid var(--accent);
+        }
+
+        .blk-free {
+            background: rgba(106, 191, 133, .2);
+            color: var(--accent3);
+            border: 1px solid var(--accent3);
+        }
+
+        .blk-ptr {
+            background: rgba(91, 168, 212, .2);
+            color: var(--accent4);
+            border: 1px solid var(--accent4);
+        }
+
+        .blk-index {
+            background: rgba(184, 127, 212, .2);
+            color: var(--accent5);
+            border: 1px solid var(--accent5);
+        }
+
+        .blk-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .68rem;
+            color: var(--muted);
+            align-self: center;
+        }
+
+        /* ══════════════════════════════════
+     Q&A ACCORDION
+  ══════════════════════════════════ */
+        .qa {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin-bottom: .7rem;
+            overflow: hidden;
+        }
+
+        .qa-q {
+            padding: 1rem 1.3rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 1rem;
+            font-size: .9rem;
+            font-weight: 500;
+            transition: background .2s;
+        }
+
+        .qa-q:hover {
+            background: var(--bg3);
+        }
+
+        .qa-q::after {
+            content: '+';
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.1rem;
+            color: var(--accent);
+            flex-shrink: 0;
+            line-height: 1.5;
+        }
+
+        .qa.open .qa-q::after {
+            content: '−';
+        }
+
+        .src-tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .62rem;
+            background: var(--tag);
+            color: var(--accent);
+            padding: 2px 8px;
+            border-radius: 3px;
+            white-space: nowrap;
+            border: 1px solid var(--border);
+            flex-shrink: 0;
+        }
+
+        .qa-a {
+            display: none;
+            padding: .85rem 1.3rem 1rem;
+            border-top: 1px solid var(--border);
+            font-size: .88rem;
+            line-height: 1.75;
+            color: var(--muted);
+        }
+
+        .qa.open .qa-a {
+            display: block;
+        }
+
+        .qa-a strong {
+            color: var(--accent3);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .75rem;
+            display: block;
+            margin-bottom: .3rem;
+        }
+
+        .qa-a ul {
+            padding-left: 1.2rem;
+            margin-top: .4rem;
+        }
+
+        .qa-a li {
+            margin-bottom: .3rem;
+        }
+
+        /* ══════════════════════════════════
+     STEP LIST (numbered)
+  ══════════════════════════════════ */
+        .steps {
+            counter-reset: step;
+            margin: .75rem 0;
+        }
+
+        .step {
+            display: flex;
+            gap: .9rem;
+            margin-bottom: .85rem;
+            font-size: .9rem;
+            align-items: flex-start;
+        }
+
+        .step-num {
+            counter-increment: step;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .72rem;
+            font-weight: 700;
+            background: var(--accent);
+            color: #fff;
+            min-width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            margin-top: .05rem;
+        }
+
+        .step-body {
+            flex: 1;
+        }
+
+        .step-body strong {
+            color: var(--accent);
+        }
+
+        /* ══════════════════════════════════
+     BITMAP VISUAL
+  ══════════════════════════════════ */
+        .bitmap-row {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .8rem;
+            display: flex;
+            gap: 2px;
+            flex-wrap: wrap;
+            margin: .5rem 0;
+        }
+
+        .bit {
+            width: 28px;
+            height: 28px;
+            border-radius: 3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: .75rem;
+        }
+
+        .bit-0 {
+            background: rgba(224, 96, 96, .2);
+            color: var(--accent2);
+            border: 1px solid var(--accent2);
+        }
+
+        .bit-1 {
+            background: rgba(106, 191, 133, .2);
+            color: var(--accent3);
+            border: 1px solid var(--accent3);
+        }
+
+        /* ══════════════════════════════════
+     HIGHLIGHT SPANS
+  ══════════════════════════════════ */
+        .hi-a {
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .hi-b {
+            color: var(--accent2);
+            font-weight: 600;
+        }
+
+        .hi-c {
+            color: var(--accent3);
+            font-weight: 600;
+        }
+
+        .hi-d {
+            color: var(--accent4);
+            font-weight: 600;
+        }
+
+        .hi-e {
+            color: var(--accent5);
+            font-weight: 600;
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 2.5rem 0;
+        }
+
+        p {
+            margin-bottom: .45rem;
+        }
+
+        @keyframes up {
+            from {
+                opacity: 0;
+                transform: translateY(16px);
+            }
+
+            to {
+                opacity: 1;
+                transform: none;
+            }
+        }
+
+        .card,
+        .alloc-card,
+        .tip,
+        .warn,
+        .ok,
+        .info,
+        .qa {
+            animation: up .35s ease both;
+        }
+
+        /* ══════════════════════════════════
+     FOOTER
+  ══════════════════════════════════ */
+        footer {
+            background: var(--bg2);
+            border-top: 1px solid var(--border);
+            padding: 1.6rem 2rem;
+            text-align: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .72rem;
+            color: var(--muted);
+            letter-spacing: .05em;
+        }
+
+        footer span {
+            color: var(--accent);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="bar"></div>
+
+    <!-- ══════════ HEADER ══════════ -->
+    <header>
+        <div class="hd-left">
+            <span class="ch-tag">CH · 12</span>
+            <h1>File-System Implementation</h1>
+        </div>
+        <button class="toggle" onclick="toggleTheme()">☀ Light</button>
+    </header>
+
+    <!-- ══════════ SUBNAV ══════════ -->
+    <nav class="subnav">
+        <a href="#overview">Overview</a>
+        <a href="#ondisk">On-Disk Structures</a>
+        <a href="#inmemory">In-Memory Structures</a>
+        <a href="#alloc">Allocation Methods</a>
+        <a href="#freespace">Free-Space Management</a>
+        <a href="#tips">Tips & Tricks</a>
+        <a href="#qa">Past Exam Q&A</a>
+    </nav>
+
+    <!-- ══════════ HERO ══════════ -->
+    <div class="hero">
+        <div class="hero-kicker">CS330 · Operating Systems · Prince Sultan University</div>
+        <h2>Chapter 12:<br><em>File-System Implementation</em></h2>
+        <p class="sub">How the OS physically organises files on disk — from boot blocks to index tables, from bitmap
+            tracking to linked chains. The chapter that bridges files you see to bytes on disk.</p>
+        <div class="hero-chips">
+            <span class="chip">🗂 On-Disk Structures</span>
+            <span class="chip">🧠 In-Memory Structures</span>
+            <span class="chip">📦 Contiguous Allocation</span>
+            <span class="chip">🔗 Linked Allocation</span>
+            <span class="chip">📑 Indexed Allocation</span>
+            <span class="chip">🟩 Bit Vector</span>
+            <span class="chip">⛓ Free-Space Linked List</span>
+            <span class="chip">🗃 Grouping & Counting</span>
+        </div>
+    </div>
+
+    <!-- ══════════ MAIN ══════════ -->
+    <main>
+
+        <!-- ─────────── OVERVIEW ─────────── -->
+        <section id="overview">
+            <div class="sec-title">
+                <div class="ico ico-a">🗺</div>Chapter Overview
+            </div>
+
+            <div class="tip">
+                <strong>🎯 THE BIG QUESTION</strong>
+                Ch 11 asked "what is a file system?" Ch 12 asks <em>"how is it actually built?"</em> — the data
+                structures on disk and in memory that make files work, plus three strategies to map file contents to
+                disk blocks.
+            </div>
+
+            <div class="g2">
+                <div class="card">
+                    <h3>What You'll Master</h3>
+                    <ul>
+                        <li>On-disk structures: boot block, superblock, inode, FCB</li>
+                        <li>In-memory structures: mount table, open-file tables, buffers</li>
+                        <li>Three allocation methods: Contiguous, Linked, Indexed</li>
+                        <li>Four free-space methods: Bit vector, Linked list, Grouping, Counting</li>
+                        <li>Calculating logical → physical addresses for each method</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>Links to Other Chapters</h3>
+                    <ul>
+                        <li><strong>Ch 11 (File Concepts):</strong> What operations exist on files; Ch 12 implements
+                            them</li>
+                        <li><strong>Ch 8–9 (Memory/VM):</strong> File system buffers live in memory; page faults can hit
+                            swap (on disk)</li>
+                        <li><strong>Ch 10 (Mass Storage):</strong> Disk scheduling decides the order we serve I/O
+                            requests generated by file operations</li>
+                        <li><strong>Final Exam:</strong> Allocation methods + free-space appeared in fe_Solution_211 and
+                            OLD_MAJOR_SIWAR</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- ─────────── ON-DISK STRUCTURES ─────────── -->
+        <section id="ondisk">
+            <div class="sec-title">
+                <div class="ico ico-b">💾</div>On-Disk File-System Structures
+            </div>
+
+            <div class="card">
+                <h3>The Disk Layout — Layers from Outer to Inner</h3>
+                <p>Think of a disk as a book. The on-disk structures are the <em>table of contents, chapters, and
+                        index</em> — all physically stored on the disk, surviving power-off.</p>
+            </div>
+
+            <!-- Visual disk layout -->
+            <div class="card" style="font-family:'JetBrains Mono',monospace; font-size:.82rem; overflow-x:auto;">
+                <h3>Disk Layout (Conceptual)</h3>
+                <div style="display:flex; gap:0; margin:.75rem 0; min-width:580px;">
+                    <div
+                        style="background:rgba(212,148,58,.2); border:1px solid var(--accent); border-radius:6px 0 0 6px; padding:.6rem .8rem; flex:1; text-align:center;">
+                        <div style="color:var(--accent); font-weight:700; font-size:.75rem;">Boot Block</div>
+                        <div style="color:var(--muted); font-size:.68rem;">Block 0</div>
+                    </div>
+                    <div
+                        style="background:rgba(91,168,212,.2); border:1px solid var(--accent4); border-left:none; padding:.6rem .8rem; flex:1; text-align:center;">
+                        <div style="color:var(--accent4); font-weight:700; font-size:.75rem;">Superblock / Volume
+                            Control Block</div>
+                        <div style="color:var(--muted); font-size:.68rem;">Partition metadata</div>
+                    </div>
+                    <div
+                        style="background:rgba(106,191,133,.2); border:1px solid var(--accent3); border-left:none; padding:.6rem .8rem; flex:1.5; text-align:center;">
+                        <div style="color:var(--accent3); font-weight:700; font-size:.75rem;">Directory Structure</div>
+                        <div style="color:var(--muted); font-size:.68rem;">Root + subdirs + inode #s</div>
+                    </div>
+                    <div
+                        style="background:rgba(184,127,212,.2); border:1px solid var(--accent5); border-left:none; padding:.6rem .8rem; flex:1.5; text-align:center;">
+                        <div style="color:var(--accent5); font-weight:700; font-size:.75rem;">Per-File FCB / inode</div>
+                        <div style="color:var(--muted); font-size:.68rem;">Name, size, location, perms</div>
+                    </div>
+                    <div
+                        style="background:rgba(224,96,96,.15); border:1px solid var(--accent2); border-left:none; border-radius:0 6px 6px 0; padding:.6rem .8rem; flex:2; text-align:center;">
+                        <div style="color:var(--accent2); font-weight:700; font-size:.75rem;">Data Blocks</div>
+                        <div style="color:var(--muted); font-size:.68rem;">Actual file content</div>
+                    </div>
+                </div>
+                <p style="color:var(--muted); font-size:.75rem; margin-top:.5rem;">← Low address on disk
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    High address →</p>
+            </div>
+
+            <div class="g2">
+                <div class="card">
+                    <h3>① Boot Control Block</h3>
+                    <ul>
+                        <li>First block of the volume (if it's bootable)</li>
+                        <li>Contains info needed to boot the OS from that partition</li>
+                        <li>Called <strong>Boot Sector</strong> (NTFS) or <strong>Boot Block</strong> (UFS)</li>
+                        <li>Empty on non-boot volumes</li>
+                    </ul>
+                    <div class="tip" style="margin-top:.75rem;">
+                        <strong>💡 LINK TO CH 1</strong>
+                        This is what the bootstrap program in ROM/EPROM reads first! It loads the OS kernel into memory
+                        to start the system.
+                    </div>
+                </div>
+                <div class="card">
+                    <h3>② Volume Control Block (Superblock)</h3>
+                    <ul>
+                        <li>Stores partition-level metadata:</li>
+                        <li>Total number of blocks</li>
+                        <li>Number of <strong>free</strong> blocks</li>
+                        <li>Block size</li>
+                        <li>Free block pointers / free FCB count</li>
+                        <li>Called <strong>Superblock</strong> in UNIX / <strong>Master File Table</strong> in NTFS</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>③ Directory Structure</h3>
+                    <ul>
+                        <li>Organises all files on the partition</li>
+                        <li>In UNIX: maps file names → <strong>inode numbers</strong></li>
+                        <li>Starts at the root directory</li>
+                        <li>Stored on disk — survives reboot</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>④ Per-File FCB (inode)</h3>
+                    <ul>
+                        <li>File Control Block — one per file</li>
+                        <li>Contains: unique ID, type, size, protection, timestamps, owner, pointers to data blocks</li>
+                        <li>Called <strong>inode</strong> in most UNIX systems</li>
+                        <li>Created at file creation; deleted when file is deleted</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="mem">
+                <div class="mem-label">🧠 Memory Aid — On-Disk Structures</div>
+                <div class="mem-big">B · S · D · F · Data</div>
+                <p><span class="hi-a">B</span>oot block → <span class="hi-d">S</span>uperblock → <span
+                        class="hi-c">D</span>irectory → <span class="hi-e">F</span>CB/inode → <span
+                        class="hi-b">Data</span> blocks<br>
+                    Think: <em>"<strong>B</strong>ig <strong>S</strong>ystems <strong>D</strong>irectly
+                        <strong>F</strong>ind <strong>D</strong>ata"</em></p>
+            </div>
+
+            <div class="warn">
+                <strong>⚠ EXAM TRAP — Superblock vs FCB</strong>
+                The <strong>superblock</strong> stores partition-wide info (total blocks, free blocks, block size). The
+                <strong>FCB/inode</strong> stores per-file info (name, size, location). Don't mix them up — they appear
+                in MCQs as distractors.
+            </div>
+        </section>
+
+        <!-- ─────────── IN-MEMORY STRUCTURES ─────────── -->
+        <section id="inmemory">
+            <div class="sec-title">
+                <div class="ico ico-c">🧠</div>In-Memory File-System Structures
+            </div>
+
+            <div class="card">
+                <h3>Why In-Memory Structures?</h3>
+                <p>Disk access is slow. The OS caches critical file-system metadata in RAM so repeated operations don't
+                    hit the disk every time. These structures are built when the system boots and flushed when it shuts
+                    down.</p>
+            </div>
+
+            <div class="g2">
+                <div class="card">
+                    <h3>Mount Table</h3>
+                    <ul>
+                        <li>Lists all currently mounted file system volumes</li>
+                        <li>Each entry: device, mount point, FS type, options</li>
+                        <li>When you run <code>mount /dev/sdb1 /mnt/usb</code>, an entry is added here</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>Directory Structure Cache</h3>
+                    <ul>
+                        <li>Caches recently accessed directory entries in memory</li>
+                        <li>Avoids re-reading directories from disk on every path lookup</li>
+                        <li>Called the <strong>dentry cache</strong> (dcache) in Linux</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>System-Wide Open-File Table</h3>
+                    <ul>
+                        <li>One entry per <em>open file</em> in the entire system (not per process)</li>
+                        <li>Contains: copy of FCB, file position pointer, open count</li>
+                        <li>When open count hits <strong>0</strong> → entry is removed</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>Per-Process Open-File Table</h3>
+                    <ul>
+                        <li>One table per running process</li>
+                        <li>Contains: pointer into the system-wide table, current file offset, access mode</li>
+                        <li>This is what gives each process its own independent file position even on the same file</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Opening a file steps -->
+            <div class="card">
+                <h3>📖 How open() Works — Step by Step</h3>
+                <div class="steps">
+                    <div class="step">
+                        <div class="step-num">1</div>
+                        <div class="step-body"><strong>Search directory</strong> on disk for the file name → get inode
+                            number</div>
+                    </div>
+                    <div class="step">
+                        <div class="step-num">2</div>
+                        <div class="step-body"><strong>Load FCB/inode</strong> from disk into the system-wide open-file
+                            table (if not already there)</div>
+                    </div>
+                    <div class="step">
+                        <div class="step-num">3</div>
+                        <div class="step-body"><strong>Create entry</strong> in per-process open-file table pointing to
+                            the system-wide entry</div>
+                    </div>
+                    <div class="step">
+                        <div class="step-num">4</div>
+                        <div class="step-body"><strong>Return file descriptor (fd)</strong> to the process — an index
+                            into the per-process table</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>📕 How close() Works</h3>
+                <div class="steps">
+                    <div class="step">
+                        <div class="step-num">1</div>
+                        <div class="step-body">Remove entry from the per-process open-file table</div>
+                    </div>
+                    <div class="step">
+                        <div class="step-num">2</div>
+                        <div class="step-body">Decrement <strong>open count</strong> in system-wide table</div>
+                    </div>
+                    <div class="step">
+                        <div class="step-num">3</div>
+                        <div class="step-body">If open count = 0, <strong>flush FCB back to disk</strong> and remove
+                            from system-wide table</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tip">
+                <strong>💡 WHY TWO TABLES?</strong>
+                The system-wide table avoids loading the same FCB from disk multiple times when many processes have the
+                same file open. Each process still gets its own file offset via the per-process table — so two processes
+                reading the same file don't interfere with each other's position.
+            </div>
+        </section>
+
+        <!-- ─────────── ALLOCATION METHODS ─────────── -->
+        <section id="alloc">
+            <div class="sec-title">
+                <div class="ico ico-d">📦</div>Allocation Methods
+            </div>
+
+            <div class="card">
+                <h3>The Core Problem</h3>
+                <p>A file is a sequence of logical blocks. The disk is a sequence of physical blocks. How do we map one
+                    to the other? Three strategies — each with distinct trade-offs on fragmentation, speed, and random
+                    access.</p>
+            </div>
+
+            <div class="info">
+                <strong>📌 KEY FORMULAS YOU MUST KNOW</strong>
+                Every allocation method has a different formula to translate a <strong>Logical Address (LA)</strong> to
+                a physical disk block. These formulas appear directly in exams — know them cold.
+            </div>
+
+            <!-- CONTIGUOUS -->
+            <div class="alloc-card ac1">
+                <h4>① Contiguous Allocation</h4>
+                <p>Each file occupies a <strong>set of consecutive (contiguous) blocks</strong> on disk. The directory
+                    entry stores only the <em>starting block address</em> and the <em>length</em> (number of blocks).
+                </p>
+
+                <!-- Visual -->
+                <div style="margin:.75rem 0;">
+                    <div
+                        style="font-family:'JetBrains Mono',monospace; font-size:.7rem; color:var(--muted); margin-bottom:.3rem;">
+                        Example: File A starts at block 6, size = 4 blocks</div>
+                    <div class="block-row">
+                        <div class="blk"
+                            style="background:var(--bg3); border:1px solid var(--border); color:var(--muted);">0</div>
+                        <div class="blk"
+                            style="background:var(--bg3); border:1px solid var(--border); color:var(--muted);">1</div>
+                        <div class="blk"
+                            style="background:var(--bg3); border:1px solid var(--border); color:var(--muted);">2</div>
+                        <div class="blk"
+                            style="background:var(--bg3); border:1px solid var(--border); color:var(--muted);">3</div>
+                        <div class="blk"
+                            style="background:var(--bg3); border:1px solid var(--border); color:var(--muted);">4</div>
+                        <div class="blk"
+                            style="background:var(--bg3); border:1px solid var(--border); color:var(--muted);">5</div>
+                        <div class="blk blk-used">6</div>
+                        <div class="blk blk-used">7</div>
+                        <div class="blk blk-used">8</div>
+                        <div class="blk blk-used">9</div>
+                        <div class="blk"
+                            style="background:var(--bg3); border:1px solid var(--border); color:var(--muted);">10</div>
+                        <span class="blk-label">← File A (blocks 6–9)</span>
+                    </div>
+                </div>
+
+                <div class="formula left">
+                    Q = LA ÷ BlockSize &nbsp; (block number within file)<br>
+                    R = LA mod BlockSize &nbsp; (offset within block)<br>
+                    Physical Block = StartAddress + Q &nbsp;|&nbsp; Displacement = R
+                </div>
+
+                <div class="ok" style="margin-top:.75rem;">
+                    <strong>✅ EXAMPLE (from OLD_MAJOR_SIWAR / fe_Solution_211)</strong>
+                    File A: start = 6, block size = 1024 bytes. LA = 2500.<br>
+                    Q = 2500 ÷ 1024 = <strong>2</strong> &nbsp;|&nbsp; R = 2500 mod 1024 = <strong>452</strong><br>
+                    Physical Block = 6 + 2 = <strong>8</strong> &nbsp;|&nbsp; Displacement = <strong>452</strong>
+                </div>
+
+                <ul style="margin-top:.75rem;">
+                    <li class="yes">✅ Simple — only start + length needed</li>
+                    <li class="yes">✅ Excellent for sequential AND random access</li>
+                    <li class="no">❌ External fragmentation — holes appear as files are deleted</li>
+                    <li class="no">❌ Files cannot grow — no adjacent space may exist</li>
+                    <li class="no">❌ Must know file size in advance</li>
+                </ul>
+
+                <div class="mem" style="margin-top:.85rem;">
+                    <div class="mem-label">🧠 Think</div>
+                    <p>Contiguous = parking lot with one long reserved spot. Easy to find your car (start + length).
+                        Problem: can't grow, leaves gaps when cars leave.</p>
+                </div>
+            </div>
+
+            <!-- LINKED -->
+            <div class="alloc-card ac2">
+                <h4>② Linked Allocation</h4>
+                <p>Each file is a <strong>linked list of disk blocks</strong>. Each block contains a <em>pointer to the
+                        next block</em>. Blocks can be anywhere on the disk. The directory stores the <em>first block
+                        pointer</em> only.</p>
+
+                <div style="margin:.75rem 0;">
+                    <div
+                        style="font-family:'JetBrains Mono',monospace; font-size:.7rem; color:var(--muted); margin-bottom:.3rem;">
+                        Example: File A → Block 8 → Block 3 → Block 10 → NULL</div>
+                    <div class="block-row">
+                        <div class="blk"
+                            style="background:var(--bg3); border:1px solid var(--border); color:var(--muted);">0</div>
+                        <div class="blk"
+                            style="background:var(--bg3); border:1px solid var(--border); color:var(--muted);">1</div>
+                        <div class="blk"
+                            style="background:var(--bg3); border:1px solid var(--border); color:var(--muted);">2</div>
+                        <div class="blk blk-ptr">3<br><span style="font-size:.55rem;">→10</span></div>
+                        <div class="blk"
+                            style="background:var(--bg3); border:1px solid var(--border); color:var(--muted);">4</div>
+                        <div class="blk"
+                            style="background:var(--bg3); border:1px solid var(--border); color:var(--muted);">5</div>
+                        <div class="blk"
+                            style="background:var(--bg3); border:1px solid var(--border); color:var(--muted);">6</div>
+                        <div class="blk"
+                            style="background:var(--bg3); border:1px solid var(--border); color:var(--muted);">7</div>
+                        <div class="blk blk-ptr">8<br><span style="font-size:.55rem;">→3</span></div>
+                        <div class="blk"
+                            style="background:var(--bg3); border:1px solid var(--border); color:var(--muted);">9</div>
+                        <div class="blk blk-ptr">10<br><span style="font-size:.55rem;">→nil</span></div>
+                    </div>
+                </div>
+
+                <div class="formula left">
+                    Q = LA ÷ (BlockSize − PointerSize) &nbsp; (Qth block in chain)<br>
+                    R = LA mod (BlockSize − PointerSize) + PointerSize<br>
+                    Must follow chain from start → walk Q pointers
+                </div>
+
+                <div class="warn" style="margin-top:.75rem;">
+                    <strong>⚠ KEY INSIGHT — FAT (File Allocation Table)</strong>
+                    FAT is a <em>variation of linked allocation</em> where pointers are stored in a separate table at
+                    the start of the disk rather than inside each block. This allows the data section of each block to
+                    be a full power-of-2 size, and the FAT itself can be cached in memory for speed. Used by MS-DOS and
+                    early Windows.
+                </div>
+
+                <ul style="margin-top:.75rem;">
+                    <li class="yes">✅ No external fragmentation</li>
+                    <li class="yes">✅ Files can grow easily — just add any free block</li>
+                    <li class="yes">✅ No need to declare file size upfront</li>
+                    <li class="no">❌ <strong>Sequential access only</strong> — to reach block i, must traverse from
+                        block 0</li>
+                    <li class="no">❌ Each block wastes space on a pointer</li>
+                    <li class="no">❌ Poor reliability — one broken pointer loses the rest of the file</li>
+                </ul>
+
+                <div class="mem" style="margin-top:.85rem;">
+                    <div class="mem-label">🧠 Think</div>
+                    <p>Linked = a treasure hunt — each clue leads to the next. Can't skip to clue 7 without following
+                        clues 1–6 first. Great for exploring in order, terrible for jumping around.</p>
+                </div>
+            </div>
+
+            <!-- INDEXED -->
+            <div class="alloc-card ac3">
+                <h4>③ Indexed Allocation</h4>
+                <p>Each file has its own dedicated <strong>index block</strong> — an array of pointers to all its data
+                    blocks. The directory stores the address of the index block. Supports both sequential and <em>direct
+                        (random) access</em>.</p>
+
+                <div style="margin:.75rem 0;">
+                    <div
+                        style="font-family:'JetBrains Mono',monospace; font-size:.7rem; color:var(--muted); margin-bottom:.3rem;">
+                        Index block contains: [6, 11, 3, 9, ...] → each is a data block address</div>
+                    <div class="block-row">
+                        <div class="blk blk-index">idx<br><span style="font-size:.55rem;">block</span></div>
+                        <span class="blk-label" style="font-size:.7rem; color:var(--muted);">→</span>
+                        <div class="blk blk-free">6</div>
+                        <div class="blk blk-free">11</div>
+                        <div class="blk blk-free">3</div>
+                        <div class="blk blk-free">9</div>
+                        <span class="blk-label" style="font-size:.7rem; color:var(--muted);">← data blocks (can be
+                            anywhere)</span>
+                    </div>
+                </div>
+
+                <div class="formula left">
+                    Q = LA ÷ BlockSize &nbsp; (index into the index block = logical block #)<br>
+                    R = LA mod BlockSize &nbsp; (offset within that data block)<br>
+                    Physical Block = IndexBlock[Q] &nbsp;|&nbsp; Displacement = R
+                </div>
+
+                <div class="ok" style="margin-top:.75rem;">
+                    <strong>✅ EXAMPLE</strong>
+                    File B: index block at disk address 25. LA = 5000, block size = 2048.<br>
+                    Q = 5000 ÷ 2048 = <strong>2</strong> (truncated) &nbsp;|&nbsp; R = 5000 mod 2048 =
+                    <strong>904</strong><br>
+                    Physical Block = IndexBlock[2] (look up the 3rd pointer) &nbsp;|&nbsp; Displacement =
+                    <strong>904</strong>
+                </div>
+
+                <ul style="margin-top:.75rem;">
+                    <li class="yes">✅ No external fragmentation</li>
+                    <li class="yes">✅ Supports random (direct) access efficiently</li>
+                    <li class="yes">✅ Files can grow (add entries to index block)</li>
+                    <li class="no">❌ Index block takes up space even for tiny files</li>
+                    <li class="no">❌ Large files may need multi-level index blocks</li>
+                </ul>
+
+                <div class="mem" style="margin-top:.85rem;">
+                    <div class="mem-label">🧠 Think</div>
+                    <p>Indexed = a book's table of contents. The TOC (index block) lists exactly where each chapter
+                        (data block) starts. You can jump directly to any chapter without reading the others.</p>
+                </div>
+
+                <!-- UNIX UFS Combined Scheme -->
+                <div class="card" style="margin-top:1rem; border-color:var(--accent5);">
+                    <h3 style="color:var(--accent5);">UNIX UFS Combined Scheme (Inode)</h3>
+                    <p>UNIX handles large files by using a <em>combined indexing scheme</em> inside each inode:</p>
+                    <div class="tw" style="margin:.75rem 0;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Pointer Type</th>
+                                    <th>How It Works</th>
+                                    <th>Covers</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><span class="hi-a">Direct (12 pointers)</span></td>
+                                    <td>Points directly to a data block</td>
+                                    <td>Small files (up to 12 × BlockSize)</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="hi-d">Single Indirect</span></td>
+                                    <td>Points to a block of pointers → each points to data</td>
+                                    <td>Medium files</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="hi-c">Double Indirect</span></td>
+                                    <td>Points to block of pointers → each points to block of pointers → data</td>
+                                    <td>Large files</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="hi-e">Triple Indirect</span></td>
+                                    <td>3 levels of indirection → data</td>
+                                    <td>Very large files</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="mem">
+                        <div class="mem-label">🧠 Mnemonic — Inode Levels</div>
+                        <p><strong>"Direct, Single, Double, Triple"</strong> — like floors in a building: ground floor =
+                            direct access, floor 1 = one elevator ride, floor 2 = two rides, floor 3 = three rides.
+                            Higher floor = more overhead but reaches higher "addresses".</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Comparison Table -->
+            <div class="sec-title" style="margin-top:2rem; font-size:1.1rem; font-family:'DM Sans',sans-serif;">📊
+                Allocation Methods — Master Comparison</div>
+            <div class="tw">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Feature</th>
+                            <th>Contiguous</th>
+                            <th>Linked</th>
+                            <th>Indexed</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>External Fragmentation</td>
+                            <td class="no">Yes ❌</td>
+                            <td class="yes">No ✅</td>
+                            <td class="yes">No ✅</td>
+                        </tr>
+                        <tr>
+                            <td>Internal Fragmentation</td>
+                            <td class="yes">No ✅</td>
+                            <td class="yes">No ✅</td>
+                            <td class="no">Possible ⚠</td>
+                        </tr>
+                        <tr>
+                            <td>Sequential Access</td>
+                            <td class="yes">Excellent ✅</td>
+                            <td class="yes">Good ✅</td>
+                            <td class="yes">Good ✅</td>
+                        </tr>
+                        <tr>
+                            <td>Random (Direct) Access</td>
+                            <td class="yes">Excellent ✅</td>
+                            <td class="no">Poor ❌ (must traverse)</td>
+                            <td class="yes">Excellent ✅</td>
+                        </tr>
+                        <tr>
+                            <td>File Can Grow?</td>
+                            <td class="no">Hard ❌</td>
+                            <td class="yes">Easy ✅</td>
+                            <td class="yes">Easy ✅</td>
+                        </tr>
+                        <tr>
+                            <td>Disk I/O for access</td>
+                            <td>1 access</td>
+                            <td>N accesses (chain walk)</td>
+                            <td>2 accesses (index + data)</td>
+                        </tr>
+                        <tr>
+                            <td>Pointer Overhead</td>
+                            <td>None</td>
+                            <td>Per block</td>
+                            <td>Per file (index block)</td>
+                        </tr>
+                        <tr>
+                            <td>Real Example</td>
+                            <td>CD-ROM, old systems</td>
+                            <td>FAT (MS-DOS), ext2</td>
+                            <td>UNIX UFS, ext3/4</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="warn">
+                <strong>⚠ EXAM TRAP — Linked vs Indexed for random access</strong>
+                Linked allocation <strong>cannot</strong> efficiently support random access (direct access). To reach
+                block N, you must follow N pointers from the start. This is why file systems evolved to indexed
+                allocation. Exam questions love asking: <em>"Which allocation method supports direct access?"</em> →
+                Answer: Contiguous and Indexed (NOT Linked).
+            </div>
+        </section>
+
+        <!-- ─────────── FREE-SPACE MANAGEMENT ─────────── -->
+        <section id="freespace">
+            <div class="sec-title">
+                <div class="ico ico-e">🟩</div>Free-Space Management
+            </div>
+
+            <div class="card">
+                <h3>The Problem</h3>
+                <p>When a file is deleted, its blocks become free. The OS must track <em>which blocks are available</em>
+                    so it can allocate them to new files. Four strategies — each with different speed/space trade-offs.
+                </p>
+            </div>
+
+            <!-- BIT VECTOR -->
+            <div class="card" style="border-left: 4px solid var(--accent);">
+                <h3>① Bit Vector (Bitmap)</h3>
+                <p>One bit per disk block. <span class="hi-c">1 = free</span>, <span class="hi-b">0 = allocated</span>.
+                </p>
+
+                <div class="card" style="background:var(--bg3); border-color:var(--border); margin:.75rem 0;">
+                    <div
+                        style="font-family:'JetBrains Mono',monospace; font-size:.75rem; color:var(--muted); margin-bottom:.5rem;">
+                        Bit vector example — 0=allocated, 1=free:</div>
+                    <div class="bitmap-row">
+                        <div class="bit bit-0">0</div>
+                        <div class="bit bit-0">0</div>
+                        <div class="bit bit-1">1</div>
+                        <div class="bit bit-1">1</div>
+                        <div class="bit bit-1">1</div>
+                        <div class="bit bit-1">1</div>
+                        <div class="bit bit-0">0</div>
+                        <div class="bit bit-0">0</div>
+                        <div class="bit bit-1">1</div>
+                        <div class="bit bit-1">1</div>
+                        <div class="bit bit-1">1</div>
+                        <div class="bit bit-1">1</div>
+                        <div class="bit bit-1">1</div>
+                        <div class="bit bit-1">1</div>
+                        <div class="bit bit-0">0</div>
+                        <div class="bit bit-0">0</div>
+                    </div>
+                    <div
+                        style="font-family:'JetBrains Mono',monospace; font-size:.7rem; color:var(--muted); margin-top:.4rem;">
+                        Blocks 0–1: allocated &nbsp;|&nbsp; Blocks 2–5: free &nbsp;|&nbsp; Blocks 6–7: allocated
+                        &nbsp;|&nbsp; Blocks 8–13: free</div>
+                </div>
+
+                <div class="formula left">
+                    Block number = (bits per word) × (number of 0-value words) + offset of first 1 bit<br>
+                    <br>
+                    A "0-value word" = all bits = 0 (all blocks in that word are allocated)
+                </div>
+
+                <div class="ok" style="margin-top:.75rem;">
+                    <strong>✅ WORKED EXAMPLE (from Chapter 12 slides)</strong>
+                    Each word = 8 bits. Bit vector:<br>
+                    Word 0: <code>00000000</code> (0-value) &nbsp;|&nbsp;
+                    Word 1: <code>00000000</code> (0-value) &nbsp;|&nbsp;
+                    Word 2: <code>00010000</code> (has a free block at position 3)<br><br>
+                    Block number = 8 × 2 + 3 = <span class="hi-c"><strong>19</strong></span> → first free block is block
+                    19.
+                </div>
+
+                <div class="ok" style="margin-top:.5rem;">
+                    <strong>✅ SIZE CALCULATION EXAMPLE (from Chapter 12)</strong>
+                    Disk = 1 TB, Block size = 4 KB.<br>
+                    Number of blocks = 1 TB ÷ 4 KB = 268,435,456 blocks.<br>
+                    Bitmap size = 268,435,456 bits ÷ 8 = <span class="hi-c"><strong>33,554,432 bytes = 32
+                            MB</strong></span>
+                </div>
+
+                <ul style="margin-top:.75rem;">
+                    <li class="yes">✅ Simple, fast to find first free block using CPU bit operations</li>
+                    <li class="yes">✅ Easy to find contiguous free blocks</li>
+                    <li class="no">❌ Inefficient unless entire bitmap kept in memory</li>
+                    <li class="no">❌ Requires extra space proportional to disk size</li>
+                </ul>
+            </div>
+
+            <!-- LINKED LIST -->
+            <div class="card" style="border-left: 4px solid var(--accent4);">
+                <h3>② Linked List (Free List)</h3>
+                <p>All free blocks are linked together. A special pointer (in the superblock) points to the <em>first
+                        free block</em>. Each free block contains a pointer to the next free block.</p>
+
+                <div style="margin:.75rem 0;">
+                    <div
+                        style="font-family:'JetBrains Mono',monospace; font-size:.7rem; color:var(--muted); margin-bottom:.3rem;">
+                        Example: First free = block 4, chain: 4 → 7 → 5 → 9 → 10 → nil</div>
+                    <div class="block-row">
+                        <div class="blk blk-used">0<br><span style="font-size:.5rem;">used</span></div>
+                        <div class="blk blk-used">1</div>
+                        <div class="blk blk-used">2</div>
+                        <div class="blk blk-used">3</div>
+                        <div class="blk blk-ptr">4<br><span style="font-size:.5rem;">→7</span></div>
+                        <div class="blk blk-ptr">5<br><span style="font-size:.5rem;">→9</span></div>
+                        <div class="blk blk-used">6</div>
+                        <div class="blk blk-ptr">7<br><span style="font-size:.5rem;">→5</span></div>
+                        <div class="blk blk-used">8</div>
+                        <div class="blk blk-ptr">9<br><span style="font-size:.5rem;">→10</span></div>
+                        <div class="blk blk-ptr">10<br><span style="font-size:.5rem;">→nil</span></div>
+                    </div>
+                </div>
+
+                <ul>
+                    <li class="yes">✅ No wasted space — pointers stored inside free blocks themselves</li>
+                    <li class="no">❌ Cannot efficiently find contiguous free space</li>
+                    <li class="no">❌ Traversing entire list requires many disk reads (I/O intensive)</li>
+                    <li class="no">❌ Poor performance for bulk allocation</li>
+                </ul>
+
+                <div class="mem">
+                    <div class="mem-label">🧠 Think</div>
+                    <p>Linked free list = chain of empty rooms in a hotel where each room's key tells you which room is
+                        free next. Finding 5 rooms in a row requires walking the whole chain.</p>
+                </div>
+            </div>
+
+            <!-- GROUPING -->
+            <div class="card" style="border-left: 4px solid var(--accent3);">
+                <h3>③ Grouping</h3>
+                <p>A modification of the linked list. The <em>first free block</em> stores the addresses of <strong>n
+                        free blocks</strong>. The last of these n blocks stores the addresses of the next n free blocks,
+                    and so on.</p>
+
+                <div class="ok">
+                    <strong>✅ KEY ADVANTAGE over simple linked list</strong>
+                    Instead of reading one block to find one free block address, you read one block to get <em>n−1 free
+                        block addresses at once</em> (the last entry in that block points to the next group). Much
+                    faster bulk allocation.
+                </div>
+
+                <ul>
+                    <li class="yes">✅ Large number of free block addresses found quickly</li>
+                    <li class="yes">✅ Better than simple linked list for bulk operations</li>
+                    <li class="no">❌ More complex than bitmap or linked list</li>
+                </ul>
+            </div>
+
+            <!-- COUNTING -->
+            <div class="card" style="border-left: 4px solid var(--accent2);">
+                <h3>④ Counting</h3>
+                <p>Instead of listing every free block, store the <strong>address of the first free block</strong> and a
+                    <strong>count</strong> of how many consecutive free blocks follow it.</p>
+
+                <div style="margin:.75rem 0;">
+                    <div
+                        style="font-family:'JetBrains Mono',monospace; font-size:.7rem; color:var(--muted); margin-bottom:.3rem;">
+                        Free-space list entries: (start, count)</div>
+                    <div class="block-row">
+                        <div class="blk blk-used">0</div>
+                        <div class="blk blk-used">1</div>
+                        <div class="blk blk-used">2</div>
+                        <div class="blk blk-free">3<br><span style="font-size:.5rem;">start</span></div>
+                        <div class="blk blk-free">4<br><span style="font-size:.5rem;">free</span></div>
+                        <div class="blk blk-used">5</div>
+                        <div class="blk blk-used">6</div>
+                        <div class="blk blk-free">7<br><span style="font-size:.5rem;">start</span></div>
+                        <div class="blk blk-free">8<br><span style="font-size:.5rem;">free</span></div>
+                        <div class="blk blk-free">9<br><span style="font-size:.5rem;">free</span></div>
+                        <div class="blk blk-used">10</div>
+                        <div class="blk blk-free">11<br><span style="font-size:.5rem;">start</span></div>
+                    </div>
+                    <div
+                        style="font-family:'JetBrains Mono',monospace; font-size:.7rem; color:var(--muted); margin-top:.4rem;">
+                        Free list = [ (3, 2), (7, 3), (11, 1) ] → 3 entries instead of 6 individual blocks
+                    </div>
+                </div>
+
+                <ul>
+                    <li class="yes">✅ Compact list — especially useful when free space is largely contiguous</li>
+                    <li class="yes">✅ Each entry covers multiple blocks with (address, count)</li>
+                    <li class="no">❌ Each entry larger than a simple address</li>
+                    <li class="no">❌ Less efficient when free blocks are scattered</li>
+                </ul>
+
+                <div class="mem">
+                    <div class="mem-label">🧠 Think</div>
+                    <p>Counting = "I have 3 parking spots starting at row 7." Much more compact than listing spots 7, 8,
+                        9 separately — especially in a mostly-empty lot.</p>
+                </div>
+            </div>
+
+            <!-- Free Space Summary Table -->
+            <div class="tw">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Method</th>
+                            <th>Storage Structure</th>
+                            <th>Find Free Block</th>
+                            <th>Find Contiguous?</th>
+                            <th>Best For</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="hi-a">Bit Vector</span></td>
+                            <td>1 bit per block array</td>
+                            <td>Scan bitmap — fast with CPU ops</td>
+                            <td class="yes">Yes ✅</td>
+                            <td>General purpose — most common</td>
+                        </tr>
+                        <tr>
+                            <td><span class="hi-d">Linked List</span></td>
+                            <td>Chain of free blocks</td>
+                            <td>Get head pointer — O(1)</td>
+                            <td class="no">No ❌</td>
+                            <td>Simple systems, low memory</td>
+                        </tr>
+                        <tr>
+                            <td><span class="hi-c">Grouping</span></td>
+                            <td>First free block holds n addresses</td>
+                            <td>Read one block → n addresses</td>
+                            <td>Partial</td>
+                            <td>When many free blocks needed fast</td>
+                        </tr>
+                        <tr>
+                            <td><span class="hi-b">Counting</span></td>
+                            <td>(address, count) pairs</td>
+                            <td>Scan short list</td>
+                            <td class="yes">Yes ✅</td>
+                            <td>When free space is mostly contiguous</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- ─────────── TIPS ─────────── -->
+        <section id="tips">
+            <div class="sec-title">
+                <div class="ico ico-a">✨</div>Study Tips & Tricks
+            </div>
+
+            <div class="g2">
+                <div class="mem">
+                    <div class="mem-label">🧠 The 3 Allocation Methods</div>
+                    <div class="mem-big">C · L · I</div>
+                    <p><span class="hi-a">C</span>ontiguous — fast, fragmented<br>
+                        <span class="hi-d">L</span>inked — flexible, no random access<br>
+                        <span class="hi-c">I</span>ndexed — best of both, overhead
+                    </p>
+                </div>
+                <div class="mem">
+                    <div class="mem-label">🧠 The 4 Free-Space Methods</div>
+                    <div class="mem-big">B · L · G · C</div>
+                    <p><span class="hi-a">B</span>itmap — 1 bit per block<br>
+                        <span class="hi-d">L</span>inked — chain of free blocks<br>
+                        <span class="hi-c">G</span>rouping — chunks of n addresses<br>
+                        <span class="hi-b">C</span>ounting — (start, count) pairs
+                    </p>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>🎯 How to Solve Address Translation Problems</h3>
+                <ol style="padding-left:1.2rem; font-size:.91rem; line-height:2.1;">
+                    <li><strong>Identify the allocation method</strong> — contiguous, linked, or indexed?</li>
+                    <li><strong>Write the correct formula</strong> for that method (Q and R)</li>
+                    <li>For <strong>Contiguous:</strong> Q = LA ÷ BlockSize, Physical = Start + Q, Offset = R</li>
+                    <li>For <strong>Linked:</strong> Q = LA ÷ (BlockSize − PtrSize), walk Q steps in chain</li>
+                    <li>For <strong>Indexed:</strong> Q = LA ÷ BlockSize, lookup IndexBlock[Q], Offset = R</li>
+                    <li><strong>Check validity:</strong> Is the resulting block within the file's bounds?</li>
+                </ol>
+            </div>
+
+            <div class="card">
+                <h3>🎯 How to Solve Bitmap Problems</h3>
+                <ol style="padding-left:1.2rem; font-size:.91rem; line-height:2.1;">
+                    <li>Identify word size (e.g. 8 bits, 16 bits, 32 bits)</li>
+                    <li>Count <strong>0-value words</strong> (all bits = 0) from the start</li>
+                    <li>Find the first word that is NOT all zeros</li>
+                    <li>Within that word, find the offset (position) of the first 1 bit — count from the left (bit 0 =
+                        leftmost)</li>
+                    <li>Block number = (bits per word × number of 0-value words) + offset</li>
+                </ol>
+            </div>
+
+            <div class="g2">
+                <div class="tip">
+                    <strong>💡 CONTIGUOUS vs LINKED for exam MCQ</strong>
+                    If a question says "supports direct/random access" → <strong>Contiguous or Indexed</strong>.<br>
+                    If a question says "no external fragmentation" → <strong>Linked or Indexed</strong>.<br>
+                    Contiguous = external fragmentation. Indexed = index block overhead.
+                </div>
+                <div class="tip">
+                    <strong>💡 INODE in UNIX</strong>
+                    When asked about UNIX file system — the inode IS the FCB. It uses a combined scheme: 12 direct +
+                    single indirect + double indirect + triple indirect. This is indexed allocation at its finest.
+                </div>
+            </div>
+
+            <div class="warn">
+                <strong>⚠ COMMON MISTAKE — Bit Vector 0 vs 1</strong>
+                The book uses: bit = 1 → <strong>free</strong>, bit = 0 → <strong>allocated</strong>. Some students flip
+                this! Always state your convention when answering. In the worked example: "Word 2: 00010000 → bit at
+                position 3 is 1 → free → block 19."
+            </div>
+
+            <div class="info">
+                <strong>📌 LINKED TO PAST EXAMS</strong>
+                The fe_Solution_211 final exam asked about: (a) contiguous allocation I/O counts for inserting a block,
+                (b) disadvantages of contiguous allocation, and (c) how the OS views a disk. These exact topics come
+                from Ch 12. Also, Quiz 4 (Dr Helene) tested file operations, allocation, and protection — all tying into
+                Ch 11 + 12.
+            </div>
+        </section>
+
+        <!-- ─────────── Q&A ─────────── -->
+        <section id="qa">
+            <div class="sec-title">
+                <div class="ico ico-e">📝</div>Past Exam Questions &amp; Answers
+            </div>
+
+            <div class="tip">
+                <strong>💡 HOW TO USE</strong>
+                Cover the answer, think it through, then click to reveal. These come directly from PSU CS330 past exams
+                and final exam samples.
+            </div>
+
+            <div class="qa" onclick="toggle(this)">
+                <div class="qa-q">
+                    <span>Q1. A file consists of 30 disk blocks (numbered 0–29). A block is inserted in the middle (as
+                        the 15th block). How many disk read and write I/O operations are needed if <strong>linked
+                            allocation</strong> is used?</span>
+                    <span class="src-tag">Final Exam Sample</span>
+                </div>
+                <div class="qa-a">
+                    <strong>✅ ANSWER: 15 reads + 2 writes</strong>
+                    In linked allocation, to reach the 15th position you must follow the chain from block 0 to block 14.
+                    That's <strong>15 reads</strong> (blocks 0 through 14, reading each pointer to find the next). Then:
+                    <strong>1 write</strong> to update block 14's pointer to point to the new block, and <strong>1
+                        write</strong> to write the new block with its pointer to the old 15th block = <strong>2 writes
+                        total</strong>.
+                    <br><br>This is a classic example of why linked allocation has poor performance for insertions —
+                    sequential traversal is mandatory.
+                </div>
+            </div>
+
+            <div class="qa" onclick="toggle(this)">
+                <div class="qa-q">
+                    <span>Q2. What are the disadvantages of contiguous disk allocation? Give three.</span>
+                    <span class="src-tag">Final Exam Sample</span>
+                </div>
+                <div class="qa-a">
+                    <strong>✅ ANSWER:</strong>
+                    <ul>
+                        <li><strong>External fragmentation:</strong> Free space breaks into scattered small holes.
+                            Requires compaction/defragmentation which is expensive.</li>
+                        <li><strong>File size must be known in advance:</strong> Hard to estimate for output files. If
+                            you underestimate, the file can't grow.</li>
+                        <li><strong>Files cannot grow:</strong> If there's no adjacent free space, the entire file must
+                            be relocated to a larger hole.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="qa" onclick="toggle(this)">
+                <div class="qa-q">
+                    <span>Q3. File A has start address = 6, block size = 1024 bytes. What disk block contains the byte
+                        at logical address (file offset) 2500? What is the displacement within that block?</span>
+                    <span class="src-tag">Chapter 12 / OLD_MAJOR</span>
+                </div>
+                <div class="qa-a">
+                    <strong>✅ ANSWER (Contiguous Allocation):</strong>
+                    <br>Q = 2500 ÷ 1024 = <strong>2</strong> (integer division)
+                    <br>R = 2500 mod 1024 = 2500 − (2 × 1024) = <strong>452</strong>
+                    <br>Physical disk block = Start + Q = 6 + 2 = <strong>Block 8</strong>
+                    <br>Displacement within block = <strong>452 bytes</strong>
+                </div>
+            </div>
+
+            <div class="qa" onclick="toggle(this)">
+                <div class="qa-q">
+                    <span>Q4. What are the on-disk data structures used to implement a file system? Name and briefly
+                        describe each.</span>
+                    <span class="src-tag">Chapter 12 Core</span>
+                </div>
+                <div class="qa-a">
+                    <strong>✅ ANSWER:</strong>
+                    <ul>
+                        <li><strong>Boot Control Block (Boot Sector):</strong> Contains info needed to boot the OS from
+                            that partition. Located at the start of the volume.</li>
+                        <li><strong>Volume Control Block (Superblock/MFT):</strong> Stores partition metadata — total
+                            blocks, free blocks, block size, free block pointers.</li>
+                        <li><strong>Directory Structure:</strong> Organises file names and their associated inode/FCB
+                            numbers, starting at the root.</li>
+                        <li><strong>Per-file FCB (inode):</strong> Stores file attributes: name, type, size, timestamps,
+                            owner, and pointers to data blocks.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="qa" onclick="toggle(this)">
+                <div class="qa-q">
+                    <span>Q5. What is the difference between the system-wide open-file table and the per-process
+                        open-file table?</span>
+                    <span class="src-tag">Chapter 12 Core</span>
+                </div>
+                <div class="qa-a">
+                    <strong>✅ ANSWER:</strong>
+                    The <strong>system-wide open-file table</strong> has one entry per open file in the entire system.
+                    It contains the FCB/inode copy, the open count (how many processes have the file open), and other
+                    metadata. When the open count hits 0, the entry is removed.
+                    <br><br>
+                    The <strong>per-process open-file table</strong> has one entry per file <em>per process</em>. It
+                    contains a pointer into the system-wide table, the current file offset for that process, and the
+                    access mode (read/write). This is why two processes reading the same file have independent file
+                    positions.
+                </div>
+            </div>
+
+            <div class="qa" onclick="toggle(this)">
+                <div class="qa-q">
+                    <span>Q6. Consider a free-space bitmap. Each word = 8 bits. The bitmap is:<br>Word 0: 00000000 |
+                        Word 1: 00000000 | Word 2: 00010000<br>What is the first free block number?</span>
+                    <span class="src-tag">Chapter 12 Slides</span>
+                </div>
+                <div class="qa-a">
+                    <strong>✅ ANSWER: Block 19</strong>
+                    <br>Step 1: Words 0 and 1 are 0-value (all bits = 0) → 2 zero-value words.
+                    <br>Step 2: Word 2 = 00010000 → first 1 bit is at position 3 (counting from left, index 3).
+                    <br>Step 3: Block = (bits per word × zero-value words) + offset = (8 × 2) + 3 = <strong>19</strong>
+                </div>
+            </div>
+
+            <div class="qa" onclick="toggle(this)">
+                <div class="qa-q">
+                    <span>Q7. A disk has block size = 4 KB and size = 1 TB. How many bytes does the free-space bitmap
+                        require?</span>
+                    <span class="src-tag">Chapter 12 Slides</span>
+                </div>
+                <div class="qa-a">
+                    <strong>✅ ANSWER: 32 MB</strong>
+                    <br>Number of blocks = 1 TB ÷ 4 KB = 1,099,511,627,776 ÷ 4,096 = <strong>268,435,456 blocks</strong>
+                    <br>Bitmap size = 268,435,456 bits ÷ 8 = <strong>33,554,432 bytes = 32 MB</strong>
+                    <br><br>This shows a practical limitation of the bitmap approach — for large disks, the bitmap
+                    itself requires significant memory to keep it loaded in RAM.
+                </div>
+            </div>
+
+            <div class="qa" onclick="toggle(this)">
+                <div class="qa-q">
+                    <span>Q8. What is the FAT (File Allocation Table) and how does it relate to linked
+                        allocation?</span>
+                    <span class="src-tag">Chapter 12 Core</span>
+                </div>
+                <div class="qa-a">
+                    <strong>✅ ANSWER:</strong>
+                    FAT is a <strong>variation of linked allocation</strong>. In standard linked allocation, each disk
+                    block stores a pointer to the next block — this wastes space and means each block's data area is not
+                    a power of 2.
+                    <br><br>
+                    FAT solves this by moving all the pointers out of the data blocks and into a <em>separate table at
+                        the start of the disk</em>. The FAT has one entry per disk block; each entry is the block number
+                    of the next block in the file chain (or a special EOF marker). The data blocks themselves contain
+                    only file data.
+                    <br><br>
+                    <strong>Advantages over standard linked:</strong> The entire FAT can be cached in memory for speed;
+                    data blocks are full-sized powers of 2; supports faster random access since you can walk the FAT in
+                    memory rather than reading disk blocks to find pointers.
+                </div>
+            </div>
+
+            <div class="qa" onclick="toggle(this)">
+                <div class="qa-q">
+                    <span>Q9. Which allocation method does the UNIX file system (UFS) use? Explain its inode structure
+                        briefly.</span>
+                    <span class="src-tag">Chapter 12 Core</span>
+                </div>
+                <div class="qa-a">
+                    <strong>✅ ANSWER: Indexed allocation (combined scheme)</strong>
+                    UNIX UFS uses an <strong>inode-based indexed allocation</strong>. Each inode contains:
+                    <ul>
+                        <li><strong>12 direct pointers:</strong> Each points directly to a data block — efficient for
+                            small files</li>
+                        <li><strong>1 single indirect pointer:</strong> Points to a block of pointers (one level of
+                            indirection)</li>
+                        <li><strong>1 double indirect pointer:</strong> Points to a block of pointers, each pointing to
+                            another block of pointers</li>
+                        <li><strong>1 triple indirect pointer:</strong> Three levels of indirection — for very large
+                            files</li>
+                    </ul>
+                    This allows small files to be accessed quickly (direct) while supporting very large files through
+                    indirect blocks.
+                </div>
+            </div>
+
+            <div class="qa" onclick="toggle(this)">
+                <div class="qa-q">
+                    <span>Q10. What is the grouping method of free-space management? How does it improve upon the linked
+                        list method?</span>
+                    <span class="src-tag">Chapter 12 Core</span>
+                </div>
+                <div class="qa-a">
+                    <strong>✅ ANSWER:</strong>
+                    In the simple <strong>linked list</strong> method, reading one free block gives you <em>one</em>
+                    free block address (plus a pointer to the next). To get N free block addresses, you must read N
+                    blocks — N disk accesses.
+                    <br><br>
+                    In <strong>grouping</strong>, the first free block stores the addresses of <em>n</em> free blocks.
+                    The last of those n entries points to another group of n free blocks. Reading <em>one disk
+                        block</em> gives you n−1 usable free block addresses immediately — far fewer disk accesses for
+                    bulk allocation.
+                </div>
+            </div>
+
+            <div class="qa" onclick="toggle(this)">
+                <div class="qa-q">
+                    <span>Q11. For indexed allocation: File B has its index block at disk block 25. Block size = 512
+                        bytes. What disk block contains logical address 1200? What is the displacement?</span>
+                    <span class="src-tag">Chapter 12 / OLD_MAJOR</span>
+                </div>
+                <div class="qa-a">
+                    <strong>✅ ANSWER:</strong>
+                    Q = 1200 ÷ 512 = <strong>2</strong> (integer division; 2 × 512 = 1024 ≤ 1200 < 1536=3 × 512) <br>R =
+                        1200 mod 512 = 1200 − 1024 = <strong>176</strong>
+                        <br>Physical Block = <strong>IndexBlock[2]</strong> (read the 3rd entry, index 2, from the index
+                        block at disk block 25)
+                        <br>Displacement = <strong>176 bytes</strong> into that block.
+                        <br><br>Note: You must first read disk block 25 to get the index table, then use the value at
+                        position [2] to get the actual data block address. This is why indexed allocation requires 2
+                        disk accesses (1 for index + 1 for data).
+                </div>
+            </div>
+
+            <div class="qa" onclick="toggle(this)">
+                <div class="qa-q">
+                    <span>Q12. Compare contiguous, linked, and indexed allocation for: (a) external fragmentation, (b)
+                        internal fragmentation, (c) ability to support random/direct access.</span>
+                    <span class="src-tag">Chapter 12 / OLD_MAJOR_SIWAR</span>
+                </div>
+                <div class="qa-a">
+                    <strong>✅ ANSWER:</strong>
+                    <ul>
+                        <li><strong>(a) External fragmentation:</strong> Contiguous = YES (big problem). Linked = No.
+                            Indexed = No.</li>
+                        <li><strong>(b) Internal fragmentation:</strong> Contiguous = Possible (last block may be
+                            partially filled). Linked = Small (pointer space wasted in each block). Indexed = Yes (index
+                            block overhead, and last data block may be partial).</li>
+                        <li><strong>(c) Random/direct access:</strong> Contiguous = Excellent (O(1), start + Q). Linked
+                            = Poor (must traverse chain from start, O(n)). Indexed = Excellent (O(1), look up
+                            IndexBlock[Q]).</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="qa" onclick="toggle(this)">
+                <div class="qa-q">
+                    <span>Q13. What are the in-memory structures used to implement a file system? Name four.</span>
+                    <span class="src-tag">Chapter 12 Core</span>
+                </div>
+                <div class="qa-a">
+                    <strong>✅ ANSWER:</strong>
+                    <ul>
+                        <li><strong>Mount table:</strong> Info about each mounted volume/device currently attached to
+                            the system.</li>
+                        <li><strong>Directory structure cache (dentry cache):</strong> Caches recently accessed
+                            directory entries to avoid repeated disk reads for path lookups.</li>
+                        <li><strong>System-wide open-file table:</strong> One entry per open file in the system;
+                            contains FCB copy and open count.</li>
+                        <li><strong>Per-process open-file table:</strong> One per process; contains pointer to
+                            system-wide entry, current file offset, and access mode.</li>
+                        <li>(Also: <strong>Buffers</strong> that hold file-system blocks being read/written to disk.)
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+        </section>
+
+        <hr>
+
+        <div class="ok">
+            <strong>📚 CHAPTER SUMMARY</strong>
+            Chapter 12 reveals the machinery behind files. On disk, the OS maintains boot blocks, superblocks,
+            directories, and inodes. In memory, it caches these structures for speed. Three allocation strategies
+            (Contiguous, Linked, Indexed) each solve the mapping problem differently — contiguous is fast but rigid,
+            linked is flexible but sequential-only, indexed gives the best of both. Free space is tracked via bitmaps,
+            linked lists, grouping, or counting. The bitmap block-number formula and the address translation formulas
+            for all three methods are essential exam skills.
+        </div>
+
+    </main>
+
+    <!-- ══════════ FOOTER ══════════ -->
+    <footer>
+        <div>CS330 · Operating Systems · Prince Sultan University</div>
+        <div style="margin-top:.4rem;">Prepared for <span>Shoug Alomran</span> · Chapter 12: File-System Implementation
+        </div>
+        <div style="margin-top:.4rem; opacity:.45;">Silberschatz, Galvin & Gagne — Operating System Concepts, 10th
+            Edition</div>
+    </footer>
+
+    <script>
+        function toggleTheme() {
+            const html = document.documentElement;
+            const btn = document.querySelector('.toggle');
+            if (html.getAttribute('data-theme') === 'dark') {
+                html.setAttribute('data-theme', 'light');
+                btn.textContent = '🌙 Dark';
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                btn.textContent = '☀ Light';
+            }
+        }
+
+        function toggle(el) { el.classList.toggle('open'); }
+
+        window.addEventListener('scroll', () => {
+            const s = document.documentElement.scrollTop;
+            const h = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            document.getElementById('bar').style.width = (s / h * 100) + '%';
+        });
+
+        document.querySelectorAll('.subnav a').forEach(a => {
+            a.addEventListener('click', e => {
+                e.preventDefault();
+                const id = a.getAttribute('href').slice(1);
+                document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        });
+    </script>
+</body>
+
+</html>

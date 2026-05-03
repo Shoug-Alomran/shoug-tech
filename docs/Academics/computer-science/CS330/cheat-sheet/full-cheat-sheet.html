@@ -1,0 +1,2051 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CS330 Operating Systems — Cheat Sheet</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Sora:wght@300;400;600;700&display=swap');
+
+        :root[data-theme="dark"] {
+            --bg: #0d0f14;
+            --bg2: #13161e;
+            --bg3: #1a1e2a;
+            --border: #252b3b;
+            --accent: #4f9cf9;
+            --accent2: #7c6ef5;
+            --accent3: #38d9a9;
+            --accent4: #f76c6c;
+            --accent5: #f9a825;
+            --text: #e2e8f0;
+            --text2: #94a3b8;
+            --text3: #64748b;
+            --card: #161b26;
+            --tag-bg: #1e2535;
+            --formula-bg: #0f1520;
+            --formula-border: #2a3550;
+            --highlight: rgba(79, 156, 249, 0.12);
+            --shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+        }
+
+        :root[data-theme="light"] {
+            --bg: #f0f4f8;
+            --bg2: #e8edf5;
+            --bg3: #dde4ef;
+            --border: #c8d3e8;
+            --accent: #2563eb;
+            --accent2: #6d4ed7;
+            --accent3: #059669;
+            --accent4: #dc2626;
+            --accent5: #d97706;
+            --text: #1e2535;
+            --text2: #475569;
+            --text3: #94a3b8;
+            --card: #ffffff;
+            --tag-bg: #e2e8f0;
+            --formula-bg: #f1f5fd;
+            --formula-border: #c5d3ee;
+            --highlight: rgba(37, 99, 235, 0.08);
+            --shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Sora', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            font-size: 13.5px;
+            line-height: 1.55;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        /* ── TOP NAV ── */
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: var(--bg2);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 20px;
+            backdrop-filter: blur(8px);
+        }
+
+        .logo {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            font-size: 15px;
+            color: var(--accent);
+            letter-spacing: 0.5px;
+        }
+
+        .logo span {
+            color: var(--accent2);
+        }
+
+        nav {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        nav a {
+            font-size: 11px;
+            font-weight: 600;
+            text-decoration: none;
+            color: var(--text2);
+            padding: 4px 9px;
+            border-radius: 5px;
+            border: 1px solid var(--border);
+            transition: all 0.2s;
+            letter-spacing: 0.3px;
+        }
+
+        nav a:hover {
+            color: var(--accent);
+            border-color: var(--accent);
+            background: var(--highlight);
+        }
+
+        .toggle-btn {
+            background: var(--bg3);
+            border: 1px solid var(--border);
+            color: var(--text);
+            border-radius: 8px;
+            padding: 6px 14px;
+            cursor: pointer;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            font-weight: 600;
+            transition: all 0.2s;
+            letter-spacing: 0.5px;
+        }
+
+        .toggle-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        /* ── LAYOUT ── */
+        main {
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: 20px 18px 60px;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 14px;
+        }
+
+        .grid-auto {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 14px;
+        }
+
+        .span2 {
+            grid-column: span 2;
+        }
+
+        .span3 {
+            grid-column: span 3;
+        }
+
+        /* ── SECTION HEADER ── */
+        .sec-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin: 28px 0 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sec-title::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+
+        /* ── CARD ── */
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 14px 16px;
+            box-shadow: var(--shadow);
+            transition: border-color 0.2s;
+        }
+
+        .card:hover {
+            border-color: var(--accent2);
+        }
+
+        .card-title {
+            font-weight: 700;
+            font-size: 12px;
+            color: var(--accent);
+            margin-bottom: 10px;
+            font-family: 'JetBrains Mono', monospace;
+            letter-spacing: 0.4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .card-title .dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--accent);
+        }
+
+        .card-title .dot.g {
+            background: var(--accent3);
+        }
+
+        .card-title .dot.p {
+            background: var(--accent2);
+        }
+
+        .card-title .dot.r {
+            background: var(--accent4);
+        }
+
+        .card-title .dot.y {
+            background: var(--accent5);
+        }
+
+        /* ── LIST STYLES ── */
+        ul.cs {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        ul.cs li {
+            display: flex;
+            gap: 8px;
+            align-items: flex-start;
+        }
+
+        ul.cs li::before {
+            content: '›';
+            color: var(--accent3);
+            font-weight: 700;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        ul.cs li.warn::before {
+            color: var(--accent4);
+            content: '!';
+        }
+
+        ul.cs li.tip::before {
+            color: var(--accent5);
+            content: '★';
+        }
+
+        b,
+        strong {
+            color: var(--text);
+            font-weight: 700;
+        }
+
+        .hl {
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .hl2 {
+            color: var(--accent3);
+            font-weight: 600;
+        }
+
+        .hl3 {
+            color: var(--accent4);
+            font-weight: 600;
+        }
+
+        .hl4 {
+            color: var(--accent5);
+            font-weight: 600;
+        }
+
+        .hl5 {
+            color: var(--accent2);
+            font-weight: 600;
+        }
+
+        /* ── FORMULA BLOCKS ── */
+        .formula {
+            background: var(--formula-bg);
+            border: 1px solid var(--formula-border);
+            border-left: 3px solid var(--accent);
+            border-radius: 6px;
+            padding: 8px 12px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: var(--accent3);
+            margin: 6px 0;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        .formula.purple {
+            border-left-color: var(--accent2);
+            color: var(--accent2);
+        }
+
+        .formula.red {
+            border-left-color: var(--accent4);
+            color: var(--accent4);
+        }
+
+        .formula.yellow {
+            border-left-color: var(--accent5);
+            color: var(--accent5);
+        }
+
+        /* ── TABLE ── */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+
+        th {
+            background: var(--bg3);
+            color: var(--accent);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            padding: 6px 10px;
+            text-align: left;
+            border-bottom: 2px solid var(--border);
+        }
+
+        td {
+            padding: 5px 10px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text2);
+            vertical-align: top;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background: var(--highlight);
+        }
+
+        td:first-child {
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        /* ── GANTT / TIMELINE ── */
+        .gantt {
+            display: flex;
+            gap: 2px;
+            margin: 6px 0;
+            align-items: stretch;
+            flex-wrap: wrap;
+        }
+
+        .gantt-block {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 4px 6px;
+            border-radius: 4px;
+            min-width: 28px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .gantt-block .lbl {
+            font-size: 9px;
+            opacity: 0.75;
+            margin-top: 1px;
+        }
+
+        .gb1 {
+            background: #2563eb;
+        }
+
+        .gb2 {
+            background: #7c3aed;
+        }
+
+        .gb3 {
+            background: #059669;
+        }
+
+        .gb4 {
+            background: #dc2626;
+        }
+
+        .gb5 {
+            background: #d97706;
+        }
+
+        /* ── TAG ── */
+        .tag {
+            display: inline-block;
+            background: var(--tag-bg);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 1px 7px;
+            font-size: 10px;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--text2);
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
+
+        .tag.blue {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: rgba(79, 156, 249, 0.08);
+        }
+
+        .tag.green {
+            border-color: var(--accent3);
+            color: var(--accent3);
+            background: rgba(56, 217, 169, 0.08);
+        }
+
+        .tag.red {
+            border-color: var(--accent4);
+            color: var(--accent4);
+            background: rgba(247, 108, 108, 0.08);
+        }
+
+        .tag.yellow {
+            border-color: var(--accent5);
+            color: var(--accent5);
+            background: rgba(249, 168, 37, 0.08);
+        }
+
+        .tag.purple {
+            border-color: var(--accent2);
+            color: var(--accent2);
+            background: rgba(124, 110, 245, 0.08);
+        }
+
+        /* ── Q&A SECTION ── */
+        .qa-item {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .qa-q {
+            background: var(--bg3);
+            padding: 10px 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+            transition: background 0.2s;
+        }
+
+        .qa-q:hover {
+            background: var(--highlight);
+        }
+
+        .qa-q .qnum {
+            color: var(--accent2);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            font-weight: 700;
+            margin-right: 8px;
+        }
+
+        .qa-a {
+            padding: 10px 14px;
+            background: var(--card);
+            border-top: 1px solid var(--border);
+            display: none;
+            color: var(--text2);
+        }
+
+        .qa-a.open {
+            display: block;
+        }
+
+        .qa-arrow {
+            font-size: 10px;
+            color: var(--text3);
+            transition: transform 0.2s;
+        }
+
+        .qa-arrow.open {
+            transform: rotate(180deg);
+        }
+
+        /* ── BADGE ── */
+        .badge {
+            display: inline-block;
+            border-radius: 20px;
+            padding: 2px 8px;
+            font-size: 10px;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .badge.easy {
+            background: rgba(56, 217, 169, 0.15);
+            color: var(--accent3);
+        }
+
+        .badge.med {
+            background: rgba(249, 168, 37, 0.15);
+            color: var(--accent5);
+        }
+
+        .badge.hard {
+            background: rgba(247, 108, 108, 0.15);
+            color: var(--accent4);
+        }
+
+        /* ── MNEMONIC ── */
+        .mnemonic {
+            background: rgba(124, 110, 245, 0.08);
+            border: 1px dashed var(--accent2);
+            border-radius: 6px;
+            padding: 7px 11px;
+            margin: 6px 0;
+            font-style: italic;
+            font-size: 12px;
+            color: var(--accent2);
+        }
+
+        /* ── MISC ── */
+        .divider {
+            height: 1px;
+            background: var(--border);
+            margin: 6px 0;
+        }
+
+        .small {
+            font-size: 11px;
+            color: var(--text3);
+        }
+
+        .mt4 {
+            margin-top: 4px;
+        }
+
+        .mt8 {
+            margin-top: 8px;
+        }
+
+        .row {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            align-items: flex-start;
+        }
+
+        .col {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            flex: 1;
+            min-width: 120px;
+        }
+
+        @media(max-width:900px) {
+
+            .grid-2,
+            .grid-3 {
+                grid-template-columns: 1fr;
+            }
+
+            .span2,
+            .span3 {
+                grid-column: span 1;
+            }
+
+            nav {
+                display: none;
+            }
+        }
+
+        @media(max-width:600px) {
+            .grid-auto {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div class="logo">CS<span>330</span> — Operating Systems</div>
+        <nav>
+            <a href="#ch1">Intro</a>
+            <a href="#ch2">OS Struct</a>
+            <a href="#ch3">Processes</a>
+            <a href="#ch4">Threads</a>
+            <a href="#ch5">Scheduling</a>
+            <a href="#ch6">Sync</a>
+            <a href="#ch8">Memory</a>
+            <a href="#ch9">Virtual</a>
+            <a href="#ch11">Files</a>
+            <a href="#ch12">FS Impl</a>
+            <a href="#exam">Exam Q&amp;A</a>
+        </nav>
+        <button class="toggle-btn" onclick="toggleTheme()">☀ / ☾</button>
+    </header>
+
+    <main>
+
+        <!-- ═══════════════════════════════════════════════════ CH1 ═══ -->
+        <div class="sec-title" id="ch1">📌 Chapter 1 — Introduction &amp; Architecture</div>
+        <div class="grid-3">
+
+            <div class="card">
+                <div class="card-title"><span class="dot"></span>OS Roles</div>
+                <ul class="cs">
+                    <li><b>Resource Allocator</b> — manages CPU, mem, I/O; decides conflicts</li>
+                    <li><b>Control Program</b> — prevents errors &amp; improper use</li>
+                    <li><b>Kernel</b> = one program running at all times</li>
+                    <li class="tip">Kernel mode bit = <span class="hl">0</span> | User mode bit = <span
+                            class="hl">1</span></li>
+                    <li class="warn">Privileged instructions → <b>kernel mode only</b></li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <div class="card-title"><span class="dot g"></span>Interrupt Mechanics</div>
+                <ul class="cs">
+                    <li><b>Interrupt vector</b> = table of ISR addresses</li>
+                    <li><b>Trap/Exception</b> = software-generated interrupt (error or syscall)</li>
+                    <li>OS saves state → runs ISR → restores state &amp; resumes</li>
+                    <li><b>Polling</b> vs <b>Vectored</b> interrupt detection</li>
+                    <li class="tip">DMA: one interrupt per <b>block</b>, not per byte</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <div class="card-title"><span class="dot p"></span>Storage Hierarchy</div>
+                <table>
+                    <tr>
+                        <th>Level</th>
+                        <th>Size</th>
+                        <th>Speed</th>
+                        <th>Volatile?</th>
+                    </tr>
+                    <tr>
+                        <td>Registers</td>
+                        <td>~8B</td>
+                        <td>0.3 ns</td>
+                        <td>Yes</td>
+                    </tr>
+                    <tr>
+                        <td>Cache</td>
+                        <td>MB</td>
+                        <td>1 ns</td>
+                        <td>Yes</td>
+                    </tr>
+                    <tr>
+                        <td>RAM</td>
+                        <td>GB</td>
+                        <td>100 ns</td>
+                        <td>Yes</td>
+                    </tr>
+                    <tr>
+                        <td>SSD</td>
+                        <td>TB</td>
+                        <td>~100 µs</td>
+                        <td>No</td>
+                    </tr>
+                    <tr>
+                        <td>HDD</td>
+                        <td>TB</td>
+                        <td>~8 ms</td>
+                        <td>No</td>
+                    </tr>
+                </table>
+                <div class="mnemonic">Faster ↑ = Smaller + More Expensive + Volatile</div>
+            </div>
+
+            <div class="card">
+                <div class="card-title"><span class="dot r"></span>Multiprocessor Types</div>
+                <ul class="cs">
+                    <li><b>Asymmetric</b> — master assigns work to slaves (large systems)</li>
+                    <li><b>Symmetric (SMP)</b> — all CPUs equal, self-scheduling (most common)</li>
+                </ul>
+                <div class="divider"></div>
+                <div class="card-title mt4"><span class="dot y"></span>Multiprogramming vs Timesharing</div>
+                <ul class="cs">
+                    <li><b>Multiprogramming</b> — keeps CPU busy by switching on I/O waits</li>
+                    <li><b>Timesharing</b> — rapid switching so users can interact (interactive)</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <div class="card-title"><span class="dot"></span>Bootstrap / Boot Sequence</div>
+                <ul class="cs">
+                    <li>Stored in <b>ROM/EPROM</b> (firmware)</li>
+                    <li>Order: <span class="hl">BIOS → Boot Loader → Kernel → Apps</span></li>
+                    <li>Initializes CPU registers, device controllers, memory</li>
+                </ul>
+                <div class="divider"></div>
+                <div class="card-title mt4"><span class="dot g"></span>Timer</div>
+                <ul class="cs">
+                    <li>Prevents CPU monopolization — decrements counter → interrupt at 0</li>
+                    <li>Set before scheduling each process</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <div class="card-title"><span class="dot p"></span>Dual-Mode Operation</div>
+                <div class="formula">User mode (bit=1) → syscall → Kernel mode (bit=0)
+                    ← return ←</div>
+                <ul class="cs mt4">
+                    <li>Mode bit provided by <b>hardware</b></li>
+                    <li>Privileged: set timer, access I/O, manage interrupts, halt CPU</li>
+                    <li class="warn">Syscall changes mode to kernel; return resets to user</li>
+                </ul>
+            </div>
+
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════ CH2 ═══ -->
+        <div class="sec-title" id="ch2">🏗 Chapter 2 — OS Structure &amp; Services</div>
+        <div class="grid-3">
+
+            <div class="card">
+                <div class="card-title"><span class="dot"></span>OS Structures Compared</div>
+                <table>
+                    <tr>
+                        <th>Model</th>
+                        <th>Key Trait</th>
+                        <th>Pro</th>
+                        <th>Con</th>
+                    </tr>
+                    <tr>
+                        <td>Monolithic</td>
+                        <td>All in kernel space</td>
+                        <td>Fast</td>
+                        <td>Hard to maintain</td>
+                    </tr>
+                    <tr>
+                        <td>Layered</td>
+                        <td>Abstraction levels</td>
+                        <td>Easy debug</td>
+                        <td>Slow (many calls)</td>
+                    </tr>
+                    <tr>
+                        <td>Microkernel</td>
+                        <td>Min kernel + user services</td>
+                        <td>Secure, portable</td>
+                        <td>IPC overhead</td>
+                    </tr>
+                    <tr>
+                        <td>Modular</td>
+                        <td>Loadable modules</td>
+                        <td>Flexible</td>
+                        <td>—</td>
+                    </tr>
+                    <tr>
+                        <td>Hybrid</td>
+                        <td>Mix of above</td>
+                        <td>Performance</td>
+                        <td>Complexity</td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="card">
+                <div class="card-title"><span class="dot g"></span>System Calls</div>
+                <ul class="cs">
+                    <li>Interface between running program and OS</li>
+                    <li>Accessed via <b>API</b> (Win32 / POSIX / Java)</li>
+                    <li>Each call has an <b>index number</b> in syscall table</li>
+                </ul>
+                <div class="divider"></div>
+                <b>6 Categories:</b>
+                <ul class="cs mt4">
+                    <li><span class="tag blue">Process</span> fork, exec, exit, wait</li>
+                    <li><span class="tag green">File</span> open, read, write, close</li>
+                    <li><span class="tag yellow">Device</span> request, release, read, write</li>
+                    <li><span class="tag purple">Info</span> get/set time, attributes</li>
+                    <li><span class="tag red">Protection</span> get/set permissions</li>
+                    <li><span class="tag">Comms</span> send, receive, create connection</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <div class="card-title"><span class="dot p"></span>Parameter Passing Methods</div>
+                <ul class="cs">
+                    <li><b>Registers</b> — simplest, limited by register count</li>
+                    <li><b>Memory block/table</b> — address passed in register (Linux, Solaris)</li>
+                    <li><b>Stack</b> — pushed by program, popped by OS</li>
+                </ul>
+                <div class="divider"></div>
+                <div class="card-title mt4"><span class="dot y"></span>Key Distinctions</div>
+                <ul class="cs">
+                    <li><b>printf()</b> = library call (NOT a syscall)</li>
+                    <li><b>write()</b> = actual syscall beneath printf</li>
+                    <li>POSIX API = Unix/Linux/macOS system interface</li>
+                </ul>
+            </div>
+
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════ CH3 ═══ -->
+        <div class="sec-title" id="ch3">⚙ Chapter 3 — Processes</div>
+        <div class="grid-3">
+
+            <div class="card">
+                <div class="card-title"><span class="dot"></span>Process Memory Layout</div>
+                <ul class="cs">
+                    <li><b>Text</b> — program code (read-only)</li>
+                    <li><b>Data</b> — global/static variables (initialized)</li>
+                    <li><b>Heap</b> — dynamic allocation (malloc), grows ↑</li>
+                    <li><b>Stack</b> — local vars, return addresses, params, grows ↓</li>
+                </ul>
+                <div class="formula">Stack ↓ .............. Heap ↑
+                    Data section | Text section</div>
+            </div>
+
+            <div class="card">
+                <div class="card-title"><span class="dot g"></span>Process States</div>
+                <div class="formula">New → Ready → Running → Waiting → Ready
+                    ↓
+                    Terminated</div>
+                <ul class="cs mt4">
+                    <li><span class="tag blue">New</span> being created</li>
+                    <li><span class="tag green">Ready</span> waiting for CPU</li>
+                    <li><span class="tag yellow">Running</span> executing on CPU</li>
+                    <li><span class="tag purple">Waiting</span> blocked on I/O/event</li>
+                    <li><span class="tag red">Terminated</span> done</li>
+                    <li class="warn">WAITING → RUNNING is <b>NOT</b> a valid transition!</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <div class="card-title"><span class="dot p"></span>PCB Contents</div>
+                <ul class="cs">
+                    <li>Process state, PID</li>
+                    <li>Program counter (PC)</li>
+                    <li>CPU registers</li>
+                    <li>Scheduling info (priority, queue pointers)</li>
+                    <li>Memory-management info</li>
+                    <li>Accounting info (CPU used, time limits)</li>
+                    <li>I/O status (open files, devices)</li>
+                </ul>
+                <div class="small mt4">PCB saved/restored on every context switch</div>
+            </div>
+
+            <div class="card">
+                <div class="card-title"><span class="dot r"></span>Schedulers</div>
+                <table>
+                    <tr>
+                        <th>Scheduler</th>
+                        <th>Selects</th>
+                        <th>Frequency</th>
+                    </tr>
+                    <tr>
+                        <td>Long-term (Job)</td>
+                        <td>Jobs → ready queue</td>
+                        <td>Very slow (mins)</td>
+                    </tr>
+                    <tr>
+                        <td>Short-term (CPU)</td>
+                        <td>Ready → CPU</td>
+                        <td>Every few ms</td>
+                    </tr>
+                    <tr>
+                        <td>Medium-term (Swap)</td>
+                        <td>Swap in/out</td>
+                        <td>Intermediate</td>
+                    </tr>
+                </table>
+                <ul class="cs mt4">
+                    <li><b>I/O-bound</b> — many short CPU bursts</li>
+                    <li><b>CPU-bound</b> — few long CPU bursts</li>
+                    <li class="tip">Long-term controls <b>degree of multiprogramming</b></li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <div class="card-title"><span class="dot y"></span>fork() / exec() Rules</div>
+                <ul class="cs">
+                    <li>fork() returns <span class="hl">0</span> to child, <span class="hl">child PID</span> to parent,
+                        <span class="hl3">−1</span> on error</li>
+                    <li>Child gets <b>copy</b> of parent's address space (independent)</li>
+                    <li>Stack, Heap <span class="hl3">NOT</span> shared — shared memory segments <b>are</b></li>
+                    <li>exec() replaces child's address space with new program</li>
+                    <li class="warn">wait() prevents <b>zombie</b>; no wait() = zombie process</li>
+                    <li class="warn">Parent dies without wait() = <b>orphan</b> process</li>
+                </ul>
+                <div class="mnemonic">n forks in loop = 2ⁿ total processes</div>
+            </div>
+
+            <div class="card">
+                <div class="card-title"><span class="dot"></span>IPC Models</div>
+                <div class="row">
+                    <div class="col">
+                        <b class="hl">Shared Memory</b>
+                        <ul class="cs">
+                            <li>Faster (no kernel intervention)</li>
+                            <li>User controls synchronization</li>
+                            <li>Good for large data</li>
+                            <li class="warn">Race condition risk</li>
+                        </ul>
+                    </div>
+                    <div class="col">
+                        <b class="hl5">Message Passing</b>
+                        <ul class="cs">
+                            <li>Easier to implement</li>
+                            <li>OS manages transfers</li>
+                            <li>Good for small data</li>
+                            <li class="warn">Slower (syscall overhead)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════ CH4 ═══ -->
+        <div class="sec-title" id="ch4">🧵 Chapter 4 — Threads</div>
+        <div class="grid-3">
+
+            <div class="card">
+                <div class="card-title"><span class="dot"></span>Thread vs Process</div>
+                <table>
+                    <tr>
+                        <th>Resource</th>
+                        <th>Shared?</th>
+                    </tr>
+                    <tr>
+                        <td>Code section</td>
+                        <td><span class="tag green">✓ Shared</span></td>
+                    </tr>
+                    <tr>
+                        <td>Data section</td>
+                        <td><span class="tag green">✓ Shared</span></td>
+                    </tr>
+                    <tr>
+                        <td>OS resources (files)</td>
+                        <td><span class="tag green">✓ Shared</span></td>
+                    </tr>
+                    <tr>
+                        <td>Program counter</td>
+                        <td><span class="tag red">✗ Own</span></td>
+                    </tr>
+                    <tr>
+                        <td>Register set</td>
+                        <td><span class="tag red">✗ Own</span></td>
+                    </tr>
+                    <tr>
+                        <td>Stack</td>
+                        <td><span class="tag red">✗ Own</span></td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="card">
+                <div class="card-title"><span class="dot g"></span>Threading Models</div>
+                <table>
+                    <tr>
+                        <th>Model</th>
+                        <th>Mapping</th>
+                        <th>Concurrency</th>
+                        <th>Examples</th>
+                    </tr>
+                    <tr>
+                        <td>Many-to-One</td>
+                        <td>N user → 1 kernel</td>
+                        <td>No parallel</td>
+                        <td>Green Threads</td>
+                    </tr>
+                    <tr>
+                        <td>One-to-One</td>
+                        <td>1 user → 1 kernel</td>
+                        <td>True parallel</td>
+                        <td>Windows, Linux</td>
+                    </tr>
+                    <tr>
+                        <td>Many-to-Many</td>
+                        <td>N user → M kernel</td>
+                        <td>Flexible</td>
+                        <td>Solaris &lt;v9</td>
+                    </tr>
+                    <tr>
+                        <td>Two-Level</td>
+                        <td>M:M + bound</td>
+                        <td>Best</td>
+                        <td>HP-UX, IRIX</td>
+                    </tr>
+                </table>
+                <ul class="cs mt4">
+                    <li class="warn">Many-to-One: <b>one blocking call blocks all threads</b></li>
+                    <li class="warn">One-to-One: overhead from many kernel threads</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <div class="card-title"><span class="dot p"></span>Thread Benefits</div>
+                <ul class="cs">
+                    <li><b>Responsiveness</b> — keep running if part is blocked</li>
+                    <li><b>Resource Sharing</b> — threads share process memory</li>
+                    <li><b>Economy</b> — faster to create/switch than processes</li>
+                    <li><b>Scalability</b> — exploit multicore CPUs</li>
+                </ul>
+                <div class="divider"></div>
+                <b>Parallelism Types:</b>
+                <ul class="cs mt4">
+                    <li><b>Data parallelism</b> — same op on different data subsets</li>
+                    <li><b>Task parallelism</b> — different ops on (possibly same) data</li>
+                </ul>
+                <div class="mnemonic">Solaris: creating a process is 30× slower than a thread</div>
+            </div>
+
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════ CH5 ═══ -->
+        <div class="sec-title" id="ch5">📅 Chapter 5 — CPU Scheduling</div>
+        <div class="grid-3">
+
+            <div class="card">
+                <div class="card-title"><span class="dot"></span>Scheduling Criteria</div>
+                <ul class="cs">
+                    <li><b>Maximize</b>: CPU Utilization, Throughput</li>
+                    <li><b>Minimize</b>: Turnaround, Waiting, Response time</li>
+                </ul>
+                <div class="formula">Turnaround Time = Finish - Arrival
+                    Waiting Time = Turnaround - Burst
+                    Response Time = First Response - Arrival</div>
+                <ul class="cs mt4">
+                    <li>Preemptive: 2, 3 (running→ready, waiting→ready)</li>
+                    <li>Non-preemptive: 1, 4 (running→waiting, terminates)</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <div class="card-title"><span class="dot g"></span>Algorithm Comparison</div>
+                <table>
+                    <tr>
+                        <th>Algorithm</th>
+                        <th>Preempt?</th>
+                        <th>Starvation?</th>
+                        <th>Optimal?</th>
+                    </tr>
+                    <tr>
+                        <td>FCFS</td>
+                        <td>No</td>
+                        <td>No</td>
+                        <td>No (convoy effect)</td>
+                    </tr>
+                    <tr>
+                        <td>SJF (non-pre)</td>
+                        <td>No</td>
+                        <td>Yes</td>
+                        <td>Min avg WT*</td>
+                    </tr>
+                    <tr>
+                        <td>SRTF (pre-SJF)</td>
+                        <td>Yes</td>
+                        <td>Yes</td>
+                        <td>Min avg WT</td>
+                    </tr>
+                    <tr>
+                        <td>Priority</td>
+                        <td>Both</td>
+                        <td>Yes</td>
+                        <td>No</td>
+                    </tr>
+                    <tr>
+                        <td>Round Robin</td>
+                        <td>Yes</td>
+                        <td>No</td>
+                        <td>No</td>
+                    </tr>
+                    <tr>
+                        <td>MLQ/MLFQ</td>
+                        <td>Both</td>
+                        <td>Possible</td>
+                        <td>—</td>
+                    </tr>
+                </table>
+                <div class="small mt4">*SJF = optimal for minimum average waiting time given all arrivals at t=0</div>
+            </div>
+
+            <div class="card">
+                <div class="card-title"><span class="dot p"></span>Round Robin Key Rules</div>
+                <ul class="cs">
+                    <li>Time quantum q → preempt, add to <b>end</b> of ready queue</li>
+                    <li>q large → degenerates to <b>FCFS</b></li>
+                    <li>q small → high context switch overhead</li>
+                    <li class="tip">Rule: 80% of CPU bursts should be &lt; q</li>
+                    <li>Higher avg turnaround than SJF but <b>better response</b></li>
+                </ul>
+                <div class="formula purple">n processes, quantum q:
+                    Max wait = (n-1) × q</div>
+            </div>
+
+            <div class="card span2">
+                <div class="card-title"><span class="dot r"></span>Scheduling Calculation Template</div>
+                <div class="formula">Given: Process, Arrival(AT), Burst(BT), Priority
+
+                    Step 1: Draw Gantt chart using chosen algorithm
+                    Step 2: Waiting Time (WT) = Start Time - Arrival Time (or TAT - BT)
+                    Step 3: Turnaround (TAT) = Finish Time - Arrival Time
+                    Step 4: Avg WT = Σ WT / n Avg TAT = Σ TAT / n
+
+                    For Preemptive SJF (SRTF): at each arrival check if new process has shorter remaining time → preempt
+                    For Priority: smaller number = higher priority (unless stated otherwise)
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title"><span class="dot y"></span>Priority + Starvation</div>
+                <ul class="cs">
+                    <li><b>Starvation</b> — low-priority process never runs</li>
+                    <li><b>Aging</b> — gradually increase priority of waiting processes</li>
+                    <li>MLQ — separate queues per priority level; no movement between</li>
+                    <li>MLFQ — processes can move between queues (aging-like)</li>
+                </ul>
+            </div>
+
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════ CH6 ═══ -->
+        <div class="sec-title" id="ch6">🔒 Chapter 6 — Process Synchronization</div>
+        <div class="grid-3">
+
+            <div class="card">
+                <div class="card-title"><span class="dot"></span>Critical Section Requirements</div>
+                <ul class="cs">
+                    <li><b>Mutual Exclusion</b> — only one process in CS at a time</li>
+                    <li><b>Progress</b> — if CS empty, a waiting process must be able to enter</li>
+                    <li><b>Bounded Waiting</b> — limit on how many times others enter before you</li>
+                </ul>
+                <div class="divider"></div>
+                <b>Structure:</b>
+                <div class="formula">entry section
+                    critical section
+                    exit section
+                    remainder section</div>
+            </div>
+
+            <div class="card">
+                <div class="card-title"><span class="dot g"></span>Semaphore Operations</div>
+                <div class="formula">wait(S): S--; if S < 0 → block process signal(S): S++; if S ≤ 0 → wakeup one
+                        blocked process</div>
+                        <ul class="cs mt4">
+                            <li><b>Binary semaphore</b> (mutex) — 0 or 1; provides mutual exclusion</li>
+                            <li><b>Counting semaphore</b> — unrestricted range; tracks resource count</li>
+                            <li>Init to 1 → mutex lock</li>
+                            <li>Init to 0 → ordering/synchronization (P1 signal → P2 runs)</li>
+                            <li>Init to n → bounded buffer with n slots</li>
+                        </ul>
+                </div>
+
+                <div class="card">
+                    <div class="card-title"><span class="dot p"></span>Peterson's Solution</div>
+                    <div class="formula">Shared: int turn; bool flag[2];
+
+                        Process Pi:
+                        flag[i] = true; turn = j;
+                        while (flag[j] && turn == j); // busy wait
+                        /* critical section */
+                        flag[i] = false;</div>
+                    <ul class="cs mt4">
+                        <li>Satisfies all 3 CS requirements for <b>2 processes</b></li>
+                        <li class="warn">Busy waits — wastes CPU</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <div class="card-title"><span class="dot r"></span>Classic Problems</div>
+                    <b>Bounded Buffer:</b>
+                    <div class="formula">mutex=1, full=0, empty=n
+                        Producer: wait(empty)→wait(mutex)→add→signal(mutex)→signal(full)
+                        Consumer: wait(full)→wait(mutex)→remove→signal(mutex)→signal(empty)</div>
+                    <b class="mt8">Readers-Writers:</b>
+                    <div class="formula">mutex=1, rw_mutex=1, read_count=0
+                        1st reader: wait(rw_mutex) | last reader: signal(rw_mutex)
+                        Writer: wait(rw_mutex) → write → signal(rw_mutex)</div>
+                    <b class="mt8">Dining Philosophers:</b>
+                    <div class="formula">chopstick[5] = {1,1,1,1,1} (semaphores)
+                        wait(chop[i]); wait(chop[(i+1)%5]); eat;
+                        signal(chop[i]); signal(chop[(i+1)%5]);</div>
+                    <ul class="cs mt4">
+                        <li class="warn">Naive approach → <b>deadlock</b> (all pick left chopstick)</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <div class="card-title"><span class="dot y"></span>Deadlock Conditions (ALL must hold)</div>
+                    <ul class="cs">
+                        <li><b>Mutual Exclusion</b> — resource held exclusively</li>
+                        <li><b>Hold and Wait</b> — holding one, waiting for another</li>
+                        <li><b>No Preemption</b> — resource not taken away</li>
+                        <li><b>Circular Wait</b> — P0→R0→P1→R1→…→Pn→P0</li>
+                    </ul>
+                    <div class="mnemonic">Mnemonic: <b>M</b>any <b>H</b>ungry <b>N</b>aughty <b>C</b>ats</div>
+                    <div class="divider"></div>
+                    <b>Starvation</b> — process never leaves semaphore queue (≠ deadlock)<br>
+                    <b>Busy wait</b> — spinning in while loop, wasting CPU
+                </div>
+
+                <div class="card">
+                    <div class="card-title"><span class="dot"></span>Monitors</div>
+                    <ul class="cs">
+                        <li>High-level sync construct — only <b>one process active</b> inside at a time</li>
+                        <li>No explicit locking needed</li>
+                        <li><b>Condition variables</b>: x.wait() suspends, x.signal() resumes one</li>
+                        <li>x.signal() with no waiting = <b>no effect</b> (unlike semaphore)</li>
+                    </ul>
+                    <div class="formula purple">Signal-and-wait: signaler waits for signaled to leave
+                        Signal-and-continue: signaled waits for signaler to leave</div>
+                </div>
+
+            </div>
+
+            <!-- ═══════════════════════════════════════════════════ CH8 ═══ -->
+            <div class="sec-title" id="ch8">💾 Chapter 8 — Main Memory Management</div>
+            <div class="grid-3">
+
+                <div class="card">
+                    <div class="card-title"><span class="dot"></span>Address Binding Stages</div>
+                    <ul class="cs">
+                        <li><b>Compile time</b> — absolute addresses; must recompile if location changes</li>
+                        <li><b>Load time</b> — relocatable code; bind when loaded</li>
+                        <li><b>Execution time</b> — bind at runtime; needs MMU hardware support</li>
+                    </ul>
+                    <div class="divider"></div>
+                    <ul class="cs">
+                        <li><b>Logical addr</b> (virtual) — generated by CPU</li>
+                        <li><b>Physical addr</b> — seen by memory unit</li>
+                        <li>Logical = Physical at compile/load time; differ at execution time</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <div class="card-title"><span class="dot g"></span>Fragmentation</div>
+                    <table>
+                        <tr>
+                            <th>Type</th>
+                            <th>Where</th>
+                            <th>Solution</th>
+                        </tr>
+                        <tr>
+                            <td>External</td>
+                            <td>Free space scattered</td>
+                            <td>Compaction / Paging / Segmentation</td>
+                        </tr>
+                        <tr>
+                            <td>Internal</td>
+                            <td>Inside allocated block</td>
+                            <td>Smaller page size</td>
+                        </tr>
+                    </table>
+                    <div class="divider"></div>
+                    <b>Allocation Policies:</b>
+                    <ul class="cs mt4">
+                        <li><b>First-fit</b> — first hole big enough (fastest)</li>
+                        <li><b>Best-fit</b> — smallest adequate hole (least waste, slow)</li>
+                        <li><b>Worst-fit</b> — largest hole (generally worst, largest leftover)</li>
+                    </ul>
+                    <div class="mnemonic">First-fit = fastest speed; Best-fit = best space utilization</div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title"><span class="dot p"></span>Paging Address Translation</div>
+                    <div class="formula">Logical Address: [Page# p | Offset d]
+                        m bits total: p = m-n bits, d = n bits
+
+                        Page size = 2ⁿ bytes → offset = n bits
+                        Num pages = logical space / page size = 2^p
+
+                        Physical Address = Frame# × page_size + offset
+                        = frame# concatenated with d</div>
+                    <ul class="cs mt4">
+                        <li>Page table stored in memory; <b>PTBR</b> points to it</li>
+                        <li>Without TLB: <b>2 memory accesses</b> per reference</li>
+                        <li>Internal fragmentation possible; <b>no external fragmentation</b></li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <div class="card-title"><span class="dot r"></span>TLB &amp; EAT Formulas</div>
+                    <div class="formula red">EAT = h×(c+m) + (1-h)×(c+2m)
+
+                        h = TLB hit ratio
+                        m = memory access time
+                        c = TLB access time
+
+                        TLB hit → access TLB + access memory = c + m
+                        TLB miss → access TLB + page table + memory = c + 2m</div>
+                    <div class="formula mt8">Example: h=0.9, c=10ns, m=100ns
+                        EAT = 0.9×(10+100) + 0.1×(10+100+100)
+                        = 0.9×110 + 0.1×210 = 99 + 21 = 120 ns</div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title"><span class="dot y"></span>Segmentation</div>
+                    <div class="formula">Logical Address: &lt;segment#, offset&gt;
+                        Segment Table entry: {base, limit}
+
+                        Physical Address = base[s] + d
+                        Valid if: d < limit[s]; else → trap (illegal access)</div>
+                            <ul class="cs mt4">
+                                <li>Matches programmer's view (functions, arrays, stack)</li>
+                                <li>External fragmentation; no internal fragmentation</li>
+                                <li>Can share segments between processes (same base+limit)</li>
+                            </ul>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title"><span class="dot"></span>Paging Address Bits — Quick Calc</div>
+                        <div class="formula">Given: N pages, page size P bytes
+                            → Logical bits = log₂(N) + log₂(P)
+                            → Offset bits = log₂(P) (= log₂(frame_size))
+                            → Page# bits = log₂(N)
+
+                            Given: F frames, frame size P bytes
+                            → Physical bits = log₂(F) + log₂(P)</div>
+                        <div class="formula yellow mt8">Example: 256 pages, 4KB page, 64 frames
+                            Page# = log₂(256) = 8 bits
+                            Offset = log₂(4096) = 12 bits
+                            Logical = 20 bits
+                            Physical = log₂(64)+12 = 6+12 = 18 bits</div>
+                    </div>
+
+                </div>
+
+                <!-- ═══════════════════════════════════════════════════ CH9 ═══ -->
+                <div class="sec-title" id="ch9">🌐 Chapter 9 — Virtual Memory</div>
+                <div class="grid-3">
+
+                    <div class="card">
+                        <div class="card-title"><span class="dot"></span>Demand Paging</div>
+                        <ul class="cs">
+                            <li>Load pages <b>only when needed</b> (lazy swapper)</li>
+                            <li>Valid-invalid bit: <span class="hl2">v</span>=in memory, <span class="hl3">i</span>=on
+                                disk</li>
+                            <li>Access to <b>i</b> page → <b>page fault trap</b></li>
+                        </ul>
+                        <b>Page Fault Steps:</b>
+                        <div class="formula">1. Check internal table (PCB) → valid reference?
+                            2. No → abort; yes but not in memory → page it in
+                            3. Get free frame
+                            4. Swap page in from disk
+                            5. Update page table (valid bit = v)
+                            6. Restart the faulting instruction</div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title"><span class="dot g"></span>EAT with Page Faults</div>
+                        <div class="formula red">EAT = (1-p) × ma + p × page_fault_service_time
+
+                            p = page fault rate (0 ≤ p ≤ 1)
+                            ma = memory access time
+
+                            If p=0 → EAT = ma (no faults)
+                            If p=1 → every access is a fault</div>
+                        <div class="formula mt8">Example: ma=200ns, fault_time=8ms=8,000,000ns
+                            EAT = (1-p)×200 + p×8,000,000
+                            = 200 + 7,999,800p ns</div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title"><span class="dot p"></span>Page Replacement Algorithms</div>
+                        <table>
+                            <tr>
+                                <th>Algorithm</th>
+                                <th>Replaces</th>
+                                <th>Belady's?</th>
+                                <th>Optimal?</th>
+                            </tr>
+                            <tr>
+                                <td>FIFO</td>
+                                <td>Oldest loaded</td>
+                                <td>Yes ⚠</td>
+                                <td>No</td>
+                            </tr>
+                            <tr>
+                                <td>Optimal (OPT)</td>
+                                <td>Farthest future use</td>
+                                <td>No</td>
+                                <td>Yes</td>
+                            </tr>
+                            <tr>
+                                <td>LRU</td>
+                                <td>Least recently used</td>
+                                <td>No</td>
+                                <td>Good approx</td>
+                            </tr>
+                        </table>
+                        <ul class="cs mt4">
+                            <li class="warn"><b>Belady's anomaly</b> — more frames → MORE faults (FIFO only)</li>
+                            <li class="tip">OPT is impossible in practice (needs future knowledge)</li>
+                            <li>LRU ≈ OPT looking backward; good real-world choice</li>
+                        </ul>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title"><span class="dot r"></span>Thrashing</div>
+                        <ul class="cs">
+                            <li>Process spends more time paging than executing</li>
+                            <li>Symptoms: <span class="hl3">CPU util low</span>, <span class="hl3">disk util high
+                                    (~97%)</span></li>
+                            <li><b>Cause</b>: too many processes, insufficient frames</li>
+                        </ul>
+                        <b>Solutions:</b>
+                        <ul class="cs mt4">
+                            <li>Decrease degree of multiprogramming</li>
+                            <li>Add more physical RAM</li>
+                            <li>Use working set model to allocate frames</li>
+                        </ul>
+                        <div class="mnemonic">CPU↓ + Disk↑ = Thrashing</div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title"><span class="dot y"></span>Dirty Bit (Modify Bit)</div>
+                        <ul class="cs">
+                            <li>Bit = 0 when page first loaded</li>
+                            <li>Bit = 1 when page is written to</li>
+                            <li>If dirty=0 when evicting → no write to disk needed</li>
+                            <li>If dirty=1 → must write back (expensive)</li>
+                            <li class="tip">Reduces number of disk writes significantly</li>
+                        </ul>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title"><span class="dot"></span>Page Fault Counting — Steps</div>
+                        <div class="formula">Reference string: 1 2 3 4 1 2 5 1 2 3 4 5
+                            Frames: 3
+
+                            FIFO: track load order → evict oldest
+                            LRU: track last-use time → evict least recently used
+                            OPT: look ahead → evict page used farthest in future
+
+                            Count ✗ = page fault each time page not in frames</div>
+                        <div class="small mt4">All frames empty initially → first k unique pages cost k faults</div>
+                    </div>
+
+                </div>
+
+                <!-- ═══════════════════════════════════════════════════ CH11 ═══ -->
+                <div class="sec-title" id="ch11">📁 Chapter 11 — File System Interface</div>
+                <div class="grid-3">
+
+                    <div class="card">
+                        <div class="card-title"><span class="dot"></span>Directory Structures</div>
+                        <table>
+                            <tr>
+                                <th>Structure</th>
+                                <th>Unique Names?</th>
+                                <th>Grouping?</th>
+                                <th>Sharing?</th>
+                            </tr>
+                            <tr>
+                                <td>Single-level</td>
+                                <td>Yes (all users)</td>
+                                <td>No</td>
+                                <td>No</td>
+                            </tr>
+                            <tr>
+                                <td>Two-level</td>
+                                <td>Per user only</td>
+                                <td>No</td>
+                                <td>Hard</td>
+                            </tr>
+                            <tr>
+                                <td>Tree</td>
+                                <td>Per path</td>
+                                <td>Yes</td>
+                                <td>No links</td>
+                            </tr>
+                            <tr>
+                                <td>Acyclic Graph</td>
+                                <td>Multiple names OK</td>
+                                <td>Yes</td>
+                                <td>Yes (links)</td>
+                            </tr>
+                            <tr>
+                                <td>General Graph</td>
+                                <td>Multiple names OK</td>
+                                <td>Yes</td>
+                                <td>Yes (cycles)</td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title"><span class="dot g"></span>Access Methods</div>
+                        <ul class="cs">
+                            <li><b>Sequential</b> — process records in order; tapes, compilers</li>
+                            <li><b>Direct/Random</b> — jump to any record; fixed-length records; DB</li>
+                            <li><b>Indexed</b> — index file → data; ISAM; handles large files</li>
+                        </ul>
+                        <div class="divider"></div>
+                        <div class="card-title mt4"><span class="dot p"></span>File Operations</div>
+                        <ul class="cs">
+                            <li>Create, Write, Read, Seek (reposition), Delete, Truncate</li>
+                            <li>Open → moves directory entry to memory (open-file table)</li>
+                            <li>Close → writes back to directory on disk</li>
+                            <li>Open-file table tracks: file pointer, open count, disk location, access rights</li>
+                        </ul>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title"><span class="dot r"></span>Protection — UNIX Model</div>
+                        <div class="formula">RWX | RWX | RWX
+                            Owner | Group | Universe
+
+                            r=4, w=2, x=1
+                            chmod 755 → 111 101 101 → rwxr-xr-x</div>
+                        <ul class="cs mt4">
+                            <li>ACL — per-file user+permission list (verbose but flexible)</li>
+                            <li>Dangling pointer problem with links → use reference count</li>
+                        </ul>
+                    </div>
+
+                </div>
+
+                <!-- ═══════════════════════════════════════════════════ CH12 ═══ -->
+                <div class="sec-title" id="ch12">🗄 Chapter 12 — File System Implementation</div>
+                <div class="grid-3">
+
+                    <div class="card">
+                        <div class="card-title"><span class="dot"></span>Disk Block Allocation Methods</div>
+                        <table>
+                            <tr>
+                                <th>Method</th>
+                                <th>Ext. Frag?</th>
+                                <th>Random Access?</th>
+                                <th>Grow?</th>
+                            </tr>
+                            <tr>
+                                <td>Contiguous</td>
+                                <td>Yes</td>
+                                <td>Yes</td>
+                                <td>Hard</td>
+                            </tr>
+                            <tr>
+                                <td>Linked</td>
+                                <td>No</td>
+                                <td>No (sequential)</td>
+                                <td>Easy</td>
+                            </tr>
+                            <tr>
+                                <td>Indexed</td>
+                                <td>No</td>
+                                <td>Yes</td>
+                                <td>Yes</td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title"><span class="dot g"></span>Contiguous Allocation</div>
+                        <div class="formula">LA / BlockSize → Q (block number from start of file)
+                            LA % BlockSize → R (displacement within block)
+
+                            Disk block = start_address + Q
+                            Displacement = R</div>
+                        <ul class="cs mt4">
+                            <li>Simple; best read performance</li>
+                            <li class="warn">External fragmentation; hard to grow file; need to know size upfront</li>
+                        </ul>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title"><span class="dot p"></span>Linked Allocation</div>
+                        <div class="formula">Q = LA / (BlockSize - PointerSize) → Qth block in chain
+                            R = LA % (BlockSize - PointerSize) → offset within block
+
+                            Displacement = R + PointerSize</div>
+                        <ul class="cs mt4">
+                            <li>No external fragmentation; easy to grow</li>
+                            <li class="warn">Sequential access only; pointer overhead; reliability risk</li>
+                            <li><b>FAT</b> = variation: pointers in table (not in blocks) → cacheable</li>
+                        </ul>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title"><span class="dot r"></span>Indexed Allocation</div>
+                        <div class="formula">Index block: [ptr₀, ptr₁, ..., ptrₙ]
+
+                            Q = LA / BlockSize → index into index block
+                            R = LA % BlockSize → offset within data block
+
+                            Physical block = index_block[Q]
+                            Displacement = R</div>
+                        <ul class="cs mt4">
+                            <li>Random access; no external fragmentation</li>
+                            <li>Overhead of index block; UNIX uses multi-level (inode)</li>
+                        </ul>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title"><span class="dot y"></span>Free Space Management</div>
+                        <table>
+                            <tr>
+                                <th>Method</th>
+                                <th>How</th>
+                                <th>Pro</th>
+                                <th>Con</th>
+                            </tr>
+                            <tr>
+                                <td>Bit vector</td>
+                                <td>1 bit per block</td>
+                                <td>Fast, simple</td>
+                                <td>Large on big disks</td>
+                            </tr>
+                            <tr>
+                                <td>Linked list</td>
+                                <td>Chain free blocks</td>
+                                <td>No waste</td>
+                                <td>Slow traversal</td>
+                            </tr>
+                            <tr>
+                                <td>Grouping</td>
+                                <td>n free addrs in 1st free block</td>
+                                <td>Faster than linked</td>
+                                <td>Complex</td>
+                            </tr>
+                            <tr>
+                                <td>Counting</td>
+                                <td>(start, count) pairs</td>
+                                <td>Compact</td>
+                                <td>Complex</td>
+                            </tr>
+                        </table>
+                        <div class="formula mt8 yellow">Bit vector block number:
+                            = (bits/word) × (# zero-value words) + (offset of first 1-bit)</div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title"><span class="dot"></span>I/O Operations — Block Add/Remove</div>
+                        <table>
+                            <tr>
+                                <th>Op</th>
+                                <th>Contiguous</th>
+                                <th>Linked</th>
+                                <th>Indexed</th>
+                            </tr>
+                            <tr>
+                                <td>Add at start</td>
+                                <td>201</td>
+                                <td>1</td>
+                                <td>1</td>
+                            </tr>
+                            <tr>
+                                <td>Add at middle</td>
+                                <td>101</td>
+                                <td>52</td>
+                                <td>1</td>
+                            </tr>
+                            <tr>
+                                <td>Add at end</td>
+                                <td>1</td>
+                                <td>3</td>
+                                <td>1</td>
+                            </tr>
+                            <tr>
+                                <td>Remove start</td>
+                                <td>198</td>
+                                <td>1</td>
+                                <td>0</td>
+                            </tr>
+                            <tr>
+                                <td>Remove middle</td>
+                                <td>98</td>
+                                <td>52</td>
+                                <td>0</td>
+                            </tr>
+                            <tr>
+                                <td>Remove end</td>
+                                <td>0</td>
+                                <td>100</td>
+                                <td>0</td>
+                            </tr>
+                        </table>
+                        <div class="small mt4">Assumes 100-block file; index block in memory for indexed</div>
+                    </div>
+
+                </div>
+
+                <!-- ═══════════════════════════════════════════════════ COMMON MISTAKES ═══ -->
+                <div class="sec-title">⚠ Common Mistakes &amp; Traps</div>
+                <div class="grid-2">
+
+                    <div class="card">
+                        <div class="card-title"><span class="dot r"></span>Process &amp; Thread Traps</div>
+                        <ul class="cs">
+                            <li class="warn">fork() n times in a loop → 2ⁿ processes (NOT n+1)</li>
+                            <li class="warn">fork() returns <b>0</b> to child — NOT child's PID</li>
+                            <li class="warn">WAITING → RUNNING is <b>INVALID</b> state transition</li>
+                            <li class="warn">Stack/heap are <b>NOT</b> shared between threads (each has own)</li>
+                            <li class="warn">Many-to-One: one blocking syscall blocks <b>ALL</b> threads in process</li>
+                            <li class="warn">Context switch time is pure <b>overhead</b> — no useful work done</li>
+                        </ul>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title"><span class="dot r"></span>Memory &amp; Scheduling Traps</div>
+                        <ul class="cs">
+                            <li class="warn">Paging = NO external fragmentation (but has internal)</li>
+                            <li class="warn">Segmentation = NO internal fragmentation (but has external)</li>
+                            <li class="warn">Pure paging: logical addr = physical addr is WRONG (execution-time binding
+                                differs)</li>
+                            <li class="warn">FIFO can suffer Belady's Anomaly; LRU and OPT cannot</li>
+                            <li class="warn">SJF is optimal only for same-arrival processes; SRTF for preemptive</li>
+                            <li class="warn">Priority: smaller integer = higher priority (common convention, verify per
+                                question)</li>
+                        </ul>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title"><span class="dot r"></span>Synchronization Traps</div>
+                        <ul class="cs">
+                            <li class="warn">Deadlock needs <b>ALL 4 conditions</b> simultaneously (not just one)</li>
+                            <li class="warn">Dining philosophers naive solution causes deadlock if all pick left
+                                chopstick</li>
+                            <li class="warn">signal() on monitor condition with no waiting process = <b>NO EFFECT</b>
+                            </li>
+                            <li class="warn">Semaphore signal() always wakes one (unlike condition variables)</li>
+                            <li class="warn">Omitting wait(mutex) or signal(mutex) → mutual exclusion broken</li>
+                            <li class="warn">Doing two wait()s on same semaphore → <b>deadlock</b></li>
+                        </ul>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title"><span class="dot r"></span>File System Traps</div>
+                        <ul class="cs">
+                            <li class="warn">Contiguous: adding block at end = 1 I/O; at beginning = 201 I/Os (100
+                                blocks file)</li>
+                            <li class="warn">Indexed: all add/insert operations = 1 disk write (index in memory)</li>
+                            <li class="warn">Linked allocation: cannot support efficient random access</li>
+                            <li class="warn">Bit vector: block# calc uses <b>0-value words</b> (all bits=0), not just
+                                any word</li>
+                            <li class="warn">printf() ≠ system call; write() is the underlying syscall</li>
+                        </ul>
+                    </div>
+
+                </div>
+
+                <!-- ═══════════════════════════════════════════════════ EXAM Q&A ═══ -->
+                <div class="sec-title" id="exam">🎯 Past Exam-Style Questions</div>
+
+                <div class="grid-2">
+                    <div>
+
+                        <div class="qa-item">
+                            <div class="qa-q" onclick="toggleQA(this)">
+                                <span><span class="qnum">Q1</span> <span class="badge easy">Easy</span> &nbsp;If the
+                                    kernel is single-threaded, a user-level thread making a blocking syscall
+                                    will…?</span>
+                                <span class="qa-arrow">▼</span>
+                            </div>
+                            <div class="qa-a">
+                                <b>Answer: (c)</b> Cause the <b>entire process to block</b>, even if other threads are
+                                available to run.<br>
+                                Because the kernel sees only one thread — the single kernel thread. All user threads map
+                                to it.
+                            </div>
+                        </div>
+
+                        <div class="qa-item">
+                            <div class="qa-q" onclick="toggleQA(this)">
+                                <span><span class="qnum">Q2</span> <span class="badge easy">Easy</span> &nbsp;What is
+                                    the output of: int x=10; fork(); if child: x-=5; fork(); x*=3; print at Line A
+                                    (child of child)?</span>
+                                <span class="qa-arrow">▼</span>
+                            </div>
+                            <div class="qa-a">
+                                <b>Line A = 15.</b> Parent: x=10. First fork → child gets x=10. Child does x-=5 → x=5.
+                                Second fork → grandchild gets x=5. Both do x*=3. Grandchild (Line A) prints
+                                5×3=<b>15</b>.<br>
+                                Line B (original parent after wait): x is still <b>10</b> (fork() copies don't affect
+                                parent).
+                            </div>
+                        </div>
+
+                        <div class="qa-item">
+                            <div class="qa-q" onclick="toggleQA(this)">
+                                <span><span class="qnum">Q3</span> <span class="badge med">Medium</span>
+                                    &nbsp;Processes: P1(AT=0,BT=8), P2(AT=3,BT=4), P3(AT=4,BT=2), P4(AT=6,BT=4). Draw
+                                    FCFS Gantt &amp; compute waiting times.</span>
+                                <span class="qa-arrow">▼</span>
+                            </div>
+                            <div class="qa-a">
+                                <b>FCFS (non-preemptive, first-come first-served):</b><br>
+                                <div class="gantt">
+                                    <div class="gantt-block gb1" style="width:64px">P1<div class="lbl">0→8</div>
+                                    </div>
+                                    <div class="gantt-block gb2" style="width:32px">P2<div class="lbl">8→12</div>
+                                    </div>
+                                    <div class="gantt-block gb3" style="width:16px">P3<div class="lbl">12→14</div>
+                                    </div>
+                                    <div class="gantt-block gb4" style="width:32px">P4<div class="lbl">14→18</div>
+                                    </div>
+                                </div>
+                                WT: P1=0, P2=8-3=5, P3=12-4=8, P4=14-6=8 → Avg WT = (0+5+8+8)/4 = <b>5.25</b>
+                            </div>
+                        </div>
+
+                        <div class="qa-item">
+                            <div class="qa-q" onclick="toggleQA(this)">
+                                <span><span class="qnum">Q4</span> <span class="badge med">Medium</span> &nbsp;TLB
+                                    access=10ns, memory=50ns, hit ratio=90%. Compute EAT.</span>
+                                <span class="qa-arrow">▼</span>
+                            </div>
+                            <div class="qa-a">
+                                <div class="formula">EAT = 0.9×(10+50) + 0.1×(10+50+50)
+                                    = 0.9×60 + 0.1×110
+                                    = 54 + 11 = <b>65 ns</b></div>
+                                Hit: TLB + memory = 60ns. Miss: TLB + page table + memory = 110ns.
+                            </div>
+                        </div>
+
+                        <div class="qa-item">
+                            <div class="qa-q" onclick="toggleQA(this)">
+                                <span><span class="qnum">Q5</span> <span class="badge med">Medium</span> &nbsp;Logical
+                                    address 2524, page size=2KB. Page table: P0→frame3, P1→frame0, P2→frame2, P3→frame1.
+                                    Find physical address.</span>
+                                <span class="qa-arrow">▼</span>
+                            </div>
+                            <div class="qa-a">
+                                <div class="formula">Page size = 2KB = 2048 bytes
+                                    Page# = 2524 / 2048 = 1 (P1)
+                                    Offset = 2524 % 2048 = 476
+                                    Frame = page_table[1] = 0
+                                    Physical = 0 × 2048 + 476 = <b>476</b></div>
+                            </div>
+                        </div>
+
+                        <div class="qa-item">
+                            <div class="qa-q" onclick="toggleQA(this)">
+                                <span><span class="qnum">Q6</span> <span class="badge med">Medium</span> &nbsp;Reference
+                                    string: 1,2,3,4,2,1,5,6,2,1,2,3 with 3 frames. How many page faults with
+                                    FIFO?</span>
+                                <span class="qa-arrow">▼</span>
+                            </div>
+                            <div class="qa-a">
+                                <div class="formula">FIFO (3 frames):
+                                    Ref: 1 2 3 4 2 1 5 6 2 1 2 3
+                                    F1: 1 1 1 4 4 4 5 5 5 5 5 3
+                                    F2: 2 2 2 2 2 2 6 6 6 6 6
+                                    F3: 3 3 3 3 3 3 3 3 3 3 ← wait — step through carefully:
+                                    Fault:✗ ✗ ✗ ✗ - - ✗ ✗ - - - ✗ = <b>8 page faults</b></div>
+                                Tip: track eviction order by FIFO queue — oldest loaded frame is evicted.
+                            </div>
+                        </div>
+
+                    </div>
+                    <div>
+
+                        <div class="qa-item">
+                            <div class="qa-q" onclick="toggleQA(this)">
+                                <span><span class="qnum">Q7</span> <span class="badge med">Medium</span> &nbsp;Semaphore
+                                    S=0. Process P1: [code; S1; wait(S)] and P2: [code; S2; signal(S)]. Which executes
+                                    first?</span>
+                                <span class="qa-arrow">▼</span>
+                            </div>
+                            <div class="qa-a">
+                                <b>S2 always executes before S1 is FALSE.</b> Actually: <b>S1 always executes AFTER
+                                    S2.</b><br>
+                                P1 reaches wait(S) → S=0 → blocks. P2 must execute signal(S) first → S=1 → P1 unblocks
+                                and runs S1.<br>
+                                This is a classic <b>ordering/synchronization</b> pattern using semaphore initialized to
+                                0.
+                            </div>
+                        </div>
+
+                        <div class="qa-item">
+                            <div class="qa-q" onclick="toggleQA(this)">
+                                <span><span class="qnum">Q8</span> <span class="badge hard">Hard</span> &nbsp;256 pages,
+                                    4KB page size, 64 frames. (a) Bits in logical address? (b) Bits in physical
+                                    address?</span>
+                                <span class="qa-arrow">▼</span>
+                            </div>
+                            <div class="qa-a">
+                                <div class="formula">(a) Logical: page# bits = log₂(256)=8; offset bits=log₂(4096)=12
+                                    Total logical = 8+12 = <b>20 bits</b>
+
+                                    (b) Physical: frame# bits=log₂(64)=6; offset=12
+                                    Total physical = 6+12 = <b>18 bits</b></div>
+                            </div>
+                        </div>
+
+                        <div class="qa-item">
+                            <div class="qa-q" onclick="toggleQA(this)">
+                                <span><span class="qnum">Q9</span> <span class="badge hard">Hard</span> &nbsp;Preemptive
+                                    SJF: P1(AT=0,BT=8), P2(AT=1,BT=4), P3(AT=2,BT=9), P4(AT=3,BT=5). Compute avg waiting
+                                    time.</span>
+                                <span class="qa-arrow">▼</span>
+                            </div>
+                            <div class="qa-a">
+                                <div class="formula">SRTF Gantt: P1[0→1] P2[1→5] P4[5→10] P1[10→17] P3[17→26]
+                                    (at t=1: P2 BT=4 < P1 remaining=7 → preempt) (at t=5: P4 BT=5 < P1 remaining=7; P3
+                                        BT=9 → P4 runs) (at t=10: only P1, P3 remain; P1 remaining=3 < P3's 9 → P1) WT:
+                                        P1=(10-1-1)+(start consideration)=start_run - arrival - burst_done Simpler:
+                                        WT=TAT - BT TAT: P1=17-0=17, P2=5-1=4, P3=26-2=24, P4=10-3=7 WT: P1=17-8=9,
+                                        P2=4-4=0, P3=24-9=15, P4=7-5=2 Avg WT=(9+0+15+2)/4=26/4=<b>6.5 ms</b></div>
+                            </div>
+                        </div>
+
+                        <div class="qa-item">
+                            <div class="qa-q" onclick="toggleQA(this)">
+                                <span><span class="qnum">Q10</span> <span class="badge hard">Hard</span> &nbsp;File has
+                                    100 blocks. Using linked allocation, how many disk I/Os to add a block in the
+                                    middle?</span>
+                                <span class="qa-arrow">▼</span>
+                            </div>
+                            <div class="qa-a">
+                                <b>Answer: 52 I/Os</b><br>
+                                Must read 50 blocks to reach the middle (50 reads). Then write the new block (1 write).
+                                Then update the 50th block's next-pointer (1 read + 1 write = 2 I/Os). Total = 50+2 =
+                                52.<br>
+                                <span class="small">Note: the 50th block must be read first to get its pointer, then
+                                    written back with updated pointer.</span>
+                            </div>
+                        </div>
+
+                        <div class="qa-item">
+                            <div class="qa-q" onclick="toggleQA(this)">
+                                <span><span class="qnum">Q11</span> <span class="badge hard">Hard</span> &nbsp;Bit
+                                    vector: bits/word=8, Word0=00000000, Word1=00000000, Word2=00010000. What is the
+                                    first free block?</span>
+                                <span class="qa-arrow">▼</span>
+                            </div>
+                            <div class="qa-a">
+                                <div class="formula">Block# = (bits/word) × (#zero-value words) + offset of first 1-bit
+                                    = 8 × 2 + 3
+                                    = <b>19</b></div>
+                                Word2 = 00010000 → first 1-bit is at position 3 (counting from left, 0-indexed).
+                            </div>
+                        </div>
+
+                        <div class="qa-item">
+                            <div class="qa-q" onclick="toggleQA(this)">
+                                <span><span class="qnum">Q12</span> <span class="badge hard">Hard</span> &nbsp;CPU
+                                    util=10%, Paging disk=97.7%, Other I/O=5%. Is this thrashing? How to fix?</span>
+                                <span class="qa-arrow">▼</span>
+                            </div>
+                            <div class="qa-a">
+                                <b>Yes, this is thrashing.</b> Signs: CPU very low, paging disk almost maxed.<br>
+                                Fixes:<br>
+                                1. <b>Decrease degree of multiprogramming</b> (suspend some processes)<br>
+                                2. <b>Add more physical RAM</b><br>
+                                3. Use <b>working set model</b> to allocate enough frames per process
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- ═══════════════════════════════════════════════════ QUICK REF ═══ -->
+                <div class="sec-title">⚡ Quick Reference Formulas</div>
+                <div class="grid-3">
+
+                    <div class="card">
+                        <div class="card-title"><span class="dot"></span>Memory Calculations</div>
+                        <div class="formula">Page size = 2ⁿ bytes → offset = n bits
+                            Num pages = 2^(total_bits - offset_bits)
+                            Physical bits = log₂(frames) + offset_bits
+
+                            Logical addr → Physical addr (paging):
+                            p = LA / page_size
+                            d = LA % page_size
+                            PA = frame_table[p] × page_size + d
+
+                            Segmentation check:
+                            if d ≥ limit[s] → TRAP (illegal)
+                            PA = base[s] + d</div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title"><span class="dot g"></span>Scheduling Formulas</div>
+                        <div class="formula">TAT = Finish_Time - Arrival_Time
+                            WT = TAT - Burst_Time
+                            Response = First_Response - Arrival_Time
+
+                            Avg WT = Σ(WT_i) / n
+                            Avg TAT = Σ(TAT_i) / n
+
+                            RR max wait = (n-1) × quantum</div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title"><span class="dot p"></span>EAT Formulas</div>
+                        <div class="formula">TLB EAT:
+                            h=hit ratio, c=TLB time, m=mem time
+                            EAT = h(c+m) + (1-h)(c+2m)
+
+                            Page Fault EAT:
+                            p=fault rate, ma=mem access, ft=fault time
+                            EAT = (1-p)×ma + p×ft
+
+                            Linked alloc address:
+                            Q = LA / (BS - PS)
+                            R = LA % (BS - PS)
+                            Disp = R + PointerSize</div>
+                    </div>
+
+                </div>
+
+    </main>
+
+    <script>
+        function toggleTheme() {
+            const root = document.documentElement;
+            root.dataset.theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
+        }
+
+        function toggleQA(el) {
+            const answer = el.nextElementSibling;
+            const arrow = el.querySelector('.qa-arrow');
+            answer.classList.toggle('open');
+            arrow.classList.toggle('open');
+        }
+    </script>
+</body>
+
+</html>

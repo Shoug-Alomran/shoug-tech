@@ -7,11 +7,11 @@
 
 إذا ما تحمل العرض بشكل صحيح، افتح ورقة الغش بشكل مباشر.
 
-- [افتح ورقة الغش في صفحة جديدة](/ar/Academics/computer-science/CS330/Cheat-Sheet.html)
+- [افتح ورقة الغش في صفحة جديدة](/ar/Academics/computer-science/CS330/cheat-sheet/Cheat-Sheet.html)
 
 <div class="iframe-wrap">
   <iframe
-    src="/ar/Academics/computer-science/CS330/Cheat-Sheet.html"
+    src="/ar/Academics/computer-science/CS330/cheat-sheet/Cheat-Sheet.html"
     title="ورقة الغش"
     loading="lazy"
     referrerpolicy="no-referrer"
