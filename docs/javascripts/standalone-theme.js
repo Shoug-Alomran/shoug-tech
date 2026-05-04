@@ -2,6 +2,16 @@
   var root = document.documentElement;
   var paletteKeyPattern = /(?:^|\/)__palette$|\.__palette$/;
 
+  function isMkDocsPage() {
+    var body = document.body;
+    return !!(
+      body && body.hasAttribute("data-md-color-scheme") ||
+      document.querySelector("[data-md-component='container']")
+    );
+  }
+
+  if (isMkDocsPage()) return;
+
   function schemeToTheme(scheme) {
     if (scheme === "slate" || scheme === "dark") return "dark";
     if (scheme === "default" || scheme === "light") return "light";
