@@ -1,0 +1,3065 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SE311 – Software Requirements Engineering</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap');
+
+        :root {
+            --bg: #0f0f13;
+            --surface: #1a1a24;
+            --surface2: #22222e;
+            --border: #2e2e3e;
+            --accent: #7c6af7;
+            --accent2: #4ecdc4;
+            --accent3: #ff6b6b;
+            --accent4: #ffd166;
+            --text: #e8e8f0;
+            --text-dim: #8888aa;
+            --leaf-bg: #1e1e2e;
+            --leaf-border: #3a3a52;
+            --popup-bg: #1c1c28;
+            --connector: #3a3a55;
+            --node-hover: #2a2a3e;
+        }
+
+        [data-theme="light"] {
+            --bg: #f4f4f8;
+            --surface: #ffffff;
+            --surface2: #eeeef5;
+            --border: #d0d0e0;
+            --accent: #5b4de0;
+            --accent2: #2ab4aa;
+            --accent3: #e05050;
+            --accent4: #d4a017;
+            --text: #1a1a2e;
+            --text-dim: #555577;
+            --leaf-bg: #ffffff;
+            --leaf-border: #c0c0d8;
+            --popup-bg: #ffffff;
+            --connector: #b0b0cc;
+            --node-hover: #e8e8f8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'DM Mono', monospace;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            padding: 14px 28px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            backdrop-filter: blur(10px);
+        }
+
+        header h1 {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            background: linear-gradient(90deg, var(--accent), var(--accent2));
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        header small {
+            display: block;
+            font-size: 0.65rem;
+            color: var(--text-dim);
+            margin-top: 2px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .btn-theme {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 6px 14px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-family: 'DM Mono', monospace;
+            font-size: 0.75rem;
+            transition: all 0.2s;
+        }
+
+        .btn-theme:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .search-wrap {
+            position: relative;
+        }
+
+        .search-wrap input {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 6px 12px 6px 30px;
+            border-radius: 20px;
+            font-family: 'DM Mono', monospace;
+            font-size: 0.75rem;
+            width: 180px;
+            transition: all 0.2s;
+            outline: none;
+        }
+
+        .search-wrap input:focus {
+            border-color: var(--accent);
+            width: 220px;
+        }
+
+        .search-wrap .icon {
+            position: absolute;
+            left: 9px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.7rem;
+            color: var(--text-dim);
+            pointer-events: none;
+        }
+
+        .tree-container {
+            padding: 32px 24px 80px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        /* Chapter group */
+        .chapter {
+            margin-bottom: 12px;
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+            transition: border-color 0.2s;
+        }
+
+        .chapter:hover {
+            border-color: var(--accent);
+        }
+
+        .chapter-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 20px;
+            background: var(--surface);
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.2s;
+        }
+
+        .chapter-header:hover {
+            background: var(--node-hover);
+        }
+
+        .ch-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 700;
+            font-family: 'Syne', sans-serif;
+            flex-shrink: 0;
+        }
+
+        .chapter-title {
+            font-family: 'Syne', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 700;
+            flex: 1;
+        }
+
+        .chapter-subtitle {
+            font-size: 0.68rem;
+            color: var(--text-dim);
+            margin-top: 2px;
+        }
+
+        .chevron {
+            color: var(--text-dim);
+            font-size: 0.75rem;
+            transition: transform 0.3s;
+        }
+
+        .chapter.open .chevron {
+            transform: rotate(90deg);
+        }
+
+        .chapter-body {
+            display: none;
+            padding: 6px 16px 16px 16px;
+            background: var(--surface);
+            border-top: 1px solid var(--border);
+        }
+
+        .chapter.open .chapter-body {
+            display: block;
+        }
+
+        /* Topic nodes inside a chapter */
+        .topic {
+            margin: 8px 0;
+            margin-left: 20px;
+            border-left: 2px solid var(--connector);
+            padding-left: 16px;
+            position: relative;
+        }
+
+        .topic::before {
+            content: '';
+            position: absolute;
+            left: -5px;
+            top: 14px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--connector);
+        }
+
+        .topic-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            background: var(--surface2);
+            border-radius: 10px;
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.15s;
+            border: 1px solid transparent;
+        }
+
+        .topic-header:hover {
+            background: var(--node-hover);
+            border-color: var(--leaf-border);
+        }
+
+        .topic-header.has-info {
+            cursor: pointer;
+        }
+
+        .topic-title {
+            font-size: 0.82rem;
+            font-weight: 600;
+            font-family: 'Syne', sans-serif;
+            flex: 1;
+        }
+
+        .topic-tag {
+            font-size: 0.6rem;
+            padding: 2px 7px;
+            border-radius: 10px;
+            background: var(--surface);
+            color: var(--text-dim);
+            border: 1px solid var(--border);
+        }
+
+        /* Leaf nodes */
+        .leaves {
+            display: none;
+            margin-top: 6px;
+        }
+
+        .topic.open>.leaves {
+            display: block;
+        }
+
+        .leaf-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            padding: 6px 0;
+        }
+
+        .leaf {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 12px;
+            background: var(--leaf-bg);
+            border: 1px solid var(--leaf-border);
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.72rem;
+            transition: all 0.15s;
+            position: relative;
+        }
+
+        .leaf:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            transform: translateY(-1px);
+        }
+
+        .leaf.active {
+            border-color: var(--accent);
+            background: color-mix(in srgb, var(--accent) 15%, transparent);
+            color: var(--accent);
+        }
+
+        .leaf-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        /* Info popup */
+        .info-panel {
+            display: none;
+            background: var(--popup-bg);
+            border: 1px solid var(--accent);
+            border-radius: 12px;
+            padding: 14px 16px;
+            margin-top: 6px;
+            font-size: 0.75rem;
+            line-height: 1.7;
+            animation: slideIn 0.2s ease;
+            position: relative;
+        }
+
+        .info-panel.show {
+            display: block;
+        }
+
+        .info-panel .close-btn {
+            position: absolute;
+            top: 8px;
+            right: 10px;
+            background: none;
+            border: none;
+            color: var(--text-dim);
+            cursor: pointer;
+            font-size: 1rem;
+            line-height: 1;
+        }
+
+        .info-panel h4 {
+            font-family: 'Syne', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 8px;
+        }
+
+        .info-panel ul {
+            padding-left: 16px;
+        }
+
+        .info-panel ul li {
+            margin-bottom: 4px;
+        }
+
+        .info-panel p {
+            margin-bottom: 6px;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-4px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Highlight for search */
+        .highlight {
+            background: color-mix(in srgb, var(--accent4) 40%, transparent);
+            border-radius: 3px;
+        }
+
+        .hidden-search {
+            display: none !important;
+        }
+
+        /* Legend */
+        .legend {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            padding: 14px 20px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-size: 0.68rem;
+            color: var(--text-dim);
+        }
+
+        .legend span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .leg-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        /* Color palette per chapter */
+        .c1 {
+            background: #7c6af7;
+        }
+
+        .border1 {
+            border-color: #7c6af7;
+        }
+
+        .c2 {
+            background: #4ecdc4;
+        }
+
+        .border2 {
+            border-color: #4ecdc4;
+        }
+
+        .c3 {
+            background: #ff6b6b;
+        }
+
+        .border3 {
+            border-color: #ff6b6b;
+        }
+
+        .c4 {
+            background: #ffd166;
+        }
+
+        .border4 {
+            border-color: #ffd166;
+        }
+
+        .c5 {
+            background: #a8e6cf;
+        }
+
+        .border5 {
+            border-color: #a8e6cf;
+        }
+
+        .c6 {
+            background: #f7b2bd;
+        }
+
+        .border6 {
+            border-color: #f7b2bd;
+        }
+
+        .c7 {
+            background: #b5ead7;
+        }
+
+        .border7 {
+            border-color: #b5ead7;
+        }
+
+        .c8 {
+            background: #c9b1ff;
+        }
+
+        .border8 {
+            border-color: #c9b1ff;
+        }
+
+        .c9 {
+            background: #fdffb6;
+        }
+
+        .border9 {
+            border-color: #fdffb6;
+        }
+
+        .sub-topic {
+            margin-left: 16px;
+            border-left-color: var(--leaf-border);
+        }
+
+        .sub-topic::before {
+            background: var(--leaf-border);
+            width: 6px;
+            height: 6px;
+        }
+    </style>
+</head>
+
+<body data-theme="dark">
+
+    <header>
+        <div>
+            <h1>SE311 — Software Requirements Engineering</h1>
+            <small>Click any node to expand · Click any leaf to see details</small>
+        </div>
+        <div class="controls">
+            <div class="search-wrap">
+                <span class="icon">🔍</span>
+                <input type="text" id="searchInput" placeholder="Search topics...">
+            </div>
+            <button class="btn-theme" onclick="toggleTheme()">☀️ / 🌙</button>
+        </div>
+    </header>
+
+    <div class="tree-container">
+
+        <div class="legend">
+            <span><span class="leg-dot c1"></span>CH1 Fundamentals</span>
+            <span><span class="leg-dot c2"></span>CH2 RE Process</span>
+            <span><span class="leg-dot c3"></span>CH3 Problem Analysis</span>
+            <span><span class="leg-dot c4"></span>CH4 Elicitation</span>
+            <span><span class="leg-dot c5"></span>CH5 Analysis & Modeling</span>
+            <span><span class="leg-dot c6"></span>CH6 Validation & Verification</span>
+            <span><span class="leg-dot c7"></span>CH7 Requirements Management</span>
+            <span><span class="leg-dot c8"></span>CH8–9 Agile / Scrum</span>
+        </div>
+
+        <!-- ═══════════════════════════════════════════
+     CHAPTER 1 – FUNDAMENTALS
+════════════════════════════════════════════ -->
+        <div class="chapter" id="ch1">
+            <div class="chapter-header" onclick="toggleChapter('ch1')">
+                <div class="ch-icon c1" style="color:#fff">CH1</div>
+                <div>
+                    <div class="chapter-title">Software Requirements Fundamentals</div>
+                    <div class="chapter-subtitle">Core truths, types of requirements, success/failure factors</div>
+                </div>
+                <span class="chevron">▶</span>
+            </div>
+            <div class="chapter-body">
+
+                <div class="topic" id="t-truths">
+                    <div class="topic-header" onclick="toggleTopic('t-truths')">
+                        <span class="topic-title">Top 10 Truths of RE</span>
+                        <span class="topic-tag">list</span>
+                        <span class="chevron">▶</span>
+                    </div>
+                    <div class="leaves">
+                        <div class="leaf-grid">
+                            <div class="leaf" onclick="showInfo(this, 'truth1')"><span class="leaf-dot c1"></span>Truth
+                                #1 – Get Requirements Right</div>
+                            <div class="leaf" onclick="showInfo(this, 'truth2')"><span class="leaf-dot c1"></span>Truth
+                                #2 – Discovery & Invention</div>
+                            <div class="leaf" onclick="showInfo(this, 'truth3')"><span class="leaf-dot c1"></span>Truth
+                                #3 – Change Happens</div>
+                            <div class="leaf" onclick="showInfo(this, 'truth4')"><span class="leaf-dot c1"></span>Truth
+                                #4 – Stakeholders Intersect</div>
+                            <div class="leaf" onclick="showInfo(this, 'truth5')"><span class="leaf-dot c1"></span>Truth
+                                #5 – Customer Involvement</div>
+                            <div class="leaf" onclick="showInfo(this, 'truth6')"><span class="leaf-dot c1"></span>Truth
+                                #6 – Customer Always Has a Point</div>
+                            <div class="leaf" onclick="showInfo(this, 'truth7')"><span class="leaf-dot c1"></span>Truth
+                                #7 – Is This In Scope?</div>
+                            <div class="leaf" onclick="showInfo(this, 'truth8')"><span class="leaf-dot c1"></span>Truth
+                                #8 – Dialogue Cannot Be Replaced</div>
+                            <div class="leaf" onclick="showInfo(this, 'truth9')"><span class="leaf-dot c1"></span>Truth
+                                #9 – Requirements May Be Vague</div>
+                            <div class="leaf" onclick="showInfo(this, 'truth10')"><span class="leaf-dot c1"></span>Truth
+                                #10 – Never Perfect Requirements</div>
+                        </div>
+                        <div class="info-panel" id="info-truth1"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Truth #1</h4>
+                            <p>If you don't get the requirements right, it doesn't matter how well you execute the rest
+                                of the project.</p>
+                        </div>
+                        <div class="info-panel" id="info-truth2"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Truth #2</h4>
+                            <p>Requirements development is a <strong>discovery and invention</strong> process, not just
+                                a collection process.</p>
+                        </div>
+                        <div class="info-panel" id="info-truth3"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Truth #3</h4>
+                            <p>Change happens. Requirements evolve throughout the project lifecycle.</p>
+                        </div>
+                        <div class="info-panel" id="info-truth4"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Truth #4</h4>
+                            <p>The interests of all project stakeholders intersect in the requirements process.</p>
+                        </div>
+                        <div class="info-panel" id="info-truth5"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Truth #5</h4>
+                            <p>Customer involvement is the <strong>most critical contributor</strong> to software
+                                quality.</p>
+                        </div>
+                        <div class="info-panel" id="info-truth6"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Truth #6</h4>
+                            <p>The customer is not always right, but the customer always has a point.</p>
+                        </div>
+                        <div class="info-panel" id="info-truth7"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Truth #7</h4>
+                            <p>The first question an analyst should ask about a proposed new requirement is: "Is this
+                                requirement in scope?"</p>
+                        </div>
+                        <div class="info-panel" id="info-truth8"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Truth #8</h4>
+                            <p>Even the best requirements document cannot—and should not—replace human dialogue.</p>
+                        </div>
+                        <div class="info-panel" id="info-truth9"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Truth #9</h4>
+                            <p>The requirements might be vague, but the product will be specific.</p>
+                        </div>
+                        <div class="info-panel" id="info-truth10"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Truth #10</h4>
+                            <p>You're never going to have perfect requirements.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="topic" id="t-success">
+                    <div class="topic-header" onclick="toggleTopic('t-success')">
+                        <span class="topic-title">Top 10 Project Success Factors</span>
+                        <span class="topic-tag">list</span>
+                        <span class="chevron">▶</span>
+                    </div>
+                    <div class="leaves">
+                        <div class="leaf-grid">
+                            <div class="leaf" onclick="showInfo(this,'sf')"><span class="leaf-dot c1"></span>1. User
+                                Involvement</div>
+                            <div class="leaf" onclick="showInfo(this,'sf')"><span class="leaf-dot c1"></span>2.
+                                Executive Management Support</div>
+                            <div class="leaf" onclick="showInfo(this,'sf')"><span class="leaf-dot c1"></span>3. Clear
+                                Statement of Requirements</div>
+                            <div class="leaf" onclick="showInfo(this,'sf')"><span class="leaf-dot c1"></span>4. Proper
+                                Planning</div>
+                            <div class="leaf" onclick="showInfo(this,'sf')"><span class="leaf-dot c1"></span>5.
+                                Realistic Expectations</div>
+                            <div class="leaf" onclick="showInfo(this,'sf')"><span class="leaf-dot c1"></span>6. Smaller
+                                Project Milestones</div>
+                            <div class="leaf" onclick="showInfo(this,'sf')"><span class="leaf-dot c1"></span>7.
+                                Competent Staff</div>
+                            <div class="leaf" onclick="showInfo(this,'sf')"><span class="leaf-dot c1"></span>8.
+                                Ownership</div>
+                            <div class="leaf" onclick="showInfo(this,'sf')"><span class="leaf-dot c1"></span>9. Clear
+                                Vision and Objectives</div>
+                            <div class="leaf" onclick="showInfo(this,'sf')"><span class="leaf-dot c1"></span>10.
+                                Hard-working, Focused Staff</div>
+                        </div>
+                        <div class="info-panel" id="info-sf"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Success Factors</h4>
+                            <p>These are the top 10 factors that lead to successful software projects, with user
+                                involvement being the most critical.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="topic" id="t-reqtypes">
+                    <div class="topic-header" onclick="toggleTopic('t-reqtypes')">
+                        <span class="topic-title">Types of Requirements</span>
+                        <span class="topic-tag">list</span>
+                        <span class="chevron">▶</span>
+                    </div>
+                    <div class="leaves">
+                        <div class="leaf-grid">
+                            <div class="leaf" onclick="showInfo(this,'rt-business')"><span
+                                    class="leaf-dot c1"></span>Business Requirements</div>
+                            <div class="leaf" onclick="showInfo(this,'rt-user')"><span class="leaf-dot c1"></span>User
+                                Requirements</div>
+                            <div class="leaf" onclick="showInfo(this,'rt-functional')"><span
+                                    class="leaf-dot c1"></span>Functional Requirements</div>
+                            <div class="leaf" onclick="showInfo(this,'rt-system')"><span
+                                    class="leaf-dot c1"></span>System Requirements</div>
+                            <div class="leaf" onclick="showInfo(this,'rt-nonfunc')"><span
+                                    class="leaf-dot c1"></span>Non-Functional Requirements</div>
+                            <div class="leaf" onclick="showInfo(this,'rt-domain')"><span
+                                    class="leaf-dot c1"></span>Domain Requirements</div>
+                        </div>
+                        <div class="info-panel" id="info-rt-business"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Business Requirements</h4>
+                            <p>Describe <em>why</em> the organization is implementing the system. High-level
+                                goals.<br>Example: "Airline wants to reduce airport counter staff costs by 25%."</p>
+                        </div>
+                        <div class="info-panel" id="info-rt-user"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>User Requirements</h4>
+                            <p>Goals or tasks users must be able to perform with the product that will provide
+                                value.<br>Example: "User needs to be able to check-in for flight using airline's
+                                website."</p>
+                        </div>
+                        <div class="info-panel" id="info-rt-functional"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Functional Requirements</h4>
+                            <p>Specify the <strong>behaviors</strong> the product will exhibit under specific conditions
+                                — what the system <em>does</em>.<br>Example: "If the Passenger's profile does not
+                                indicate a seating preference, the system shall assign a seat."</p>
+                        </div>
+                        <div class="info-panel" id="info-rt-system"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>System Requirements</h4>
+                            <p>Requirements for a product composed of multiple components or subsystems.<br>Example:
+                                "The airport check-in kiosks need a barcode reader to scan a passport."</p>
+                        </div>
+                        <div class="info-panel" id="info-rt-nonfunc"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Non-Functional Requirements (NFRs)</h4>
+                            <p>Describe <em>how well</em> the product carries out its tasks. Three main categories:
+                            <ul>
+                                <li><strong>Quality Attributes</strong> — performance, reliability, security, usability,
+                                    etc.</li>
+                                <li><strong>External Interfaces</strong> — connections to the outside world (HW, SW,
+                                    users)</li>
+                                <li><strong>Constraints</strong> — restrictions on design/implementation choices</li>
+                            </ul>
+                            </p>
+                        </div>
+                        <div class="info-panel" id="info-rt-domain"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Domain Requirements</h4>
+                            <p>Derived from the application domain. Describe system characteristics reflecting the
+                                domain. May be new FRs or constraints on existing requirements.<br>Example: "A patient's
+                                designated physician is the only entity allowed to retrieve a patient's medical
+                                reports."</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="topic" id="t-nfr-types">
+                    <div class="topic-header" onclick="toggleTopic('t-nfr-types')">
+                        <span class="topic-title">NFR Sub-Types (Quality Attributes)</span>
+                        <span class="topic-tag">list</span>
+                        <span class="chevron">▶</span>
+                    </div>
+                    <div class="leaves">
+                        <div class="leaf-grid">
+                            <div class="leaf" onclick="showInfo(this,'qa-avail')"><span
+                                    class="leaf-dot c3"></span>Availability</div>
+                            <div class="leaf" onclick="showInfo(this,'qa-integrity')"><span
+                                    class="leaf-dot c3"></span>Integrity</div>
+                            <div class="leaf" onclick="showInfo(this,'qa-perf')"><span
+                                    class="leaf-dot c3"></span>Performance</div>
+                            <div class="leaf" onclick="showInfo(this,'qa-reliability')"><span
+                                    class="leaf-dot c3"></span>Reliability</div>
+                            <div class="leaf" onclick="showInfo(this,'qa-robust')"><span
+                                    class="leaf-dot c3"></span>Robustness</div>
+                            <div class="leaf" onclick="showInfo(this,'qa-safety')"><span
+                                    class="leaf-dot c3"></span>Safety</div>
+                            <div class="leaf" onclick="showInfo(this,'qa-security')"><span
+                                    class="leaf-dot c3"></span>Security</div>
+                            <div class="leaf" onclick="showInfo(this,'qa-usability')"><span
+                                    class="leaf-dot c3"></span>Usability</div>
+                            <div class="leaf" onclick="showInfo(this,'qa-maintain')"><span
+                                    class="leaf-dot c3"></span>Maintainability</div>
+                            <div class="leaf" onclick="showInfo(this,'qa-portability')"><span
+                                    class="leaf-dot c3"></span>Portability</div>
+                            <div class="leaf" onclick="showInfo(this,'qa-scalability')"><span
+                                    class="leaf-dot c3"></span>Scalability</div>
+                            <div class="leaf" onclick="showInfo(this,'qa-testability')"><span
+                                    class="leaf-dot c3"></span>Testability</div>
+                            <div class="leaf" onclick="showInfo(this,'qa-integrability')"><span
+                                    class="leaf-dot c3"></span>Integrability</div>
+                            <div class="leaf" onclick="showInfo(this,'qa-reusability')"><span
+                                    class="leaf-dot c3"></span>Reusability</div>
+                        </div>
+                        <div class="info-panel" id="info-qa-avail"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Availability</h4>
+                            <p>Percentage of time system is up and running correctly.<br>Formula: <strong>MTBF / (MTBF +
+                                    MTTR)</strong><br>MTBF = Mean Time Between Failures; MTTR = Mean Time to Repair</p>
+                        </div>
+                        <div class="info-panel" id="info-qa-integrity"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Integrity</h4>
+                            <p>Preventing information loss and protecting correctness of data. No tolerance for errors.
+                                Security is sometimes considered a subset of integrity.</p>
+                        </div>
+                        <div class="info-panel" id="info-qa-perf"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Performance</h4>
+                            <p>Measures: response time, throughput, capacity, latency, usage ratio, number of events
+                                processed/denied in a time interval. Usually stated with probabilities and confidence
+                                intervals.</p>
+                        </div>
+                        <div class="info-panel" id="info-qa-reliability"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Reliability</h4>
+                            <p>Probability the software executes without failure for a specific period. Measured using
+                                defect rate, degree of precision for computations.</p>
+                        </div>
+                        <div class="info-panel" id="info-qa-robust"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Robustness</h4>
+                            <p>Ability to cope with unexpected cases — invalid inputs, extreme loads, faults. Measured
+                                by: % failures on invalid inputs, degree of service degradation, minimum performance
+                                under extreme loads.</p>
+                        </div>
+                        <div class="info-panel" id="info-qa-safety"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Safety</h4>
+                            <p>Deals with preventing a system from causing injury to people or damage to
+                                equipment/environment.</p>
+                        </div>
+                        <div class="info-panel" id="info-qa-security"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Security</h4>
+                            <p>Blocking unauthorized access. Measures: success rate in authentication, resistance to
+                                known attacks, time/effort to find a key, % of successful attacks, encryption level,
+                                lifespan of passwords/sessions.</p>
+                        </div>
+                        <div class="info-panel" id="info-qa-usability"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Usability</h4>
+                            <p>Ease of use and training. Sub-measures:
+                            <ul>
+                                <li><strong>Learnability</strong> — % of tasks mastered after X training time</li>
+                                <li><strong>Efficiency</strong> — tasks/time, mouse clicks to info</li>
+                                <li><strong>Memorability</strong> — tasks still done after idle period</li>
+                                <li><strong>Error avoidance</strong> — errors per time period</li>
+                                <li><strong>Error handling</strong> — mean time to recover</li>
+                                <li><strong>User satisfaction</strong> — satisfaction ratio</li>
+                            </ul>
+                            </p>
+                        </div>
+                        <div class="info-panel" id="info-qa-maintain"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Maintainability</h4>
+                            <p>Ability to make changes quickly and cost-effectively. Measured by: mean time to fix a
+                                defect, mean time to add functionality, quality/quantity of documentation.</p>
+                        </div>
+                        <div class="info-panel" id="info-qa-portability"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Portability</h4>
+                            <p>Ability to run under different computing environments (HW, SW, OS, versions). Measured
+                                by: number of targeted platforms, proportion of platform-specific components, mean time
+                                to port.</p>
+                        </div>
+                        <div class="info-panel" id="info-qa-scalability"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Scalability</h4>
+                            <p>Ability to grow to accommodate more users, data, services, geographic locations,
+                                transactions, network traffic.</p>
+                        </div>
+                        <div class="info-panel" id="info-qa-testability"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Testability</h4>
+                            <p>Ability to detect, isolate, and fix defects. Measured by: time to run tests, time to set
+                                up testing environment, probability of visible failure in presence of a defect, test
+                                coverage.</p>
+                        </div>
+                        <div class="info-panel" id="info-qa-integrability"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Integrability</h4>
+                            <p>Ability to make separated components work together. Measured by: mean time to integrate
+                                with a new interfacing system.</p>
+                        </div>
+                        <div class="info-panel" id="info-qa-reusability"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Reusability</h4>
+                            <p>Ability of existing components to be reused in new applications. Measured by: % of reused
+                                requirements/design/code/tests, coupling of components.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="topic" id="t-whyre">
+                    <div class="topic-header" onclick="toggleTopic('t-whyre')">
+                        <span class="topic-title">Why RE? — RE Challenges & Impaired Factors</span>
+                        <span class="topic-tag">list</span>
+                        <span class="chevron">▶</span>
+                    </div>
+                    <div class="leaves">
+                        <div class="leaf-grid">
+                            <div class="leaf" onclick="showInfo(this,'re-challenges')"><span
+                                    class="leaf-dot c3"></span>Top 10 Challenged Project Factors</div>
+                            <div class="leaf" onclick="showInfo(this,'re-impaired')"><span
+                                    class="leaf-dot c3"></span>Top 10 Impaired Project Factors</div>
+                            <div class="leaf" onclick="showInfo(this,'re-defects')"><span
+                                    class="leaf-dot c3"></span>Distribution of Defects by Source</div>
+                            <div class="leaf" onclick="showInfo(this,'re-def')"><span class="leaf-dot c3"></span>RE
+                                Definition</div>
+                        </div>
+                        <div class="info-panel" id="info-re-challenges"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Top 10 Challenged Project Factors</h4>
+                            <ul>
+                                <li>1. Lack of user involvement</li>
+                                <li>2. Incomplete requirements and specifications</li>
+                                <li>3. Changing requirements and specifications</li>
+                                <li>4. Lack of executive support</li>
+                                <li>5. Technology incompetence</li>
+                                <li>6. Lack of resources</li>
+                                <li>7. Unrealistic expectations</li>
+                                <li>8. Unclear objectives</li>
+                                <li>9. Unrealistic timeframe</li>
+                                <li>10. New technology</li>
+                            </ul>
+                        </div>
+                        <div class="info-panel" id="info-re-impaired"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Top 10 Impaired Project Factors</h4>
+                            <ul>
+                                <li>1. Incomplete requirements</li>
+                                <li>2. Lack of user involvement</li>
+                                <li>3. Lack of resources</li>
+                                <li>4. Unrealistic expectations</li>
+                                <li>5. Lack of executive support</li>
+                                <li>6. Changing requirements & specs</li>
+                                <li>7. Lack of planning</li>
+                                <li>8. Didn't need anymore</li>
+                                <li>9. Lack of IT management</li>
+                                <li>10. Technology illiteracy</li>
+                            </ul>
+                        </div>
+                        <div class="info-panel" id="info-re-defects"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Distribution of Defects</h4>
+                            <p><strong>Source:</strong> Requirements = 56%, Design = 27%, Code = 7%, Other =
+                                10%<br><strong>Effort to Fix:</strong> Requirements defects account for 82% of fix
+                                effort — extremely costly if caught late!</p>
+                        </div>
+                        <div class="info-panel" id="info-re-def"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>RE Definition</h4>
+                            <p>Requirements Engineering is the activity of development, elicitation, specification,
+                                analysis, and management of stakeholder requirements, which are to be met by a new or
+                                evolving system. A requirement is a statement which translates or expresses a need and
+                                its associated constraints and conditions.</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════
+     CHAPTER 2 – RE PROCESS
+════════════════════════════════════════════ -->
+        <div class="chapter" id="ch2">
+            <div class="chapter-header" onclick="toggleChapter('ch2')">
+                <div class="ch-icon c2" style="color:#0a2a28">CH2</div>
+                <div>
+                    <div class="chapter-title">Requirements Engineering Process</div>
+                    <div class="chapter-subtitle">RE activities, stakeholders, best practices</div>
+                </div>
+                <span class="chevron">▶</span>
+            </div>
+            <div class="chapter-body">
+
+                <div class="topic" id="t-reactivities">
+                    <div class="topic-header" onclick="toggleTopic('t-reactivities')">
+                        <span class="topic-title">RE Activities (Sequence)</span>
+                        <span class="topic-tag">list</span>
+                        <span class="chevron">▶</span>
+                    </div>
+                    <div class="leaves">
+                        <div class="leaf-grid">
+                            <div class="leaf" onclick="showInfo(this,'act-inception')"><span
+                                    class="leaf-dot c2"></span>1. Inception</div>
+                            <div class="leaf" onclick="showInfo(this,'act-elicit')"><span class="leaf-dot c2"></span>2.
+                                Requirements Elicitation</div>
+                            <div class="leaf" onclick="showInfo(this,'act-analysis')"><span
+                                    class="leaf-dot c2"></span>3. Analysis & Negotiation</div>
+                            <div class="leaf" onclick="showInfo(this,'act-spec')"><span class="leaf-dot c2"></span>4.
+                                Requirements Specification</div>
+                            <div class="leaf" onclick="showInfo(this,'act-valid')"><span class="leaf-dot c2"></span>5.
+                                Requirements Validation</div>
+                            <div class="leaf" onclick="showInfo(this,'act-mgmt')"><span class="leaf-dot c2"></span>6.
+                                Requirements Management</div>
+                        </div>
+                        <div class="info-panel" id="info-act-inception"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Inception</h4>
+                            <p>Start the process: business need, market opportunity, great idea. Includes business case,
+                                feasibility study, system scope, risks.</p>
+                        </div>
+                        <div class="info-panel" id="info-act-elicit"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Requirements Elicitation</h4>
+                            <p>Requirements discovered through consultation with stakeholders. All tasks involved in
+                                discovering and gathering requirements (interviews, document analysis, etc.).</p>
+                        </div>
+                        <div class="info-panel" id="info-act-analysis"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Analysis & Negotiation</h4>
+                            <p>Requirements analyzed, conflicts resolved through negotiation. Develop deeper
+                                understanding individually and as a whole (decomposition, conflicts, gaps).</p>
+                        </div>
+                        <div class="info-panel" id="info-act-spec"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Requirements Specification</h4>
+                            <p>A precise requirements document is produced. Documenting requirements in a well-organized
+                                way suitable for the intended audiences.</p>
+                        </div>
+                        <div class="info-panel" id="info-act-valid"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Requirements Validation</h4>
+                            <p>Requirements document checked for consistency and completeness. Reviewing documented
+                                requirements to confirm complete, properly represented, and meets customer needs.</p>
+                        </div>
+                        <div class="info-panel" id="info-act-mgmt"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Requirements Management</h4>
+                            <p>Needs and contexts evolve, and so do requirements. Managing requirements through
+                                implementation until project completion (tracing, tracking status, assessing impact).
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="topic" id="t-stakeholders">
+                    <div class="topic-header" onclick="toggleTopic('t-stakeholders')">
+                        <span class="topic-title">Stakeholder Types</span>
+                        <span class="topic-tag">list</span>
+                        <span class="chevron">▶</span>
+                    </div>
+                    <div class="leaves">
+                        <div class="leaf-grid">
+                            <div class="leaf" onclick="showInfo(this,'sh-client')"><span
+                                    class="leaf-dot c2"></span>Client / Customer</div>
+                            <div class="leaf" onclick="showInfo(this,'sh-buyer')"><span class="leaf-dot c2"></span>Buyer
+                            </div>
+                            <div class="leaf" onclick="showInfo(this,'sh-user')"><span class="leaf-dot c2"></span>User
+                            </div>
+                            <div class="leaf" onclick="showInfo(this,'sh-domain')"><span
+                                    class="leaf-dot c2"></span>Domain Expert</div>
+                            <div class="leaf" onclick="showInfo(this,'sh-se')"><span class="leaf-dot c2"></span>Software
+                                Engineer</div>
+                            <div class="leaf" onclick="showInfo(this,'sh-inspector')"><span
+                                    class="leaf-dot c2"></span>Inspector</div>
+                            <div class="leaf" onclick="showInfo(this,'sh-market')"><span
+                                    class="leaf-dot c2"></span>Market Research Specialist</div>
+                            <div class="leaf" onclick="showInfo(this,'sh-lawyer')"><span
+                                    class="leaf-dot c2"></span>Lawyer</div>
+                        </div>
+                        <div class="info-panel" id="info-sh-client"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Client / Customer</h4>
+                            <p>Person who pays for the software development. Has final word on what the product will be.
+                                For internal products = product manager; for consumer market = marketing department.</p>
+                        </div>
+                        <div class="info-panel" id="info-sh-buyer"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Buyer</h4>
+                            <p>Person who pays for the software once it is developed. Possibly a user or a business
+                                owner buying a product for his employees. Must participate actively in the project.</p>
+                        </div>
+                        <div class="info-panel" id="info-sh-user"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>User</h4>
+                            <p>Users of the current or future system. Experts of current system indicate which functions
+                                to maintain/improve. May have special needs (usability, training). Select carefully —
+                                different seniority levels.</p>
+                        </div>
+                        <div class="info-panel" id="info-sh-domain"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Domain Expert</h4>
+                            <p>Expert who knows the work involved. Familiar with the problem the software must solve
+                                (e.g., financial expert for finance software, meteorologist for weather systems). Also
+                                knows the environment in which the product will be used.</p>
+                        </div>
+                        <div class="info-panel" id="info-sh-se"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Software Engineer</h4>
+                            <p>Expert who knows the technology and process. Determines technical and economic
+                                feasibility. Estimates cost and time. Educates buyer/client on latest technologies.</p>
+                        </div>
+                        <div class="info-panel" id="info-sh-inspector"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Inspector</h4>
+                            <p>Expert in governmental rules and safety relevant to the project. Examples: safety
+                                inspectors, auditors, technical inspectors, government inspectors.</p>
+                        </div>
+                        <div class="info-panel" id="info-sh-market"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Market Research Specialist</h4>
+                            <p>Can play the role of the customer for software developed for the general public. Expert
+                                who studied the market to determine trends and needs of potential customers.</p>
+                        </div>
+                        <div class="info-panel" id="info-sh-lawyer"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Lawyer</h4>
+                            <p>Familiar with laws and legal aspects. Knows standards relevant to the project.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="topic" id="t-bestpract">
+                    <div class="topic-header" onclick="toggleTopic('t-bestpract')">
+                        <span class="topic-title">Best Practices by Activity</span>
+                        <span class="topic-tag">list</span>
+                        <span class="chevron">▶</span>
+                    </div>
+                    <div class="leaves">
+                        <div class="leaf-grid">
+                            <div class="leaf" onclick="showInfo(this,'bp-elicit')"><span
+                                    class="leaf-dot c2"></span>Elicitation Best Practices</div>
+                            <div class="leaf" onclick="showInfo(this,'bp-analysis')"><span
+                                    class="leaf-dot c2"></span>Analysis Best Practices</div>
+                            <div class="leaf" onclick="showInfo(this,'bp-spec')"><span
+                                    class="leaf-dot c2"></span>Specification Best Practices</div>
+                            <div class="leaf" onclick="showInfo(this,'bp-valid')"><span
+                                    class="leaf-dot c2"></span>Validation Best Practices</div>
+                            <div class="leaf" onclick="showInfo(this,'bp-mgmt')"><span
+                                    class="leaf-dot c2"></span>Management Best Practices</div>
+                        </div>
+                        <div class="info-panel" id="info-bp-elicit"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Elicitation Best Practices</h4>
+                            <ul>
+                                <li>Define product vision and project scope</li>
+                                <li>Identify user classes and their characteristics</li>
+                                <li>Select a product champion for each user class</li>
+                                <li>Conduct focus groups with typical users</li>
+                                <li>Work with user representatives to identify user requirements</li>
+                                <li>Identify system events and responses</li>
+                                <li>Hold elicitation interviews</li>
+                                <li>Observe users performing their jobs</li>
+                                <li>Distribute questionnaires</li>
+                                <li>Examine problems of current system</li>
+                                <li>Reuse existing requirements</li>
+                            </ul>
+                        </div>
+                        <div class="info-panel" id="info-bp-analysis"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Analysis Best Practices</h4>
+                            <ul>
+                                <li>Model the application environment</li>
+                                <li>Create user interface and technical prototypes</li>
+                                <li>Analyze requirements feasibility</li>
+                                <li>Prioritize requirements</li>
+                                <li>Create data dictionary</li>
+                                <li>Model the requirements</li>
+                                <li>Analyze interfaces between system and outside world</li>
+                                <li>Allocate requirements to subsystems</li>
+                            </ul>
+                        </div>
+                        <div class="info-panel" id="info-bp-spec"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Specification Best Practices</h4>
+                            <ul>
+                                <li>Adopt requirement document templates</li>
+                                <li>Identify requirement origins</li>
+                                <li>Uniquely label each requirement</li>
+                                <li>Record business rules</li>
+                                <li>Specify non-functional requirements</li>
+                            </ul>
+                        </div>
+                        <div class="info-panel" id="info-bp-valid"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Validation Best Practices</h4>
+                            <ul>
+                                <li>Review the requirements</li>
+                                <li>Test the requirements</li>
+                                <li>Define acceptance criteria</li>
+                                <li>Simulate the requirements</li>
+                            </ul>
+                        </div>
+                        <div class="info-panel" id="info-bp-mgmt"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Management Best Practices</h4>
+                            <ul>
+                                <li>Establish a requirements change control process</li>
+                                <li>Perform impact analysis on requirements changes</li>
+                                <li>Establish baselines and control versions</li>
+                                <li>Maintain a history of requirements changes</li>
+                                <li>Track the status of each requirement</li>
+                                <li>Track requirements issues</li>
+                                <li>Maintain a requirements traceability matrix</li>
+                                <li>Use a requirements management tool</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════
+     CHAPTER 3 – PROBLEM ANALYSIS / INCEPTION
+════════════════════════════════════════════ -->
+        <div class="chapter" id="ch3">
+            <div class="chapter-header" onclick="toggleChapter('ch3')">
+                <div class="ch-icon c3" style="color:#fff">CH3</div>
+                <div>
+                    <div class="chapter-title">Problem Analysis & Project Inception</div>
+                    <div class="chapter-subtitle">Vision & scope, stakeholder profiles, 5 steps</div>
+                </div>
+                <span class="chevron">▶</span>
+            </div>
+            <div class="chapter-body">
+
+                <div class="topic" id="t-5steps">
+                    <div class="topic-header" onclick="toggleTopic('t-5steps')">
+                        <span class="topic-title">5 Steps for Problem Analysis</span>
+                        <span class="topic-tag">list</span>
+                        <span class="chevron">▶</span>
+                    </div>
+                    <div class="leaves">
+                        <div class="leaf-grid">
+                            <div class="leaf" onclick="showInfo(this,'ps1')"><span class="leaf-dot c3"></span>1. Gain
+                                Agreement on Problem Definition</div>
+                            <div class="leaf" onclick="showInfo(this,'ps2')"><span class="leaf-dot c3"></span>2.
+                                Understand Root Causes</div>
+                            <div class="leaf" onclick="showInfo(this,'ps3')"><span class="leaf-dot c3"></span>3.
+                                Identify Stakeholders</div>
+                            <div class="leaf" onclick="showInfo(this,'ps4')"><span class="leaf-dot c3"></span>4. Define
+                                Solution Vision & Boundary</div>
+                            <div class="leaf" onclick="showInfo(this,'ps5')"><span class="leaf-dot c3"></span>5.
+                                Identify Constraints</div>
+                        </div>
+                        <div class="info-panel" id="info-ps1"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Step 1 – Gain Agreement</h4>
+                            <p>Document the problem and seek agreement. Ask stakeholders to write a problem statement:
+                                What is the problem? Who is affected? What is the impact? Proposed solution? Key
+                                benefits?</p>
+                        </div>
+                        <div class="info-panel" id="info-ps2"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Step 2 – Understand Root Causes</h4>
+                            <p>There is often "a problem behind the problem." Root cause analysis finds underlying
+                                causes not immediately apparent. Determine recursively what factors contribute to the
+                                problem. Example: "Our ecommerce site is not profitable → Why? → Poor site design? Bad
+                                pricing? Poor customer management?"</p>
+                        </div>
+                        <div class="info-panel" id="info-ps3"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Step 3 – Identify Stakeholders</h4>
+                            <p>Create stakeholder profiles including: major value/benefit, likely attitude toward
+                                product, major features of interest, known constraints. Ask: Who
+                                uses/evaluates/maintains the system? Who is affected by outputs? Who cares
+                                (legal/regulatory)?</p>
+                        </div>
+                        <div class="info-panel" id="info-ps4"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Step 4 – Vision & Boundary</h4>
+                            <p><strong>Product Vision:</strong> describes what the product is about and what it could
+                                eventually become.<br><strong>Project Scope:</strong> identifies what portion of the
+                                ultimate vision the current project addresses.<br>Vision Statement template: "For
+                                [customer] who [need] the [product] is [category] that [benefit] unlike [alternative]
+                                our product [differentiation]"</p>
+                        </div>
+                        <div class="info-panel" id="info-ps5"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Step 5 – Identify Constraints</h4>
+                            <p>Sources of constraints:
+                            <ul>
+                                <li>Economics (costs, licensing)</li>
+                                <li>Politics (internal/external, interdepartmental)</li>
+                                <li>Technology (choice of platform)</li>
+                                <li>Systems (existing system, compatibility)</li>
+                                <li>Environment (legal, security, standards)</li>
+                                <li>Schedule and resources (fixed schedule, team)</li>
+                            </ul>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="topic" id="t-vsd">
+                    <div class="topic-header" onclick="toggleTopic('t-vsd')">
+                        <span class="topic-title">Vision & Scope Document Contents</span>
+                        <span class="topic-tag">list</span>
+                        <span class="chevron">▶</span>
+                    </div>
+                    <div class="leaves">
+                        <div class="leaf-grid">
+                            <div class="leaf" onclick="showInfo(this,'vsd1')"><span class="leaf-dot c3"></span>Business
+                                Requirements</div>
+                            <div class="leaf" onclick="showInfo(this,'vsd2')"><span class="leaf-dot c3"></span>Vision of
+                                the Solution</div>
+                            <div class="leaf" onclick="showInfo(this,'vsd3')"><span class="leaf-dot c3"></span>Scope and
+                                Limitation</div>
+                            <div class="leaf" onclick="showInfo(this,'vsd4')"><span class="leaf-dot c3"></span>Business
+                                Context</div>
+                            <div class="leaf" onclick="showInfo(this,'vsd5')"><span class="leaf-dot c3"></span>Risks
+                            </div>
+                        </div>
+                        <div class="info-panel" id="info-vsd1"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Business Requirements Section</h4>
+                            <p>Includes: Business opportunity, Business objectives and success criteria, Success
+                                metrics, Vision statement, Business risks.</p>
+                        </div>
+                        <div class="info-panel" id="info-vsd2"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Vision of the Solution</h4>
+                            <p>Includes major features and dependencies. Describes what the product will do and what it
+                                could eventually become.</p>
+                        </div>
+                        <div class="info-panel" id="info-vsd3"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Scope and Limitation</h4>
+                            <p>Includes: Major features for initial and subsequent releases, Scope of initial release,
+                                Scope of subsequent releases, Limitations and Exclusions (features NOT included).</p>
+                        </div>
+                        <div class="info-panel" id="info-vsd4"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Business Context</h4>
+                            <p>Includes: Stakeholder profiles (major value, attitude, features of interest,
+                                constraints), Project priorities, Deployment considerations.</p>
+                        </div>
+                        <div class="info-panel" id="info-vsd5"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Risks</h4>
+                            <p>Documents all identified risks to the project, helping stakeholders understand what could
+                                go wrong and how to mitigate those risks.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="topic" id="t-scoperep">
+                    <div class="topic-header" onclick="toggleTopic('t-scoperep')">
+                        <span class="topic-title">Scope Representation Techniques</span>
+                        <span class="topic-tag">list</span>
+                        <span class="chevron">▶</span>
+                    </div>
+                    <div class="leaves">
+                        <div class="leaf-grid">
+                            <div class="leaf" onclick="showInfo(this,'sr-context')"><span
+                                    class="leaf-dot c3"></span>Context Diagram</div>
+                            <div class="leaf" onclick="showInfo(this,'sr-ecosystem')"><span
+                                    class="leaf-dot c3"></span>Ecosystem Map</div>
+                            <div class="leaf" onclick="showInfo(this,'sr-feature')"><span
+                                    class="leaf-dot c3"></span>Feature Tree</div>
+                            <div class="leaf" onclick="showInfo(this,'sr-event')"><span class="leaf-dot c3"></span>Event
+                                Lists</div>
+                        </div>
+                        <div class="info-panel" id="info-sr-context"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Context Diagram</h4>
+                            <p>Shows all types of external entities that directly interface with the system. No
+                                features/functions, from the outside only. Defines system boundary.</p>
+                        </div>
+                        <div class="info-panel" id="info-sr-ecosystem"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Ecosystem Map</h4>
+                            <p>Shows all systems related to the system being developed and interactions among them.
+                                Includes systems with no direct connection (indirect relationships).</p>
+                        </div>
+                        <div class="info-panel" id="info-sr-feature"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Feature Tree</h4>
+                            <p>Hierarchically subdivides each feature into further levels of detail. Useful for
+                                organizing features in a logical hierarchy.</p>
+                        </div>
+                        <div class="info-panel" id="info-sr-event"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Event Lists</h4>
+                            <p>Identifies external events that could trigger behavior in the system. Events could be
+                                triggered by users (user-initiated) or by time (time-triggered).</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════
+     CHAPTER 4 – ELICITATION TECHNIQUES
+════════════════════════════════════════════ -->
+        <div class="chapter" id="ch4">
+            <div class="chapter-header" onclick="toggleChapter('ch4')">
+                <div class="ch-icon c4" style="color:#2a1a00">CH4</div>
+                <div>
+                    <div class="chapter-title">Requirements Elicitation</div>
+                    <div class="chapter-subtitle">Techniques, use cases, prototyping, misuse cases</div>
+                </div>
+                <span class="chevron">▶</span>
+            </div>
+            <div class="chapter-body">
+
+                <div class="topic" id="t-elicgoals">
+                    <div class="topic-header" onclick="toggleTopic('t-elicgoals')">
+                        <span class="topic-title">Elicitation Goals & Challenges</span>
+                        <span class="topic-tag">list</span>
+                        <span class="chevron">▶</span>
+                    </div>
+                    <div class="leaves">
+                        <div class="leaf-grid">
+                            <div class="leaf" onclick="showInfo(this,'eg-goals')"><span
+                                    class="leaf-dot c4"></span>Elicitation Goals</div>
+                            <div class="leaf" onclick="showInfo(this,'eg-scope')"><span
+                                    class="leaf-dot c4"></span>Problems of Scope</div>
+                            <div class="leaf" onclick="showInfo(this,'eg-understanding')"><span
+                                    class="leaf-dot c4"></span>Problems of Understanding</div>
+                            <div class="leaf" onclick="showInfo(this,'eg-volatility')"><span
+                                    class="leaf-dot c4"></span>Problems of Volatility</div>
+                            <div class="leaf" onclick="showInfo(this,'eg-done')"><span class="leaf-dot c4"></span>When
+                                Are We Done?</div>
+                            <div class="leaf" onclick="showInfo(this,'eg-factors')"><span
+                                    class="leaf-dot c4"></span>Factors for Choosing Techniques</div>
+                        </div>
+                        <div class="info-panel" id="info-eg-goals"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Elicitation Goals</h4>
+                            <ul>
+                                <li>Determine sources of requirements and select appropriate techniques</li>
+                                <li>Elicit information on domain, problem, needs, and constraints</li>
+                                <li>Produce a first document (mainly user requirements and elicitation notes)</li>
+                            </ul>
+                        </div>
+                        <div class="info-panel" id="info-eg-scope"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Problems of Scope</h4>
+                            <ul>
+                                <li>System boundaries inadequately defined or defined too soon</li>
+                                <li>Unnecessary technical details included</li>
+                            </ul>
+                        </div>
+                        <div class="info-panel" id="info-eg-understanding"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Problems of Understanding</h4>
+                            <ul>
+                                <li>Stakeholder not sure of what is needed</li>
+                                <li>Stakeholder has trouble communicating needs</li>
+                                <li>Stakeholder does not understand computing environment capabilities</li>
+                                <li>Requirements limited by what stakeholders think is possible</li>
+                                <li>Stakeholders state conflicting requirements</li>
+                            </ul>
+                        </div>
+                        <div class="info-panel" id="info-eg-volatility"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Problems of Volatility</h4>
+                            <p>Stakeholders will not commit to a set of written requirements. Requirements keep changing
+                                throughout the project.</p>
+                        </div>
+                        <div class="info-panel" id="info-eg-done"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>When Are We Done?</h4>
+                            <ul>
+                                <li>Users can't think of any more use cases</li>
+                                <li>Users propose new scenarios with no new functional requirements</li>
+                                <li>Users repeat issues previously covered</li>
+                                <li>Suggested new features are all out of scope</li>
+                                <li>Proposed new requirements are all low priority</li>
+                                <li>Developers/testers reviewing requirements have few questions</li>
+                            </ul>
+                        </div>
+                        <div class="info-panel" id="info-eg-factors"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Factors for Choosing Techniques</h4>
+                            <ul>
+                                <li>The distinction between conscious, unconscious, and subconscious requirements to be
+                                    elicited</li>
+                                <li>Time and budget constraints</li>
+                                <li>Availability of stakeholders</li>
+                                <li>Experience of the requirements engineer with a particular technique</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="topic" id="t-elictech">
+                    <div class="topic-header" onclick="toggleTopic('t-elictech')">
+                        <span class="topic-title">Elicitation Techniques — Facilitated</span>
+                        <span class="topic-tag">list</span>
+                        <span class="chevron">▶</span>
+                    </div>
+                    <div class="leaves">
+                        <div class="leaf-grid">
+                            <div class="leaf" onclick="showInfo(this,'et-interview')"><span
+                                    class="leaf-dot c4"></span>Interviews</div>
+                            <div class="leaf" onclick="showInfo(this,'et-workshop')"><span
+                                    class="leaf-dot c4"></span>Workshops (JAD)</div>
+                            <div class="leaf" onclick="showInfo(this,'et-focus')"><span class="leaf-dot c4"></span>Focus
+                                Groups</div>
+                            <div class="leaf" onclick="showInfo(this,'et-obs')"><span
+                                    class="leaf-dot c4"></span>Observations / Ethnography</div>
+                            <div class="leaf" onclick="showInfo(this,'et-quest')"><span
+                                    class="leaf-dot c4"></span>Questionnaires & Surveys</div>
+                            <div class="leaf" onclick="showInfo(this,'et-brain')"><span
+                                    class="leaf-dot c4"></span>Brainstorming</div>
+                        </div>
+                        <div class="info-panel" id="info-et-interview"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Interviews</h4>
+                            <p><strong>Strengths:</strong> Get to know domain quickly; interviewees more comfortable
+                                sharing; easier to establish involvement; suitable for busy
+                                executives.<br><strong>Tips:</strong> Acquire background knowledge; prepare questions;
+                                establish rapport; stay in scope; listen actively; suggest ideas.<br><strong>Common
+                                    Mistakes:</strong> Not interviewing all right people; asking direct questions too
+                                early; interviewing one-at-a-time; assuming stated needs are exactly correct.</p>
+                        </div>
+                        <div class="info-panel" id="info-et-workshop"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Workshops (JAD)</h4>
+                            <p>Facilitated structured meetings with selected stakeholders. Requirements elicited from
+                                multiple stakeholders concurrently.<br><strong>Strengths:</strong> Effective in solving
+                                disagreements; suitable for tight schedules.<br><strong>Tips:</strong> Establish ground
+                                rules; plan agenda; stay in scope; use parking lots; timebox discussions; keep team
+                                small but right.</p>
+                        </div>
+                        <div class="info-panel" id="info-et-focus"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Focus Groups</h4>
+                            <p>Representative group of users in a facilitated elicitation activity. Useful for exploring
+                                users' attitudes, impressions, preferences, and needs.<br><strong>Strengths:</strong>
+                                Valuable for developing commercial products; highlights consensus and
+                                conflict.<br>Participants normally don't have decision-making authority.</p>
+                        </div>
+                        <div class="info-panel" id="info-et-obs"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Observations / Ethnography</h4>
+                            <p>Get into the trenches and observe specialists in the wild. Shadow important users as they
+                                do their work. Can be silent or interactive.<br><strong>Strengths:</strong> Useful for
+                                high-risk tasks; facilitates requirements validation; identifies new topics for
+                                interviews.<br>Ethnography also discovers social, human, and political factors.</p>
+                        </div>
+                        <div class="info-panel" id="info-et-quest"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Questionnaires & Surveys</h4>
+                            <p><strong>Strengths:</strong> Can reach many people anonymously; asynchronous,
+                                cheap.<br><strong>Challenges:</strong> Preparation time; choice of questions;
+                                statistical significance; validity; getting people to answer.<br><strong>Question
+                                    types:</strong> Demography, Attitudinal (Likert scales), Open supplementary,
+                                Redundant for robustness.</p>
+                        </div>
+                        <div class="info-panel" id="info-et-brain"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Brainstorming</h4>
+                            <p>Used when much is unknown or to invent new ways of doing things.<br><strong>Two
+                                    phases:</strong>
+                            <ul>
+                                <li><strong>The Storm:</strong> Generate as many ideas as possible (quantity not
+                                    quality)</li>
+                                <li><strong>The Calm:</strong> Filter ideas (combine, clarify, prioritize, improve)</li>
+                            </ul><strong>Roles:</strong> Scribe, Moderator, Participants.<br><strong>Objective:</strong>
+                            Hear unconventional ideas; encourage creativity.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="topic" id="t-elicind">
+                    <div class="topic-header" onclick="toggleTopic('t-elicind')">
+                        <span class="topic-title">Elicitation Techniques — Independent</span>
+                        <span class="topic-tag">list</span>
+                        <span class="chevron">▶</span>
+                    </div>
+                    <div class="leaves">
+                        <div class="leaf-grid">
+                            <div class="leaf" onclick="showInfo(this,'ei-sysint')"><span
+                                    class="leaf-dot c4"></span>System Interface Analysis</div>
+                            <div class="leaf" onclick="showInfo(this,'ei-uianalysis')"><span
+                                    class="leaf-dot c4"></span>User Interface Analysis</div>
+                            <div class="leaf" onclick="showInfo(this,'ei-docanalysis')"><span
+                                    class="leaf-dot c4"></span>Document Analysis</div>
+                            <div class="leaf" onclick="showInfo(this,'ei-existing')"><span
+                                    class="leaf-dot c4"></span>Analysis of Existing Systems</div>
+                        </div>
+                        <div class="info-panel" id="info-ei-sysint"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>System Interface Analysis</h4>
+                            <p>Examining systems to which your system connects. Reveals functional requirements
+                                regarding data/service exchange. Consult context diagrams and ecosystem maps to identify
+                                systems.</p>
+                        </div>
+                        <div class="info-panel" id="info-ei-uianalysis"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>User Interface Analysis</h4>
+                            <p>Study existing systems to discover user and functional requirements. Great for getting up
+                                to speed on how an existing system works. Don't have to stick to all features for next
+                                implementation.<br><strong>Strengths:</strong> Suitable for building new versions;
+                                clarifies user input.</p>
+                        </div>
+                        <div class="info-panel" id="info-ei-docanalysis"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Document Analysis</h4>
+                            <p>Examining existing documentation for potential requirements. Includes user documents,
+                                development docs, requirements docs, internal memos, change histories. Often out of date
+                                but a good starting point.</p>
+                        </div>
+                        <div class="info-panel" id="info-ei-existing"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Analysis of Existing Systems</h4>
+                            <p>Useful when building a new improved version of an existing system. Important to know:
+                                what is used/not used/missing, what works/doesn't work, how the system is actually used
+                                vs. how it was supposed to be used.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="topic" id="t-usecases">
+                    <div class="topic-header" onclick="toggleTopic('t-usecases')">
+                        <span class="topic-title">Use Cases</span>
+                        <span class="topic-tag">list</span>
+                        <span class="chevron">▶</span>
+                    </div>
+                    <div class="leaves">
+                        <div class="leaf-grid">
+                            <div class="leaf" onclick="showInfo(this,'uc-def')"><span
+                                    class="leaf-dot c4"></span>Definition & Components</div>
+                            <div class="leaf" onclick="showInfo(this,'uc-actors')"><span
+                                    class="leaf-dot c4"></span>Actors</div>
+                            <div class="leaf" onclick="showInfo(this,'uc-relations')"><span
+                                    class="leaf-dot c4"></span>Relationships (Include / Extend)</div>
+                            <div class="leaf" onclick="showInfo(this,'uc-types')"><span
+                                    class="leaf-dot c4"></span>Scenario Types</div>
+                            <div class="leaf" onclick="showInfo(this,'uc-templates')"><span
+                                    class="leaf-dot c4"></span>UC Templates</div>
+                            <div class="leaf" onclick="showInfo(this,'uc-misuse')"><span
+                                    class="leaf-dot c4"></span>Misuse Cases</div>
+                        </div>
+                        <div class="info-panel" id="info-uc-def"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Use Case Definition</h4>
+                            <p>A sequence of interactions between a system and an external actor that results in the
+                                actor achieving some outcome of value. A scenario is a specific instance of a use case
+                                (specific actor, at specific time, with specific data). Many scenarios can come from a
+                                single use case.</p>
+                        </div>
+                        <div class="info-panel" id="info-uc-actors"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Actors</h4>
+                            <p>Any entity that performs a role in the system (people, organizations, external systems).
+                                Drawn as a stick figure. Actors don't interact with other actors. Names should reflect
+                                <strong>roles</strong> rather than actual people.</p>
+                        </div>
+                        <div class="info-panel" id="info-uc-relations"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Relationships</h4>
+                            <p><strong>&lt;&lt;include&gt;&gt;:</strong> The base use case always executes the included
+                                use case. Arrow points to the included use case. Represents common functionality needed
+                                in multiple use cases.<br><strong>&lt;&lt;extend&gt;&gt;:</strong> Optionally extends
+                                the base use case. Arrow points to the base use case. Base is meaningful on its own. Can
+                                have extension conditions.</p>
+                        </div>
+                        <div class="info-panel" id="info-uc-types"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Scenario Types</h4>
+                            <ul>
+                                <li><strong>As-is scenario:</strong> Describes current situation (re-engineering
+                                    projects)</li>
+                                <li><strong>Visionary scenario:</strong> Describes future system
+                                    (greenfield/reengineering)</li>
+                                <li><strong>Evaluation scenario:</strong> User tasks against which system is evaluated
+                                </li>
+                                <li><strong>Training scenario:</strong> Step-by-step instructions for novice users</li>
+                            </ul>
+                        </div>
+                        <div class="info-panel" id="info-uc-templates"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Use Case Templates</h4>
+                            <ul>
+                                <li><strong>Narrative Form:</strong> Paragraph focusing on primary scenario and some
+                                    secondary ones. Useful when stakeholders first meet.</li>
+                                <li><strong>Simple Column Form:</strong> Linear sequences (main and alternatives)</li>
+                                <li><strong>Multiple Column Form:</strong> One column per actor; more detailed view</li>
+                            </ul>
+                        </div>
+                        <div class="info-panel" id="info-uc-misuse"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Misuse Cases</h4>
+                            <p>Negative scenarios with goals undesirable from the business perspective. The misactor is
+                                a hostile agent.<br><strong>Steps:</strong> 1) Find misactors → 2) Identify what
+                                misactor would do to harm system (&lt;&lt;threaten&gt;&gt;) → 3) Mitigate
+                                (&lt;&lt;mitigate&gt;&gt;)<br><strong>Strengths:</strong> Elicits security/safety
+                                requirements; early identification of threats.<br><strong>Risks:</strong> May lead to
+                                premature design solutions in step 3.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="topic" id="t-prototyping">
+                    <div class="topic-header" onclick="toggleTopic('t-prototyping')">
+                        <span class="topic-title">Prototyping</span>
+                        <span class="topic-tag">list</span>
+                        <span class="chevron">▶</span>
+                    </div>
+                    <div class="leaves">
+                        <div class="leaf-grid">
+                            <div class="leaf" onclick="showInfo(this,'pr-types')"><span class="leaf-dot c4"></span>Types
+                                (Evolutive vs Throwaway)</div>
+                            <div class="leaf" onclick="showInfo(this,'pr-fidelity')"><span
+                                    class="leaf-dot c4"></span>Fidelity (Low vs High)</div>
+                            <div class="leaf" onclick="showInfo(this,'pr-purpose')"><span class="leaf-dot c4"></span>3
+                                Purposes</div>
+                            <div class="leaf" onclick="showInfo(this,'pr-strengths')"><span
+                                    class="leaf-dot c4"></span>Strengths & Risks</div>
+                        </div>
+                        <div class="info-panel" id="info-pr-types"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Prototype Types</h4>
+                            <ul>
+                                <li><strong>Evolutive:</strong> Turned into a product incrementally. Begins with
+                                    well-understood requirements. Gives users a working system more quickly.</li>
+                                <li><strong>Throwaway:</strong> Less precise, thrown away after use. Focuses on less
+                                    well-understood aspects. Designed to elicit or validate requirements.</li>
+                            </ul>Forms: Paper prototypes, Screen mock-ups, Interactive prototypes, Executable models.
+                        </div>
+                        <div class="info-panel" id="info-pr-fidelity"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Fidelity Levels</h4>
+                            <p><strong>Low fidelity (static):</strong><br>Pros: Easy/quick/cheap to build; excellent for
+                                interfaces; encourages creativity; engages users before coding.<br>Cons: Not
+                                interactive; may not cover all aspects; may seem non-professional.<br><br><strong>High
+                                    fidelity (functional):</strong><br>Pros: Deeper understanding of functionality;
+                                reduces design risk; more precise decisions.<br>Cons: Time-consuming; costly; difficult
+                                to change; false sense of security.</p>
+                        </div>
+                        <div class="info-panel" id="info-pr-purpose"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>3 Purposes of Prototyping</h4>
+                            <ul>
+                                <li>1. <strong>Requirements tool:</strong> Clarify, complete, and validate requirements
+                                </li>
+                                <li>2. <strong>Design tool:</strong> Explore design alternatives</li>
+                                <li>3. <strong>Construction tool:</strong> Create a subset that will grow into the
+                                    ultimate product</li>
+                            </ul>The purpose must be made clear from the very beginning!
+                        </div>
+                        <div class="info-panel" id="info-pr-strengths"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Strengths & Risks</h4>
+                            <p><strong>Strengths:</strong> Enhances user involvement; closes expectation gaps; resolves
+                                uncertainties early.<br><strong>Risks:</strong> Pressure to release the prototype as
+                                final product; distraction by detail; unrealistic performance expectations; excessive
+                                effort invested.</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════
+     CHAPTER 5 – ANALYSIS, MODELING & SPEC
+════════════════════════════════════════════ -->
+        <div class="chapter" id="ch5">
+            <div class="chapter-header" onclick="toggleChapter('ch5')">
+                <div class="ch-icon c5" style="color:#0a2a1a">CH5</div>
+                <div>
+                    <div class="chapter-title">Analysis, Modeling & Writing Requirements</div>
+                    <div class="chapter-subtitle">UML diagrams, writing pitfalls, characteristics, prioritization</div>
+                </div>
+                <span class="chevron">▶</span>
+            </div>
+            <div class="chapter-body">
+
+                <div class="topic" id="t-reqchars">
+                    <div class="topic-header" onclick="toggleTopic('t-reqchars')">
+                        <span class="topic-title">Characteristics of Excellent Requirements</span>
+                        <span class="topic-tag">list</span>
+                        <span class="chevron">▶</span>
+                    </div>
+                    <div class="leaves">
+                        <div class="leaf-grid">
+                            <div class="leaf" onclick="showInfo(this,'rc-complete')"><span
+                                    class="leaf-dot c5"></span>Complete</div>
+                            <div class="leaf" onclick="showInfo(this,'rc-correct')"><span
+                                    class="leaf-dot c5"></span>Correct</div>
+                            <div class="leaf" onclick="showInfo(this,'rc-concise')"><span
+                                    class="leaf-dot c5"></span>Concise</div>
+                            <div class="leaf" onclick="showInfo(this,'rc-feasible')"><span
+                                    class="leaf-dot c5"></span>Feasible</div>
+                            <div class="leaf" onclick="showInfo(this,'rc-necessary')"><span
+                                    class="leaf-dot c5"></span>Necessary</div>
+                            <div class="leaf" onclick="showInfo(this,'rc-prioritized')"><span
+                                    class="leaf-dot c5"></span>Prioritized</div>
+                            <div class="leaf" onclick="showInfo(this,'rc-unambiguous')"><span
+                                    class="leaf-dot c5"></span>Unambiguous</div>
+                            <div class="leaf" onclick="showInfo(this,'rc-verifiable')"><span
+                                    class="leaf-dot c5"></span>Verifiable</div>
+                            <div class="leaf" onclick="showInfo(this,'rc-consistent')"><span
+                                    class="leaf-dot c5"></span>Consistent</div>
+                            <div class="leaf" onclick="showInfo(this,'rc-traceable')"><span
+                                    class="leaf-dot c5"></span>Traceable</div>
+                            <div class="leaf" onclick="showInfo(this,'rc-modifiable')"><span
+                                    class="leaf-dot c5"></span>Modifiable</div>
+                        </div>
+                        <div class="info-panel" id="info-rc-complete"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Complete</h4>
+                            <p>Contains sufficient detail for those using it to guide their work. Every gap forces
+                                designers to guess. Use TBD to flag missing information; resolve all TBDs before
+                                implementation.</p>
+                        </div>
+                        <div class="info-panel" id="info-rc-correct"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Correct</h4>
+                            <p>Error-free. Must accurately describe a capability meeting some stakeholder's need. Check
+                                against source materials and subject matter experts. A requirement conflicting with its
+                                parent is incorrect.</p>
+                        </div>
+                        <div class="info-panel" id="info-rc-concise"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Concise</h4>
+                            <p>Contains just the needed information in as few words as possible. Lack of conciseness
+                                often caused by compound statements, embedded rationale, or overly complex grammar.</p>
+                        </div>
+                        <div class="info-panel" id="info-rc-feasible"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Feasible</h4>
+                            <p>At least one design and implementation exists for it given constraints of time, budget,
+                                staff, and environment. Proof-of-concept prototypes can evaluate feasibility.</p>
+                        </div>
+                        <div class="info-panel" id="info-rc-necessary"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Necessary</h4>
+                            <p>At least one of: traceable to a stakeholder need, makes product market competitive,
+                                establishes a product differentiator, or is dictated by business strategy/standards.</p>
+                        </div>
+                        <div class="info-panel" id="info-rc-prioritized"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Prioritized</h4>
+                            <p>Ranked or ordered according to importance. All requirements compete for limited
+                                resources. Should be a collaborative activity involving multiple stakeholders.</p>
+                        </div>
+                        <div class="info-panel" id="info-rc-unambiguous"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Unambiguous</h4>
+                            <p>Has a single interpretation. Ambiguity depends on reader background. Reduce by defining
+                                terms, writing concisely, and testing understanding. Augment with diagrams and tables.
+                            </p>
+                        </div>
+                        <div class="info-panel" id="info-rc-verifiable"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Verifiable</h4>
+                            <p>A tester can devise tests to determine whether it was properly implemented. Verification
+                                via demonstration, analysis, inspection, or testing. Ambiguous/incomplete requirements
+                                are unverifiable.</p>
+                        </div>
+                        <div class="info-panel" id="info-rc-consistent"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Consistent</h4>
+                            <p>Does not conflict with any other requirements at any level. Refer to original statements
+                                instead of repeating to improve consistency.</p>
+                        </div>
+                        <div class="info-panel" id="info-rc-traceable"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Traceable</h4>
+                            <p>Uniquely and persistently identified with a Tag. Can be traced to/from designs, tests,
+                                usage models, other artifacts. Enables change impact assessment, coverage analysis, and
+                                scope management.</p>
+                        </div>
+                        <div class="info-panel" id="info-rc-modifiable"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Modifiable</h4>
+                            <p>Maintain history of changes; understand connections/dependencies; use unique labels;
+                                avoid redundancy; cross-reference related items.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="topic" id="t-writingpitfalls">
+                    <div class="topic-header" onclick="toggleTopic('t-writingpitfalls')">
+                        <span class="topic-title">Writing Pitfalls & Typical Mistakes</span>
+                        <span class="topic-tag">list</span>
+                        <span class="chevron">▶</span>
+                    </div>
+                    <div class="leaves">
+                        <div class="leaf-grid">
+                            <div class="leaf" onclick="showInfo(this,'wp-overspec')"><span
+                                    class="leaf-dot c5"></span>Over-specification</div>
+                            <div class="leaf" onclick="showInfo(this,'wp-ambig')"><span
+                                    class="leaf-dot c5"></span>Ambiguity Sources</div>
+                            <div class="leaf" onclick="showInfo(this,'wp-vague')"><span class="leaf-dot c5"></span>Vague
+                                Indefinable Terms</div>
+                            <div class="leaf" onclick="showInfo(this,'wp-multiple')"><span
+                                    class="leaf-dot c5"></span>Multiple Requirements in One</div>
+                            <div class="leaf" onclick="showInfo(this,'wp-letout')"><span
+                                    class="leaf-dot c5"></span>Let-out / Escape Clauses</div>
+                            <div class="leaf" onclick="showInfo(this,'wp-speculate')"><span
+                                    class="leaf-dot c5"></span>Speculation & Wishful Thinking</div>
+                            <div class="leaf" onclick="showInfo(this,'wp-typmistakes')"><span
+                                    class="leaf-dot c5"></span>Typical Mistake Types</div>
+                        </div>
+                        <div class="info-panel" id="info-wp-overspec"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Over-specification</h4>
+                            <p>Describing HOW the system achieves something instead of WHAT it should do. Refrain from
+                                designing prematurely. Danger signs: naming components, materials, software objects,
+                                fields & records in requirements.</p>
+                        </div>
+                        <div class="info-panel" id="info-wp-ambig"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Ambiguity Sources</h4>
+                            <ul>
+                                <li><strong>Fuzzy words:</strong> reasonably, approximately, generally, quickly,
+                                    usually, systematically</li>
+                                <li><strong>A/B construct:</strong> "Delivery/Fulfillment" — does slash mean and, or, or
+                                    a name?</li>
+                                <li><strong>Boundary values:</strong> "5 to 10 days" — what happens at exactly 5 or 10?
+                                    Use "through," "inclusive," "exclusive"</li>
+                                <li><strong>Negative requirements:</strong> "Prevent user from X if not Y" — convert to
+                                    positive form</li>
+                            </ul>
+                        </div>
+                        <div class="info-panel" id="info-wp-vague"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Vague Indefinable Terms</h4>
+                            <p>Words too vague to be verified. Danger signs: user-friendly, highly versatile, flexible,
+                                to the maximum extent, approximately, as much as possible, minimal impact.</p>
+                        </div>
+                        <div class="info-panel" id="info-wp-multiple"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Multiple Requirements in One</h4>
+                            <p>Keep each requirement as a single sentence. Conjunction danger signs: and, or, with,
+                                also, additionally. Words like "unless," "except," "but" indicate multiple requirements
+                                should be split.</p>
+                        </div>
+                        <div class="info-panel" id="info-wp-letout"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Let-out / Escape Clauses</h4>
+                            <p>Requirements with escape clauses are dangerous because of testing problems. Danger signs:
+                                if, but, when, except, unless, although.</p>
+                        </div>
+                        <div class="info-panel" id="info-wp-speculate"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Speculation & Wishful Thinking</h4>
+                            <p><strong>Speculation:</strong> Vague subjects like usually, generally, often, normally,
+                                typically.<br><strong>Wishful thinking:</strong> Asking for the impossible (100%
+                                reliable, handle all failures, run on all platforms).<br><strong>Suggestions:</strong>
+                                May, might, should, ought, could, perhaps, probably — these are not requirements!</p>
+                        </div>
+                        <div class="info-panel" id="info-wp-typmistakes"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Typical Mistake Types</h4>
+                            <ul>
+                                <li><strong>Noise:</strong> Text carrying no relevant information</li>
+                                <li><strong>Silence:</strong> A feature not covered by any text</li>
+                                <li><strong>Over-specification:</strong> Text describing the solution, not the problem
+                                </li>
+                                <li><strong>Contradiction:</strong> Same feature defined incompatibly</li>
+                                <li><strong>Ambiguity:</strong> Text with ≥2 possible interpretations</li>
+                                <li><strong>Forward reference:</strong> Reference to a feature yet to be defined</li>
+                                <li><strong>Wishful thinking:</strong> Feature that cannot possibly be validated</li>
+                                <li><strong>Jigsaw puzzles:</strong> Requirements distributed across document requiring
+                                    cross-referencing</li>
+                                <li><strong>Inconsistent terminology:</strong> Inventing then changing terminology</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="topic" id="t-prioritization">
+                    <div class="topic-header" onclick="toggleTopic('t-prioritization')">
+                        <span class="topic-title">Prioritization Techniques</span>
+                        <span class="topic-tag">list</span>
+                        <span class="chevron">▶</span>
+                    </div>
+                    <div class="leaves">
+                        <div class="leaf-grid">
+                            <div class="leaf" onclick="showInfo(this,'pt-inout')"><span class="leaf-dot c5"></span>1. In
+                                or Out</div>
+                            <div class="leaf" onclick="showInfo(this,'pt-pairwise')"><span class="leaf-dot c5"></span>2.
+                                Pairwise Comparison & Rank Ordering</div>
+                            <div class="leaf" onclick="showInfo(this,'pt-3level')"><span class="leaf-dot c5"></span>3.
+                                Three-Level Scale (High/Med/Low)</div>
+                            <div class="leaf" onclick="showInfo(this,'pt-moscow')"><span class="leaf-dot c5"></span>4.
+                                MoSCoW</div>
+                            <div class="leaf" onclick="showInfo(this,'pt-100dollar')"><span
+                                    class="leaf-dot c5"></span>5. The $100 Technique</div>
+                            <div class="leaf" onclick="showInfo(this,'pt-vcr')"><span class="leaf-dot c5"></span>6.
+                                Value / Cost / Risk</div>
+                        </div>
+                        <div class="info-panel" id="info-pt-inout"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>In or Out</h4>
+                            <p>Work through a list: is each requirement "in" or "out"? Keep referring to business
+                                objectives. Cut to bare minimum for first release, then revisit "out" requirements for
+                                next release.</p>
+                        </div>
+                        <div class="info-panel" id="info-pt-pairwise"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Pairwise Comparison & Rank Ordering</h4>
+                            <p>Assign a prioritized sequence number to each requirement. Make pairwise comparisons
+                                between all requirements to judge which has higher priority. Group requirements into
+                                features/small sets with similar priorities.</p>
+                        </div>
+                        <div class="info-panel" id="info-pt-3level"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Three-Level Scale</h4>
+                            <p>Group requirements into High, Medium, and Low. Consider two measures:
+                                <strong>importance</strong> and <strong>urgency</strong>. Stakeholders must agree on
+                                what each level means. Include priority in SRS. Watch for dependencies between priority
+                                levels.</p>
+                        </div>
+                        <div class="info-panel" id="info-pt-moscow"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>MoSCoW</h4>
+                            <ul>
+                                <li><strong>Must:</strong> Requirements that MUST be satisfied for success</li>
+                                <li><strong>Should:</strong> Should be included if possible but not necessary for
+                                    success</li>
+                                <li><strong>Could:</strong> Could be included but can be postponed or eliminated</li>
+                                <li><strong>Won't:</strong> Will NOT be implemented in the current release (not in this
+                                    release or never)</li>
+                            </ul>
+                        </div>
+                        <div class="info-panel" id="info-pt-100dollar"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>The $100 Technique</h4>
+                            <p>Give stakeholders a hypothetical $100 to allocate among requirements based on priority.
+                                Makes prioritization more tangible. Gets groups thinking in terms of resource
+                                allocation. Risk: room for cheating/gaming the system.</p>
+                        </div>
+                        <div class="info-panel" id="info-pt-vcr"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Prioritization Based on Value / Cost / Risk</h4>
+                            <p>Used when stakeholders can't agree informally. Features with high risk-adjusted
+                                value/cost ratio have highest priority. Feature attractiveness is directly proportional
+                                to value and inversely proportional to cost. Participants: PM/BA, customer
+                                representative, development representative.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="topic" id="t-umldiagrams">
+                    <div class="topic-header" onclick="toggleTopic('t-umldiagrams')">
+                        <span class="topic-title">UML Diagrams for RE</span>
+                        <span class="topic-tag">list</span>
+                        <span class="chevron">▶</span>
+                    </div>
+                    <div class="leaves">
+                        <div class="leaf-grid">
+                            <div class="leaf" onclick="showInfo(this,'uml-usecase')"><span
+                                    class="leaf-dot c5"></span>Use Case Diagram</div>
+                            <div class="leaf" onclick="showInfo(this,'uml-sequence')"><span
+                                    class="leaf-dot c5"></span>Sequence Diagram</div>
+                            <div class="leaf" onclick="showInfo(this,'uml-class')"><span
+                                    class="leaf-dot c5"></span>Class Diagram</div>
+                            <div class="leaf" onclick="showInfo(this,'uml-activity')"><span
+                                    class="leaf-dot c5"></span>Activity Diagram</div>
+                            <div class="leaf" onclick="showInfo(this,'uml-state')"><span
+                                    class="leaf-dot c5"></span>State Machine Diagram</div>
+                            <div class="leaf" onclick="showInfo(this,'uml-swimlane')"><span
+                                    class="leaf-dot c5"></span>Swimlane Diagram</div>
+                            <div class="leaf" onclick="showInfo(this,'uml-dfd')"><span class="leaf-dot c5"></span>Data
+                                Flow Diagram (DFD)</div>
+                            <div class="leaf" onclick="showInfo(this,'uml-std')"><span class="leaf-dot c5"></span>State
+                                Transition Diagram (STD)</div>
+                            <div class="leaf" onclick="showInfo(this,'uml-erd')"><span
+                                    class="leaf-dot c5"></span>Entity-Relationship Diagram (ERD)</div>
+                            <div class="leaf" onclick="showInfo(this,'uml-dialog')"><span
+                                    class="leaf-dot c5"></span>Dialog Map</div>
+                            <div class="leaf" onclick="showInfo(this,'uml-decision')"><span
+                                    class="leaf-dot c5"></span>Decision Tables & Trees</div>
+                        </div>
+                        <div class="info-panel" id="info-uml-usecase"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Use Case Diagram</h4>
+                            <p>Behavioral UML diagram. Shows actors, use cases, and relationships. 5 relationship types:
+                                Association (actor-UC), Generalization (actor), Extend (UC-UC), Include (UC-UC),
+                                Generalization (UC). Actors don't interact with each other.</p>
+                        </div>
+                        <div class="info-panel" id="info-uml-sequence"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Sequence Diagram</h4>
+                            <p>Models interactions between objects in a single use case. Shows order of message
+                                exchanges. Components: Lifelines, Activation Bars, Message Arrows (synchronous=solid
+                                arrowhead; asynchronous=open), Return messages, Reflexive messages, Sequence Fragments
+                                (Alternative=if-else; Option=if; Loop; Reference).</p>
+                        </div>
+                        <div class="info-panel" id="info-uml-class"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Class Diagram</h4>
+                            <p>Main building block of OO modeling. Shows objects, attributes, operations, and
+                                relationships. Relationship types: <strong>Association</strong> (logical connection),
+                                <strong>Multiplicity</strong> (cardinality), <strong>Aggregation</strong> (part-of, open
+                                diamond), <strong>Composition</strong> (strong part-of, filled diamond — parts destroyed
+                                with whole), <strong>Inheritance/Generalization</strong> (is-a relationship, arrow to
+                                parent).</p>
+                        </div>
+                        <div class="info-panel" id="info-uml-activity"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Activity Diagram</h4>
+                            <p>Describes dynamic behavior as a flow of activities (workflow). Shows sequence,
+                                alternative paths, and parallel flows. Used for modeling processes and workflows.</p>
+                        </div>
+                        <div class="info-panel" id="info-uml-state"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>State Machine Diagram</h4>
+                            <p>Depicts states and transitions. Not best for overall progression of events — better for
+                                specific state shifts. Used for: event-driven reactive system objects, use case
+                                scenarios, object lifecycle behavior.</p>
+                        </div>
+                        <div class="info-panel" id="info-uml-swimlane"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Swimlane Diagram</h4>
+                            <p>Used to show business processes, workflows, or system/user interactions. Similar to UML
+                                Activity Diagrams. Contains: process steps, transitions, decisions. One of the easiest
+                                models for stakeholders to understand.</p>
+                        </div>
+                        <div class="info-panel" id="info-uml-dfd"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Data Flow Diagram (DFD)</h4>
+                            <p>Takes a functional decomposition approach. Provides a big-picture view of how data moves
+                                through a system. Represents systems over a wide range of abstractions. Don't show more
+                                than 8–10 processes on a single diagram.</p>
+                        </div>
+                        <div class="info-panel" id="info-uml-std"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>State Transition Diagram</h4>
+                            <p>3 elements: States (possible system conditions), Transitions (events or conditions
+                                causing state changes), Canceled states. Provides brief, complete, and unambiguous
+                                representation.</p>
+                        </div>
+                        <div class="info-panel" id="info-uml-erd"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Entity-Relationship Diagram (ERD)</h4>
+                            <p>Represents system data relationships. Provides a high-level view of the system. Entity =
+                                physical item or collection of data (rectangle, singular noun). Relationship = logical
+                                link between pairs of entities. Cardinality shown with numbers/letters (M = many).</p>
+                        </div>
+                        <div class="info-panel" id="info-uml-dialog"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Dialog Map</h4>
+                            <p>Represents user interface design at a high level. Dialog elements as states (rectangles);
+                                navigation as transitions (arrows); conditions shown on arrows. Used to represent
+                                interactions between an actor and the system in a use case. Helps find missing,
+                                incorrect, or unnecessary navigation.</p>
+                        </div>
+                        <div class="info-panel" id="info-uml-decision"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Decision Tables & Trees</h4>
+                            <p>For requirements describing what system should do under all possible combinations of
+                                conditions. Factors shown as: statements (true/false), yes/no questions, or questions
+                                with more than 2 values. Alternative techniques for representing complex business rules.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════
+     CHAPTER 6 – VALIDATION & VERIFICATION
+════════════════════════════════════════════ -->
+        <div class="chapter" id="ch6">
+            <div class="chapter-header" onclick="toggleChapter('ch6')">
+                <div class="ch-icon c6" style="color:#2a0a12">CH6</div>
+                <div>
+                    <div class="chapter-title">Requirements Validation & Verification</div>
+                    <div class="chapter-subtitle">V&V difference, reviews, inspections, techniques</div>
+                </div>
+                <span class="chevron">▶</span>
+            </div>
+            <div class="chapter-body">
+
+                <div class="topic" id="t-vvdiff">
+                    <div class="topic-header" onclick="toggleTopic('t-vvdiff')">
+                        <span class="topic-title">Validation vs Verification</span>
+                        <span class="topic-tag">key concept</span>
+                        <span class="chevron">▶</span>
+                    </div>
+                    <div class="leaves">
+                        <div class="leaf-grid">
+                            <div class="leaf" onclick="showInfo(this,'vv-valid')"><span
+                                    class="leaf-dot c6"></span>Validation</div>
+                            <div class="leaf" onclick="showInfo(this,'vv-verif')"><span
+                                    class="leaf-dot c6"></span>Verification</div>
+                            <div class="leaf" onclick="showInfo(this,'vv-diff')"><span class="leaf-dot c6"></span>Main
+                                Difference</div>
+                            <div class="leaf" onclick="showInfo(this,'vv-what')"><span class="leaf-dot c6"></span>What
+                                to Validate</div>
+                        </div>
+                        <div class="info-panel" id="info-vv-valid"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Validation</h4>
+                            <p>Assesses whether a product satisfies customer needs. "Are we building the <strong>right
+                                    product</strong>?" Checks the software requirements specification against
+                                stakeholders' goals and requirements.</p>
+                        </div>
+                        <div class="info-panel" id="info-vv-verif"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Verification</h4>
+                            <p>Determines whether the product meets its requirements. "Are we building the product
+                                <strong>right</strong>?" Checks consistency of the SRS artifacts and other development
+                                products against the specification.</p>
+                        </div>
+                        <div class="info-panel" id="info-vv-diff"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Main Difference</h4>
+                            <p><strong>Validation:</strong> "Are we building the right product?" → Against stakeholder
+                                goals.<br><strong>Verification:</strong> "Are we building the product right?" → Against
+                                the specification.<br>Both must be performed at every stage: elicitation, analysis,
+                                specification.</p>
+                        </div>
+                        <div class="info-panel" id="info-vv-what"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>What to Validate</h4>
+                            <ul>
+                                <li>Requirements accurately describe intended system capabilities and properties</li>
+                                <li>Requirements correctly derived from business requirements and other sources</li>
+                                <li>Requirements are complete, feasible, and verifiable</li>
+                                <li>All requirements are necessary; the entire set is sufficient</li>
+                                <li>All requirements representations are consistent</li>
+                                <li>Requirements provide adequate basis to proceed with design</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="topic" id="t-vvtech">
+                    <div class="topic-header" onclick="toggleTopic('t-vvtech')">
+                        <span class="topic-title">V&V Techniques</span>
+                        <span class="topic-tag">list</span>
+                        <span class="chevron">▶</span>
+                    </div>
+                    <div class="leaves">
+                        <div class="leaf-grid">
+                            <div class="leaf" onclick="showInfo(this,'vt-simple')"><span
+                                    class="leaf-dot c6"></span>Simple Checks (Traceability)</div>
+                            <div class="leaf" onclick="showInfo(this,'vt-proto')"><span
+                                    class="leaf-dot c6"></span>Prototyping</div>
+                            <div class="leaf" onclick="showInfo(this,'vt-functional')"><span
+                                    class="leaf-dot c6"></span>Functional Test Design</div>
+                            <div class="leaf" onclick="showInfo(this,'vt-reviews')"><span
+                                    class="leaf-dot c6"></span>Reviews & Inspections</div>
+                            <div class="leaf" onclick="showInfo(this,'vt-modelbased')"><span
+                                    class="leaf-dot c6"></span>Model-Based V&V</div>
+                        </div>
+                        <div class="info-panel" id="info-vt-simple"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Simple Checks</h4>
+                            <p>Various checks using traceability techniques. Developing a traceability matrix. Verify
+                                that requirements are well-written according to established criteria.</p>
+                        </div>
+                        <div class="info-panel" id="info-vt-proto"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Prototyping for Validation</h4>
+                            <p>Excellent for validation by users and customers. More accessible than specification.
+                                Demonstrates requirements and helps stakeholders discover problems. Come in all shapes:
+                                paper prototypes to formal executable models (horizontal, vertical, evolutive,
+                                throwaway).</p>
+                        </div>
+                        <div class="info-panel" id="info-vt-functional"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Functional Test Design</h4>
+                            <p>Derive functional tests from the requirements specification. Each functional requirement
+                                should have an associated test. Designing tests may reveal specification errors even
+                                before building the system. TDD (Test-Driven Development) begins with tests before
+                                programming.</p>
+                        </div>
+                        <div class="info-panel" id="info-vt-reviews"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Reviews & Inspections</h4>
+                            <p>A group reads/analyzes requirements, finds problems, meets to discuss, agrees on action
+                                items.<br><strong>Informal reviews:</strong> desk checks, pass-arounds,
+                                walkthroughs.<br><strong>Formal reviews / Fagan Inspection:</strong> Not more than 2
+                                hours; 3–5 reviewers; author presents; metrics collected; supervisor doesn't
+                                participate; moderator leads; all reviewers use checklists; re-inspect if >5% changes.
+                            </p>
+                        </div>
+                        <div class="info-panel" id="info-vt-modelbased"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Model-Based V&V</h4>
+                            <p>Formal techniques using modeling paradigms. Tools may provide: completeness checking,
+                                consistency checking, refinement checking, model checking, theorem proving.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="topic" id="t-reviewchecklist">
+                    <div class="topic-header" onclick="toggleTopic('t-reviewchecklist')">
+                        <span class="topic-title">Review Checklist Elements</span>
+                        <span class="topic-tag">list</span>
+                        <span class="chevron">▶</span>
+                    </div>
+                    <div class="leaves">
+                        <div class="leaf-grid">
+                            <div class="leaf" onclick="showInfo(this,'rc-comprehend')"><span
+                                    class="leaf-dot c6"></span>Comprehensibility</div>
+                            <div class="leaf" onclick="showInfo(this,'rc-redundancy')"><span
+                                    class="leaf-dot c6"></span>Redundancy</div>
+                            <div class="leaf" onclick="showInfo(this,'rc-completeness')"><span
+                                    class="leaf-dot c6"></span>Completeness</div>
+                            <div class="leaf" onclick="showInfo(this,'rc-ambig')"><span
+                                    class="leaf-dot c6"></span>Ambiguity</div>
+                            <div class="leaf" onclick="showInfo(this,'rc-consistency')"><span
+                                    class="leaf-dot c6"></span>Consistency</div>
+                            <div class="leaf" onclick="showInfo(this,'rc-organisation')"><span
+                                    class="leaf-dot c6"></span>Organisation</div>
+                            <div class="leaf" onclick="showInfo(this,'rc-conformance')"><span
+                                    class="leaf-dot c6"></span>Conformance to Standards</div>
+                            <div class="leaf" onclick="showInfo(this,'rc-traceability')"><span
+                                    class="leaf-dot c6"></span>Traceability</div>
+                        </div>
+                        <div class="info-panel" id="info-rc-comprehend"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Comprehensibility</h4>
+                            <p>Can readers of the document understand what the requirements mean?</p>
+                        </div>
+                        <div class="info-panel" id="info-rc-redundancy"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Redundancy</h4>
+                            <p>Is information unnecessarily repeated in the requirements document?</p>
+                        </div>
+                        <div class="info-panel" id="info-rc-completeness"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Completeness</h4>
+                            <p>Does the checker know of any missing requirements? Is any information missing from
+                                individual requirement descriptions?</p>
+                        </div>
+                        <div class="info-panel" id="info-rc-ambig"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Ambiguity</h4>
+                            <p>Are requirements expressed using clearly defined terms? Could readers from different
+                                backgrounds make different interpretations?</p>
+                        </div>
+                        <div class="info-panel" id="info-rc-consistency"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Consistency</h4>
+                            <p>Do descriptions of different requirements contain contradictions? Are there
+                                contradictions between individual and overall system requirements?</p>
+                        </div>
+                        <div class="info-panel" id="info-rc-organisation"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Organisation</h4>
+                            <p>Is the document structured sensibly? Are descriptions organized so related requirements
+                                are grouped together?</p>
+                        </div>
+                        <div class="info-panel" id="info-rc-conformance"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Conformance to Standards</h4>
+                            <p>Does the requirements document conform to defined standards? Are departures from
+                                standards justified?</p>
+                        </div>
+                        <div class="info-panel" id="info-rc-traceability"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Traceability</h4>
+                            <p>Are requirements unambiguously identified? Do they include links to related requirements
+                                and to the reasons why they were included?</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════
+     CHAPTER 7 – REQUIREMENTS MANAGEMENT
+════════════════════════════════════════════ -->
+        <div class="chapter" id="ch7">
+            <div class="chapter-header" onclick="toggleChapter('ch7')">
+                <div class="ch-icon c7" style="color:#0a2a1a">CH7</div>
+                <div>
+                    <div class="chapter-title">Requirements Management</div>
+                    <div class="chapter-subtitle">Traceability, baselines, change management, tools</div>
+                </div>
+                <span class="chevron">▶</span>
+            </div>
+            <div class="chapter-body">
+
+                <div class="topic" id="t-reqstatus">
+                    <div class="topic-header" onclick="toggleTopic('t-reqstatus')">
+                        <span class="topic-title">Requirements Statuses & Attributes</span>
+                        <span class="topic-tag">list</span>
+                        <span class="chevron">▶</span>
+                    </div>
+                    <div class="leaves">
+                        <div class="leaf-grid">
+                            <div class="leaf" onclick="showInfo(this,'rs-statuses')"><span
+                                    class="leaf-dot c7"></span>Status Lifecycle</div>
+                            <div class="leaf" onclick="showInfo(this,'rs-attrs')"><span
+                                    class="leaf-dot c7"></span>Requirement Attributes</div>
+                            <div class="leaf" onclick="showInfo(this,'rs-changefactors')"><span
+                                    class="leaf-dot c7"></span>Requirements Change Factors</div>
+                            <div class="leaf" onclick="showInfo(this,'rs-id')"><span
+                                    class="leaf-dot c7"></span>Requirements Identification</div>
+                        </div>
+                        <div class="info-panel" id="info-rs-statuses"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Requirement Status Lifecycle</h4>
+                            <ul>
+                                <li><strong>Proposed:</strong> Submitted by some stakeholder</li>
+                                <li><strong>Approved:</strong> Part of baseline; committed to implement</li>
+                                <li><strong>Rejected:</strong> After evaluation, not included</li>
+                                <li><strong>Implemented:</strong> Designed and implemented</li>
+                                <li><strong>Verified:</strong> Relevant tests have passed</li>
+                                <li><strong>Deleted:</strong> Removed from the list</li>
+                            </ul>
+                        </div>
+                        <div class="info-panel" id="info-rs-attrs"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Requirement Attributes</h4>
+                            <p>Attributes to consider: Priority, Status, Date created, Release number, Validation method
+                                used. More complex projects = richer attributes. Many are predefined in RM tools; others
+                                defined by requirements engineers per project.</p>
+                        </div>
+                        <div class="info-panel" id="info-rs-changefactors"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Requirements Change Factors</h4>
+                            <ul>
+                                <li>Requirements errors, conflicts, and inconsistencies</li>
+                                <li>Evolving customer/user knowledge of the system</li>
+                                <li>Technical, schedule, or cost problems</li>
+                                <li>Changing customer priorities and new needs</li>
+                                <li>Collaborating systems may change</li>
+                                <li>Changing laws and regulations</li>
+                            </ul>
+                        </div>
+                        <div class="info-panel" id="info-rs-id"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Requirements Identification</h4>
+                            <p>Every requirement must have a unique identification. Most common: requirements numbering
+                                by chapter/section. Problems: numbers can't be assigned until document is complete;
+                                implicit classification by section may mislead readers.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="topic" id="t-traceability">
+                    <div class="topic-header" onclick="toggleTopic('t-traceability')">
+                        <span class="topic-title">Traceability</span>
+                        <span class="topic-tag">list</span>
+                        <span class="chevron">▶</span>
+                    </div>
+                    <div class="leaves">
+                        <div class="leaf-grid">
+                            <div class="leaf" onclick="showInfo(this,'tr-def')"><span
+                                    class="leaf-dot c7"></span>Definition & Benefits</div>
+                            <div class="leaf" onclick="showInfo(this,'tr-types')"><span class="leaf-dot c7"></span>Types
+                                of Traceability</div>
+                            <div class="leaf" onclick="showInfo(this,'tr-matrix')"><span
+                                    class="leaf-dot c7"></span>Traceability Matrix</div>
+                        </div>
+                        <div class="info-panel" id="info-tr-def"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Traceability Definition & Benefits</h4>
+                            <p>A requirement is traceable if you can discover: who suggested it, why it exists, what
+                                requirements relate to it, how it relates to
+                                designs/implementations/documentation.<br><strong>Benefits:</strong> Impact analysis,
+                                change control, process monitoring, improved software quality, risk reduction.</p>
+                        </div>
+                        <div class="info-panel" id="info-tr-types"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Types of Traceability</h4>
+                            <ul>
+                                <li><strong>Source traceability:</strong> Links requirements with person or document
+                                </li>
+                                <li><strong>Rationale traceability:</strong> Links to the reason for the requirement
+                                </li>
+                                <li><strong>Requirements-requirements:</strong> Links dependent requirements to each
+                                    other</li>
+                                <li><strong>Architecture traceability:</strong> Links to subsystems implementing the
+                                    requirement</li>
+                                <li><strong>Design traceability:</strong> Links to hardware/software components</li>
+                                <li><strong>Interface traceability:</strong> Links to interfaces of external systems
+                                </li>
+                                <li><strong>Feature traceability:</strong> Links to product features</li>
+                                <li><strong>Tests traceability:</strong> Links to test cases verifying the requirement
+                                </li>
+                                <li><strong>Code traceability:</strong> Generally inferred, not directly established
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="info-panel" id="info-tr-matrix"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Traceability Matrix</h4>
+                            <p>Defines links between pairs of elements. For hundreds/thousands of requirements, matrices
+                                become large and sparsely populated. Simplified form: maintain lists of related
+                                requirement identifiers alongside each requirement description.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="topic" id="t-baseline">
+                    <div class="topic-header" onclick="toggleTopic('t-baseline')">
+                        <span class="topic-title">Baselines & Version Control</span>
+                        <span class="topic-tag">list</span>
+                        <span class="chevron">▶</span>
+                    </div>
+                    <div class="leaves">
+                        <div class="leaf-grid">
+                            <div class="leaf" onclick="showInfo(this,'bl-def')"><span
+                                    class="leaf-dot c7"></span>Baseline Definition</div>
+                            <div class="leaf" onclick="showInfo(this,'bl-versioncontrol')"><span
+                                    class="leaf-dot c7"></span>Version Control</div>
+                            <div class="leaf" onclick="showInfo(this,'bl-change')"><span
+                                    class="leaf-dot c7"></span>Change Management Process</div>
+                        </div>
+                        <div class="info-panel" id="info-bl-def"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Baseline</h4>
+                            <p>Non-modifiable (read-only) version of a document. Describes a moment in time. Enables
+                                document comparison. Comes with a change history. Requires access control.<br>For
+                                requirements: represents the set of functional and non-functional requirements the
+                                development team committed to implement in a specific release. All changes after
+                                baselining must follow a change control process.</p>
+                        </div>
+                        <div class="info-panel" id="info-bl-versioncontrol"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Version Control</h4>
+                            <p>Every version of a requirement needs a unique identifier. Last version must be available
+                                to all team members. Changes must be documented and communicated. Requirements documents
+                                should include a revision history (changes, dates, by whom, why). Version control tools
+                                store and manage revision history.</p>
+                        </div>
+                        <div class="info-panel" id="info-bl-change"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Change Management Process</h4>
+                            <p><strong>Steps:</strong>
+                            <ol>
+                                <li>Identify requirements problem</li>
+                                <li>Analyze requirements and propose changes</li>
+                                <li>Analyze the proposed changes (how many affected? cost in time/money?)</li>
+                                <li>Implement the change (produce amendments or new document version)</li>
+                            </ol><strong>Change Request Form includes:</strong> Date, Customer, Requester,
+                            Product+version, Description and rationale, Change analysis fields, Signature fields,
+                            Status, Comments.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="topic" id="t-rmtools">
+                    <div class="topic-header" onclick="toggleTopic('t-rmtools')">
+                        <span class="topic-title">RM Tools & Approaches</span>
+                        <span class="topic-tag">list</span>
+                        <span class="chevron">▶</span>
+                    </div>
+                    <div class="leaves">
+                        <div class="leaf-grid">
+                            <div class="leaf" onclick="showInfo(this,'rmt-doc')"><span
+                                    class="leaf-dot c7"></span>Document Approach (Word)</div>
+                            <div class="leaf" onclick="showInfo(this,'rmt-db')"><span
+                                    class="leaf-dot c7"></span>Database Approach (DOORS)</div>
+                            <div class="leaf" onclick="showInfo(this,'rmt-tools')"><span
+                                    class="leaf-dot c7"></span>Available RM Tools</div>
+                        </div>
+                        <div class="info-panel" id="info-rmt-doc"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Document Approach</h4>
+                            <p><strong>Pros:</strong> Easy to use, easy to access, simple training, easy to produce
+                                final document.<br><strong>Cons:</strong> Poor traceability, no status reports, no
+                                granularity, limited search/navigation, poor change management and version control,
+                                simultaneous access issues.</p>
+                        </div>
+                        <div class="info-panel" id="info-rmt-db"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Database Approach (e.g., DOORS)</h4>
+                            <p><strong>Pros:</strong> Good for management, controlled access, links, analysis, reports,
+                                query/navigation, version management, change management.<br><strong>Cons:</strong> Hard
+                                and costly to configure, manage, and use; link between database and final document must
+                                be maintained.</p>
+                        </div>
+                        <div class="info-panel" id="info-rmt-tools"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Available RM Tools</h4>
+                            <ul>
+                                <li>Word processor (MS Word with templates)</li>
+                                <li>Spreadsheet (MS Excel)</li>
+                                <li>Commercial: IBM/Telelogic DOORS, IBM Requisite Pro, Jama Contour, Accompa</li>
+                                <li>Open source: OSRMT (SourceForge)</li>
+                                <li>Bug tracking: Bugzilla, GitHub</li>
+                                <li>Collaboration: Assembla, GitHub, Twiki</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════
+     CHAPTER 7B – SRS SPECIFICATION
+════════════════════════════════════════════ -->
+        <div class="chapter" id="ch7b">
+            <div class="chapter-header" onclick="toggleChapter('ch7b')">
+                <div class="ch-icon c8" style="color:#1a0a2a">SRS</div>
+                <div>
+                    <div class="chapter-title">Software Requirements Specification (SRS)</div>
+                    <div class="chapter-subtitle">Labeling methods, readability, TBDs, Volere shell</div>
+                </div>
+                <span class="chevron">▶</span>
+            </div>
+            <div class="chapter-body">
+
+                <div class="topic" id="t-srslabel">
+                    <div class="topic-header" onclick="toggleTopic('t-srslabel')">
+                        <span class="topic-title">Labeling / Identification Methods</span>
+                        <span class="topic-tag">list</span>
+                        <span class="chevron">▶</span>
+                    </div>
+                    <div class="leaves">
+                        <div class="leaf-grid">
+                            <div class="leaf" onclick="showInfo(this,'sl-seq')"><span
+                                    class="leaf-dot c8"></span>Sequence Numbering (UC-9, FR-26)</div>
+                            <div class="leaf" onclick="showInfo(this,'sl-hier')"><span
+                                    class="leaf-dot c8"></span>Hierarchical Numbering (3.2.4.3)</div>
+                            <div class="leaf" onclick="showInfo(this,'sl-textual')"><span
+                                    class="leaf-dot c8"></span>Hierarchical Textual Tags</div>
+                        </div>
+                        <div class="info-panel" id="info-sl-seq"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Sequence Numbering</h4>
+                            <p>Simplest approach. Prefix indicates requirement type (UC-9, FR-26). Numbers not reused
+                                when a requirement is deleted. Used by commercial RM tools.<br><strong>Pros:</strong>
+                                Easy to retain unique identifier even when moving
+                                requirements.<br><strong>Cons:</strong> No logical/hierarchical grouping; numeric labels
+                                say nothing about intent.</p>
+                        </div>
+                        <div class="info-panel" id="info-sl-hier"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Hierarchical Numbering</h4>
+                            <p>Requirements labeled with section numbers (e.g., 3.2.4.3 is a child of 3.2.4). More
+                                digits = more detailed requirement.<br><strong>Pros:</strong> Simple, compact, familiar;
+                                word processor can auto-assign; supported in RM tools.<br><strong>Cons:</strong> Labels
+                                can grow to many digits; TRAP — word processors don't generate persistent labels
+                                (inserting/moving changes numbers).<br><strong>Mitigation:</strong> Number major
+                                sections hierarchically, then use short text codes with sequence numbers in each
+                                section.</p>
+                        </div>
+                        <div class="info-panel" id="info-sl-textual"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Hierarchical Textual Tags</h4>
+                            <p>Structured, meaningful tags: e.g., "Print.ConfirmCopies." Unaffected by
+                                adding/deleting/moving other requirements. Unique ID = Parent.Child (e.g.,
+                                Product.Cart.01).<br><strong>Pros:</strong> Avoids maintenance problems of hierarchical
+                                numbers; tags are meaningful.<br><strong>Cons:</strong> Longer and more difficult to
+                                create/maintain uniqueness.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="topic" id="t-srsaudience">
+                    <div class="topic-header" onclick="toggleTopic('t-srsaudience')">
+                        <span class="topic-title">SRS Audience</span>
+                        <span class="topic-tag">list</span>
+                        <span class="chevron">▶</span>
+                    </div>
+                    <div class="leaves">
+                        <div class="leaf-grid">
+                            <div class="leaf" onclick="showInfo(this,'sa-all')"><span class="leaf-dot c8"></span>All SRS
+                                Audiences</div>
+                        </div>
+                        <div class="info-panel" id="info-sa-all"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>SRS Audiences</h4>
+                            <ul>
+                                <li><strong>Developers:</strong> Need to know what to build</li>
+                                <li><strong>Project Managers:</strong> Schedule and resource estimations</li>
+                                <li><strong>Customers, marketing & sales:</strong> Know what product they expect</li>
+                                <li><strong>Testers:</strong> Develop requirements-based tests and test plans</li>
+                                <li><strong>Maintenance & support:</strong> Understand what each part should do</li>
+                                <li><strong>Documentation writers & training personnel:</strong> Develop user manuals
+                                </li>
+                                <li><strong>Legal staff:</strong> Ensure requirements comply with laws</li>
+                                <li><strong>Subcontractors:</strong> Base their work on specified requirements</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="topic" id="t-srswriting">
+                    <div class="topic-header" onclick="toggleTopic('t-srswriting')">
+                        <span class="topic-title">Writing Guidelines & Style</span>
+                        <span class="topic-tag">list</span>
+                        <span class="chevron">▶</span>
+                    </div>
+                    <div class="leaves">
+                        <div class="leaf-grid">
+                            <div class="leaf" onclick="showInfo(this,'sw-perspective')"><span
+                                    class="leaf-dot c8"></span>System or User Perspective</div>
+                            <div class="leaf" onclick="showInfo(this,'sw-style')"><span
+                                    class="leaf-dot c8"></span>Writing Style Tips</div>
+                            <div class="leaf" onclick="showInfo(this,'sw-detail')"><span
+                                    class="leaf-dot c8"></span>Level of Detail</div>
+                            <div class="leaf" onclick="showInfo(this,'sw-shall')"><span class="leaf-dot c8"></span>The
+                                "Shall" Keyword</div>
+                            <div class="leaf" onclick="showInfo(this,'sw-rfctypes')"><span
+                                    class="leaf-dot c8"></span>RFC 2119 Keywords</div>
+                        </div>
+                        <div class="info-panel" id="info-sw-perspective"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>System or User Perspective</h4>
+                            <p>Write as: "The system shall [action] [observable result]" or "The [user class] shall be
+                                able to [do something] [to some object]."<br>Include optional preconditions and trigger
+                                events. Active voice makes it clear who is taking the action.</p>
+                        </div>
+                        <div class="info-panel" id="info-sw-style"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Writing Style Tips</h4>
+                            <ul>
+                                <li>Put the punch line first (statement of need/functionality)</li>
+                                <li>Use complete sentences with proper grammar/spelling</li>
+                                <li>Keep sentences short and direct — avoid jargon</li>
+                                <li>Don't use multiple terms for the same concept</li>
+                                <li>Avoid interleaving passive and active voice</li>
+                                <li>Write in active voice to clarify who takes the action</li>
+                                <li>Avoid "and/or" — leaves interpretation to the reader</li>
+                                <li>Split requirements with "unless," "except," "but" into multiple requirements</li>
+                            </ul>
+                        </div>
+                        <div class="info-panel" id="info-sw-detail"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Level of Detail</h4>
+                            <p><strong>More detail when:</strong> External client; outsourced development/testing;
+                                geographically dispersed team; testing based on requirements; accurate estimates needed;
+                                traceability required.<br><strong>Less detail when:</strong> Internal work; customers
+                                extensively involved; developers have domain experience; precedents available; package
+                                solution used.</p>
+                        </div>
+                        <div class="info-panel" id="info-sw-shall"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>The "Shall" Keyword</h4>
+                            <p>Use "shall" (or "must") to indicate mandatory requirements. Be consistent — pick one word
+                                and stick with it. "May" or "should" indicate optional/recommended behavior. "Shall" is
+                                a standard signal to developers and testers that implementation is required.</p>
+                        </div>
+                        <div class="info-panel" id="info-sw-rfctypes"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>RFC 2119 Requirement Keywords</h4>
+                            <ul>
+                                <li><strong>MUST / REQUIRED / SHALL:</strong> Absolute requirement</li>
+                                <li><strong>MUST NOT / SHALL NOT:</strong> Absolute prohibition</li>
+                                <li><strong>SHOULD / RECOMMENDED:</strong> Think twice about NOT doing it</li>
+                                <li><strong>SHOULD NOT / NOT RECOMMENDED:</strong> Think twice about doing it</li>
+                                <li><strong>MAY / OPTIONAL:</strong> Truly optional</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════
+     CHAPTER 8–9 – AGILE & SCRUM
+════════════════════════════════════════════ -->
+        <div class="chapter" id="ch89">
+            <div class="chapter-header" onclick="toggleChapter('ch89')">
+                <div class="ch-icon c9" style="color:#2a2a00">CH8–9</div>
+                <div>
+                    <div class="chapter-title">Agile Methods & Scrum</div>
+                    <div class="chapter-subtitle">Agile values, principles, Scrum roles, artifacts, ceremonies</div>
+                </div>
+                <span class="chevron">▶</span>
+            </div>
+            <div class="chapter-body">
+
+                <div class="topic" id="t-agilevalues">
+                    <div class="topic-header" onclick="toggleTopic('t-agilevalues')">
+                        <span class="topic-title">Agile Manifesto Values</span>
+                        <span class="topic-tag">list</span>
+                        <span class="chevron">▶</span>
+                    </div>
+                    <div class="leaves">
+                        <div class="leaf-grid">
+                            <div class="leaf" onclick="showInfo(this,'av1')"><span
+                                    class="leaf-dot c9"></span>Individuals & Interactions > Process & Tools</div>
+                            <div class="leaf" onclick="showInfo(this,'av2')"><span class="leaf-dot c9"></span>Working
+                                Software > Comprehensive Documentation</div>
+                            <div class="leaf" onclick="showInfo(this,'av3')"><span class="leaf-dot c9"></span>Customer
+                                Collaboration > Contract Negotiation</div>
+                            <div class="leaf" onclick="showInfo(this,'av4')"><span class="leaf-dot c9"></span>Responding
+                                to Change > Following a Plan</div>
+                        </div>
+                        <div class="info-panel" id="info-av1"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Individuals & Interactions</h4>
+                            <p>Individuals create value. Without a skilled craftsman, the best tools are useless. Focus
+                                on people, not processes.</p>
+                        </div>
+                        <div class="info-panel" id="info-av2"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Working Software</h4>
+                            <p>Heavy processes generate exhaustive documentation with ambiguity and maintenance costs. A
+                                single criterion measures progress: working software. Documentation is a support tool,
+                                not the goal.</p>
+                        </div>
+                        <div class="info-panel" id="info-av3"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Customer Collaboration</h4>
+                            <p>Negotiation protects from financial risk but can cause project failure and endless
+                                disputes. Think as one team with a common goal: a successful project.</p>
+                        </div>
+                        <div class="info-panel" id="info-av4"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Responding to Change</h4>
+                            <p>A predefined plan makes us unresponsive to events. Agile methods are designed to
+                                accommodate change, ensuring accurate and adaptive strategic planning.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="topic" id="t-agileprinciples">
+                    <div class="topic-header" onclick="toggleTopic('t-agileprinciples')">
+                        <span class="topic-title">Agile Manifesto Principles (12)</span>
+                        <span class="topic-tag">list</span>
+                        <span class="chevron">▶</span>
+                    </div>
+                    <div class="leaves">
+                        <div class="leaf-grid">
+                            <div class="leaf" onclick="showInfo(this,'ap-all')"><span class="leaf-dot c9"></span>All 12
+                                Principles</div>
+                        </div>
+                        <div class="info-panel" id="info-ap-all"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>12 Agile Manifesto Principles</h4>
+                            <ol>
+                                <li>Satisfy customer through early and continuous delivery of valuable software</li>
+                                <li>Welcome changing requirements, even late in development</li>
+                                <li>Deliver working software frequently (weeks to months, shorter preferred)</li>
+                                <li>Business people and developers work together daily</li>
+                                <li>Build projects around motivated individuals; give them support and trust them</li>
+                                <li>Most efficient communication: face-to-face conversation</li>
+                                <li>Working software is the primary measure of progress</li>
+                                <li>Agile promotes sustainable development pace (sponsors, devs, users)</li>
+                                <li>Continuous attention to technical excellence and good design</li>
+                                <li>Simplicity — maximize the amount of work NOT done</li>
+                                <li>Best architectures and designs emerge from self-organizing teams</li>
+                                <li>Team regularly reflects on how to become more effective and adjusts</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="topic" id="t-scrumroles">
+                    <div class="topic-header" onclick="toggleTopic('t-scrumroles')">
+                        <span class="topic-title">Scrum Roles</span>
+                        <span class="topic-tag">list</span>
+                        <span class="chevron">▶</span>
+                    </div>
+                    <div class="leaves">
+                        <div class="leaf-grid">
+                            <div class="leaf" onclick="showInfo(this,'sr-po')"><span class="leaf-dot c9"></span>Product
+                                Owner</div>
+                            <div class="leaf" onclick="showInfo(this,'sr-sm')"><span class="leaf-dot c9"></span>Scrum
+                                Master</div>
+                            <div class="leaf" onclick="showInfo(this,'sr-team')"><span
+                                    class="leaf-dot c9"></span>Project Team</div>
+                        </div>
+                        <div class="info-panel" id="info-sr-po"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Product Owner</h4>
+                            <p>Possibly a Product Manager or Project Sponsor. Decides features, release date,
+                                prioritization, and budget. Has final say on product decisions.</p>
+                        </div>
+                        <div class="info-panel" id="info-sr-sm"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Scrum Master</h4>
+                            <p>Typically a Project Manager or Team Leader. Responsible for enacting Scrum values and
+                                practices. Handles risk management and politics. Keeps everyone productive. Removes
+                                impediments.</p>
+                        </div>
+                        <div class="info-panel" id="info-sr-team"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Project Team</h4>
+                            <p>5–10 members. Self-organizing. Cross-functional: QA, Programmers, UI Designers, etc.
+                                Membership should change only between sprints.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="topic" id="t-scrumartifacts">
+                    <div class="topic-header" onclick="toggleTopic('t-scrumartifacts')">
+                        <span class="topic-title">Scrum Artifacts</span>
+                        <span class="topic-tag">list</span>
+                        <span class="chevron">▶</span>
+                    </div>
+                    <div class="leaves">
+                        <div class="leaf-grid">
+                            <div class="leaf" onclick="showInfo(this,'sa-backlog')"><span
+                                    class="leaf-dot c9"></span>Product Backlog</div>
+                            <div class="leaf" onclick="showInfo(this,'sa-stories')"><span
+                                    class="leaf-dot c9"></span>User Stories</div>
+                            <div class="leaf" onclick="showInfo(this,'sa-sprint')"><span
+                                    class="leaf-dot c9"></span>Sprint Backlog</div>
+                            <div class="leaf" onclick="showInfo(this,'sa-burndown')"><span
+                                    class="leaf-dot c9"></span>Sprint Burndown Chart</div>
+                        </div>
+                        <div class="info-panel" id="info-sa-backlog"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Product Backlog</h4>
+                            <p>The project requirements. Prioritized by the Product Owner. Reprioritized at the start of
+                                each sprint. Contains all features, enhancements, and fixes needed.</p>
+                        </div>
+                        <div class="info-panel" id="info-sa-stories"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>User Stories</h4>
+                            <p>Format: "As a [user role], I want to [goal], so I can [reason]."<br>Example: "As a user,
+                                I want to log in, so I can access subscriber content."<br>Captures: Who (user role),
+                                What (goal), Why (reason).</p>
+                        </div>
+                        <div class="info-panel" id="info-sa-sprint"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Sprint Backlog</h4>
+                            <p>Set of Product Backlog items selected for the Sprint. Created during Sprint Planning.
+                                Contains tasks identified and estimated (1–16 hours each). Created collaboratively, not
+                                by Scrum Master alone.</p>
+                        </div>
+                        <div class="info-panel" id="info-sa-burndown"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Sprint Burndown Chart</h4>
+                            <p>Displays what work has been completed and what remains. One per developer or work item.
+                                Updated every day. Make best guess about hours/points completed each day.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="topic" id="t-scrumceremonies">
+                    <div class="topic-header" onclick="toggleTopic('t-scrumceremonies')">
+                        <span class="topic-title">Scrum Ceremonies</span>
+                        <span class="topic-tag">list</span>
+                        <span class="chevron">▶</span>
+                    </div>
+                    <div class="leaves">
+                        <div class="leaf-grid">
+                            <div class="leaf" onclick="showInfo(this,'sc-planning')"><span
+                                    class="leaf-dot c9"></span>Sprint Planning</div>
+                            <div class="leaf" onclick="showInfo(this,'sc-daily')"><span class="leaf-dot c9"></span>Daily
+                                Scrum (Stand-up)</div>
+                            <div class="leaf" onclick="showInfo(this,'sc-review')"><span
+                                    class="leaf-dot c9"></span>Sprint Review</div>
+                            <div class="leaf" onclick="showInfo(this,'sc-retro')"><span
+                                    class="leaf-dot c9"></span>Sprint Retrospective</div>
+                        </div>
+                        <div class="info-panel" id="info-sc-planning"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Sprint Planning</h4>
+                            <p>Team selects items from product backlog they can commit to completing. Sprint Backlog
+                                created with tasks identified and estimated. Collaboratively done. High-level design
+                                considered. Usually a 2-week to 1-month cycle.</p>
+                        </div>
+                        <div class="info-panel" id="info-sc-daily"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Daily Scrum (Stand-up)</h4>
+                            <p>Daily, 15 minutes, standing. Not for problem solving. The whole world is invited to
+                                observe but only team members, Scrum Master, and Product Owner can talk. Helps avoid
+                                unnecessary meetings. 3 questions: What did I do yesterday? What will I do today? Any
+                                impediments?</p>
+                        </div>
+                        <div class="info-panel" id="info-sc-review"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Sprint Review</h4>
+                            <p>Team presents what it accomplished during the sprint (typically a demo of new features).
+                                Informal — 2-hour prep time rule, no slides. Whole team participates. Invite the world.
+                            </p>
+                        </div>
+                        <div class="info-panel" id="info-sc-retro"><button class="close-btn"
+                                onclick="closeInfo(this)">×</button>
+                            <h4>Sprint Retrospective</h4>
+                            <p>Team reflects on the process: What went well? What could improve? How to make next sprint
+                                better? Results in concrete action items for the next sprint.</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div><!-- end tree-container -->
+
+    <script>
+        function toggleChapter(id) {
+            const el = document.getElementById(id);
+            el.classList.toggle('open');
+        }
+
+        function toggleTopic(id) {
+            const el = document.getElementById(id);
+            el.classList.toggle('open');
+        }
+
+        function showInfo(leafEl, infoId) {
+            // toggle active on leaf
+            const wasActive = leafEl.classList.contains('active');
+            // close all info panels in this leaf-grid
+            const grid = leafEl.closest('.leaves');
+            grid.querySelectorAll('.leaf').forEach(l => l.classList.remove('active'));
+            grid.querySelectorAll('.info-panel').forEach(p => p.classList.remove('show'));
+
+            if (!wasActive) {
+                leafEl.classList.add('active');
+                const panel = document.getElementById('info-' + infoId);
+                if (panel) panel.classList.add('show');
+            }
+        }
+
+        function closeInfo(btn) {
+            const panel = btn.closest('.info-panel');
+            panel.classList.remove('show');
+            // also deactivate associated leaf
+            const leaves = panel.closest('.leaves');
+            if (leaves) leaves.querySelectorAll('.leaf').forEach(l => l.classList.remove('active'));
+        }
+
+        function toggleTheme() {
+            const body = document.body;
+            body.dataset.theme = body.dataset.theme === 'dark' ? 'light' : 'dark';
+        }
+
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('input', function () {
+            const q = this.value.toLowerCase().trim();
+            if (!q) {
+                document.querySelectorAll('.chapter, .topic, .leaf').forEach(el => el.classList.remove('hidden-search'));
+                return;
+            }
+
+            document.querySelectorAll('.chapter').forEach(chapter => {
+                const topics = chapter.querySelectorAll('.topic');
+                let chapterVisible = false;
+
+                topics.forEach(topic => {
+                    const leaves = topic.querySelectorAll('.leaf');
+                    let topicVisible = false;
+                    const topicTitle = topic.querySelector('.topic-title').textContent.toLowerCase();
+
+                    leaves.forEach(leaf => {
+                        const text = leaf.textContent.toLowerCase();
+                        if (text.includes(q) || topicTitle.includes(q)) {
+                            leaf.classList.remove('hidden-search');
+                            topicVisible = true;
+                        } else {
+                            leaf.classList.add('hidden-search');
+                        }
+                    });
+
+                    if (topicVisible || topicTitle.includes(q)) {
+                        topic.classList.remove('hidden-search');
+                        chapterVisible = true;
+                        // auto-open
+                        topic.classList.add('open');
+                        chapter.classList.add('open');
+                    } else {
+                        topic.classList.add('hidden-search');
+                    }
+                });
+
+                const chapterTitle = chapter.querySelector('.chapter-title').textContent.toLowerCase();
+                if (chapterVisible || chapterTitle.includes(q)) {
+                    chapter.classList.remove('hidden-search');
+                } else {
+                    chapter.classList.add('hidden-search');
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
