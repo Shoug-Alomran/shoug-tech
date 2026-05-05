@@ -7,11 +7,11 @@
 
 إذا لم يتم تحميل العرض المضمن بشكل صحيح، افتح الفصل مباشرة.
 
-- [افتح الفصل العاشر في صفحة جديدة](/ar/Academics/computer-science/CS330/chapter-10/chapter-10.html)
+- [افتح الفصل العاشر في صفحة جديدة](/Academics/computer-science/CS330/chapter-10/chapter-10.html)
 
 <div class="iframe-wrap">
   <iframe
-    src="/ar/Academics/computer-science/CS330/chapter-10/chapter-10.html"
+    src="/Academics/computer-science/CS330/chapter-10/chapter-10.html"
     title="الفصل العاشر: بنية التخزين الضخم"
     loading="lazy"
     referrerpolicy="no-referrer"

@@ -20,12 +20,12 @@
 
   function url(path) {
     const base = getBase().replace(/\/$/, ""); // remove trailing slash
-    const clean = String(path || "").replace(/^\//,-""); // remove leading slash
+    const clean = String(path || "").replace(/^\//, ""); // remove leading slash
     return `${base}/${clean}`.replace(/\/+$/, "/"); // ensure ends with /
   }
 
   function policyHref(path) {
-    const clean = String(path || "").replace(/^\//,-"");
+    const clean = String(path || "").replace(/^\//, "");
     return url(clean.replace(/\.md$/, "/"));
   }
 

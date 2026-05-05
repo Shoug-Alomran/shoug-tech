@@ -7,11 +7,11 @@
 
 إذا لم يتم تحميل العرض المضمن بشكل صحيح، افتح الفصل مباشرة.
 
-- [افتح الفصل الحادي عشر في صفحة جديدة](/ar/Academics/computer-science/CS330/chapter-11/chapter-11.html)
+- [افتح الفصل الحادي عشر في صفحة جديدة](/Academics/computer-science/CS330/chapter-11/chapter-11.html)
 
 <div class="iframe-wrap">
   <iframe
-    src="/ar/Academics/computer-science/CS330/chapter-11/chapter-11.html"
+    src="/Academics/computer-science/CS330/chapter-11/chapter-11.html"
     title="الفصل الحادي عشر: واجهة نظام الملفات"
     loading="lazy"
     referrerpolicy="no-referrer"

@@ -7,11 +7,11 @@
 
 إذا ما تحمل العرض بشكل صحيح، افتح الخريطة الذهنية بشكل مباشر.
 
-- [افتح الخريطة الذهنية النهائية في صفحة جديدة](/ar/Academics/software-engineering/SE311/mindmap/final-mindmap.html)
+- [افتح الخريطة الذهنية النهائية في صفحة جديدة](/Academics/software-engineering/SE311/mindmap/final-mindmap.html)
 
 <div class="iframe-wrap">
   <iframe
-    src="/ar/Academics/software-engineering/SE311/mindmap/final-mindmap.html"
+    src="/Academics/software-engineering/SE311/mindmap/final-mindmap.html"
     title="الخريطة الذهنية النهائية لمقرر SE311"
     loading="lazy"
     referrerpolicy="no-referrer"
