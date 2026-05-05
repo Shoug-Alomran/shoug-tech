@@ -93,15 +93,18 @@ bash scripts/preflight_qa.sh
 
 It performs:
 - strict EN/AR parity check with autofix for missing Arabic files
-- clean `mkdocs build --clean`
-- favicon validation (`docs/favicon.ico`)
+- clean `mkdocs build --strict --clean`
+- configured theme asset validation (`logo` and `favicon` from `mkdocs.yml`)
+- generated route validation
+- generated internal link and asset validation
 
 ## Deployment
 On every push to `main`, GitHub Actions:
 1. installs dependencies
 2. runs strict EN/AR parity checks
-3. builds the MkDocs site
-4. deploys to GitHub Pages
+3. builds the MkDocs site in strict mode
+4. verifies generated routes, links, and assets
+5. deploys to GitHub Pages
 
 Workflow file: `.github/workflows/deploy-mkdocs.yml`
 
