@@ -481,7 +481,6 @@
       html[data-parent-theme="dark"] dt,
       html[data-parent-theme="dark"] dd,
       html[data-parent-theme="dark"] span,
-      html[data-parent-theme="dark"] div,
       html[data-parent-theme="dark"] label {
         color: #e5e7eb !important;
       }
