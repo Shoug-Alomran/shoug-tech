@@ -7,6 +7,7 @@ This section contains my structured study material for SE311, including:
 * Chapter notes
 * Quizzes and practice questions
 * A midterm cheat sheet
+* A UML diagrams cheat sheet for class diagrams and use case diagrams
 * Supporting diagrams and examples
 
 The goal of this section is to provide a clear, practical study resource for understanding requirements engineering and preparing for assessments.
@@ -17,7 +18,7 @@ The goal of this section is to provide a clear, practical study resource for und
 
 * If you are following the course, start from Chapter 1 and continue in order.
 * If you are revising, use the midterm cheat sheet and the quizzes to test your understanding.
-* If you are working on modeling or analysis tasks, focus on the modeling chapters and their examples.
+* If you are working on modeling or analysis tasks, focus on the modeling chapters, their examples, and the UML diagrams cheat sheet.
 
 This page is the main entry point to all SE311 material.
 
@@ -112,6 +113,7 @@ This page is the main entry point to all SE311 material.
 In addition to the chapter notes, this section also includes:
 
 * A midterm cheat sheet for focused revision
+* A UML diagrams cheat sheet for class diagrams, use case diagrams, and the Smart Parking System example
 * Quizzes and practice questions for multiple chapters
 
 These materials are intended to support both understanding and exam preparation.
