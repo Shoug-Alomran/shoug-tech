@@ -566,6 +566,78 @@
             color: var(--wrong)
         }
 
+        .mock-panel {
+            text-align: left;
+            margin-top: 24px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            background: var(--surface)
+        }
+
+        .mock-panel summary {
+            cursor: pointer;
+            padding: 14px 18px;
+            background: var(--highlight);
+            color: var(--accent);
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            letter-spacing: .02em
+        }
+
+        .mock-body {
+            padding: 18px;
+            display: grid;
+            gap: 14px
+        }
+
+        .mock-group {
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            overflow: hidden
+        }
+
+        .mock-group h3 {
+            background: var(--section-head);
+            color: #f7f3ec;
+            font-family: 'Playfair Display', serif;
+            font-size: .95rem;
+            padding: 9px 12px
+        }
+
+        [data-theme=dark] .mock-group h3 {
+            color: #1a150d
+        }
+
+        .mock-list {
+            list-style: none;
+            padding: 10px 14px;
+            display: grid;
+            gap: 8px
+        }
+
+        .mock-list li {
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 8px
+        }
+
+        .mock-list li:last-child {
+            border-bottom: 0;
+            padding-bottom: 0
+        }
+
+        .mock-num {
+            color: var(--accent2);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .78rem;
+            font-weight: 500
+        }
+
+        .mock-answer {
+            color: var(--correct);
+            font-weight: 600
+        }
+
         @media(max-width:600px) {
             .exam-header {
                 padding-left: 16px;
@@ -607,7 +679,7 @@
     <button class="theme-toggle" id="themeBtn" onclick="toggleTheme()">LIGHT / DARK</button>
     <header class="exam-header">
         <h1>ISC 103 - Islamic Economic System</h1>
-        <p>FINAL EXAMINATION · Dr. Amal Sharaf</p>
+        <p>FINAL EXAMINATION</p>
         <div class="header-meta"><span class="meta-pill">2 HOURS</span><span class="meta-pill">40 POINTS</span><span
                 class="meta-pill">12 LECTURES</span></div>
     </header>
@@ -629,7 +701,7 @@
             ['Lecture 5', 'Zakat is customarily what percentage of a Muslim\'s total disposable income?', ['5% (1/20)', '2.5% (1/40)', '10% (1/10)', '20% (1/5)'], 'b'],
             ['Lecture 6', 'What is the cause of the "economic dilemma" as defined in the lectures?', ['The excessive taxation by governments', 'The impossibility of providing all human needs and desires in the appropriate time, place and form - Relative Scarcity', 'The prohibition of interest in Islamic law', 'The unequal distribution caused by socialism'], 'b'],
             ['Lecture 7', 'In Islam, production is described as exerting persistent effort in investing resources of wealth to double the yield for:', ['Individual profit and personal gain', 'The prosperity of society, its existence, and its supreme values', 'State control and government revenues', 'Competition with capitalist markets'], 'b'],
-            ['Lecture 8', 'The Arabic term Tabtheer (تبذير) in consumption refers to:', ['Exceeding the limit of temperance in spending (less than luxury)', 'Spending money in wrongful and unworthy things', 'Living a luxurious life (Taraf)', 'The act of saving excess wealth'], 'b'],
+            ['Lecture 8', 'The Arabic term Tabtheer (تبذير) in consumption refers to:', ['Exceeding the limit of temperance in spending (less than luxury)', 'Spending money in wrongful and unworthy things', 'Living a luxurious life', 'The act of saving excess wealth'], 'b'],
             ['Lecture 9', 'When exchanging gold for gold (same type of usurious asset), Islamic law requires:', ['A difference in weight is permissible as long as it is immediate', 'Equality (like for like) AND immediate exchange (hand to hand)', 'Only that the exchange is delayed; weight differences are fine', 'That the transaction be recorded by a witness'], 'b'],
             ['Lecture 11', 'Which of the following is a main (primary) function of money according to the lectures?', ['Value reservoir', 'A method for credit payments', 'A means of exchanging', 'A tool for government borrowing'], 'c'],
             ['Lecture 12', 'The central (issuing) bank performs which of the following functions?', ['Accepting demand deposits and granting retail loans', 'Financing real estate only', 'Banking, monetary/credit supervision, and supervisory functions', 'Buying and selling foreign currencies for individuals'], 'c']
@@ -677,6 +749,27 @@
         const letters = ['a', 'b', 'c', 'd'];
         function section(title, pts, inst, body) { return `<section class="section-card"><div class="section-header"><span class="section-title">${title}</span><span class="section-pts">${pts}</span></div><div class="section-inst">${inst}</div><div class="section-body">${body}</div></section>` }
         function qwrap(id, lec, num, stem, body) { return `<div class="q-item" id="${id}"><span class="lec-tag">${lec}</span><div class="q-stem"><span class="q-num">${num}.</span> ${stem}</div>${body}<div class="q-feedback" id="${id}-fb"></div></div>` }
+        function cleanPrompt(text) { return text.replace(/<input[^>]+>/g, '_____') }
+        function fibAnswerText(q) {
+            let ans = Array.isArray(q[3][0]) ? q[3] : [q[3]];
+            return ans.map(a => a[0]).join(' / ');
+        }
+        function mockList(title, items) {
+            return `<div class="mock-group"><h3>${title}</h3><ol class="mock-list">${items.join('')}</ol></div>`;
+        }
+        function renderMockAnswers() {
+            const mcqItems = mcq.map((q, i) => {
+                const letter = q[3].toUpperCase();
+                const answer = q[2][letters.indexOf(q[3])];
+                return `<li><span class="mock-num">${i + 1}.</span> <span class="mock-answer">${letter}</span> - ${answer}</li>`;
+            });
+            const tfItems = tf.map((q, i) => `<li><span class="mock-num">${i + 13}.</span> <span class="mock-answer">${q[2] === 'T' ? 'True' : 'False'}</span></li>`);
+            const matchItems = matchTerms.map((term, i) => `<li><span class="mock-num">${i + 1}.</span> ${term}: <span class="mock-answer">${matchAns[i]}) ${matchOptions[matchAns[i]]}</span></li>`);
+            const fibItems = fib.map((q, i) => `<li><span class="mock-num">${i + 25}.</span> ${cleanPrompt(q[1])}<br><span class="mock-answer">Mock answer: ${fibAnswerText(q)}</span></li>`);
+            const hadItems = had.map((q, i) => `<li><span class="mock-num">${i + 33}.</span> ${q[1]}<br><span class="mock-answer">Mock answer:</span> ${q[2]}</li>`);
+            const swItems = sw.map((q, i) => `<li><span class="mock-num">${i + 37}.</span> ${q[1]}<br><span class="mock-answer">Mock answer:</span> ${q[2]}</li>`);
+            return `<details class="mock-panel"><summary>Mock Answers / Study Key</summary><div class="mock-body">${mockList('Section A - Multiple Choice', mcqItems)}${mockList('Section B - True or False', tfItems)}${mockList('Section C - Matching', matchItems)}${mockList('Section D - Fill in the Blank', fibItems)}${mockList('Section E - Hadith / Quranic Verse', hadItems)}${mockList('Section F - Short Written Answer', swItems)}</div></details>`;
+        }
         function render() {
             let n = 1; let mbody = mcq.map((q, i) => qwrap(`q${i + 1}`, q[0], n++, q[1], `<div class="options">${q[2].map((o, j) => `<label class="option-label"><input type="radio" name="q${i + 1}" value="${letters[j]}"><span class="opt-letter">${letters[j].toUpperCase()}</span>${o}</label>`).join('')}</div>`)).join('');
             let tfbody = tf.map((q, i) => qwrap(`tf${i + 1}`, q[0], n++, q[1], `<div class="tf-group"><button class="tf-btn" onclick="selectTF('tf${i + 1}','T')">True</button><button class="tf-btn" onclick="selectTF('tf${i + 1}','F')">False</button></div>`)).join('');
@@ -684,7 +777,7 @@
             let fibbody = fib.map((q, i) => qwrap(`fib${i + 1}`, q[0], n++, q[1], '')).join('');
             let hadbody = had.map((q, i) => qwrap(`had${i + 1}`, q[0], n++, q[1], `<textarea class="written-area" id="had${i + 1}-ans" placeholder="Write the Hadith here..." rows="4"></textarea><div class="answer-reveal" id="had${i + 1}-reveal"></div>`)).join('');
             let swbody = sw.map((q, i) => qwrap(`sw${i + 1}`, q[0], n++, q[1], `<textarea class="written-area" id="sw${i + 1}-ans" placeholder="Your answer..." rows="5"></textarea><div class="answer-reveal" id="sw${i + 1}-reveal"></div>`)).join('');
-            document.getElementById('examBody').innerHTML = section('Section A - Multiple Choice Questions', '12 Points · 1 pt each', 'Choose the best answer for each question.', mbody) + section('Section B - True or False', '6 Points · 0.5 pt each', 'Determine whether each statement is True or False.', tfbody) + section('Section C - Matching', '6 Points · 0.5 pt each', 'Match each term with the correct definition or description.', matchbody) + section('Section D - Fill in the Blank', '4 Points · 0.5 pt each', 'Complete each sentence with the correct word or phrase.', fibbody) + section('Section E - Write the Hadith / Quranic Verse', '4 Points · 1 pt each', 'Write the full Hadith or Quranic verse related to each topic. Graded on keyword inclusion.', hadbody) + section('Section F - Short Written Answer', '8 Points · 2 pts each', 'Answer each question in 3-6 sentences. Graded on keyword matching.', swbody) + `<div class="submit-section"><p style="color:var(--muted);font-size:.85rem;margin-bottom:16px">Review all answers before submitting. Once submitted, the exam is graded immediately.</p><button class="submit-btn" id="submitBtn" onclick="submitExam()">Submit Exam</button><div class="results-panel" id="resultsPanel"><p style="font-size:.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px">بسم الله الرحمن الرحيم</p><div class="result-score" id="resultScore">-</div><div class="result-grade" id="resultGrade">- / 40 points</div><div class="result-msg" id="resultMsg"></div><div class="result-breakdown" id="resultBreakdown"></div></div></div>`;
+            document.getElementById('examBody').innerHTML = section('Section A - Multiple Choice Questions', '12 Points · 1 pt each', 'Choose the best answer for each question.', mbody) + section('Section B - True or False', '6 Points · 0.5 pt each', 'Determine whether each statement is True or False.', tfbody) + section('Section C - Matching', '6 Points · 0.5 pt each', 'Match each term with the correct definition or description.', matchbody) + section('Section D - Fill in the Blank', '4 Points · 0.5 pt each', 'Complete each sentence with the correct word or phrase.', fibbody) + section('Section E - Write the Hadith / Quranic Verse', '4 Points · 1 pt each', 'Write the full Hadith or Quranic verse related to each topic. Graded on keyword inclusion.', hadbody) + section('Section F - Short Written Answer', '8 Points · 2 pts each', 'Answer each question in 3-6 sentences. Graded on keyword matching.', swbody) + `<div class="submit-section"><p style="color:var(--muted);font-size:.85rem;margin-bottom:16px">Review all answers before submitting. Once submitted, the exam is graded immediately.</p><button class="submit-btn" id="submitBtn" onclick="submitExam()">Submit Exam</button><div class="results-panel" id="resultsPanel"><p style="font-size:.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px">بسم الله الرحمن الرحيم</p><div class="result-score" id="resultScore">-</div><div class="result-grade" id="resultGrade">- / 40 points</div><div class="result-msg" id="resultMsg"></div><div class="result-breakdown" id="resultBreakdown"></div></div>${renderMockAnswers()}</div>`;
             document.querySelectorAll('.option-label').forEach(label => label.addEventListener('click', function () { if (examSubmitted) return; let name = this.querySelector('input').name; document.querySelectorAll(`input[name="${name}"]`).forEach(r => r.closest('.option-label').classList.remove('selected')); this.querySelector('input').checked = true; this.classList.add('selected') }))
         }
         function selectTF(qid, val) { if (examSubmitted) return; tfState[qid] = val; let btns = document.querySelectorAll(`#${qid} .tf-btn`); btns.forEach(b => b.classList.remove('selected')); btns[val === 'T' ? 0 : 1].classList.add('selected') }
