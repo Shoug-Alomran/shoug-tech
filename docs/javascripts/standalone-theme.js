@@ -100,6 +100,8 @@
       (document.head || document.documentElement).appendChild(style);
     }
 
+    if (style.textContent) return;
+
     style.textContent = [
       "html[data-theme='dark'], html[data-theme='dark'] :root {",
       "  --white: #111827 !important;",
@@ -166,19 +168,31 @@
     applyTheme(resolveTheme());
   }
 
+  var syncQueued = false;
+  function queueSync() {
+    if (syncQueued) return;
+    syncQueued = true;
+    var run = function () {
+      syncQueued = false;
+      sync();
+    };
+    if (window.requestAnimationFrame) window.requestAnimationFrame(run);
+    else setTimeout(run, 16);
+  }
+
   sync();
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", sync);
+    document.addEventListener("DOMContentLoaded", queueSync);
   }
 
   var media = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
   if (media) {
-    if (media.addEventListener) media.addEventListener("change", sync);
-    else if (media.addListener) media.addListener(sync);
+    if (media.addEventListener) media.addEventListener("change", queueSync);
+    else if (media.addListener) media.addListener(queueSync);
   }
 
   window.addEventListener("storage", function (event) {
-    if (!event.key || event.key === "__palette" || paletteKeyPattern.test(event.key)) sync();
+    if (!event.key || event.key === "__palette" || paletteKeyPattern.test(event.key)) queueSync();
   });
 
   if (window.MutationObserver) {
@@ -188,7 +202,7 @@
 
       targets.forEach(function (target) {
         if (!target) return;
-        new MutationObserver(sync).observe(target, {
+        new MutationObserver(queueSync).observe(target, {
           attributes: true,
           attributeFilter: ["data-md-color-scheme", "data-theme", "class"]
         });
