@@ -570,7 +570,6 @@
   function initRevealMotion() {
     const selectors = [
       ".md-typeset.grid.cards->-ul->-li",
-      ".home-hero__text",
       ".value-strip",
       ".md-typeset->-h1"
     ];
