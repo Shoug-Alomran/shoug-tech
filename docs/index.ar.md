@@ -77,7 +77,7 @@ hide:
 
     شوف خارطة طريق تعلمك بعدة صيغ.
 
-    [:octicons-arrow-right-24: شوف الخطة الأكاديمية](academic-plan-themes/academic-plan.md)
+    [:octicons-arrow-right-24: شوف الخطة الأكاديمية](academic-plan-themes/academic-plan.ar.md)
 
 -   :link: **روابط مفيدة**
 
