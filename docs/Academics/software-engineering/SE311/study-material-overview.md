@@ -1,15 +1,27 @@
-# Study Material Overview
+<div class="overview-hero">
+  <span class="overview-kicker">SE311 · Study Material</span>
+  <h1>SE311 Study Material</h1>
+  <p>Exam-ready cheat sheets, UML support, a final mindmap, and a course summary.</p>
+</div>
 
-This section collects SE311 review resources for exams and quick revision.
+## Open The Resources
 
-## Resources
+<div class="overview-grid">
+  <a class="overview-card" href="/Academics/software-engineering/SE311/cheat-sheet/"><strong>Midterm Cheat Sheet</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/software-engineering/SE311/uml-diagrams-cheat-sheet/"><strong>UML Diagrams Cheat Sheet</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/software-engineering/SE311/mindmap/final-mindmap/"><strong>Final Mindmap</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/software-engineering/SE311/se-311-summary.pdf"><strong>Summary PDF</strong><span>Open resource</span></a>
+</div>
 
-- [Midterm Cheat Sheet](cheat-sheet.md)
-- [UML Diagrams Cheat Sheet](uml-diagrams-cheat-sheet.md)
-- [Final Mindmap](mindmap/final-mindmap.md)
-- [Summary PDF](se-311-summary.pdf)
+## Study Path
 
-## Suggested Flow
+<div class="overview-steps">
+  <div class="overview-step">Use the cheat sheets for focused review.</div>
+  <div class="overview-step">Use the UML sheet for modeling questions.</div>
+  <div class="overview-step">Use the mindmap to connect the course.</div>
+  <div class="overview-step">Finish with the summary PDF.</div>
+</div>
 
-Use the cheat sheets for focused review, then use the mindmap to connect the
-course concepts before practicing quizzes.
+<div class="overview-note">
+<strong>Study note:</strong> This is the fast lane for revision after chapter reading.
+</div>

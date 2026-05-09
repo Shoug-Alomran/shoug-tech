@@ -1,15 +1,27 @@
-# Study Material Overview
+<div class="overview-hero">
+  <span class="overview-kicker">CS340 · Study Material</span>
+  <h1>CS340 Study Material</h1>
+  <p>Database review resources for symbols, SQL, chapter summaries, and final review.</p>
+</div>
 
-This section collects CS340 review resources.
+## Open The Resources
 
-## Resources
+<div class="overview-grid">
+  <a class="overview-card" href="/Academics/computer-science/CS340/Cheat-Sheet/"><strong>Cheat Sheet</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/computer-science/CS340/symbols/"><strong>Symbols</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/computer-science/CS340/Chapter-5/chapter-5-cheat-sheet/"><strong>Chapter 5 Cheat Sheet</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/computer-science/CS340/CS-340-Summary.pdf"><strong>Summary PDF</strong><span>Open resource</span></a>
+</div>
 
-- [Cheat Sheet](cheat-sheets/Cheat-Sheet.md)
-- [Symbols](cheat-sheets/symbols.md)
-- [Chapter 5 Cheat Sheet](Chapter-5/chapter-5-cheat-sheet.md)
-- [Summary PDF](CS-340-Summary.pdf)
+## Study Path
 
-## Suggested Flow
+<div class="overview-steps">
+  <div class="overview-step">Use symbols for ERD review.</div>
+  <div class="overview-step">Use the chapter 5 sheet for SQL.</div>
+  <div class="overview-step">Use the main cheat sheet for broad recall.</div>
+  <div class="overview-step">Finish with the summary PDF.</div>
+</div>
 
-Use the symbols page when reviewing ER diagrams, then use the cheat sheets for
-SQL, relational design, and exam review.
+<div class="overview-note">
+<strong>Study note:</strong> This is the database review desk: diagrams, SQL, and summary in one place.
+</div>

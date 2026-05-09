@@ -1,18 +1,27 @@
-# Midterm 2 Overview
+<div class="overview-hero">
+  <span class="overview-kicker">ISC103 · Midterm 2</span>
+  <h1>Midterm 2 Overview</h1>
+  <p>A study hub for the second Islamic Studies midterm: preparation, practice, mindmap, and video.</p>
+</div>
 
-Use this section to prepare for the second Islamic Studies midterm. It collects
-the main study pages, exam practice, visual review, and video resource.
+## Open The Resources
 
-## Resources
+<div class="overview-grid">
+  <a class="overview-card" href="/Academics/other/Islamic/major-2/midterm/"><strong>Midterm Preparation</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/other/Islamic/major-2/exam-2/"><strong>Midterm Exam</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/other/Islamic/major-2/mindmap/"><strong>Mindmap</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/other/Islamic/major-2/video/"><strong>Video</strong><span>Open resource</span></a>
+</div>
 
-- [Midterm Preparation](/Academics/other/Islamic/major-2/midterm/)
-- [Midterm Exam](/Academics/other/Islamic/major-2/exam-2/)
-- [Mindmap](/Academics/other/Islamic/major-2/mindmap/)
-- [Video](/Academics/other/Islamic/major-2/video/)
+## Study Path
 
-## Suggested Flow
+<div class="overview-steps">
+  <div class="overview-step">Read the preparation page.</div>
+  <div class="overview-step">Use the mindmap to connect ideas.</div>
+  <div class="overview-step">Practice with the exam page.</div>
+  <div class="overview-step">Watch the video for guided review.</div>
+</div>
 
-1. Read the preparation page first.
-2. Use the mindmap to connect the main ideas.
-3. Practice with the midterm exam page.
-4. Watch the video if you need a quick guided review.
+<div class="overview-note">
+<strong>Study note:</strong> The mindmap is the fastest way to see what belongs together.
+</div>

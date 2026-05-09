@@ -1,26 +1,35 @@
-# Lectures Overview
+<div class="overview-hero">
+  <span class="overview-kicker">ISC103 · Lectures</span>
+  <h1>Islamic Lectures</h1>
+  <p>A lecture-by-lecture entry point for the Islamic Studies PDFs and review pages.</p>
+</div>
 
-Use this page as the starting point for the Islamic Studies lecture pages. Each
-lecture page embeds the lecture PDF and gives you a direct link to open it.
+## Open The Resources
 
-## Suggested Flow
+<div class="overview-grid">
+  <a class="overview-card" href="/Academics/other/Islamic/lecture-1/"><strong>Lecture 1</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/other/Islamic/lecture-2/"><strong>Lecture 2</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/other/Islamic/lecture-3/"><strong>Lecture 3</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/other/Islamic/lecture-4/"><strong>Lecture 4</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/other/Islamic/lecture-5/"><strong>Lecture 5</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/other/Islamic/lecture-6/"><strong>Lecture 6</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/other/Islamic/lecture-7/"><strong>Lecture 7</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/other/Islamic/lecture-8/"><strong>Lecture 8</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/other/Islamic/lecture-9/"><strong>Lecture 9</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/other/Islamic/lecture-10/"><strong>Lecture 10</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/other/Islamic/lecture-11/"><strong>Lecture 11</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/other/Islamic/lecture-12/"><strong>Lecture 12</strong><span>Open resource</span></a>
+</div>
 
-1. Review the lectures in order.
-2. Use the midterm and final sections for exam-specific study.
-3. Return to individual lectures when the cheat sheets mention a topic you want
-   to verify.
+## Study Path
 
-## Lecture Links
+<div class="overview-steps">
+  <div class="overview-step">Review lectures in order.</div>
+  <div class="overview-step">Use midterm and final sections for exam-specific study.</div>
+  <div class="overview-step">Return to individual lectures when cheat sheets mention a topic.</div>
+  <div class="overview-step">Use Hadith and glossary pages for memorization.</div>
+</div>
 
-- [Lecture 1](../lecture-1.md)
-- [Lecture 2](../lecture-2.md)
-- [Lecture 3](../lecture-3.md)
-- [Lecture 4](../lecture-4.md)
-- [Lecture 5](../lecture-5.md)
-- [Lecture 6](../lecture-6.md)
-- [Lecture 7](../lecture-7.md)
-- [Lecture 8](../lecture-8.md)
-- [Lecture 9](../lecture-9.md)
-- [Lecture 10](../lecture-10.md)
-- [Lecture 11](../lecture-11.md)
-- [Lecture 12](../lecture-12.md)
+<div class="overview-note">
+<strong>Study note:</strong> Lecture tags in the final cheat sheet can guide you back to the source lecture.
+</div>

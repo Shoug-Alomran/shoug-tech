@@ -1,22 +1,31 @@
-# Quizzes Overview
+<div class="overview-hero">
+  <span class="overview-kicker">SE311 · Quizzes</span>
+  <h1>SE311 Quizzes</h1>
+  <p>Practice questions for requirements engineering chapters and quiz review.</p>
+</div>
 
-Use these SE311 quizzes to test chapter-level understanding and prepare for
-requirements engineering exams.
+## Open The Resources
 
-## Suggested Flow
+<div class="overview-grid">
+  <a class="overview-card" href="/Academics/software-engineering/SE311/quizez/chapter-1-quiz/"><strong>Ch 1 Quiz</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/software-engineering/SE311/quizez/chapter-2-quiz/"><strong>Ch 2 Quiz</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/software-engineering/SE311/quizez/chapter-4-quiz/"><strong>Ch 4 Quiz</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/software-engineering/SE311/quizez/chapter-5-quiz/"><strong>Ch 5 Quiz</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/software-engineering/SE311/quizez/chapter-6-quiz/"><strong>Ch 6 Quiz</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/software-engineering/SE311/quizez/chapter-8-quiz/"><strong>Ch 8 Quiz</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/software-engineering/SE311/quizez/chapter-9-quiz/"><strong>Ch 9 Quiz</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/software-engineering/SE311/quizez/quiz-1/"><strong>Quiz 1</strong><span>Open resource</span></a>
+</div>
 
-1. Review the relevant chapter.
-2. Take the quiz without notes.
-3. Mark weak areas such as elicitation, analysis, or specification.
-4. Return to the study material for fast review.
+## Study Path
 
-## Quiz Links
+<div class="overview-steps">
+  <div class="overview-step">Review the matching chapter.</div>
+  <div class="overview-step">Take the quiz without notes.</div>
+  <div class="overview-step">Mark weak areas by concept.</div>
+  <div class="overview-step">Return to study material for fast review.</div>
+</div>
 
-- [Ch 1 Quiz](chapter-1-quiz.md)
-- [Ch 2 Quiz](chapter-2-quiz.md)
-- [Ch 4 Quiz](chapter-4-quiz.md)
-- [Ch 5 Quiz](chapter-5-quiz.md)
-- [Ch 6 Quiz](chapter-6-quiz.md)
-- [Ch 8 Quiz](chapter-8-quiz.md)
-- [Ch 9 Quiz](chapter-9-quiz.md)
-- [Quiz 1](quiz-1.md)
+<div class="overview-note">
+<strong>Study note:</strong> Quiz mistakes usually point to a missed definition, process step, or requirements-quality rule.
+</div>

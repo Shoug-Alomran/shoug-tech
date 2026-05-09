@@ -1,18 +1,28 @@
-# Quizzes Overview
+<div class="overview-hero">
+  <span class="overview-kicker">CYS401 · Quizzes</span>
+  <h1>CYS401 Quizzes</h1>
+  <p>Chapter quizzes for cybersecurity concepts, models, principles, and crypto review.</p>
+</div>
 
-Use these CYS401 quizzes to test cybersecurity concepts chapter by chapter.
+## Open The Resources
 
-## Suggested Flow
+<div class="overview-grid">
+  <a class="overview-card" href="/Academics/cyber-security/CYS401/Quizez/Chapter-1-Quiz/"><strong>Ch 1 Quiz</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/cyber-security/CYS401/Quizez/Chapter-2-Quiz/"><strong>Ch 2 Quiz</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/cyber-security/CYS401/Quizez/Chapter-5-Quiz/"><strong>Ch 5 Quiz</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/cyber-security/CYS401/Quizez/Chapter-6-Quiz/"><strong>Ch 6 Quiz</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/cyber-security/CYS401/Quizez/Chapter-7-Quiz/"><strong>Ch 7 Quiz</strong><span>Open resource</span></a>
+</div>
 
-1. Review the chapter notes.
-2. Attempt the matching quiz.
-3. Revisit missed definitions, models, and security principles.
-4. Use the quiz set for cumulative exam review.
+## Study Path
 
-## Quiz Links
+<div class="overview-steps">
+  <div class="overview-step">Review the chapter notes.</div>
+  <div class="overview-step">Attempt the matching quiz.</div>
+  <div class="overview-step">Revisit missed definitions and models.</div>
+  <div class="overview-step">Use the set for cumulative exam review.</div>
+</div>
 
-- [Ch 1 Quiz](Chapter-1-Quiz.md)
-- [Ch 2 Quiz](Chapter-2-Quiz.md)
-- [Ch 5 Quiz](Chapter-5-Quiz.md)
-- [Ch 6 Quiz](Chapter-6-Quiz.md)
-- [Ch 7 Quiz](Chapter-7-Quiz.md)
+<div class="overview-note">
+<strong>Study note:</strong> Missed quiz questions are usually vocabulary, model, or principle gaps.
+</div>

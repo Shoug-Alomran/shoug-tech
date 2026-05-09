@@ -1,16 +1,27 @@
-# Study Material Overview
+<div class="overview-hero">
+  <span class="overview-kicker">SE201 · Study Material</span>
+  <h1>SE201 Study Material</h1>
+  <p>Quick-review resources for diagrams, cheat sheets, summaries, and tool guidance.</p>
+</div>
 
-This section collects the SE201 review resources that are broader than a single
-chapter.
+## Open The Resources
 
-## Resources
+<div class="overview-grid">
+  <a class="overview-card" href="/Academics/software-engineering/SE201/Complete-UML-&amp;-Software-Engineering-Diagrams-Guide/"><strong>UML & Diagrams Guide</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/software-engineering/SE201/Cheat-Sheet/"><strong>Cheat Sheet</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/software-engineering/SE201/SE-201-Summary.pdf"><strong>Summary PDF</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/software-engineering/SE201/Jira-Guide.pdf"><strong>Jira Guide PDF</strong><span>Open resource</span></a>
+</div>
 
-- [UML and Software Engineering Diagrams Guide](Complete-UML-&-Software-Engineering-Diagrams-Guide.md)
-- [Cheat Sheet](Cheat-Sheet.md)
-- [Summary PDF](SE-201-Summary.pdf)
-- [Jira Guide PDF](Jira-Guide.pdf)
+## Study Path
 
-## Suggested Flow
+<div class="overview-steps">
+  <div class="overview-step">Use chapter notes first.</div>
+  <div class="overview-step">Open the UML guide when diagrams appear.</div>
+  <div class="overview-step">Use the cheat sheet for fast recall.</div>
+  <div class="overview-step">Review PDFs for final polishing.</div>
+</div>
 
-Use the chapter notes first, then come here for final review, diagram practice,
-and quick-reference material.
+<div class="overview-note">
+<strong>Study note:</strong> This section is best for consolidation after you have already read the chapters.
+</div>

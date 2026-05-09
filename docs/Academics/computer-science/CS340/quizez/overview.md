@@ -1,22 +1,31 @@
-# Quizzes Overview
+<div class="overview-hero">
+  <span class="overview-kicker">CS340 · Quizzes</span>
+  <h1>CS340 Quizzes</h1>
+  <p>Database quiz and midterm practice for SQL, ERD, normalization, and transactions.</p>
+</div>
 
-Use these CS340 quizzes and exam pages for database practice.
+## Open The Resources
 
-## Suggested Flow
+<div class="overview-grid">
+  <a class="overview-card" href="/Academics/computer-science/CS340/quizez/Chapter-1-Quiz/"><strong>Ch 1 Quiz</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/computer-science/CS340/quizez/Chapter-2-Quiz/"><strong>Ch 2 Quiz</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/computer-science/CS340/quizez/Chapter-3-Quiz/"><strong>Ch 3 Quiz</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/computer-science/CS340/quizez/Chapter-4-Quiz/"><strong>Ch 4 Quiz</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/computer-science/CS340/quizez/Chapter-5-Quiz/"><strong>Ch 5 Quiz</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/computer-science/CS340/quizez/Chapter-7-Quiz/"><strong>Ch 7 Quiz</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/computer-science/CS340/quizez/Chapter-9-Quiz/"><strong>Ch 9 Quiz</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/computer-science/CS340/quizez/Midterm/"><strong>Midterm Exam</strong><span>Open resource</span></a>
+</div>
 
-1. Review the relevant chapter.
-2. Practice the quiz.
-3. Revisit SQL, ERD, normalization, or transaction concepts as needed.
-4. Use the midterm page for cumulative review.
+## Study Path
 
-## Quiz Links
+<div class="overview-steps">
+  <div class="overview-step">Review the relevant chapter.</div>
+  <div class="overview-step">Practice the quiz.</div>
+  <div class="overview-step">Revisit SQL, ERD, normalization, or transactions.</div>
+  <div class="overview-step">Use the midterm page for cumulative review.</div>
+</div>
 
-- [Ch 1 Quiz](Chapter-1-Quiz.md)
-- [Ch 2 Quiz](Chapter-2-Quiz.md)
-- [Ch 3 Quiz](Chapter-3-Quiz.md)
-- [Ch 4 Quiz](Chapter-4-Quiz.md)
-- [Ch 5 Quiz](Chapter-5-Quiz.md)
-- [Ch 7 Quiz](Chapter-7-Quiz.md)
-- [Ch 9 Quiz](Chapter-9-Quiz.md)
-- [Midterm Exam](Midterm.md)
-- [Final Exam 251 Practice](Final-Exam-251-Practice.md)
+<div class="overview-note">
+<strong>Study note:</strong> If a quiz feels slow, practice the SQL or ERD mechanics separately.
+</div>

@@ -1,17 +1,27 @@
-# Mindmaps Overview
+<div class="overview-hero">
+  <span class="overview-kicker">CS340 · Mindmaps</span>
+  <h1>CS340 Mindmaps</h1>
+  <p>Visual maps for reviewing database chapters and explaining concepts out loud.</p>
+</div>
 
-Use these CS340 mindmaps to review chapter relationships visually.
+## Open The Resources
 
-## Suggested Flow
+<div class="overview-grid">
+  <a class="overview-card" href="/Academics/computer-science/CS340/Mindmap/Chapter-1-mindmap/"><strong>Ch 1 Mindmap</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/computer-science/CS340/Mindmap/Chapter-2-mindmap/"><strong>Ch 2 Mindmap</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/computer-science/CS340/Mindmap/Chapter-3-mindmap/"><strong>Ch 3 Mindmap</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/computer-science/CS340/Mindmap/Chapter-4-mindmap/"><strong>Ch 4 Mindmap</strong><span>Open resource</span></a>
+</div>
 
-1. Read the chapter notes first.
-2. Open the matching mindmap.
-3. Use the mindmap to explain the chapter out loud.
-4. Return to the notes for any weak branches.
+## Study Path
 
-## Mindmap Links
+<div class="overview-steps">
+  <div class="overview-step">Read the chapter first.</div>
+  <div class="overview-step">Open the matching mindmap.</div>
+  <div class="overview-step">Explain each branch out loud.</div>
+  <div class="overview-step">Return to notes for weak branches.</div>
+</div>
 
-- [Ch 1 Mindmap](Chapter-1-mindmap.md)
-- [Ch 2 Mindmap](Chapter-2-mindmap.md)
-- [Ch 3 Mindmap](Chapter-3-mindmap.md)
-- [Ch 4 Mindmap](Chapter-4-mindmap.md)
+<div class="overview-note">
+<strong>Study note:</strong> Mindmaps are best after reading, not before.
+</div>

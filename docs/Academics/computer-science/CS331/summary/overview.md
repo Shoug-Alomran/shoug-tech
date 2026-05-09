@@ -1,12 +1,24 @@
-# Study Material Overview
+<div class="overview-hero">
+  <span class="overview-kicker">CS331 · Study Material</span>
+  <h1>CS331 Study Material</h1>
+  <p>Focused review material for CS331 quiz preparation.</p>
+</div>
 
-This section collects CS331 study material.
+## Open The Resources
 
-## Resources
+<div class="overview-grid">
+  <a class="overview-card" href="/Academics/computer-science/CS331/summary/quiz-2-cheat-sheet/"><strong>Quiz 2 Cheat Sheet</strong><span>Open resource</span></a>
+</div>
 
-- [Quiz 2 Cheat Sheet](quiz-2-cheat-sheet.md)
+## Study Path
 
-## Suggested Flow
+<div class="overview-steps">
+  <div class="overview-step">Open the cheat sheet.</div>
+  <div class="overview-step">Review the highest-weight concepts.</div>
+  <div class="overview-step">Practice quiz-style questions.</div>
+  <div class="overview-step">Revisit weak definitions.</div>
+</div>
 
-Use the cheat sheet as a focused review page before attempting quiz-style
-questions.
+<div class="overview-note">
+<strong>Study note:</strong> This page is intentionally small: one focused resource, no clutter.
+</div>

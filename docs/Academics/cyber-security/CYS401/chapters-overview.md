@@ -1,22 +1,30 @@
-# Chapters Overview
+<div class="overview-hero">
+  <span class="overview-kicker">CYS401 · Chapters</span>
+  <h1>CYS401 Chapters</h1>
+  <p>Cybersecurity notes covering foundations, threat modeling, asset protection, cryptography, PKI, and secure design.</p>
+</div>
 
-Use this page as the starting point for CYS401 cybersecurity notes. The chapters
-cover security foundations, threat modeling, asset protection, cryptography, PKI,
-and secure design.
+## Open The Resources
 
-## Suggested Flow
+<div class="overview-grid">
+  <a class="overview-card" href="/Academics/cyber-security/CYS401/Chapter-1/Chapter-1/"><strong>Ch 1 – Introduction to Cyber Security</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/cyber-security/CYS401/Chapter-2/Chapter-2/"><strong>Ch 2 – Foundations & Principles</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/cyber-security/CYS401/Chapter-3/Chapter-3/"><strong>Ch 3 – Threat Modeling</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/cyber-security/CYS401/Chapter-4/Chapter-4/"><strong>Ch 4 – Protection of Information Assets</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/cyber-security/CYS401/Chapter-5/Chapter-5/"><strong>Ch 5 – Cryptography</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/cyber-security/CYS401/Chapter-6/Chapter-6/"><strong>Ch 6 – Asymmetric Cryptography & PKI</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/cyber-security/CYS401/Chapter-7/Chapter-7/"><strong>Ch 7 – Principles of Security Design, Models, & Capabilities</strong><span>Open resource</span></a>
+</div>
 
-1. Start with the introduction and security principles.
-2. Review threat modeling and information asset protection.
-3. Study cryptography and asymmetric cryptography.
-4. Finish with security design principles, models, and capabilities.
+## Study Path
 
-## Chapter Links
+<div class="overview-steps">
+  <div class="overview-step">Start with security foundations.</div>
+  <div class="overview-step">Review threat modeling and asset protection.</div>
+  <div class="overview-step">Study cryptography and PKI.</div>
+  <div class="overview-step">Finish with secure design principles.</div>
+</div>
 
-- [Ch 1 – Introduction to Cyber Security](Chapter-1/Chapter-1.md)
-- [Ch 2 – Foundations & Principles](Chapter-2/Chapter-2.md)
-- [Ch 3 – Threat Modeling](Chapter-3/Chapter-3.md)
-- [Ch 4 – Protection of Information Assets](Chapter-4/Chapter-4.md)
-- [Ch 5 – Cryptography](Chapter-5/Chapter-5.md)
-- [Ch 6 – Asymmetric Cryptography & PKI](Chapter-6/Chapter-6.md)
-- [Ch 7 – Principles of Security Design, Models, & Capabilities](Chapter-7/Chapter-7.md)
+<div class="overview-note">
+<strong>Study note:</strong> Keep definitions precise: many cybersecurity questions hinge on exact wording.
+</div>

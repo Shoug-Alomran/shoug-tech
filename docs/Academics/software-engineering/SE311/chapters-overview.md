@@ -1,29 +1,33 @@
-# Chapters Overview
+<div class="overview-hero">
+  <span class="overview-kicker">SE311 · Chapters</span>
+  <h1>SE311 Chapters</h1>
+  <p>A requirements engineering route from inception and elicitation to specification, nonfunctional requirements, and prioritization.</p>
+</div>
 
-Use this page as the starting point for SE311 requirements engineering notes.
-The chapters follow the requirements lifecycle from inception through elicitation,
-analysis, specification, nonfunctional requirements, and prioritization.
+## Open The Resources
 
-## Suggested Flow
+<div class="overview-grid">
+  <a class="overview-card" href="/Academics/software-engineering/SE311/chapter-1/chapter-1/"><strong>Ch 1 – Software Requirements Engineering</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/software-engineering/SE311/chapter-2/chapter-2/"><strong>Ch 2 – Requirements Inception</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/software-engineering/SE311/chapter-3/chapter-3/"><strong>Ch 3 – Requirements Elicitation</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/software-engineering/SE311/chapter-4/chapter-4/"><strong>Ch 4 – Problem Analysis</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/software-engineering/SE311/chapter-5/chapter-5/"><strong>Ch 5 – Requirements Analysis</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/software-engineering/SE311/chapter-6/chapter-6/"><strong>Ch 6 – Writing Excellent Requirements</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/software-engineering/SE311/chapter-7/chapter-7/"><strong>Ch 7 – Requirements Specification</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/software-engineering/SE311/chapter-8/chapter-8/"><strong>Ch 8 – Requirements Specification</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/software-engineering/SE311/chapter-9/chapter-9/"><strong>Ch 9 – Nonfunctional Requirements</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/software-engineering/SE311/chapter-10/chapter-10/"><strong>Ch 10 – Requirements Prioritization</strong><span>Open resource</span></a>
+</div>
 
-1. Start with Chapters 1-3 for the foundations, inception, and elicitation.
-2. Review Chapters 4-6 for problem analysis, requirements analysis, and writing quality requirements.
-3. Study Chapters 7-10 for specification, nonfunctional requirements, and prioritization.
+## Study Path
 
-## Chapter Links
+<div class="overview-steps">
+  <div class="overview-step">Start with foundations, inception, and elicitation.</div>
+  <div class="overview-step">Move into problem and requirements analysis.</div>
+  <div class="overview-step">Practice writing high-quality requirements.</div>
+  <div class="overview-step">Finish with specification, NFRs, and prioritization.</div>
+</div>
 
-- [Ch 1 – Software Requirements Engineering](chapter-1/chapter-1.md)
-- [Ch 2 – Requirements Inception](chapter-2/chapter-2.md)
-- [Ch 3 – Requirements Elicitation](chapter-3/chapter-3.md)
-- [Ch 4 – Problem Analysis](chapter-4/chapter-4.md)
-- [Ch 5 – Requirements Analysis](chapter-5/chapter-5.md)
-- [Ch 6 – Writing Excellent Requirements](chapter-6/chapter-6.md)
-- [Ch 7 – Requirements Specification](chapter-7/chapter-7.md)
-- [Ch 8 – Requirements Specification](chapter-8/chapter-8.md)
-- [Ch 9 – Nonfunctional Requirements](chapter-9/chapter-9.md)
-- [Ch 10 – Requirements Prioritization](chapter-10/chapter-10.md)
-
-## Study Tip
-
-Keep a separate list of requirement types, stakeholder techniques, and common
-quality checks while reading.
+<div class="overview-note">
+<strong>Study note:</strong> Keep a running list of requirement types, stakeholder techniques, and quality checks.
+</div>

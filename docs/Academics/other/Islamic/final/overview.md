@@ -1,17 +1,26 @@
-# Final Overview
+<div class="overview-hero">
+  <span class="overview-kicker">ISC103 · Final</span>
+  <h1>Final Overview</h1>
+  <p>A final-exam dashboard with the full cheat sheet, interactive exam, and Hadith review.</p>
+</div>
 
-Use this section to prepare for the Islamic Studies final exam. The final section
-includes the full cheat sheet, an interactive final exam, and a Hadith review page.
+## Open The Resources
 
-## Resources
+<div class="overview-grid">
+  <a class="overview-card" href="/Academics/other/Islamic/final/final/"><strong>Final Cheat Sheet</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/other/Islamic/final/final-exam/"><strong>Final Exam</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/other/Islamic/final/hadiths/"><strong>Hadiths</strong><span>Open resource</span></a>
+</div>
 
-- [Final Cheat Sheet](/Academics/other/Islamic/final/final/)
-- [Final Exam](/Academics/other/Islamic/final/final-exam/)
-- [Hadiths](/Academics/other/Islamic/final/hadiths/)
+## Study Path
 
-## Suggested Flow
+<div class="overview-steps">
+  <div class="overview-step">Start with the final cheat sheet.</div>
+  <div class="overview-step">Review glossary and lecture tags.</div>
+  <div class="overview-step">Study Hadiths for memorization and recognition.</div>
+  <div class="overview-step">Take the final exam and compare mock answers.</div>
+</div>
 
-1. Start with the final cheat sheet for the full lecture summary.
-2. Review the glossary and lecture tags inside the cheat sheet.
-3. Study the Hadiths page for memorization and recognition.
-4. Take the final exam and compare with the mock answers.
+<div class="overview-note">
+<strong>Study note:</strong> The final cheat sheet links concepts back to lecture sources so you can verify quickly.
+</div>

@@ -1,17 +1,26 @@
-# Midterm 1 Overview
+<div class="overview-hero">
+  <span class="overview-kicker">ISC103 · Midterm 1</span>
+  <h1>Midterm 1 Overview</h1>
+  <p>A focused landing page for the first Islamic Studies midterm resources.</p>
+</div>
 
-Use this section to prepare for the first Islamic Studies midterm. Start with the
-preparation page, then review the practice exam and cheat sheet.
+## Open The Resources
 
-## Resources
+<div class="overview-grid">
+  <a class="overview-card" href="/Academics/other/Islamic/midterm/"><strong>Midterm Preparation</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/other/Islamic/exam-1/"><strong>Midterm Exam</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/other/Islamic/cheat-sheet-1/"><strong>Cheat Sheet</strong><span>Open resource</span></a>
+</div>
 
-- [Midterm Preparation](/Academics/other/Islamic/midterm/)
-- [Midterm Exam](/Academics/other/Islamic/exam-1/)
-- [Cheat Sheet](/Academics/other/Islamic/cheat-sheet-1/)
+## Study Path
 
-## Suggested Flow
+<div class="overview-steps">
+  <div class="overview-step">Review the covered lecture notes.</div>
+  <div class="overview-step">Study definitions, rules, and common traps.</div>
+  <div class="overview-step">Take the midterm exam page as practice.</div>
+  <div class="overview-step">Revisit weak topics before moving on.</div>
+</div>
 
-1. Review the lecture notes covered in Midterm 1.
-2. Study the cheat sheet for definitions, rules, and common exam traps.
-3. Take the midterm exam page as practice.
-4. Revisit any weak topics before moving on to Midterm 2.
+<div class="overview-note">
+<strong>Study note:</strong> Use this section before Midterm 2 so the foundations stay fresh.
+</div>
