@@ -5,7 +5,44 @@ description: Curated technical resources for learning, development, cybersecurit
 
 # :link: Resources & Link Dump
 
-> **Section summary:** A curated, tagged reference list for tools and sites I actually use.
+<div class="resource-link-hero" markdown>
+<span class="resource-link-kicker">Curated link stack</span>
+
+Tools, references, and sites I actually return to while studying, building,
+debugging, and researching. The page is organized like a working shelf: jump
+into the category you need, then scan by tags.
+
+<div class="resource-link-stats" markdown>
+<span>11 sections</span>
+<span>50+ links</span>
+<span>Learning, dev, security, ops</span>
+</div>
+</div>
+
+<div class="resource-feature-grid" markdown>
+
+<a class="resource-feature-card resource-feature-card--learn" href="#learning-documentation">
+  <span class="resource-card-icon">:books:</span>
+  <strong>Start Learning</strong>
+  <span>Documentation, tutorials, architecture writing, and references for building foundations fast.</span>
+  <small>#learning #reference #dev</small>
+</a>
+
+<a class="resource-feature-card resource-feature-card--tools" href="#editors-dev-tools">
+  <span class="resource-card-icon">:hammer_and_wrench:</span>
+  <strong>Build Faster</strong>
+  <span>Editors, AI helpers, package managers, containers, and practical developer utilities.</span>
+  <small>#editor #automation #containers</small>
+</a>
+
+<a class="resource-feature-card resource-feature-card--security" href="#cybersecurity-osint-tools">
+  <span class="resource-card-icon">:shield:</span>
+  <strong>Investigate Safely</strong>
+  <span>OSINT, defensive references, security frameworks, scanners, and research tooling.</span>
+  <small>#cybersec #osint #tools</small>
+</a>
+
+</div>
 
 A curated collection of tools, references, and links I consistently use for
 study, development, and technical work — organized by category with tags for
@@ -15,19 +52,64 @@ quick scanning.
 
 ## :mag: Jump to Section
 
-| Category | Tags |
-|---|---|
-| [Learning & Documentation](#learning-documentation) | `#learning` `#reference` `#dev` `#videos` `#articles` |
-| [Editors & Dev Tools](#editors-dev-tools) | `#editor` `#ai` `#automation` |
-| [Containers, VMs & Package Managers](#containers-vms-package-managers) | `#containers` `#docker` `#vm` `#os` |
-| [Visualization & Problem-Solving](#visualization-problem-solving) | `#algorithms` `#visualization` `#regex` |
-| [Cybersecurity & OSINT Tools](#cybersecurity-osint-tools) | `#cybersec` `#osint` `#tools` `#scanning` |
-| [Security Research & Offensive Tools](#security-research-offensive-tools) | `#pentest` `#phishing` `#metasploit` |
-| [Web, HTTP & DevOps](#web-http-devops) | `#web` `#server` `#devops` `#ci` |
-| [Servers, Configs & Formats](#servers-configs-formats) | `#config` `#certs` `#docs` |
-| [Observability & Ops](#observability-ops) | `#monitoring` `#ops` |
-| [Banking & Local Resources](#banking-local-resources) | `#banking` `#saudi` |
-| [Creative / Demoscene / Fun](#creative-demoscene-fun) | `#art` `#culture` `#demoscene` |
+<div class="resource-section-grid" markdown>
+
+<a class="resource-section-card" href="#learning-documentation">
+  <strong>:books: Learning & Documentation</strong>
+  <span>`#learning` `#reference` `#dev` `#videos` `#articles`</span>
+</a>
+
+<a class="resource-section-card" href="#editors-dev-tools">
+  <strong>:hammer_and_wrench: Editors & Dev Tools</strong>
+  <span>`#editor` `#ai` `#automation`</span>
+</a>
+
+<a class="resource-section-card" href="#containers-vms-package-managers">
+  <strong>:whale: Containers, VMs & Package Managers</strong>
+  <span>`#containers` `#docker` `#vm` `#os`</span>
+</a>
+
+<a class="resource-section-card" href="#visualization-problem-solving">
+  <strong>:bar_chart: Visualization & Problem-Solving</strong>
+  <span>`#algorithms` `#visualization` `#regex`</span>
+</a>
+
+<a class="resource-section-card" href="#cybersecurity-osint-tools">
+  <strong>:shield: Cybersecurity & OSINT Tools</strong>
+  <span>`#cybersec` `#osint` `#tools` `#scanning`</span>
+</a>
+
+<a class="resource-section-card" href="#security-research-offensive-tools">
+  <strong>:lock_with_ink_pen: Security Research & Offensive Tools</strong>
+  <span>`#pentest` `#phishing` `#metasploit`</span>
+</a>
+
+<a class="resource-section-card" href="#web-http-devops">
+  <strong>:globe_with_meridians: Web, HTTP & DevOps</strong>
+  <span>`#web` `#server` `#devops` `#ci`</span>
+</a>
+
+<a class="resource-section-card" href="#servers-configs-formats">
+  <strong>:gear: Servers, Configs & Formats</strong>
+  <span>`#config` `#certs` `#docs`</span>
+</a>
+
+<a class="resource-section-card" href="#observability-ops">
+  <strong>:satellite: Observability & Ops</strong>
+  <span>`#monitoring` `#ops`</span>
+</a>
+
+<a class="resource-section-card" href="#banking-local-resources">
+  <strong>:bank: Banking & Local Resources</strong>
+  <span>`#banking` `#saudi`</span>
+</a>
+
+<a class="resource-section-card" href="#creative-demoscene-fun">
+  <strong>:art: Creative / Demoscene / Fun</strong>
+  <span>`#art` `#culture` `#demoscene`</span>
+</a>
+
+</div>
 
 ---
 
