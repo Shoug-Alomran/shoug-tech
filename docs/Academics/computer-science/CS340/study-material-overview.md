@@ -4,8 +4,8 @@ This section collects CS340 review resources.
 
 ## Resources
 
-- [Cheat Sheet](Cheat-Sheet.md)
-- [Symbols](symbols.md)
+- [Cheat Sheet](cheat-sheets/Cheat-Sheet.md)
+- [Symbols](cheat-sheets/symbols.md)
 - [Chapter 5 Cheat Sheet](Chapter-5/chapter-5-cheat-sheet.md)
 - [Summary PDF](CS-340-Summary.pdf)
 

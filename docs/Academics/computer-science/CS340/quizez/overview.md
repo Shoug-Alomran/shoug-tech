@@ -19,3 +19,4 @@ Use these CS340 quizzes and exam pages for database practice.
 - [Ch 7 Quiz](Chapter-7-Quiz.md)
 - [Ch 9 Quiz](Chapter-9-Quiz.md)
 - [Midterm Exam](Midterm.md)
+- [Final Exam 251 Practice](Final-Exam-251-Practice.md)
