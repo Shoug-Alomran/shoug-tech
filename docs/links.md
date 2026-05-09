@@ -5,42 +5,50 @@ description: Curated technical resources for learning, development, cybersecurit
 
 # :link: Resources & Link Dump
 
-<div class="resource-link-hero" markdown>
-<span class="resource-link-kicker">Curated link stack</span>
-
-Tools, references, and sites I actually return to while studying, building,
-debugging, and researching. The page is organized like a working shelf: jump
-into the category you need, then scan by tags.
-
-<div class="resource-link-stats" markdown>
-<span>11 sections</span>
-<span>50+ links</span>
-<span>Learning, dev, security, ops</span>
+<div class="resource-link-hero">
+  <p class="resource-link-kicker">Curated link stack</p>
+  <p class="resource-link-lede">
+    A working shelf for the tools, references, and sites I return to while
+    studying, building, debugging, and researching.
+  </p>
+  <div class="resource-link-stats">
+    <span>11 sections</span>
+    <span>50+ links</span>
+    <span>Learning</span>
+    <span>Development</span>
+    <span>Security</span>
+    <span>Ops</span>
+  </div>
 </div>
-</div>
 
-<div class="resource-feature-grid" markdown>
+<div class="grid cards resource-feature-grid" markdown>
 
-<a class="resource-feature-card resource-feature-card--learn" href="#learning-documentation">
-  <span class="resource-card-icon">:books:</span>
-  <strong>Start Learning</strong>
-  <span>Documentation, tutorials, architecture writing, and references for building foundations fast.</span>
-  <small>#learning #reference #dev</small>
-</a>
+-   :books: **Start Learning**
 
-<a class="resource-feature-card resource-feature-card--tools" href="#editors-dev-tools">
-  <span class="resource-card-icon">:hammer_and_wrench:</span>
-  <strong>Build Faster</strong>
-  <span>Editors, AI helpers, package managers, containers, and practical developer utilities.</span>
-  <small>#editor #automation #containers</small>
-</a>
+    ---
 
-<a class="resource-feature-card resource-feature-card--security" href="#cybersecurity-osint-tools">
-  <span class="resource-card-icon">:shield:</span>
-  <strong>Investigate Safely</strong>
-  <span>OSINT, defensive references, security frameworks, scanners, and research tooling.</span>
-  <small>#cybersec #osint #tools</small>
-</a>
+    Documentation, tutorials, architecture writing, and references for building
+    foundations fast.
+
+    [:octicons-arrow-right-24: Open Learning](#learning-documentation)
+
+-   :hammer_and_wrench: **Build Faster**
+
+    ---
+
+    Editors, AI helpers, package managers, containers, and practical developer
+    utilities.
+
+    [:octicons-arrow-right-24: Open Dev Tools](#editors-dev-tools)
+
+-   :shield: **Investigate Safely**
+
+    ---
+
+    OSINT, defensive references, security frameworks, scanners, and research
+    tooling.
+
+    [:octicons-arrow-right-24: Open Security Tools](#cybersecurity-osint-tools)
 
 </div>
 
@@ -52,62 +60,73 @@ quick scanning.
 
 ## :mag: Jump to Section
 
-<div class="resource-section-grid" markdown>
+<div class="grid cards resource-section-grid" markdown>
 
-<a class="resource-section-card" href="#learning-documentation">
-  <strong>:books: Learning & Documentation</strong>
-  <span>`#learning` `#reference` `#dev` `#videos` `#articles`</span>
-</a>
+-   :books: **Learning & Documentation**
 
-<a class="resource-section-card" href="#editors-dev-tools">
-  <strong>:hammer_and_wrench: Editors & Dev Tools</strong>
-  <span>`#editor` `#ai` `#automation`</span>
-</a>
+    `#learning` `#reference` `#dev` `#videos` `#articles`
 
-<a class="resource-section-card" href="#containers-vms-package-managers">
-  <strong>:whale: Containers, VMs & Package Managers</strong>
-  <span>`#containers` `#docker` `#vm` `#os`</span>
-</a>
+    [:octicons-arrow-right-24: Open](#learning-documentation)
 
-<a class="resource-section-card" href="#visualization-problem-solving">
-  <strong>:bar_chart: Visualization & Problem-Solving</strong>
-  <span>`#algorithms` `#visualization` `#regex`</span>
-</a>
+-   :hammer_and_wrench: **Editors & Dev Tools**
 
-<a class="resource-section-card" href="#cybersecurity-osint-tools">
-  <strong>:shield: Cybersecurity & OSINT Tools</strong>
-  <span>`#cybersec` `#osint` `#tools` `#scanning`</span>
-</a>
+    `#editor` `#ai` `#automation`
 
-<a class="resource-section-card" href="#security-research-offensive-tools">
-  <strong>:lock_with_ink_pen: Security Research & Offensive Tools</strong>
-  <span>`#pentest` `#phishing` `#metasploit`</span>
-</a>
+    [:octicons-arrow-right-24: Open](#editors-dev-tools)
 
-<a class="resource-section-card" href="#web-http-devops">
-  <strong>:globe_with_meridians: Web, HTTP & DevOps</strong>
-  <span>`#web` `#server` `#devops` `#ci`</span>
-</a>
+-   :whale: **Containers, VMs & Package Managers**
 
-<a class="resource-section-card" href="#servers-configs-formats">
-  <strong>:gear: Servers, Configs & Formats</strong>
-  <span>`#config` `#certs` `#docs`</span>
-</a>
+    `#containers` `#docker` `#vm` `#os`
 
-<a class="resource-section-card" href="#observability-ops">
-  <strong>:satellite: Observability & Ops</strong>
-  <span>`#monitoring` `#ops`</span>
-</a>
+    [:octicons-arrow-right-24: Open](#containers-vms-package-managers)
 
-<a class="resource-section-card" href="#banking-local-resources">
-  <strong>:bank: Banking & Local Resources</strong>
-  <span>`#banking` `#saudi`</span>
-</a>
+-   :bar_chart: **Visualization & Problem-Solving**
 
-<a class="resource-section-card" href="#creative-demoscene-fun">
-  <strong>:art: Creative / Demoscene / Fun</strong>
-  <span>`#art` `#culture` `#demoscene`</span>
-</a>
+    `#algorithms` `#visualization` `#regex`
+
+    [:octicons-arrow-right-24: Open](#visualization-problem-solving)
+
+-   :shield: **Cybersecurity & OSINT Tools**
+
+    `#cybersec` `#osint` `#tools` `#scanning`
+
+    [:octicons-arrow-right-24: Open](#cybersecurity-osint-tools)
+
+-   :lock_with_ink_pen: **Security Research & Offensive Tools**
+
+    `#pentest` `#phishing` `#metasploit`
+
+    [:octicons-arrow-right-24: Open](#security-research-offensive-tools)
+
+-   :globe_with_meridians: **Web, HTTP & DevOps**
+
+    `#web` `#server` `#devops` `#ci`
+
+    [:octicons-arrow-right-24: Open](#web-http-devops)
+
+-   :gear: **Servers, Configs & Formats**
+
+    `#config` `#certs` `#docs`
+
+    [:octicons-arrow-right-24: Open](#servers-configs-formats)
+
+-   :satellite: **Observability & Ops**
+
+    `#monitoring` `#ops`
+
+    [:octicons-arrow-right-24: Open](#observability-ops)
+
+-   :bank: **Banking & Local Resources**
+
+    `#banking` `#saudi`
+
+    [:octicons-arrow-right-24: Open](#banking-local-resources)
+
+-   :art: **Creative / Demoscene / Fun**
+
+    `#art` `#culture` `#demoscene`
+
+    [:octicons-arrow-right-24: Open](#creative-demoscene-fun)
 
 </div>
 

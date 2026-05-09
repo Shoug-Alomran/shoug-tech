@@ -5,151 +5,146 @@ description: Portfolio context, projects, workshops, and how I execute technical
 
 # Career Development
 
-> **Section summary:** Use this page to evaluate execution quality, project impact, and professional growth evidence.
+<section class="career-hub-hero">
+  <div class="career-hub-hero__content">
+    <span class="career-hub-kicker">Portfolio hub</span>
+    <h2>Evidence of how I build, document, teach, and grow.</h2>
+    <p>
+      This section is the fastest way to evaluate my technical range: project
+      execution, cybersecurity curiosity, workshop documentation, teaching
+      experience, and the way I turn messy work into clear deliverables.
+    </p>
+    <div class="career-hub-actions">
+      <a class="md-button md-button--primary" href="../CV.html">View Resume</a>
+      <a class="md-button" href="../projects/">Explore Projects</a>
+      <a class="md-button" href="../Workshops/">See Workshops</a>
+      <a class="md-button" href="mailto:inquiry@shoug-tech.com">Contact Me</a>
+    </div>
+  </div>
+  <div class="career-hub-snapshot">
+    <strong>Quick read</strong>
+    <span>Software Engineering + Cybersecurity student</span>
+    <span>Portfolio sites, docs, deployed systems</span>
+    <span>Student tutor and workshop speaker</span>
+  </div>
+</section>
 
-[View Resume](./CV.html){ .md-button .md-button--primary }
-[Contact Me](mailto:inquiry@shoug-tech.com){ .md-button }
+<div class="career-route-grid" markdown>
+
+<a class="career-route-card" href="../projects/">
+  <span class="career-route-card__icon">:rocket:</span>
+  <strong>Projects</strong>
+  <span>Proof of execution: hosted systems, documentation, requirements work, technical ownership, and lessons learned.</span>
+</a>
+
+<a class="career-route-card" href="../Workshops/">
+  <span class="career-route-card__icon">:microphone:</span>
+  <strong>Workshops</strong>
+  <span>Teaching, mentoring, cybersecurity crash course notes, speaking material, reflections, and feedback.</span>
+</a>
+
+<a class="career-route-card" href="../me/">
+  <span class="career-route-card__icon">:sparkles:</span>
+  <strong>About Me</strong>
+  <span>A clearer view of my background, direction, strengths, and how I think about technical growth.</span>
+</a>
+
+</div>
 
 ---
 
-## How to Use This Section
+## Start Here
 
-* **If you are an employer** → Start with **Projects** and **Resume**
-* **If you are an instructor** → Explore **Workshops** and how I document and structure technical work
-* **If you are a student** → You can see how I approach learning, projects, and technical documentation
+<div class="career-audience-grid" markdown>
 
-This section is meant to show **how I work**, not just what I claim to know.
+-   :briefcase: **Employer / Recruiter**
 
----
+    Start with the resume, then inspect projects for evidence of execution:
+    what was built, what role I played, and how the work was delivered.
 
-## What I Focus On
+-   :mortar_board: **Instructor / Mentor**
 
-<div class="grid cards" markdown>
+    Look at workshops and documentation quality. This is where my structure,
+    communication, and teaching instincts show most clearly.
 
--   :shield: **Cybersecurity**
+-   :books: **Student / Peer**
 
-    Penetration testing mindset and attacker methodology. Vulnerability analysis 
-    and system weakness identification. Ethical and structured security testing.
-    
-    Long-term goal: red team, then broader blue/purple team exposure.
-
--   :computer: **Software Engineering**
-
-    System design and documentation. Databases and backend concepts. Structured 
-    development and requirements-driven work.
-    
-    Web systems, deployment, and hosting — including building and maintaining 
-    this site.
-
--   :books: **Learning & Teaching**
-
-    University tutoring and workshop participation. Clear, structured technical 
-    documentation. Explaining complex topics in a practical, usable way.
-    
-    Strong preference for hands-on, applied learning over purely theoretical study.
+    Use this section as a model for turning coursework, learning, and workshop
+    participation into evidence someone else can actually understand.
 
 </div>
 
 ---
 
-## Projects
+## What I Bring
 
-Most of my projects are **university-based and team-oriented**, but my role 
-consistently goes beyond minimum requirements — especially in:
+<div class="career-proof-grid" markdown>
 
-* Building and deploying project websites
-* Structuring documentation and deliverables
-* Turning prototypes into working, hosted systems
-* Taking responsibility for technical integration and presentation
+-   :shield: **Security-minded engineering**
 
-I am especially proud of:
+    I approach systems with an attacker-aware mindset: weakness identification,
+    ethical testing, risk thinking, and curiosity about how systems fail.
 
-* A **CS102 project** that I built almost entirely from scratch under difficult 
-  team conditions
-* An **SE201 project** where I took the prototype further than required, converting 
-  it into a deployed system using modern tooling
+-   :computer: **Structured software delivery**
 
-Each project is documented with:
+    I care about requirements, system design, databases, backend concepts,
+    deployment, and turning prototypes into something people can use.
 
-* The problem it addresses
-* The system design and implementation approach
-* My personal contribution
-* What I learned from building it
+-   :books: **Documentation as proof**
 
-[:octicons-arrow-right-24: View All Projects](./projects.md){ .md-button }
-
----
-
-## Workshops & Teaching
-
-I was invited to speak about my **experience as a student tutor**, focusing on 
-mentorship, instructional structure, and professional growth. In addition, I 
-participated in technical workshops including a **Cybersecurity Crash Course** 
-and documented the work in detail. My instructors specifically noted the 
-**quality and depth of my documentation** compared to peers.
-
-<div class="grid cards" markdown>
-
--   :microphone: **My Journey as a Student Tutor**
-
-    Invited speaker workshop. Covers mentorship, communication, instructional 
-    structure, and professional growth. Documented with full timeline, skills 
-    breakdown, feedback, and reflection.
-
-    [:octicons-arrow-right-24: View Workshop](./Workshops/My-Journey-as-a-Student-Tutor/overview.md)
-
--   :lock: **Cybersecurity Crash Course**
-
-    Technical workshop with full documentation — session handouts, Bandit notes, 
-    agenda, topics covered, and personal reflection.
-
-    [:octicons-arrow-right-24: View Workshop](./Workshops/cybersecurity-crash-course/overview.md)
+    I document work so another person can evaluate it: context, decisions,
+    deliverables, screenshots, reflections, and practical next steps.
 
 </div>
 
-These workshops demonstrate my ability to **communicate technical material clearly**, 
-my commitment to **structured, high-quality documentation**, and my interest in 
-**teaching, mentoring, and knowledge sharing**.
+---
+
+## Featured Evidence
+
+<div class="career-feature-list" markdown>
+
+<a class="career-feature-item" href="../projects/">
+  <span>01</span>
+  <strong>Project Portfolio</strong>
+  <p>University and team projects where my role often extended into deployment, documentation, technical integration, and presentation.</p>
+</a>
+
+<a class="career-feature-item" href="../Workshops/My-Journey-as-a-Student-Tutor/overview/">
+  <span>02</span>
+  <strong>Student Tutor Journey</strong>
+  <p>An invited speaker workshop about mentorship, instructional structure, communication, professional growth, and feedback.</p>
+</a>
+
+<a class="career-feature-item" href="../Workshops/cybersecurity-crash-course/overview/">
+  <span>03</span>
+  <strong>Cybersecurity Crash Course</strong>
+  <p>Technical workshop documentation with agenda, topics, handouts, Bandit notes, screenshots, and reflection.</p>
+</a>
+
+</div>
 
 ---
 
 ## How I Work
 
-I am:
+<div class="career-workflow" markdown>
 
-* Detail-oriented and systems-focused
-* Strong in documentation, structure, and organization
-* Practical and hands-on in how I learn
-* More effective in **building and testing** than in purely theoretical or 
-  exam-based environments
+1. **Clarify the goal**: understand what the project, audience, or assignment needs to prove.
+2. **Build the core**: make the thing work, test assumptions, and handle the technical details.
+3. **Document the proof**: explain decisions, contribution, screenshots, deliverables, and lessons.
+4. **Improve the presentation**: make the final work readable, usable, and credible.
 
-I care deeply about:
-
-* Doing work properly, not just "good enough"
-* Taking projects beyond minimum requirements
-* Making technical work **clear, usable, and well-presented**
-* Continuously improving both my **engineering** and **security** skill sets
-
----
-
-## Why This Exists
-
-This website is:
-
-* A **living record** of my technical growth
-* A **portfolio of real work**, not just claims
-* A demonstration of how I **design, document, and explain systems**
-* A place where **software engineering, cybersecurity, and teaching** meet
-
-It reflects not only what I know, but **how I apply, structure, and communicate 
-that knowledge**.
+</div>
 
 ---
 
 ## Contact
 
-If you are an instructor, collaborator, or employer and would like to discuss 
+If you are an instructor, collaborator, or employer and would like to discuss
 my work, projects, or background, I welcome the conversation.
 
-**Email:** [inquiry@shoug-tech.com](mailto:inquiry@shoug-tech.com)  
-**LinkedIn:** [shoug-alomran](https://www.linkedin.com/in/shoug-alomran)
+<div class="career-contact-strip" markdown>
+[Email](mailto:inquiry@shoug-tech.com){ .md-button .md-button--primary }
+[LinkedIn](https://www.linkedin.com/in/shoug-alomran){ .md-button }
+[Resume](./CV.html){ .md-button }
+</div>
