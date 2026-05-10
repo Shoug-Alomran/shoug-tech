@@ -9,13 +9,13 @@ description: Course map for software engineering, computer science, and cybersec
 
 <div class="grid cards" markdown>
 
--  ### **SE201 — Software Engineering**
+-  ### **SE201  -  Software Engineering**
 
     Processes, design, testing, project management. Includes UML guide, cheat sheets, and quizzes.
 
     [:octicons-arrow-right-24: SE201 Overview](software-engineering/SE201/intro.md)
 
--  ### **SE311 — Requirements Engineering**
+-  ### **SE311  -  Requirements Engineering**
 
     Elicitation, analysis, specification, validation. Includes cheat sheet and practice quizzes.
 
@@ -27,32 +27,32 @@ description: Course map for software engineering, computer science, and cybersec
 
 <div class="grid cards" markdown>
 
--  ### **CS210 — Data Structures**
+-  ### **CS210  -  Data Structures**
 
     Lists, trees, hashing, sorting, recursion. Topic-based notes and cheat sheets.
 
     [:octicons-arrow-right-24: CS210 Overview](computer-science/CS210/intro.md)
 
--  ### **CS285 — Discrete Mathematics**
+-  ### **CS285  -  Discrete Mathematics**
 
     Logic, proofs, relations, counting, cryptography. Notes and concise cheat sheet.
 
     [:octicons-arrow-right-24: CS285 Overview](computer-science/CS285/intro.md)
 
--  ### **CS330 — Operating Systems**
+-  ### **CS330  -  Operating Systems**
 
     Processes, scheduling, memory, synchronization. Notes, summaries, and quizzes.
 
     [:octicons-arrow-right-24: CS330 Overview](computer-science/CS330/intro.md)
 
--  ### **CS331 — Data Communications and Networks**
+-  ### **CS331  -  Data Communications and Networks**
 
     Layered models, subnetting, protocols, and network devices. Includes a
     course overview and study material.
 
     [:octicons-arrow-right-24: CS331 Overview](computer-science/CS331/intro.md)
 
-- ###  **CS340 — Database Systems**
+- ###  **CS340  -  Database Systems**
 
     SQL, relational model, transactions, NoSQL. Notes, mind maps, cheat sheets, quizzes.
 
@@ -64,7 +64,7 @@ description: Course map for software engineering, computer science, and cybersec
 
 <div class="grid cards" markdown>
 
--  ### **CYS401 — Cyber Security**
+-  ### **CYS401  -  Cyber Security**
 
     Foundations, principles, and core concepts. Chapter notes and practice quizzes.
 

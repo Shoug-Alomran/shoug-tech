@@ -101,25 +101,28 @@ description: Portfolio context, projects, workshops, and how I execute technical
 
 ## Featured Evidence
 
-<div class="career-feature-list" markdown>
+<div class="grid cards career-feature-list" markdown>
 
-<a class="career-feature-item" href="../projects/">
-  <span>01</span>
-  <strong>Project Portfolio</strong>
-  <p>University and team projects where my role often extended into deployment, documentation, technical integration, and presentation.</p>
-</a>
+-   <span class="career-feature-number">01</span> **Project Portfolio**
 
-<a class="career-feature-item" href="../Workshops/My-Journey-as-a-Student-Tutor/overview/">
-  <span>02</span>
-  <strong>Student Tutor Journey</strong>
-  <p>An invited speaker workshop about mentorship, instructional structure, communication, professional growth, and feedback.</p>
-</a>
+    University and team projects where my role often extended into deployment,
+    documentation, technical integration, and presentation.
 
-<a class="career-feature-item" href="../Workshops/cybersecurity-crash-course/overview/">
-  <span>03</span>
-  <strong>Cybersecurity Crash Course</strong>
-  <p>Technical workshop documentation with agenda, topics, handouts, Bandit notes, screenshots, and reflection.</p>
-</a>
+    [:octicons-arrow-right-24: View Projects](./projects.md)
+
+-   <span class="career-feature-number">02</span> **Student Tutor Journey**
+
+    An invited speaker workshop about mentorship, instructional structure,
+    communication, professional growth, and feedback.
+
+    [:octicons-arrow-right-24: View Workshop](./Workshops/My-Journey-as-a-Student-Tutor/overview.md)
+
+-   <span class="career-feature-number">03</span> **Cybersecurity Crash Course**
+
+    Technical workshop documentation with agenda, topics, handouts, Bandit
+    notes, screenshots, and reflection.
+
+    [:octicons-arrow-right-24: View Workshop](./Workshops/cybersecurity-crash-course/overview.md)
 
 </div>
 

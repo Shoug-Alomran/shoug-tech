@@ -1,4 +1,4 @@
-# :lock: CYS401 — Fundamentals of Cybersecurity
+# :lock: CYS401  -  Fundamentals of Cybersecurity
 
 This course introduces the core concepts, technologies, and practices of
 cybersecurity in organizational and real-world contexts. It focuses on
@@ -111,8 +111,8 @@ preparation.
 
 | Step | Topic |
 |------|-------|
-| 1 | Introduction and security foundations — build core concepts first |
-| 2 | Data security and cryptography — understand protection mechanisms |
+| 1 | Introduction and security foundations  -  build core concepts first |
+| 2 | Data security and cryptography  -  understand protection mechanisms |
 | 3 | Security design and computer architecture security |
 | 4 | Systems architecture security and specialized domains |
 | 5 | ICS and SCADA systems |

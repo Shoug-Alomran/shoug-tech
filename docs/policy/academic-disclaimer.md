@@ -6,15 +6,15 @@
 
 Shoug's Digital Garden is a personal academic documentation platform. The
 materials published here are created as part of my personal learning process
-and knowledge organization — intended for educational and reference purposes
+and knowledge organization  -  intended for educational and reference purposes
 only.
 
 ---
 
 ## :notepad_spiral: Purpose of This Website
 
-The content in the Academics section — including notes, summaries, diagrams,
-quizzes, cheat sheets, and reflections — reflects my personal understanding
+The content in the Academics section  -  including notes, summaries, diagrams,
+quizzes, cheat sheets, and reflections  -  reflects my personal understanding
 and interpretation of course material. It may simplify, reorganize, or
 rephrase official material for clarity, and should not be considered a
 substitute for lectures, textbooks, or official course documentation.

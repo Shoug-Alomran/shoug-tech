@@ -1,4 +1,4 @@
-# :pencil: SE201 — Introduction to Software Engineering
+# :pencil: SE201  -  Introduction to Software Engineering
 
 This course covers the fundamental principles, processes, and ethics of
 software engineering. It focuses on how software is planned, designed,
@@ -7,7 +7,7 @@ implemented, tested, and maintained in real-world environments.
 This section contains structured study material including chapter notes,
 quizzes and practice questions, cheat sheets and summaries, a UML and
 diagrams guide, and additional reference material. The goal is a clear,
-practical study resource — not just a list of notes.
+practical study resource  -  not just a list of notes.
 
 ---
 
@@ -26,56 +26,56 @@ design tasks**, go directly to the UML and diagrams guide.
 
 <div class="grid cards" markdown>
 
--   :one: **Chapter 1 — Software Engineering Practice & Ethics**
+-   :one: **Chapter 1  -  Software Engineering Practice & Ethics**
 
     ---
 
     What software engineering is, types of software, and professional ethics
     and responsibilities.
 
--   :two: **Chapter 2 — Software Engineering Process**
+-   :two: **Chapter 2  -  Software Engineering Process**
 
     ---
 
     SDLC models including Waterfall, Iterative, and Spiral, requirements
     engineering activities, and the Capability Maturity Model (CMM).
 
--   :three: **Chapter 3 — Agile Software Development**
+-   :three: **Chapter 3  -  Agile Software Development**
 
     ---
 
     Agile principles and values, Scrum and Extreme Programming (XP), and
     agile versus plan-driven development.
 
--   :four: **Chapter 4 — Planning & Managing the Project**
+-   :four: **Chapter 4  -  Planning & Managing the Project**
 
     ---
 
     Project scheduling, risk management, and ethical issues in project
     leadership.
 
--   :five: **Chapter 5 — Requirements Engineering**
+-   :five: **Chapter 5  -  Requirements Engineering**
 
     ---
 
     Functional and non-functional requirements, requirements gathering and
     documentation, and structural, behavioral, and implementation modeling.
 
--   :six: **Chapter 6 — Designing the Software**
+-   :six: **Chapter 6  -  Designing the Software**
 
     ---
 
     Design principles and patterns, architectural styles, and interface
     design.
 
--   :seven: **Chapter 7 — Implementing the Software**
+-   :seven: **Chapter 7  -  Implementing the Software**
 
     ---
 
     Coding standards and best practices, reuse and modularity, documentation,
     and source code organization.
 
--   :eight: **Chapter 8 — Testing the Software**
+-   :eight: **Chapter 8  -  Testing the Software**
 
     ---
 

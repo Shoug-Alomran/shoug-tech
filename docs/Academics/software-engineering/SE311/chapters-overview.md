@@ -7,16 +7,16 @@
 ## Open The Resources
 
 <div class="overview-grid">
-  <a class="overview-card" href="/Academics/software-engineering/SE311/chapter-1/chapter-1/"><strong>Ch 1 – Software Requirements Engineering</strong><span>Open resource</span></a>
-  <a class="overview-card" href="/Academics/software-engineering/SE311/chapter-2/chapter-2/"><strong>Ch 2 – Requirements Inception</strong><span>Open resource</span></a>
-  <a class="overview-card" href="/Academics/software-engineering/SE311/chapter-3/chapter-3/"><strong>Ch 3 – Requirements Elicitation</strong><span>Open resource</span></a>
-  <a class="overview-card" href="/Academics/software-engineering/SE311/chapter-4/chapter-4/"><strong>Ch 4 – Problem Analysis</strong><span>Open resource</span></a>
-  <a class="overview-card" href="/Academics/software-engineering/SE311/chapter-5/chapter-5/"><strong>Ch 5 – Requirements Analysis</strong><span>Open resource</span></a>
-  <a class="overview-card" href="/Academics/software-engineering/SE311/chapter-6/chapter-6/"><strong>Ch 6 – Writing Excellent Requirements</strong><span>Open resource</span></a>
-  <a class="overview-card" href="/Academics/software-engineering/SE311/chapter-7/chapter-7/"><strong>Ch 7 – Requirements Specification</strong><span>Open resource</span></a>
-  <a class="overview-card" href="/Academics/software-engineering/SE311/chapter-8/chapter-8/"><strong>Ch 8 – Requirements Specification</strong><span>Open resource</span></a>
-  <a class="overview-card" href="/Academics/software-engineering/SE311/chapter-9/chapter-9/"><strong>Ch 9 – Nonfunctional Requirements</strong><span>Open resource</span></a>
-  <a class="overview-card" href="/Academics/software-engineering/SE311/chapter-10/chapter-10/"><strong>Ch 10 – Requirements Prioritization</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/software-engineering/SE311/chapter-1/chapter-1/"><strong>Ch 1  -  Software Requirements Engineering</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/software-engineering/SE311/chapter-2/chapter-2/"><strong>Ch 2  -  Requirements Inception</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/software-engineering/SE311/chapter-3/chapter-3/"><strong>Ch 3  -  Requirements Elicitation</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/software-engineering/SE311/chapter-4/chapter-4/"><strong>Ch 4  -  Problem Analysis</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/software-engineering/SE311/chapter-5/chapter-5/"><strong>Ch 5  -  Requirements Analysis</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/software-engineering/SE311/chapter-6/chapter-6/"><strong>Ch 6  -  Writing Excellent Requirements</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/software-engineering/SE311/chapter-7/chapter-7/"><strong>Ch 7  -  Requirements Specification</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/software-engineering/SE311/chapter-8/chapter-8/"><strong>Ch 8  -  Requirements Specification</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/software-engineering/SE311/chapter-9/chapter-9/"><strong>Ch 9  -  Nonfunctional Requirements</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/software-engineering/SE311/chapter-10/chapter-10/"><strong>Ch 10  -  Requirements Prioritization</strong><span>Open resource</span></a>
 </div>
 
 ## Study Path

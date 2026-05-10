@@ -1,4 +1,4 @@
-# :mosque: ISC113 — Islamic Economic System
+# :mosque: ISC113  -  Islamic Economic System
 
 This course introduces the Islamic economic system as a practical, value-based
 framework for understanding wealth, ownership, production, distribution, and

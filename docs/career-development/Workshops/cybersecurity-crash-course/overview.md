@@ -1,4 +1,4 @@
-# Cybersecurity Crash Course — Offensive Security
+# Cybersecurity Crash Course  -  Offensive Security
 
 ← [Back to Workshops](../index.md)
 
@@ -6,7 +6,7 @@
 
 **Host:** Automated Systems and Computing Lab (ASCL), Prince Sultan University  
 **Type:** 3-day intensive, in-person workshop  
-**Focus:** Offensive security — understanding the attacker's mindset to design 
+**Focus:** Offensive security  -  understanding the attacker's mindset to design 
 more effective defenses.
 
 This workshop introduced the fundamentals of offensive cybersecurity by walking 
@@ -30,9 +30,9 @@ through the steps an attacker might take against a system or network.
 | **Host** | Automated Systems and Computing Lab (ASCL), Prince Sultan University |
 | **Instructor** | Mahmoud Khalifa |
 | **Format** | 3-day intensive, in-person |
-| **Day 1** | January 18, 2026 · 12:00 PM – 1:30 PM |
-| **Day 2** | January 21, 2026 · 12:00 PM – 1:30 PM |
-| **Day 3** | January 22, 2026 · 12:00 PM – 1:30 PM |
+| **Day 1** | January 18, 2026 · 12:00 PM  -  1:30 PM |
+| **Day 2** | January 21, 2026 · 12:00 PM  -  1:30 PM |
+| **Day 3** | January 22, 2026 · 12:00 PM  -  1:30 PM |
 
 ---
 

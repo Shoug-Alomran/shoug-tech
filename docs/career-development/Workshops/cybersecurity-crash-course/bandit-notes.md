@@ -1,4 +1,4 @@
-# OverTheWire Bandit — Complete Walkthrough (Level 0 → 33)
+# OverTheWire Bandit  -  Complete Walkthrough (Level 0 → 33)
 
 ← [Back to Workshop Overview](overview.md)
 
@@ -36,61 +36,61 @@
 
 <div class="grid cards" markdown>
 
--   :material-console-line: **Levels 0 – 3**
+-   :material-console-line: **Levels 0  -  3**
 
     SSH, basic file reading, hidden files
 
     [Jump to early levels](#phase-1)
 
--   :material-file-search: **Levels 4 – 6**
+-   :material-file-search: **Levels 4  -  6**
 
     File types, `find`, filesystem-wide search
 
     [Jump to filesystem levels](#phase-2)
 
--   :material-filter-outline: **Levels 7 – 9**
+-   :material-filter-outline: **Levels 7  -  9**
 
     `grep`, `sort`, `uniq`, `strings`
 
     [Jump to text-hunting levels](#phase-3)
 
--   :material-lock-open-variant-outline: **Levels 10 – 12**
+-   :material-lock-open-variant-outline: **Levels 10  -  12**
 
     Base64, ROT13, layered compression
 
     [Jump to decoding levels](#phase-4)
 
--   :material-lan-connect: **Levels 13 – 16**
+-   :material-lan-connect: **Levels 13  -  16**
 
     SSH keys, `nc`, SSL/TLS, port scanning
 
     [Jump to networking levels](#phase-5)
 
--   :material-key-chain-variant: **Levels 17 – 20**
+-   :material-key-chain-variant: **Levels 17  -  20**
 
     `diff`, `.bashrc` bypass, setuid binaries
 
     [Jump to access-control levels](#phase-6)
 
--   :material-clock-outline: **Levels 21 – 24**
+-   :material-clock-outline: **Levels 21  -  24**
 
     Cron jobs, MD5-derived paths, brute force
 
     [Jump to automation levels](#phase-7)
 
--   :material-open-in-app: **Levels 25 – 27**
+-   :material-open-in-app: **Levels 25  -  27**
 
     Restricted shell escape, `vim` exploit, SUID
 
     [Jump to escape levels](#phase-8)
 
--   :material-source-branch: **Levels 27 – 31**
+-   :material-source-branch: **Levels 27  -  31**
 
     Git history, branches, tags, hooks
 
     [Jump to Git levels](#phase-9)
 
--   :material-arrow-expand-up: **Levels 32 – 33**
+-   :material-arrow-expand-up: **Levels 32  -  33**
 
     Uppercase shell bypass
 
@@ -611,7 +611,7 @@ ssh -i sshkey.private bandit14@bandit.labs.overthewire.org -p 2220
 - Note: connecting to localhost is blocked, so the remote hostname must be used
 
 **Password for Next Level**
-No password required — access to the bandit14 account is the goal.
+No password required  -  access to the bandit14 account is the goal.
 
 ---
 
@@ -679,7 +679,7 @@ openssl s_client -connect localhost:30001
 ## Level 16 → Level 17 { #level-16-17 .level-hero }
 
 **Goal**
-Find the correct SSL-enabled port between 31000–32000 and submit the password to retrieve credentials for bandit17.
+Find the correct SSL-enabled port between 31000 - 32000 and submit the password to retrieve credentials for bandit17.
 
 **Commands Used**
 ```bash
@@ -690,7 +690,7 @@ openssl s_client -connect localhost:31790
 
 **Solution Explanation**
 
-- Scanned ports 31000–32000 using `nmap` with service detection
+- Scanned ports 31000 - 32000 using `nmap` with service detection
 - Nmap revealed several open ports, with 31518 and 31790 speaking SSL
 - Port 31518 returned only an echo with KEYUPDATE
 - Port 31790 returned an RSA private key for bandit17 after submitting the password
@@ -990,7 +990,7 @@ done | nc localhost 30002
 
 **Solution Explanation**
 
-- A daemon on port 30002 requires the current password and a secret 4-digit PIN (0000–9999)
+- A daemon on port 30002 requires the current password and a secret 4-digit PIN (0000 - 9999)
 - Used a for loop with `seq -w 0000 9999` to generate zero-padded PIN codes
 - Piped all 10,000 attempts through one netcat connection
 - Eventually received: "Correct! The password of user bandit25 is..."
@@ -1150,7 +1150,7 @@ cat README
 Clone a Git repository and analyze its commit history to find a leaked password.
 
 !!! warning "Real-World Relevance"
-    This is a genuine security issue in production systems — credentials committed 
+    This is a genuine security issue in production systems  -  credentials committed 
     to Git and later removed are still fully recoverable via `git log`. Always use 
     environment variables or secrets managers. Never commit credentials directly.
 
@@ -1304,7 +1304,7 @@ Escape the "uppercase shell" that converts all input to uppercase, preventing no
 
 !!! tip "Key Insight"
     `$0` expands to the current shell's binary path before the uppercase filter 
-    processes it — making it the only way to reference a command without it 
+    processes it  -  making it the only way to reference a command without it 
     being uppercased into an invalid form.
 
 **Commands Used**

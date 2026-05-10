@@ -5,7 +5,7 @@
 
 Tutoring taught me that effective teaching is about much more than knowing the
 material. It requires communication, empathy, and the kind of reliability that
-students can depend on — especially when they're under pressure.
+students can depend on  -  especially when they're under pressure.
 
 ---
 
@@ -17,7 +17,7 @@ students can depend on — especially when they're under pressure.
 
     No two students learn the same way, and that became clear to me early on.
     I learned to read how a student was engaging with the material and shift my
-    approach accordingly — slowing down, reframing an explanation, or reaching
+    approach accordingly  -  slowing down, reframing an explanation, or reaching
     for a concrete example that made the concept land. Over time, explaining
     complex topics clearly became one of my strongest skills.
 
@@ -27,7 +27,7 @@ students can depend on — especially when they're under pressure.
 
     Some of the most valuable conversations I had with students had nothing to
     do with course content. Students came in stressed, uncertain, or struggling
-    with confidence — and part of my role was to meet them where they were. I
+    with confidence  -  and part of my role was to meet them where they were. I
     learned to listen carefully, respond without judgment, and offer support
     that went beyond the academic.
 
@@ -36,7 +36,7 @@ students can depend on — especially when they're under pressure.
     ---
 
     Balancing multiple subjects and responsibilities simultaneously required
-    genuine discipline. I held myself to a high standard of consistency —
+    genuine discipline. I held myself to a high standard of consistency  - 
     because students were counting on me to show up prepared, every time. That
     steady reliability under pressure is something I now carry into every role
     I take on.
@@ -45,5 +45,5 @@ students can depend on — especially when they're under pressure.
 
 ---
 
-*These skills were built through real experience — session by session, student
+*These skills were built through real experience  -  session by session, student
 by student.*

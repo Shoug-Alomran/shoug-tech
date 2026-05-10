@@ -5,7 +5,7 @@
 
 Tutoring is one of the most underrated ways to grow as a student and a
 professional. If you're considering it, here's what I've learned from doing it
-— session by session.
+ -  session by session.
 
 ---
 
@@ -13,7 +13,7 @@ professional. If you're considering it, here's what I've learned from doing it
 
 Before your first session, get clear on your why. What do you want to give,
 and what do you hope to gain? Tutoring works best when it's driven by genuine
-care — for the subject, and for the person you're helping. Set that intention
+care  -  for the subject, and for the person you're helping. Set that intention
 early and return to it whenever things get hard.
 
 ---
@@ -63,14 +63,14 @@ early and return to it whenever things get hard.
     ---
 
     Learn to explain the same idea multiple ways. If one approach isn't
-    working, pivot — don't repeat yourself louder.
+    working, pivot  -  don't repeat yourself louder.
 
 -   :people_holding_hands: **Patience**
 
     ---
 
     Every student learns at a different pace. Your job isn't to rush them
-    through the material — it's to meet them where they are.
+    through the material  -  it's to meet them where they are.
 
 -   :jigsaw: **Adaptability**
 
@@ -94,14 +94,14 @@ early and return to it whenever things get hard.
 
 Don't limit yourself to one format or environment. Try tutoring online and
 in person. Get comfortable on different platforms. Each setting will challenge
-you in different ways — and make you a more versatile, resilient educator.
+you in different ways  -  and make you a more versatile, resilient educator.
 The goal is to walk into any room, virtual or physical, and show up ready.
 
 ---
 
-> :thought_balloon: *"Every session is a chance to get better — for your
+> :thought_balloon: *"Every session is a chance to get better  -  for your
 > student, and for yourself."*
 
 ---
 
-*Written by Shoug Fawaz Alomran — Prince Sultan University, 2025.*
+*Written by Shoug Fawaz Alomran  -  Prince Sultan University, 2025.*

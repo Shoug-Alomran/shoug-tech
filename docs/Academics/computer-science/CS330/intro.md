@@ -1,8 +1,8 @@
-# :computer: CS330 — Introduction to Operating Systems
+# :computer: CS330  -  Introduction to Operating Systems
 
 This course introduces the core concepts behind modern operating systems. It
 focuses on how operating systems manage hardware, processes, memory, storage,
-synchronization, and file systems — using real-world examples from Unix and
+synchronization, and file systems  -  using real-world examples from Unix and
 Windows to connect theory to practice.
 
 This section contains structured study material including chapter notes,
@@ -27,76 +27,76 @@ references for commands and concepts.
 
 <div class="grid cards" markdown>
 
--   :one: **Chapter 1 — Introduction to Operating Systems**
+-   :one: **Chapter 1  -  Introduction to Operating Systems**
 
     ---
 
     Evolution and purpose of operating systems, OS components and architecture,
     types of OS, and basic functions and responsibilities.
 
--   :two: **Chapter 2 — Operating System Services**
+-   :two: **Chapter 2  -  Operating System Services**
 
     ---
 
     System calls and APIs, user and kernel modes, OS design and implementation,
     and command interpreters.
 
--   :three: **Chapter 3 — Process Management**
+-   :three: **Chapter 3  -  Process Management**
 
     ---
 
     What processes are, process states and transitions, the Process Control
     Block, context switching, and process creation.
 
--   :four: **Chapter 4 — Threads**
+-   :four: **Chapter 4  -  Threads**
 
     ---
 
     Processes vs. threads, multithreading models, benefits and challenges of
     threading, and thread libraries.
 
--   :five: **Chapter 5 — CPU Scheduling**
+-   :five: **Chapter 5  -  CPU Scheduling**
 
     ---
 
     Scheduling criteria, preemptive and non-preemptive scheduling, FCFS, SJF,
     Priority, Round Robin, Multilevel Queue, and performance evaluation.
 
--   :six: **Chapter 6 — Synchronization**
+-   :six: **Chapter 6  -  Synchronization**
 
     ---
 
     Race conditions, critical sections, mutual exclusion, semaphores, monitors,
     classical synchronization problems, and deadlock avoidance.
 
--   :seven: **Chapter 8 — Memory Management**
+-   :seven: **Chapter 8  -  Memory Management**
 
     ---
 
     Contiguous allocation, paging, segmentation, fragmentation, and allocation
     strategies.
 
--   :eight: **Chapter 9 — Virtual Memory**
+-   :eight: **Chapter 9  -  Virtual Memory**
 
     ---
 
     Demand paging, page replacement algorithms, thrashing, working set models,
     and virtual memory performance.
 
--   :nine: **Chapter 10 — Mass Storage Structure**
+-   :nine: **Chapter 10  -  Mass Storage Structure**
 
     ---
 
     Disk structure and scheduling, RAID levels, and storage device management.
 
--   :keycap_ten: **Chapter 11 — File System Interface**
+-   :keycap_ten: **Chapter 11  -  File System Interface**
 
     ---
 
     File concepts and attributes, directory structures, access methods, and
     file protection mechanisms.
 
--   :file_folder: **Chapter 12 — File System Implementation**
+-   :file_folder: **Chapter 12  -  File System Implementation**
 
     ---
 
@@ -107,7 +107,7 @@ references for commands and concepts.
 
 ---
 
-## :penguin: Practical Work — Unix & Linux Project
+## :penguin: Practical Work  -  Unix & Linux Project
 
 This part of the course focuses on hands-on experience with Unix and Linux
 systems. Work covered includes core Unix commands, system navigation and file
@@ -129,12 +129,12 @@ and efficient exam preparation.
 
 | Step | Topic |
 |------|-------|
-| 1 | Chapters 1 & 2 — OS concepts and services |
-| 2 | Chapters 3 & 4 — Processes and threads |
-| 3 | Chapter 5 — CPU scheduling |
-| 4 | Chapter 6 — Synchronization — conceptually important |
-| 5 | Chapters 8 & 9 — Memory management and virtual memory |
-| 6 | Chapters 10–12 — Storage and file systems |
+| 1 | Chapters 1 & 2  -  OS concepts and services |
+| 2 | Chapters 3 & 4  -  Processes and threads |
+| 3 | Chapter 5  -  CPU scheduling |
+| 4 | Chapter 6  -  Synchronization  -  conceptually important |
+| 5 | Chapters 8 & 9  -  Memory management and virtual memory |
+| 6 | Chapters 10 - 12  -  Storage and file systems |
 | 7 | Cheat sheet, summary, and quizzes for revision |
 
 ---

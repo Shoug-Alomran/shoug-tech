@@ -7,7 +7,7 @@
 ## Main Themes
 
 - **Fundamental cyber-attack methodologies**  
-  Basic phases of an attack — reconnaissance, scanning, exploitation, 
+  Basic phases of an attack  -  reconnaissance, scanning, exploitation, 
   post-exploitation.
 
 - **Adopting an attacker's perspective**  

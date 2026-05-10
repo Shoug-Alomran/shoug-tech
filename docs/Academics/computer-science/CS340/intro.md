@@ -1,4 +1,4 @@
-# :floppy_disk: CS340 — Introduction to Database Systems
+# :floppy_disk: CS340  -  Introduction to Database Systems
 
 This course introduces the foundations of database systems, including data
 modeling, the relational model, SQL, normalization, and emerging database
@@ -28,7 +28,7 @@ project**, focus on the modeling, mapping, and SQL chapters.
 
 <div class="grid cards" markdown>
 
--   :one: **Chapters 1 & 2 — Introduction to Database Systems**
+-   :one: **Chapters 1 & 2  -  Introduction to Database Systems**
 
     ---
 
@@ -36,7 +36,7 @@ project**, focus on the modeling, mapping, and SQL chapters.
     database users and roles, DBMS architecture, data models, schemas, and
     languages.
 
--   :two: **Chapters 3 & 4 — Data Modeling using ER & EER**
+-   :two: **Chapters 3 & 4  -  Data Modeling using ER & EER**
 
     ---
 
@@ -44,42 +44,42 @@ project**, focus on the modeling, mapping, and SQL chapters.
     generalization, UML-based conceptual modeling, and designing complex
     database applications.
 
--   :three: **Chapter 5 — Relational Data Model & Constraints**
+-   :three: **Chapter 5  -  Relational Data Model & Constraints**
 
     ---
 
     Relations, tuples, and attributes, keys and integrity constraints, entity
     integrity, and referential integrity.
 
--   :four: **Chapter 6 — Basic SQL**
+-   :four: **Chapter 6  -  Basic SQL**
 
     ---
 
     SQL data definition, constraints and table creation, basic SELECT queries,
     and filtering.
 
--   :five: **Chapter 7 — Advanced SQL**
+-   :five: **Chapter 7  -  Advanced SQL**
 
     ---
 
     Nested queries, aggregation and grouping, views and virtual tables, and
     more complex SQL operations.
 
--   :six: **Chapter 8 — Relational Algebra**
+-   :six: **Chapter 8  -  Relational Algebra**
 
     ---
 
-    Selection, projection, joins, and division — query formulation using
+    Selection, projection, joins, and division  -  query formulation using
     algebraic operators.
 
--   :seven: **Chapter 9 — ER to Relational Mapping**
+-   :seven: **Chapter 9  -  ER to Relational Mapping**
 
     ---
 
     Converting ER and EER diagrams into relational schemas, mapping entities,
     relationships, and constraints, and preparing designs for implementation.
 
--   :eight: **Chapters 14 & 15 — Normalization**
+-   :eight: **Chapters 14 & 15  -  Normalization**
 
     ---
 
@@ -92,7 +92,7 @@ project**, focus on the modeling, mapping, and SQL chapters.
 
 ## :globe_with_meridians: Emerging Database Topics
 
-This section also covers topics beyond the traditional relational model —
+This section also covers topics beyond the traditional relational model  - 
 including an introduction to object-oriented databases, NoSQL concepts, and
 hands-on MongoDB CRUD operations through lab work.
 
@@ -120,12 +120,12 @@ deep understanding and efficient exam preparation.
 
 | Step | Topic |
 |------|-------|
-| 1 | Chapters 1 & 2 — Introduction and data modeling |
-| 2 | Chapter 5 — Relational model and constraints |
-| 3 | Chapter 8 — Relational algebra |
-| 4 | Chapters 6 & 7 — Basic then advanced SQL |
-| 5 | Chapter 9 — ER to relational mapping |
-| 6 | Chapters 14 & 15 — Normalization |
+| 1 | Chapters 1 & 2  -  Introduction and data modeling |
+| 2 | Chapter 5  -  Relational model and constraints |
+| 3 | Chapter 8  -  Relational algebra |
+| 4 | Chapters 6 & 7  -  Basic then advanced SQL |
+| 5 | Chapter 9  -  ER to relational mapping |
+| 6 | Chapters 14 & 15  -  Normalization |
 | 7 | Mind maps, cheat sheet, and symbols page for revision |
 | 8 | Quizzes to test understanding |
 | 9 | Apply concepts in the final project |

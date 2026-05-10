@@ -32,7 +32,7 @@
 
 ## Workshop Overview
 
-The **Cybersecurity Crash Course – Offensive Security**, organized by the 
+The **Cybersecurity Crash Course  -  Offensive Security**, organized by the 
 **Automated Systems and Computing Lab (ASCL)** at **Prince Sultan University**, 
 was a three-day intensive workshop designed to introduce participants to 
 cybersecurity from an attacker's perspective. The workshop emphasized the 
@@ -53,8 +53,8 @@ OverTheWire Bandit wargame.
 
 One of the most important takeaways from this workshop was learning how attackers 
 approach systems methodically rather than randomly. By studying the **cyber attack 
-lifecycle** — from reconnaissance and initial access to privilege escalation and 
-impact — I gained a clearer understanding of how real-world attacks are structured 
+lifecycle**  -  from reconnaissance and initial access to privilege escalation and 
+impact  -  I gained a clearer understanding of how real-world attacks are structured 
 and executed. This perspective is essential for anticipating threats and designing 
 effective defensive strategies.
 </section>
@@ -67,7 +67,7 @@ The workshop reinforced the importance of working within a **safe and isolated
 security lab** using VirtualBox and Kali Linux. Setting up the environment 
 independently improved my confidence in managing virtual machines and highlighted 
 why Linux proficiency is critical in cybersecurity. Through continuous use of 
-Linux commands — file navigation, permissions, searching, and process inspection — 
+Linux commands  -  file navigation, permissions, searching, and process inspection  -  
 I developed stronger command-line skills that are foundational for penetration 
 testing and system analysis.
 </section>
@@ -76,7 +76,7 @@ testing and system analysis.
   <p class="reflection-card__eyebrow">Learning Outcome</p>
   <h3 class="reflection-card__title">Hands-On Practice with OverTheWire Bandit</h3>
 
-Completing the **OverTheWire Bandit challenges (Levels 0–33)** was one of the 
+Completing the **OverTheWire Bandit challenges (Levels 0 - 33)** was one of the 
 most valuable components of the workshop. These challenges transformed theoretical 
 concepts into practical skills, particularly in:
 
@@ -86,7 +86,7 @@ concepts into practical skills, particularly in:
 - Privilege escalation using SUID binaries
 
 The Bandit exercises demonstrated how small misconfigurations or overlooked details 
-can lead to security weaknesses — reinforcing the importance of attention to detail 
+can lead to security weaknesses  -  reinforcing the importance of attention to detail 
 in both offensive and defensive security work.
 </section>
 
@@ -97,7 +97,7 @@ in both offensive and defensive security work.
 The reconnaissance research assignment expanded my understanding of how attackers 
 gather information before exploitation. By studying and experimenting with tools 
 such as **Nmap, Maltego, Legion, Burp Suite, Gobuster, FFUF, and Aircrack-ng**, 
-I learned how different tools target different layers of a system — hosts, networks, 
+I learned how different tools target different layers of a system  -  hosts, networks, 
 DNS, web applications, and wireless networks. This assignment emphasized that 
 effective attacks (and defenses) begin with thorough information gathering.
 </section>

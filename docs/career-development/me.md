@@ -10,7 +10,7 @@ with a primary focus on **penetration testing, system analysis, and secure softw
 design**. My work centers on understanding how systems are built, how they fail, and 
 how they can be strengthened through structured engineering and security practices.
 
-I am especially interested in security from an attacker-minded perspective — not to 
+I am especially interested in security from an attacker-minded perspective  -  not to 
 exploit systems, but to identify weaknesses early and translate findings into concrete 
 fixes, better designs, and safer user experiences.
 
@@ -53,7 +53,7 @@ fixes, better designs, and safer user experiences.
 
 I follow an ethics-first approach to security work:
 
-- I operate only with explicit permission — authorized engagements, lab environments, 
+- I operate only with explicit permission  -  authorized engagements, lab environments, 
   or my own infrastructure.
 - I practice responsible disclosure by reporting vulnerabilities privately and 
   supporting safe remediation.
@@ -84,7 +84,7 @@ I follow an ethics-first approach to security work:
 ## Why This Work Matters to Me
 
 Good security comes from understanding systems deeply, finding problems early, and 
-fixing them properly. I enjoy both sides of this process — the analytical side of 
+fixing them properly. I enjoy both sides of this process  -  the analytical side of 
 testing and investigation, and the engineering side of building clearer, safer, and 
 more reliable systems.
 

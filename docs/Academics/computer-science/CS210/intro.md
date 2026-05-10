@@ -1,4 +1,4 @@
-# :books: CS210 — Data Structures and Algorithms
+# :books: CS210  -  Data Structures and Algorithms
 
 This course focuses on how data is organized, stored, and processed efficiently.
 It covers fundamental data structures, algorithm analysis, and practical
@@ -38,7 +38,7 @@ references for behavior, operations, and complexity.
 
     ---
 
-    Single, double, and circular linked lists — traversal, insertion, and
+    Single, double, and circular linked lists  -  traversal, insertion, and
     deletion operations.
 
 -   :bar_chart: **Analysis of Algorithms**
@@ -65,7 +65,7 @@ references for behavior, operations, and complexity.
 
     ---
 
-    Tree traversal methods — inorder, preorder, postorder — plus searching,
+    Tree traversal methods  -  inorder, preorder, postorder  -  plus searching,
     insertion, and deletion.
 
 -   :balance_scale: **AVL Trees**
@@ -112,7 +112,7 @@ preparation.
 | Step | Topic |
 |------|-------|
 | 1 | Linked objects and basic data structures |
-| 2 | Algorithm analysis — understand performance early |
+| 2 | Algorithm analysis  -  understand performance early |
 | 3 | Linear structures: linked lists, stacks, and queues |
 | 4 | Trees, AVL trees, and heaps |
 | 5 | Hashing and graphs |

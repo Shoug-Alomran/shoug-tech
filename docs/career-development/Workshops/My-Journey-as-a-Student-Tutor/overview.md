@@ -10,7 +10,7 @@
 |---|---|
 | **Presenter** | Shoug Fawaz Alomran |
 | **Arabic Title** | رحلتي مع تقديم دروس التقوية |
-| **Institution** | Prince Sultan University – Writing & Tutoring Center (WTC) |
+| **Institution** | Prince Sultan University  -  Writing & Tutoring Center (WTC) |
 | **Type** | Invited speaker workshop |
 
 ---
@@ -18,7 +18,7 @@
 ## :open_book: Introduction
 
 This workshop shares my personal journey as a student tutor at Prince Sultan
-University — how I started, what tutoring demanded of me, and how it shaped
+University  -  how I started, what tutoring demanded of me, and how it shaped
 my growth as a student, communicator, and emerging professional. It is an
 honest account of what peer teaching looks like from the inside.
 
@@ -37,27 +37,27 @@ clubs and initiatives.
 
     ---
 
-    MDD — hands-on training in security tools, environments, and real-world
+    MDD  -  hands-on training in security tools, environments, and real-world
     practice.
 
 -   :microphone: **Course Instructor**
 
     ---
 
-    Qimah — delivering structured academic content in a formal teaching role.
+    Qimah  -  delivering structured academic content in a formal teaching role.
 
 -   :link: **Liaison Officer**
 
     ---
 
-    ACM Student Chapter — connecting students to the global computing
+    ACM Student Chapter  -  connecting students to the global computing
     community.
 
 -   :heart: **Club Member**
 
     ---
 
-    Mental Health & Well-Being Club — supporting student welfare and awareness
+    Mental Health & Well-Being Club  -  supporting student welfare and awareness
     on campus.
 
 </div>
@@ -69,7 +69,7 @@ clubs and initiatives.
 Stepping into a teaching role while managing my own studies pushed me to grow
 in ways I didn't anticipate. I became sharper at explaining complex ideas,
 more patient with different learning styles, and more deliberate about how I
-prepared and communicated. Tutoring didn't just help others — it made me
+prepared and communicated. Tutoring didn't just help others  -  it made me
 better at everything else I was doing at the same time.
 
 ---
@@ -90,7 +90,7 @@ better at everything else I was doing at the same time.
 
     ---
 
-    My tutoring journey from start to present — key milestones and turning
+    My tutoring journey from start to present  -  key milestones and turning
     points.
 
     [:octicons-arrow-right-24: View Timeline](timeline.md)

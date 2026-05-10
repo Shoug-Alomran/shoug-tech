@@ -5,12 +5,12 @@
 ---
 
 A curated index of my academic and applied projects in software engineering, 
-cybersecurity, and computer science — listed from most recent to oldest to 
+cybersecurity, and computer science  -  listed from most recent to oldest to 
 reflect my technical growth over time.
 
 Most projects were developed in university team contexts. My contributions 
 consistently focus on **system structure, documentation, integration, and 
-deployment** — taking projects beyond minimum requirements to produce complete, 
+deployment**  -  taking projects beyond minimum requirements to produce complete, 
 usable systems.
 
 ---
@@ -19,7 +19,7 @@ usable systems.
 
 <div class="grid cards" markdown>
 
--  ### **SE311 — Software Requirements Analysis (Sillah)**
+-  ### **SE311  -  Software Requirements Analysis (Sillah)**
 
     Full requirements engineering project applying formal SE311 methodologies.
     Vision & scope, elicitation, UML/GRL modeling, traceability, multi-release planning.
@@ -29,7 +29,7 @@ usable systems.
     [Repository](https://github.com/Shoug-Alomran/SE311-Software-Requirements-Analysis) · 
     [Project Site](https://software-requirements-analysis.shoug-tech.com) · *Ongoing*
 
--  ### **SE201 — Sillah Project**
+-  ### **SE201  -  Sillah Project**
 
     Preventive health management system with full software engineering documentation.
     Requirements specification, UML diagrams, end-to-end system modeling.
@@ -48,7 +48,7 @@ usable systems.
 
 <div class="grid cards" markdown>
 
-- ###  **CS340 — Full Stack Database Web Application**
+- ###  **CS340  -  Full Stack Database Web Application**
 
     Complete database-driven web app from conceptual design to deployed system.
     EER modeling, normalization, SQL/CRUD workflows, full MkDocs documentation.
@@ -58,7 +58,7 @@ usable systems.
     [Repository](https://github.com/Shoug-Alomran/cs340-database-web-application) · 
     [Project Site](https://database.shoug-tech.com) · *Ongoing*
 
-- ###  **CS330 — Parallel Performance Evaluation in Linux**
+- ###  **CS330  -  Parallel Performance Evaluation in Linux**
 
     Process-based parallelism and performance measurement in a Linux environment.
     Fork-based process creation, controlled experiments, reproducible documentation.
@@ -68,7 +68,7 @@ usable systems.
     [Repository](https://github.com/Shoug-Alomran/CS330-Parallel-Performance-Evaluation-in-Linux-Project) · 
     [Project Site](https://operating-systems.shoug-tech.com) · *Ongoing*
 
-- ###  **CS285 — Cryptography Project**
+- ###  **CS285  -  Cryptography Project**
 
     Secure key exchange system implementing the Diffie-Hellman algorithm in Java.
     Number theory, modular arithmetic, key generation, shared secret derivation.
@@ -78,7 +78,7 @@ usable systems.
     [Repository](https://github.com/Shoug-Alomran/CS285-CryptographyProject) · 
     [Project Site](https://secure-key-exchange.shoug-tech.com)
 
--  ### **CS210 — Linked List Implementation and Runtime Analysis**
+-  ### **CS210  -  Linked List Implementation and Runtime Analysis**
 
     Singly linked list implementation with performance analysis in Java.
     Core data structure operations, runtime complexity discussion, modular design.
@@ -88,7 +88,7 @@ usable systems.
     [Repository](https://github.com/Shoug-Alomran/CS210-Project-Linked-List-Implementation-and-Runtime-Analysis) · 
     [Project Site](https://linkedlist.shoug-tech.com)
 
-- ###  **CS102 — School Course Enrollment System**
+- ###  **CS102  -  School Course Enrollment System**
 
     Console-based university course registration platform with multiple user roles.
     Role-based access, file persistence, modular OOP design in Java.
@@ -107,7 +107,7 @@ usable systems.
 
 <div class="grid cards" markdown>
 
-- ### **MATH221 — Numerical Analysis Methods**
+- ### **MATH221  -  Numerical Analysis Methods**
 
     Implementation and analysis of core numerical techniques including root-finding,
     interpolation, numerical differentiation, and numerical integration methods.

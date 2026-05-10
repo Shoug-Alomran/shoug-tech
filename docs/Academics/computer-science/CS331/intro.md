@@ -1,4 +1,4 @@
-# :satellite: CS331 — Data Communications and Computer Networks
+# :satellite: CS331  -  Data Communications and Computer Networks
 
 This course introduces the foundations of data communications and computer
 networks. It focuses on how data moves across networks, how communication is
@@ -30,7 +30,7 @@ you build and analyze network behavior.
 
 <div class="grid cards" markdown>
 
--   :one: **Weeks 1-2 — Overview of Data Communications and Networking**
+-   :one: **Weeks 1-2  -  Overview of Data Communications and Networking**
 
     ---
 
@@ -38,49 +38,49 @@ you build and analyze network behavior.
     layered thinking, and the role of the Internet and modern computer
     networks.
 
--   :two: **Weeks 3-4 — Physical Layer**
+-   :two: **Weeks 3-4  -  Physical Layer**
 
     ---
 
     Signals, transmission media, physical-layer communication concepts, and
     the foundational mechanisms that allow data to move between devices.
 
--   :three: **Weeks 5-8 — Data Link Layer**
+-   :three: **Weeks 5-8  -  Data Link Layer**
 
     ---
 
     Framing, error detection and correction, flow control, medium access, and
     Ethernet concepts across the data link subtopics covered in the course.
 
--   :four: **Week 9 — Interconnecting Devices**
+-   :four: **Week 9  -  Interconnecting Devices**
 
     ---
 
     Core networking devices and how they operate across layers, including how
     devices help forward, segment, and manage communication in real networks.
 
--   :five: **Weeks 15-17 — Network Layer**
+-   :five: **Weeks 15-17  -  Network Layer**
 
     ---
 
     Logical addressing, routing concepts, subnetting, packet delivery, and
     network-layer design decisions used to connect networks together.
 
--   :six: **Week 18 — Transport Layer**
+-   :six: **Week 18  -  Transport Layer**
 
     ---
 
     End-to-end communication, segmentation, reliability, flow control, and
     transport services in TCP/IP-based communication.
 
--   :seven: **Week 19 — Application Layer**
+-   :seven: **Week 19  -  Application Layer**
 
     ---
 
     Network applications, service models, and the protocols users interact
     with most directly in practical networked systems.
 
--   :eight: **Applied Work — Packet Tracer and Wireshark**
+-   :eight: **Applied Work  -  Packet Tracer and Wireshark**
 
     ---
 

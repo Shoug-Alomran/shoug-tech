@@ -1,14 +1,14 @@
 # Workshops
 
 This section documents the professional development workshops I have attended and 
-delivered — including notes, labs, reflections, and materials produced from each one.
+delivered  -  including notes, labs, reflections, and materials produced from each one.
 
 My instructors have specifically noted the **quality and depth of my documentation** 
 compared to peers. These pages are a direct example of that.
 
 <div class="grid cards" markdown>
 
--   :lock: **Cybersecurity Crash Course — Offensive Security**
+-   :lock: **Cybersecurity Crash Course  -  Offensive Security**
 
     A technical workshop covering offensive security fundamentals. Includes full 
     session documentation, Bandit lab notes, agenda, topics covered, and personal 

@@ -8,14 +8,14 @@
 
 <div class="overview-grid">
   <a class="overview-card" href="/Academics/computer-science/CS340/Chapter-1/Chapter-1/"><strong>Ch 1</strong><span>Open resource</span></a>
-  <a class="overview-card" href="/Academics/computer-science/CS340/Chapter-1/Chapter-1-Handouts/"><strong>Ch 1 – Handouts</strong><span>Open resource</span></a>
-  <a class="overview-card" href="/Academics/computer-science/CS340/Chapter-2/Chapter-2/"><strong>Ch 2 – Conceptual Design</strong><span>Open resource</span></a>
-  <a class="overview-card" href="/Academics/computer-science/CS340/Chapter-3/Chapter-3/"><strong>Ch 3 – Relational Model</strong><span>Open resource</span></a>
-  <a class="overview-card" href="/Academics/computer-science/CS340/Chapter-4/Chapter-4/"><strong>Ch 4 – SQL</strong><span>Open resource</span></a>
-  <a class="overview-card" href="/Academics/computer-science/CS340/Chapter-5/Chapter-5/"><strong>Ch 5 – Advanced SQL</strong><span>Open resource</span></a>
-  <a class="overview-card" href="/Academics/computer-science/CS340/Chapter-6/Chapter-6/"><strong>Ch 6 – Database Design</strong><span>Open resource</span></a>
-  <a class="overview-card" href="/Academics/computer-science/CS340/Chapter-7/Chapter-7/"><strong>Ch 7 – Transactions & Concurrency</strong><span>Open resource</span></a>
-  <a class="overview-card" href="/Academics/computer-science/CS340/Chapter-9/Chapter-9/"><strong>Ch 9 – NoSQL Databases</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/computer-science/CS340/Chapter-1/Chapter-1-Handouts/"><strong>Ch 1  -  Handouts</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/computer-science/CS340/Chapter-2/Chapter-2/"><strong>Ch 2  -  Conceptual Design</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/computer-science/CS340/Chapter-3/Chapter-3/"><strong>Ch 3  -  Relational Model</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/computer-science/CS340/Chapter-4/Chapter-4/"><strong>Ch 4  -  SQL</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/computer-science/CS340/Chapter-5/Chapter-5/"><strong>Ch 5  -  Advanced SQL</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/computer-science/CS340/Chapter-6/Chapter-6/"><strong>Ch 6  -  Database Design</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/computer-science/CS340/Chapter-7/Chapter-7/"><strong>Ch 7  -  Transactions & Concurrency</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/computer-science/CS340/Chapter-9/Chapter-9/"><strong>Ch 9  -  NoSQL Databases</strong><span>Open resource</span></a>
 </div>
 
 ## Study Path

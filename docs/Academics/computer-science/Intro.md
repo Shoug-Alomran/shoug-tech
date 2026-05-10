@@ -3,12 +3,12 @@
 This section focuses on the core computer science foundations that support
 software engineering and cybersecurity work. It documents my learning in data
 structures, algorithms, operating systems, databases, and discrete mathematics
-— with an emphasis on understanding how systems work internally and how they
+ -  with an emphasis on understanding how systems work internally and how they
 can be designed efficiently and correctly.
 
 The material here combines theoretical concepts with practical system-level
 thinking. A large part of this section is about learning how to reason about
-performance, structure, and correctness — not just how to write code.
+performance, structure, and correctness  -  not just how to write code.
 
 ---
 
@@ -16,7 +16,7 @@ performance, structure, and correctness — not just how to write code.
 
 <div class="grid cards" markdown>
 
--   :abacus: **CS210 — Data Structures & Algorithms**
+-   :abacus: **CS210  -  Data Structures & Algorithms**
 
     ---
 
@@ -25,7 +25,7 @@ performance, structure, and correctness — not just how to write code.
 
     [:octicons-arrow-right-24: View CS210](CS210/intro.md)
 
--   :triangular_ruler: **CS285 — Discrete Math for Computing**
+-   :triangular_ruler: **CS285  -  Discrete Math for Computing**
 
     ---
 
@@ -34,7 +34,7 @@ performance, structure, and correctness — not just how to write code.
 
     [:octicons-arrow-right-24: View CS285](CS285/intro.md)
 
--   :computer: **CS330 — Introduction to Operating Systems**
+-   :computer: **CS330  -  Introduction to Operating Systems**
 
     ---
 
@@ -43,7 +43,7 @@ performance, structure, and correctness — not just how to write code.
 
     [:octicons-arrow-right-24: View CS330](CS330/intro.md)
 
--   :satellite: **CS331 — Data Communications and Computer Networks**
+-   :satellite: **CS331  -  Data Communications and Computer Networks**
 
     ---
 
@@ -53,7 +53,7 @@ performance, structure, and correctness — not just how to write code.
 
     [:octicons-arrow-right-24: View CS331](CS331/intro.md)
 
--   :floppy_disk: **CS340 — Introduction to Database Systems**
+-   :floppy_disk: **CS340  -  Introduction to Database Systems**
 
     ---
 
@@ -75,7 +75,7 @@ Understanding databases makes me a better application architect. And
 understanding discrete mathematics gives me the formal reasoning tools that
 underpin all of it.
 
-This is not just coursework documentation — it is the foundation that
+This is not just coursework documentation  -  it is the foundation that
 connects directly to my work in software engineering and cybersecurity.
 
 ---
@@ -83,7 +83,7 @@ connects directly to my work in software engineering and cybersecurity.
 ## :notepad_spiral: Supporting Material
 
 Across these courses, this section includes summaries, cheat sheets, quizzes,
-mind maps, and PDF references — all designed to support both conceptual
+mind maps, and PDF references  -  all designed to support both conceptual
 understanding and practical exam preparation.
 
 ---

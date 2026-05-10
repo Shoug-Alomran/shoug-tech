@@ -4,7 +4,7 @@
 ---
 
 Tutoring has been one of the most rewarding parts of my academic journey.
-These are real responses from students I supported — their words reflect the
+These are real responses from students I supported  -  their words reflect the
 kind of impact I aim to have every time I step into a teaching role.
 
 ---
@@ -45,7 +45,7 @@ kind of impact I aim to have every time I step into a teaching role.
 ## :mirror: Reflection
 
 The feedback I received made a few things clear to me. Students valued clarity
-above all — the ability to break down difficult material in a way that actually
+above all  -  the ability to break down difficult material in a way that actually
 made sense to them. They also noticed the effort put into organization and
 preparation, which tells me that structure in teaching is just as important as
 knowledge.

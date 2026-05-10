@@ -1,6 +1,6 @@
 # :wrench: Software Engineering
 
-This section focuses on software engineering as a structured discipline — from
+This section focuses on software engineering as a structured discipline  -  from
 requirements and planning to design, implementation, testing, and project
 management. It documents my learning and applied work in building software
 systems in a deliberate, organized, and requirements-driven way.
@@ -17,7 +17,7 @@ quality.
 
 <div class="grid cards" markdown>
 
--   :pencil: **SE201 — Introduction to Software Engineering**
+-   :pencil: **SE201  -  Introduction to Software Engineering**
 
     ---
 
@@ -27,7 +27,7 @@ quality.
 
     [:octicons-arrow-right-24: View SE201](SE201/intro.md)
 
--   :triangular_ruler: **SE311 — Requirements Engineering**
+-   :triangular_ruler: **SE311  -  Requirements Engineering**
 
     ---
 
@@ -52,14 +52,14 @@ That distinction is what this section is built around. The courses here pushed
 me to think about software not just as something that runs, but as something
 that has to be planned, communicated, tested, and sustained over time. Those
 habits of thinking carry directly into my work in cybersecurity and systems
-design — where structure and precision matter just as much.
+design  -  where structure and precision matter just as much.
 
 ---
 
 ## :notepad_spiral: Supporting Material
 
 Across these courses, this section includes summaries, cheat sheets, quizzes,
-and documentation related to diagrams, modeling, and system structure — all
+and documentation related to diagrams, modeling, and system structure  -  all
 designed to support both conceptual understanding and practical application.
 
 ---

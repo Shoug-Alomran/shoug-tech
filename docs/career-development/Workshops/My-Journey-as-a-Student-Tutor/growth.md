@@ -5,7 +5,7 @@
 
 Tutoring pushed me to grow in ways I didn't expect. Beyond helping others
 understand the material, it challenged me to deepen my own knowledge, sharpen
-how I communicate, and manage competing responsibilities — all at once.
+how I communicate, and manage competing responsibilities  -  all at once.
 
 ---
 
@@ -24,7 +24,7 @@ how I communicate, and manage competing responsibilities — all at once.
 
     ---
 
-    Every piece of collected feedback was positive — a reflection of
+    Every piece of collected feedback was positive  -  a reflection of
     preparation, empathy, and care.
 
 -   :fire: **Three Roles, One Year**
@@ -44,7 +44,7 @@ Taking on a teaching role while navigating my own coursework and professional
 commitments shaped me in several meaningful ways.
 
 Explaining complex topics to others forced me to truly understand them myself
-— not just well enough to pass, but well enough to teach. That process made me
+ -  not just well enough to pass, but well enough to teach. That process made me
 a sharper thinker and a more confident communicator. Working with students who
 had different learning styles taught me to read a room, adjust my approach on
 the fly, and stay patient when something wasn't clicking.
