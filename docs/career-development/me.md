@@ -1,74 +1,115 @@
 # About Me
 
-[View Resume](./CV.html){ .md-button .md-button--primary }
-[Contact Me](mailto:Shoug.Alomran@Shoug-Tech.com){ .md-button }
+<section class="about-hero">
+  <div class="about-hero__main">
+    <span class="about-kicker">Software Engineering + Cybersecurity</span>
+    <h2>Hi, I am Shoug. I like making technical work clear, useful, and actually finished.</h2>
+    <p>
+      I study Software Engineering and Cybersecurity at Prince Sultan University.
+      My work sits between secure systems, practical development, teaching, and
+      documentation that helps people understand what was built and why it matters.
+    </p>
+    <div class="about-hero__actions">
+      <a class="md-button md-button--primary" href="../CV.html">View Resume</a>
+      <a class="md-button" href="mailto:inquiry@shoug-tech.com">Contact Me</a>
+      <a class="md-button" href="https://www.linkedin.com/in/shoug-alomran">LinkedIn</a>
+    </div>
+  </div>
+  <aside class="about-hero__note">
+    <strong>Current focus</strong>
+    <span>Security testing with authorization</span>
+    <span>Structured software delivery</span>
+    <span>Teaching and technical communication</span>
+  </aside>
+</section>
 
----
-
-I am a **Software Engineering and Cybersecurity student** at *Prince Sultan University* 
-with a primary focus on **penetration testing, system analysis, and secure software 
-design**. My work centers on understanding how systems are built, how they fail, and 
-how they can be strengthened through structured engineering and security practices.
-
-I am especially interested in security from an attacker-minded perspective  -  not to 
-exploit systems, but to identify weaknesses early and translate findings into concrete 
-fixes, better designs, and safer user experiences.
+<div class="about-card-grid">
+  <div class="about-mini-card">
+    <span>01</span>
+    <strong>Security Mindset</strong>
+    <p>I like understanding how systems fail so they can be designed, tested, and repaired more thoughtfully.</p>
+  </div>
+  <div class="about-mini-card">
+    <span>02</span>
+    <strong>Builder Energy</strong>
+    <p>I enjoy turning ideas, coursework, and prototypes into polished systems, websites, notes, and deliverables.</p>
+  </div>
+  <div class="about-mini-card">
+    <span>03</span>
+    <strong>Clear Documentation</strong>
+    <p>I care about making work easy to evaluate, reproduce, teach, and improve.</p>
+  </div>
+</div>
 
 ---
 
 ## What I Work On
 
-- **Penetration Testing and Security Analysis**  
-  I analyze systems to identify weaknesses, focusing on web and network-level issues, 
-  basic exploitation techniques, and misconfigurations. All work is conducted in 
-  authorized or controlled environments.
-
-- **Application and System Development**  
-  I build small applications, tools, and web-based systems, often to solve specific 
-  workflow or documentation problems. My focus is on structure, clarity, and secure 
-  coding practices rather than just functionality.
-
-- **Documentation and Knowledge Structuring**  
-  A large part of my work is organizing technical material, project documentation, 
-  and learning resources in a way that is clear, reproducible, and useful to others.
+<div class="about-focus-grid">
+  <section>
+    <strong>Penetration Testing and Security Analysis</strong>
+    <p>I analyze systems for weaknesses, focusing on web and network-level issues, basic exploitation techniques, and misconfigurations. All work stays inside authorized or controlled environments.</p>
+  </section>
+  <section>
+    <strong>Application and System Development</strong>
+    <p>I build small applications, tools, and web-based systems that solve workflow, documentation, or learning problems with structure and secure coding habits.</p>
+  </section>
+  <section>
+    <strong>Documentation and Knowledge Structuring</strong>
+    <p>I organize technical material, project evidence, and learning resources so another person can understand the context, decisions, and outcome.</p>
+  </section>
+</div>
 
 ---
 
-## Current Roles and Experience
+## Current Roles
 
-- **Cybersecurity Trainee at MDD**  
-  Hands-on work with penetration testing tasks, network analysis, and basic security 
-  hardening activities.
-
-- **Course Instructor at Qimah**  
-  Developing learning material and teaching structured approaches to understanding 
-  complex topics.
-
-- **Peer Tutor at Prince Sultan University WTC**  
-  Mentoring students in technical subjects and academic communication.
+<div class="about-timeline">
+  <div>
+    <span>Cybersecurity Trainee</span>
+    <strong>MDD</strong>
+    <p>Hands-on work with penetration testing tasks, network analysis, and basic security hardening activities.</p>
+  </div>
+  <div>
+    <span>Course Instructor</span>
+    <strong>Qimah</strong>
+    <p>Developing learning material and teaching structured approaches to complex topics.</p>
+  </div>
+  <div>
+    <span>Peer Tutor</span>
+    <strong>Prince Sultan University WTC</strong>
+    <p>Mentoring students in technical subjects and academic communication.</p>
+  </div>
+</div>
 
 ---
 
 ## Ethics and Professional Approach
 
-I follow an ethics-first approach to security work:
-
-- I operate only with explicit permission  -  authorized engagements, lab environments, 
-  or my own infrastructure.
-- I practice responsible disclosure by reporting vulnerabilities privately and 
-  supporting safe remediation.
-- I prioritize secure development and mitigation over exploitation, with the goal of 
-  improving system safety and user protection.
+<div class="about-ethics-card">
+  <strong>I only practice security testing in legal and authorized contexts.</strong>
+  <p>
+    I operate with explicit permission, use labs or owned infrastructure for
+    practice, report vulnerabilities privately, and prioritize safer design and
+    remediation over exploitation.
+  </p>
+</div>
 
 ---
 
 ## Technical Focus Areas
 
-- Penetration testing for web and networked systems
-- Secure application development including authentication, input validation, and 
-  API design
-- Tooling and automation to support security testing and analysis
-- Research-driven, hands-on learning using writeups, labs, and technical references
+<div class="about-chip-cloud">
+  <span>Web security testing</span>
+  <span>Network analysis</span>
+  <span>Secure application design</span>
+  <span>Authentication</span>
+  <span>Input validation</span>
+  <span>API design</span>
+  <span>Tooling and automation</span>
+  <span>Technical writeups</span>
+  <span>TryHackMe and Hack The Box labs</span>
+</div>
 
 ---
 
@@ -77,25 +118,14 @@ I follow an ethics-first approach to security work:
 - **AI in Robotics Bootcamp 2025**, Prince Sultan University
 - **First Aid Provider**, Saudi Red Crescent Authority
 - Ongoing practical labs on TryHackMe and Hack The Box
-- Actively working toward advanced offensive security certification (OSCP track)
-
----
-
-## Why This Work Matters to Me
-
-Good security comes from understanding systems deeply, finding problems early, and 
-fixing them properly. I enjoy both sides of this process  -  the analytical side of 
-testing and investigation, and the engineering side of building clearer, safer, and 
-more reliable systems.
-
-> I only practice security testing in legal and authorized contexts. If you are 
-> interested in collaborating on a security assessment or review, I am happy to 
-> discuss scope, authorization, and a responsible disclosure process first.
+- Actively working toward advanced offensive security certification, OSCP track
 
 ---
 
 ## Contact
 
-**Email:** [inquiry@shoug-tech.com](mailto:inquiry@shoug-tech.com)  
-**LinkedIn:** <a rel="me" href="https://www.linkedin.com/in/shoug-alomran">https://www.linkedin.com/in/shoug-alomran</a>  
-**GitHub:** <a rel="me" href="https://github.com/Shoug-Alomran">https://github.com/Shoug-Alomran</a>
+<div class="about-contact-card">
+  <a href="mailto:inquiry@shoug-tech.com">inquiry@shoug-tech.com</a>
+  <a rel="me" href="https://www.linkedin.com/in/shoug-alomran">LinkedIn</a>
+  <a rel="me" href="https://github.com/Shoug-Alomran">GitHub</a>
+</div>

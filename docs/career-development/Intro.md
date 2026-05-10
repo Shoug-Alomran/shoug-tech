@@ -101,28 +101,28 @@ description: Portfolio context, projects, workshops, and how I execute technical
 
 ## Featured Evidence
 
-<div class="grid cards career-feature-list" markdown>
-
--   <span class="career-feature-number">01</span> **Project Portfolio**
-
-    University and team projects where my role often extended into deployment,
-    documentation, technical integration, and presentation.
-
-    [:octicons-arrow-right-24: View Projects](./projects.md)
-
--   <span class="career-feature-number">02</span> **Student Tutor Journey**
-
-    An invited speaker workshop about mentorship, instructional structure,
-    communication, professional growth, and feedback.
-
-    [:octicons-arrow-right-24: View Workshop](./Workshops/My-Journey-as-a-Student-Tutor/overview.md)
-
--   <span class="career-feature-number">03</span> **Cybersecurity Crash Course**
-
-    Technical workshop documentation with agenda, topics, handouts, Bandit
-    notes, screenshots, and reflection.
-
-    [:octicons-arrow-right-24: View Workshop](./Workshops/cybersecurity-crash-course/overview.md)
+<div class="career-evidence-grid">
+  <a class="career-evidence-card" href="../projects/">
+    <span class="career-evidence-card__number">01</span>
+    <span class="career-evidence-card__label">Project Portfolio</span>
+    <strong>Built work, not just listed work.</strong>
+    <span class="career-evidence-card__body">University and team projects where my role often extended into deployment, documentation, technical integration, and presentation.</span>
+    <span class="career-evidence-card__cta">View Projects</span>
+  </a>
+  <a class="career-evidence-card" href="../Workshops/My-Journey-as-a-Student-Tutor/overview/">
+    <span class="career-evidence-card__number">02</span>
+    <span class="career-evidence-card__label">Student Tutor Journey</span>
+    <strong>Teaching, mentoring, and communication.</strong>
+    <span class="career-evidence-card__body">An invited speaker workshop about mentorship, instructional structure, communication, professional growth, and feedback.</span>
+    <span class="career-evidence-card__cta">View Workshop</span>
+  </a>
+  <a class="career-evidence-card" href="../Workshops/cybersecurity-crash-course/overview/">
+    <span class="career-evidence-card__number">03</span>
+    <span class="career-evidence-card__label">Cybersecurity Crash Course</span>
+    <strong>Security learning documented clearly.</strong>
+    <span class="career-evidence-card__body">Technical workshop documentation with agenda, topics, handouts, Bandit notes, screenshots, and reflection.</span>
+    <span class="career-evidence-card__cta">View Workshop</span>
+  </a>
 
 </div>
 
