@@ -6,7 +6,7 @@ This section contains my structured study material for SE311, including:
 
 * Chapter notes
 * Quizzes and practice questions
-* A midterm cheat sheet
+* Midterm and final cheat sheets
 * A UML diagrams cheat sheet for class diagrams and use case diagrams
 * Supporting diagrams and examples
 
