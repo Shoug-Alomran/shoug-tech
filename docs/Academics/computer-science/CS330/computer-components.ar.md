@@ -7,11 +7,11 @@
 
 إذا لم يتم تحميل العرض المضمن بشكل صحيح، افتح الصفحة مباشرة.
 
-- [افتح مستكشف مكونات الحاسوب في صفحة جديدة](/ar/Academics/computer-science/CS330/computer-components.html)
+- [افتح مستكشف مكونات الحاسوب في صفحة جديدة](/Academics/computer-science/CS330/computer-components.html)
 
 <div class="iframe-wrap">
   <iframe
-    src="/ar/Academics/computer-science/CS330/computer-components.html"
+    src="/Academics/computer-science/CS330/computer-components.html"
     title="مستكشف مكونات الحاسوب"
     loading="lazy"
     referrerpolicy="no-referrer"

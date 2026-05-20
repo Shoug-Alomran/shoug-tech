@@ -7,11 +7,11 @@
 
 إذا ما تحمل العرض بشكل صحيح، افتح الفصل بشكل مباشر.
 
-- [افتح الفصل الأول في صفحة جديدة](/ar/Academics/software-engineering/SE311/chapter-1/chapter-1.html)
+- [افتح الفصل الأول في صفحة جديدة](/Academics/software-engineering/SE311/chapter-1/chapter-1.html)
 
 <div class="iframe-wrap">
   <iframe
-    src="/ar/Academics/software-engineering/SE311/chapter-1/chapter-1.html"
+    src="/Academics/software-engineering/SE311/chapter-1/chapter-1.html"
     title="SE311 - الفصل الأول: أساسيات هندسة المتطلبات"
     loading="lazy"
     referrerpolicy="no-referrer"

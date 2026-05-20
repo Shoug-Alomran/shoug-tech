@@ -7,11 +7,11 @@
 
 إذا ما تحمل العرض بشكل صحيح، افتح الفصل بشكل مباشر.
 
-- [افتح الفصل الخامس في صفحة جديدة](/ar/Academics/computer-science/CS340/Chapter-5/cheat-sheet.html)
+- [افتح الفصل الخامس في صفحة جديدة](/Academics/computer-science/CS340/Chapter-5/cheat-sheet.html)
 
 <div class="iframe-wrap">
   <iframe
-    src="/ar/Academics/computer-science/CS340/Chapter-5/cheat-sheet.html"
+    src="/Academics/computer-science/CS340/Chapter-5/cheat-sheet.html"
     title="الفصل الخامس: أساسيات SQL"
     loading="lazy"
     referrerpolicy="no-referrer"

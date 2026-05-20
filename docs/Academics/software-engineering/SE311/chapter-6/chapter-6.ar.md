@@ -7,11 +7,11 @@
 
 إذا ما تحمل العرض بشكل صحيح، افتح الفصل بشكل مباشر.
 
-- [افتح الفصل السادس في صفحة جديدة](/ar/Academics/software-engineering/SE311/chapter-6/chapter-6.html)
+- [افتح الفصل السادس في صفحة جديدة](/Academics/software-engineering/SE311/chapter-6/chapter-6.html)
 
 <div class="iframe-wrap">
   <iframe
-    src="/ar/Academics/software-engineering/SE311/chapter-6/chapter-6.html"
+    src="/Academics/software-engineering/SE311/chapter-6/chapter-6.html"
     title="SE311 - الفصل السادس: التحقق من صحة المتطلبات"
     loading="lazy"
     referrerpolicy="no-referrer"

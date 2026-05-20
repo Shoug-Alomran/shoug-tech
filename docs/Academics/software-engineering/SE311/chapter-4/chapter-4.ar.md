@@ -7,11 +7,11 @@
 
 إذا ما تحمل العرض بشكل صحيح، افتح الفصل بشكل مباشر.
 
-- [افتح الفصل الرابع في صفحة جديدة](/ar/Academics/software-engineering/SE311/chapter-4/chapter-4.html)
+- [افتح الفصل الرابع في صفحة جديدة](/Academics/software-engineering/SE311/chapter-4/chapter-4.html)
 
 <div class="iframe-wrap">
   <iframe
-    src="/ar/Academics/software-engineering/SE311/chapter-4/chapter-4.html"
+    src="/Academics/software-engineering/SE311/chapter-4/chapter-4.html"
     title="SE311 - الفصل الرابع: استخراج المتطلبات"
     loading="lazy"
     referrerpolicy="no-referrer"

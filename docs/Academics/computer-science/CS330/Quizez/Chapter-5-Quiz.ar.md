@@ -7,11 +7,11 @@
 
 إذا ما تحمل العرض بشكل صحيح، افتح الاختبار بشكل مباشر.
 
-- [افتح اختبار الفصل الخامس في صفحة جديدة](/ar/Academics/computer-science/CS330/Quizez/Chapter-5-Quiz.html)
+- [افتح اختبار الفصل الخامس في صفحة جديدة](/Academics/computer-science/CS330/Quizez/Chapter-5-Quiz.html)
 
 <div class="iframe-wrap">
   <iframe
-    src="/ar/Academics/computer-science/CS330/Quizez/Chapter-5-Quiz.html"
+    src="/Academics/computer-science/CS330/Quizez/Chapter-5-Quiz.html"
     title="اختبار الفصل الخامس"
     loading="lazy"
     referrerpolicy="no-referrer"

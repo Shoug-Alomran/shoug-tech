@@ -7,11 +7,11 @@
 
 إذا ما تحمل العرض بشكل صحيح، افتح الفصل بشكل مباشر.
 
-- [افتح الفصل الثاني في صفحة جديدة](/ar/Academics/software-engineering/SE311/chapter-2/chapter-2.html)
+- [افتح الفصل الثاني في صفحة جديدة](/Academics/software-engineering/SE311/chapter-2/chapter-2.html)
 
 <div class="iframe-wrap">
   <iframe
-    src="/ar/Academics/software-engineering/SE311/chapter-2/chapter-2.html"
+    src="/Academics/software-engineering/SE311/chapter-2/chapter-2.html"
     title="SE311 - الفصل الثاني: معايير التوثيق"
     loading="lazy"
     referrerpolicy="no-referrer"

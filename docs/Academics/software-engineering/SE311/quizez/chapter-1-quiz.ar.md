@@ -7,11 +7,11 @@
 
 إذا ما تحمل العرض بشكل صحيح، افتح الاختبار بشكل مباشر.
 
-- [افتح اختبار الفصل الأول في صفحة جديدة](/ar/Academics/software-engineering/SE311/quizez/chapter-1-quiz.html)
+- [افتح اختبار الفصل الأول في صفحة جديدة](/Academics/software-engineering/SE311/quizez/chapter-1-quiz.html)
 
 <div class="iframe-wrap">
   <iframe
-    src="/ar/Academics/software-engineering/SE311/quizez/chapter-1-quiz.html"
+    src="/Academics/software-engineering/SE311/quizez/chapter-1-quiz.html"
     title="SE311 - اختبار الفصل الأول"
     loading="lazy"
     referrerpolicy="no-referrer"

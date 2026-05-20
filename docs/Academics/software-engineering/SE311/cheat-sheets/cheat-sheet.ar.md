@@ -7,11 +7,11 @@
 
 إذا ما تحمل العرض بشكل صحيح، افتح ورقة الغش بشكل مباشر.
 
-- [افتح ورقة الغش في صفحة جديدة](/ar/Academics/software-engineering/SE311/cheat-sheets/cheat-sheet.html)
+- [افتح ورقة الغش في صفحة جديدة](/Academics/software-engineering/SE311/cheat-sheets/cheat-sheet.html)
 
 <div class="iframe-wrap">
   <iframe
-    src="/ar/Academics/software-engineering/SE311/cheat-sheets/cheat-sheet.html"
+    src="/Academics/software-engineering/SE311/cheat-sheets/cheat-sheet.html"
     title="ورقة الغش"
     loading="lazy"
     referrerpolicy="no-referrer"

@@ -7,11 +7,11 @@
 
 إذا لم يتم تحميل العرض المضمن بشكل صحيح، افتح الصفحة مباشرة.
 
-- [افتح صفحة الصيغ الرياضية في صفحة جديدة](/ar/Academics/computer-science/CS330/formulas.html)
+- [افتح صفحة الصيغ الرياضية في صفحة جديدة](/Academics/computer-science/CS330/formulas.html)
 
 <div class="iframe-wrap">
   <iframe
-    src="/ar/Academics/computer-science/CS330/formulas.html"
+    src="/Academics/computer-science/CS330/formulas.html"
     title="الصيغ الرياضية"
     loading="lazy"
     referrerpolicy="no-referrer"
