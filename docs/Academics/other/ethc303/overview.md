@@ -30,6 +30,15 @@ the slides section.
 
     [Open guide](privacy-issue-in-cyberspace.md)
 
+-   **Network Security and Privacy in the Cloud**
+
+    ---
+
+    Cloud privacy and security concepts, cloud risks, protection methods, and
+    review material for privacy issues in cloud computing.
+
+    [Open guide](network-security-and-privacy-in-the-cloud.md)
+
 -   **Network Security and Privacy**
 
     ---
@@ -47,6 +56,24 @@ the slides section.
     to analyze decisions in cybertechnology and computing.
 
     [Open guide](moral-systems-ethical-concepts-and-theories.md)
+
+-   **Kantianism**
+
+    ---
+
+    Duty-based ethics, categorical imperatives, respect for persons, autonomy,
+    and how Kantian reasoning applies to ethical decisions.
+
+    [Open guide](kantianism.md)
+
+-   **Social Contract Theory**
+
+    ---
+
+    Social agreements, rights and responsibilities, consent, fairness, and how
+    social contracts shape ethical rules in society and technology.
+
+    [Open guide](social-contract-theory.md)
 
 -   **Cyber Laws in Saudi Arabia**
 

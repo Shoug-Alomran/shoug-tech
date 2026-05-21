@@ -265,6 +265,7 @@
     replaceFooterCredit();
     initRevealMotion();
     syncEmbeddedIframesTheme();
+    bindDynamicIframeResizing();
     translateTabs();
     translateSidebarNav();
   }
@@ -541,11 +542,16 @@
     }
   }
 
+  function embeddedIframes() {
+    return document.querySelectorAll('.md-content-iframe, .md-content__inner iframe[src$=".html"], .md-content__inner iframe[src*=".html#"]');
+  }
+
   function syncEmbeddedIframesTheme() {
-    const iframes = document.querySelectorAll(".md-content-iframe");
+    const iframes = embeddedIframes();
     if (!iframes.length) return;
 
     iframes.forEach((iframe) => {
+      iframe.classList.add("md-content-iframe");
       if (!iframe.dataset.themeBound) {
         iframe.dataset.themeBound = "1";
         iframe.addEventListener("load", () => applyThemeToIframe(iframe));
@@ -560,10 +566,76 @@
     if (!target || typeof MutationObserver === "undefined") return;
 
     new MutationObserver(() => {
-      document.querySelectorAll(".md-content-iframe").forEach((iframe) => applyThemeToIframe(iframe));
+      embeddedIframes().forEach((iframe) => applyThemeToIframe(iframe));
     }).observe(target, {
       attributes: true,
       attributeFilter: ["data-md-color-scheme"]
+    });
+  }
+
+  function normalizedPath(value) {
+    try {
+      return new URL(value, window.location.href).pathname.replace(/\/+$/, "");
+    } catch (e) {
+      return String(value || "").split("#")[0].split("?")[0].replace(/\/+$/, "");
+    }
+  }
+
+  function resizeIframe(iframe, height) {
+    const next = Math.max(520, Math.min(Number(height) || 0, 20000));
+    if (!next) return;
+    iframe.classList.add("md-content-iframe");
+    iframe.style.width = "100%";
+    iframe.style.height = `${next + 24}px`;
+    iframe.style.minHeight = "70vh";
+    iframe.style.border = iframe.style.border || "0";
+  }
+
+  function measureIframe(iframe) {
+    try {
+      const doc = iframe.contentDocument;
+      if (!doc || !doc.documentElement) return;
+      const body = doc.body;
+      resizeIframe(iframe, Math.max(
+        body ? body.scrollHeight : 0,
+        body ? body.offsetHeight : 0,
+        doc.documentElement.scrollHeight,
+        doc.documentElement.offsetHeight
+      ));
+    } catch (e) {
+      // The postMessage path handles same-origin pages when direct access is blocked.
+    }
+  }
+
+  function bindDynamicIframeResizing() {
+    const iframes = embeddedIframes();
+    iframes.forEach((iframe) => {
+      iframe.classList.add("md-content-iframe");
+      iframe.removeAttribute("height");
+      iframe.style.minHeight = "70vh";
+      iframe.style.width = "100%";
+      if (!iframe.dataset.resizeBound) {
+        iframe.dataset.resizeBound = "1";
+        iframe.addEventListener("load", () => {
+          measureIframe(iframe);
+          window.setTimeout(() => measureIframe(iframe), 300);
+          window.setTimeout(() => measureIframe(iframe), 1200);
+        });
+      }
+      measureIframe(iframe);
+    });
+
+    if (bindDynamicIframeResizing.messageBound) return;
+    bindDynamicIframeResizing.messageBound = true;
+
+    window.addEventListener("message", (event) => {
+      if (event.origin !== window.location.origin || !event.data || event.data.type !== "sg:iframe-height") return;
+      const sourcePath = normalizedPath(event.data.path);
+      embeddedIframes().forEach((iframe) => {
+        if (normalizedPath(iframe.getAttribute("src")) === sourcePath) {
+          resizeIframe(iframe, event.data.height);
+        }
+      });
     });
   }
 
