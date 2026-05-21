@@ -3,7 +3,8 @@
 This section collects the ETHCS 303 study guides in one place. The material
 focuses on ethical hacking foundations, privacy in cyberspace, Saudi cyber law,
 network security and privacy, moral theories, and ethical issues in systems
-analysis and software engineering.
+analysis and software engineering. The original lecture PDFs are collected in
+the slides section.
 
 ---
 
@@ -20,14 +21,14 @@ analysis and software engineering.
 
     [Open guide](intro.md)
 
--   **Privacy in Cybersecurity**
+-   **Privacy Issues in Cyberspace**
 
     ---
 
     Privacy concepts, online tracking, cookies, fingerprinting, privacy in
     cloud, mobile, social media, IoT, e-government, and biometrics.
 
-    [Open guide](privacy-issue-in-cybersecurity.md)
+    [Open guide](privacy-issue-in-cyberspace.md)
 
 -   **Network Security and Privacy**
 
@@ -64,6 +65,41 @@ analysis and software engineering.
     engineering decisions, and ethical risks in analysis and design.
 
     [Open guide](ethical-issues-in-systems-analysis-and-software-engineering.md)
+
+-   **Business Ethics**
+
+    ---
+
+    Ethical principles in business, common dilemmas, responsible decision-making,
+    CSR, ethical leadership, and the cost of unethical behavior.
+
+    [Open guide](business-ethics.md)
+
+-   **Social Engineering**
+
+    ---
+
+    Human-centered attacks, persuasion tactics, phishing, impersonation, and
+    defenses against manipulation-based security threats.
+
+    [Open guide](social-engineering.md)
+
+-   **Social Media Ethical, Legal, and Security Issues**
+
+    ---
+
+    Ethical, legal, security, hiring, organizational, and marketing issues
+    connected to social media use.
+
+    [Open guide](social-media.md)
+
+-   **Slides**
+
+    ---
+
+    Original ETHCS 303 lecture PDFs for quick reference and review.
+
+    [Open slides](slides/overview.md)
 
 </div>
 
