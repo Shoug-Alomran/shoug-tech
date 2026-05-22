@@ -9,11 +9,11 @@
 
 -   **قضايا الخصوصية في الفضاء السيبراني**
 
-    [افتح الشرائح](privacy-issues-cyberspace.pdf)
+    [افتح الشرائح](privacy-issues-in-cyberspace.pdf)
 
--   **قضايا الخصوصية في الحوسبة السحابية**
+-   **أمن الشبكات والخصوصية في السحابة**
 
-    [افتح الشرائح](privacy-issues-cloud-computing.pdf)
+    [افتح الشرائح](network-security-and-privacy-in-the-cloud.pdf)
 
 -   **أخلاقيات الأعمال**
 
@@ -21,23 +21,23 @@
 
 -   **القضايا التقنية والأخلاقية في تحليل وتصميم النظم**
 
-    [افتح الشرائح](technical-and-ethical-issues-sa-sd.pdf)
+    [افتح الشرائح](ethical-issues-in-systems-analysis-and-software-engineering.pdf)
 
 -   **الأنظمة السيبرانية في السعودية**
 
-    [افتح الشرائح](cyber-laws-saudi-arabia.pdf)
+    [افتح الشرائح](cyber-laws-in-saudi-arabia.pdf)
 
--   **النظريات الأخلاقية - الجزء 1**
+-   **الكانطية**
 
-    [افتح الشرائح](ethical-theories-part-1.pdf)
+    [افتح الشرائح](kantianism.pdf)
 
--   **النظريات الأخلاقية - الجزء 2**
+-   **النفعية**
 
-    [افتح الشرائح](ethical-theories-part-2.pdf)
+    [افتح الشرائح](utilitarianism.pdf)
 
--   **النظريات الأخلاقية - الجزء 3**
+-   **نظرية العقد الاجتماعي**
 
-    [افتح الشرائح](ethical-theories-part-3.pdf)
+    [افتح الشرائح](social-contract-theory.pdf)
 
 -   **أنظمة الملكية الفكرية**
 
@@ -49,11 +49,11 @@
 
 -   **النظم الأخلاقية والمفاهيم والنظريات الأخلاقية**
 
-    [افتح الشرائح](moral-systems-ethical-concepts-theories.pdf)
+    [افتح الشرائح](moral-systems-ethical-concepts-and-theories.pdf)
 
--   **القضايا الأمنية وطرق معالجتها**
+-   **أمن الشبكات والخصوصية**
 
-    [افتح الشرائح](security-issues-countermeasures.pdf)
+    [افتح الشرائح](network-security-and-privacy.pdf)
 
 -   **الهندسة الاجتماعية**
 

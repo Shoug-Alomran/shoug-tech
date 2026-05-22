@@ -6,35 +6,35 @@ This section collects the ETHCS 303 lecture slides as PDF files.
 
 -   **Privacy Issues in Cyberspace**
 
-    [Open slides](privacy-issues-cyberspace.pdf)
+    [Open slides](privacy-issues-in-cyberspace.pdf)
 
--   **Privacy Issues in Cloud Computing**
+-   **Network Security and Privacy in the Cloud**
 
-    [Open slides](privacy-issues-cloud-computing.pdf)
+    [Open slides](network-security-and-privacy-in-the-cloud.pdf)
 
 -   **Business Ethics**
 
     [Open slides](business-ethics.pdf)
 
--   **Technical and Ethical Issues with SA and SD**
+-   **Ethical Issues in Systems Analysis and Software Engineering**
 
-    [Open slides](technical-and-ethical-issues-sa-sd.pdf)
+    [Open slides](ethical-issues-in-systems-analysis-and-software-engineering.pdf)
 
 -   **Cyber Laws in Saudi Arabia**
 
-    [Open slides](cyber-laws-saudi-arabia.pdf)
+    [Open slides](cyber-laws-in-saudi-arabia.pdf)
 
--   **Ethical Theories Part 1**
+-   **Kantianism**
 
-    [Open slides](ethical-theories-part-1.pdf)
+    [Open slides](kantianism.pdf)
 
--   **Ethical Theories Part 2**
+-   **Utilitarianism**
 
-    [Open slides](ethical-theories-part-2.pdf)
+    [Open slides](utilitarianism.pdf)
 
--   **Ethical Theories Part 3**
+-   **Social Contract Theory**
 
-    [Open slides](ethical-theories-part-3.pdf)
+    [Open slides](social-contract-theory.pdf)
 
 -   **Intellectual Property Laws**
 
@@ -46,11 +46,11 @@ This section collects the ETHCS 303 lecture slides as PDF files.
 
 -   **Moral Systems, Ethical Concepts, and Theories**
 
-    [Open slides](moral-systems-ethical-concepts-theories.pdf)
+    [Open slides](moral-systems-ethical-concepts-and-theories.pdf)
 
--   **Security Issues and Their Countermeasures**
+-   **Network Security and Privacy**
 
-    [Open slides](security-issues-countermeasures.pdf)
+    [Open slides](network-security-and-privacy.pdf)
 
 -   **Social Engineering**
 

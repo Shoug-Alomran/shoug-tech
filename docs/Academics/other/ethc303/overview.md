@@ -66,6 +66,15 @@ the slides section.
 
     [Open guide](kantianism.md)
 
+-   **Utilitarianism**
+
+    ---
+
+    Consequence-based ethics, the principle of utility, greatest happiness,
+    act utilitarianism, rule utilitarianism, and common criticisms.
+
+    [Open guide](utilitarianism.md)
+
 -   **Social Contract Theory**
 
     ---
