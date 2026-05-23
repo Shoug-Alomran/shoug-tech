@@ -1,0 +1,2121 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 10: Authentication & Access Control</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg: #faf7f2;
+            --surface: #ffffff;
+            --card: #f5f0e8;
+            --border: #e8ddd0;
+            --amber: #c8690a;
+            --amber-light: #f0a945;
+            --amber-dark: #7a3d04;
+            --teal: #0a7c7c;
+            --teal-light: #e0f4f4;
+            --rose: #b5383a;
+            --rose-light: #fbeaea;
+            --indigo: #3730a3;
+            --indigo-light: #eef2ff;
+            --green: #166534;
+            --green-light: #dcfce7;
+            --text: #1c1a17;
+            --muted: #7a6f60;
+            --shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.65;
+            overflow-x: hidden;
+        }
+
+        /* HERO */
+        .hero {
+            background: linear-gradient(135deg, var(--amber-dark) 0%, var(--amber) 60%, var(--amber-light) 100%);
+            padding: 56px 40px 48px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 80px;
+            background: var(--bg);
+            border-radius: 50%;
+        }
+
+        .chapter-pill {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            color: #fff;
+            font-size: 11px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            padding: 5px 18px;
+            border-radius: 30px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(28px, 5vw, 54px);
+            font-weight: 900;
+            color: #fff;
+            line-height: 1.1;
+            margin-bottom: 14px;
+            text-shadow: 0 2px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .hero p {
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 15px;
+            max-width: 560px;
+            margin: 0 auto 28px;
+        }
+
+        .progress-wrap {
+            max-width: 420px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.25);
+            border-radius: 4px;
+            height: 5px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: #fff;
+            border-radius: 4px;
+            transition: width 0.4s ease;
+        }
+
+        .progress-txt {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 11px;
+            margin-top: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        /* NAV */
+        .nav {
+            display: flex;
+            gap: 2px;
+            padding: 14px 32px;
+            background: #fff;
+            border-bottom: 2px solid var(--border);
+            overflow-x: auto;
+            scrollbar-width: none;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow);
+        }
+
+        .nav::-webkit-scrollbar {
+            display: none;
+        }
+
+        .nav-btn {
+            padding: 7px 15px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            border: 1px solid transparent;
+            background: transparent;
+            color: var(--muted);
+            transition: all 0.18s;
+            white-space: nowrap;
+        }
+
+        .nav-btn:hover {
+            background: var(--card);
+            color: var(--text);
+        }
+
+        .nav-btn.active {
+            background: var(--amber);
+            color: #fff;
+            border-color: var(--amber);
+        }
+
+        /* MAIN */
+        .main {
+            max-width: 1060px;
+            margin: 0 auto;
+            padding: 44px 24px 80px;
+        }
+
+        .section {
+            display: none;
+            animation: rise 0.3s ease;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes rise {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* SECTION HEADER */
+        .sec-head {
+            display: flex;
+            align-items: flex-start;
+            gap: 18px;
+            margin-bottom: 32px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .sec-icon {
+            font-size: 38px;
+            width: 68px;
+            height: 68px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--card);
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            flex-shrink: 0;
+        }
+
+        .sec-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--amber-dark);
+        }
+
+        .sec-sub {
+            color: var(--muted);
+            font-size: 13px;
+            margin-top: 3px;
+        }
+
+        /* MNEMONIC */
+        .mnemonic {
+            background: linear-gradient(135deg, #fffbf0, #fff8e6);
+            border: 2px solid var(--amber-light);
+            border-left: 5px solid var(--amber);
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin-bottom: 28px;
+        }
+
+        .mnemo-label {
+            font-size: 10px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--amber);
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .mnemo-phrase {
+            font-family: 'Playfair Display', serif;
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--amber-dark);
+            margin-bottom: 12px;
+        }
+
+        .mnemo-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .mnemo-item {
+            background: rgba(200, 105, 10, 0.1);
+            border: 1px solid rgba(200, 105, 10, 0.25);
+            border-radius: 20px;
+            padding: 5px 14px;
+            font-size: 13px;
+        }
+
+        .mnemo-item b {
+            color: var(--amber-dark);
+        }
+
+        /* CARDS */
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            transition: transform 0.2s, box-shadow 0.2s;
+            border-top: 3px solid var(--border);
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-icon {
+            font-size: 26px;
+            margin-bottom: 10px;
+        }
+
+        .card-title {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .card-body {
+            font-size: 13px;
+            color: var(--muted);
+            line-height: 1.6;
+        }
+
+        .card-tag {
+            display: inline-block;
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            padding: 3px 10px;
+            border-radius: 20px;
+            margin-top: 10px;
+        }
+
+        /* COLOR VARIANTS */
+        .c-amber {
+            border-top-color: var(--amber) !important;
+        }
+
+        .c-amber .card-title {
+            color: var(--amber-dark);
+        }
+
+        .c-teal {
+            border-top-color: var(--teal) !important;
+        }
+
+        .c-teal .card-title {
+            color: var(--teal);
+        }
+
+        .c-rose {
+            border-top-color: var(--rose) !important;
+        }
+
+        .c-rose .card-title {
+            color: var(--rose);
+        }
+
+        .c-indigo {
+            border-top-color: var(--indigo) !important;
+        }
+
+        .c-indigo .card-title {
+            color: var(--indigo);
+        }
+
+        .c-green {
+            border-top-color: var(--green) !important;
+        }
+
+        .c-green .card-title {
+            color: var(--green);
+        }
+
+        .t-amber {
+            background: rgba(200, 105, 10, 0.1);
+            color: var(--amber-dark);
+        }
+
+        .t-teal {
+            background: var(--teal-light);
+            color: var(--teal);
+        }
+
+        .t-rose {
+            background: var(--rose-light);
+            color: var(--rose);
+        }
+
+        .t-indigo {
+            background: var(--indigo-light);
+            color: var(--indigo);
+        }
+
+        .t-green {
+            background: var(--green-light);
+            color: var(--green);
+        }
+
+        /* ALERTS */
+        .alert {
+            border-radius: 10px;
+            padding: 16px 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .alert strong {
+            display: block;
+            font-size: 11px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .a-amber {
+            background: #fffbf0;
+            border-color: var(--amber);
+        }
+
+        .a-amber strong {
+            color: var(--amber);
+        }
+
+        .a-rose {
+            background: var(--rose-light);
+            border-color: var(--rose);
+        }
+
+        .a-rose strong {
+            color: var(--rose);
+        }
+
+        .a-teal {
+            background: var(--teal-light);
+            border-color: var(--teal);
+        }
+
+        .a-teal strong {
+            color: var(--teal);
+        }
+
+        .a-green {
+            background: var(--green-light);
+            border-color: var(--green);
+        }
+
+        .a-green strong {
+            color: var(--green);
+        }
+
+        .a-indigo {
+            background: var(--indigo-light);
+            border-color: var(--indigo);
+        }
+
+        .a-indigo strong {
+            color: var(--indigo);
+        }
+
+        /* TABLE */
+        .tbl {
+            width: 100%;
+            border-collapse: collapse;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 28px;
+            font-size: 13px;
+            box-shadow: var(--shadow);
+        }
+
+        .tbl th {
+            background: var(--amber);
+            color: #fff;
+            padding: 13px 16px;
+            text-align: left;
+            font-size: 11px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .tbl td {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border);
+            background: var(--surface);
+            vertical-align: top;
+        }
+
+        .tbl tr:last-child td {
+            border-bottom: none;
+        }
+
+        .tbl tr:hover td {
+            background: var(--card);
+        }
+
+        .tbl td:first-child {
+            font-weight: 700;
+            color: var(--amber-dark);
+        }
+
+        /* TWO COLUMN COMPARE */
+        .cmp {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin-bottom: 24px;
+        }
+
+        .cmp-bad {
+            background: var(--rose-light);
+            border: 1px solid #f5c6c6;
+            border-radius: 10px;
+            padding: 18px;
+        }
+
+        .cmp-good {
+            background: var(--green-light);
+            border: 1px solid #bbf7d0;
+            border-radius: 10px;
+            padding: 18px;
+        }
+
+        .cmp-label {
+            font-size: 10px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .cmp-bad .cmp-label {
+            color: var(--rose);
+        }
+
+        .cmp-good .cmp-label {
+            color: var(--green);
+        }
+
+        .cmp-item {
+            font-size: 13px;
+            color: var(--text);
+            margin-bottom: 7px;
+            padding-left: 14px;
+            position: relative;
+            line-height: 1.5;
+        }
+
+        .cmp-item::before {
+            content: '›';
+            position: absolute;
+            left: 0;
+            font-weight: 700;
+        }
+
+        .cmp-bad .cmp-item::before {
+            color: var(--rose);
+        }
+
+        .cmp-good .cmp-item::before {
+            color: var(--green);
+        }
+
+        /* PROCESS FLOW */
+        .flow {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            margin-bottom: 28px;
+            flex-wrap: wrap;
+        }
+
+        .flow-step {
+            background: var(--surface);
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            padding: 14px 18px;
+            text-align: center;
+            font-size: 13px;
+            flex: 1;
+            min-width: 100px;
+            box-shadow: var(--shadow);
+        }
+
+        .flow-step-title {
+            font-weight: 700;
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .flow-step-sub {
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        .flow-arrow {
+            font-size: 22px;
+            color: var(--amber);
+            padding: 0 6px;
+            flex-shrink: 0;
+        }
+
+        .flow-step.fs-amber {
+            border-color: var(--amber);
+            background: #fffbf0;
+        }
+
+        .flow-step.fs-amber .flow-step-title {
+            color: var(--amber-dark);
+        }
+
+        .flow-step.fs-teal {
+            border-color: var(--teal);
+            background: var(--teal-light);
+        }
+
+        .flow-step.fs-teal .flow-step-title {
+            color: var(--teal);
+        }
+
+        .flow-step.fs-green {
+            border-color: var(--green);
+            background: var(--green-light);
+        }
+
+        .flow-step.fs-green .flow-step-title {
+            color: var(--green);
+        }
+
+        /* CALLOUT */
+        .callout {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin-bottom: 22px;
+        }
+
+        .callout-title {
+            font-weight: 700;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .callout ul {
+            padding-left: 18px;
+        }
+
+        .callout li {
+            font-size: 13px;
+            color: var(--muted);
+            margin-bottom: 6px;
+            line-height: 1.6;
+        }
+
+        .callout li strong {
+            color: var(--text);
+        }
+
+        /* QUIZ */
+        .quiz-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 22px;
+            margin-bottom: 16px;
+            box-shadow: var(--shadow);
+        }
+
+        .quiz-num {
+            font-size: 10px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .quiz-q {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            line-height: 1.5;
+        }
+
+        .quiz-opts {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .quiz-opt {
+            background: var(--card);
+            border: 1.5px solid var(--border);
+            border-radius: 8px;
+            padding: 11px 16px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.18s;
+            text-align: left;
+            font-family: 'DM Sans', sans-serif;
+            line-height: 1.5;
+        }
+
+        .quiz-opt:hover {
+            border-color: var(--amber);
+            background: #fffbf0;
+        }
+
+        .quiz-opt.correct {
+            border-color: var(--green);
+            background: var(--green-light);
+            color: var(--green);
+            font-weight: 600;
+        }
+
+        .quiz-opt.wrong {
+            border-color: var(--rose);
+            background: var(--rose-light);
+            color: var(--rose);
+        }
+
+        .quiz-opt.disabled {
+            pointer-events: none;
+            opacity: 0.45;
+        }
+
+        .quiz-opt.disabled.correct {
+            opacity: 1;
+        }
+
+        .quiz-fb {
+            margin-top: 12px;
+            font-size: 13px;
+            padding: 10px 14px;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .quiz-fb.show {
+            display: block;
+        }
+
+        .quiz-fb.ok {
+            background: var(--green-light);
+            color: var(--green);
+        }
+
+        .quiz-fb.fail {
+            background: var(--rose-light);
+            color: var(--rose);
+        }
+
+        .quiz-score {
+            background: var(--surface);
+            border: 2px solid var(--amber);
+            border-radius: 12px;
+            padding: 32px;
+            text-align: center;
+            margin-top: 24px;
+            display: none;
+            box-shadow: var(--shadow);
+        }
+
+        .quiz-score.show {
+            display: block;
+        }
+
+        .score-big {
+            font-family: 'Playfair Display', serif;
+            font-size: 56px;
+            font-weight: 900;
+            color: var(--amber-dark);
+        }
+
+        /* FLASHCARDS */
+        .fc-wrap {
+            perspective: 1000px;
+            max-width: 560px;
+            margin: 0 auto;
+        }
+
+        .fc {
+            width: 100%;
+            height: 200px;
+            cursor: pointer;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-bottom: 16px;
+        }
+
+        .fc.flip {
+            transform: rotateY(180deg);
+        }
+
+        .fc-face {
+            position: absolute;
+            inset: 0;
+            backface-visibility: hidden;
+            border-radius: 14px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 28px;
+            text-align: center;
+            box-shadow: var(--shadow);
+        }
+
+        .fc-front {
+            background: var(--surface);
+            border: 2px solid var(--border);
+        }
+
+        .fc-back {
+            background: linear-gradient(135deg, var(--amber-dark), var(--amber));
+            transform: rotateY(180deg);
+        }
+
+        .fc-front p {
+            font-size: 16px;
+            font-weight: 600;
+            line-height: 1.5;
+        }
+
+        .fc-back p {
+            font-size: 14px;
+            color: #fff;
+            line-height: 1.6;
+        }
+
+        .fc-hint {
+            font-size: 11px;
+            color: var(--muted);
+            margin-top: 10px;
+            text-align: center;
+            letter-spacing: 0.5px;
+        }
+
+        .fc-nav {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            margin-bottom: 30px;
+        }
+
+        .fc-btn {
+            background: var(--surface);
+            border: 1.5px solid var(--border);
+            padding: 9px 22px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 500;
+            transition: all 0.18s;
+        }
+
+        .fc-btn:hover {
+            border-color: var(--amber);
+            color: var(--amber-dark);
+            background: #fffbf0;
+        }
+
+        .fc-cnt {
+            font-size: 13px;
+            color: var(--muted);
+            min-width: 60px;
+            text-align: center;
+        }
+
+        /* AAA VISUAL */
+        .aaa {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+            margin-bottom: 28px;
+        }
+
+        .aaa-box {
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .aaa-num {
+            font-family: 'Playfair Display', serif;
+            font-size: 40px;
+            font-weight: 900;
+            margin-bottom: 6px;
+        }
+
+        .aaa-title {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .aaa-sub {
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        .aaa-1 {
+            background: #fffbf0;
+            border: 2px solid var(--amber);
+        }
+
+        .aaa-1 .aaa-num,
+        .aaa-1 .aaa-title {
+            color: var(--amber-dark);
+        }
+
+        .aaa-1 .aaa-sub {
+            color: var(--muted);
+        }
+
+        .aaa-2 {
+            background: var(--teal-light);
+            border: 2px solid var(--teal);
+        }
+
+        .aaa-2 .aaa-num,
+        .aaa-2 .aaa-title {
+            color: var(--teal);
+        }
+
+        .aaa-2 .aaa-sub {
+            color: var(--muted);
+        }
+
+        .aaa-3 {
+            background: var(--indigo-light);
+            border: 2px solid var(--indigo);
+        }
+
+        .aaa-3 .aaa-num,
+        .aaa-3 .aaa-title {
+            color: var(--indigo);
+        }
+
+        .aaa-3 .aaa-sub {
+            color: var(--muted);
+        }
+
+        /* BIOMETRIC VISUAL */
+        .bio-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin-bottom: 24px;
+        }
+
+        .bio-col {
+            border-radius: 12px;
+            padding: 18px;
+            border: 1.5px solid;
+        }
+
+        .bio-col-title {
+            font-weight: 700;
+            font-size: 14px;
+            margin-bottom: 12px;
+        }
+
+        .bio-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+        }
+
+        .bio-item:last-child {
+            border-bottom: none;
+        }
+
+        .bio-emoji {
+            font-size: 20px;
+        }
+
+        .bio-p {
+            border-color: var(--teal);
+            background: var(--teal-light);
+        }
+
+        .bio-p .bio-col-title {
+            color: var(--teal);
+        }
+
+        .bio-b {
+            border-color: var(--indigo);
+            background: var(--indigo-light);
+        }
+
+        .bio-b .bio-col-title {
+            color: var(--indigo);
+        }
+
+        /* ERR VISUAL */
+        .err-boxes {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .err-box {
+            border-radius: 10px;
+            padding: 18px;
+            text-align: center;
+            border: 2px solid;
+        }
+
+        .err-title {
+            font-weight: 800;
+            font-size: 16px;
+            margin-bottom: 6px;
+        }
+
+        .err-sub {
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        .err-1 {
+            border-color: var(--amber);
+            background: #fffbf0;
+        }
+
+        .err-1 .err-title {
+            color: var(--amber-dark);
+        }
+
+        .err-2 {
+            border-color: var(--rose);
+            background: var(--rose-light);
+        }
+
+        .err-2 .err-title {
+            color: var(--rose);
+        }
+
+        .err-3 {
+            border-color: var(--teal);
+            background: var(--teal-light);
+        }
+
+        .err-3 .err-title {
+            color: var(--teal);
+        }
+
+        h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--amber-dark);
+            margin-bottom: 14px;
+            margin-top: 4px;
+        }
+
+        h4 {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 640px) {
+            .hero {
+                padding: 36px 18px 40px;
+            }
+
+            .nav {
+                padding: 10px 14px;
+            }
+
+            .main {
+                padding: 24px 14px 60px;
+            }
+
+            .cmp,
+            .bio-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .aaa {
+                grid-template-columns: 1fr;
+            }
+
+            .err-boxes {
+                grid-template-columns: 1fr;
+            }
+
+            .flow {
+                flex-direction: column;
+            }
+
+            .flow-arrow {
+                transform: rotate(90deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="hero">
+        <div class="chapter-pill">Chapter 10 · Access Control</div>
+        <h1>Authentication &<br>Access Control</h1>
+        <p>Master identification, authentication, authorization models, biometrics, SSO, and AAA protocols with
+            mnemonics and interactive tools.</p>
+        <div class="progress-wrap">
+            <div class="progress-fill" id="pBar"></div>
+        </div>
+        <div class="progress-txt" id="pTxt">Explore each section to track your progress</div>
+    </div>
+
+    <nav class="nav" id="navEl">
+        <button class="nav-btn active" onclick="show(0)">🗺 Overview</button>
+        <button class="nav-btn" onclick="show(1)">🔑 IAA Basics</button>
+        <button class="nav-btn" onclick="show(2)">🧬 Biometrics</button>
+        <button class="nav-btn" onclick="show(3)">🔐 Passwords & OTP</button>
+        <button class="nav-btn" onclick="show(4)">✅ Authorization</button>
+        <button class="nav-btn" onclick="show(5)">🔗 SSO</button>
+        <button class="nav-btn" onclick="show(6)">🏛 AC Models</button>
+        <button class="nav-btn" onclick="show(7)">🛠 AC Techniques</button>
+        <button class="nav-btn" onclick="show(8)">📡 RADIUS & TACACS</button>
+        <button class="nav-btn" onclick="show(9)">📋 Accountability</button>
+        <button class="nav-btn" onclick="show(10)">🃏 Flashcards</button>
+        <button class="nav-btn" onclick="show(11)">❓ Quiz</button>
+    </nav>
+
+    <div class="main">
+
+        <!-- SECTION 0: OVERVIEW -->
+        <div class="section active" id="s0">
+            <div class="sec-head">
+                <div class="sec-icon">🗺</div>
+                <div>
+                    <div class="sec-title">Chapter Overview</div>
+                    <div class="sec-sub">Everything you need to know — at a glance</div>
+                </div>
+            </div>
+
+            <div class="mnemonic">
+                <div class="mnemo-label">🧠 Master Mnemonic — Cover ALL topics</div>
+                <div class="mnemo-phrase">"I Always Authorize Basic People's Silly Actions"</div>
+                <div style="font-size:13px;color:var(--muted);margin-bottom:10px;">One word per major topic in this
+                    chapter</div>
+                <div class="mnemo-items">
+                    <div class="mnemo-item"><b>I</b>dentification</div>
+                    <div class="mnemo-item"><b>A</b>uthentication (3 factors)</div>
+                    <div class="mnemo-item"><b>A</b>uthorization & ACLs</div>
+                    <div class="mnemo-item"><b>B</b>iometrics (ERR/FAR/FRR)</div>
+                    <div class="mnemo-item"><b>P</b>asswords & OTP</div>
+                    <div class="mnemo-item"><b>S</b>SO & Kerberos</div>
+                    <div class="mnemo-item"><b>A</b>ccess Control Models (DAC/MAC/RBAC)</div>
+                </div>
+            </div>
+
+            <div class="aaa">
+                <div class="aaa-box aaa-1">
+                    <div class="aaa-num">1</div>
+                    <div class="aaa-title">Identification</div>
+                    <div class="aaa-sub">WHO are you claiming to be? (Username)</div>
+                </div>
+                <div class="aaa-box aaa-2">
+                    <div class="aaa-num">2</div>
+                    <div class="aaa-title">Authentication</div>
+                    <div class="aaa-sub">PROVE it. (Password, token, fingerprint)</div>
+                </div>
+                <div class="aaa-box aaa-3">
+                    <div class="aaa-num">3</div>
+                    <div class="aaa-title">Authorization</div>
+                    <div class="aaa-sub">What are you ALLOWED to do? (Permissions)</div>
+                </div>
+            </div>
+
+            <div class="alert a-amber">
+                <strong>🎯 Core Concept</strong>
+                Access Control = managing the flow of information between <strong>Subjects</strong> (active entities
+                that request access) and <strong>Objects</strong> (passive entities that contain information). The goal:
+                enforce CIA — Confidentiality, Integrity, Availability.
+            </div>
+
+            <div class="cards">
+                <div class="card c-amber">
+                    <div class="card-icon">🎯</div>
+                    <div class="card-title">What is Access Control?</div>
+                    <div class="card-body">A security technique that regulates who or what can view or use resources.
+                        Specifies what users can do, which resources they can access, and what operations they can
+                        perform.</div>
+                    <span class="card-tag t-amber">Definition</span>
+                </div>
+                <div class="card c-teal">
+                    <div class="card-icon">🔑</div>
+                    <div class="card-title">3 Authentication Factors</div>
+                    <div class="card-body"><strong>Something you know</strong> — password/PIN<br><strong>Something you
+                            have</strong> — token/smart card<br><strong>Something you are</strong> — biometrics</div>
+                    <span class="card-tag t-teal">Key Exam Topic</span>
+                </div>
+                <div class="card c-rose">
+                    <div class="card-icon">🏛</div>
+                    <div class="card-title">3 Access Control Models</div>
+                    <div class="card-body"><strong>DAC</strong> — Owner decides (Discretionary)<br><strong>MAC</strong>
+                        — Labels decide (Mandatory)<br><strong>RBAC</strong> — Role decides (Non-Discretionary)</div>
+                    <span class="card-tag t-rose">Must Know</span>
+                </div>
+                <div class="card c-indigo">
+                    <div class="card-icon">📡</div>
+                    <div class="card-title">AAA Protocols</div>
+                    <div class="card-body">RADIUS (UDP, passwords only), TACACS+ (TCP, full encryption, true AAA), and
+                        Diameter (RADIUS evolved, IETF standard).</div>
+                    <span class="card-tag t-indigo">Protocols</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 1: IAA BASICS -->
+        <div class="section" id="s1">
+            <div class="sec-head">
+                <div class="sec-icon">🔑</div>
+                <div>
+                    <div class="sec-title">Identification, Authentication & Authorization</div>
+                    <div class="sec-sub">The three distinct and sequential functions of access control</div>
+                </div>
+            </div>
+
+            <div class="mnemonic">
+                <div class="mnemo-label">🧠 Remember the order</div>
+                <div class="mnemo-phrase">"I Am Authorized" — IAA in sequence</div>
+                <div class="mnemo-items">
+                    <div class="mnemo-item"><b>I</b>dentification → "I am Alice" (claim)</div>
+                    <div class="mnemo-item"><b>A</b>uthentication → "Here's my proof" (verify)</div>
+                    <div class="mnemo-item"><b>A</b>uthorization → "Here's what Alice can do" (permit)</div>
+                </div>
+            </div>
+
+            <div class="flow">
+                <div class="flow-step fs-amber">
+                    <div class="flow-step-title">👤 Identification</div>
+                    <div class="flow-step-sub">Claim your identity<br>Username, ID</div>
+                </div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-step fs-teal">
+                    <div class="flow-step-title">🔐 Authentication</div>
+                    <div class="flow-step-sub">Prove your identity<br>Password, token, biometric</div>
+                </div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-step fs-green">
+                    <div class="flow-step-title">✅ Authorization</div>
+                    <div class="flow-step-sub">Access granted<br>Based on permissions</div>
+                </div>
+            </div>
+
+            <h3>Identification</h3>
+            <div class="alert a-amber">
+                <strong>Definition</strong>
+                Identification = establishing the identity of a subject (user, program, process). Uses public info like
+                a username.
+            </div>
+            <div class="callout">
+                <div class="callout-title" style="color:var(--amber-dark)">📋 Good Identification Requirements</div>
+                <ul>
+                    <li><strong>Unique</strong> — each value must be unique for user accountability</li>
+                    <li><strong>Standard Naming</strong> — a consistent naming scheme should be followed</li>
+                    <li><strong>Non-descriptive</strong> — should NOT reveal the user's position or role</li>
+                </ul>
+            </div>
+
+            <h3>Authentication — The 3 Factors</h3>
+            <div class="mnemonic">
+                <div class="mnemo-label">🧠 3 Factors Mnemonic</div>
+                <div class="mnemo-phrase">"Know. Own. Are."</div>
+                <div class="mnemo-items">
+                    <div class="mnemo-item"><b>Know</b> — Something you KNOW (password, PIN, passphrase)</div>
+                    <div class="mnemo-item"><b>Own</b> — Something you HAVE (token, smart card)</div>
+                    <div class="mnemo-item"><b>Are</b> — Something you ARE (biometrics: fingerprint, iris)</div>
+                </div>
+            </div>
+
+            <div class="cards">
+                <div class="card c-amber">
+                    <div class="card-icon">🧠</div>
+                    <div class="card-title">Factor 1: Knowledge</div>
+                    <div class="card-body">Something you <strong>KNOW</strong>. Passwords, passphrases, PINs. Most
+                        common but weakest — can be guessed, stolen, or shared.</div>
+                    <span class="card-tag t-amber">Type 1</span>
+                </div>
+                <div class="card c-teal">
+                    <div class="card-icon">💳</div>
+                    <div class="card-title">Factor 2: Ownership</div>
+                    <div class="card-body">Something you <strong>HAVE</strong>. Tokens, smart cards, key fobs. RSA
+                        SecurID is the classic example. Generates OTPs.</div>
+                    <span class="card-tag t-teal">Type 2</span>
+                </div>
+                <div class="card c-rose">
+                    <div class="card-icon">🧬</div>
+                    <div class="card-title">Factor 3: Characteristics</div>
+                    <div class="card-body">Something you <strong>ARE</strong>. Biometrics — digitized physical features
+                        (fingerprint, iris) or behaviors (signature, keystroke).</div>
+                    <span class="card-tag t-rose">Type 3</span>
+                </div>
+                <div class="card c-indigo">
+                    <div class="card-icon">🔒</div>
+                    <div class="card-title">MFA — Multi-Factor Auth</div>
+                    <div class="card-body">Using 2 or more factors together = <strong>strong authentication</strong>.
+                        Must combine DIFFERENT types (e.g., password + token = 1+2). Two of the same type = NOT MFA.
+                    </div>
+                    <span class="card-tag t-indigo">Best Practice</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 2: BIOMETRICS -->
+        <div class="section" id="s2">
+            <div class="sec-head">
+                <div class="sec-icon">🧬</div>
+                <div>
+                    <div class="sec-title">Biometrics</div>
+                    <div class="sec-sub">Types, error rates, and the Crossover Error Rate (CER)</div>
+                </div>
+            </div>
+
+            <div class="alert a-teal">
+                <strong>💡 What is Biometrics?</strong>
+                Verifies identity by analyzing a unique person attribute or behavior — what a person IS. Most expensive
+                and most accurate form of authentication, but has user acceptance challenges.
+            </div>
+
+            <div class="bio-grid">
+                <div class="bio-col bio-p">
+                    <div class="bio-col-title">🧬 Physiological (Physical)</div>
+                    <div class="bio-item"><span class="bio-emoji">👤</span> Face recognition</div>
+                    <div class="bio-item"><span class="bio-emoji">👆</span> Fingerprint</div>
+                    <div class="bio-item"><span class="bio-emoji">✋</span> Hand geometry</div>
+                    <div class="bio-item"><span class="bio-emoji">👁</span> Iris / Retina scan</div>
+                    <div class="bio-item"><span class="bio-emoji">🧬</span> DNA</div>
+                </div>
+                <div class="bio-col bio-b">
+                    <div class="bio-col-title">⌨️ Behavioral (Actions)</div>
+                    <div class="bio-item"><span class="bio-emoji">⌨️</span> Keystroke dynamics</div>
+                    <div class="bio-item"><span class="bio-emoji">✍️</span> Signature dynamics</div>
+                    <div class="bio-item"><span class="bio-emoji">🎤</span> Voice recognition</div>
+                </div>
+            </div>
+
+            <h3>Biometric Error Rates — The Key Exam Concept</h3>
+            <div class="mnemonic">
+                <div class="mnemo-label">🧠 Error Types Mnemonic</div>
+                <div class="mnemo-phrase">"Type 1 = Rejects the Right one. Type 2 = Accepts the Wrong one."</div>
+                <div style="font-size:13px;color:var(--muted);margin-top:8px;">Type II (False Acceptance) is the MORE
+                    DANGEROUS error — you don't want impostors getting in!</div>
+            </div>
+
+            <div class="err-boxes">
+                <div class="err-box err-1">
+                    <div class="err-title">Type I Error</div>
+                    <div style="font-size:22px;margin:8px 0">🚫✅</div>
+                    <div style="font-weight:700;font-size:13px;color:var(--amber-dark)">False Rejection Rate (FRR)</div>
+                    <div class="err-sub">Rejects an AUTHORIZED user. Annoying but not dangerous. System is too strict.
+                    </div>
+                </div>
+                <div class="err-box err-2">
+                    <div class="err-title">Type II Error</div>
+                    <div style="font-size:22px;margin:8px 0">✅🚫</div>
+                    <div style="font-weight:700;font-size:13px;color:var(--rose)">False Acceptance Rate (FAR)</div>
+                    <div class="err-sub">Accepts an UNAUTHORIZED user. <strong>Very dangerous!</strong> System is too
+                        lax. The error to AVOID.</div>
+                </div>
+                <div class="err-box err-3">
+                    <div class="err-title">CER / ERR</div>
+                    <div style="font-size:22px;margin:8px 0">⚖️</div>
+                    <div style="font-weight:700;font-size:13px;color:var(--teal)">Crossover Error Rate</div>
+                    <div class="err-sub">Point where FRR = FAR. <strong>Lower CER = More accurate</strong> system. Used
+                        to compare biometric systems.</div>
+                </div>
+            </div>
+
+            <div class="alert a-rose">
+                <strong>⚠️ Exam Trap: Which error is worse?</strong>
+                Type II (False Acceptance Rate) is always the more critical error to minimize — accepting an impostor is
+                a security breach. Type I just inconveniences a legitimate user.
+            </div>
+        </div>
+
+        <!-- SECTION 3: PASSWORDS & OTP -->
+        <div class="section" id="s3">
+            <div class="sec-head">
+                <div class="sec-icon">🔐</div>
+                <div>
+                    <div class="sec-title">Passwords & One-Time Passwords</div>
+                    <div class="sec-sub">Most common auth method, its weaknesses, and OTP solutions</div>
+                </div>
+            </div>
+
+            <div class="alert a-amber">
+                <strong>📌 Passwords</strong>
+                Most common identification/authentication scheme. Considered a <strong>weak</strong> security mechanism
+                on its own — always implement strong password protections and complexity requirements.
+            </div>
+
+            <h3>Password Attack Techniques</h3>
+            <div class="mnemonic">
+                <div class="mnemo-label">🧠 Password Attacks Mnemonic</div>
+                <div class="mnemo-phrase">"Every Angry Burglar Digs Social holes"</div>
+                <div class="mnemo-items">
+                    <div class="mnemo-item"><b>E</b>lectronic monitoring (sniffing)</div>
+                    <div class="mnemo-item"><b>A</b>ccess the password file</div>
+                    <div class="mnemo-item"><b>B</b>rute Force Attacks</div>
+                    <div class="mnemo-item"><b>D</b>ictionary Attacks</div>
+                    <div class="mnemo-item"><b>S</b>ocial Engineering</div>
+                </div>
+            </div>
+
+            <div class="cards">
+                <div class="card c-rose">
+                    <div class="card-icon">📡</div>
+                    <div class="card-title">Electronic Monitoring</div>
+                    <div class="card-body">Sniffing network traffic to capture passwords in transit. Defeated by
+                        encryption (TLS/HTTPS).</div>
+                    <span class="card-tag t-rose">Passive Attack</span>
+                </div>
+                <div class="card c-rose">
+                    <div class="card-icon">📁</div>
+                    <div class="card-title">Password File Access</div>
+                    <div class="card-body">Gaining access to the stored password file (e.g., /etc/shadow on Linux).
+                        Defeated by hashing and salting.</div>
+                    <span class="card-tag t-rose">File Attack</span>
+                </div>
+                <div class="card c-rose">
+                    <div class="card-icon">💪</div>
+                    <div class="card-title">Brute Force</div>
+                    <div class="card-body">Trying every possible combination. Takes time but guarantees success.
+                        Defeated by lockout policies and long passwords.</div>
+                    <span class="card-tag t-rose">Exhaustive</span>
+                </div>
+                <div class="card c-rose">
+                    <div class="card-icon">📖</div>
+                    <div class="card-title">Dictionary Attack</div>
+                    <div class="card-body">Uses a list of common words and passwords. Much faster than brute force.
+                        Defeated by random/complex passwords.</div>
+                    <span class="card-tag t-rose">Wordlist</span>
+                </div>
+            </div>
+
+            <h3>One-Time Passwords (OTP)</h3>
+            <div class="alert a-green">
+                <strong>✅ OTP Advantage</strong>
+                OTPs (Dynamic Passwords) are NOT vulnerable to electronic eavesdropping, sniffing, or password guessing
+                — because each password is used exactly once.
+            </div>
+
+            <div class="tbl-wrap">
+                <table class="tbl">
+                    <thead>
+                        <tr>
+                            <th>OTP Type</th>
+                            <th>How it works</th>
+                            <th>Example</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Synchronous (Time-Based)</td>
+                            <td>Token generates OTP in sync with the server clock. No challenge needed — just match the
+                                current time window.</td>
+                            <td>Google Authenticator, RSA SecurID</td>
+                        </tr>
+                        <tr>
+                            <td>Asynchronous (Challenge-Based)</td>
+                            <td>Server sends a random challenge value → user enters it into the token → token generates
+                                OTP → user sends OTP back to server.</td>
+                            <td>Challenge-Response tokens</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- SECTION 4: AUTHORIZATION -->
+        <div class="section" id="s4">
+            <div class="sec-head">
+                <div class="sec-icon">✅</div>
+                <div>
+                    <div class="sec-title">Authorization</div>
+                    <div class="sec-sub">Access criteria, key concepts, ACLs, and common pitfalls</div>
+                </div>
+            </div>
+
+            <div class="alert a-teal">
+                <strong>Definition</strong>
+                Authorization = determining whether a proven identity has the RIGHT to access requested resources. Based
+                on level of trust + need to know.
+            </div>
+
+            <h3>Access Criteria — How Access is Granted</h3>
+            <div class="mnemonic">
+                <div class="mnemo-label">🧠 Access Criteria Mnemonic</div>
+                <div class="mnemo-phrase">"Really Good Locations Tend To Work"</div>
+                <div class="mnemo-items">
+                    <div class="mnemo-item"><b>R</b>oles — job function (manager, cashier)</div>
+                    <div class="mnemo-item"><b>G</b>roups — multiple users needing same access</div>
+                    <div class="mnemo-item"><b>L</b>ocation — where access comes from (local vs remote)</div>
+                    <div class="mnemo-item"><b>T</b>ime — restrict access to certain hours</div>
+                    <div class="mnemo-item"><b>T</b>ransaction Types — what functions can be performed on data</div>
+                    <div class="mnemo-item"><b>W</b>—(see table below)</div>
+                </div>
+            </div>
+
+            <table class="tbl">
+                <thead>
+                    <tr>
+                        <th>Criteria</th>
+                        <th>Description</th>
+                        <th>Example</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Roles</td>
+                        <td>Access based on job function</td>
+                        <td>Managers vs. Clerks vs. Cashiers</td>
+                    </tr>
+                    <tr>
+                        <td>Groups</td>
+                        <td>Multiple users needing the same access</td>
+                        <td>HR Group, IT Group</td>
+                    </tr>
+                    <tr>
+                        <td>Location</td>
+                        <td>Restrict remote access to sensitive systems</td>
+                        <td>No remote admin to servers</td>
+                    </tr>
+                    <tr>
+                        <td>Time</td>
+                        <td>Restrict access to certain hours</td>
+                        <td>Database only accessible 8am–6pm</td>
+                    </tr>
+                    <tr>
+                        <td>Transaction Types</td>
+                        <td>Control what functions can be run on data</td>
+                        <td>Read-only during audit period</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Critical Authorization Concepts</h3>
+            <div class="cards">
+                <div class="card c-rose">
+                    <div class="card-icon">🦠</div>
+                    <div class="card-title">Authorization Creep</div>
+                    <div class="card-body">When employees accumulate permissions over time without old ones being
+                        removed. A major security risk — regularly review and revoke unneeded access.</div>
+                    <span class="card-tag t-rose">Risk</span>
+                </div>
+                <div class="card c-teal">
+                    <div class="card-icon">0️⃣</div>
+                    <div class="card-title">Default to Zero</div>
+                    <div class="card-body">Start with ZERO access and only grant what is needed. Opposite of "allow by
+                        default." This is the secure baseline principle.</div>
+                    <span class="card-tag t-teal">Principle</span>
+                </div>
+                <div class="card c-amber">
+                    <div class="card-icon">🎯</div>
+                    <div class="card-title">Need to Know</div>
+                    <div class="card-body">Users get access ONLY to information they absolutely require for their job
+                        duties. Even if they have a clearance, they must have a need to know.</div>
+                    <span class="card-tag t-amber">Principle</span>
+                </div>
+                <div class="card c-indigo">
+                    <div class="card-icon">📋</div>
+                    <div class="card-title">Access Control Lists (ACL)</div>
+                    <div class="card-body">A list of subjects (users) that are authorized to access a particular object
+                        (resource). Bound to the OBJECT. Tells the object who can access it.</div>
+                    <span class="card-tag t-indigo">Tool</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 5: SSO -->
+        <div class="section" id="s5">
+            <div class="sec-head">
+                <div class="sec-icon">🔗</div>
+                <div>
+                    <div class="sec-title">Single Sign-On (SSO)</div>
+                    <div class="sec-sub">One login for everything — benefits, risks, and technologies</div>
+                </div>
+            </div>
+
+            <div class="alert a-amber">
+                <strong>What is SSO?</strong>
+                Single Sign-On allows user credentials to be entered ONE time, granting access to ALL authorized
+                resources across primary and secondary network domains. Also called "reduced sign-on." Used in federated
+                identity management systems.
+            </div>
+
+            <div class="mnemonic">
+                <div class="mnemo-label">🧠 SSO Technologies Mnemonic</div>
+                <div class="mnemo-phrase">"Kerberos Sits Securely, Drawing Diagrams"</div>
+                <div class="mnemo-items">
+                    <div class="mnemo-item"><b>K</b>erberos</div>
+                    <div class="mnemo-item"><b>S</b>esame</div>
+                    <div class="mnemo-item"><b>S</b>ecurity Domains</div>
+                    <div class="mnemo-item"><b>D</b>irectory Services</div>
+                    <div class="mnemo-item"><b>D</b>umb Terminals</div>
+                </div>
+            </div>
+
+            <div class="cmp">
+                <div class="cmp-bad">
+                    <div class="cmp-label">⚠️ SSO Cons</div>
+                    <div class="cmp-item"><strong>Single Point of Compromise</strong> — one stolen credential = access
+                        to everything</div>
+                    <div class="cmp-item"><strong>Legacy Interoperability</strong> — older systems may not work with SSO
+                        software</div>
+                    <div class="cmp-item"><strong>Implementation Difficulties</strong> — unusual systems may not
+                        interface well</div>
+                </div>
+                <div class="cmp-good">
+                    <div class="cmp-label">✅ SSO Pros</div>
+                    <div class="cmp-item"><strong>Efficient logon</strong> — user logs in only once for all authorized
+                        systems</div>
+                    <div class="cmp-item"><strong>Stronger passwords</strong> — one password to remember → users choose
+                        harder ones</div>
+                    <div class="cmp-item"><strong>Centralized administration</strong> — consistent policy application
+                        across the org</div>
+                </div>
+            </div>
+
+            <div class="alert a-rose">
+                <strong>⚠️ Key SSO Risk — Single Point of Failure</strong>
+                The biggest downside: one compromised login = attacker accesses ALL of the user's authorized resources.
+                This is the critical exam trade-off for SSO.
+            </div>
+        </div>
+
+        <!-- SECTION 6: AC MODELS -->
+        <div class="section" id="s6">
+            <div class="sec-head">
+                <div class="sec-icon">🏛</div>
+                <div>
+                    <div class="sec-title">Access Control Models</div>
+                    <div class="sec-sub">DAC, MAC, and RBAC — know them cold</div>
+                </div>
+            </div>
+
+            <div class="mnemonic">
+                <div class="mnemo-label">🧠 3 Models Mnemonic</div>
+                <div class="mnemo-phrase">"Decide by: Discretion, Mandatory labels, or Roles"</div>
+                <div class="mnemo-items">
+                    <div class="mnemo-item"><b>D</b>AC — Owner decides (Discretionary)</div>
+                    <div class="mnemo-item"><b>M</b>AC — System labels decide (Mandatory)</div>
+                    <div class="mnemo-item"><b>R</b>BAC — Job role decides (Non-Discretionary)</div>
+                </div>
+            </div>
+
+            <table class="tbl">
+                <thead>
+                    <tr>
+                        <th>Model</th>
+                        <th>Full Name</th>
+                        <th>Who Controls Access?</th>
+                        <th>Best Used When</th>
+                        <th>Key Trait</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>DAC</td>
+                        <td>Discretionary AC</td>
+                        <td>The OWNER of the resource decides who can access it</td>
+                        <td>Flexibility needed; small environments</td>
+                        <td>Most flexible, least secure</td>
+                    </tr>
+                    <tr>
+                        <td>MAC</td>
+                        <td>Mandatory AC</td>
+                        <td>The SYSTEM enforces based on security labels & clearances</td>
+                        <td>Military/government where confidentiality is critical</td>
+                        <td>Most rigid, most secure</td>
+                    </tr>
+                    <tr>
+                        <td>RBAC</td>
+                        <td>Role-Based AC</td>
+                        <td>Centrally-administered ROLES determine access</td>
+                        <td>Organizations with high staff turnover</td>
+                        <td>Best for orgs — easy to manage</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="cards">
+                <div class="card c-amber">
+                    <div class="card-icon">👑</div>
+                    <div class="card-title">DAC — Discretionary</div>
+                    <div class="card-body">The OWNER of the resource decides who gets access. Like owning a file and
+                        deciding who can read it. Used in most OS file systems (Windows, Linux). Most flexible but can
+                        lead to inconsistent security.</div>
+                    <span class="card-tag t-amber">Owner Controls</span>
+                </div>
+                <div class="card c-rose">
+                    <div class="card-icon">🏷</div>
+                    <div class="card-title">MAC — Mandatory</div>
+                    <div class="card-body">Uses a SECURITY LABELING SYSTEM. Users have clearances; resources have
+                        classification labels (Top Secret, Secret, etc.). System enforces — users cannot override. Used
+                        in the military.</div>
+                    <span class="card-tag t-rose">System Controls</span>
+                </div>
+                <div class="card c-teal">
+                    <div class="card-icon">👔</div>
+                    <div class="card-title">RBAC — Role-Based</div>
+                    <div class="card-body">Access determined by JOB ROLE, not individual identity. Centrally
+                        administered. Best for high-turnover organizations — change the role, permissions follow
+                        automatically.</div>
+                    <span class="card-tag t-teal">Role Controls</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 7: AC TECHNIQUES -->
+        <div class="section" id="s7">
+            <div class="sec-head">
+                <div class="sec-icon">🛠</div>
+                <div>
+                    <div class="sec-title">Access Control Techniques</div>
+                    <div class="sec-sub">Rule-based, constrained interfaces, and access control matrix</div>
+                </div>
+            </div>
+
+            <div class="mnemonic">
+                <div class="mnemo-label">🧠 3 Techniques Mnemonic</div>
+                <div class="mnemo-phrase">"Rules Constrain Matrices"</div>
+                <div class="mnemo-items">
+                    <div class="mnemo-item"><b>R</b>ule-Based Access Control</div>
+                    <div class="mnemo-item"><b>C</b>onstrained User Interfaces</div>
+                    <div class="mnemo-item"><b>M</b>atrix (Access Control Matrix)</div>
+                </div>
+            </div>
+
+            <div class="cards">
+                <div class="card c-amber">
+                    <div class="card-icon">📏</div>
+                    <div class="card-title">Rule-Based AC</div>
+                    <div class="card-body">Uses specific rules defining what CAN and CANNOT happen between subject and
+                        object. Not necessarily identity-based. Classic example: <strong>FIREWALLS</strong>.
+                        Traditionally used in MAC systems.</div>
+                    <span class="card-tag t-amber">Firewall = Rule-Based</span>
+                </div>
+                <div class="card c-teal">
+                    <div class="card-icon">🚧</div>
+                    <div class="card-title">Constrained User Interfaces</div>
+                    <div class="card-body">Restricts user access by hiding or disabling options they're not allowed to
+                        use. Three types: <strong>Menus & Shells, Database Views, Physically Constrained
+                            Interfaces</strong> (e.g., ATM keypad).</div>
+                    <span class="card-tag t-teal">UI Restriction</span>
+                </div>
+                <div class="card c-rose">
+                    <div class="card-icon">📊</div>
+                    <div class="card-title">Access Control Matrix</div>
+                    <div class="card-body">A table mapping subjects × objects showing what actions each subject can take
+                        on each object. Two views: <strong>Capability Table</strong> (bound to subject) and
+                        <strong>ACL</strong> (bound to object).</div>
+                    <span class="card-tag t-rose">Subject × Object Table</span>
+                </div>
+            </div>
+
+            <h3>Access Control Matrix — The Two Views</h3>
+            <table class="tbl">
+                <thead>
+                    <tr>
+                        <th>View Type</th>
+                        <th>Bound To</th>
+                        <th>How to Think About It</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Capability Table</td>
+                        <td>SUBJECT (User)</td>
+                        <td>Read down a ROW — shows everything THIS USER can access. "Here are Alice's capabilities."
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Access Control List (ACL)</td>
+                        <td>OBJECT (Resource)</td>
+                        <td>Read down a COLUMN — shows everyone who can access THIS RESOURCE. "Here's who can access
+                            File1."</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Centralized vs Decentralized Administration</h3>
+            <div class="cmp">
+                <div class="cmp-good">
+                    <div class="cmp-label">✅ Centralized</div>
+                    <div class="cmp-item"><strong>One entity</strong> oversees all corporate resource access</div>
+                    <div class="cmp-item"><strong>Consistent & uniform</strong> method of controlling access rights
+                    </div>
+                    <div class="cmp-item">Protocols used: <strong>RADIUS, TACACS+, Diameter</strong></div>
+                </div>
+                <div class="cmp-bad">
+                    <div class="cmp-label">⚠️ Decentralized</div>
+                    <div class="cmp-item">Control given to people <strong>closer to the resources</strong></div>
+                    <div class="cmp-item"><strong>No consistent control</strong> — lacks proper consistency</div>
+                    <div class="cmp-item">Harder to enforce organization-wide policy</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 8: RADIUS & TACACS -->
+        <div class="section" id="s8">
+            <div class="sec-head">
+                <div class="sec-icon">📡</div>
+                <div>
+                    <div class="sec-title">RADIUS, TACACS & Diameter</div>
+                    <div class="sec-sub">AAA protocols — know the differences cold</div>
+                </div>
+            </div>
+
+            <div class="mnemonic">
+                <div class="mnemo-label">🧠 RADIUS vs TACACS+ Key Differences Mnemonic</div>
+                <div class="mnemo-phrase">RADIUS = "Rapid but Partial" · TACACS+ = "Total Armored Control"</div>
+                <div class="mnemo-items">
+                    <div class="mnemo-item">RADIUS → <b>UDP</b>, encrypts <b>password only</b>, combines auth+authz
+                    </div>
+                    <div class="mnemo-item">TACACS+ → <b>TCP</b>, encrypts <b>everything</b>, separates
+                        auth+authz+accounting</div>
+                </div>
+            </div>
+
+            <table class="tbl">
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>RADIUS</th>
+                        <th>TACACS+</th>
+                        <th>Diameter</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Full Name</td>
+                        <td>Remote Authentication Dial-In User Service</td>
+                        <td>Terminal Access Controller Access Control System</td>
+                        <td>Diameter (IETF RFC 3588)</td>
+                    </tr>
+                    <tr>
+                        <td>Transport Protocol</td>
+                        <td><strong>UDP</strong> (ports 1812, 1813)</td>
+                        <td><strong>TCP</strong> (port 49)</td>
+                        <td>TCP/SCTP</td>
+                    </tr>
+                    <tr>
+                        <td>Encryption</td>
+                        <td>Only encrypts the <strong>password</strong> field</td>
+                        <td>Encrypts the <strong>entire packet</strong> (except TACACS header)</td>
+                        <td>Full encryption</td>
+                    </tr>
+                    <tr>
+                        <td>AAA</td>
+                        <td>Combines Authentication + Authorization (together)</td>
+                        <td>Separates Auth, Authz, and Accounting (true AAA)</td>
+                        <td>True AAA, extensible</td>
+                    </tr>
+                    <tr>
+                        <td>Best For</td>
+                        <td>Simple username/password auth; ISP dial-up</td>
+                        <td>Environments needing full security & granular control</td>
+                        <td>Modern apps needing extensible AAA</td>
+                    </tr>
+                    <tr>
+                        <td>Who Uses It</td>
+                        <td>Most ISPs — authenticates customers before internet access</td>
+                        <td>Enterprise networks — Cisco AAA architecture</td>
+                        <td>Mobile networks, modern AAA apps</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="alert a-teal">
+                <strong>💡 RADIUS Expanded: R-A-D-I-U-S</strong>
+                <strong>R</strong>emote <strong>A</strong>uthentication <strong>D</strong>ial-<strong>I</strong>n
+                <strong>U</strong>ser <strong>S</strong>ervice — open protocol, client/server architecture, UDP-based,
+                only encrypts password. Appropriate for simple accept/deny decisions.
+            </div>
+
+            <div class="alert a-indigo">
+                <strong>💡 TACACS+ Advantage</strong>
+                TACACS+ separates authentication from authorization so they can be implemented on DIFFERENT security
+                servers. Provides true AAA architecture and encrypts all data — superior to RADIUS for enterprise
+                security.
+            </div>
+
+            <div class="alert a-green">
+                <strong>💡 Diameter = RADIUS 2.0</strong>
+                Diameter was built to overcome RADIUS limitations. It's an IETF standard (RFC 3588). Applications
+                requiring AAA can define extensions on top of the Diameter base protocol.
+            </div>
+        </div>
+
+        <!-- SECTION 9: ACCOUNTABILITY -->
+        <div class="section" id="s9">
+            <div class="sec-head">
+                <div class="sec-icon">📋</div>
+                <div>
+                    <div class="sec-title">Accountability & Best Practices</div>
+                    <div class="sec-sub">Audit trails, monitoring, and access control hygiene</div>
+                </div>
+            </div>
+
+            <div class="alert a-amber">
+                <strong>What is Accountability?</strong>
+                Accountability is tracked by recording user, system, and application activities. Audit information MUST
+                be regularly reviewed. It answers: WHO did WHAT, WHEN?
+            </div>
+
+            <div class="mnemonic">
+                <div class="mnemo-label">🧠 Audit Review Types Mnemonic</div>
+                <div class="mnemo-phrase">"Even Real Auditors Validate Attacks"</div>
+                <div class="mnemo-items">
+                    <div class="mnemo-item"><b>E</b>vent-Oriented Audit Review</div>
+                    <div class="mnemo-item"><b>R</b>eal-Time & Near Real-Time Review</div>
+                    <div class="mnemo-item"><b>A</b>udit Reduction Tools</div>
+                    <div class="mnemo-item"><b>V</b>ariance Detection Tools</div>
+                    <div class="mnemo-item"><b>A</b>ttack Signature Tools</div>
+                </div>
+            </div>
+
+            <div class="cards">
+                <div class="card c-amber">
+                    <div class="card-icon">⌨️</div>
+                    <div class="card-title">Keystroke Monitoring</div>
+                    <div class="card-body">Records every keystroke made by a user during an active session. Very
+                        effective for detecting malicious insiders. Has <strong>privacy implications</strong> — must be
+                        disclosed in policy.</div>
+                    <span class="card-tag t-amber">Monitoring</span>
+                </div>
+                <div class="card c-rose">
+                    <div class="card-icon">🧹</div>
+                    <div class="card-title">Scrubbing</div>
+                    <div class="card-body">Removing specific incriminating or unpleasant data from within audit logs. A
+                        malicious act performed by someone trying to cover their tracks.</div>
+                    <span class="card-tag t-rose">Threat to Logs</span>
+                </div>
+            </div>
+
+            <h3>Access Control Best Practices Checklist</h3>
+            <div class="mnemonic">
+                <div class="mnemo-label">🧠 Best Practices Mnemonic</div>
+                <div class="mnemo-phrase">"Don't Ever Suspend Rogue People — Audit Protects"</div>
+                <div class="mnemo-items">
+                    <div class="mnemo-item"><b>D</b>eny anonymous account access</div>
+                    <div class="mnemo-item"><b>E</b>nforce strict access criteria</div>
+                    <div class="mnemo-item"><b>S</b>uspend inactive accounts</div>
+                    <div class="mnemo-item"><b>R</b>eplace default passwords</div>
+                    <div class="mnemo-item"><b>P</b>assword rotation — enforce it</div>
+                    <div class="mnemo-item"><b>A</b>udit and review regularly</div>
+                    <div class="mnemo-item"><b>P</b>rotect audit logs from modification</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 10: FLASHCARDS -->
+        <div class="section" id="s10">
+            <div class="sec-head">
+                <div class="sec-icon">🃏</div>
+                <div>
+                    <div class="sec-title">Flashcards</div>
+                    <div class="sec-sub">Click each card to reveal the answer — test yourself!</div>
+                </div>
+            </div>
+
+            <div class="fc-wrap">
+                <div class="fc" id="fcEl" onclick="flipFC()">
+                    <div class="fc-face fc-front">
+                        <p id="fcQ">Loading...</p>
+                        <p class="fc-hint">Click to flip and reveal answer ↻</p>
+                    </div>
+                    <div class="fc-face fc-back">
+                        <p id="fcA">Loading...</p>
+                    </div>
+                </div>
+            </div>
+            <div class="fc-nav">
+                <button class="fc-btn" onclick="prevFC()">← Previous</button>
+                <span class="fc-cnt" id="fcCnt">1 / 20</span>
+                <button class="fc-btn" onclick="nextFC()">Next →</button>
+            </div>
+        </div>
+
+        <!-- SECTION 11: QUIZ -->
+        <div class="section" id="s11">
+            <div class="sec-head">
+                <div class="sec-icon">❓</div>
+                <div>
+                    <div class="sec-title">Knowledge Quiz</div>
+                    <div class="sec-sub">10 questions covering the full chapter — no peeking!</div>
+                </div>
+            </div>
+            <div id="qContainer"></div>
+            <div class="quiz-score" id="qScore">
+                <div
+                    style="color:var(--muted);font-size:11px;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;">
+                    Your Final Score</div>
+                <div class="score-big" id="sNum">0/10</div>
+                <div style="color:var(--muted);margin-top:12px;font-size:14px;" id="sMsg"></div>
+            </div>
+        </div>
+
+    </div><!-- /main -->
+
+    <script>
+        // --- NAV ---
+        const visited = new Set([0]);
+        function show(i) {
+            document.querySelectorAll('.section').forEach((s, idx) => s.classList.toggle('active', idx === i));
+            document.querySelectorAll('.nav-btn').forEach((b, idx) => b.classList.toggle('active', idx === i));
+            visited.add(i);
+            const total = document.querySelectorAll('.section').length;
+            const pct = Math.round(visited.size / total * 100);
+            document.getElementById('pBar').style.width = pct + '%';
+            document.getElementById('pTxt').textContent = `${pct}% explored — ${visited.size} of ${total} sections visited`;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // --- FLASHCARDS ---
+        const fcs = [
+            { q: "What is the difference between Identification and Authentication?", a: "Identification = claiming an identity (username). Authentication = PROVING that identity (password, token, biometric). They are sequential — identification first, authentication second." },
+            { q: "What are the 3 factors of authentication?", a: "1. Something you KNOW (password/PIN) — Factor 1\n2. Something you HAVE (token/smart card) — Factor 2\n3. Something you ARE (biometrics) — Factor 3. MFA requires at least 2 DIFFERENT factors." },
+            { q: "What is the Crossover Error Rate (CER/ERR) in biometrics?", a: "CER is the point where False Rejection Rate (FRR) = False Acceptance Rate (FAR). A lower CER means a MORE accurate biometric system. Used to compare biometric systems fairly." },
+            { q: "What is a Type II Error in biometrics and why is it more dangerous?", a: "Type II Error = False Acceptance Rate (FAR) — the system accepts an UNAUTHORIZED person. More dangerous than Type I because it results in a security breach (letting an impostor in)." },
+            { q: "What is Authorization Creep?", a: "When employees accumulate new permissions over time without old permissions being reviewed and removed. They end up with far more access than their current role requires." },
+            { q: "What is the difference between a Capability Table and an ACL?", a: "Capability Table = bound to a SUBJECT (user) — lists everything that user can access. ACL (Access Control List) = bound to an OBJECT (resource) — lists everyone who can access that resource." },
+            { q: "What is the key difference between RADIUS and TACACS+?", a: "RADIUS: UDP-based, only encrypts the password, combines auth & authorization. TACACS+: TCP-based, encrypts the ENTIRE packet, separates authentication/authorization/accounting (true AAA)." },
+            { q: "Which access control model is best for high-turnover organizations?", a: "RBAC (Role-Based Access Control) — also called Non-Discretionary AC. When someone leaves or changes roles, you update their role and permissions follow automatically." },
+            { q: "What are OTPs and what attacks are they immune to?", a: "One-Time Passwords (Dynamic Passwords) = used once, then invalid. Immune to: electronic eavesdropping, sniffing, and password replay/guessing attacks since the password changes every time." },
+            { q: "What is the 'Default to Zero' principle in authorization?", a: "Start ALL users with ZERO access rights. Then explicitly grant only the permissions needed for their job. This is the secure default — never start with full access and restrict downward." },
+            { q: "What transport protocol does RADIUS use vs TACACS+?", a: "RADIUS uses UDP (ports 1812, 1813). TACACS+ uses TCP (port 49). TCP is more reliable — TACACS+ is better for environments requiring reliable, full-session encryption." },
+            { q: "What is Scrubbing in the context of audit logs?", a: "Scrubbing = maliciously removing incriminating or unpleasant data from audit logs to cover tracks. A security risk — audit logs must be protected from modification." },
+            { q: "In MAC (Mandatory Access Control), who controls access?", a: "The SYSTEM controls access — not the owner, not the user. Based on security labels (classifications) assigned to resources and clearances assigned to users. Used in military environments." },
+            { q: "What is the Need-to-Know Principle?", a: "Users should only be given access to information they ABSOLUTELY REQUIRE to complete their job duties — even if they have a security clearance, they must also have a need to know." },
+            { q: "What is SSO's biggest security risk?", a: "Single Point of Compromise — if the SSO credentials are stolen or compromised, the attacker gains access to ALL of the user's authorized resources across all connected systems." },
+            { q: "What is Keystroke Monitoring?", a: "Recording every key pressed by a user during an active session. Can detect malicious activity but has privacy implications — organizations must disclose this monitoring in policy." },
+            { q: "What does Diameter protocol improve over RADIUS?", a: "Diameter (RFC 3588) overcomes RADIUS limitations: better security, reliability (TCP-based), extensible AAA architecture, peer-to-peer support, and allows applications to define their own extensions." },
+            { q: "What is DAC (Discretionary Access Control)?", a: "The OWNER of the resource decides who gets access to it. Most flexible but least consistent — security depends on individual owner decisions. Common in standard OS file systems." },
+            { q: "What are the 3 types of Constrained User Interfaces?", a: "1. Menus and Shells — limit available commands/options. 2. Database Views — show only allowed data subsets. 3. Physically Constrained Interfaces — e.g., ATM keypads with limited functionality." },
+            { q: "What are the 5 Best Practices for Access Control?", a: "1. Deny anonymous accounts. 2. Enforce strict access criteria. 3. Suspend inactive accounts. 4. Replace default passwords. 5. Enforce password rotation. 6. Audit regularly. 7. Protect audit logs." },
+        ];
+
+        let fcIdx = 0;
+        function renderFC() {
+            document.getElementById('fcEl').classList.remove('flip');
+            document.getElementById('fcQ').textContent = fcs[fcIdx].q;
+            document.getElementById('fcA').textContent = fcs[fcIdx].a;
+            document.getElementById('fcCnt').textContent = `${fcIdx + 1} / ${fcs.length}`;
+        }
+        function flipFC() { document.getElementById('fcEl').classList.toggle('flip'); }
+        function nextFC() { fcIdx = (fcIdx + 1) % fcs.length; renderFC(); }
+        function prevFC() { fcIdx = (fcIdx - 1 + fcs.length) % fcs.length; renderFC(); }
+        renderFC();
+
+        // --- QUIZ ---
+        const qs = [
+            { q: "What is the correct ORDER of the IAA process?", opts: ["Authentication → Identification → Authorization", "Identification → Authentication → Authorization", "Authorization → Authentication → Identification", "Identification → Authorization → Authentication"], ans: 1 },
+            { q: "Which biometric error is MORE dangerous and must be minimized?", opts: ["Type I Error (False Rejection Rate)", "Crossover Error Rate", "Type II Error (False Acceptance Rate)", "Sensitivity Error"], ans: 2 },
+            { q: "An employee who changes departments keeps their old permissions AND gains new ones. This is called:", opts: ["Need to Know Violation", "Authorization Creep", "Privilege Escalation", "Mandatory Access Failure"], ans: 1 },
+            { q: "TACACS+ uses which transport protocol and encrypts how much?", opts: ["UDP — passwords only", "TCP — passwords only", "UDP — entire packet", "TCP — entire packet"], ans: 3 },
+            { q: "Which Access Control Model is BEST for high-turnover organizations?", opts: ["DAC (Discretionary)", "MAC (Mandatory)", "RBAC (Role-Based)", "Rule-Based"], ans: 2 },
+            { q: "A Capability Table is bound to a _____, while an ACL is bound to an _____.", opts: ["Object … Subject", "Subject … Object", "User … Group", "Group … User"], ans: 1 },
+            { q: "In a Synchronous OTP token, what determines the one-time password?", opts: ["A server-sent challenge value", "The user's fingerprint", "Time synchronization with the server", "A random seed selected by the user"], ans: 2 },
+            { q: "Which is a PRO of Single Sign-On (SSO)?", opts: ["Eliminates all authentication requirements", "Creates multiple points of compromise", "Users may create stronger passwords since they have only one to remember", "Decentralizes access control administration"], ans: 2 },
+            { q: "RADIUS is most appropriate for:", opts: ["Full AAA with separate servers for auth and accounting", "Encrypting all packet data between client and server", "Simple username/password authentication with accept or deny results", "Military environments requiring security labels"], ans: 3 },
+            { q: "The CER (Crossover Error Rate) in biometrics represents:", opts: ["The maximum acceptable false acceptance rate", "The point where false rejection rate equals false acceptance rate", "The minimum accuracy a biometric system must achieve", "The rate at which the system requires re-enrollment"], ans: 1 },
+        ];
+
+        let qAns = 0, qCorrect = 0;
+        function buildQuiz() {
+            const c = document.getElementById('qContainer');
+            c.innerHTML = '';
+            qs.forEach((q, qi) => {
+                const d = document.createElement('div');
+                d.className = 'quiz-card';
+                d.innerHTML = `<div class="quiz-num">Question ${qi + 1} of ${qs.length}</div>
+      <div class="quiz-q">${q.q}</div>
+      <div class="quiz-opts">${q.opts.map((o, oi) => `<button class="quiz-opt" onclick="check(${qi},${oi},${q.ans},this)">${String.fromCharCode(65 + oi)}. ${o}</button>`).join('')}</div>
+      <div class="quiz-fb" id="fb${qi}"></div>`;
+                c.appendChild(d);
+            });
+        }
+        function check(qi, chosen, correct, btn) {
+            const card = btn.closest('.quiz-card');
+            const opts = card.querySelectorAll('.quiz-opt');
+            opts.forEach((o, i) => {
+                o.classList.add('disabled');
+                if (i === correct) o.classList.add('correct');
+                else if (i === chosen && chosen !== correct) o.classList.add('wrong');
+            });
+            const fb = document.getElementById('fb' + qi);
+            if (chosen === correct) { fb.className = 'quiz-fb show ok'; fb.textContent = '✅ Correct!'; qCorrect++; }
+            else { fb.className = 'quiz-fb show fail'; fb.textContent = `❌ Incorrect. The answer is: "${qs[qi].opts[correct]}"`; }
+            qAns++;
+            if (qAns === qs.length) {
+                const sc = document.getElementById('qScore');
+                sc.classList.add('show');
+                document.getElementById('sNum').textContent = `${qCorrect}/${qs.length}`;
+                const msgs = ['Keep reviewing — you\'ll get there! 💪', 'Good effort — focus on the weak spots 📖', 'Solid understanding! Keep it up 🔥', 'Almost perfect — outstanding work! 🎯', 'Perfect score! You mastered Chapter 10! 🏆'];
+                document.getElementById('sMsg').textContent = msgs[Math.min(Math.floor(qCorrect / qs.length * 5), 4)];
+                sc.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+        buildQuiz();
+    </script>
+</body>
+
+</html>

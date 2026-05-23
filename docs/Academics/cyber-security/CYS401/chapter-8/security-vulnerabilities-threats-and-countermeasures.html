@@ -1,0 +1,1867 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 8 — Security Across System Layers</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap');
+
+        :root {
+            --bg: #f5f4f0;
+            --surface: #ffffff;
+            --surface2: #eeecea;
+            --text: #1a1916;
+            --text-muted: #6b6860;
+            --accent: #2d5be3;
+            --accent2: #e05c2a;
+            --accent3: #22a76a;
+            --accent4: #9b3fc8;
+            --border: #d8d5cf;
+            --card-shadow: 0 2px 16px rgba(0, 0, 0, 0.07);
+            --radius: 14px;
+            --transition: 0.25s ease;
+        }
+
+        [data-theme="dark"] {
+            --bg: #111110;
+            --surface: #1c1b19;
+            --surface2: #252420;
+            --text: #f0ede8;
+            --text-muted: #8a8780;
+            --accent: #5b82f5;
+            --accent2: #f07444;
+            --accent3: #34c97f;
+            --accent4: #bf6de8;
+            --border: #2e2d2b;
+            --card-shadow: 0 2px 16px rgba(0, 0, 0, 0.35);
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            font-size: clamp(14px, 2vw, 16px);
+            line-height: 1.65;
+            transition: background var(--transition), color var(--transition);
+            min-height: 100vh;
+        }
+
+        /* ─── NAV ─── */
+        nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            padding: 0 clamp(16px, 4vw, 48px);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            height: 56px;
+            backdrop-filter: blur(12px);
+        }
+
+        .nav-logo {
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            font-size: 15px;
+            color: var(--accent);
+            white-space: nowrap;
+            letter-spacing: -0.3px;
+        }
+
+        .nav-search {
+            flex: 1;
+            max-width: 400px;
+            margin-left: auto;
+            position: relative;
+        }
+
+        .nav-search input {
+            width: 100%;
+            padding: 7px 14px 7px 36px;
+            border: 1.5px solid var(--border);
+            border-radius: 8px;
+            background: var(--surface2);
+            color: var(--text);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 13px;
+            outline: none;
+            transition: border-color var(--transition);
+        }
+
+        .nav-search input:focus {
+            border-color: var(--accent);
+        }
+
+        .nav-search svg {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            pointer-events: none;
+        }
+
+        .search-results-count {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 11px;
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        #theme-toggle {
+            margin-left: 12px;
+            background: var(--surface2);
+            border: 1.5px solid var(--border);
+            border-radius: 8px;
+            padding: 6px 10px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background var(--transition);
+            flex-shrink: 0;
+            color: var(--text);
+        }
+
+        #theme-toggle:hover {
+            background: var(--border);
+        }
+
+        /* ─── HERO ─── */
+        .hero {
+            padding: clamp(40px, 8vw, 80px) clamp(16px, 6vw, 80px) clamp(32px, 6vw, 60px);
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .hero-tag {
+            display: inline-block;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--accent);
+            background: color-mix(in srgb, var(--accent) 10%, transparent);
+            border: 1px solid color-mix(in srgb, var(--accent) 25%, transparent);
+            border-radius: 6px;
+            padding: 4px 10px;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(28px, 5vw, 52px);
+            font-weight: 800;
+            line-height: 1.1;
+            letter-spacing: -1px;
+            margin-bottom: 16px;
+        }
+
+        h1 span {
+            color: var(--accent);
+        }
+
+        .hero-sub {
+            color: var(--text-muted);
+            font-size: clamp(14px, 2vw, 17px);
+            max-width: 600px;
+            margin-bottom: 32px;
+            font-weight: 300;
+        }
+
+        /* ─── TOC ─── */
+        .toc {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .toc-chip {
+            padding: 6px 14px;
+            border-radius: 50px;
+            border: 1.5px solid var(--border);
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            color: var(--text);
+            background: var(--surface);
+            transition: all var(--transition);
+            white-space: nowrap;
+        }
+
+        .toc-chip:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: color-mix(in srgb, var(--accent) 6%, transparent);
+        }
+
+        /* ─── MAIN CONTENT ─── */
+        main {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 clamp(16px, 6vw, 80px) clamp(40px, 6vw, 80px);
+        }
+
+        /* ─── SECTION HEADERS ─── */
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin: clamp(40px, 6vw, 64px) 0 24px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .section-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        h2 {
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(20px, 3vw, 28px);
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        h3 {
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(15px, 2vw, 18px);
+            font-weight: 700;
+            margin-bottom: 10px;
+            letter-spacing: -0.2px;
+        }
+
+        /* ─── CARDS ─── */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius);
+            padding: clamp(16px, 3vw, 24px);
+            box-shadow: var(--card-shadow);
+            transition: transform var(--transition), border-color var(--transition);
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            border-color: var(--accent);
+        }
+
+        .card-accent {
+            border-left: 4px solid var(--accent);
+        }
+
+        .card-accent2 {
+            border-left: 4px solid var(--accent2);
+        }
+
+        .card-accent3 {
+            border-left: 4px solid var(--accent3);
+        }
+
+        .card-accent4 {
+            border-left: 4px solid var(--accent4);
+        }
+
+        /* ─── MNEMONIC BOX ─── */
+        .mnemonic {
+            background: color-mix(in srgb, var(--accent) 8%, var(--surface));
+            border: 2px dashed color-mix(in srgb, var(--accent) 35%, transparent);
+            border-radius: var(--radius);
+            padding: clamp(16px, 3vw, 24px);
+            margin: 20px 0;
+            position: relative;
+        }
+
+        .mnemonic-label {
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 8px;
+        }
+
+        .mnemonic .word {
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(22px, 4vw, 36px);
+            font-weight: 800;
+            color: var(--accent);
+            letter-spacing: 3px;
+            margin-bottom: 12px;
+        }
+
+        .mnemonic-item {
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+            margin: 6px 0;
+            font-size: 14px;
+        }
+
+        .mnemonic-letter {
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            font-size: 18px;
+            color: var(--accent);
+            min-width: 24px;
+            line-height: 1.3;
+        }
+
+        /* ─── ALERT/TIP ─── */
+        .tip {
+            background: color-mix(in srgb, var(--accent3) 10%, var(--surface));
+            border-left: 4px solid var(--accent3);
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin: 12px 0;
+            font-size: 13.5px;
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+        }
+
+        .tip-icon {
+            font-size: 16px;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        .warn {
+            background: color-mix(in srgb, var(--accent2) 10%, var(--surface));
+            border-left: 4px solid var(--accent2);
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin: 12px 0;
+            font-size: 13.5px;
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+        }
+
+        /* ─── TABLE ─── */
+        .table-wrap {
+            overflow-x: auto;
+            margin: 16px 0;
+            border-radius: var(--radius);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13.5px;
+            background: var(--surface);
+        }
+
+        th {
+            background: var(--surface2);
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
+            font-size: 12px;
+            letter-spacing: 0.5px;
+            text-align: left;
+            padding: 12px 16px;
+            color: var(--text);
+            border-bottom: 2px solid var(--border);
+        }
+
+        td {
+            padding: 10px 16px;
+            border-bottom: 1px solid var(--border);
+            vertical-align: top;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background: var(--surface2);
+        }
+
+        /* ─── PILL / BADGE ─── */
+        .badge {
+            display: inline-block;
+            padding: 2px 9px;
+            border-radius: 50px;
+            font-size: 11px;
+            font-weight: 600;
+            margin: 2px 3px 2px 0;
+        }
+
+        .badge-blue {
+            background: color-mix(in srgb, var(--accent) 15%, transparent);
+            color: var(--accent);
+        }
+
+        .badge-orange {
+            background: color-mix(in srgb, var(--accent2) 15%, transparent);
+            color: var(--accent2);
+        }
+
+        .badge-green {
+            background: color-mix(in srgb, var(--accent3) 15%, transparent);
+            color: var(--accent3);
+        }
+
+        .badge-purple {
+            background: color-mix(in srgb, var(--accent4) 15%, transparent);
+            color: var(--accent4);
+        }
+
+        /* ─── RING DIAGRAM ─── */
+        .ring-diagram {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            margin: 16px 0;
+        }
+
+        .ring-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 14px;
+            border-radius: 8px;
+            margin-bottom: 4px;
+            border: 1.5px solid var(--border);
+            background: var(--surface);
+            font-size: 13.5px;
+        }
+
+        .ring-num {
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            font-size: 18px;
+            min-width: 36px;
+            text-align: center;
+        }
+
+        /* ─── ACCORDION ─── */
+        details {
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius);
+            margin-bottom: 10px;
+            background: var(--surface);
+            overflow: hidden;
+            transition: border-color var(--transition);
+        }
+
+        details[open] {
+            border-color: var(--accent);
+        }
+
+        summary {
+            padding: 14px 18px;
+            cursor: pointer;
+            font-family: 'Syne', sans-serif;
+            font-weight: 600;
+            font-size: 15px;
+            list-style: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            user-select: none;
+        }
+
+        summary::after {
+            content: '+';
+            margin-left: auto;
+            font-size: 20px;
+            color: var(--text-muted);
+            transition: transform var(--transition);
+        }
+
+        details[open] summary::after {
+            content: '−';
+        }
+
+        details>div {
+            padding: 4px 18px 18px;
+        }
+
+        /* ─── CHECKLIST ─── */
+        .checklist {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        .checklist li {
+            display: flex;
+            align-items: flex-start;
+            gap: 9px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .checklist li::before {
+            content: '✓';
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--accent3);
+            background: color-mix(in srgb, var(--accent3) 15%, transparent);
+            width: 20px;
+            height: 20px;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        .xlist {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        .xlist li {
+            display: flex;
+            align-items: flex-start;
+            gap: 9px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .xlist li::before {
+            content: '⚠';
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--accent2);
+            background: color-mix(in srgb, var(--accent2) 15%, transparent);
+            width: 20px;
+            height: 20px;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        /* ─── DIVIDER ─── */
+        .divider {
+            border: none;
+            border-top: 1.5px solid var(--border);
+            margin: 32px 0;
+        }
+
+        /* ─── CLOUD LAYERS ─── */
+        .layer-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            margin: 12px 0;
+        }
+
+        .layer-item {
+            border-radius: 8px;
+            padding: 10px 16px;
+            font-size: 13.5px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* ─── HIGHLIGHT TEXT ─── */
+        mark {
+            background: color-mix(in srgb, var(--accent) 18%, transparent);
+            color: var(--accent);
+            border-radius: 3px;
+            padding: 0 4px;
+            font-weight: 600;
+        }
+
+        .accent2-mark {
+            background: color-mix(in srgb, var(--accent2) 18%, transparent);
+            color: var(--accent2);
+            border-radius: 3px;
+            padding: 0 4px;
+            font-weight: 600;
+        }
+
+        /* ─── SEARCH HIGHLIGHT ─── */
+        .search-highlight {
+            background: #ffe066;
+            color: #222;
+            border-radius: 2px;
+            padding: 0 1px;
+        }
+
+        [data-theme="dark"] .search-highlight {
+            background: #b8860b;
+            color: #fff;
+        }
+
+        /* ─── HIDDEN (search) ─── */
+        .hidden {
+            display: none !important;
+        }
+
+        /* ─── FOOTER ─── */
+        footer {
+            background: var(--surface);
+            border-top: 1.5px solid var(--border);
+            padding: clamp(24px, 4vw, 40px) clamp(16px, 6vw, 80px);
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+
+        footer strong {
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        .footer-inner {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .footer-name {
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(18px, 3vw, 22px);
+            font-weight: 800;
+            color: var(--text);
+            letter-spacing: -0.5px;
+        }
+
+        /* ─── RESPONSIVE ─── */
+        @media (max-width: 600px) {
+            .card-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .toc {
+                gap: 6px;
+            }
+        }
+
+        /* ─── ANIMATIONS ─── */
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(18px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero>* {
+            animation: fadeUp 0.5s ease both;
+        }
+
+        .hero>*:nth-child(1) {
+            animation-delay: 0.05s;
+        }
+
+        .hero>*:nth-child(2) {
+            animation-delay: 0.12s;
+        }
+
+        .hero>*:nth-child(3) {
+            animation-delay: 0.19s;
+        }
+
+        .hero>*:nth-child(4) {
+            animation-delay: 0.26s;
+        }
+
+        .hero>*:nth-child(5) {
+            animation-delay: 0.33s;
+        }
+
+        /* scroll fade-in for sections */
+        .fade-section {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .fade-section.visible {
+            opacity: 1;
+            transform: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- NAV -->
+    <nav>
+        <span class="nav-logo">Ch.8 · Security Layers</span>
+        <div class="nav-search">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <circle cx="11" cy="11" r="8" />
+                <path d="m21 21-4.35-4.35" />
+            </svg>
+            <input type="text" id="searchInput" placeholder="Search anything…" autocomplete="off">
+            <span class="search-results-count" id="searchCount"></span>
+        </div>
+        <button id="theme-toggle" title="Toggle theme" aria-label="Toggle dark/light mode">🌙</button>
+    </nav>
+
+    <!-- HERO -->
+    <div class="hero">
+        <div class="hero-tag">Chapter 8</div>
+        <h1>Security Vulnerabilities,<br><span>Threats & Countermeasures</span></h1>
+        <p class="hero-sub">A comprehensive, visual study guide — with mnemonics, summaries, and clear explanations
+            across all system layers.</p>
+        <nav class="toc" aria-label="Jump to section">
+            <a href="#hardware" class="toc-chip">🔧 Hardware</a>
+            <a href="#protection" class="toc-chip">🛡 Protection Mechanisms</a>
+            <a href="#memory" class="toc-chip">💾 Memory</a>
+            <a href="#io" class="toc-chip">⌨️ I/O Devices</a>
+            <a href="#firmware" class="toc-chip">⚙️ Firmware</a>
+            <a href="#client-server" class="toc-chip">🖥 Client & Server</a>
+            <a href="#database" class="toc-chip">🗄 Database</a>
+            <a href="#cloud" class="toc-chip">☁️ Cloud</a>
+            <a href="#iot" class="toc-chip">📡 IoT</a>
+            <a href="#web" class="toc-chip">🌐 Web</a>
+            <a href="#mobile" class="toc-chip">📱 Mobile</a>
+            <a href="#os" class="toc-chip">💻 OS Security</a>
+        </nav>
+    </div>
+
+    <main>
+
+        <!-- ══════════════════════════════════════════ -->
+        <!-- 1. HARDWARE -->
+        <!-- ══════════════════════════════════════════ -->
+        <section id="hardware" class="fade-section">
+            <div class="section-header">
+                <div class="section-icon" style="background:color-mix(in srgb,var(--accent) 12%,transparent)">🔧</div>
+                <div>
+                    <h2>Hardware Components</h2>
+                    <p style="color:var(--text-muted);font-size:13px;margin-top:2px">CPU execution types & processing
+                        models</p>
+                </div>
+            </div>
+
+            <div class="mnemonic">
+                <div class="mnemonic-label">🧠 Mnemonic — CPU Execution Types</div>
+                <div class="word">MM&nbsp;&nbsp;MT</div>
+                <div style="font-size:13px;color:var(--text-muted);margin-bottom:12px">"<strong>M</strong>any
+                    <strong>M</strong>achines, <strong>M</strong>any <strong>T</strong>hreads" — the two M's cover the 3
+                    multi- types + threading</div>
+                <div class="mnemonic-item"><span class="mnemonic-letter">M</span>
+                    <div><strong>Multitasking</strong> — handling 2+ tasks simultaneously at the OS level</div>
+                </div>
+                <div class="mnemonic-item"><span class="mnemonic-letter">M</span>
+                    <div><strong>Multicore</strong> — one chip, multiple independent CPU cores</div>
+                </div>
+                <div class="mnemonic-item"><span class="mnemonic-letter">M</span>
+                    <div><strong>Multiprocessing</strong> — multiple physical CPUs; 2 sub-types below</div>
+                </div>
+                <div class="mnemonic-item"><span class="mnemonic-letter">T</span>
+                    <div><strong>Multithreading</strong> — concurrent program parts on a single processor</div>
+                </div>
+            </div>
+
+            <div class="card-grid">
+                <div class="card card-accent">
+                    <h3>SMP — Symmetric Multiprocessing</h3>
+                    <p style="font-size:13.5px">All processors <mark>share one OS & memory</mark>. Think of a team
+                        working from the same office — shared resources, tightly coupled.</p>
+                </div>
+                <div class="card card-accent2">
+                    <h3>MPP — Massive Parallel Processing</h3>
+                    <p style="font-size:13.5px">Each processor has <span class="accent2-mark">its own OS &
+                            memory</span>. Think of separate offices — loosely coupled, highly scalable.</p>
+                    <div class="tip" style="margin-top:10px"><span class="tip-icon">💡</span><span>Memory:
+                            <strong>S</strong>MP = <strong>S</strong>hared. <strong>M</strong>PP = <strong>M</strong>y
+                            own.</span></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ══════════════════════════════════════════ -->
+        <!-- 2. PROTECTION MECHANISMS -->
+        <!-- ══════════════════════════════════════════ -->
+        <section id="protection" class="fade-section">
+            <div class="section-header">
+                <div class="section-icon" style="background:color-mix(in srgb,var(--accent2) 12%,transparent)">🛡</div>
+                <div>
+                    <h2>Protection Mechanisms</h2>
+                    <p style="color:var(--text-muted);font-size:13px;margin-top:2px">Hardware-level privilege control &
+                        process management</p>
+                </div>
+            </div>
+
+            <div class="card" style="margin-bottom:16px">
+                <h3>1. Protection Rings</h3>
+                <p style="font-size:13.5px;margin-bottom:14px">Inner = more privilege. The OS kernel sits at the center;
+                    user apps are on the outside.</p>
+                <div class="ring-diagram">
+                    <div class="ring-row"
+                        style="border-color:var(--accent);background:color-mix(in srgb,var(--accent) 8%,var(--surface))">
+                        <span class="ring-num" style="color:var(--accent)">0</span>
+                        <div><strong>OS Kernel / Memory</strong> — highest privilege, runs in supervisory (privileged)
+                            mode</div>
+                    </div>
+                    <div class="ring-row">
+                        <span class="ring-num" style="color:var(--accent3)">1</span>
+                        <div><strong>Other OS Components</strong> — still privileged</div>
+                    </div>
+                    <div class="ring-row">
+                        <span class="ring-num" style="color:var(--accent4)">2</span>
+                        <div><strong>Drivers & Protocols</strong> — device drivers, network protocols</div>
+                    </div>
+                    <div class="ring-row"
+                        style="border-color:var(--accent2);background:color-mix(in srgb,var(--accent2) 8%,var(--surface))">
+                        <span class="ring-num" style="color:var(--accent2)">3</span>
+                        <div><strong>User-Level Programs</strong> — lowest privilege, runs in user mode. All requests
+                            must be authorized.</div>
+                    </div>
+                </div>
+                <div class="mnemonic" style="margin-top:16px">
+                    <div class="mnemonic-label">🧠 Memory trick</div>
+                    <p style="font-size:13.5px"><strong>"Rings 0–2 = Supervisory, Ring 3 = Street level"</strong><br>Or:
+                        <em>0 is the boss, 3 is the employee who needs permission for everything.</em></p>
+                </div>
+            </div>
+
+            <div class="card-grid">
+                <div class="card card-accent3">
+                    <h3>2. Operating States</h3>
+                    <ul class="checklist">
+                        <li><strong>Supervisory state</strong> — all-access; can execute any instruction & reference any
+                            memory</li>
+                        <li><strong>Operating/Problem state</strong> (User mode) — limited; every access request checked
+                            against credentials</li>
+                    </ul>
+                </div>
+                <div class="card card-accent4">
+                    <h3>3. Process States</h3>
+                    <p style="font-size:13px;margin-bottom:10px">Managed by the <strong>Process Scheduler</strong>:</p>
+                    <div style="display:flex;flex-wrap:wrap;gap:8px">
+                        <span class="badge badge-green">Ready</span>
+                        <span style="font-size:18px;color:var(--text-muted)">→</span>
+                        <span class="badge badge-blue">Running</span>
+                        <span style="font-size:18px;color:var(--text-muted)">→</span>
+                        <span class="badge badge-orange">Waiting</span>
+                        <span style="font-size:18px;color:var(--text-muted)">→</span>
+                        <span class="badge badge-purple">Terminated</span>
+                    </div>
+                    <div class="tip" style="margin-top:12px"><span
+                            class="tip-icon">🧠</span><span><em>"<strong>R</strong>eal <strong>W</strong>orkers
+                                <strong>R</strong>etire <strong>T</strong>oday"</em> — Ready → Waiting → Running →
+                            Terminated</span></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ══════════════════════════════════════════ -->
+        <!-- 3. MEMORY PROTECTION -->
+        <!-- ══════════════════════════════════════════ -->
+        <section id="memory" class="fade-section">
+            <div class="section-header">
+                <div class="section-icon" style="background:color-mix(in srgb,var(--accent3) 12%,transparent)">💾</div>
+                <div>
+                    <h2>Memory Protection Mechanisms</h2>
+                    <p style="color:var(--text-muted);font-size:13px;margin-top:2px">Primary & secondary memory types +
+                        protection techniques</p>
+                </div>
+            </div>
+
+            <div class="card-grid">
+                <div class="card card-accent">
+                    <h3>ROM — Read Only Memory</h3>
+                    <p style="font-size:13px;margin-bottom:10px">Non-volatile. Data persists without power. Four types:
+                    </p>
+                    <ul style="list-style:none;display:flex;flex-direction:column;gap:6px;font-size:13px">
+                        <li><span class="badge badge-blue">PROM</span> Programmable ROM — write once</li>
+                        <li><span class="badge badge-blue">EPROM</span> Erasable (UV light) then re-writable</li>
+                        <li><span class="badge badge-blue">EEPROM</span> Electronically erasable — used for BIOS</li>
+                        <li><span class="badge badge-blue">Flash</span> Modern EEPROM variant; fast block erasure</li>
+                    </ul>
+                </div>
+                <div class="card card-accent2">
+                    <h3>RAM — Random Access Memory</h3>
+                    <p style="font-size:13px;margin-bottom:10px">Volatile. Data lost when power off. Three levels:</p>
+                    <ul style="list-style:none;display:flex;flex-direction:column;gap:6px;font-size:13px">
+                        <li><span class="badge badge-orange">Real</span> Main working memory</li>
+                        <li><span class="badge badge-orange">Cache</span> Fast buffer between CPU and RAM</li>
+                        <li><span class="badge badge-orange">Registers</span> Fastest; inside the CPU itself</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card" style="margin:16px 0">
+                <h3>Why Memory Protection Matters</h3>
+                <p style="font-size:13.5px">Prevents one process from accessing another's memory space → preserves
+                    <mark>data integrity</mark>, prevents <mark>system crashes</mark>, and stops <mark>unauthorized data
+                        access</mark>.</p>
+            </div>
+
+            <div class="mnemonic">
+                <div class="mnemonic-label">🧠 Mnemonic — Primary Memory Protection Techniques</div>
+                <div class="word">PAD·PK·KB</div>
+                <div class="mnemonic-item"><span class="mnemonic-letter">P</span>
+                    <div><strong>Paging & Segmentation</strong> — divides memory into chunks with specific access rights
+                        (read/write/execute)</div>
+                </div>
+                <div class="mnemonic-item"><span class="mnemonic-letter">A</span>
+                    <div><strong>ASLR</strong> — Address Space Layout Randomization; randomizes memory addresses to stop
+                        attackers finding target code</div>
+                </div>
+                <div class="mnemonic-item"><span class="mnemonic-letter">D</span>
+                    <div><strong>DEP</strong> — Data Execution Prevention; marks regions as non-executable to block
+                        malware</div>
+                </div>
+                <div class="mnemonic-item"><span class="mnemonic-letter">P</span>
+                    <div><strong>Protection Keys (MPK)</strong> — numeric keys for fast permission changes on memory
+                        blocks</div>
+                </div>
+                <div class="mnemonic-item"><span class="mnemonic-letter">K</span>
+                    <div><strong>Kernel Protection</strong> — protects OS memory from user-level malware</div>
+                </div>
+                <div class="mnemonic-item"><span class="mnemonic-letter">B</span>
+                    <div><strong>Buffer Overflow Mitigation</strong> — blocks attacks that overwrite memory to hijack
+                        program flow</div>
+                </div>
+                <div style="margin-top:8px;font-size:13px;color:var(--text-muted)">+ <strong>Process Isolation</strong>:
+                    each app gets its own memory space</div>
+            </div>
+
+            <div class="card card-accent3" style="margin-top:16px">
+                <h3>Secondary Memory Protection</h3>
+                <p style="font-size:13px;margin-bottom:12px">Protects <strong>non-volatile storage</strong> (HDD, SSD,
+                    USB, cloud). Critical because data survives power-off — prime target for long-term exfiltration.</p>
+                <div class="mnemonic">
+                    <div class="mnemonic-label">🧠 Mnemonic — EIAA·P</div>
+                    <div class="mnemonic-item"><span class="mnemonic-letter">E</span>
+                        <div><strong>Encryption at-rest</strong> — full-disk or file-level; stolen data stays unreadable
+                        </div>
+                    </div>
+                    <div class="mnemonic-item"><span class="mnemonic-letter">I</span>
+                        <div><strong>Immutable Backups</strong> — object locking; ransomware can't modify or delete them
+                        </div>
+                    </div>
+                    <div class="mnemonic-item"><span class="mnemonic-letter">A</span>
+                        <div><strong>Air-Gapping</strong> — physically separate backups from the network</div>
+                    </div>
+                    <div class="mnemonic-item"><span class="mnemonic-letter">A</span>
+                        <div><strong>Access Controls & Auth</strong> — MFA + strict permissions on storage partitions
+                        </div>
+                    </div>
+                    <div class="mnemonic-item"><span class="mnemonic-letter">P</span>
+                        <div><strong>Physical Security</strong> — lock servers, remove removable media</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ══════════════════════════════════════════ -->
+        <!-- 4. I/O DEVICES -->
+        <!-- ══════════════════════════════════════════ -->
+        <section id="io" class="fade-section">
+            <div class="section-header">
+                <div class="section-icon" style="background:color-mix(in srgb,var(--accent4) 12%,transparent)">⌨️</div>
+                <div>
+                    <h2>Input / Output Devices</h2>
+                    <p style="color:var(--text-muted);font-size:13px;margin-top:2px">Yes, even keyboards and mice can be
+                        attack vectors</p>
+                </div>
+            </div>
+
+            <div class="card-grid">
+                <div class="card">
+                    <h3>Device Types</h3>
+                    <ul style="font-size:13.5px;list-style:none;display:flex;flex-direction:column;gap:5px">
+                        <li><span class="badge badge-blue">Input</span> Keyboards, mice, scanners, mics, cameras</li>
+                        <li><span class="badge badge-green">Output</span> Monitors, printers, projectors, speakers</li>
+                        <li><span class="badge badge-purple">Storage</span> USB drives, external HDDs, IoT sensors</li>
+                        <li><span class="badge badge-orange">Network</span> Modems, routers</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3 style="color:var(--accent2)">⚠️ Can basic devices be risky?</h3>
+                    <p style="font-size:13.5px">Yes! A <strong>USB drive</strong> can inject malware. A compromised
+                        <strong>keyboard</strong> can log keystrokes. A malicious <strong>router</strong> can intercept
+                        all traffic.</p>
+                </div>
+            </div>
+
+            <div class="mnemonic" style="margin-top:16px">
+                <div class="mnemonic-label">🧠 Mnemonic — I/O Protection: <strong>PPSANE·I</strong></div>
+                <div class="mnemonic-item"><span class="mnemonic-letter">P</span>
+                    <div><strong>Physical Security</strong> — lock devices, use surveillance, access badges</div>
+                </div>
+                <div class="mnemonic-item"><span class="mnemonic-letter">P</span>
+                    <div><strong>Port Control</strong> — disable/remove unused USB, CD/DVD ports</div>
+                </div>
+                <div class="mnemonic-item"><span class="mnemonic-letter">S</span>
+                    <div><strong>Software Updates</strong> — patch firmware and drivers regularly</div>
+                </div>
+                <div class="mnemonic-item"><span class="mnemonic-letter">A</span>
+                    <div><strong>Authentication & Access Control</strong> — strong passwords or biometrics</div>
+                </div>
+                <div class="mnemonic-item"><span class="mnemonic-letter">N</span>
+                    <div><strong>Network Segmentation</strong> — isolate IoT/peripherals from main network</div>
+                </div>
+                <div class="mnemonic-item"><span class="mnemonic-letter">E</span>
+                    <div><strong>Encryption (TLS)</strong> — encrypt data in transit between devices</div>
+                </div>
+                <div class="mnemonic-item"><span class="mnemonic-letter">I</span>
+                    <div><strong>Input Validation</strong> — ensure data integrity, block malicious code via input</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ══════════════════════════════════════════ -->
+        <!-- 5. FIRMWARE -->
+        <!-- ══════════════════════════════════════════ -->
+        <section id="firmware" class="fade-section">
+            <div class="section-header">
+                <div class="section-icon" style="background:color-mix(in srgb,var(--accent2) 12%,transparent)">⚙️</div>
+                <div>
+                    <h2>Firmware</h2>
+                    <p style="color:var(--text-muted);font-size:13px;margin-top:2px">Microcode stored in ROM — the
+                        software closest to hardware</p>
+                </div>
+            </div>
+
+            <div class="card-grid">
+                <div class="card card-accent">
+                    <h3>BIOS</h3>
+                    <p style="font-size:13.5px">Basic Input/Output System. Stored on <mark>EEPROM chip</mark>.<br>
+                        Updating it = <strong>"flashing the BIOS"</strong>.<br>
+                        Threat: <span class="accent2-mark">Phlashing</span> — malicious code embedding itself into BIOS
+                        (very hard to remove!)</p>
+                </div>
+                <div class="card card-accent3">
+                    <h3>UEFI</h3>
+                    <p style="font-size:13.5px">Unified Extensible Firmware Interface. Replaced BIOS since
+                        <mark>2011</mark>. More advanced interface between hardware and OS — supports larger drives,
+                        faster boot, Secure Boot feature.</p>
+                </div>
+                <div class="card card-accent4">
+                    <h3>Hardware Device Firmware</h3>
+                    <p style="font-size:13.5px">Printers, modems, routers each have mini-OS stored as firmware in
+                        EEPROM. If compromised, they become persistent attack footholds.</p>
+                </div>
+            </div>
+
+            <div class="warn" style="margin-top:4px"><span class="tip-icon">⚠️</span><span><strong>Key exam
+                        point:</strong> Firmware attacks are especially dangerous because they survive OS reinstalls and
+                    are very difficult to detect or remove.</span></div>
+
+            <div class="card" style="margin-top:16px">
+                <h3>The Software Stack (Bottom → Top)</h3>
+                <div class="layer-stack">
+                    <div class="layer-item"
+                        style="background:color-mix(in srgb,var(--accent) 10%,var(--surface));border:1.5px solid color-mix(in srgb,var(--accent) 25%,transparent)">
+                        🔩 <strong>Hardware</strong> — the physical chips and circuits</div>
+                    <div class="layer-item"
+                        style="background:color-mix(in srgb,var(--accent2) 10%,var(--surface));border:1.5px solid color-mix(in srgb,var(--accent2) 25%,transparent)">
+                        ⚙️ <strong>Firmware</strong> — BIOS/UEFI, device microcode</div>
+                    <div class="layer-item"
+                        style="background:color-mix(in srgb,var(--accent3) 10%,var(--surface));border:1.5px solid color-mix(in srgb,var(--accent3) 25%,transparent)">
+                        💻 <strong>Operating Systems</strong> — Windows, Linux, macOS</div>
+                    <div class="layer-item"
+                        style="background:color-mix(in srgb,var(--accent4) 10%,var(--surface));border:1.5px solid color-mix(in srgb,var(--accent4) 25%,transparent)">
+                        🔗 <strong>Middleware</strong> — APIs, runtime environments</div>
+                    <div class="layer-item" style="background:var(--surface2);border:1.5px solid var(--border)">📱
+                        <strong>Software</strong> — user applications</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ══════════════════════════════════════════ -->
+        <!-- 6. CLIENT & SERVER -->
+        <!-- ══════════════════════════════════════════ -->
+        <section id="client-server" class="fade-section">
+            <div class="section-header">
+                <div class="section-icon" style="background:color-mix(in srgb,var(--accent) 12%,transparent)">🖥</div>
+                <div>
+                    <h2>Protecting Client & Server Systems</h2>
+                    <p style="color:var(--text-muted);font-size:13px;margin-top:2px">Endpoint security + server
+                        hardening</p>
+                </div>
+            </div>
+
+            <div class="card-grid">
+                <div class="card card-accent">
+                    <h3>Client-Side Security</h3>
+                    <p style="font-size:13px;margin-bottom:10px">Secures the <mark>user endpoint</mark> (laptops,
+                        mobiles, browsers).<br>Attack example: malicious website injects code into a vulnerable browser.
+                    </p>
+                    <ul class="checklist">
+                        <li><strong>Endpoint Security (EDR)</strong> — antivirus + detection & response</li>
+                        <li><strong>Browser Security</strong> — Content Security Policy (CSP), HttpOnly/Secure cookies
+                        </li>
+                        <li><strong>Input Sanitization</strong> — validate all inputs client & server side</li>
+                        <li><strong>Code Obfuscation</strong> — make JS hard to reverse engineer</li>
+                        <li><strong>Patching</strong> — keep browsers & OS updated</li>
+                    </ul>
+                </div>
+                <div class="card card-accent2">
+                    <h3>Server-Side Security</h3>
+                    <p style="font-size:13px;margin-bottom:10px">Servers = primary target (sensitive data, central
+                        control). Key concerns: <mark>data flow control</mark>, load balancing, throughput, DoS/DDoS
+                        defence.</p>
+                    <ul class="checklist">
+                        <li><strong>NGFW & WAF</strong> — filter network & app-layer traffic</li>
+                        <li><strong>Patch Management</strong> — regular OS/app updates</li>
+                        <li><strong>MFA + RBAC</strong> — access control & least privilege</li>
+                        <li><strong>Encryption</strong> — protect data at rest</li>
+                        <li><strong>IDS/IPS</strong> — monitor & block suspicious traffic</li>
+                        <li><strong>Server Hardening</strong> — disable unused ports/services</li>
+                        <li><strong>DDoS Mitigation</strong> — tools to absorb volumetric attacks</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="mnemonic" style="margin-top:4px">
+                <div class="mnemonic-label">🧠 Server Protection — "NPMEDIS"</div>
+                <div class="mnemonic-item"><span class="mnemonic-letter">N</span>
+                    <div>NGFW / WAF</div>
+                </div>
+                <div class="mnemonic-item"><span class="mnemonic-letter">P</span>
+                    <div>Patch Management</div>
+                </div>
+                <div class="mnemonic-item"><span class="mnemonic-letter">M</span>
+                    <div>MFA + RBAC</div>
+                </div>
+                <div class="mnemonic-item"><span class="mnemonic-letter">E</span>
+                    <div>Encryption</div>
+                </div>
+                <div class="mnemonic-item"><span class="mnemonic-letter">D</span>
+                    <div>Detection (IDS/IPS)</div>
+                </div>
+                <div class="mnemonic-item"><span class="mnemonic-letter">I</span>
+                    <div>Isolate (Server Hardening)</div>
+                </div>
+                <div class="mnemonic-item"><span class="mnemonic-letter">S</span>
+                    <div>Stop DDoS</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ══════════════════════════════════════════ -->
+        <!-- 7. DATABASE -->
+        <!-- ══════════════════════════════════════════ -->
+        <section id="database" class="fade-section">
+            <div class="section-header">
+                <div class="section-icon" style="background:color-mix(in srgb,var(--accent3) 12%,transparent)">🗄</div>
+                <div>
+                    <h2>Database Systems Security</h2>
+                    <p style="color:var(--text-muted);font-size:13px;margin-top:2px">CIA Triad for stored data —
+                        Confidentiality, Integrity, Availability</p>
+                </div>
+            </div>
+
+            <div class="tip"><span class="tip-icon">📌</span><span>DB security covers: the DBMS itself + applications +
+                    physical servers + network infrastructure, through access controls, encryption, and auditing.</span>
+            </div>
+
+            <div class="card-grid" style="margin-top:16px">
+                <div class="card card-accent2">
+                    <h3>⚠️ Common Threats</h3>
+                    <ul class="xlist">
+                        <li><strong>SQL/NoSQL Injection</strong> — malicious code in queries manipulates the DB</li>
+                        <li><strong>Insider Threats</strong> — malicious or careless authorized employees</li>
+                        <li><strong>Misconfigured DB</strong> — default passwords, open ports</li>
+                        <li><strong>Weak/Missing Encryption</strong> — data readable if system is breached</li>
+                        <li><strong>Ransomware</strong> — data encrypted or stolen, ransom demanded</li>
+                    </ul>
+                </div>
+                <div class="card card-accent3">
+                    <h3>✅ Best Practices</h3>
+                    <ul class="checklist">
+                        <li><strong>Least Privilege</strong> — users get minimum necessary access</li>
+                        <li><strong>Data Masking</strong> — hide sensitive data in non-production environments</li>
+                        <li><strong>Secure Backups</strong> — regular, encrypted backups</li>
+                        <li><strong>Vulnerability Scanning & Pen Testing</strong></li>
+                        <li><strong>Physical Security</strong> — secure servers hosting the DB</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="mnemonic" style="margin-top:4px">
+                <div class="mnemonic-label">🧠 DB Threats — "SIM·WR"</div>
+                <div class="mnemonic-item"><span class="mnemonic-letter">S</span>
+                    <div>SQL Injection</div>
+                </div>
+                <div class="mnemonic-item"><span class="mnemonic-letter">I</span>
+                    <div>Insider Threats</div>
+                </div>
+                <div class="mnemonic-item"><span class="mnemonic-letter">M</span>
+                    <div>Misconfiguration</div>
+                </div>
+                <div class="mnemonic-item"><span class="mnemonic-letter">W</span>
+                    <div>Weak Encryption</div>
+                </div>
+                <div class="mnemonic-item"><span class="mnemonic-letter">R</span>
+                    <div>Ransomware</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ══════════════════════════════════════════ -->
+        <!-- 8. CLOUD -->
+        <!-- ══════════════════════════════════════════ -->
+        <section id="cloud" class="fade-section">
+            <div class="section-header">
+                <div class="section-icon" style="background:color-mix(in srgb,var(--accent) 12%,transparent)">☁️</div>
+                <div>
+                    <h2>Cloud Computing Security</h2>
+                    <p style="color:var(--text-muted);font-size:13px;margin-top:2px">AWS, Azure, Google, Alibaba —
+                        protecting data, apps & infrastructure</p>
+                </div>
+            </div>
+
+            <div class="card-grid">
+                <div class="card">
+                    <h3>Cloud Service Models</h3>
+                    <div class="layer-stack">
+                        <div class="layer-item"
+                            style="background:color-mix(in srgb,var(--accent3) 10%,var(--surface));border:1px solid color-mix(in srgb,var(--accent3) 25%,transparent)">
+                            📱 <strong>SaaS</strong> — Software as a Service (Gmail, Office 365) — you use the app</div>
+                        <div class="layer-item"
+                            style="background:color-mix(in srgb,var(--accent2) 10%,var(--surface));border:1px solid color-mix(in srgb,var(--accent2) 25%,transparent)">
+                            🔧 <strong>PaaS</strong> — Platform as a Service (Heroku, Azure) — you build the app</div>
+                        <div class="layer-item"
+                            style="background:color-mix(in srgb,var(--accent) 10%,var(--surface));border:1px solid color-mix(in srgb,var(--accent) 25%,transparent)">
+                            🖥 <strong>IaaS</strong> — Infrastructure as a Service (raw VM/storage) — you manage the OS
+                            up</div>
+                    </div>
+                </div>
+                <div class="card card-accent4">
+                    <h3>Key Concepts</h3>
+                    <ul style="list-style:none;display:flex;flex-direction:column;gap:7px;font-size:13.5px">
+                        <li><span class="badge badge-purple">Hypervisor/VMM</span> Creates, manages, and operates
+                            virtual machines</li>
+                        <li><span class="badge badge-purple">Elasticity</span> Cloud's ability to expand or shrink
+                            resources on demand</li>
+                        <li><span class="badge badge-purple">Shared Responsibility</span> CSP secures "of" the cloud;
+                            customer secures "in" the cloud</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card" style="margin:16px 0">
+                <h3>Shared Responsibility Model — The Golden Rule</h3>
+                <div class="card-grid" style="margin-top:12px">
+                    <div style="background:var(--surface2);border-radius:10px;padding:14px">
+                        <div style="font-weight:700;font-size:13px;margin-bottom:6px;color:var(--accent)">☁️ CSP is
+                            responsible FOR:</div>
+                        <p style="font-size:13px">Physical data centers, networking, storage hardware, virtualization
+                            layer — <em>the cloud itself</em></p>
+                    </div>
+                    <div style="background:var(--surface2);border-radius:10px;padding:14px">
+                        <div style="font-weight:700;font-size:13px;margin-bottom:6px;color:var(--accent2)">👤 Customer
+                            is responsible FOR:</div>
+                        <p style="font-size:13px">Data, applications, identity management, access controls — <em>what's
+                                IN the cloud</em></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-grid">
+                <div class="card card-accent2">
+                    <h3>⚠️ Common Cloud Threats</h3>
+                    <ul class="xlist">
+                        <li><strong>Misconfigurations</strong> — #1 cause of cloud breaches</li>
+                        <li><strong>Account Hijacking</strong> — weak credentials exploited</li>
+                        <li><strong>Insecure APIs</strong> — vulnerabilities in cloud management interfaces</li>
+                        <li><strong>Insider Threats</strong> — risks from within the organization</li>
+                    </ul>
+                </div>
+                <div class="card card-accent3">
+                    <h3>✅ Cloud Security Strategies</h3>
+                    <ul class="checklist">
+                        <li><strong>IAM + MFA</strong> — control who accesses what</li>
+                        <li><strong>Data Encryption</strong> — at rest and in transit</li>
+                        <li><strong>CSPM</strong> — Cloud Security Posture Management for compliance</li>
+                        <li><strong>CWPP + CNAPP</strong> — workload & cloud-native app protection</li>
+                        <li><strong>Secure Backups</strong> — encrypted, off-site</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- ══════════════════════════════════════════ -->
+        <!-- 9. IoT -->
+        <!-- ══════════════════════════════════════════ -->
+        <section id="iot" class="fade-section">
+            <div class="section-header">
+                <div class="section-icon" style="background:color-mix(in srgb,var(--accent2) 12%,transparent)">📡</div>
+                <div>
+                    <h2>IoT Security</h2>
+                    <p style="color:var(--text-muted);font-size:13px;margin-top:2px">Cameras, sensors, smart devices —
+                        insecure by design</p>
+                </div>
+            </div>
+
+            <div class="warn"><span class="tip-icon">⚠️</span><span><strong>Key stat:</strong> 83% of medical IoT
+                    devices run on unsupported operating systems — critical attack surface!</span></div>
+
+            <div class="card-grid" style="margin-top:16px">
+                <div class="card card-accent2">
+                    <h3>⚠️ Key Threats & Challenges</h3>
+                    <ul class="xlist">
+                        <li><strong>Weak Firmware</strong> — rushed to market, little security testing</li>
+                        <li><strong>No Encryption</strong> — most IoT traffic is unencrypted</li>
+                        <li><strong>Default Credentials</strong> — never changed from factory defaults</li>
+                        <li><strong>Gateway Risk</strong> — compromised device = entry to entire network</li>
+                        <li><strong>Unsupported Software</strong> — no patches, ever-growing vulnerabilities</li>
+                    </ul>
+                </div>
+                <div class="card card-accent3">
+                    <h3>✅ Best Practices</h3>
+                    <ul class="checklist">
+                        <li><strong>Change Default Passwords</strong> immediately</li>
+                        <li><strong>Update Firmware</strong> regularly</li>
+                        <li><strong>Network Segmentation</strong> — IoT on its own VLAN</li>
+                        <li><strong>Zero Trust</strong> — authenticate every device continuously</li>
+                        <li><strong>Disable Unused Features</strong> (Bluetooth, remote access)</li>
+                        <li><strong>MFA</strong> whenever available</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="mnemonic" style="margin-top:4px">
+                <div class="mnemonic-label">🧠 IoT Best Practices — "CUNZD·M"</div>
+                <div class="mnemonic-item"><span class="mnemonic-letter">C</span>
+                    <div>Change default passwords</div>
+                </div>
+                <div class="mnemonic-item"><span class="mnemonic-letter">U</span>
+                    <div>Update firmware</div>
+                </div>
+                <div class="mnemonic-item"><span class="mnemonic-letter">N</span>
+                    <div>Network segmentation</div>
+                </div>
+                <div class="mnemonic-item"><span class="mnemonic-letter">Z</span>
+                    <div>Zero Trust</div>
+                </div>
+                <div class="mnemonic-item"><span class="mnemonic-letter">D</span>
+                    <div>Disable unused features</div>
+                </div>
+                <div class="mnemonic-item"><span class="mnemonic-letter">M</span>
+                    <div>MFA</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ══════════════════════════════════════════ -->
+        <!-- 10. WEB SECURITY -->
+        <!-- ══════════════════════════════════════════ -->
+        <section id="web" class="fade-section">
+            <div class="section-header">
+                <div class="section-icon" style="background:color-mix(in srgb,var(--accent4) 12%,transparent)">🌐</div>
+                <div>
+                    <h2>Web-Based Security</h2>
+                    <p style="color:var(--text-muted);font-size:13px;margin-top:2px">Protecting websites, APIs & web
+                        applications</p>
+                </div>
+            </div>
+
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Threat</th>
+                            <th>What it does</th>
+                            <th>Mitigation</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>SQL Injection (SQLi)</strong></td>
+                            <td>Malicious code injected into DB queries to extract/alter data</td>
+                            <td>Validate & sanitize all user inputs; use parameterized queries</td>
+                        </tr>
+                        <tr>
+                            <td><strong>XSS (Cross-Site Scripting)</strong></td>
+                            <td>Malicious scripts injected into trusted websites</td>
+                            <td>Escape user-provided content; use Content Security Policy</td>
+                        </tr>
+                        <tr>
+                            <td><strong>DDoS</strong></td>
+                            <td>Flood servers with traffic to make services unavailable</td>
+                            <td>DDoS mitigation services, rate limiting, traffic scrubbing</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Broken Access Control</strong></td>
+                            <td>Unauthorized access to accounts or data</td>
+                            <td>Strict authentication mechanisms, RBAC</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="card-grid" style="margin-top:16px">
+                <div class="card card-accent">
+                    <h3>Key Web Security Components</h3>
+                    <ul class="checklist">
+                        <li><strong>WAF</strong> — Web Application Firewall; filters HTTP traffic between app and
+                            internet</li>
+                        <li><strong>Vulnerability Scanning</strong> — automated tools find known weaknesses</li>
+                        <li><strong>Secure Coding (OWASP Top 10)</strong> — build security in from the start</li>
+                        <li><strong>API Security</strong> — protect interfaces from unauthorized access</li>
+                        <li><strong>SSL/TLS</strong> — encrypt data in transit</li>
+                    </ul>
+                </div>
+                <div class="card card-accent4">
+                    <h3>Pen Test Checklist for Web</h3>
+                    <ul class="checklist">
+                        <li>View hosted web pages for exposed info</li>
+                        <li>Explore automation technologies in use</li>
+                        <li>Check file and backup handling</li>
+                        <li>Evaluate SSL/TLS transmission security</li>
+                        <li>Test authentication & session management</li>
+                        <li>Review cryptography & data validation</li>
+                        <li>Check DoS defences & error handling</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="mnemonic">
+                <div class="mnemonic-label">🧠 Web Threats — "SXDBr" (Sx + D + B)</div>
+                <div class="mnemonic-item"><span class="mnemonic-letter">S</span>
+                    <div>SQL Injection</div>
+                </div>
+                <div class="mnemonic-item"><span class="mnemonic-letter">X</span>
+                    <div>XSS — Cross-Site Scripting</div>
+                </div>
+                <div class="mnemonic-item"><span class="mnemonic-letter">D</span>
+                    <div>DDoS</div>
+                </div>
+                <div class="mnemonic-item"><span class="mnemonic-letter">B</span>
+                    <div>Broken Access Control</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ══════════════════════════════════════════ -->
+        <!-- 11. MOBILE -->
+        <!-- ══════════════════════════════════════════ -->
+        <section id="mobile" class="fade-section">
+            <div class="section-header">
+                <div class="section-icon" style="background:color-mix(in srgb,var(--accent3) 12%,transparent)">📱</div>
+                <div>
+                    <h2>Mobile Device Security</h2>
+                    <p style="color:var(--text-muted);font-size:13px;margin-top:2px">Device security + app security +
+                        BYOD concerns</p>
+                </div>
+            </div>
+
+            <div class="card-grid">
+                <div class="card card-accent">
+                    <h3>Device Security Features</h3>
+                    <p style="font-size:12px;color:var(--text-muted);margin-bottom:8px">Useless if not activated!</p>
+                    <ul class="checklist">
+                        <li>Full device encryption</li>
+                        <li>Remote wiping</li>
+                        <li>Screen locks & lockout</li>
+                        <li>GPS tracking</li>
+                        <li>Application control</li>
+                        <li>Storage segmentation</li>
+                        <li>Disabling unused features</li>
+                    </ul>
+                </div>
+                <div class="card card-accent3">
+                    <h3>Application Security</h3>
+                    <ul class="checklist">
+                        <li><strong>Key Management</strong> — most crypto failures are from bad key mgmt, not algorithms
+                        </li>
+                        <li><strong>Credential Management</strong> — central, secure storage of creds</li>
+                        <li><strong>Authentication</strong> — passwords + biometrics</li>
+                        <li><strong>Geotagging</strong> — can reveal routine patterns; use carefully</li>
+                        <li><strong>Encryption</strong> — enable if available</li>
+                        <li><strong>App Whitelisting</strong> — deny by default, allow by exception (opposite of
+                            blacklisting)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card" style="margin-top:16px">
+                <h3>BYOD — Bring Your Own Device</h3>
+                <p style="font-size:13.5px;margin-bottom:14px">Policy allowing employees to use personal devices for
+                    work. Improves morale but introduces significant security risks.</p>
+                <div class="card-grid">
+                    <div style="background:var(--surface2);border-radius:10px;padding:14px">
+                        <div style="font-weight:700;font-size:13px;margin-bottom:8px">📋 Key BYOD Concerns</div>
+                        <ul class="xlist">
+                            <li><strong>Data Ownership</strong> — who owns the data? Remote wipe issues</li>
+                            <li><strong>Support Ownership</strong> — who pays for repairs?</li>
+                            <li><strong>Patch Management</strong> — who ensures updates?</li>
+                            <li><strong>Antivirus</strong> — required or optional?</li>
+                            <li><strong>Privacy</strong> — employee loses some privacy</li>
+                            <li><strong>Forensics</strong> — how are devices investigated?</li>
+                            <li><strong>Onboarding/Offboarding</strong> — processes for enrollment & departure</li>
+                        </ul>
+                    </div>
+                    <div style="background:var(--surface2);border-radius:10px;padding:14px">
+                        <div style="font-weight:700;font-size:13px;margin-bottom:8px">🔄 BYOD Alternatives</div>
+                        <ul style="list-style:none;display:flex;flex-direction:column;gap:10px;font-size:13.5px">
+                            <li><span class="badge badge-blue">COPE</span> <strong>Company Owned, Personally
+                                    Enabled</strong> — company provides device, employee personalizes</li>
+                            <li><span class="badge badge-green">CYOD</span> <strong>Choose Your Own Device</strong> —
+                                employee picks from approved list</li>
+                            <li><span class="badge badge-purple">VDI/VMI</span> <strong>Virtual Desktop/Mobile
+                                    Infrastructure</strong> — apps run in a virtual environment, not on the device</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="mnemonic" style="margin-top:4px">
+                <div class="mnemonic-label">🧠 BYOD Concerns — "Data Support Patches Antivirus For Privacy On/Off"</div>
+                <p style="font-size:13px;color:var(--text-muted)">D-S-P-A-F-P-O: <strong>D</strong>ata ownership,
+                    <strong>S</strong>upport, <strong>P</strong>atching, <strong>A</strong>ntivirus,
+                    <strong>F</strong>orensics, <strong>P</strong>rivacy, <strong>O</strong>nboarding/Offboarding</p>
+            </div>
+        </section>
+
+        <!-- ══════════════════════════════════════════ -->
+        <!-- 12. OS SECURITY -->
+        <!-- ══════════════════════════════════════════ -->
+        <section id="os" class="fade-section">
+            <div class="section-header">
+                <div class="section-icon" style="background:color-mix(in srgb,var(--accent) 12%,transparent)">💻</div>
+                <div>
+                    <h2>Operating System Security</h2>
+                    <p style="color:var(--text-muted);font-size:13px;margin-top:2px">Technical & policy mechanisms + OS
+                        hardening</p>
+                </div>
+            </div>
+
+            <div class="card-grid">
+                <div class="card card-accent">
+                    <h3>⚙️ Technical Mechanisms</h3>
+                    <ul class="checklist">
+                        <li><strong>Layering</strong> — ring-model structure for OS privilege levels</li>
+                        <li><strong>Abstraction</strong> — access rights assigned to groups of objects, not individuals
+                        </li>
+                        <li><strong>Data Hiding</strong> — objects placed in different security containers from subjects
+                            (need-to-know)</li>
+                        <li><strong>Process Isolation</strong> — separate memory spaces for each process's instructions
+                            & data</li>
+                        <li><strong>Hardware Segmentation</strong> — like process isolation but enforced by physical
+                            hardware controls</li>
+                    </ul>
+                </div>
+                <div class="card card-accent3">
+                    <h3>📋 Policy Mechanisms</h3>
+                    <ul class="checklist">
+                        <li><strong>Least Privilege</strong> — users get only the minimum access needed for their job.
+                            Nothing more.</li>
+                        <li><strong>Separation of Duties</strong> — critical tasks split across multiple people; reduces
+                            insider fraud</li>
+                        <li><strong>Accountability</strong> — all privileged actions logged; "who did what?"</li>
+                    </ul>
+                    <div class="mnemonic" style="margin-top:12px">
+                        <div class="mnemonic-label">🧠 "LSA"</div>
+                        <p style="font-size:13px"><strong>L</strong>east Privilege · <strong>S</strong>eparation of
+                            Duties · <strong>A</strong>ccountability</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" style="margin-top:16px">
+                <h3>OS Hardening — The 6-Point Shield</h3>
+                <div class="card-grid" style="margin-top:14px">
+                    <div
+                        style="display:flex;gap:12px;align-items:flex-start;padding:12px;background:var(--surface2);border-radius:10px">
+                        <span style="font-size:24px">🗑</span>
+                        <div>
+                            <div style="font-weight:700;font-size:13px">Remove Unnecessary Software</div>
+                            <p style="font-size:12px;color:var(--text-muted)">Less software = smaller attack surface</p>
+                        </div>
+                    </div>
+                    <div
+                        style="display:flex;gap:12px;align-items:flex-start;padding:12px;background:var(--surface2);border-radius:10px">
+                        <span style="font-size:24px">🔧</span>
+                        <div>
+                            <div style="font-weight:700;font-size:13px">Change Default Configurations</div>
+                            <p style="font-size:12px;color:var(--text-muted)">Defaults are publicly known; change them
+                            </p>
+                        </div>
+                    </div>
+                    <div
+                        style="display:flex;gap:12px;align-items:flex-start;padding:12px;background:var(--surface2);border-radius:10px">
+                        <span style="font-size:24px">🔥</span>
+                        <div>
+                            <div style="font-weight:700;font-size:13px">Enable Firewall</div>
+                            <p style="font-size:12px;color:var(--text-muted)">Block unauthorized network traffic</p>
+                        </div>
+                    </div>
+                    <div
+                        style="display:flex;gap:12px;align-items:flex-start;padding:12px;background:var(--surface2);border-radius:10px">
+                        <span style="font-size:24px">🔑</span>
+                        <div>
+                            <div style="font-weight:700;font-size:13px">Use Strong Passwords</div>
+                            <p style="font-size:12px;color:var(--text-muted)">Complex, unique credentials across all
+                                accounts</p>
+                        </div>
+                    </div>
+                    <div
+                        style="display:flex;gap:12px;align-items:flex-start;padding:12px;background:var(--surface2);border-radius:10px">
+                        <span style="font-size:24px">🔐</span>
+                        <div>
+                            <div style="font-weight:700;font-size:13px">Enforce MFA</div>
+                            <p style="font-size:12px;color:var(--text-muted)">Multi-Factor Authentication for all
+                                privileged access</p>
+                        </div>
+                    </div>
+                    <div
+                        style="display:flex;gap:12px;align-items:flex-start;padding:12px;background:var(--surface2);border-radius:10px">
+                        <span style="font-size:24px">🔍</span>
+                        <div>
+                            <div style="font-weight:700;font-size:13px">Enable Audit & Monitoring</div>
+                            <p style="font-size:12px;color:var(--text-muted)">Log everything; detect anomalies early</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="mnemonic" style="margin-top:16px">
+                    <div class="mnemonic-label">🧠 OS Hardening — "RCFSMEA"</div>
+                    <p style="font-size:13px"><strong>R</strong>emove unnecessary software · <strong>C</strong>hange
+                        defaults · <strong>F</strong>irewall · <strong>S</strong>trong passwords · <strong>M</strong>FA
+                        · <strong>E</strong>nable auditing</p>
+                    <p style="font-size:12.5px;color:var(--text-muted);margin-top:4px">Phrase: <em>"Really Careful
+                            Firewalls Seem More Effective Always"</em></p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ══════════════════════════════════════════ -->
+        <!-- MASTER SUMMARY -->
+        <!-- ══════════════════════════════════════════ -->
+        <section class="fade-section" style="margin-top:60px">
+            <div class="section-header">
+                <div class="section-icon" style="background:color-mix(in srgb,var(--accent) 12%,transparent)">📊</div>
+                <div>
+                    <h2>Master Summary Table</h2>
+                    <p style="color:var(--text-muted);font-size:13px;margin-top:2px">All layers at a glance — great for
+                        last-minute review</p>
+                </div>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Layer</th>
+                            <th>Key Threats</th>
+                            <th>Key Defences</th>
+                            <th>Mnemonic</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Hardware / CPU</strong></td>
+                            <td>Side-channel attacks, privilege escalation</td>
+                            <td>Protection rings, operating states, process isolation</td>
+                            <td>MM·MT</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Memory</strong></td>
+                            <td>Buffer overflow, process injection</td>
+                            <td>ASLR, DEP, paging, MMU</td>
+                            <td>PAD·PK·KB</td>
+                        </tr>
+                        <tr>
+                            <td><strong>I/O Devices</strong></td>
+                            <td>Malicious USB, keyloggers, rogue devices</td>
+                            <td>Port control, physical security, input validation</td>
+                            <td>PPSANE·I</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Firmware</strong></td>
+                            <td>Phlashing, BIOS rootkits</td>
+                            <td>Secure Boot (UEFI), firmware updates, integrity checks</td>
+                            <td>—</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Client Systems</strong></td>
+                            <td>Drive-by downloads, XSS, malware</td>
+                            <td>EDR, CSP, patching, code obfuscation</td>
+                            <td>—</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Server Systems</strong></td>
+                            <td>DDoS, SQL injection, unauthorized access</td>
+                            <td>WAF, NGFW, IDS/IPS, MFA, server hardening</td>
+                            <td>NPMEDIS</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Database</strong></td>
+                            <td>SQL injection, insider threats, ransomware</td>
+                            <td>Least privilege, encryption, masking, auditing</td>
+                            <td>SIM·WR</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Cloud</strong></td>
+                            <td>Misconfigurations, account hijacking, insecure APIs</td>
+                            <td>IAM, CSPM, shared responsibility model, MFA</td>
+                            <td>—</td>
+                        </tr>
+                        <tr>
+                            <td><strong>IoT</strong></td>
+                            <td>Default creds, no encryption, botnets</td>
+                            <td>Network segmentation, Zero Trust, firmware updates</td>
+                            <td>CUNZD·M</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Web</strong></td>
+                            <td>SQLi, XSS, DDoS, broken access control</td>
+                            <td>WAF, input validation, TLS, OWASP guidelines</td>
+                            <td>SXDBr</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Mobile</strong></td>
+                            <td>Malicious apps, BYOD risks, geotracking</td>
+                            <td>App whitelisting, encryption, MFA, remote wipe</td>
+                            <td>D-S-P-A-F-P-O</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Operating System</strong></td>
+                            <td>Privilege escalation, rootkits</td>
+                            <td>Least privilege, separation of duties, OS hardening</td>
+                            <td>LSA / RCFSMEA</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="footer-inner">
+            <div class="footer-name">Shoug Alomran</div>
+            <p>Chapter 8 · Security Vulnerabilities, Threats & Countermeasures Across System Layers</p>
+            <p style="margin-top:4px;font-size:12px">Study guide compiled for academic use · All content derived from
+                course materials</p>
+        </div>
+    </footer>
+
+    <script>
+        // ─── THEME ───
+        const toggle = document.getElementById('theme-toggle');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        let dark = prefersDark;
+        document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+        toggle.textContent = dark ? '☀️' : '🌙';
+        toggle.addEventListener('click', () => {
+            dark = !dark;
+            document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+            toggle.textContent = dark ? '☀️' : '🌙';
+        });
+
+        // ─── SEARCH ───
+        const searchInput = document.getElementById('searchInput');
+        const searchCount = document.getElementById('searchCount');
+        let originalHTML = {};
+
+        function escapeRegex(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
+
+        function clearHighlights() {
+            document.querySelectorAll('.search-highlight').forEach(el => {
+                el.outerHTML = el.textContent;
+            });
+        }
+
+        function performSearch(q) {
+            clearHighlights();
+            const sections = document.querySelectorAll('section, footer');
+            if (!q.trim()) {
+                sections.forEach(s => s.classList.remove('hidden'));
+                searchCount.textContent = '';
+                return;
+            }
+            const re = new RegExp(`(${escapeRegex(q)})`, 'gi');
+            let totalMatches = 0;
+            sections.forEach(section => {
+                const text = section.textContent;
+                if (re.test(text)) {
+                    section.classList.remove('hidden');
+                    // highlight
+                    walkText(section, re);
+                    const matches = section.querySelectorAll('.search-highlight').length;
+                    totalMatches += matches;
+                } else {
+                    section.classList.add('hidden');
+                }
+                re.lastIndex = 0;
+            });
+            searchCount.textContent = totalMatches ? `${totalMatches}` : '';
+        }
+
+        function walkText(node, re) {
+            if (node.nodeType === 3) {
+                const parent = node.parentNode;
+                if (parent.classList && (parent.classList.contains('search-highlight') || parent.tagName === 'SCRIPT' || parent.tagName === 'STYLE')) return;
+                const text = node.textContent;
+                if (re.test(text)) {
+                    const span = document.createElement('span');
+                    span.innerHTML = text.replace(re, '<span class="search-highlight">$1</span>');
+                    parent.replaceChild(span, node);
+                }
+                re.lastIndex = 0;
+            } else if (node.nodeType === 1) {
+                Array.from(node.childNodes).forEach(child => walkText(child, re));
+            }
+        }
+
+        let debounceTimer;
+        searchInput.addEventListener('input', () => {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => {
+                performSearch(searchInput.value);
+            }, 200);
+        });
+
+        // ─── SCROLL FADE ───
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(e => {
+                if (e.isIntersecting) { e.target.classList.add('visible'); }
+            });
+        }, { threshold: 0.08 });
+        document.querySelectorAll('.fade-section').forEach(s => observer.observe(s));
+    </script>
+</body>
+
+</html>
