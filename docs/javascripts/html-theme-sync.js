@@ -668,6 +668,7 @@
 
   function loadPastExamPractice() {
     if (!/\/ethc303\//i.test(location.pathname)) return;
+    if (/\/ethc303\/quizez\//i.test(location.pathname)) return;
     if (document.querySelector('script[src="/javascripts/past-exam-practice.js"]')) return;
 
     var script = document.createElement("script");

@@ -11,5 +11,5 @@
 
 ## الملفات المتاحة
 
-- [ملف الجلسة الأولى (PDF)](handouts/session-1.pdf)
-- [ملف ملاحظات Bandit (PDF)](handouts/Cyber-Workshop.pdf)
+- [ملف الجلسة الأولى](handouts/session-1.pdf)
+- [ملف ملاحظات Bandit](handouts/Cyber-Workshop.pdf)

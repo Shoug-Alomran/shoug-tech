@@ -8,5 +8,5 @@ This section collects the downloadable handouts for the Cybersecurity Crash Cour
 
 ## Available Files
 
-- [Session 1 Handout (PDF)](handouts/session-1.pdf)
-- [Bandit Notes Handout (PDF)](handouts/Cyber-Workshop.pdf)
+- [Session 1 Handout](handouts/session-1.pdf)
+- [Bandit Notes Handout](handouts/Cyber-Workshop.pdf)

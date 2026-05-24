@@ -137,6 +137,15 @@ the slides section.
 
     [Open slides](slides/overview.md)
 
+-   **Quizzes**
+
+    ---
+
+    Exam-prep quizzes for ETHCS 303 topics, including privacy, cloud computing,
+    cyber law, software engineering ethics, and business ethics.
+
+    [Open quizzes](quizez/overview.md)
+
 </div>
 
 ---
