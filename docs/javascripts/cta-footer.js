@@ -3,7 +3,6 @@
   const LINKEDIN = "https://www.linkedin.com/in/shoug-alomran";
   const GITHUB = "https://github.com/Shoug-Alomran";
   const REPO = `${GITHUB}/My-Garden`;
-  const LS_LEFT_KEY = "sg_hide_left_sidebar";
   const LS_RIGHT_KEY = "sg_hide_right_sidebar";
   const LS_START_LEFT_OPEN_KEY = "sg_start_here_left_sidebar_open";
 
@@ -414,7 +413,6 @@
         const hide = !document.body.classList.contains("sg-hide-left-sidebar");
         document.body.classList.toggle("sg-hide-left-sidebar", hide);
         try {
-          localStorage.setItem(LS_LEFT_KEY, hide ? "1" : "0");
           if (isStartHerePage()) {
             localStorage.setItem(LS_START_LEFT_OPEN_KEY, hide ? "0" : "1");
           }
@@ -436,7 +434,7 @@
     }
 
     try {
-      let hideLeft = localStorage.getItem(LS_LEFT_KEY) === "1";
+      let hideLeft = false;
       const hideRight = localStorage.getItem(LS_RIGHT_KEY) === "1";
       if (isStartHerePage() && localStorage.getItem(LS_START_LEFT_OPEN_KEY) !== "1") {
         hideLeft = true;
