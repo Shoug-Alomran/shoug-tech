@@ -473,8 +473,11 @@
     return `
       html[data-parent-theme="dark"] { color-scheme: dark; }
       html[data-parent-theme="dark"] body {
-        background: #0b1020 !important;
+        background: transparent !important;
         color: #e5e7eb !important;
+      }
+      html[data-parent-theme="light"] body {
+        background: transparent !important;
       }
       html[data-parent-theme="dark"] .container,
       html[data-parent-theme="dark"] main,
@@ -489,7 +492,7 @@
       html[data-parent-theme="dark"] .panel,
       html[data-parent-theme="dark"] .box,
       html[data-parent-theme="dark"] .wrapper {
-        background: #111827 !important;
+        background: transparent !important;
         color: #e5e7eb !important;
       }
       html[data-parent-theme="dark"] h1,
@@ -564,7 +567,7 @@
   }
 
   function embeddedIframes() {
-    return document.querySelectorAll('.md-content-iframe, .md-content__inner iframe[src$=".html"], .md-content__inner iframe[src*=".html#"]');
+    return document.querySelectorAll('.md-content-iframe, .md-content__inner iframe[src$=".html"], .md-content__inner iframe[src*=".html#"], .md-content__inner iframe[src*=".html?"]');
   }
 
   function syncEmbeddedIframesTheme() {
