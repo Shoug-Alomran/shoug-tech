@@ -275,20 +275,32 @@
       svg,
       canvas,
       video,
-      table,
       pre {
         max-width: 100%;
       }
 
       table {
-        display: block;
+        width: 100%;
+        border-collapse: collapse;
+        table-layout: auto;
+      }
+
+      .sg-table-scroll {
+        width: 100%;
+        max-width: 100%;
         overflow-x: auto;
+        overflow-y: hidden;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .sg-table-scroll > table {
+        min-width: max-content;
       }
 
       .sg-page-search {
         position: fixed;
         z-index: 9999;
-        top: max(0.85rem, env(safe-area-inset-top));
+        bottom: max(0.85rem, env(safe-area-inset-bottom));
         right: max(0.85rem, env(safe-area-inset-right));
         display: flex;
         align-items: center;
@@ -300,6 +312,7 @@
         color: #f8fafc;
         box-shadow: 0 16px 42px rgba(15, 23, 42, 0.24);
         backdrop-filter: blur(14px);
+        max-width: min(34rem, calc(100vw - 1.7rem));
       }
 
       .sg-page-search__input {
@@ -369,6 +382,12 @@
         .sg-page-search__input {
           flex: 1 1 auto;
           width: auto;
+        }
+      }
+
+      @media (max-width: 760px) {
+        .sg-table-scroll > table {
+          width: max-content;
         }
       }
     `;
@@ -483,6 +502,17 @@
 
     window.setTimeout(postHeightToParent, 250);
     window.setTimeout(postHeightToParent, 1000);
+  }
+
+  function wrapResponsiveTables() {
+    if (!document.body) return;
+    document.querySelectorAll("table").forEach(function (table) {
+      if (table.closest(".sg-table-scroll")) return;
+      var wrapper = document.createElement("div");
+      wrapper.className = "sg-table-scroll";
+      table.parentNode.insertBefore(wrapper, table);
+      wrapper.appendChild(table);
+    });
   }
 
   function clearSearchMarks() {
@@ -636,6 +666,16 @@
     });
   }
 
+  function loadPastExamPractice() {
+    if (!/\/ethc303\//i.test(location.pathname)) return;
+    if (document.querySelector('script[src="/javascripts/past-exam-practice.js"]')) return;
+
+    var script = document.createElement("script");
+    script.src = "/javascripts/past-exam-practice.js";
+    script.defer = true;
+    (document.body || document.documentElement).appendChild(script);
+  }
+
   installToggle();
 
   syncTheme();
@@ -645,13 +685,17 @@
       installToggle();
       syncTheme();
       installSearch();
+      wrapResponsiveTables();
       bindDynamicHeight();
+      loadPastExamPractice();
     }, { once: true });
   } else {
     installToggle();
     syncTheme();
     installSearch();
+    wrapResponsiveTables();
     bindDynamicHeight();
+    loadPastExamPractice();
   }
 
   bindParentObserver();
@@ -660,6 +704,8 @@
     installToggle();
     syncTheme();
     installSearch();
+    wrapResponsiveTables();
+    loadPastExamPractice();
     postHeightToParent();
   });
 
