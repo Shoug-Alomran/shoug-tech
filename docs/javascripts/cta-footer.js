@@ -175,13 +175,13 @@
 
     // Policies (moved to repository-level policy folder)
     const privacyHref = isArabic()
-      ? policyHref("ar/policy/privacy-notice.ar.md")
+      ? url("ar/policy/privacy-notice/")
       : policyHref("policy/privacy-notice.md");
     const disclaimerHref = isArabic()
-      ? policyHref("ar/policy/academic-disclaimer.ar.md")
+      ? url("ar/policy/academic-disclaimer/")
       : policyHref("policy/academic-disclaimer.md");
     const copyrightHref = isArabic()
-      ? policyHref("ar/policy/copyright.ar.md")
+      ? url("ar/policy/copyright/")
       : policyHref("policy/copyright.md");
 
     const dirAttr = isArabic() ? 'dir="rtl"' : 'dir="ltr"';

@@ -20,6 +20,28 @@ MAP_PATH = ROOT / "scripts" / "legacy-docs-path-map.json"
 ASSET_SUFFIXES = {".png", ".jpg", ".jpeg", ".gif", ".svg", ".webp", ".pdf", ".pptx"}
 
 
+def case_sensitive_exists(path: Path) -> bool:
+    """Return true only when each path component exists with exact casing."""
+    try:
+        path.relative_to(ROOT)
+    except ValueError:
+        return path.exists()
+
+    current = path.anchor and Path(path.anchor) or Path(".")
+    for part in path.parts[1:] if path.is_absolute() else path.parts:
+        if not current.exists():
+            return False
+        try:
+            names = {child.name for child in current.iterdir()}
+        except OSError:
+            return False
+        if part not in names:
+            return False
+        current = current / part
+
+    return True
+
+
 def docs_rel_to_site_path(rel: str) -> Path:
     path = Path(rel)
     name = path.name
@@ -110,9 +132,11 @@ def load_git_rename_mapping() -> dict[str, str]:
         output = subprocess.check_output(
             ["git", "log", "--name-status", "--diff-filter=R", "--format="],
             cwd=ROOT,
+            stderr=subprocess.DEVNULL,
             text=True,
+            timeout=15,
         )
-    except (FileNotFoundError, subprocess.CalledProcessError):
+    except (FileNotFoundError, subprocess.CalledProcessError, subprocess.TimeoutExpired):
         return {}
 
     rename_map: dict[str, str] = {}
@@ -167,6 +191,14 @@ def legacy_component_variant(part: str, *, title_case: bool) -> str:
     return f"{stem}{suffix}"
 
 
+def legacy_spaced_dash_component_variant(part: str) -> str:
+    """Return legacy titles like `Chapter 4 - Quiz` for hyphenated stems."""
+    stem, suffix = split_component(part)
+    stem = stem.replace("-", " ")
+    stem = re.sub(r"(?<=\d) (?=[A-Za-z])", " - ", stem)
+    return f"{stem}{suffix}"
+
+
 def load_spacing_heuristic_mapping() -> dict[str, str]:
     """Fallback aliases for common space-to-hyphen filename migrations."""
 
@@ -187,6 +219,34 @@ def load_spacing_heuristic_mapping() -> dict[str, str]:
             )
             candidates.add(candidate)
 
+        candidates.add("/".join(legacy_spaced_dash_component_variant(part) for part in parts))
+
+        candidates.add(
+            "/".join([*parts[:-1], legacy_component_variant(parts[-1], title_case=True)])
+        )
+
+        if len(parts) >= 2:
+            candidates.add(
+                "/".join(
+                    [
+                        *parts[:-2],
+                        legacy_component_variant(parts[-2], title_case=True),
+                        legacy_component_variant(parts[-1], title_case=True),
+                    ]
+                )
+            )
+
+            if parts[-2].lower() == "quizez":
+                candidates.add(
+                    "/".join(
+                        [
+                            *parts[:-2],
+                            legacy_component_variant(parts[-2], title_case=True),
+                            legacy_spaced_dash_component_variant(parts[-1]),
+                        ]
+                    )
+                )
+
         # Preserve the old `.ar.html` suffix style for standalone Arabic HTML pages.
         if rel.endswith("-ar.html"):
             candidates.add(rel[: -len("-ar.html")] + ".ar.html")
@@ -194,7 +254,7 @@ def load_spacing_heuristic_mapping() -> dict[str, str]:
         for candidate in candidates:
             if candidate == rel:
                 continue
-            if (ROOT / "docs" / candidate).exists():
+            if case_sensitive_exists(ROOT / "docs" / candidate):
                 continue
             heuristic_map.setdefault(candidate, rel)
 
@@ -239,6 +299,33 @@ def write_ar_asset_mirror(rel: str) -> bool:
     return True
 
 
+def write_legacy_route_redirect(old_route: str, new_rel: str) -> bool:
+    old_site = SITE / old_route.strip("/") / "index.html"
+    new_site = docs_rel_to_site_path(new_rel)
+
+    if old_site.exists() or not new_site.exists():
+        return False
+
+    write_redirect(old_site, site_path_to_url(new_site))
+    return True
+
+
+def write_root_policy_redirects() -> int:
+    redirects = 0
+    policies = ("academic-disclaimer", "copyright", "privacy-notice")
+
+    for slug in policies:
+        pairs = (
+            (slug, f"policy/{slug}.md"),
+            (f"ar/{slug}", f"policy/{slug}.ar.md"),
+        )
+        for old_route, new_rel in pairs:
+            if write_legacy_route_redirect(old_route, new_rel):
+                redirects += 1
+
+    return redirects
+
+
 def main() -> int:
     if not SITE.exists():
         return 0
@@ -260,8 +347,13 @@ def main() -> int:
 
         if old_site == new_site or not new_site.exists():
             continue
+        try:
+            if old_site.exists() and old_site.samefile(new_site):
+                continue
+        except OSError:
+            pass
 
-        if old_site.suffix == ".html" and old_rel.endswith(".md"):
+        if new_rel.endswith((".md", ".ar.md", ".html")):
             write_redirect(old_site, site_path_to_url(new_site))
             created_redirects += 1
             continue
@@ -281,6 +373,8 @@ def main() -> int:
 
         if write_ar_asset_mirror(rel):
             copied_assets += 1
+
+    created_redirects += write_root_policy_redirects()
 
     print(f"[legacy-aliases] mappings: {len(mapping)}")
     print(f"[legacy-aliases] redirects: {created_redirects}")
