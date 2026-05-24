@@ -471,7 +471,31 @@
 
   function getIframeThemeStyle() {
     return `
-      html[data-parent-theme="dark"] { color-scheme: dark; }
+      html[data-parent-theme="dark"] {
+        color-scheme: dark;
+        --white: #111827 !important;
+        --card: #111827 !important;
+        --surface: #111827 !important;
+        --background: #0b1020 !important;
+        --bg: #0b1020 !important;
+        --light-bg: #1f2937 !important;
+        --text-dark: #e5e7eb !important;
+        --text-color: #e5e7eb !important;
+        --text: #e5e7eb !important;
+        --text-light: #cbd5e1 !important;
+        --ink: #e5e7eb !important;
+        --ink-1: #e5e7eb !important;
+        --ink-2: #cbd5e1 !important;
+        --primary-color: #93c5fd !important;
+        --primary: #93c5fd !important;
+        --primary-dark: #bfdbfe !important;
+        --secondary: #c4b5fd !important;
+        --secondary-color: #c4b5fd !important;
+        --accent: #fbbf24 !important;
+        --accent-color: #fbbf24 !important;
+        --border: #374151 !important;
+        --border-color: #4b5563 !important;
+      }
       html[data-parent-theme="dark"] body {
         background: transparent !important;
         color: #e5e7eb !important;
@@ -494,6 +518,49 @@
       html[data-parent-theme="dark"] .wrapper {
         background: transparent !important;
         color: #e5e7eb !important;
+      }
+      html[data-parent-theme="dark"] .question,
+      html[data-parent-theme="dark"] .question-card,
+      html[data-parent-theme="dark"] .question-block,
+      html[data-parent-theme="dark"] .quiz-container,
+      html[data-parent-theme="dark"] .topic-card,
+      html[data-parent-theme="dark"] .exam-question,
+      html[data-parent-theme="dark"] .solution-card,
+      html[data-parent-theme="dark"] .result-box,
+      html[data-parent-theme="dark"] .feedback,
+      html[data-parent-theme="dark"] .mock-answer,
+      html[data-parent-theme="dark"] .answer-box,
+      html[data-parent-theme="dark"] .learning-outcomes,
+      html[data-parent-theme="dark"] .highlight,
+      html[data-parent-theme="dark"] .key-point,
+      html[data-parent-theme="dark"] .warning,
+      html[data-parent-theme="dark"] .principle,
+      html[data-parent-theme="dark"] .timeline-item,
+      html[data-parent-theme="dark"] .stat-card,
+      html[data-parent-theme="dark"] .metric-card,
+      html[data-parent-theme="dark"] .summary-card,
+      html[data-parent-theme="dark"] .concept-box,
+      html[data-parent-theme="dark"] .example-box,
+      html[data-parent-theme="dark"] .exam-section,
+      html[data-parent-theme="dark"] .diagram-container,
+      html[data-parent-theme="dark"] .key-concept,
+      html[data-parent-theme="dark"] .tip,
+      html[data-parent-theme="dark"] .exam-example,
+      html[data-parent-theme="dark"] .option,
+      html[data-parent-theme="dark"] .tf-option,
+      html[data-parent-theme="dark"] .mcq-option,
+      html[data-parent-theme="dark"] .mcq-options li,
+      html[data-parent-theme="dark"] .practice-list li,
+      html[data-parent-theme="dark"] .requirements-list li,
+      html[data-parent-theme="dark"] .key-points li,
+      html[data-parent-theme="dark"] [class*="-card"],
+      html[data-parent-theme="dark"] [class*="-box"],
+      html[data-parent-theme="dark"] [class*="-panel"],
+      html[data-parent-theme="dark"] [class*="-item"],
+      html[data-parent-theme="dark"] [class*="-option"] {
+        background: #1f2937 !important;
+        color: #e5e7eb !important;
+        border-color: #4b5563 !important;
       }
       html[data-parent-theme="dark"] h1,
       html[data-parent-theme="dark"] h2,
@@ -529,6 +596,64 @@
         background: #111827 !important;
         color: #e5e7eb !important;
         border-color: #374151 !important;
+      }
+      html[data-parent-theme="dark"] .card:hover,
+      html[data-parent-theme="dark"] .question:hover,
+      html[data-parent-theme="dark"] .question-card:hover,
+      html[data-parent-theme="dark"] .question-block:hover,
+      html[data-parent-theme="dark"] .option:hover,
+      html[data-parent-theme="dark"] .tf-option:hover,
+      html[data-parent-theme="dark"] .mcq-option:hover,
+      html[data-parent-theme="dark"] .mcq-options li:hover,
+      html[data-parent-theme="dark"] .practice-list li:hover,
+      html[data-parent-theme="dark"] .requirements-list li:hover,
+      html[data-parent-theme="dark"] .key-points li:hover,
+      html[data-parent-theme="dark"] .toc a:hover,
+      html[data-parent-theme="dark"] nav a:hover,
+      html[data-parent-theme="dark"] tr:hover,
+      html[data-parent-theme="dark"] tr:hover td,
+      html[data-parent-theme="dark"] [class*="-card"]:hover,
+      html[data-parent-theme="dark"] [class*="-box"]:hover,
+      html[data-parent-theme="dark"] [class*="-panel"]:hover,
+      html[data-parent-theme="dark"] [class*="-item"]:hover,
+      html[data-parent-theme="dark"] [class*="-option"]:hover,
+      html[data-parent-theme="dark"] .active,
+      html[data-parent-theme="dark"] .selected,
+      html[data-parent-theme="dark"] .is-active,
+      html[data-parent-theme="dark"] [aria-selected="true"] {
+        background: #172033 !important;
+        color: #f8fafc !important;
+        border-color: #60a5fa !important;
+        box-shadow: 0 14px 30px rgba(0, 0, 0, 0.28) !important;
+      }
+      html[data-parent-theme="dark"] .card:hover *,
+      html[data-parent-theme="dark"] .question:hover *,
+      html[data-parent-theme="dark"] .question-card:hover *,
+      html[data-parent-theme="dark"] .question-block:hover *,
+      html[data-parent-theme="dark"] .option:hover *,
+      html[data-parent-theme="dark"] .tf-option:hover *,
+      html[data-parent-theme="dark"] .mcq-option:hover *,
+      html[data-parent-theme="dark"] .mcq-options li:hover *,
+      html[data-parent-theme="dark"] .practice-list li:hover *,
+      html[data-parent-theme="dark"] .requirements-list li:hover *,
+      html[data-parent-theme="dark"] .key-points li:hover *,
+      html[data-parent-theme="dark"] [class*="-card"]:hover *,
+      html[data-parent-theme="dark"] [class*="-box"]:hover *,
+      html[data-parent-theme="dark"] [class*="-panel"]:hover *,
+      html[data-parent-theme="dark"] [class*="-item"]:hover *,
+      html[data-parent-theme="dark"] [class*="-option"]:hover *,
+      html[data-parent-theme="dark"] .active *,
+      html[data-parent-theme="dark"] .selected *,
+      html[data-parent-theme="dark"] .is-active *,
+      html[data-parent-theme="dark"] [aria-selected="true"] * {
+        color: #f8fafc !important;
+      }
+      html[data-parent-theme="dark"] [class*="-badge"],
+      html[data-parent-theme="dark"] [class*="-tag"],
+      html[data-parent-theme="dark"] .badge,
+      html[data-parent-theme="dark"] .tag {
+        color: #ffffff !important;
+        border-color: transparent !important;
       }
       html[data-parent-theme="dark"] input,
       html[data-parent-theme="dark"] textarea,

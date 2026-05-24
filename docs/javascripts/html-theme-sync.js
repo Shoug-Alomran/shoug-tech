@@ -83,10 +83,17 @@
         --light-bg: #1f2937 !important;
         --text: #e5e7eb !important;
         --text-color: #e5e7eb !important;
+        --text-dark: #e5e7eb !important;
         --muted: #cbd5e1 !important;
-        --primary-color: #f8fafc !important;
-        --secondary-color: #93c5fd !important;
-        --accent-color: #c4b5fd !important;
+        --primary-color: #93c5fd !important;
+        --primary: #93c5fd !important;
+        --primary-dark: #bfdbfe !important;
+        --secondary-color: #c4b5fd !important;
+        --secondary: #c4b5fd !important;
+        --accent-color: #fbbf24 !important;
+        --accent: #fbbf24 !important;
+        --border: #374151 !important;
+        --border-color: #4b5563 !important;
       }
 
       html[data-theme="dark"] body {
@@ -231,6 +238,48 @@
         border-color: #374151 !important;
       }
 
+      html[data-theme="dark"] .question,
+      html[data-theme="dark"] .question-card,
+      html[data-theme="dark"] .question-block,
+      html[data-theme="dark"] .topic-card,
+      html[data-theme="dark"] .exam-question,
+      html[data-theme="dark"] .solution-card,
+      html[data-theme="dark"] .result-box,
+      html[data-theme="dark"] .feedback,
+      html[data-theme="dark"] .mock-answer,
+      html[data-theme="dark"] .answer-box,
+      html[data-theme="dark"] .learning-outcomes,
+      html[data-theme="dark"] .highlight,
+      html[data-theme="dark"] .key-point,
+      html[data-theme="dark"] .warning,
+      html[data-theme="dark"] .principle,
+      html[data-theme="dark"] .timeline-item,
+      html[data-theme="dark"] .stat-card,
+      html[data-theme="dark"] .metric-card,
+      html[data-theme="dark"] .summary-card,
+      html[data-theme="dark"] .concept-box,
+      html[data-theme="dark"] .example-box,
+      html[data-theme="dark"] .exam-section,
+      html[data-theme="dark"] .key-concept,
+      html[data-theme="dark"] .tip,
+      html[data-theme="dark"] .exam-example,
+      html[data-theme="dark"] .option,
+      html[data-theme="dark"] .tf-option,
+      html[data-theme="dark"] .mcq-option,
+      html[data-theme="dark"] .mcq-options li,
+      html[data-theme="dark"] .practice-list li,
+      html[data-theme="dark"] .requirements-list li,
+      html[data-theme="dark"] .key-points li,
+      html[data-theme="dark"] [class*="-card"],
+      html[data-theme="dark"] [class*="-box"],
+      html[data-theme="dark"] [class*="-panel"],
+      html[data-theme="dark"] [class*="-item"],
+      html[data-theme="dark"] [class*="-option"] {
+        background: #1f2937 !important;
+        color: #e5e7eb !important;
+        border-color: #4b5563 !important;
+      }
+
       html[data-theme="dark"] tr:nth-child(even) td,
       html[data-theme="dark"] tr:nth-child(even) th {
         background: #172033 !important;
@@ -243,6 +292,67 @@
         background: #0f172a !important;
         color: #e5e7eb !important;
         border-color: #374151 !important;
+      }
+
+      html[data-theme="dark"] .card:hover,
+      html[data-theme="dark"] .question:hover,
+      html[data-theme="dark"] .question-card:hover,
+      html[data-theme="dark"] .question-block:hover,
+      html[data-theme="dark"] .option:hover,
+      html[data-theme="dark"] .tf-option:hover,
+      html[data-theme="dark"] .mcq-option:hover,
+      html[data-theme="dark"] .mcq-options li:hover,
+      html[data-theme="dark"] .practice-list li:hover,
+      html[data-theme="dark"] .requirements-list li:hover,
+      html[data-theme="dark"] .key-points li:hover,
+      html[data-theme="dark"] .toc a:hover,
+      html[data-theme="dark"] nav a:hover,
+      html[data-theme="dark"] tr:hover,
+      html[data-theme="dark"] tr:hover td,
+      html[data-theme="dark"] [class*="-card"]:hover,
+      html[data-theme="dark"] [class*="-box"]:hover,
+      html[data-theme="dark"] [class*="-panel"]:hover,
+      html[data-theme="dark"] [class*="-item"]:hover,
+      html[data-theme="dark"] [class*="-option"]:hover,
+      html[data-theme="dark"] .active,
+      html[data-theme="dark"] .selected,
+      html[data-theme="dark"] .is-active,
+      html[data-theme="dark"] [aria-selected="true"] {
+        background: #172033 !important;
+        color: #f8fafc !important;
+        border-color: #60a5fa !important;
+        box-shadow: 0 14px 30px rgba(0, 0, 0, 0.28) !important;
+      }
+
+      html[data-theme="dark"] .card:hover *,
+      html[data-theme="dark"] .question:hover *,
+      html[data-theme="dark"] .question-card:hover *,
+      html[data-theme="dark"] .question-block:hover *,
+      html[data-theme="dark"] .option:hover *,
+      html[data-theme="dark"] .tf-option:hover *,
+      html[data-theme="dark"] .mcq-option:hover *,
+      html[data-theme="dark"] .mcq-options li:hover *,
+      html[data-theme="dark"] .practice-list li:hover *,
+      html[data-theme="dark"] .requirements-list li:hover *,
+      html[data-theme="dark"] .key-points li:hover *,
+      html[data-theme="dark"] [class*="-card"]:hover *,
+      html[data-theme="dark"] [class*="-box"]:hover *,
+      html[data-theme="dark"] [class*="-panel"]:hover *,
+      html[data-theme="dark"] [class*="-item"]:hover *,
+      html[data-theme="dark"] [class*="-option"]:hover *,
+      html[data-theme="dark"] .active *,
+      html[data-theme="dark"] .selected *,
+      html[data-theme="dark"] .is-active *,
+      html[data-theme="dark"] [aria-selected="true"] * {
+        color: #f8fafc !important;
+      }
+
+      html[data-theme="dark"] [class*="-badge"],
+      html[data-theme="dark"] [class*="-tag"],
+      html[data-theme="dark"] .badge,
+      html[data-theme="dark"] .tag {
+        color: #ffffff !important;
+        border-color: transparent !important;
       }
 
       html[data-theme="dark"] input,
