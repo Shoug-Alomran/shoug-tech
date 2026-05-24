@@ -355,6 +355,90 @@
         border-color: transparent !important;
       }
 
+      html[data-theme="dark"] .hero-content,
+      html[data-theme="dark"] .hero-inner,
+      html[data-theme="dark"] .hero-bg,
+      html[data-theme="dark"] [class*="hero-content"],
+      html[data-theme="dark"] [class*="hero-inner"],
+      html[data-theme="dark"] [class*="hero-bg"] {
+        background: transparent !important;
+        border-color: transparent !important;
+        box-shadow: none !important;
+      }
+
+      html[data-theme="dark"] .instructions,
+      html[data-theme="dark"] .instruction,
+      html[data-theme="dark"] .quiz-instructions,
+      html[data-theme="dark"] .exam-info,
+      html[data-theme="dark"] .info-box,
+      html[data-theme="dark"] .score-display,
+      html[data-theme="dark"] .score-breakdown,
+      html[data-theme="dark"] .progress-wrap,
+      html[data-theme="dark"] .section-header,
+      html[data-theme="dark"] .q-card,
+      html[data-theme="dark"] .q-meta,
+      html[data-theme="dark"] .q-scenario,
+      html[data-theme="dark"] .option-btn,
+      html[data-theme="dark"] .tf-btn,
+      html[data-theme="dark"] .options label,
+      html[data-theme="dark"] .answer-option,
+      html[data-theme="dark"] .feedback,
+      html[data-theme="dark"] .explanation,
+      html[data-theme="dark"] .results-card {
+        background: #172033 !important;
+        color: #f8fafc !important;
+        border-color: #475569 !important;
+      }
+
+      html[data-theme="dark"] .instructions *,
+      html[data-theme="dark"] .instruction *,
+      html[data-theme="dark"] .quiz-instructions *,
+      html[data-theme="dark"] .exam-info *,
+      html[data-theme="dark"] .info-box *,
+      html[data-theme="dark"] .score-display *,
+      html[data-theme="dark"] .score-breakdown *,
+      html[data-theme="dark"] .progress-wrap *,
+      html[data-theme="dark"] .section-header *,
+      html[data-theme="dark"] .q-card *,
+      html[data-theme="dark"] .q-meta *,
+      html[data-theme="dark"] .q-scenario *,
+      html[data-theme="dark"] .option-btn *,
+      html[data-theme="dark"] .tf-btn *,
+      html[data-theme="dark"] .options label *,
+      html[data-theme="dark"] .answer-option *,
+      html[data-theme="dark"] .feedback *,
+      html[data-theme="dark"] .explanation *,
+      html[data-theme="dark"] .results-card * {
+        color: inherit !important;
+      }
+
+      html[data-theme="dark"] .section-header,
+      html[data-theme="dark"] .question-number,
+      html[data-theme="dark"] .q-num,
+      html[data-theme="dark"] .q-type,
+      html[data-theme="dark"] .marks,
+      html[data-theme="dark"] .score-pill,
+      html[data-theme="dark"] .past-exam-badge {
+        color: #ffffff !important;
+      }
+
+      html[data-theme="dark"] .question.correct,
+      html[data-theme="dark"] .correct,
+      html[data-theme="dark"] .correct-answer {
+        background: rgba(22, 101, 52, 0.35) !important;
+        color: #dcfce7 !important;
+        border-color: #22c55e !important;
+      }
+
+      html[data-theme="dark"] .question.incorrect,
+      html[data-theme="dark"] .wrong,
+      html[data-theme="dark"] .incorrect,
+      html[data-theme="dark"] .incorrect-answer {
+        background: rgba(127, 29, 29, 0.38) !important;
+        color: #fee2e2 !important;
+        border-color: #ef4444 !important;
+      }
+
       html[data-theme="dark"] input,
       html[data-theme="dark"] textarea,
       html[data-theme="dark"] select,
