@@ -5,9 +5,15 @@
   const REPO = `${GITHUB}/My-Garden`;
   const LS_LEFT_KEY = "sg_hide_left_sidebar";
   const LS_RIGHT_KEY = "sg_hide_right_sidebar";
+  const LS_START_LEFT_OPEN_KEY = "sg_start_here_left_sidebar_open";
 
   function isArabic() {
     return location.pathname.includes("/ar/");
+  }
+
+  function isStartHerePage() {
+    const path = location.pathname.replace(/\/+$/, "/");
+    return path === "/start-here/" || path === "/ar/start-here/";
   }
 
   function getBase() {
@@ -409,6 +415,9 @@
         document.body.classList.toggle("sg-hide-left-sidebar", hide);
         try {
           localStorage.setItem(LS_LEFT_KEY, hide ? "1" : "0");
+          if (isStartHerePage()) {
+            localStorage.setItem(LS_START_LEFT_OPEN_KEY, hide ? "0" : "1");
+          }
         } catch (e) {}
         setToggleVisualState();
       });
@@ -427,8 +436,11 @@
     }
 
     try {
-      const hideLeft = localStorage.getItem(LS_LEFT_KEY) === "1";
+      let hideLeft = localStorage.getItem(LS_LEFT_KEY) === "1";
       const hideRight = localStorage.getItem(LS_RIGHT_KEY) === "1";
+      if (isStartHerePage() && localStorage.getItem(LS_START_LEFT_OPEN_KEY) !== "1") {
+        hideLeft = true;
+      }
       document.body.classList.toggle("sg-hide-left-sidebar", hideLeft);
       document.body.classList.toggle("sg-hide-right-sidebar", hideRight);
     } catch (e) {}
