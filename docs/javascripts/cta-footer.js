@@ -5,6 +5,7 @@
   const REPO = `${GITHUB}/My-Garden`;
   const LS_RIGHT_KEY = "sg_hide_right_sidebar";
   const LS_START_LEFT_OPEN_KEY = "sg_start_here_left_sidebar_open";
+  const LS_HTML_TOC_OPEN_KEY = "sg_html_wrapper_toc_open";
 
   function isArabic() {
     return location.pathname.includes("/ar/");
@@ -13,6 +14,10 @@
   function isStartHerePage() {
     const path = location.pathname.replace(/\/+$/, "/");
     return path === "/start-here/" || path === "/ar/start-here/";
+  }
+
+  function hasEmbeddedHtmlPage() {
+    return !!document.querySelector('.md-content__inner iframe[src$=".html"], .md-content__inner iframe[src*=".html#"], .md-content__inner iframe[src*=".html?"]');
   }
 
   function getBase() {
@@ -428,6 +433,9 @@
         document.body.classList.toggle("sg-hide-right-sidebar", hide);
         try {
           localStorage.setItem(LS_RIGHT_KEY, hide ? "1" : "0");
+          if (hasEmbeddedHtmlPage()) {
+            localStorage.setItem(LS_HTML_TOC_OPEN_KEY, hide ? "0" : "1");
+          }
         } catch (e) {}
         setToggleVisualState();
       });
@@ -435,16 +443,19 @@
 
     try {
       let hideLeft = false;
-      const hideRight = localStorage.getItem(LS_RIGHT_KEY) === "1";
+      let hideRight = localStorage.getItem(LS_RIGHT_KEY) === "1";
       if (isStartHerePage() && localStorage.getItem(LS_START_LEFT_OPEN_KEY) !== "1") {
         hideLeft = true;
+      }
+      if (hasEmbeddedHtmlPage() && localStorage.getItem(LS_HTML_TOC_OPEN_KEY) !== "1") {
+        hideRight = true;
       }
       document.body.classList.toggle("sg-hide-left-sidebar", hideLeft);
       document.body.classList.toggle("sg-hide-right-sidebar", hideRight);
     } catch (e) {}
 
     // Always keep TOC visible in Arabic pages.
-    if (isArabic()) {
+    if (isArabic() && !hasEmbeddedHtmlPage()) {
       document.body.classList.remove("sg-hide-right-sidebar");
       try {
         localStorage.setItem(LS_RIGHT_KEY, "0");
