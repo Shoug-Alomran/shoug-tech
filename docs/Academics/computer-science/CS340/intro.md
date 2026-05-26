@@ -110,9 +110,11 @@ directly relevant references for project work.
 ## :notepad_spiral: Study & Revision Material
 
 In addition to the chapter notes, this section includes quizzes for multiple
-chapters, mind maps for selected topics, a cheat sheet and symbols reference,
+chapters, lecture slides, mind maps for selected topics, a cheat sheet and symbols reference,
 and a full course summary in PDF format. These are designed to support both
 deep understanding and efficient exam preparation.
+
+- [CS340 Slides](/Academics/computer-science/CS340/slides/)
 
 ---
 

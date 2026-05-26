@@ -7,9 +7,9 @@
 ## Open The Resources
 
 <div class="overview-grid">
-  <a class="overview-card" href="/Academics/other/Islamic/final/final/"><strong>Final Cheat Sheet</strong><span>Open resource</span></a>
-  <a class="overview-card" href="/Academics/other/Islamic/final/final-exam/"><strong>Final Exam</strong><span>Open resource</span></a>
-  <a class="overview-card" href="/Academics/other/Islamic/final/hadiths/"><strong>Hadiths</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/other/Islamic/Islamic-113/final/final/"><strong>Final Cheat Sheet</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/other/Islamic/Islamic-113/final/final-exam/"><strong>Final Exam</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/other/Islamic/Islamic-113/final/hadiths/"><strong>Hadiths</strong><span>Open resource</span></a>
 </div>
 
 ## Study Path

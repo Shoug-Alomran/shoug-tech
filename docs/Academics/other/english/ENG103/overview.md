@@ -16,13 +16,12 @@
 ## Open The Resources
 
 <div class="overview-grid">
-  <a class="overview-card" href="eng103-research-writing-techniques-syllabus.docx"><strong>Course Syllabus</strong><span>Open DOCX</span></a>
   <a class="overview-card" href="/Academics/other/english/ENG103/assignment-1-annotated-bibliography/overview/"><strong>Assignment 1</strong><span>Annotated bibliography</span></a>
   <a class="overview-card" href="/Academics/other/english/ENG103/assignment-2-methodology-and-results/overview/"><strong>Assignment 2</strong><span>Methodology and results</span></a>
   <a class="overview-card" href="/Academics/other/english/ENG103/exam-preparation/overview/"><strong>Exam Preparation</strong><span>Midterm and final guides</span></a>
 </div>
 
-## Syllabus-Based Study Path
+## Course Study Path
 
 <div class="overview-steps">
   <div class="overview-step">Start with research terminology, paraphrasing, source synthesis, and APA referencing.</div>

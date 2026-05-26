@@ -7,18 +7,18 @@
 ## Open The Resources
 
 <div class="overview-grid">
-  <a class="overview-card" href="/Academics/other/Islamic/lecture-1/"><strong>Lecture 1</strong><span>Open resource</span></a>
-  <a class="overview-card" href="/Academics/other/Islamic/lecture-2/"><strong>Lecture 2</strong><span>Open resource</span></a>
-  <a class="overview-card" href="/Academics/other/Islamic/lecture-3/"><strong>Lecture 3</strong><span>Open resource</span></a>
-  <a class="overview-card" href="/Academics/other/Islamic/lecture-4/"><strong>Lecture 4</strong><span>Open resource</span></a>
-  <a class="overview-card" href="/Academics/other/Islamic/lecture-5/"><strong>Lecture 5</strong><span>Open resource</span></a>
-  <a class="overview-card" href="/Academics/other/Islamic/lecture-6/"><strong>Lecture 6</strong><span>Open resource</span></a>
-  <a class="overview-card" href="/Academics/other/Islamic/lecture-7/"><strong>Lecture 7</strong><span>Open resource</span></a>
-  <a class="overview-card" href="/Academics/other/Islamic/lecture-8/"><strong>Lecture 8</strong><span>Open resource</span></a>
-  <a class="overview-card" href="/Academics/other/Islamic/lecture-9/"><strong>Lecture 9</strong><span>Open resource</span></a>
-  <a class="overview-card" href="/Academics/other/Islamic/lecture-10/"><strong>Lecture 10</strong><span>Open resource</span></a>
-  <a class="overview-card" href="/Academics/other/Islamic/lecture-11/"><strong>Lecture 11</strong><span>Open resource</span></a>
-  <a class="overview-card" href="/Academics/other/Islamic/lecture-12/"><strong>Lecture 12</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/other/Islamic/Islamic-113/lecture-1/"><strong>Lecture 1</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/other/Islamic/Islamic-113/lecture-2/"><strong>Lecture 2</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/other/Islamic/Islamic-113/lecture-3/"><strong>Lecture 3</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/other/Islamic/Islamic-113/lecture-4/"><strong>Lecture 4</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/other/Islamic/Islamic-113/lecture-5/"><strong>Lecture 5</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/other/Islamic/Islamic-113/lecture-6/"><strong>Lecture 6</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/other/Islamic/Islamic-113/lecture-7/"><strong>Lecture 7</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/other/Islamic/Islamic-113/lecture-8/"><strong>Lecture 8</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/other/Islamic/Islamic-113/lecture-9/"><strong>Lecture 9</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/other/Islamic/Islamic-113/lecture-10/"><strong>Lecture 10</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/other/Islamic/Islamic-113/lecture-11/"><strong>Lecture 11</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/other/Islamic/Islamic-113/lecture-12/"><strong>Lecture 12</strong><span>Open resource</span></a>
 </div>
 
 ## Study Path

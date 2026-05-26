@@ -7,22 +7,22 @@
 ## Open The Resources
 
 <div class="overview-grid">
-  <a class="overview-card" href="assignment-2-methodology-results-writing-template.docx"><strong>Writing Template</strong><span>Open DOCX</span></a>
-  <a class="overview-card" href="assignment-2-designing-the-survey-preparation.pdf"><strong>Designing the Survey</strong><span>Open PDF</span></a>
-  <a class="overview-card" href="assignment-2-designing-the-survey-preparation.odt"><strong>Designing the Survey ODT</strong><span>Open ODT</span></a>
-  <a class="overview-card" href="research-consent-form-template.docx"><strong>Research Consent Form</strong><span>Open DOCX</span></a>
-  <a class="overview-card" href="sample-research-proposal-dr-bosco-marcus.docx"><strong>Sample Research Proposal</strong><span>Open DOCX</span></a>
+  <a class="overview-card" href="/Academics/other/english/ENG103/assignment-2-methodology-and-results/assignment-2-methodology-results-writing-template.docx"><strong>Writing Template</strong><span>Open DOCX</span></a>
+  <a class="overview-card" href="/Academics/other/english/ENG103/assignment-2-methodology-and-results/assignment-2-designing-the-survey-preparation/"><strong>Designing the Survey</strong><span>Open PDF</span></a>
+  <a class="overview-card" href="/Academics/other/english/ENG103/assignment-2-methodology-and-results/assignment-2-designing-the-survey-preparation.odt"><strong>Designing the Survey ODT</strong><span>Open ODT</span></a>
+  <a class="overview-card" href="/Academics/other/english/ENG103/assignment-2-methodology-and-results/research-consent-form-template.docx"><strong>Research Consent Form</strong><span>Open DOCX</span></a>
+  <a class="overview-card" href="/Academics/other/english/ENG103/assignment-2-methodology-and-results/sample-research-proposal-dr-bosco-marcus.docx"><strong>Sample Research Proposal</strong><span>Open DOCX</span></a>
 </div>
 
 ## Writing Guides
 
 <div class="overview-grid">
-  <a class="overview-card" href="paragraph-research-writing.pptx"><strong>Paragraph Research Writing</strong><span>Open slides</span></a>
-  <a class="overview-card" href="research-ethics.pptx"><strong>Research Ethics</strong><span>Open slides</span></a>
-  <a class="overview-card" href="participant-oriented-research-samples-surveys.pptx"><strong>Samples and Surveys</strong><span>Open slides</span></a>
-  <a class="overview-card" href="assignment-2-overview-title-introduction.pptx"><strong>Overview, Title, Introduction</strong><span>Open slides</span></a>
-  <a class="overview-card" href="assignment-2-research-objectives-questions-methods.pptx"><strong>Objectives, Questions, Methods</strong><span>Open slides</span></a>
-  <a class="overview-card" href="assignment-2-survey-development.pptx"><strong>Survey Development</strong><span>Open slides</span></a>
+  <a class="overview-card" href="/Academics/other/english/ENG103/assignment-2-methodology-and-results/paragraph-research-writing/"><strong>Paragraph Research Writing</strong><span>Open slides</span></a>
+  <a class="overview-card" href="/Academics/other/english/ENG103/assignment-2-methodology-and-results/research-ethics/"><strong>Research Ethics</strong><span>Open slides</span></a>
+  <a class="overview-card" href="/Academics/other/english/ENG103/assignment-2-methodology-and-results/participant-oriented-research-samples-surveys/"><strong>Samples and Surveys</strong><span>Open slides</span></a>
+  <a class="overview-card" href="/Academics/other/english/ENG103/assignment-2-methodology-and-results/assignment-2-overview-title-introduction/"><strong>Overview, Title, Introduction</strong><span>Open slides</span></a>
+  <a class="overview-card" href="/Academics/other/english/ENG103/assignment-2-methodology-and-results/assignment-2-research-objectives-questions-methods/"><strong>Objectives, Questions, Methods</strong><span>Open slides</span></a>
+  <a class="overview-card" href="/Academics/other/english/ENG103/assignment-2-methodology-and-results/assignment-2-survey-development/"><strong>Survey Development</strong><span>Open slides</span></a>
 </div>
 
 ## Study Path

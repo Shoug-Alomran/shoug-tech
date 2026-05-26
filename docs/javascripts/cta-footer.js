@@ -268,6 +268,7 @@
 
   function run() {
     normalizeInternalMarkdownLinks();
+    enhanceOpenResourceLinks();
     addHeaderCTA();
     addQuickLinksWidget();
     initSidebarToggles();
@@ -308,6 +309,67 @@
 
       a.setAttribute("href", relative);
     });
+  }
+
+  function enhanceOpenResourceLinks() {
+    const content = document.querySelector(".md-content__inner.md-typeset");
+    if (!content) return;
+
+    content.querySelectorAll('a[href]').forEach((a) => {
+      if (a.classList.contains("open-resource-card__link")) return;
+
+      const label = a.textContent.replace(/\s+/g, " ").trim();
+      const href = a.getAttribute("href") || "";
+      const isEnglishOpenLink = /\bopen\b.*\bnew tab\b/i.test(label);
+      const isArabicOpenLink = /افتح|افتحي/.test(label) && /تبويب|صفحة/.test(label) && /جديد|جديدة/.test(label);
+      const isEmbeddableResource = /\.(html?|pdf|pptx?)([#?].*)?$/i.test(href);
+      if ((!isEnglishOpenLink && !isArabicOpenLink) || !isEmbeddableResource) return;
+
+      const container = a.parentElement;
+      if (!container || !/^(LI|P)$/i.test(container.tagName)) return;
+
+      const resourceType = resourceLabel(href);
+      const subtitle = isArabic()
+        ? `افتحي ${resourceType} في مساحة أكبر للقراءة أو التحميل.`
+        : `Open the ${resourceType} in a larger, focused tab.`;
+
+      a.classList.add("open-resource-card__link");
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+      a.innerHTML = `
+        <span class="open-resource-card__copy">
+          <span class="open-resource-card__eyebrow">${isArabic() ? "عرض المورد" : "Resource preview"}</span>
+          <span class="open-resource-card__title">${escapeHtml(label)}</span>
+          <span class="open-resource-card__subtitle">${escapeHtml(subtitle)}</span>
+        </span>
+        <span class="open-resource-card__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" focusable="false">
+            <path d="M14 4h6v6h-2V7.41l-8.29 8.3-1.42-1.42 8.3-8.29H14V4z"></path>
+            <path d="M5 5h6v2H7v10h10v-4h2v6H5V5z"></path>
+          </svg>
+        </span>
+      `;
+
+      container.classList.add("open-resource-card");
+      if (container.tagName === "LI" && container.parentElement) {
+        container.parentElement.classList.add("open-resource-card-list");
+      }
+    });
+  }
+
+  function resourceLabel(href) {
+    if (/\.pdf([#?].*)?$/i.test(href)) return isArabic() ? "ملف PDF" : "PDF";
+    if (/\.pptx?([#?].*)?$/i.test(href)) return isArabic() ? "العرض" : "slide deck";
+    return isArabic() ? "المورد" : "resource";
+  }
+
+  function escapeHtml(value) {
+    return String(value)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
   }
 
   function replaceFooterCredit() {

@@ -12,8 +12,8 @@ This video explores Islamic economics as a value-driven system where work, wealt
   "@type": "VideoObject",
   "name": "Economy with a Conscience",
   "description": "A short video on Islamic economics that connects work, stewardship, moderation, and fairness in transactions to the moral foundations of economic life.",
-  "thumbnailUrl": "https://shoug-tech.com/Academics/other/Islamic/major-2/pics/poster.png",
+  "thumbnailUrl": "https://shoug-tech.com/Academics/other/Islamic/Islamic-113/major-2/pics/poster.png",
   "contentUrl": "https://pub-1ae2691df7364eea93afb4e67996d97c.r2.dev/Economy%20with%20a%20Conscience.mp4",
-  "embedUrl": "https://shoug-tech.com/Academics/other/Islamic/major-2/video/"
+  "embedUrl": "https://shoug-tech.com/Academics/other/Islamic/Islamic-113/major-2/video/"
 }
 </script>

@@ -7,10 +7,10 @@
 ## Open The Resources
 
 <div class="overview-grid">
-  <a class="overview-card" href="/Academics/other/Islamic/major-2/midterm/"><strong>Midterm Preparation</strong><span>Open resource</span></a>
-  <a class="overview-card" href="/Academics/other/Islamic/major-2/exam-2/"><strong>Midterm Exam</strong><span>Open resource</span></a>
-  <a class="overview-card" href="/Academics/other/Islamic/major-2/mindmap/"><strong>Mindmap</strong><span>Open resource</span></a>
-  <a class="overview-card" href="/Academics/other/Islamic/major-2/video/"><strong>Video</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/other/Islamic/Islamic-113/major-2/midterm/"><strong>Midterm Preparation</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/other/Islamic/Islamic-113/major-2/exam-2/"><strong>Midterm Exam</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/other/Islamic/Islamic-113/major-2/mindmap/"><strong>Mindmap</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/other/Islamic/Islamic-113/major-2/video/"><strong>Video</strong><span>Open resource</span></a>
 </div>
 
 ## Study Path

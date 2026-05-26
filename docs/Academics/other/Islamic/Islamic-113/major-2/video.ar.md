@@ -15,8 +15,8 @@
   "@type": "VideoObject",
   "name": "اقتصاد بضمير",
   "description": "فيديو قصير عن الاقتصاد الإسلامي وكيف يربط بين العمل والكسب والنية والاعتدال والعدل في التعاملات.",
-  "thumbnailUrl": "https://shoug-tech.com/Academics/other/Islamic/major-2/pics/poster.png",
+  "thumbnailUrl": "https://shoug-tech.com/Academics/other/Islamic/Islamic-113/major-2/pics/poster.png",
   "contentUrl": "https://pub-1ae2691df7364eea93afb4e67996d97c.r2.dev/Economy%20with%20a%20Conscience.mp4",
-  "embedUrl": "https://shoug-tech.com/ar/Academics/other/Islamic/major-2/video/"
+  "embedUrl": "https://shoug-tech.com/ar/Academics/other/Islamic/Islamic-113/major-2/video/"
 }
 </script>

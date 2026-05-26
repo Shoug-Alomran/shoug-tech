@@ -3,11 +3,11 @@
 This page contains the Lecture 1 PDF for ISC113. Use it to review the lecture
 inside the site or open the file directly in a new tab.
 
-- [Open Lecture 1 PDF](/Academics/other/Islamic/lectures/lecture-1.pdf)
+- [Open Lecture 1 PDF](/Academics/other/Islamic/Islamic-113/lectures/lecture-1.pdf)
 
 <div class="iframe-wrap">
   <iframe
-    src="/Academics/other/Islamic/lectures/lecture-1.pdf"
+    src="/Academics/other/Islamic/Islamic-113/lectures/lecture-1.pdf"
     title="ISC113 Lecture 1 PDF"
     loading="lazy"
     referrerpolicy="no-referrer"

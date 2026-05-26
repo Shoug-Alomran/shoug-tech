@@ -119,9 +119,11 @@ activities.
 ## :notepad_spiral: Study & Revision Material
 
 In addition to the chapter notes, this section includes a cheat sheet for
-quick revision, a full course summary, and quizzes and practice questions
+quick revision, lecture slides, a full course summary, and quizzes and practice questions
 across multiple chapters. These are designed to support both deep understanding
 and efficient exam preparation.
+
+- [CS330 Slides](/Academics/computer-science/CS330/slides/)
 
 ---
 

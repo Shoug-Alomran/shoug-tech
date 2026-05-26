@@ -114,8 +114,10 @@ Wireshark.
 
 ## :notepad_spiral: Study Material
 
-This section currently includes your uploaded HTML resource for revision:
+This section currently includes your uploaded slide deck wrappers and HTML
+resource for revision:
 
+- [CS331 Slides](/Academics/computer-science/CS331/slides/)
 - [Quiz 2 Cheat Sheet](/Academics/computer-science/CS331/summary/quiz-2-cheat-sheet.html)
 
 More notes, summaries, and supporting material can be added here over time as

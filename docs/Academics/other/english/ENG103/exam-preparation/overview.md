@@ -7,8 +7,8 @@
 ## Open The Resources
 
 <div class="overview-grid">
-  <a class="overview-card" href="eng103-midterm-exam-study-guide.pdf"><strong>Midterm Exam Study Guide</strong><span>Open PDF</span></a>
-  <a class="overview-card" href="eng103-final-exam-study-guide.pdf"><strong>Final Exam Study Guide</strong><span>Open PDF</span></a>
+  <a class="overview-card" href="/Academics/other/english/ENG103/exam-preparation/eng103-midterm-exam-study-guide/"><strong>Midterm Exam Study Guide</strong><span>Open PDF</span></a>
+  <a class="overview-card" href="/Academics/other/english/ENG103/exam-preparation/eng103-final-exam-study-guide/"><strong>Final Exam Study Guide</strong><span>Open PDF</span></a>
 </div>
 
 ## Study Path

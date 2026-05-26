@@ -7,9 +7,9 @@
 ## Open The Resources
 
 <div class="overview-grid">
-  <a class="overview-card" href="/Academics/other/Islamic/midterm/"><strong>Midterm Preparation</strong><span>Open resource</span></a>
-  <a class="overview-card" href="/Academics/other/Islamic/exam-1/"><strong>Midterm Exam</strong><span>Open resource</span></a>
-  <a class="overview-card" href="/Academics/other/Islamic/cheat-sheet-1/"><strong>Cheat Sheet</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/other/Islamic/Islamic-113/midterm/"><strong>Midterm Preparation</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/other/Islamic/Islamic-113/exam-1/"><strong>Midterm Exam</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/other/Islamic/Islamic-113/cheat-sheet-1/"><strong>Cheat Sheet</strong><span>Open resource</span></a>
 </div>
 
 ## Study Path
