@@ -16,6 +16,14 @@
     return path === "/start-here/" || path === "/ar/start-here/";
   }
 
+  function isSinglePageTopNav() {
+    const path = location.pathname.replace(/\/+$/, "/");
+    return path === "/links/"
+      || path === "/ar/links/"
+      || path === "/policy/copyright/"
+      || path === "/ar/policy/copyright/";
+  }
+
   function hasEmbeddedHtmlPage() {
     return !!document.querySelector('.md-content__inner iframe[src$=".html"], .md-content__inner iframe[src*=".html#"], .md-content__inner iframe[src*=".html?"]');
   }
@@ -508,6 +516,11 @@
       let hideRight = localStorage.getItem(LS_RIGHT_KEY) === "1";
       if (isStartHerePage() && localStorage.getItem(LS_START_LEFT_OPEN_KEY) !== "1") {
         hideLeft = true;
+      }
+      if (isSinglePageTopNav()) {
+        hideLeft = true;
+        hideRight = false;
+        localStorage.setItem(LS_RIGHT_KEY, "0");
       }
       if (hasEmbeddedHtmlPage() && localStorage.getItem(LS_HTML_TOC_OPEN_KEY) !== "1") {
         hideRight = true;
