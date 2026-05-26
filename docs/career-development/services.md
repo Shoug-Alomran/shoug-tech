@@ -29,120 +29,194 @@ last_updated: 2026-03-02
   </div>
 </section>
 
-## What You Can Hire Me For
+<section class="services-showcase">
+  <div class="services-showcase__intro">
+    <span class="services-kicker">What you can hire me for</span>
+    <h2>Clean static websites for work that needs to be understood quickly.</h2>
+    <p>
+      I turn scattered material into a polished, navigable website with clear
+      structure, careful copy, mobile-friendly layouts, and a deployment you can
+      keep using after delivery.
+    </p>
+  </div>
 
-### 1. Portfolio Websites
+  <div class="services-package-grid">
+    <article class="services-package-card services-package-card--featured">
+      <span class="services-package-card__number">01</span>
+      <span class="services-package-card__type">Portfolio websites</span>
+      <h3>Make your work easy to evaluate.</h3>
+      <p>
+        Best for students and early-career professionals who need a sharper
+        first impression and better project storytelling.
+      </p>
+      <ul>
+        <li>Clear project hierarchy</li>
+        <li>Recruiter-friendly summaries</li>
+        <li>Mobile-ready layout</li>
+        <li>Strong calls to action</li>
+      </ul>
+      <strong>Goal: help reviewers understand your value in minutes.</strong>
+    </article>
 
-Best for students and early-career professionals who need:
+    <article class="services-package-card">
+      <span class="services-package-card__number">02</span>
+      <span class="services-package-card__type">Academic documentation</span>
+      <h3>Present academic work with review-ready structure.</h3>
+      <p>
+        Built for capstone, thesis, research, and structured academic
+        submissions that need credible navigation and clean sections.
+      </p>
+      <ul>
+        <li>Chapter-based navigation</li>
+        <li>Methodology and results flow</li>
+        <li>References and appendices</li>
+        <li>Submission-ready organization</li>
+      </ul>
+      <strong>Goal: make complex academic work easier to review.</strong>
+    </article>
 
-- Clear project storytelling
-- Strong first impression
-- Organized content hierarchy
-- Mobile-friendly layout
+    <article class="services-package-card">
+      <span class="services-package-card__number">03</span>
+      <span class="services-package-card__type">Workshop and course pages</span>
+      <h3>Give participants one clear place to start.</h3>
+      <p>
+        Designed for instructors and organizers who need agendas, resources,
+        session logistics, and participant guidance in one polished hub.
+      </p>
+      <ul>
+        <li>Agenda-first page flow</li>
+        <li>Central resource library</li>
+        <li>Participant instructions</li>
+        <li>Session logistics</li>
+      </ul>
+      <strong>Goal: reduce confusion before and during the session.</strong>
+    </article>
+  </div>
+</section>
 
-Primary goal: help reviewers and recruiters understand your value in minutes, not after digging through clutter.
-
-### 2. Academic Documentation Websites
-
-Built for capstone, thesis, and other structured academic submissions.
-
-Typical structure includes:
-
-- Chapter-based navigation
-- Clear methodology and results sections
-- Reference and appendix organization
-- Submission-ready structure
-
-Primary goal: improve review clarity and present academic work with a cleaner, more credible structure.
-
-### 3. Workshop and Course Pages
-
-Designed for instructors and organizers who need:
-
-- Agenda-first layouts
-- Centralized resource sections
-- Participant guidance flow
-- Clear session logistics
-
-Primary goal: reduce confusion, improve readiness, and give participants one clear place to find everything.
-
-## Why This Style Works
-
-- Clear hierarchy instead of crowded pages
-- Fast-loading static delivery with low maintenance
-- Strong structure for long-term updates
-- Thoughtful mobile behavior, not desktop-only layouts
-- Visual polish without unnecessary complexity
+<section class="services-proof-band">
+  <div>
+    <span class="services-kicker">Why this style works</span>
+    <h2>Fancy, but still practical.</h2>
+    <p>
+      The visual layer supports the content instead of burying it. The result is
+      a site that feels polished while staying fast, maintainable, and easy to scan.
+    </p>
+  </div>
+  <div class="services-proof-grid">
+    <span>Clear hierarchy</span>
+    <span>Fast static delivery</span>
+    <span>Mobile behavior</span>
+    <span>Low maintenance</span>
+    <span>Clean handover</span>
+    <span>Revision control</span>
+  </div>
+</section>
 
 ## Typical Deliverables
 
-Every project is scoped to produce a usable, review-ready website. Typical deliverables include:
-
-- A clear landing page with purposeful calls to action
-- Organized navigation and page structure
-- Responsive layout for desktop and mobile
-- Clean deployment to a static host
-- Handover guidance for future edits
-
-## Delivery Principles
-
-Every project is built with:
-
-- Fixed scope and transparent boundaries
-- Clean structure that is easy to maintain
-- Clear revision control and content organization
-- Practical layouts that work on desktop and mobile
+<div class="services-deliverable-grid">
+  <article>
+    <span>Launch page</span>
+    <p>A focused first page with purposeful calls to action and readable sections.</p>
+  </article>
+  <article>
+    <span>Navigation system</span>
+    <p>Organized menus, page structure, and section anchors for quick movement.</p>
+  </article>
+  <article>
+    <span>Responsive layout</span>
+    <p>Desktop and mobile views that preserve clarity without awkward stacking.</p>
+  </article>
+  <article>
+    <span>Static deployment</span>
+    <p>Clean publishing to a static host, usually GitHub Pages.</p>
+  </article>
+  <article>
+    <span>Content polish</span>
+    <p>Copy structure, headings, and page rhythm tuned for the target audience.</p>
+  </article>
+  <article>
+    <span>Handover notes</span>
+    <p>Practical guidance for future edits so the site does not become fragile.</p>
+  </article>
+</div>
 
 ## Process
 
-1. Scope the website type, page count, and deadline.
-2. Organize the content into a clean structure before visual polish.
-3. Build the site with a clear visual direction and mobile-friendly layout.
-4. Review details, refine the copy, and prepare the final deployment.
+<div class="services-process">
+  <article>
+    <span>01</span>
+    <strong>Scope</strong>
+    <p>Define website type, page count, deadline, audience, and must-have sections.</p>
+  </article>
+  <article>
+    <span>02</span>
+    <strong>Structure</strong>
+    <p>Organize the content and navigation before visual polish starts.</p>
+  </article>
+  <article>
+    <span>03</span>
+    <strong>Build</strong>
+    <p>Create the static site with a strong visual direction and responsive layout.</p>
+  </article>
+  <article>
+    <span>04</span>
+    <strong>Refine</strong>
+    <p>Review details, tighten copy, prepare deployment, and hand over the final site.</p>
+  </article>
+</div>
 
 ## Good Fit
 
-Blueprint is a strong fit if you want:
-
-- A portfolio that feels more credible and professional
-- Academic or capstone documentation that is easier to review
-- A workshop page that reduces participant confusion
-- A static website you can maintain without platform complexity
-
-## Service Boundaries
-
-Blueprint provides **static website services only**.  
-The following are outside scope:
-
-- Full-stack applications
-- Database systems
-- Authentication logic
-- SaaS product development
-- Custom backend integrations
-
-Projects requiring dynamic systems fall outside service scope.
+<div class="services-fit-panel">
+  <div>
+    <span class="services-kicker">A strong fit if you want</span>
+    <ul>
+      <li>A portfolio that feels credible and professional</li>
+      <li>Academic documentation that is easier to review</li>
+      <li>A workshop page that reduces participant confusion</li>
+      <li>A static website you can maintain without platform complexity</li>
+    </ul>
+  </div>
+  <div>
+    <span class="services-kicker">Outside scope</span>
+    <ul>
+      <li>Full-stack applications</li>
+      <li>Database systems</li>
+      <li>Authentication logic</li>
+      <li>SaaS product development</li>
+      <li>Custom backend integrations</li>
+    </ul>
+  </div>
+</div>
 
 ## Domain and Hosting Notes
 
-Projects are deployed using static hosting, usually GitHub Pages.
-
-You can choose one of the following:
-
-- Free GitHub Pages domain  
-  Example: `username.github.io/project-name`
-- Custom domain (purchased separately)
-
-If no custom domain is provided, the project will remain live under the GitHub Pages URL.
-
-Domain purchase, renewals, and third-party hosting costs are the client's responsibility unless explicitly agreed in writing.
+<div class="services-hosting-card">
+  <span class="services-kicker">Hosting model</span>
+  <h3>Static hosting keeps the site fast and easy to maintain.</h3>
+  <p>
+    Projects are deployed using static hosting, usually GitHub Pages. You can use
+    a free GitHub Pages domain such as <code>username.github.io/project-name</code>,
+    or connect a custom domain purchased separately.
+  </p>
+  <p>
+    Domain purchase, renewals, and third-party hosting costs are the client's
+    responsibility unless explicitly agreed in writing.
+  </p>
+</div>
 
 ## Quick Contact Prompt
 
-If you want a fast estimate, send:
-
-- Website type (Portfolio, Academic Docs, or Workshop/Course)
-- Number of pages
-- Deadline
-- Whether you need a custom domain
-
-You can also include the main goal, for example: "I want recruiters to understand my projects quickly" or "I need my capstone documentation to feel cleaner and more professional."
+<section class="services-contact-card">
+  <div>
+    <span class="services-kicker">Fast estimate</span>
+    <h2>Send the basics and I can scope the website quickly.</h2>
+    <p>
+      Include the website type, number of pages, deadline, custom domain needs,
+      and the main goal for the site.
+    </p>
+  </div>
+  <a class="md-button md-button--primary" href="mailto:inquiry@shoug-tech.com?subject=Blueprint%20website%20estimate">Request an estimate</a>
+</section>
