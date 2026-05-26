@@ -5,6 +5,7 @@
 
 [عرض السيرة الذاتية](/career-development/CV.html){ .md-button .md-button--primary }
 [تواصل معي](mailto:Shoug.Alomran@Shoug-Tech.com){ .md-button }
+[GitHub](https://github.com/Shoug-Alomran){ .md-button }
 
 ---
 
@@ -80,3 +81,4 @@
 
 **البريد الإلكتروني:** [inquiry@shoug-tech.com](mailto:inquiry@shoug-tech.com)  
 **لينكد إن:** [shoug-alomran](https://www.linkedin.com/in/shoug-alomran)
+**GitHub:** [Shoug-Alomran](https://github.com/Shoug-Alomran)

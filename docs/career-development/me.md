@@ -13,6 +13,7 @@
       <a class="md-button md-button--primary" href="../CV.html">View Resume</a>
       <a class="md-button" href="mailto:inquiry@shoug-tech.com">Contact Me</a>
       <a class="md-button" href="https://www.linkedin.com/in/shoug-alomran">LinkedIn</a>
+      <a class="md-button" href="https://github.com/Shoug-Alomran">GitHub</a>
     </div>
   </div>
   <aside class="about-hero__note">
