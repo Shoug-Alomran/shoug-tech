@@ -1,18 +1,38 @@
-# ETHCS 303 - Ethics and Cybersecurity
+# :balance_scale: ETHCS 303 - Ethics and Cybersecurity
 
-This section collects the ETHCS 303 study guides in one place. The material
-focuses on ethical hacking foundations, privacy in cyberspace, Saudi cyber law,
-network security and privacy, moral theories, and ethical issues in systems
-analysis and software engineering. The original lecture PDFs are collected in
-the slides section.
+This course connects ethical reasoning with real cybersecurity and computing
+decisions. It covers moral systems, major ethical theories, professional
+responsibility, privacy, cyber law, social engineering, social media issues,
+business ethics, and security-related responsibilities in software and systems
+work.
+
+This section contains structured study material including slide breakdowns,
+original lecture slides, interactive quizzes, and past-exam style practice
+questions. The goal is to make the course easier to revise by topic and to
+practice the kind of reasoning expected in quizzes, major exams, and written
+case-study questions.
 
 ---
 
-## Study Guides
+## :compass: How to Use This Section
+
+Depending on where you are in the course, use this section differently.
+
+If you are **following the course week by week**, start with the foundations of
+ethical hacking, privacy, and moral theories, then move into applied topics like
+Saudi cyber law, software engineering ethics, business ethics, social
+engineering, and social media. If you are **revising for an exam**, use the
+quizzes and past-exam questions after reading each slide breakdown. If you are
+**working on written answers**, focus on the model answers and keyword-graded
+questions to practice clear ethical analysis.
+
+---
+
+## :card_index_dividers: Course Topics
 
 <div class="grid cards" markdown>
 
--   **Introduction to Ethical Hacking**
+-   :shield: **Introduction to Ethical Hacking**
 
     ---
 
@@ -21,7 +41,7 @@ the slides section.
 
     [Open guide](intro.md)
 
--   **Privacy Issues in Cyberspace**
+-   :lock: **Privacy Issues in Cyberspace**
 
     ---
 
@@ -30,7 +50,7 @@ the slides section.
 
     [Open guide](privacy-issue-in-cyberspace.md)
 
--   **Network Security and Privacy in the Cloud**
+-   :cloud: **Network Security and Privacy in the Cloud**
 
     ---
 
@@ -39,7 +59,7 @@ the slides section.
 
     [Open guide](network-security-and-privacy-in-the-cloud.md)
 
--   **Network Security and Privacy**
+-   :closed_lock_with_key: **Network Security and Privacy**
 
     ---
 
@@ -48,7 +68,7 @@ the slides section.
 
     [Open guide](network-security-and-privacy.md)
 
--   **Moral Systems, Ethical Concepts, and Theories**
+-   :brain: **Moral Systems, Ethical Concepts, and Theories**
 
     ---
 
@@ -57,7 +77,7 @@ the slides section.
 
     [Open guide](moral-systems-ethical-concepts-and-theories.md)
 
--   **Kantianism**
+-   :classical_building: **Kantianism**
 
     ---
 
@@ -66,16 +86,16 @@ the slides section.
 
     [Open guide](kantianism.md)
 
--   **Utilitarianism**
+-   :bar_chart: **Utilitarianism**
 
     ---
 
-    Consequence-based ethics, the principle of utility, greatest happiness,
-    act utilitarianism, rule utilitarianism, and common criticisms.
+    Consequence-based ethics, the principle of utility, greatest happiness, act
+    utilitarianism, rule utilitarianism, and common criticisms.
 
     [Open guide](utilitarianism.md)
 
--   **Social Contract Theory**
+-   :handshake: **Social Contract Theory**
 
     ---
 
@@ -84,7 +104,7 @@ the slides section.
 
     [Open guide](social-contract-theory.md)
 
--   **Cyber Laws in Saudi Arabia**
+-   :scroll: **Cyber Laws in Saudi Arabia**
 
     ---
 
@@ -93,7 +113,7 @@ the slides section.
 
     [Open guide](cyber-laws-in-saudi-arabia.md)
 
--   **Ethical Issues in Systems Analysis and Software Engineering**
+-   :computer: **Systems Analysis and Software Engineering Ethics**
 
     ---
 
@@ -102,16 +122,17 @@ the slides section.
 
     [Open guide](ethical-issues-in-systems-analysis-and-software-engineering.md)
 
--   **Business Ethics**
+-   :briefcase: **Business Ethics**
 
     ---
 
-    Ethical principles in business, common dilemmas, responsible decision-making,
-    CSR, ethical leadership, and the cost of unethical behavior.
+    Ethical principles in business, common dilemmas, responsible
+    decision-making, CSR, ethical leadership, and the cost of unethical
+    behavior.
 
     [Open guide](business-ethics.md)
 
--   **Social Engineering**
+-   :busts_in_silhouette: **Social Engineering**
 
     ---
 
@@ -120,7 +141,7 @@ the slides section.
 
     [Open guide](social-engineering.md)
 
--   **Social Media Ethical, Legal, and Security Issues**
+-   :speech_balloon: **Social Media Ethical, Legal, and Security Issues**
 
     ---
 
@@ -129,7 +150,20 @@ the slides section.
 
     [Open guide](social-media.md)
 
--   **Slides**
+</div>
+
+---
+
+## :notepad_spiral: Study & Revision Material
+
+In addition to the topic breakdowns, this section includes the original slide
+PDFs and interactive quizzes. The quizzes include chapter-based practice,
+past-exam questions where relevant, explanations, model answers for written
+responses, and keyword-detection grading to help with short-answer revision.
+
+<div class="grid cards" markdown>
+
+-   :page_facing_up: **Slides**
 
     ---
 
@@ -137,7 +171,7 @@ the slides section.
 
     [Open slides](slides/overview.md)
 
--   **Quizzes**
+-   :white_check_mark: **Quizzes**
 
     ---
 
@@ -150,6 +184,20 @@ the slides section.
 
 ---
 
+## :round_pushpin: Recommended Study Path
+
+| Step | Topic |
+|------|-------|
+| 1 | Start with ethical hacking, privacy, and network security foundations |
+| 2 | Study moral systems and ethical theories: Kantianism, utilitarianism, and social contract theory |
+| 3 | Move into applied topics: Saudi cyber law, software engineering ethics, and business ethics |
+| 4 | Review social engineering and social media issues as practical security cases |
+| 5 | Use quizzes after each topic to check recall and exam-style reasoning |
+| 6 | Practice written responses using model answers and keyword feedback |
+
+---
+
 !!! note "About This Material"
-    These pages are standalone interactive study guides. Use the navigation
-    links above or the course menu to move between them.
+    These notes are based on my own coursework and personal study. The focus is
+    on clarity, structure, and practical exam preparation. Content will
+    continue to be refined and expanded over time.
