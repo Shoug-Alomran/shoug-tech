@@ -3,5 +3,5 @@
 
 # النظم الأخلاقية والمفاهيم والنظريات الأخلاقية
 
-- [افتح في تبويب جديد](/Academics/other/ethc303/moral-systems-ethical-concepts-and-theories.html)
-<iframe src="/Academics/other/ethc303/moral-systems-ethical-concepts-and-theories.html" width="100%" height="800" style="border:none;"></iframe>
+- [افتح في تبويب جديد](/Academics/other/ethc303/slide%20breakdowns/moral-systems-ethical-concepts-and-theories.html)
+<iframe src="/Academics/other/ethc303/slide%20breakdowns/moral-systems-ethical-concepts-and-theories.html" width="100%" height="800" style="border:none;"></iframe>

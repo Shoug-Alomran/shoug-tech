@@ -3,5 +3,5 @@
 
 # مقدمة في الاختراق الأخلاقي
 
-- [افتح في تبويب جديد](/Academics/other/ethc303/intro.html)
-<iframe src="/Academics/other/ethc303/intro.html" width="100%" height="800" style="border:none;"></iframe>
+- [افتح في تبويب جديد](/Academics/other/ethc303/slide%20breakdowns/intro.html)
+<iframe src="/Academics/other/ethc303/slide%20breakdowns/intro.html" width="100%" height="800" style="border:none;"></iframe>

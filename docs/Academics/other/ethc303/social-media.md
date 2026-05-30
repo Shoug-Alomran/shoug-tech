@@ -1,4 +1,4 @@
 # Social Media Ethical, Legal, and Security Issues
 
-- [Open in new tab](/Academics/other/ethc303/social-media.html)
-<iframe src="/Academics/other/ethc303/social-media.html" width="100%" height="800" style="border:none;"></iframe>
+- [Open in new tab](/Academics/other/ethc303/slide%20breakdowns/social-media.html)
+<iframe src="/Academics/other/ethc303/slide%20breakdowns/social-media.html" width="100%" height="800" style="border:none;"></iframe>
