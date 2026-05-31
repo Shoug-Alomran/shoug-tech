@@ -6,6 +6,8 @@ standards, languages and models for representing requirements, analysis and
 validation techniques, need/goal/use-case analysis, quality requirements, and
 requirements management through change, traceability, and feature interaction.
 
+---
+
 !!! info "Course project"
     I created and documented a SE311 requirements analysis project for this
     course. You can view the portfolio entry and open the project here:

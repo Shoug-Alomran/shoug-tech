@@ -5,6 +5,8 @@ course builds on CS101 and focuses on class design, inheritance, polymorphism,
 interfaces, Java collections, generics, recursion, files, two-dimensional
 arrays, and object-oriented project work.
 
+---
+
 !!! info "Course project"
     I created and documented a CS102 school course enrollment system for this
     course. You can view the portfolio entry and open the project here:

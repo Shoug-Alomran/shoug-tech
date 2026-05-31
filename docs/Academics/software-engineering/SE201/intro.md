@@ -8,6 +8,8 @@ management, construction, testing, and professional ethics.
 The course emphasizes building high-quality software using software engineering
 principles and disciplined development practices.
 
+---
+
 !!! info "Course project"
     I created and documented a SE201 project for this course. You can view the
     portfolio entry and open the live project materials here:

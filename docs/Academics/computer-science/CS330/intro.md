@@ -7,6 +7,8 @@ virtual memory, mass storage, file-system interfaces, and file-system
 implementation. It also includes practical operating-system work through a
 course project.
 
+---
+
 !!! info "Course project"
     I created and documented a CS330 operating-systems project for this course.
     You can view the portfolio entry and open the project here:

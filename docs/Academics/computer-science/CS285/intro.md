@@ -8,6 +8,8 @@ recursion, counting, recurrence relations, and relations.
 The course prepares students for higher-level computing courses where discrete
 structures and proof techniques are fundamental.
 
+---
+
 !!! info "Course project"
     I created and documented a CS285 cryptography project for this course. You
     can view the portfolio entry and open the project here:

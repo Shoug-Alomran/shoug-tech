@@ -6,6 +6,8 @@ SQL, normalization, teamwork-based database projects, and emergent database
 topics such as object-oriented databases, NoSQL theory, and MongoDB CRUD
 operations.
 
+---
+
 !!! info "Course project"
     I created and documented a CS340 full stack database project for this
     course. You can view the portfolio entry and open the project here:
