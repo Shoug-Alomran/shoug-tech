@@ -78,6 +78,56 @@ def main() -> int:
         return 1
 
     print(f"[ok] SEO metadata: {checked} canonical pages checked")
+
+    standalone_sitemap = SITE / "standalone-sitemap.xml"
+    if standalone_sitemap.exists():
+        sitemap = standalone_sitemap.read_text(encoding="utf-8", errors="ignore")
+        if "404.html" in sitemap:
+            print("[error] standalone sitemap includes 404.html")
+            return 1
+
+        standalone_failures: list[str] = []
+        standalone_checked = 0
+        for path in sorted(SITE.rglob("*.html")):
+            if path.name in {"index.html", "404.html"}:
+                continue
+
+            html = path.read_text(encoding="utf-8", errors="ignore")
+            if is_redirect(html):
+                continue
+
+            standalone_checked += 1
+            route = route_for(path)
+            description = attr(
+                html,
+                r'<meta\s+name=["\']description["\']\s+content=["\'](.*?)["\']',
+            )
+            canonical = attr(
+                html,
+                r'<link\s+rel=["\']canonical["\']\s+href=["\'](.*?)["\']',
+            )
+            og_title = attr(
+                html,
+                r'<meta\s+property=["\']og:title["\']\s+content=["\'](.*?)["\']',
+            )
+
+            if not description:
+                standalone_failures.append(f"{route}: missing description")
+            if not canonical:
+                standalone_failures.append(f"{route}: missing canonical")
+            if not og_title:
+                standalone_failures.append(f"{route}: missing Open Graph title")
+
+        if standalone_failures:
+            print("[error] Standalone HTML SEO issues found:")
+            for failure in standalone_failures[:80]:
+                print(f"- {failure}")
+            if len(standalone_failures) > 80:
+                print(f"- ...and {len(standalone_failures) - 80} more")
+            return 1
+
+        print(f"[ok] SEO metadata: {standalone_checked} standalone HTML pages checked")
+
     return 0
 
 
