@@ -943,15 +943,62 @@
 
   function initRevealMotion() {
     const selectors = [
-      ".md-typeset.grid.cards->-ul->-li",
+      ".home-hero__text",
       ".value-strip",
-      ".md-typeset->-h1"
+      ".hero-actions .md-button",
+      ".md-typeset > h1",
+      ".md-typeset > h2",
+      ".md-typeset > h3",
+      ".md-typeset > p",
+      ".md-typeset > blockquote",
+      ".md-typeset > details",
+      ".md-typeset > table",
+      ".md-typeset .grid.cards > ul > li",
+      ".overview-hero",
+      ".overview-card",
+      ".overview-step",
+      ".overview-note",
+      ".resource-link-hero",
+      ".resource-feature-grid > ul > li",
+      ".resource-section-grid > ul > li",
+      ".career-hub-hero__content",
+      ".career-hub-snapshot",
+      ".career-route-card",
+      ".career-audience-grid > ul > li",
+      ".career-proof-grid > ul > li",
+      ".career-feature-item",
+      ".career-workflow",
+      ".quick-links-widget",
+      ".open-resource-card",
+      ".custom-footer__left",
+      ".custom-footer__right .footer-col"
     ];
 
-    const nodes = document.querySelectorAll(selectors.join(","));
+    const content = document.querySelector(".md-content__inner.md-typeset");
+    const nodes = Array.from(document.querySelectorAll(selectors.join(",")))
+      .filter((el) => {
+        if (!el || el.dataset.motionReady === "1") return false;
+        if (content && !content.contains(el) && !el.closest(".custom-footer")) return false;
+        if (el.closest(".md-content-iframe, .iframe-wrap, .highlight, pre, code")) return false;
+        return true;
+      });
     if (!nodes.length) return;
 
-    nodes.forEach((el) => el.classList.add("reveal"));
+    nodes.forEach((el, index) => {
+      el.dataset.motionReady = "1";
+      el.classList.add("sg-reveal");
+      el.style.setProperty("--sg-stagger", String(Math.min(index % 8, 7)));
+
+      if (
+        el.matches(".home-hero__text, .overview-hero, .resource-link-hero, .career-hub-hero__content")
+      ) {
+        el.dataset.motion = "scale";
+      } else if (el.matches(".md-typeset > h1, .md-typeset > h2, .md-typeset > h3")) {
+        el.dataset.motion = "fade";
+      } else {
+        el.dataset.motion = "rise";
+      }
+    });
 
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduced || typeof IntersectionObserver === "undefined") {
@@ -968,10 +1015,20 @@
           }
         });
       },
-      { threshold: 0.16 }
+      {
+        rootMargin: "0px 0px 12% 0px",
+        threshold: 0.01
+      }
     );
 
-    nodes.forEach((el) => io.observe(el));
+    nodes.forEach((el) => {
+      const rect = el.getBoundingClientRect();
+      if (rect.top < window.innerHeight * 1.08 && rect.bottom > 0) {
+        el.classList.add("is-visible");
+        return;
+      }
+      io.observe(el);
+    });
   }
 
   // Material instant navigation support

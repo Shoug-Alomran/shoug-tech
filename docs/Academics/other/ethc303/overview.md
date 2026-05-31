@@ -12,7 +12,7 @@ grading breakdown, and instructor-specific expectations.
 
 ---
 
-## :bullseye: What You Will Learn
+## What You Will Learn
 
 By the end of this course, you should be able to:
 
