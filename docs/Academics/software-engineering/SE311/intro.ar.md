@@ -8,6 +8,13 @@
 والتحقق، تحليل الاحتياج والأهداف وحالات الاستخدام، متطلبات الجودة، وإدارة
 المتطلبات عند التغيير والتتبع وتفاعل الخصائص.
 
+!!! info "مشروع المقرر"
+    أنشأت ووثقت مشروع تحليل متطلبات مرتبطًا بمقرر SE311. يمكن للزائر الاطلاع
+    على المشروع من صفحة المشاريع أو فتحه مباشرة:
+    [صفحة المشاريع](/career-development/projects/#se311-software-requirements-analysis-sillah) ·
+    [موقع المشروع](https://software-requirements-analysis.shoug-tech.com) ·
+    [المستودع](https://github.com/Shoug-Alomran/SE311-Software-Requirements-Analysis)
+
 ---
 
 ## معلومات المقرر

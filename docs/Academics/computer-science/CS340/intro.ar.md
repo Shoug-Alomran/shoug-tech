@@ -8,6 +8,13 @@
 مشاريع قواعد البيانات الجماعية، والموضوعات الحديثة مثل قواعد البيانات الكائنية
 وNoSQL وعمليات MongoDB CRUD.
 
+!!! info "مشروع المقرر"
+    أنشأت ووثقت مشروع تطبيق ويب كامل لقاعدة بيانات مرتبطًا بمقرر CS340. يمكن
+    للزائر الاطلاع على المشروع من صفحة المشاريع أو فتحه مباشرة:
+    [صفحة المشاريع](/career-development/projects/#cs340-full-stack-database-web-application) ·
+    [موقع المشروع](https://database.shoug-tech.com) ·
+    [المستودع](https://github.com/Shoug-Alomran/cs340-database-web-application)
+
 ---
 
 ## معلومات المقرر

@@ -4,7 +4,9 @@ This section collects the PHY205 Physics II slides and notes as chapter-based
 PDF files.
 
 !!! note "Credit"
-    The slides and the notes were done by Yara Faris Albugami.
+    The slides are university-provided course materials from Prince Sultan
+    University. The notes and organization were done by Yara Faris Albugami.
+    Rights remain with the university, course instructors, and original authors.
 
 <div class="grid cards" markdown>
 

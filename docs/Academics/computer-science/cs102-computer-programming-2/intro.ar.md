@@ -8,6 +8,13 @@
 ومجموعات Java، والأصناف العامة، والاستدعاء الذاتي، والملفات، والمصفوفات ثنائية
 البعد، والعمل على مشروع برمجي كائني.
 
+!!! info "مشروع المقرر"
+    أنشأت ووثقت نظام تسجيل مقررات مرتبطًا بمقرر CS102. يمكن للزائر الاطلاع
+    على المشروع من صفحة المشاريع أو فتحه مباشرة:
+    [صفحة المشاريع](/career-development/projects/#cs102-school-course-enrollment-system) ·
+    [موقع المشروع](https://school-course-enrolment-system.shoug-tech.com) ·
+    [المستودع](https://github.com/Shoug-Alomran/CS102-SchoolCourseEnrolmentSystem)
+
 ---
 
 ## معلومات المقرر

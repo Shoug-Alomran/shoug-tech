@@ -2,6 +2,10 @@
 
 This section collects the CS331 data communications and computer networks lecture slides as SEO-friendly PDF files for quick layer-by-layer review.
 
+!!! note "Slide Source"
+    The files in this slides section are university-provided course materials.
+    Rights remain with the university, course instructors, and original authors.
+
 <div class="grid cards" markdown>
 
 -   **Chapter 1: Data Communications and Networking, Part 1**

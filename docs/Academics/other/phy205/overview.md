@@ -16,4 +16,5 @@ electricity, circuits, magnetism, and related Halliday textbook chapters.
 </div>
 
 !!! note "Credit"
-    The PHY205 slides and notes were done by Yara Faris Albugami.
+    The PHY205 slides are course materials from Prince Sultan University. The
+    notes and organization were done by Yara Faris Albugami.

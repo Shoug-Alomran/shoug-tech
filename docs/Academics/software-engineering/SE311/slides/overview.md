@@ -2,6 +2,10 @@
 
 This section collects the SE311 requirements engineering lecture slides as SEO-friendly PDF files.
 
+!!! note "Slide Source"
+    The files in this slides section are university-provided course materials.
+    Rights remain with the university, course instructors, and original authors.
+
 <div class="grid cards" markdown>
 
 -   **Chapter 1: Software Requirements Engineering Fundamentals**

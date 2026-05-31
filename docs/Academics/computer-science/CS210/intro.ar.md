@@ -8,6 +8,13 @@
 المكدسات، الطوابير، الأكوام، الأشجار، الرسوم البيانية، البحث، الترتيب،
 الاستعراض، التجزئة، وتنفيذ هياكل البيانات والخوارزميات بلغات برمجة حديثة.
 
+!!! info "مشروع المقرر"
+    أنشأت ووثقت مشروع تطبيق قائمة مرتبطة وتحليل أداء مرتبطًا بمقرر CS210.
+    يمكن للزائر الاطلاع على المشروع من صفحة المشاريع أو فتحه مباشرة:
+    [صفحة المشاريع](/career-development/projects/#cs210-linked-list-implementation-and-runtime-analysis) ·
+    [موقع المشروع](https://linkedlist.shoug-tech.com) ·
+    [المستودع](https://github.com/Shoug-Alomran/CS210-Project-Linked-List-Implementation-and-Runtime-Analysis)
+
 ---
 
 ## معلومات المقرر

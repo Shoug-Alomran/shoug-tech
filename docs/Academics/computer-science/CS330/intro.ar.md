@@ -8,6 +8,13 @@
 الذاكرة، الذاكرة الافتراضية، التخزين، واجهات أنظمة الملفات، وتنفيذ أنظمة
 الملفات. يتضمن المقرر أيضًا عملًا عمليًا من خلال مشروع.
 
+!!! info "مشروع المقرر"
+    أنشأت ووثقت مشروعًا مرتبطًا بمقرر CS330 وأنظمة التشغيل. يمكن للزائر
+    الاطلاع على المشروع من صفحة المشاريع أو فتحه مباشرة:
+    [صفحة المشاريع](/career-development/projects/#cs330-parallel-performance-evaluation-in-linux) ·
+    [موقع المشروع](https://operating-systems.shoug-tech.com) ·
+    [المستودع](https://github.com/Shoug-Alomran/CS330-Parallel-Performance-Evaluation-in-Linux-Project)
+
 ---
 
 ## معلومات المقرر

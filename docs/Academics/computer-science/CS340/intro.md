@@ -6,6 +6,13 @@ SQL, normalization, teamwork-based database projects, and emergent database
 topics such as object-oriented databases, NoSQL theory, and MongoDB CRUD
 operations.
 
+!!! info "Course project"
+    I created and documented a CS340 full stack database project for this
+    course. You can view the portfolio entry and open the project here:
+    [Project portfolio](/career-development/projects/#cs340-full-stack-database-web-application) ·
+    [Project site](https://database.shoug-tech.com) ·
+    [Repository](https://github.com/Shoug-Alomran/cs340-database-web-application)
+
 ---
 
 ## Course Information

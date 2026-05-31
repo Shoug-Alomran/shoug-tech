@@ -2,6 +2,10 @@
 
 This section collects the CYS401 lecture slides as PDF files.
 
+!!! note "Slide Source"
+    The files in this slides section are university-provided course materials.
+    Rights remain with the university, course instructors, and original authors.
+
 <div class="grid cards" markdown>
 
 -   **Chapter 1: Introduction to Cybersecurity**

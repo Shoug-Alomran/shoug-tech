@@ -27,7 +27,7 @@ usable systems.
     **Role:** Led requirements structure, documentation, and modeling.
 
     [Repository](https://github.com/Shoug-Alomran/SE311-Software-Requirements-Analysis) · 
-    [Project Site](https://software-requirements-analysis.shoug-tech.com) · *Ongoing*
+    [Project Site](https://software-requirements-analysis.shoug-tech.com)
 
 -  ### **SE201  -  Sillah Project**
 
@@ -38,7 +38,7 @@ usable systems.
 
     [Repository](https://github.com/Shoug-Alomran/SE201--Sillah-Project) · 
     [Docs](https://sillah.shoug-tech.com) · 
-    [App](https://sillah-app.shoug-tech.com) *(under maintenance)*
+    [App](https://sillah-app.shoug-tech.com)
 
 </div>
 
@@ -56,7 +56,7 @@ usable systems.
     **Role:** Data model design, documentation, system integration and deployment.
 
     [Repository](https://github.com/Shoug-Alomran/cs340-database-web-application) · 
-    [Project Site](https://database.shoug-tech.com) · *Ongoing*
+    [Project Site](https://database.shoug-tech.com)
 
 - ###  **CS330  -  Parallel Performance Evaluation in Linux**
 
@@ -66,7 +66,7 @@ usable systems.
     **Role:** Structured experiments, documentation, and project site setup.
 
     [Repository](https://github.com/Shoug-Alomran/CS330-Parallel-Performance-Evaluation-in-Linux-Project) · 
-    [Project Site](https://operating-systems.shoug-tech.com) · *Ongoing*
+    [Project Site](https://operating-systems.shoug-tech.com)
 
 - ###  **CS285  -  Cryptography Project**
 

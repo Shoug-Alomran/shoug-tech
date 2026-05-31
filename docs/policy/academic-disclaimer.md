@@ -38,6 +38,11 @@ Some materials may reference standard textbooks, academic frameworks, or
 publicly available educational resources. Where applicable, proper attribution
 is provided.
 
+Folders or pages labeled `slides` contain university-provided course slide
+materials unless otherwise stated. These slide materials are included for
+personal study and course reference only, and the rights remain with the
+respective university, course instructors, and original authors.
+
 All original notes, summaries, and structured documentation on this website
 are my own intellectual work unless otherwise stated.
 

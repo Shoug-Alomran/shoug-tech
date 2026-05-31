@@ -2,6 +2,10 @@
 
 This section collects the SE201 lecture slides as SEO-friendly PDF files for quick chapter review.
 
+!!! note "Slide Source"
+    The files in this slides section are university-provided course materials.
+    Rights remain with the university, course instructors, and original authors.
+
 <div class="grid cards" markdown>
 
 -   **Chapter 1: Software Engineering Practices and Ethics**

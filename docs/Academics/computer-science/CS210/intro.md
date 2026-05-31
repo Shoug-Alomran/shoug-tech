@@ -6,6 +6,14 @@ covers lists, stacks, queues, heaps, trees, graphs, searching, sorting,
 traversal, hashing, and implementation of data structures and algorithms in
 modern programming languages.
 
+!!! info "Course project"
+    I created and documented a CS210 linked-list implementation and runtime
+    analysis project for this course. You can view the portfolio entry and open
+    the project here:
+    [Project portfolio](/career-development/projects/#cs210-linked-list-implementation-and-runtime-analysis) ·
+    [Project site](https://linkedlist.shoug-tech.com) ·
+    [Repository](https://github.com/Shoug-Alomran/CS210-Project-Linked-List-Implementation-and-Runtime-Analysis)
+
 ---
 
 ## Course Information

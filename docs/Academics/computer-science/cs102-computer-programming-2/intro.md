@@ -5,6 +5,13 @@ course builds on CS101 and focuses on class design, inheritance, polymorphism,
 interfaces, Java collections, generics, recursion, files, two-dimensional
 arrays, and object-oriented project work.
 
+!!! info "Course project"
+    I created and documented a CS102 school course enrollment system for this
+    course. You can view the portfolio entry and open the project here:
+    [Project portfolio](/career-development/projects/#cs102-school-course-enrollment-system) ·
+    [Project site](https://school-course-enrolment-system.shoug-tech.com) ·
+    [Repository](https://github.com/Shoug-Alomran/CS102-SchoolCourseEnrolmentSystem)
+
 ---
 
 ## Course Information
