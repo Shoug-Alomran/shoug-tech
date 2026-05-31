@@ -1068,9 +1068,16 @@
         const NODE_W = 200;
         const NODE_H = 46;
         const H_GAP = 80;
-        const V_GAP = 14;
+        const V_GAP = 28;
         const ROOT_W = 240;
         const ROOT_H = 54;
+
+        function estimateNodeHeight(node) {
+            const base = node.level === 0 ? ROOT_H : NODE_H;
+            const charsPerLine = node.level === 0 ? 24 : 20;
+            const lines = Math.max(1, Math.ceil(String(node.label || "").length / charsPerLine));
+            return Math.max(base, 24 + lines * 22);
+        }
 
         function getAllNodes(node, acc = []) {
             acc.push(node);
@@ -1088,15 +1095,15 @@
 
         function measureSubtreeHeight(visNode) {
             if (!visNode.visibleChildren || visNode.visibleChildren.length === 0) {
-                return NODE_H;
+                return estimateNodeHeight(visNode);
             }
             const childrenH = visNode.visibleChildren.reduce((sum, c) => sum + measureSubtreeHeight(c) + V_GAP, 0) - V_GAP;
-            return Math.max(NODE_H, childrenH);
+            return Math.max(estimateNodeHeight(visNode), childrenH);
         }
 
         function layoutTree(visNode, x, y, positions) {
             const w = visNode.level === 0 ? ROOT_W : NODE_W;
-            const h = visNode.level === 0 ? ROOT_H : NODE_H;
+            const h = estimateNodeHeight(visNode);
             positions[visNode.id] = { x, y, w, h };
 
             if (!visNode.visibleChildren || visNode.visibleChildren.length === 0) return;

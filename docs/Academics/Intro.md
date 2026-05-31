@@ -1,6 +1,6 @@
 ---
 title: Learn Overview
-description: Course map for software engineering, computer science, and cybersecurity tracks.
+description: Course map for software engineering, computer science, cybersecurity, and other academic tracks.
 ---
 
 > **Section summary:** Start from your course area and jump directly into notes, cheat sheets, and quizzes.
@@ -69,5 +69,29 @@ description: Course map for software engineering, computer science, and cybersec
     Foundations, principles, and core concepts. Chapter notes and practice quizzes.
 
     [:octicons-arrow-right-24: CYS401 Overview](cyber-security/CYS401/intro.md)
+
+</div>
+
+## Other Courses
+
+<div class="grid cards" markdown>
+
+-  ### **ETHCS 303  -  Ethics and Cybersecurity**
+
+    Ethical reasoning, privacy, cyber law, professional responsibility, and security issues. Includes slide breakdowns, quizzes, slides, and mind maps.
+
+    [:octicons-arrow-right-24: ETHCS 303 Overview](other/ethc303/overview.md)
+
+-  ### **English  -  Writing Resources**
+
+    ENG101, ENG103, academic writing, grammar, APA referencing, assignment guides, and exam preparation.
+
+    [:octicons-arrow-right-24: English Overview](other/english/overview.md)
+
+-  ### **ISC113  -  Islamic Economic System**
+
+    Islamic economy, public finance, production, consumption, markets, pricing, and exam revision material.
+
+    [:octicons-arrow-right-24: ISC113 Overview](other/Islamic/Islamic-113/Intro.md)
 
 </div>

@@ -759,20 +759,34 @@
         const NODE_W = 200;
         const NODE_H = 44;
         const H_GAP = 80;
-        const V_GAP = 16;
+        const V_GAP = 28;
+
+        function estimateNodeHeight(node) {
+            const text = String(node.label || "");
+            const charsPerLine = node._level === 0 ? 22 : 18;
+            const lines = Math.max(1, Math.ceil(text.length / charsPerLine));
+            return Math.max(NODE_H, 24 + lines * 22);
+        }
 
         // ─────────────────────────────────────────────
         // LAYOUT ENGINE
         // ─────────────────────────────────────────────
+        function shiftSubtree(node, deltaY) {
+            node._y += deltaY;
+            if (node.children && state.expanded.has(node.id)) {
+                node.children.forEach(child => shiftSubtree(child, deltaY));
+            }
+        }
+
         function computeLayout(node, level = 0, x = 100, y = 0) {
             node._level = level;
             node._x = x;
             node._y = y;
             node._w = NODE_W;
-            node._h = NODE_H;
+            node._h = estimateNodeHeight(node);
 
             if (!node.children || !state.expanded.has(node.id)) {
-                node._subtreeH = NODE_H;
+                node._subtreeH = node._h;
                 return node._subtreeH;
             }
 
@@ -784,13 +798,14 @@
             });
             totalH -= V_GAP;
 
-            let cy = y + (NODE_H / 2) - (totalH / 2);
+            let cy = y + (node._h / 2) - (totalH / 2);
             node.children.forEach(child => {
-                child._y = cy + (child._subtreeH / 2) - (NODE_H / 2);
+                const nextY = cy + (child._subtreeH / 2) - (child._h / 2);
+                shiftSubtree(child, nextY - child._y);
                 cy += child._subtreeH + V_GAP;
             });
 
-            node._subtreeH = Math.max(NODE_H, totalH);
+            node._subtreeH = Math.max(node._h, totalH);
             return node._subtreeH;
         }
 
