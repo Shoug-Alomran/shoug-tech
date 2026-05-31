@@ -1,131 +1,160 @@
-# :mosque: ISC113  -  Islamic Economic System
+# ISC113 - Islamic Economy
 
-This course introduces the Islamic economic system as a practical, value-based
-framework for understanding wealth, ownership, production, distribution, and
-consumption. It connects economic ideas to Islamic Sharia, explores how Islam
-approaches contemporary economic issues, and compares Islamic economic thought
-with other major systems such as capitalism and socialism.
-
-This section contains structured study material including lecture notes,
-midterm preparation material, exams, cheat sheets, a summary PDF, and a video
-resource. The goal is to provide a clear, organized place for understanding
-the course concepts and reviewing them efficiently before assessments.
+ISC113 introduces the Islamic economic system as part of Islamic Sharia and
+connects it to contemporary economic issues. The course studies property,
+succession, economic welfare, production, distribution, consumption, market
+ethics, pricing, money, and comparisons between Islamic economics and other
+economic systems.
 
 ---
 
-## :compass: How to Use This Section
+## Course Information
 
-Depending on where you are in the course, use this section differently.
-
-If you are **following the course**, start with the lecture notes and move in
-order through the core ideas. If you are **preparing for exams**, focus on the
-midterm preparation pages, exam practice, cheat sheets, and summary material.
-If you are **reviewing a specific topic**, jump directly to the lecture or
-major section that matches it.
+| Item | Details |
+|------|---------|
+| Course code | ISC113 |
+| Course title | Islamic Economy |
+| Credit hours | 2 |
+| Prerequisite | None |
+| Co-requisite | None |
 
 ---
 
-## :card_index_dividers: Course Topics
+## Course Learning Outcomes
+
+By the end of ISC113, students should be able to:
+
+1. Define economic terms such as money, production, capital, and work.
+2. List the characteristics and major bases of the Islamic economy, including
+   market ethics and regulations.
+3. Compare economic concepts such as savings versus hoarding and insufficient
+   resources versus relative scarcity.
+4. Apply juristic rulings related to zakat, usury, and some market
+   transactions.
+
+---
+
+## Course Content
 
 <div class="grid cards" markdown>
 
--   :seedling: **Introduction to Islamic Economy**
+-   **Introduction and Definition of Islamic Economy**
 
     ---
 
-    Definition of Islamic economy, why it matters in daily life, and how it is
-    connected to Islamic legislation and broader human conduct.
+    What Islamic economy means and why it matters as a practical system of
+    life.
 
--   :balance_scale: **Islamic Economy and Other Economic Systems**
-
-    ---
-
-    Core characteristics of the Islamic economy, along with comparisons to
-    capitalism and socialism and their approaches to economic problems.
-
--   :bookmark_tabs: **Prime Economic Terms**
+-   **Economics and Islamic Legislation**
 
     ---
 
-    Foundational concepts such as money, production, capital, and work, along
-    with the language used throughout the course.
+    The relationship between economics, Sharia, and other sciences.
 
--   :bank: **Public Revenues and State Budget**
-
-    ---
-
-    Islamic state budget revenues, public revenues in the Islamic economy, and
-    how they compare with revenues in non-Islamic systems.
-
--   :classical_building: **Public Expenditure in Islam**
+-   **Islamic, Capitalist, and Socialist Economic Systems**
 
     ---
 
-    How spending is viewed in the Islamic system, including principles,
-    priorities, and social responsibility in public finance.
+    Characteristics of the Islamic economy and comparison with capitalist and
+    socialist approaches.
 
--   :factory: **Production in Islamic Economic Thought**
-
-    ---
-
-    The economic dilemma, the place of production in Islam, and how productive
-    activity is tied to ethics, responsibility, and lawful earning.
-
--   :shopping_trolley: **Consumption and Consumer Conduct**
+-   **Prime Economic Terms**
 
     ---
 
-    Consumption in Islam, moderation, responsible use of wealth, and consumer
-    behavior shaped by moral and spiritual values.
+    Money, production, capital, work, resources, scarcity, savings, and
+    hoarding.
 
--   :shopping_bags: **The Market and Pricing in Islam**
-
-    ---
-
-    The role of the market in Islamic economic thought, market ethics and
-    regulation, pricing, and fair dealing in transactions.
-
--   :coin: **Money in Islam**
+-   **Islamic State Budget and Revenues**
 
     ---
 
-    The role and nature of money in the Islamic framework, including its
-    function, limits, and relation to broader economic justice.
+    State budget revenues and public revenues in Islamic and non-Islamic
+    systems.
+
+-   **Public Expenditure in Islam**
+
+    ---
+
+    Public spending principles, priorities, and responsibility in Islamic
+    economic thought.
+
+-   **Islam and the Economic Dilemma**
+
+    ---
+
+    How Islam approaches economic problems and balances production,
+    distribution, and consumption.
+
+-   **Production**
+
+    ---
+
+    Production, work, resources, and lawful economic activity.
+
+-   **Consumption and Consumer Conduct**
+
+    ---
+
+    Responsible consumption, moderation, and ethical consumer behavior.
+
+-   **Market and Pricing in Islam**
+
+    ---
+
+    The market in Islamic economic thought, market ethics, regulation, and
+    pricing.
+
+-   **Money in Islam**
+
+    ---
+
+    The role of money, its limits, and its connection to justice and lawful
+    transactions.
 
 </div>
 
 ---
 
-## :notepad_spiral: Study & Revision Material
+## Assessments
 
-In addition to the lecture notes, this section includes:
-
-* Midterm preparation pages
-* Midterm exams and practice material
-* Cheat sheets for faster revision
-* A summary PDF
-* A video resource for major topics
-
-These materials are designed to support both understanding and exam
-preparation.
+| Assessment | Weight |
+|-----------|--------|
+| First major exam | 25% |
+| Second major exam | 25% |
+| Participation and assignments | 10% |
+| Written final exam | 40% |
 
 ---
 
-## :round_pushpin: Recommended Study Path
+## Current Site Coverage
 
-| Step | Topic |
-|------|-------|
-| 1 | Start with the definition of Islamic economy and its relationship to Sharia |
-| 2 | Study the characteristics of the Islamic economy and compare them with capitalism and socialism |
-| 3 | Review the prime economic terms carefully because they support the rest of the course |
-| 4 | Move to public revenues, state budget, and public expenditure |
-| 5 | Study production, the economic dilemma, and the role of work and lawful earning |
-| 6 | Review consumption, market conduct, pricing, and money in Islam |
-| 7 | Use the midterm material, cheat sheets, summary, and video for revision |
+| Syllabus topic | Current site material | Status |
+|----------------|-----------------------|--------|
+| Introduction and definition of Islamic economy | Lecture material | Covered |
+| Relationship with Sharia and other sciences | Lecture material | Covered |
+| Islamic, capitalist, and socialist systems | Lecture material and revision pages | Covered |
+| Prime economic terms | Lecture and exam-review material | Covered |
+| State budget and revenues | Lecture and review material | Covered |
+| Public expenditure in Islam | Lecture and review material | Covered |
+| Economic dilemma and production | Lecture and review material | Covered |
+| Consumption and consumer conduct | Lecture and review material | Covered |
+| Market ethics and pricing | Major 2 material and mindmap | Covered |
+| Money in Islam | Final/lecture material | Covered |
+
+
 
 ---
 
-!!! note "About This Material"
-    This section is based on my coursework, lecture material, and course
-    syllabus. The focus is on clarity, structure, and practical revision.
-    Content will continue to be refined and expanded over time.
+## Study Path
+
+1. Start with the definition of Islamic economy and its relationship to Sharia.
+2. Compare Islamic economics with capitalist and socialist systems.
+3. Memorize prime economic terms and revenue/expenditure categories.
+4. Study production, consumption, market conduct, pricing, and money in Islam.
+5. Use the midterm, major, final, cheat sheet, summary, video, and mindmap
+   pages for revision.
+
+!!! note "Source"
+    This overview was updated from the ISC113 course syllabus and the current
+    files in the Islamic Economy section of this site.

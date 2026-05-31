@@ -1,140 +1,154 @@
-# :floppy_disk: CS340  -  Introduction to Database Systems
+# CS340 - Introduction to Database Systems
 
-This course introduces the foundations of database systems, including data
-modeling, the relational model, SQL, normalization, and emerging database
-technologies. It focuses on how databases are designed, implemented, queried,
-and optimized using conceptual, logical, and physical modeling techniques.
-
-This section contains structured study material including chapter notes,
-quizzes and practice questions, mind maps for selected chapters, a cheat sheet
-and symbols reference, and a full course summary in PDF format. The goal is a
-clear, practical resource for understanding database systems and preparing for
-exams and projects.
+CS340 introduces database concepts, database architecture, conceptual data
+modeling, logical database design, relational constraints, relational algebra,
+SQL, normalization, teamwork-based database projects, and emergent database
+topics such as object-oriented databases, NoSQL theory, and MongoDB CRUD
+operations.
 
 ---
 
-## :compass: How to Use This Section
+## Course Information
 
-Depending on where you are in the course, use this section differently.
-
-If you are **following the course**, start with the introduction and data
-modeling chapters, then continue in order. If you are **revising**, use the
-cheat sheet, symbols page, summaries, and quizzes. If you are **working on the
-project**, focus on the modeling, mapping, and SQL chapters.
+| Item | Details |
+|------|---------|
+| Course code | CS340 |
+| Course title | Introduction to Database Systems |
+| Credits/contact hours | 3 credits |
+| Prerequisite | CS210 Data Structures |
+| Main textbook | Elmasri and Navathe, *Fundamentals of Database Systems*, 7th ed. |
 
 ---
 
-## :card_index_dividers: Course Chapters
+## Course Learning Outcomes
+
+By the end of CS340, students should be able to:
+
+1. Describe basic database concepts, architecture, and DBMS principles.
+2. Develop conceptual models using ER, EER, or UML notation.
+3. Create logical database designs from conceptual ER models.
+4. Apply functional dependencies and normalization forms such as 1NF, 2NF,
+   3NF, and BCNF.
+5. Create relational schemas using keys, entity integrity, and referential
+   integrity.
+6. Work effectively in a team to design, implement, and present a database
+   project.
+
+---
+
+## Course Content
 
 <div class="grid cards" markdown>
 
--   :one: **Chapters 1 & 2  -  Introduction to Database Systems**
+-   **Chapters 1-2 - Database Fundamentals and Architecture**
 
     ---
 
-    What databases are, characteristics and advantages of database systems,
-    database users and roles, DBMS architecture, data models, schemas, and
-    languages.
+    DBMS concepts, database approach characteristics and advantages, database
+    users, data models, schemas, database languages, and architecture.
 
--   :two: **Chapters 3 & 4  -  Data Modeling using ER & EER**
-
-    ---
-
-    Entity-Relationship modeling, Enhanced ER including specialization and
-    generalization, UML-based conceptual modeling, and designing complex
-    database applications.
-
--   :three: **Chapter 5  -  Relational Data Model & Constraints**
+-   **Chapters 3-4 - ER and EER Data Modeling**
 
     ---
 
-    Relations, tuples, and attributes, keys and integrity constraints, entity
-    integrity, and referential integrity.
+    Conceptual modeling with Entity-Relationship and Enhanced ER models.
 
--   :four: **Chapter 6  -  Basic SQL**
-
-    ---
-
-    SQL data definition, constraints and table creation, basic SELECT queries,
-    and filtering.
-
--   :five: **Chapter 7  -  Advanced SQL**
+-   **Chapter 5 - Relational Data Model and Constraints**
 
     ---
 
-    Nested queries, aggregation and grouping, views and virtual tables, and
-    more complex SQL operations.
+    Relations, keys, relational constraints, entity integrity, and referential
+    integrity.
 
--   :six: **Chapter 8  -  Relational Algebra**
-
-    ---
-
-    Selection, projection, joins, and division  -  query formulation using
-    algebraic operators.
-
--   :seven: **Chapter 9  -  ER to Relational Mapping**
+-   **Chapter 9 - ER-to-Relational Mapping**
 
     ---
 
-    Converting ER and EER diagrams into relational schemas, mapping entities,
-    relationships, and constraints, and preparing designs for implementation.
+    Mapping conceptual ER/EER designs into relational schemas.
 
--   :eight: **Chapters 14 & 15  -  Normalization**
+-   **Chapter 8 - Relational Algebra**
 
     ---
 
-    Functional dependencies, first through third normal form and BCNF,
-    decomposition, and schema optimization.
+    Algebraic query formulation using relational operators.
+
+-   **Chapter 6 - Basic SQL**
+
+    ---
+
+    SQL data definition, constraints, and basic queries.
+
+-   **Chapter 7 - Advanced SQL**
+
+    ---
+
+    Complex queries, views, and advanced SQL features.
+
+-   **Chapters 14-15 - Functional Dependencies and Normalization**
+
+    ---
+
+    Functional dependencies, normal forms, decomposition, and schema quality.
+
+-   **Emergent Database Topics**
+
+    ---
+
+    Object-oriented databases, NoSQL database theory, and MongoDB CRUD lab
+    operations.
+
+-   **Final Project**
+
+    ---
+
+    Team-based database design, implementation, documentation, and
+    presentation.
 
 </div>
 
 ---
 
-## :globe_with_meridians: Emerging Database Topics
+## Assessments
 
-This section also covers topics beyond the traditional relational model  - 
-including an introduction to object-oriented databases, NoSQL concepts, and
-hands-on MongoDB CRUD operations through lab work.
-
----
-
-## :hammer_and_wrench: Project & Applied Work
-
-The final project brings the course together through database design and
-modeling, SQL implementation, team-based collaboration, and full demonstration
-and documentation. The modeling, mapping, and SQL chapters are the most
-directly relevant references for project work.
+| Assessment | Weight |
+|-----------|--------|
+| Class assignment | 5% |
+| Two quizzes | 10% |
+| Two major exams | 25% |
+| Project | 15% |
+| Attendance | 5% |
+| Final exam | 40% |
 
 ---
 
-## :notepad_spiral: Study & Revision Material
+## Current Site Coverage
 
-In addition to the chapter notes, this section includes quizzes for multiple
-chapters, lecture slides, mind maps for selected topics, a cheat sheet and symbols reference,
-and a full course summary in PDF format. These are designed to support both
-deep understanding and efficient exam preparation.
-
-- [CS340 Slides](/Academics/computer-science/CS340/slides/)
-
----
-
-## :round_pushpin: Recommended Study Path
-
-| Step | Topic |
-|------|-------|
-| 1 | Chapters 1 & 2  -  Introduction and data modeling |
-| 2 | Chapter 5  -  Relational model and constraints |
-| 3 | Chapter 8  -  Relational algebra |
-| 4 | Chapters 6 & 7  -  Basic then advanced SQL |
-| 5 | Chapter 9  -  ER to relational mapping |
-| 6 | Chapters 14 & 15  -  Normalization |
-| 7 | Mind maps, cheat sheet, and symbols page for revision |
-| 8 | Quizzes to test understanding |
-| 9 | Apply concepts in the final project |
+| Syllabus topic | Current site material | Status |
+|----------------|-----------------------|--------|
+| Database fundamentals and architecture | Chapter 1/2 notes and slides | Covered |
+| ER/EER modeling | Chapter 2/3 materials and slides | Covered |
+| Relational model and constraints | Chapter 3/4 materials and slides | Covered |
+| ER-to-relational mapping | Chapter 5/6 materials and slides | Covered |
+| Relational algebra | Covered in study material | Covered |
+| Basic and advanced SQL | Chapter 4/5 notes and Chapter 6/7 slides | Covered |
+| Functional dependencies and normalization | Chapter 6/7 notes and Chapter 9 slides | Covered |
+| Object-oriented and NoSQL databases | Chapter 9 notes and Chapter 10 slides | Covered |
+| MongoDB CRUD lab operations | Covered under emergent database topics | Covered |
+| Final project | Project concepts are supported by modeling, SQL, and design pages | Covered |
 
 ---
 
-!!! note "About This Material"
-    These notes are based on my own coursework and personal study. The focus
-    is on clarity, structure, and practical understanding. Content will
-    continue to be refined and expanded over time.
+## Study Path
+
+1. Start with database fundamentals and DBMS architecture.
+2. Study ER/EER modeling and relational constraints.
+3. Learn ER-to-relational mapping before writing SQL.
+4. Practice relational algebra, then basic and advanced SQL.
+5. Study normalization and functional dependencies.
+6. Finish with NoSQL/object-oriented topics and MongoDB practice.
+7. Use the project to connect conceptual design, implementation, and
+   presentation skills.
+
+!!! note "Source"
+    This overview was updated from the CS340 course syllabus and the current
+    files in the CS340 section of this site.

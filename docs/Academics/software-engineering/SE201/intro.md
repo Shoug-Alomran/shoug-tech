@@ -1,112 +1,151 @@
-# :pencil: SE201  -  Introduction to Software Engineering
+# SE201 - Introduction to Software Engineering
 
-This course covers the fundamental principles, processes, and ethics of
-software engineering. It focuses on how software is planned, designed,
-implemented, tested, and maintained in real-world environments.
+SE201 introduces software engineering design and development. The course covers
+software process models, lifecycle phases, requirements analysis,
+documentation, design methodologies, development strategies, project
+management, construction, testing, and professional ethics.
 
-This section contains structured study material including chapter notes,
-quizzes and practice questions, cheat sheets and summaries, a UML and
-diagrams guide, and additional reference material. The goal is a clear,
-practical study resource  -  not just a list of notes.
-
----
-
-## :compass: How to Use This Section
-
-Depending on where you are in the course, use this section differently.
-
-If you are **following the course week by week**, start with Chapter 1 and
-continue in order. If you are **revising for quizzes or exams**, use the
-cheat sheet, summaries, and quizzes. If you are **working on diagrams or
-design tasks**, go directly to the UML and diagrams guide.
+The course emphasizes building high-quality software using software engineering
+principles and disciplined development practices.
 
 ---
 
-## :card_index_dividers: Course Chapters
+## Course Information
+
+| Item | Details |
+|------|---------|
+| Course code | SE201 |
+| Course title | Introduction to Software Engineering |
+| Credits/contact hours | 3 credits and 4 contact hours: lectures 3, lab 1 |
+| Prerequisites | CS102 and ENG103 |
+| Main textbook | Ian Sommerville, *Software Engineering*, 10th ed., Pearson |
+| Course role | Required core course for the BSSE program |
+
+---
+
+## Course Learning Outcomes
+
+By the end of SE201, students should be able to:
+
+1. Recognize software engineering fundamentals, processes, lifecycle phases,
+   iterations, and best practices.
+2. Apply object-oriented methodology in software engineering analysis and
+   design.
+3. Demonstrate understanding of professional, ethical, and social
+   responsibilities in software engineering.
+
+---
+
+## Course Content
 
 <div class="grid cards" markdown>
 
--   :one: **Chapter 1  -  Software Engineering Practice & Ethics**
+-   **Chapter 1 - Software Engineering Practice and Ethics**
 
     ---
 
-    What software engineering is, types of software, and professional ethics
-    and responsibilities.
+    Engineering, software types, software engineering as a layered technology,
+    and professional ethics for software engineers.
 
--   :two: **Chapter 2  -  Software Engineering Process**
-
-    ---
-
-    SDLC models including Waterfall, Iterative, and Spiral, requirements
-    engineering activities, and the Capability Maturity Model (CMM).
-
--   :three: **Chapter 3  -  Agile Software Development**
+-   **Chapter 2 - Software Engineering Process**
 
     ---
 
-    Agile principles and values, Scrum and Extreme Programming (XP), and
-    agile versus plan-driven development.
+    Software process models, SDLCs, requirements engineering activities, and
+    the Capability Maturity Model.
 
--   :four: **Chapter 4  -  Planning & Managing the Project**
-
-    ---
-
-    Project scheduling, risk management, and ethical issues in project
-    leadership.
-
--   :five: **Chapter 5  -  Requirements Engineering**
+-   **Chapter 3 - Agile Software Development**
 
     ---
 
-    Functional and non-functional requirements, requirements gathering and
-    documentation, and structural, behavioral, and implementation modeling.
+    Agile methods, plan-driven versus agile development, and Extreme
+    Programming.
 
--   :six: **Chapter 6  -  Designing the Software**
-
-    ---
-
-    Design principles and patterns, architectural styles, and interface
-    design.
-
--   :seven: **Chapter 7  -  Implementing the Software**
+-   **Chapter 4 - Planning and Managing the Project**
 
     ---
 
-    Coding standards and best practices, reuse and modularity, documentation,
-    and source code organization.
+    Project management spectrum, project management activities, scheduling,
+    risk management, and ethical issues related to project management.
 
--   :eight: **Chapter 8  -  Testing the Software**
+-   **Chapter 5 - Requirements Engineering and System Modeling**
 
     ---
 
-    Types of faults, levels of testing, and why software projects fail.
+    Requirement types, requirements processes, documentation, structural
+    modeling, behavioral modeling, implementation modeling, and ethics in
+    requirements engineering.
+
+-   **Chapter 6 - Designing the Software**
+
+    ---
+
+    Design principles, design concepts, architectural patterns, interface
+    design, and ethical issues related to software design.
+
+-   **Chapter 7 - Implementing the Software**
+
+    ---
+
+    Software construction fundamentals, coding standards, understandable code,
+    reuse guidelines, source code organization, code documentation, and ethics
+    in implementation.
+
+-   **Chapter 8 - Testing the Software**
+
+    ---
+
+    Fault classification, purpose of testing, software testing concepts, causes
+    of project failure, testing types, testing levels, and ethics in testing.
+
+-   **Course Project**
+
+    ---
+
+    A semester project applies the course concepts across planning,
+    requirements, design, construction, and testing.
 
 </div>
 
 ---
 
-## :notepad_spiral: Study & Reference Material
+## Assessments
 
-In addition to the chapter notes, this section includes a cheat sheet for
-quick revision, a full course summary in PDF format, a Jira guide for project
-management workflows, a complete UML and software engineering diagrams guide,
-and quizzes with compiled multiple-choice questions for practice. These are
-designed to support both deep understanding and efficient exam preparation.
-
----
-
-## :round_pushpin: Recommended Study Path
-
-| Step | Topic |
-|------|-------|
-| 1 | Read chapter notes in order from Chapter 1 to Chapter 8 |
-| 2 | Use the UML and diagrams guide for design-related topics |
-| 3 | Review the cheat sheet and summary before quizzes or exams |
-| 4 | Test understanding using the quizzes and compiled questions |
+| Assessment | Weight |
+|-----------|--------|
+| Quiz I | 5% |
+| Quiz II | 5% |
+| Labs, assignments, and attendance | 15% |
+| Project | 15% |
+| Major exam | 20% |
+| Final exam | 40% |
 
 ---
 
-!!! note "About This Material"
-    These notes are based on my own coursework and personal study. The focus
-    is on clarity, structure, and practical understanding. Content will
-    continue to be refined and expanded over time.
+## Current Site Coverage
+
+| Syllabus topic | Current site material | Status |
+|----------------|-----------------------|--------|
+| Software engineering practice and ethics | Chapter 1 notes, slides, and quiz | Covered |
+| Software processes | Chapter 2 notes, slides, and quiz | Covered |
+| Agile software engineering | Chapter 3 notes, slides, and quiz | Covered |
+| Project management | Chapter 4 notes, slides, and quiz | Covered |
+| Requirements engineering and system modeling | Chapter 5 notes, diagram symbols, slides, and quiz | Covered |
+| Software design | Chapter 6 notes, slides, and quiz | Covered |
+| Software construction | Chapter 7 notes, slides, and quiz | Covered |
+| Software testing | Chapter 8 notes, slides, and quiz | Covered |
+| Course project support | Jira guide and UML/diagram guide | Covered |
+
+---
+
+## Study Path
+
+1. Study chapters in syllabus order from practice and ethics through testing.
+2. Use the UML and diagrams guide when working on modeling or design tasks.
+3. Use the Jira guide for project-management workflow support.
+4. Practice with the matching chapter quizzes after each topic.
+5. Review the cheat sheet, summary, and compiled MCQs before assessments.
+
+!!! note "Source"
+    This overview was updated from the SE201 course syllabus and the current
+    files in the SE201 section of this site.

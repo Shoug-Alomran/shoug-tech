@@ -1,147 +1,179 @@
-# :satellite: CS331  -  Data Communications and Computer Networks
+# CS331 - Data Communications and Computer Networks
 
-This course introduces the foundations of data communications and computer
-networks. It focuses on how data moves across networks, how communication is
-organized through the OSI and TCP/IP models, and how network layers,
-addressing, error control, and core devices work together in real systems.
-
-This section contains structured study material for the course, including the
-overview page and your uploaded HTML study resource. The goal is to keep the
-course content clear, organized, and practical for both revision and project
-work.
+CS331 introduces the basic concepts of data communication and computer
+networks. The course covers the nature of data communication, characteristics
+of computer networks, ISO-OSI protocol layers, TCP/IP layers, network
+topologies and models, error detection and correction codes, and network
+performance considerations.
 
 ---
 
-## :compass: How to Use This Section
+## Course Information
 
-Depending on where you are in the course, use this section differently.
-
-If you are **following the course**, move through the topics in layer order,
-starting from the networking overview and physical layer, then continuing up
-through data link, network, transport, and application concepts. If you are
-**revising**, focus on the cheat sheet and the most important layered-model
-concepts, devices, and addressing ideas. If you are **working on Packet
-Tracer or Wireshark tasks**, use the layer-specific topics as references while
-you build and analyze network behavior.
+| Item | Details |
+|------|---------|
+| Course code | CS331 |
+| Course title | Data Communications and Computer Networks |
+| Credits/contact hours | 3 credits |
+| Prerequisite | CS210 & CS175 |
+| Main textbook | Behrouz Forouzan, *Data Communications and Networking, With TCP/IP Protocol Suite*, 6th ed., McGraw Hill, 2021 |
+| Other reference | *Computer Networking: A Top-Down Approach*, 7th ed., Pearson, 2016 |
+| LMS | Moodle |
 
 ---
 
-## :card_index_dividers: Course Topics
+## Course Learning Outcomes
+
+By the end of CS331, students should be able to:
+
+1. Describe how communication works in data networks and the Internet with
+   reference to the OSI and TCP/IP models.
+2. Describe the services and features of the various TCP/IP layers and their
+   relevant network devices.
+3. Produce a network design solution based on a real-life network problem.
+4. Design, calculate, and apply subnet masks and addresses to fulfill
+   networking requirements.
+5. Use simulators and analysis tools such as Cisco Packet Tracer and network
+   protocol analyzers.
+
+---
+
+## Weekly Course Content
 
 <div class="grid cards" markdown>
 
--   :one: **Weeks 1-2  -  Overview of Data Communications and Networking**
+-   **Weeks 1-2 - Overview of Data Communications and Networking**
 
     ---
 
-    Basic communication concepts, network characteristics, network models,
-    layered thinking, and the role of the Internet and modern computer
-    networks.
+    Core communication concepts, network characteristics, the Internet,
+    layered network models, OSI, TCP/IP, topologies, and how data
+    communication systems are organized.
 
--   :two: **Weeks 3-4  -  Physical Layer**
-
-    ---
-
-    Signals, transmission media, physical-layer communication concepts, and
-    the foundational mechanisms that allow data to move between devices.
-
--   :three: **Weeks 5-8  -  Data Link Layer**
+-   **Weeks 3-4 - Physical Layer**
 
     ---
 
-    Framing, error detection and correction, flow control, medium access, and
-    Ethernet concepts across the data link subtopics covered in the course.
+    Physical-layer services and features, signals, transmission concepts,
+    media, and the low-level mechanisms that allow bits to move between
+    devices.
 
--   :four: **Week 9  -  Interconnecting Devices**
-
-    ---
-
-    Core networking devices and how they operate across layers, including how
-    devices help forward, segment, and manage communication in real networks.
-
--   :five: **Weeks 15-17  -  Network Layer**
+-   **Weeks 5-7 - Data Link Layer 1 and 2**
 
     ---
 
-    Logical addressing, routing concepts, subnetting, packet delivery, and
-    network-layer design decisions used to connect networks together.
+    Data link layer services, framing, error detection and correction, flow
+    control, link-level delivery, and data link mechanisms used before packets
+    move across networks.
 
--   :six: **Week 18  -  Transport Layer**
-
-    ---
-
-    End-to-end communication, segmentation, reliability, flow control, and
-    transport services in TCP/IP-based communication.
-
--   :seven: **Week 19  -  Application Layer**
+-   **Weeks 7-8 - Data Link Layer 3 and Ethernet**
 
     ---
 
-    Network applications, service models, and the protocols users interact
-    with most directly in practical networked systems.
+    Ethernet and medium access concepts, local network communication, MAC-level
+    behavior, and data link technologies used in LANs.
 
--   :eight: **Applied Work  -  Packet Tracer and Wireshark**
+-   **Week 9 - Interconnecting Devices**
 
     ---
 
-    Practical network design, subnetting exercises, simulation work, and
-    protocol analysis using tools such as Cisco Packet Tracer and Wireshark.
+    Network devices and the layers where they operate, including devices used
+    to connect, forward, segment, and manage communication across networks.
+
+-   **Weeks 10-14 - Ramadan and Eid Break**
+
+    ---
+
+    No regular topic coverage is listed in the syllabus for this period.
+
+-   **Weeks 15-17 - Network Layer**
+
+    ---
+
+    Network-layer services, logical addressing, routing, packet delivery,
+    subnetting, network design decisions, and applying addresses and masks to
+    real networking requirements.
+
+-   **Week 18 - Transport Layer**
+
+    ---
+
+    End-to-end communication, segmentation, transport services, reliability,
+    and the role of TCP/IP transport protocols in application communication.
+
+-   **Week 19 - Application Layer**
+
+    ---
+
+    Application-layer services and protocols, user-facing network applications,
+    and how software uses lower-layer services to communicate.
+
+-   **Week 20 - Review**
+
+    ---
+
+    Final review of the course content, especially layered models, network
+    devices, subnetting, packet delivery, and applied networking tools.
 
 </div>
 
 ---
 
-## :globe_with_meridians: Core Learning Focus
+## Assessments
 
-The course is centered on understanding communication across layers rather
-than memorizing isolated facts. A big part of the learning is connecting
-abstract protocol models to real devices, real traffic, and real design
-choices. That includes explaining how services differ by layer, how network
-devices fit into the stack, and how subnetting and addressing support actual
-network requirements.
-
----
-
-## :hammer_and_wrench: Lab and Project Work
-
-This course includes hands-on work through network simulation and protocol
-analysis tools. The applied side of the course focuses on building network
-design solutions, calculating and applying subnet masks and addresses, and
-analyzing communication behavior using tools such as Packet Tracer and
-Wireshark.
+| Assessment | Weight | Syllabus details |
+|-----------|--------|------------------|
+| Final exam | 40% | Cumulative final assessment |
+| Major exams I and II | 30% | Two major exams during the semester |
+| Quizzes I, II, III | 10% | Average of the best two quizzes |
+| Attendance | 5% | University attendance policy applies; 16 absences may lead to DN |
+| Assignments | 7% | Bi-weekly online or offline LMS-graded assignments |
+| Labs/projects | 8% | One Wireshark lab worth 3 marks and two Packet Tracer projects worth 5 marks |
 
 ---
 
-## :notepad_spiral: Study Material
+## Practical Work
 
-This section currently includes your uploaded slide deck wrappers and HTML
-resource for revision:
+The applied part of CS331 focuses on:
 
-- [CS331 Slides](/Academics/computer-science/CS331/slides/)
-- [Quiz 2 Cheat Sheet](/Academics/computer-science/CS331/summary/quiz-2-cheat-sheet.html)
-
-More notes, summaries, and supporting material can be added here over time as
-the course content grows.
+- Designing network solutions for real-life networking problems.
+- Calculating and applying subnet masks and addresses.
+- Building and testing network designs in **Cisco Packet Tracer**.
+- Analyzing traffic with **Wireshark** or other network protocol analyzers.
 
 ---
 
-## :round_pushpin: Recommended Study Path
+## Current Site Coverage
 
-| Step | Topic |
-|------|-------|
-| 1 | Networking overview and layered models |
-| 2 | Physical layer foundations |
-| 3 | Data link layer concepts and Ethernet |
-| 4 | Interconnecting devices |
-| 5 | Network layer and subnetting |
-| 6 | Transport layer services |
-| 7 | Application layer protocols |
-| 8 | Cheat sheet, Packet Tracer, and Wireshark practice |
+Your CS331 section currently covers most of the syllabus topics through slide
+wrappers and summary material.
+
+| Syllabus topic | Current site material | Status |
+|----------------|-----------------------|--------|
+| Overview of Data Communications and Networking | Chapter 1 Part 1 and Chapter 1 Part 2 slides | Covered |
+| Physical Layer | Physical-layer syllabus unit | Covered |
+| Data Link Layer 1 and 2 | Data Link Layer Part 1 and Part 2 slides | Covered |
+| Data Link Layer 3 / Ethernet | Ethernet slides | Covered |
+| Interconnecting Devices | Interconnecting Devices slides | Covered |
+| Network Layer | Network Layer Part 1 and Part 2 slides | Covered |
+| Transport Layer | Transport Layer slides | Covered |
+| Application Layer | Application Layer slides | Covered |
+| Packet Tracer / Wireshark practice | Practical networking tools listed in the syllabus | Covered |
 
 ---
 
-!!! note "About This Material"
-    This page is based on the course syllabus and my own study organization.
-    The focus is on clarity, structure, and practical understanding. Content
-    can be expanded with notes, labs, and additional revision material over
-    time.
+## Study Path
+
+1. Start with Chapter 1 Part 1 and Part 2 to understand data communication,
+   network characteristics, OSI, TCP/IP, topologies, and models.
+2. Study the Physical Layer before moving into link-level communication.
+3. Study Data Link Layer Parts 1 and 2, then Ethernet.
+4. Review Interconnecting Devices and connect each device to its network layer.
+5. Study Network Layer Parts 1 and 2 with extra subnetting practice.
+6. Finish with Transport Layer and Application Layer.
+7. Use Packet Tracer and Wireshark practice to connect the theory to real
+   traffic and network design.
+
+!!! note "Source"
+    This overview was updated from the CS331 course syllabus and the current
+    files in the CS331 section of this site.

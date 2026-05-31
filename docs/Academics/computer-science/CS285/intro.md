@@ -1,107 +1,137 @@
-# :abacus: CS285  -  Discrete Math for Computing
+# CS285 - Discrete Math for Computing
 
-This course builds the mathematical foundation required for computing. It covers
-logic, sets, functions, number theory, counting, relations, and proof techniques
-that are used throughout computer science.
+CS285 introduces mathematical logic and fundamental discrete structures used in
+computing. The course covers propositional logic, predicates, sets, functions,
+sequences, summations, matrices, number theory, cryptography, induction,
+recursion, counting, recurrence relations, and relations.
 
-This section contains structured study material including chapter-based notes,
-explanations of core concepts and proof techniques, and a cheat sheet for
-revision and quick reference. The goal is a clear, practical resource for
-understanding discrete mathematics and preparing for exams and problem-solving
-tasks.
+The course prepares students for higher-level computing courses where discrete
+structures and proof techniques are fundamental.
 
 ---
 
-## :compass: How to Use This Section
+## Course Information
 
-Depending on where you are in the course, use this section differently.
-
-If you are **following the course**, start from Chapter 1 and continue in
-order  -  the chapters build on each other deliberately. If you are **revising**,
-go directly to the cheat sheet and the chapters you find most challenging. If
-you are **practicing problem solving**, use the chapter notes as references for
-definitions, theorems, and methods.
+| Item | Details |
+|------|---------|
+| Course code | CS285 |
+| Course title | Discrete Math for Computing |
+| Credits/contact hours | 3 credits and 4 contact hours: lectures 3, tutorials 1 |
+| Prerequisite | CS101 |
+| Main textbook | Kenneth H. Rosen, *Discrete Mathematics and its Applications*, 7th ed. |
+| Course role | Required core course for CS, SE, and IS programs |
 
 ---
 
-## :card_index_dividers: Course Chapters
+## Course Learning Outcomes
+
+By the end of CS285, students should be able to:
+
+1. Describe basic concepts of propositional logic, sets, sequences, functions,
+   sums, number theory, recurrences, and counting.
+2. Apply proof techniques using propositional logic, rules of inference, and
+   induction.
+3. Perform operations on integers, matrices, sets, functions, sequences, sums,
+   number theory, relations, propositional logic, and proof techniques.
+4. Apply counting principles and recurrence relations to counting problems.
+5. Use basic cryptography algorithms.
+6. Collaborate ethically and communicate clearly when developing cryptographic
+   solutions.
+
+---
+
+## Course Content
 
 <div class="grid cards" markdown>
 
--   :one: **Chapter 1  -  Logic, Sets & Functions**
+-   **Logic, Sets, and Functions**
 
     ---
 
-    Propositional logic, truth tables, logical equivalences, predicates,
-    quantifiers, and rules of inference.
+    Propositional logic, applications of propositional logic, logical
+    equivalences, predicates, quantifiers, and rules of inference.
 
--   :two: **Chapter 2  -  Basic Structures**
-
-    ---
-
-    Set operations, injective/surjective/bijective functions, sequences,
-    summations, and matrices.
-
--   :three: **Chapter 3  -  Number Theory & Cryptography**
+-   **Basic Structures**
 
     ---
 
-    Divisibility, modular arithmetic, primes, the Euclidean algorithm, and
-    an introduction to classical cryptography.
+    Sets, set operations, functions, sequences, summations, and matrices.
 
--   :four: **Chapter 4  -  Induction & Recursion**
+-   **Number Theory and Cryptography**
+
+    ---
+
+    Integers and division, primes, greatest common divisors, and introductory
+    cryptographic algorithms.
+
+-   **Induction and Recursion**
 
     ---
 
     Mathematical induction, recursive definitions, and structural induction.
 
--   :five: **Chapter 5  -  Counting**
+-   **Counting**
 
     ---
 
     Basic counting rules, permutations, combinations, and binomial
     coefficients.
 
--   :six: **Chapter 6  -  Advanced Counting**
+-   **Advanced Counting Techniques**
 
     ---
 
-    Recurrence relations and techniques for solving them.
+    Recurrence relations and methods for solving recurrence relations.
 
--   :seven: **Chapter 7  -  Relations**
+-   **Relations**
 
     ---
 
-    Properties of relations, matrix and graph representations, closures, and
+    Relation properties, representing relations, closures of relations, and
     equivalence relations.
 
 </div>
 
 ---
 
-## :notepad_spiral: Study & Revision Material
+## Assessments
 
-In addition to the chapter notes, this section includes a cheat sheet for
-quick revision and condensed explanations of key definitions, rules, and
-techniques. These are designed to support both deep understanding and efficient
-exam preparation.
-
----
-
-## :round_pushpin: Recommended Study Path
-
-| Step | Topic |
-|------|-------|
-| 1 | Logic, sets, and functions  -  build the foundation first |
-| 2 | Basic structures and number theory |
-| 3 | Induction and recursion  -  referenced throughout the course |
-| 4 | Counting and advanced counting techniques |
-| 5 | Relations and their representations |
-| 6 | Cheat sheet for revision and quick recall before exams |
+| Assessment | Weight |
+|-----------|--------|
+| Major exam | 20% |
+| Project | 10% |
+| Assignments | 5% |
+| Attendance | 5% |
+| Quizzes | 20% |
+| Final exam | 40% |
 
 ---
 
-!!! note "About This Material"
-    These notes are based on my own coursework and personal study. The focus
-    is on clarity, structure, and practical understanding. Content will
-    continue to be refined and expanded over time.
+## Current Site Coverage
+
+| Syllabus topic | Current site material | Status |
+|----------------|-----------------------|--------|
+| Logic, sets, and functions | Chapter 1 notes and slides | Covered |
+| Basic structures | Chapter 2 notes and slides | Covered |
+| Number theory and cryptography | Chapter 4 notes and slides | Covered |
+| Induction and recursion | Chapter 5 notes, slides, and handout | Covered |
+| Counting | Chapter 6 notes and slides | Covered |
+| Advanced counting techniques | Chapter 8 notes and slides | Covered |
+| Relations | Chapter 9 notes and slides | Covered |
+| Cryptography project support | Covered inside number theory/cryptography material | Covered |
+
+---
+
+## Study Path
+
+1. Begin with propositional logic, predicates, sets, and functions.
+2. Move into number theory and cryptography after the basic structures.
+3. Study induction and recursion carefully because they support later proofs.
+4. Work through counting, advanced counting, and recurrence relations.
+5. Finish with relations and their properties.
+6. Use the cheat sheet only after practicing proof and counting problems by
+   hand.
+
+!!! note "Source"
+    This overview was updated from the CS285 course syllabus and the current
+    files in the CS285 section of this site.

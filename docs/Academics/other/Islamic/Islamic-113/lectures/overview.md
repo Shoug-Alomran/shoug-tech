@@ -1,5 +1,5 @@
 <div class="overview-hero">
-  <span class="overview-kicker">ISC103 · Lectures</span>
+  <span class="overview-kicker">ISC113 · Lectures</span>
   <h1>Islamic Lectures</h1>
   <p>A lecture-by-lecture entry point for the Islamic Studies PDFs and review pages.</p>
 </div>

@@ -1,147 +1,157 @@
-# :computer: CS330  -  Introduction to Operating Systems
+# CS330 - Introduction to Operating Systems
 
-This course introduces the core concepts behind modern operating systems. It
-focuses on how operating systems manage hardware, processes, memory, storage,
-synchronization, and file systems  -  using real-world examples from Unix and
-Windows to connect theory to practice.
-
-This section contains structured study material including chapter notes,
-quizzes and practice questions, a course summary, and a cheat sheet for
-revision. The goal is a clear, practical resource for understanding operating
-systems concepts and preparing for exams and assessments.
+CS330 explores the principles, concepts, and design issues of modern operating
+systems. The course covers operating system structure, services, process
+management, threads, CPU scheduling, synchronization, memory management,
+virtual memory, mass storage, file-system interfaces, and file-system
+implementation. It also includes practical operating-system work through a
+course project.
 
 ---
 
-## :compass: How to Use This Section
+## Course Information
 
-Depending on where you are in the course, use this section differently.
-
-If you are **following the course**, start from Chapter 1 and continue in
-order. If you are **revising**, focus on the cheat sheet, summary, and quizzes.
-If you are **working on the Unix/Linux project**, use the relevant chapters as
-references for commands and concepts.
+| Item | Details |
+|------|---------|
+| Course code | CS330 |
+| Course title | Introduction to Operating Systems |
+| Credits/contact hours | 3 credits |
+| Prerequisites | CS175 and CS210 |
+| Main textbook | Silberschatz, Galvin, and Gagne, *Operating System Concepts: With Java*, 10th ed. |
 
 ---
 
-## :card_index_dividers: Course Chapters
+## Course Learning Outcomes
+
+By the end of CS330, students should be able to:
+
+1. Describe the objectives, major components, and functions of a modern
+   operating system.
+2. Explain concepts related to processes, threads, scheduling, and
+   synchronization.
+3. Apply memory management and virtual memory techniques to basic memory
+   problems.
+4. Apply mass storage and file-system interface/implementation concepts.
+5. Demonstrate operating-system concepts through practical project work.
+
+---
+
+## Course Content
 
 <div class="grid cards" markdown>
 
--   :one: **Chapter 1  -  Introduction to Operating Systems**
+-   **Chapters 1-2 - OS Foundations and Services**
 
     ---
 
-    Evolution and purpose of operating systems, OS components and architecture,
-    types of OS, and basic functions and responsibilities.
+    Introduction to operating systems, operating system objectives, components,
+    services, system calls, APIs, and operating system structure.
 
--   :two: **Chapter 2  -  Operating System Services**
-
-    ---
-
-    System calls and APIs, user and kernel modes, OS design and implementation,
-    and command interpreters.
-
--   :three: **Chapter 3  -  Process Management**
+-   **Chapter 3 - Process Management**
 
     ---
 
-    What processes are, process states and transitions, the Process Control
-    Block, context switching, and process creation.
+    Processes, process states, process control blocks, context switching,
+    process creation, and process behavior.
 
--   :four: **Chapter 4  -  Threads**
-
-    ---
-
-    Processes vs. threads, multithreading models, benefits and challenges of
-    threading, and thread libraries.
-
--   :five: **Chapter 5  -  CPU Scheduling**
+-   **Chapter 4 - Threads**
 
     ---
 
-    Scheduling criteria, preemptive and non-preemptive scheduling, FCFS, SJF,
-    Priority, Round Robin, Multilevel Queue, and performance evaluation.
+    Threads, multithreading, user and kernel threads, thread models, and
+    thread-related design issues.
 
--   :six: **Chapter 6  -  Synchronization**
+-   **Chapter 5 - CPU Scheduling**
+
+    ---
+
+    Scheduling criteria and scheduling algorithms, including common
+    preemptive and non-preemptive policies.
+
+-   **Chapter 6 - Synchronization**
 
     ---
 
     Race conditions, critical sections, mutual exclusion, semaphores, monitors,
-    classical synchronization problems, and deadlock avoidance.
+    and synchronization problems.
 
--   :seven: **Chapter 8  -  Memory Management**
-
-    ---
-
-    Contiguous allocation, paging, segmentation, fragmentation, and allocation
-    strategies.
-
--   :eight: **Chapter 9  -  Virtual Memory**
+-   **Chapter 8 - Memory Management**
 
     ---
 
-    Demand paging, page replacement algorithms, thrashing, working set models,
-    and virtual memory performance.
+    Address binding, contiguous allocation, paging, segmentation,
+    fragmentation, and memory allocation strategies.
 
--   :nine: **Chapter 10  -  Mass Storage Structure**
-
-    ---
-
-    Disk structure and scheduling, RAID levels, and storage device management.
-
--   :keycap_ten: **Chapter 11  -  File System Interface**
+-   **Chapter 9 - Virtual Memory**
 
     ---
 
-    File concepts and attributes, directory structures, access methods, and
-    file protection mechanisms.
+    Demand paging, page replacement, thrashing, working sets, and virtual
+    memory performance.
 
--   :file_folder: **Chapter 12  -  File System Implementation**
+-   **Chapter 10 - Mass Storage Structure**
 
     ---
 
-    File system layout, contiguous/linked/indexed allocation, free space
-    management, and directory implementation.
+    Disk structure, disk scheduling, RAID, and storage management concepts.
+
+-   **Chapter 11 - File-System Interface**
+
+    ---
+
+    File concepts, file attributes, directory structures, access methods, and
+    protection.
+
+-   **Chapter 12 - File-System Implementation**
+
+    ---
+
+    File-system layout, allocation methods, free-space management, and
+    directory implementation.
+
+-   **Course Project**
+
+    ---
+
+    Practical work applying operating-system concepts and tools.
 
 </div>
 
 ---
 
-## :penguin: Practical Work  -  Unix & Linux Project
+## Assessments
 
-This part of the course focuses on hands-on experience with Unix and Linux
-systems. Work covered includes core Unix commands, system navigation and file
-operations, permissions and access control, and team-based problem-solving
-activities.
-
----
-
-## :notepad_spiral: Study & Revision Material
-
-In addition to the chapter notes, this section includes a cheat sheet for
-quick revision, lecture slides, a full course summary, and quizzes and practice questions
-across multiple chapters. These are designed to support both deep understanding
-and efficient exam preparation.
-
-- [CS330 Slides](/Academics/computer-science/CS330/slides/)
+| Assessment | Weight |
+|-----------|--------|
+| Final exam | 40% |
+| Major exam | 20% |
+| Quizzes | 20% |
+| Project | 15% |
+| Attendance and participation | 5% |
 
 ---
 
-## :round_pushpin: Recommended Study Path
+## Current Site Coverage
 
-| Step | Topic |
-|------|-------|
-| 1 | Chapters 1 & 2  -  OS concepts and services |
-| 2 | Chapters 3 & 4  -  Processes and threads |
-| 3 | Chapter 5  -  CPU scheduling |
-| 4 | Chapter 6  -  Synchronization  -  conceptually important |
-| 5 | Chapters 8 & 9  -  Memory management and virtual memory |
-| 6 | Chapters 10 - 12  -  Storage and file systems |
-| 7 | Cheat sheet, summary, and quizzes for revision |
+| Syllabus topic | Current site material | Status |
+|----------------|-----------------------|--------|
+| Introduction and OS services | Chapters 1-2 notes and slides | Covered |
+| Processes, threads, CPU scheduling, synchronization | Chapters 3-6 notes, slides, and quizzes | Covered |
+| Memory management and virtual memory | Chapters 8-9 notes, slides, and quiz support | Covered |
+| Mass storage structure | Chapter 10 notes | Covered |
+| File-system interface and implementation | Chapters 11-12 notes and slides | Covered |
+| Course project/practical work | Project-related materials and supporting summaries | Covered |
 
 ---
 
-!!! note "About This Material"
-    These notes are based on my own coursework and personal study. The focus
-    is on clarity, structure, and practical understanding. Content will
-    continue to be refined and expanded over time.
+## Study Path
+
+1. Start with OS concepts and services.
+2. Study processes, threads, scheduling, and synchronization together.
+3. Move into memory management and virtual memory.
+4. Finish with storage and file-system topics.
+5. Use quizzes, formulas, cheat sheets, and the summary for revision.
+
+!!! note "Source"
+    This overview was updated from the CS330 course syllabus and the current
+    files in the CS330 section of this site.

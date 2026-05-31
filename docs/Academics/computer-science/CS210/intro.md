@@ -1,126 +1,149 @@
-# :books: CS210  -  Data Structures and Algorithms
+# CS210 - Data Structures and Algorithms
 
-This course focuses on how data is organized, stored, and processed efficiently.
-It covers fundamental data structures, algorithm analysis, and practical
-implementation techniques essential for software development and system design.
-
-This section contains structured study material including topic-based notes,
-algorithm analysis explanations, and cheat sheets for revision and quick
-reference. The goal is a clear, practical resource for understanding the
-material and preparing for exams and programming tasks.
+CS210 introduces classical data structures and algorithms with emphasis on
+performance through asymptotic analysis and complexity classes. The course
+covers lists, stacks, queues, heaps, trees, graphs, searching, sorting,
+traversal, hashing, and implementation of data structures and algorithms in
+modern programming languages.
 
 ---
 
-## :compass: How to Use This Section
+## Course Information
 
-Depending on where you are in the course, use this section differently.
-
-If you are **following the course**, start with the basic data representation
-topics and progress toward more advanced structures in order. If you are
-**revising**, go directly to the cheat sheets and the topics you find most
-difficult. If you are **practicing implementation**, use the topic pages as
-references for behavior, operations, and complexity.
+| Item | Details |
+|------|---------|
+| Course code | CS210 |
+| Course title | Data Structures and Algorithms |
+| Credits/contact hours | 3 credits and 4 contact hours: lectures 3, tutorials 1 |
+| Prerequisite | CS102 Programming II |
+| Main textbook | Goodrich and Tamassia, *Data Structures and Algorithms in Java*, 6th ed. |
+| Course role | Required core course for CS, IS, and SE programs |
 
 ---
 
-## :card_index_dividers: Course Topics
+## Course Learning Outcomes
+
+By the end of CS210, students should be able to:
+
+1. Demonstrate knowledge of fundamental data structures and related algorithms,
+   including lists, stacks, queues, trees, heaps, and graphs.
+2. Explain hash functions and hash tables for faster data storage and access.
+3. Analyze runtime for operations on data structures and related algorithms.
+4. Write programs that apply data structures and algorithms.
+5. Collaborate in designing and implementing efficient, sustainable data
+   structures and algorithms.
+
+---
+
+## Course Content
 
 <div class="grid cards" markdown>
 
--   :link: **Linked Objects & Data Structures**
+-   **Linked Objects and Data Structures**
 
     ---
 
-    How data is represented in memory, object references, and dynamic
-    structures.
+    Object references, linked structures, and the foundations of dynamic data
+    representation.
 
--   :arrow_right_hook: **Linked Lists**
-
-    ---
-
-    Single, double, and circular linked lists  -  traversal, insertion, and
-    deletion operations.
-
--   :bar_chart: **Analysis of Algorithms**
+-   **Linked Lists**
 
     ---
 
-    Big O notation, time and space complexity, and iterative versus recursive
-    analysis.
+    Singly linked lists, doubly linked lists, circular linked lists, traversal,
+    insertion, and deletion.
 
--   :arrows_counterclockwise: **Sorting Algorithms**
+-   **Algorithm Analysis**
+
+    ---
+
+    Iterative and recursive algorithm analysis, asymptotic reasoning, and
+    complexity comparison.
+
+-   **Sorting Algorithms**
 
     ---
 
     Selection sort, insertion sort, merge sort, and quick sort.
 
--   :package: **Stacks & Queues**
+-   **Stacks and Queues**
 
     ---
 
-    LIFO and FIFO structures and their applications in compilers and operating
-    systems.
+    Basic linear structures, LIFO/FIFO behavior, operations, and applications.
 
--   :deciduous_tree: **Binary Trees & BSTs**
-
-    ---
-
-    Tree traversal methods  -  inorder, preorder, postorder  -  plus searching,
-    insertion, and deletion.
-
--   :balance_scale: **AVL Trees**
+-   **Binary Trees and Binary Search Trees**
 
     ---
 
-    Self-balancing trees, rotations, and height maintenance.
+    Tree terminology, traversal, search, insertion, deletion, and BST behavior.
 
--   :trophy: **Heaps & Priority Queues**
-
-    ---
-
-    Binary heaps, heap operations, and practical applications.
-
--   :hash: **Hashing**
+-   **AVL Trees**
 
     ---
 
-    Hash functions and collision resolution techniques including chaining and
-    probing.
+    Self-balancing search trees, height balance, and rotations.
 
--   :globe_with_meridians: **Graphs**
+-   **Heaps and Priority Queues**
 
     ---
 
-    Directed and undirected graphs, graph representations, DFS, BFS, and
-    real-world applications.
+    Heap structure, priority queue operations, heap insertion/removal, and
+    heap-based applications.
+
+-   **Hashing**
+
+    ---
+
+    Hash functions, hash tables, chaining, probing, and collision handling.
+
+-   **Directed and Undirected Graphs**
+
+    ---
+
+    Graph representation, traversal, and basic graph-processing ideas.
 
 </div>
 
 ---
 
-## :notepad_spiral: Study & Revision Material
+## Assessments
 
-In addition to the topic notes, this section includes cheat sheets for quick
-revision and condensed references for common operations and complexities.
-These are designed to support both deep understanding and efficient exam
-preparation.
-
----
-
-## :round_pushpin: Recommended Study Path
-
-| Step | Topic |
-|------|-------|
-| 1 | Linked objects and basic data structures |
-| 2 | Algorithm analysis  -  understand performance early |
-| 3 | Linear structures: linked lists, stacks, and queues |
-| 4 | Trees, AVL trees, and heaps |
-| 5 | Hashing and graphs |
-| 6 | Cheat sheets for revision and quick recall before exams |
+| Assessment | Weight |
+|-----------|--------|
+| Midterm exam | 20% |
+| Two quizzes | 20% |
+| Projects | 15% |
+| Attendance and participation | 5% |
+| Final exam | 40% |
 
 ---
 
-!!! note "About This Material"
-    These notes are based on my own coursework and personal study. The focus
-    is on clarity, structure, and practical understanding. Content will
-    continue to be refined and expanded over time.
+## Current Site Coverage
+
+| Syllabus topic | Current site material | Status |
+|----------------|-----------------------|--------|
+| Linked objects and linked lists | Lists and circular linked-list slides | Covered |
+| Algorithm analysis | Algorithm analysis slides and topic notes | Covered |
+| Sorting algorithms | Elementary sorting, merge sort, and quick sort materials | Covered |
+| Stacks and queues | Topic notes and slides | Covered |
+| Binary trees and BSTs | Trees and BST materials | Covered |
+| AVL trees | Topic notes and slides | Covered |
+| Heaps and priority queues | Heaps and priority queue slides | Covered |
+| Hashing | Hash tables materials | Covered |
+| Directed and undirected graphs | Graph slides | Covered |
+
+---
+
+## Study Path
+
+1. Start with linked objects and linked lists.
+2. Study algorithm analysis before comparing implementations.
+3. Move through sorting, stacks, queues, trees, BSTs, AVL trees, and heaps.
+4. Finish with hashing and graph concepts.
+5. Use the cheat sheets and exam practice after solving implementation traces
+   by hand.
+
+!!! note "Source"
+    This overview was updated from the CS210 course syllabus and the current
+    files in the CS210 section of this site.

@@ -88,6 +88,12 @@ description: Course map for software engineering, computer science, cybersecurit
 
     [:octicons-arrow-right-24: English Overview](other/english/overview.md)
 
+-  ### **PHY205  -  Physics II**
+
+    Electricity, circuits, magnetism, and Halliday chapter slides for Physics II review.
+
+    [:octicons-arrow-right-24: PHY205 Overview](other/phy205/overview.md)
+
 -  ### **ISC113  -  Islamic Economic System**
 
     Islamic economy, public finance, production, consumption, markets, pricing, and exam revision material.

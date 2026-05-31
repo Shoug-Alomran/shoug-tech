@@ -16,6 +16,24 @@ performance, structure, and correctness  -  not just how to write code.
 
 <div class="grid cards" markdown>
 
+-   :coffee: **CS101 - Computer Programming 1**
+
+    ---
+
+    Java programming foundations: variables, selection, loops, methods,
+    arrays, files, and IDE-based debugging.
+
+    [:octicons-arrow-right-24: View CS101](cs101-computer-programming-1/intro.md)
+
+-   :jigsaw: **CS102 - Computer Programming II**
+
+    ---
+
+    Intermediate Java and object-oriented programming: classes, inheritance,
+    polymorphism, interfaces, collections, generics, recursion, and projects.
+
+    [:octicons-arrow-right-24: View CS102](cs102-computer-programming-2/intro.md)
+
 -   :abacus: **CS210  -  Data Structures & Algorithms**
 
     ---
