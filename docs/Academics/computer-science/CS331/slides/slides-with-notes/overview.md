@@ -8,52 +8,52 @@ review beside the original slide PDFs.
 
 <div class="grid cards" markdown>
 
--   **Overview**
+-   **Chapter 01 Introduction Part 1 Notes**
 
-    [Open notes](overview-notes.md)
+    [Open notes](chapter-01-introduction-part-1-notes.md)
 
--   **Overview 2**
+-   **Chapter 01 Introduction Part 2 Notes**
 
-    [Open notes](overview-2-notes.md)
+    [Open notes](chapter-01-introduction-part-2-notes.md)
 
--   **Physical Layer**
+-   **Chapter 02 Physical Layer Part 1 Notes**
 
-    [Open notes](physical-layer-notes.md)
+    [Open notes](chapter-02-physical-layer-part-1-notes.md)
 
--   **Physical Layer 2**
+-   **Chapter 02 Physical Layer Part 2 Notes**
 
-    [Open notes](physical-layer-2-notes.md)
+    [Open notes](chapter-02-physical-layer-part-2-notes.md)
 
--   **Data Link Layer Part 1**
+-   **Chapter 03 Data-Link Layer Part 1 Notes**
 
-    [Open notes](data-link-layer-part-1-notes.md)
+    [Open notes](chapter-03-data-link-layer-part-1-notes.md)
 
--   **Data Link Layer Part 2**
+-   **Chapter 03 Data-Link Layer Part 2 Notes**
 
-    [Open notes](data-link-layer-part-2-notes.md)
+    [Open notes](chapter-03-data-link-layer-part-2-notes.md)
 
--   **Ethernet**
+-   **Chapter 04 Local Area Networks LANs Notes**
 
-    [Open notes](ethernet-notes.md)
+    [Open notes](chapter-04-local-area-networks-lans-notes.md)
 
--   **Interconnecting Devices**
+-   **Chapter 06 Connecting Devices and Virtual LANs Notes**
 
-    [Open notes](interconnecting-devices-notes.md)
+    [Open notes](chapter-06-connecting-devices-and-virtual-lans-notes.md)
 
--   **Network Layer Part 1**
+-   **Chapter 07 Network Layer Data Transfer Notes**
 
-    [Open notes](network-layer-part-1-notes.md)
+    [Open notes](chapter-07-network-layer-data-transfer-notes.md)
 
--   **Network Layer Part 2**
+-   **Chapter 08 Network Layer Routing of Packets Notes**
 
-    [Open notes](network-layer-part-2-notes.md)
+    [Open notes](chapter-08-network-layer-routing-of-packets-notes.md)
 
--   **Transport Layer**
+-   **Chapter 09 Transport Layer Notes**
 
-    [Open notes](transport-layer-notes.md)
+    [Open notes](chapter-09-transport-layer-notes.md)
 
--   **Application Layer**
+-   **Chapter 10 Application Layer Notes**
 
-    [Open notes](application-layer-notes.md)
+    [Open notes](chapter-10-application-layer-notes.md)
 
 </div>

@@ -7,16 +7,16 @@
 ## فتح الموارد
 
 <div class="overview-grid">
-  <a class="overview-card" href="/Academics/computer-science/CS331/slide-breakdowns/data-communications-and-networking.html"><strong>Data Communications and Networking</strong><span>فتح المورد</span></a>
-  <a class="overview-card" href="/Academics/computer-science/CS331/slide-breakdowns/protocol-layering.html"><strong>Protocol Layering and Network Models</strong><span>فتح المورد</span></a>
-  <a class="overview-card" href="/Academics/computer-science/CS331/slide-breakdowns/data-link-layer-control.html"><strong>Data Link Layer Control</strong><span>فتح المورد</span></a>
-  <a class="overview-card" href="/Academics/computer-science/CS331/slide-breakdowns/data-link-layer.html"><strong>Data Link Layer MAC Protocols</strong><span>فتح المورد</span></a>
-  <a class="overview-card" href="/Academics/computer-science/CS331/slide-breakdowns/ethernet.html"><strong>Ethernet and LANs</strong><span>فتح المورد</span></a>
-  <a class="overview-card" href="/Academics/computer-science/CS331/slide-breakdowns/interconnecting-devices.html"><strong>Interconnecting Devices and VLANs</strong><span>فتح المورد</span></a>
-  <a class="overview-card" href="/Academics/computer-science/CS331/slide-breakdowns/network-layer-data-transfer.html"><strong>Network Layer Data Transfer</strong><span>فتح المورد</span></a>
-  <a class="overview-card" href="/Academics/computer-science/CS331/slide-breakdowns/network-layer-routing.html"><strong>Network Layer Routing</strong><span>فتح المورد</span></a>
-  <a class="overview-card" href="/Academics/computer-science/CS331/slide-breakdowns/transport-layer.html"><strong>Transport Layer</strong><span>فتح المورد</span></a>
-  <a class="overview-card" href="/Academics/computer-science/CS331/slide-breakdowns/dns-and-application-layer.html"><strong>DNS and Application Layer</strong><span>فتح المورد</span></a>
+  <a class="overview-card" href="data-communications-and-networking.md"><strong>Data Communications and Networking</strong><span>فتح المورد</span></a>
+  <a class="overview-card" href="protocol-layering.md"><strong>Protocol Layering and Network Models</strong><span>فتح المورد</span></a>
+  <a class="overview-card" href="data-link-layer-control.md"><strong>Data Link Layer Control</strong><span>فتح المورد</span></a>
+  <a class="overview-card" href="data-link-layer.md"><strong>Data Link Layer MAC Protocols</strong><span>فتح المورد</span></a>
+  <a class="overview-card" href="ethernet.md"><strong>Ethernet and LANs</strong><span>فتح المورد</span></a>
+  <a class="overview-card" href="interconnecting-devices.md"><strong>Interconnecting Devices and VLANs</strong><span>فتح المورد</span></a>
+  <a class="overview-card" href="network-layer-data-transfer.md"><strong>Network Layer Data Transfer</strong><span>فتح المورد</span></a>
+  <a class="overview-card" href="network-layer-routing.md"><strong>Network Layer Routing</strong><span>فتح المورد</span></a>
+  <a class="overview-card" href="transport-layer.md"><strong>Transport Layer</strong><span>فتح المورد</span></a>
+  <a class="overview-card" href="dns-and-application-layer.md"><strong>DNS and Application Layer</strong><span>فتح المورد</span></a>
 </div>
 
 ## مسار المذاكرة
