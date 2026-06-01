@@ -330,8 +330,13 @@
       const href = a.getAttribute("href") || "";
       const isEnglishOpenLink = /\bopen\b.*\bnew tab\b/i.test(label);
       const isArabicOpenLink = /افتح|افتحي/.test(label) && /تبويب|صفحة/.test(label) && /جديد|جديدة/.test(label);
+      const isEnglishPdfOpenLink = /\bopen\b.*\b(pdf|slides?)\b/i.test(label);
+      const isArabicPdfOpenLink = /فتح/.test(label) && /pdf|ملف/i.test(label);
       const isEmbeddableResource = /\.(html?|pdf|pptx?)([#?].*)?$/i.test(href);
-      if ((!isEnglishOpenLink && !isArabicOpenLink) || !isEmbeddableResource) return;
+      if (
+        (!isEnglishOpenLink && !isArabicOpenLink && !isEnglishPdfOpenLink && !isArabicPdfOpenLink) ||
+        !isEmbeddableResource
+      ) return;
 
       const container = a.parentElement;
       if (!container || !/^(LI|P)$/i.test(container.tagName)) return;

@@ -1,3 +1,8 @@
+---
+title: PHY205 Physics II
+description: PHY205 Physics II course overview with electricity, circuits, magnetism, Halliday chapter slides, and credited notes.
+---
+
 # PHY205 - Physics II
 
 PHY205 collects Physics II material for quick course review, with a focus on

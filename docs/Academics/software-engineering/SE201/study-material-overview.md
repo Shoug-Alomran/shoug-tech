@@ -7,11 +7,11 @@
 ## Open The Resources
 
 <div class="overview-grid">
-  <a class="overview-card" href="/Academics/software-engineering/SE201/Complete-UML-&amp;-Software-Engineering-Diagrams-Guide/"><strong>UML & Diagrams Guide</strong><span>Open resource</span></a>
-  <a class="overview-card" href="/Academics/software-engineering/SE201/Cheat-Sheet/"><strong>Cheat Sheet</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/software-engineering/SE201/extra-resources/Complete-UML-&amp;-Software-Engineering-Diagrams-Guide/"><strong>UML & Diagrams Guide</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/software-engineering/SE201/extra-resources/Cheat-Sheet/"><strong>Cheat Sheet</strong><span>Open resource</span></a>
   <a class="overview-card" href="/Academics/software-engineering/SE201/slides/overview/"><strong>Lecture Slides</strong><span>Open resource</span></a>
-  <a class="overview-card" href="/Academics/software-engineering/SE201/SE-201-Summary.pdf"><strong>Summary PDF</strong><span>Open resource</span></a>
-  <a class="overview-card" href="/Academics/software-engineering/SE201/Jira-Guide.pdf"><strong>Jira Guide PDF</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/software-engineering/SE201/extra-resources/SE-201-Summary.pdf"><strong>Summary PDF</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/software-engineering/SE201/extra-resources/Jira-Guide.pdf"><strong>Jira Guide PDF</strong><span>Open resource</span></a>
 </div>
 
 ## Study Path

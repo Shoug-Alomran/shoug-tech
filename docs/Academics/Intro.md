@@ -21,11 +21,29 @@ description: Course map for software engineering, computer science, cybersecurit
 
     [:octicons-arrow-right-24: SE311 Overview](software-engineering/SE311/intro.md)
 
+-  ### **SE322  -  Software Design and Architecture**
+
+    Architecture foundations, quality attributes, architecture patterns, detailed design, and structural design patterns.
+
+    [:octicons-arrow-right-24: SE322 Overview](software-engineering/SE322/intro.md)
+
 </div>
 
 ## Computer Science
 
 <div class="grid cards" markdown>
+
+-  ### **CS101  -  Computer Programming 1**
+
+    Java foundations: variables, control flow, methods, arrays, files, and debugging. Includes course slides.
+
+    [:octicons-arrow-right-24: CS101 Overview](computer-science/CS101/intro.md)
+
+-  ### **CS102  -  Computer Programming II**
+
+    Object-oriented Java, inheritance, polymorphism, collections, generics, recursion, files, and project work.
+
+    [:octicons-arrow-right-24: CS102 Overview](computer-science/CS102/intro.md)
 
 -  ### **CS210  -  Data Structures**
 

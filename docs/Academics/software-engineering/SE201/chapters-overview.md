@@ -7,15 +7,15 @@
 ## Open The Resources
 
 <div class="overview-grid">
-  <a class="overview-card" href="/Academics/software-engineering/SE201/Chapter-1/Software-Engineering-Practices-and-Ethics/"><strong>Ch 1  -  Practices & Ethics</strong><span>Open resource</span></a>
-  <a class="overview-card" href="/Academics/software-engineering/SE201/Chapter-2/Software-Processes/"><strong>Ch 2  -  Software Processes</strong><span>Open resource</span></a>
-  <a class="overview-card" href="/Academics/software-engineering/SE201/Chapter-3/Agile-Software-Engineering/"><strong>Ch 3  -  Agile Software Engineering</strong><span>Open resource</span></a>
-  <a class="overview-card" href="/Academics/software-engineering/SE201/Chapter-4/Software-Project-Management/"><strong>Ch 4  -  Software Project Management</strong><span>Open resource</span></a>
-  <a class="overview-card" href="/Academics/software-engineering/SE201/Chapter-5/Requirements-Engineering/"><strong>Ch 5  -  Requirements Engineering</strong><span>Open resource</span></a>
-  <a class="overview-card" href="/Academics/software-engineering/SE201/Chapter-5/Chapter-5-Diagram-Sybmols/"><strong>Ch 5  -  Diagram Symbols</strong><span>Open resource</span></a>
-  <a class="overview-card" href="/Academics/software-engineering/SE201/Chapter-6/Software-Design/"><strong>Ch 6  -  Software Design</strong><span>Open resource</span></a>
-  <a class="overview-card" href="/Academics/software-engineering/SE201/Chapter-7/Software-Construction/"><strong>Ch 7  -  Software Construction</strong><span>Open resource</span></a>
-  <a class="overview-card" href="/Academics/software-engineering/SE201/Chapter-8/Software-Testing/"><strong>Ch 8  -  Software Testing</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/software-engineering/SE201/slide-breakdowns/Chapter-1/Software-Engineering-Practices-and-Ethics/"><strong>Ch 1  -  Practices & Ethics</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/software-engineering/SE201/slide-breakdowns/Chapter-2/Software-Processes/"><strong>Ch 2  -  Software Processes</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/software-engineering/SE201/slide-breakdowns/Chapter-3/Agile-Software-Engineering/"><strong>Ch 3  -  Agile Software Engineering</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/software-engineering/SE201/slide-breakdowns/Chapter-4/Software-Project-Management/"><strong>Ch 4  -  Software Project Management</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/software-engineering/SE201/slide-breakdowns/Chapter-5/Requirements-Engineering/"><strong>Ch 5  -  Requirements Engineering</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/software-engineering/SE201/slide-breakdowns/Chapter-5/Chapter-5-Diagram-Sybmols/"><strong>Ch 5  -  Diagram Symbols</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/software-engineering/SE201/slide-breakdowns/Chapter-6/Software-Design/"><strong>Ch 6  -  Software Design</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/software-engineering/SE201/slide-breakdowns/Chapter-7/Software-Construction/"><strong>Ch 7  -  Software Construction</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/software-engineering/SE201/slide-breakdowns/Chapter-8/Software-Testing/"><strong>Ch 8  -  Software Testing</strong><span>Open resource</span></a>
 </div>
 
 ## Study Path

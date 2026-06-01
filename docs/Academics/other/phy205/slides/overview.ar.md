@@ -1,45 +1,48 @@
+---
+title: شرائح PHY205
+description: ملفات شرائح PHY205 الفيزياء 2 حسب الفصول لموضوعات الكهرباء والمجالات الكهربائية والدوائر والمغناطيسية والحث.
+---
+
 # شرائح PHY205
 
-تجمع هذه الصفحة the PHY205 Physics II slides and notes as chapter-based
-PDF files.
+يجمع هذا القسم شرائح وملاحظات PHY205 الفيزياء 2 كملفات PDF منظمة حسب الفصول.
 
-!!! note "Credit"
-    The slides are university-provided course materials from Prince Sultan
-    University. The notes and organization were done by Yara Faris Albugami.
-    تبقى الحقوق محفوظة للجامعة ومدرسي المقرر والمؤلفين الأصليين.
+!!! note "تنويه"
+    الشرائح مواد جامعية مقدمة من جامعة الأمير سلطان. الملاحظات والتنظيم من إعداد
+    يارا فارس البقمي. تبقى الحقوق للجامعة ومدرسي المقرر والمؤلفين الأصليين.
 
 <div class="grid cards" markdown>
 
--   **Chapter 21 - Electric Charge**
+-   **الفصل 21 - الشحنة الكهربائية**
 
-    [فتح الشرائح](phy205-chapter-21-electric-charge-halliday.pdf)
+    [فتح الشرائح](chapter-21-electric-charge.md)
 
--   **Chapter 22 - Electric Fields**
+-   **الفصل 22 - المجالات الكهربائية**
 
-    [فتح الشرائح](phy205-chapter-22-electric-fields-halliday.pdf)
+    [فتح الشرائح](chapter-22-electric-fields.md)
 
--   **Chapter 23 - Gauss' Law**
+-   **الفصل 23 - قانون جاوس**
 
-    [فتح الشرائح](phy205-chapter-23-gauss-law-halliday.pdf)
+    [فتح الشرائح](chapter-23-gauss-law.md)
 
--   **Chapter 24 - Electric Potential**
+-   **الفصل 24 - الجهد الكهربائي**
 
-    [فتح الشرائح](phy205-chapter-24-electric-potential-halliday.pdf)
+    [فتح الشرائح](chapter-24-electric-potential.md)
 
--   **Chapter 25 - Capacitance**
+-   **الفصل 25 - السعة الكهربائية**
 
-    [فتح الشرائح](phy205-chapter-25-capacitance-halliday.pdf)
+    [فتح الشرائح](chapter-25-capacitance.md)
 
--   **Chapter 26 - Current and Resistance**
+-   **الفصل 26 - التيار والمقاومة**
 
-    [فتح الشرائح](phy205-chapter-26-current-and-resistance-halliday.pdf)
+    [فتح الشرائح](chapter-26-current-and-resistance.md)
 
--   **Chapter 27 - Circuits**
+-   **الفصل 27 - الدوائر**
 
-    [فتح الشرائح](phy205-chapter-27-circuits-halliday.pdf)
+    [فتح الشرائح](chapter-27-circuits.md)
 
--   **Chapters 28, 29, and 30 - Magnetic Fields and Induction**
+-   **الفصول 28 و29 و30 - المجالات المغناطيسية والحث**
 
-    [فتح الشرائح](phy205-chapters-28-29-30-magnetic-fields-and-induction-halliday.pdf)
+    [فتح الشرائح](chapters-28-29-30-magnetic-fields-and-induction.md)
 
 </div>

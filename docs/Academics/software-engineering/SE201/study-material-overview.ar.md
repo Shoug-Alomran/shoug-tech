@@ -7,11 +7,11 @@
 ## فتح The Resources
 
 <div class="overview-grid">
-  <a class="overview-card" href="/Academics/software-engineering/SE201/Complete-UML-&amp;-Software-Engineering-Diagrams-Guide/"><strong>دليل UML والمخططات</strong><span>فتح المورد</span></a>
-  <a class="overview-card" href="/Academics/software-engineering/SE201/Cheat-Sheet/"><strong>ورقة مراجعة</strong><span>فتح المورد</span></a>
+  <a class="overview-card" href="/Academics/software-engineering/SE201/extra-resources/Complete-UML-&amp;-Software-Engineering-Diagrams-Guide/"><strong>دليل UML والمخططات</strong><span>فتح المورد</span></a>
+  <a class="overview-card" href="/Academics/software-engineering/SE201/extra-resources/Cheat-Sheet/"><strong>ورقة مراجعة</strong><span>فتح المورد</span></a>
   <a class="overview-card" href="/Academics/software-engineering/SE201/slides/overview/"><strong>Lecture الشرائح</strong><span>فتح المورد</span></a>
-  <a class="overview-card" href="/Academics/software-engineering/SE201/SE-201-Summary.pdf"><strong>ملخص PDF</strong><span>فتح المورد</span></a>
-  <a class="overview-card" href="/Academics/software-engineering/SE201/Jira-Guide.pdf"><strong>دليل Jira بصيغة PDF</strong><span>فتح المورد</span></a>
+  <a class="overview-card" href="/Academics/software-engineering/SE201/extra-resources/SE-201-Summary.pdf"><strong>ملخص PDF</strong><span>فتح المورد</span></a>
+  <a class="overview-card" href="/Academics/software-engineering/SE201/extra-resources/Jira-Guide.pdf"><strong>دليل Jira بصيغة PDF</strong><span>فتح المورد</span></a>
 </div>
 
 ## مسار المذاكرة

@@ -7,10 +7,10 @@
 ## فتح The Resources
 
 <div class="overview-grid">
-  <a class="overview-card" href="/Academics/software-engineering/SE311/cheat-sheets/cheat-sheet/"><strong>Midterm ورقة مراجعة</strong><span>فتح المورد</span></a>
-  <a class="overview-card" href="/Academics/software-engineering/SE311/cheat-sheets/final-cheat-sheet/"><strong>ورقة مراجعة نهائية</strong><span>فتح المورد</span></a>
+  <a class="overview-card" href="/Academics/software-engineering/SE311/extra-resources/cheat-sheets/cheat-sheet/"><strong>Midterm ورقة مراجعة</strong><span>فتح المورد</span></a>
+  <a class="overview-card" href="/Academics/software-engineering/SE311/extra-resources/cheat-sheets/final-cheat-sheet/"><strong>ورقة مراجعة نهائية</strong><span>فتح المورد</span></a>
   <a class="overview-card" href="/Academics/software-engineering/SE311/uml-diagrams-cheat-sheet/"><strong>UML Diagrams ورقة مراجعة</strong><span>فتح المورد</span></a>
-  <a class="overview-card" href="/Academics/software-engineering/SE311/mindmap/final-mindmap/"><strong>Final خريطة ذهنية</strong><span>فتح المورد</span></a>
+  <a class="overview-card" href="/Academics/software-engineering/SE311/extra-resources/mindmap/final-mindmap/"><strong>Final خريطة ذهنية</strong><span>فتح المورد</span></a>
   <a class="overview-card" href="/Academics/software-engineering/SE311/slides/overview/"><strong>Lecture الشرائح</strong><span>فتح المورد</span></a>
   <a class="overview-card" href="/Academics/software-engineering/SE311/se-311-summary.pdf"><strong>ملخص PDF</strong><span>فتح المورد</span></a>
 </div>

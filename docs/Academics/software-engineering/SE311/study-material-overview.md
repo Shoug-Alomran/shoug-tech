@@ -7,10 +7,10 @@
 ## Open The Resources
 
 <div class="overview-grid">
-  <a class="overview-card" href="/Academics/software-engineering/SE311/cheat-sheets/cheat-sheet/"><strong>Midterm Cheat Sheet</strong><span>Open resource</span></a>
-  <a class="overview-card" href="/Academics/software-engineering/SE311/cheat-sheets/final-cheat-sheet/"><strong>Final Cheat Sheet</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/software-engineering/SE311/extra-resources/cheat-sheets/cheat-sheet/"><strong>Midterm Cheat Sheet</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/software-engineering/SE311/extra-resources/cheat-sheets/final-cheat-sheet/"><strong>Final Cheat Sheet</strong><span>Open resource</span></a>
   <a class="overview-card" href="/Academics/software-engineering/SE311/uml-diagrams-cheat-sheet/"><strong>UML Diagrams Cheat Sheet</strong><span>Open resource</span></a>
-  <a class="overview-card" href="/Academics/software-engineering/SE311/mindmap/final-mindmap/"><strong>Final Mindmap</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/software-engineering/SE311/extra-resources/mindmap/final-mindmap/"><strong>Final Mindmap</strong><span>Open resource</span></a>
   <a class="overview-card" href="/Academics/software-engineering/SE311/slides/overview/"><strong>Lecture Slides</strong><span>Open resource</span></a>
   <a class="overview-card" href="/Academics/software-engineering/SE311/se-311-summary.pdf"><strong>Summary PDF</strong><span>Open resource</span></a>
 </div>

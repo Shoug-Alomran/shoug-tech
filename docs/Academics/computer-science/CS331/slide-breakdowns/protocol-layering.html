@@ -1,0 +1,2001 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Protocol Layering & Network Models — Study Guide</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
+
+        :root {
+            --bg: #f5f3ee;
+            --surface: #ffffff;
+            --surface2: #f0ede6;
+            --border: #e2ddd4;
+            --text: #1a1814;
+            --text-muted: #6b6560;
+            --accent: #c8622a;
+            --accent2: #3a6b9e;
+            --accent3: #4a8a5a;
+            --accent4: #8a5a9e;
+            --def-bg: #fff8f4;
+            --def-border: #c8622a;
+            --exam-bg: #fff4e6;
+            --exam-border: #e08020;
+            --mnem-bg: #f0f8f0;
+            --mnem-border: #4a8a5a;
+            --conf-bg: #f4f0f8;
+            --conf-border: #8a5a9e;
+            --tip-bg: #f0f6ff;
+            --tip-border: #3a6b9e;
+            --shadow: 0 2px 16px rgba(0, 0, 0, 0.07);
+            --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.12);
+            --radius: 12px;
+        }
+
+        [data-theme="dark"] {
+            --bg: #141210;
+            --surface: #1e1c18;
+            --surface2: #262420;
+            --border: #353028;
+            --text: #f0ece4;
+            --text-muted: #9a9088;
+            --accent: #e07840;
+            --accent2: #5a8fc0;
+            --accent3: #6aaa7a;
+            --accent4: #aa7abe;
+            --def-bg: #251a10;
+            --exam-bg: #251e10;
+            --mnem-bg: #101a12;
+            --conf-bg: #181020;
+            --tip-bg: #101820;
+            --shadow: 0 2px 16px rgba(0, 0, 0, 0.3);
+            --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            font-size: 16px;
+            line-height: 1.7;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        /* ===== HEADER ===== */
+        header {
+            background: var(--text);
+            color: var(--bg);
+            padding: 48px 24px 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: -60px;
+            right: -60px;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: var(--accent);
+            opacity: 0.12;
+        }
+
+        header::after {
+            content: '';
+            position: absolute;
+            bottom: -80px;
+            left: 20%;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: var(--accent2);
+            opacity: 0.1;
+        }
+
+        .header-inner {
+            max-width: 900px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .course-tag {
+            font-family: 'DM Mono', monospace;
+            font-size: 11px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2rem, 5vw, 3.2rem);
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 16px;
+        }
+
+        header p {
+            font-size: 1.05rem;
+            opacity: 0.7;
+            max-width: 560px;
+        }
+
+        /* ===== THEME TOGGLE ===== */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--surface);
+            border: 2px solid var(--border);
+            border-radius: 50px;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text);
+            z-index: 1000;
+            box-shadow: var(--shadow);
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .theme-toggle:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        /* ===== NAV ===== */
+        .toc {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            padding: 0 24px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow);
+        }
+
+        .toc-inner {
+            max-width: 900px;
+            margin: 0 auto;
+            display: flex;
+            gap: 4px;
+            overflow-x: auto;
+            padding: 12px 0;
+            scrollbar-width: none;
+        }
+
+        .toc-inner::-webkit-scrollbar {
+            display: none;
+        }
+
+        .toc a {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-decoration: none;
+            white-space: nowrap;
+            padding: 6px 14px;
+            border-radius: 50px;
+            transition: all 0.2s;
+            letter-spacing: 0.3px;
+        }
+
+        .toc a:hover {
+            background: var(--accent);
+            color: white;
+        }
+
+        /* ===== MAIN ===== */
+        main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 48px 24px 80px;
+        }
+
+        /* ===== SECTIONS ===== */
+        section {
+            margin-bottom: 64px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 28px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .section-number {
+            font-family: 'DM Mono', monospace;
+            font-size: 12px;
+            background: var(--accent);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-weight: 500;
+        }
+
+        h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(1.4rem, 3vw, 1.8rem);
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        h3 {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 24px 0 12px;
+            color: var(--accent2);
+        }
+
+        /* ===== CARDS ===== */
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 24px;
+            margin-bottom: 16px;
+            box-shadow: var(--shadow);
+        }
+
+        .card p {
+            margin-bottom: 10px;
+            color: var(--text);
+        }
+
+        .card p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* ===== SPECIAL BOXES ===== */
+        .box {
+            border-radius: var(--radius);
+            padding: 20px 24px;
+            margin: 20px 0;
+            border-left: 4px solid;
+        }
+
+        .box-title {
+            font-size: 11px;
+            font-family: 'DM Mono', monospace;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .def {
+            background: var(--def-bg);
+            border-color: var(--def-border);
+        }
+
+        .def .box-title {
+            color: var(--def-border);
+        }
+
+        .exam {
+            background: var(--exam-bg);
+            border-color: var(--exam-border);
+        }
+
+        .exam .box-title {
+            color: var(--exam-border);
+        }
+
+        .mnem {
+            background: var(--mnem-bg);
+            border-color: var(--mnem-border);
+        }
+
+        .mnem .box-title {
+            color: var(--mnem-border);
+        }
+
+        .conf {
+            background: var(--conf-bg);
+            border-color: var(--conf-border);
+        }
+
+        .conf .box-title {
+            color: var(--conf-border);
+        }
+
+        .tip {
+            background: var(--tip-bg);
+            border-color: var(--tip-border);
+        }
+
+        .tip .box-title {
+            color: var(--tip-border);
+        }
+
+        /* ===== GRID CARDS ===== */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin: 20px 0;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+            margin: 20px 0;
+        }
+
+        @media (max-width: 640px) {
+
+            .grid-2,
+            .grid-3 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ===== LAYER STACK ===== */
+        .layer-stack {
+            margin: 24px 0;
+        }
+
+        .layer-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 14px 20px;
+            border-radius: 8px;
+            margin-bottom: 4px;
+            font-weight: 500;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .layer-item:hover {
+            transform: translateX(6px);
+        }
+
+        .layer-num {
+            font-family: 'DM Mono', monospace;
+            font-size: 12px;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            flex-shrink: 0;
+            color: white;
+        }
+
+        .layer-pdu {
+            margin-left: auto;
+            font-size: 11px;
+            font-family: 'DM Mono', monospace;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .l7 {
+            background: #fff3f0;
+        }
+
+        .l7 .layer-num {
+            background: #e05030;
+        }
+
+        .l6 {
+            background: #fff8f0;
+        }
+
+        .l6 .layer-num {
+            background: #e07830;
+        }
+
+        .l5 {
+            background: #fffcf0;
+        }
+
+        .l5 .layer-num {
+            background: #c09020;
+        }
+
+        .l4 {
+            background: #f0fff4;
+        }
+
+        .l4 .layer-num {
+            background: #30a060;
+        }
+
+        .l3 {
+            background: #f0f8ff;
+        }
+
+        .l3 .layer-num {
+            background: #3070c0;
+        }
+
+        .l2 {
+            background: #f8f0ff;
+        }
+
+        .l2 .layer-num {
+            background: #7040b0;
+        }
+
+        .l1 {
+            background: #f4f4f4;
+        }
+
+        .l1 .layer-num {
+            background: #505050;
+        }
+
+        [data-theme="dark"] .l7 {
+            background: #2a1210;
+        }
+
+        [data-theme="dark"] .l6 {
+            background: #2a1a08;
+        }
+
+        [data-theme="dark"] .l5 {
+            background: #1e1a08;
+        }
+
+        [data-theme="dark"] .l4 {
+            background: #0a1e12;
+        }
+
+        [data-theme="dark"] .l3 {
+            background: #0a1422;
+        }
+
+        [data-theme="dark"] .l2 {
+            background: #1a0e22;
+        }
+
+        [data-theme="dark"] .l1 {
+            background: #181818;
+        }
+
+        /* ===== COMPARISON TABLE ===== */
+        .compare-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            overflow: hidden;
+            border-radius: var(--radius);
+        }
+
+        .compare-table th,
+        .compare-table td {
+            padding: 14px 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.9rem;
+        }
+
+        .compare-table th {
+            background: var(--text);
+            color: var(--bg);
+            font-weight: 600;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+        }
+
+        .compare-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .compare-table tr:nth-child(even) td {
+            background: var(--surface2);
+        }
+
+        .compare-table-wrap {
+            overflow-x: auto;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+
+        /* ===== FLOW DIAGRAM ===== */
+        .flow-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin: 16px 0;
+        }
+
+        .flow-box {
+            background: var(--surface);
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            padding: 10px 16px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .flow-arrow {
+            font-size: 1.4rem;
+            color: var(--accent);
+            font-weight: 700;
+        }
+
+        .highlight-box {
+            background: var(--accent);
+            color: white;
+            border: none;
+        }
+
+        /* ===== ENCAPSULATION VISUAL ===== */
+        .encap-visual {
+            margin: 20px 0;
+        }
+
+        .encap-row {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            margin-bottom: 6px;
+            border-radius: 6px;
+            overflow: hidden;
+            font-size: 0.8rem;
+            font-family: 'DM Mono', monospace;
+        }
+
+        .encap-label {
+            width: 120px;
+            flex-shrink: 0;
+            font-size: 0.8rem;
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-align: right;
+            padding-right: 12px;
+        }
+
+        .encap-seg {
+            padding: 8px 14px;
+            color: white;
+            font-weight: 600;
+            text-align: center;
+            font-size: 0.78rem;
+        }
+
+        .seg-data {
+            background: #e07820;
+        }
+
+        .seg-ah {
+            background: #e05030;
+        }
+
+        .seg-ph {
+            background: #d04830;
+        }
+
+        .seg-sh {
+            background: #c08020;
+        }
+
+        .seg-th {
+            background: #30a060;
+        }
+
+        .seg-nh {
+            background: #3070c0;
+        }
+
+        .seg-dh {
+            background: #7040b0;
+        }
+
+        .seg-dt {
+            background: #504080;
+        }
+
+        /* ===== SUMMARY BOX ===== */
+        .summary {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 20px 24px;
+            margin-top: 28px;
+        }
+
+        .summary-title {
+            font-size: 11px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 12px;
+            font-family: 'DM Mono', monospace;
+        }
+
+        .summary ul {
+            list-style: none;
+        }
+
+        .summary ul li {
+            padding: 5px 0;
+            padding-left: 20px;
+            position: relative;
+            font-size: 0.95rem;
+        }
+
+        .summary ul li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: var(--accent);
+            font-weight: 700;
+        }
+
+        /* ===== QUIZ ===== */
+        .quiz-item {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 24px;
+            margin-bottom: 16px;
+            box-shadow: var(--shadow);
+        }
+
+        .quiz-q {
+            font-weight: 600;
+            margin-bottom: 16px;
+            font-size: 0.95rem;
+        }
+
+        .quiz-q span {
+            display: inline-block;
+            background: var(--accent);
+            color: white;
+            border-radius: 6px;
+            padding: 2px 10px;
+            font-size: 12px;
+            font-family: 'DM Mono', monospace;
+            margin-right: 8px;
+        }
+
+        .quiz-options {
+            margin: 12px 0;
+        }
+
+        .quiz-opt {
+            display: block;
+            padding: 10px 16px;
+            margin: 6px 0;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 2px solid var(--border);
+            background: var(--surface);
+            color: var(--text);
+            font-size: 0.9rem;
+            text-align: left;
+            width: 100%;
+            transition: all 0.2s;
+            font-family: 'DM Sans', sans-serif;
+        }
+
+        .quiz-opt:hover {
+            border-color: var(--accent);
+            background: var(--surface2);
+        }
+
+        .quiz-opt.correct {
+            background: #e8f8e8;
+            border-color: #4a8a5a;
+            color: #2a5a2a;
+        }
+
+        .quiz-opt.wrong {
+            background: #f8e8e8;
+            border-color: #c03030;
+            color: #6a1010;
+        }
+
+        [data-theme="dark"] .quiz-opt.correct {
+            background: #0a1e0a;
+            border-color: #4a8a5a;
+            color: #8ad08a;
+        }
+
+        [data-theme="dark"] .quiz-opt.wrong {
+            background: #1e0a0a;
+            border-color: #c03030;
+            color: #e08080;
+        }
+
+        .quiz-explain {
+            display: none;
+            margin-top: 14px;
+            padding: 14px 18px;
+            background: var(--tip-bg);
+            border-left: 4px solid var(--tip-border);
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+
+        .quiz-explain.show {
+            display: block;
+        }
+
+        /* ===== CHEAT SHEET ===== */
+        .cheat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 14px;
+            margin-top: 20px;
+        }
+
+        .cheat-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 18px;
+            box-shadow: var(--shadow);
+        }
+
+        .cheat-card h4 {
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--accent);
+            margin-bottom: 12px;
+            font-family: 'DM Mono', monospace;
+        }
+
+        .cheat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.85rem;
+        }
+
+        .cheat-item:last-child {
+            border-bottom: none;
+        }
+
+        .cheat-val {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.78rem;
+            background: var(--surface2);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        /* ===== FOOTER ===== */
+        footer {
+            background: var(--text);
+            color: var(--bg);
+            text-align: center;
+            padding: 28px 24px;
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+
+        footer strong {
+            color: var(--accent);
+        }
+
+        /* ===== PROGRESS BAR ===== */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: var(--accent);
+            z-index: 9999;
+            transition: width 0.1s;
+        }
+
+        /* misc */
+        ul.styled {
+            padding-left: 0;
+            list-style: none;
+        }
+
+        ul.styled li {
+            padding: 6px 0 6px 24px;
+            position: relative;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.95rem;
+        }
+
+        ul.styled li:last-child {
+            border-bottom: none;
+        }
+
+        ul.styled li::before {
+            content: '◆';
+            position: absolute;
+            left: 0;
+            color: var(--accent);
+            font-size: 0.6rem;
+            top: 12px;
+        }
+
+        strong {
+            color: var(--accent);
+        }
+
+        code {
+            font-family: 'DM Mono', monospace;
+            background: var(--surface2);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.88em;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            font-family: 'DM Mono', monospace;
+            margin-right: 4px;
+        }
+
+        .badge-orange {
+            background: #fff0e0;
+            color: #c06010;
+            border: 1px solid #e09030;
+        }
+
+        .badge-blue {
+            background: #e0f0ff;
+            color: #1060c0;
+            border: 1px solid #3080e0;
+        }
+
+        .badge-green {
+            background: #e0f8e8;
+            color: #106030;
+            border: 1px solid #30a060;
+        }
+
+        [data-theme="dark"] .badge-orange {
+            background: #2a1800;
+            color: #e09040;
+        }
+
+        [data-theme="dark"] .badge-blue {
+            background: #001828;
+            color: #6098d0;
+        }
+
+        [data-theme="dark"] .badge-green {
+            background: #001810;
+            color: #50a870;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="progress-bar" id="progressBar"></div>
+
+    <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">🌙 Dark Mode</button>
+
+    <header>
+        <div class="header-inner">
+            <span class="course-tag">CS331 — Data Communications & Networking</span>
+            <h1>Protocol Layering,<br>OSI & TCP/IP Models</h1>
+            <p>A comprehensive study guide covering protocol layers, OSI model, TCP/IP suite, encapsulation, and all
+                seven layers in depth.</p>
+        </div>
+    </header>
+
+    <nav class="toc">
+        <div class="toc-inner">
+            <a href="#s1">Why Layers?</a>
+            <a href="#s2">OSI Model</a>
+            <a href="#s3">All 7 Layers</a>
+            <a href="#s4">Encapsulation</a>
+            <a href="#s5">TCP/IP</a>
+            <a href="#s6">OSI vs TCP/IP</a>
+            <a href="#s7">Addressing</a>
+            <a href="#s8">Cheat Sheet</a>
+            <a href="#s9">Practice Q's</a>
+        </div>
+    </nav>
+
+    <main>
+
+        <!-- ====== SECTION 1: WHY LAYERS ====== -->
+        <section id="s1">
+            <div class="section-header">
+                <span class="section-number">01</span>
+                <h2>Why Do We Use Protocol Layers?</h2>
+            </div>
+
+            <div class="card">
+                <p>Computer network architecture is <strong>extremely complex</strong> — there are too many different
+                    components, devices, and functions involved. The question is: how do we manage this complexity?</p>
+                <p>The solution is to organize network functions into <strong>layers</strong>.</p>
+            </div>
+
+            <div class="box def">
+                <div class="box-title">📘 Definition — Layer</div>
+                <p>A <strong>layer</strong> is a logical grouping of all the processes or functions required for
+                    effective data exchange. Each layer provides services to the layer above it through a well-defined
+                    interface.</p>
+            </div>
+
+            <h3>Key Principles of Layering</h3>
+            <ul class="styled">
+                <li><strong>Layer N-1 provides services to Layer N</strong> through a well-defined interface (boundary).
+                </li>
+                <li><strong>Each interface</strong> defines what information, operations, and services a layer must
+                    provide for the layer above it.</li>
+                <li><strong>Layers are distributed</strong> across all nodes in the network — not just at one device.
+                </li>
+                <li><strong>Peer communication:</strong> Layer N on one machine communicates logically with Layer N on
+                    another machine.</li>
+            </ul>
+
+            <h3>Advantages of Layered Architecture</h3>
+            <div class="grid-2">
+                <div class="card">
+                    <h3 style="margin-top:0">🧩 Simplicity</h3>
+                    <p>Breaks complex communication into simpler, smaller problems. Each layer handles one specific job.
+                        Easier to implement in hardware or software.</p>
+                </div>
+                <div class="card">
+                    <h3 style="margin-top:0">🔒 Independence</h3>
+                    <p>Each layer can be implemented <strong>independently</strong> of the others. Different
+                        manufacturers can supply hardware/software for different layers — encouraging collaboration and
+                        competition.</p>
+                </div>
+                <div class="card">
+                    <h3 style="margin-top:0">🔄 Flexibility</h3>
+                    <p>A layer's implementation can be changed completely without affecting other layers, as long as the
+                        interface stays the same.</p>
+                </div>
+                <div class="card">
+                    <h3 style="margin-top:0">🏭 Standardization</h3>
+                    <p>Well-defined interfaces allow interoperability between devices from different vendors and
+                        manufacturers worldwide.</p>
+                </div>
+            </div>
+
+            <div class="box exam">
+                <div class="box-title">🎯 Exam Focus</div>
+                <p>The exam may ask: "What are the advantages of layered architecture?" Know all four advantages above.
+                    Also know that <strong>well-defined interfaces</strong> allow changing one layer's implementation
+                    without affecting others.</p>
+            </div>
+
+            <div class="summary">
+                <div class="summary-title">📌 Section Summary</div>
+                <ul>
+                    <li>Layers break complexity into manageable, simpler pieces</li>
+                    <li>Each layer serves the layer above via a defined interface</li>
+                    <li>Layers can be independently implemented and modified</li>
+                    <li>All nodes in a network use the same layered structure</li>
+                    <li>Two standard protocol stacks: OSI and TCP/IP</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- ====== SECTION 2: OSI MODEL ====== -->
+        <section id="s2">
+            <div class="section-header">
+                <span class="section-number">02</span>
+                <h2>The OSI Model</h2>
+            </div>
+
+            <div class="box def">
+                <div class="box-title">📘 Definition — OSI Model</div>
+                <p>The <strong>Open System Interconnect (OSI)</strong> model was developed by ISO (International
+                    Organization for Standardization) in the <strong>1970s</strong>. It provides a framework for
+                    standardization.</p>
+                <p>An <strong>open system</strong> is a set of protocols that allows <em>any two different systems</em>
+                    to communicate, regardless of their underlying architecture.</p>
+            </div>
+
+            <div class="grid-2">
+                <div class="card">
+                    <h3 style="margin-top:0">🔍 What OSI Describes</h3>
+                    <p>Describes how data and network information moves from an <strong>application</strong> in one
+                        computer to an <strong>application</strong> in another computer.</p>
+                </div>
+                <div class="card">
+                    <h3 style="margin-top:0">📅 Historical Context</h3>
+                    <p>OSI <strong>dominated before 1990</strong>. After that, TCP/IP became dominant because it was
+                        already implemented in ARPANET (forerunner of the internet).</p>
+                </div>
+            </div>
+
+            <h3>The 7 OSI Layers (Top → Bottom)</h3>
+            <div class="layer-stack">
+                <div class="layer-item l7">
+                    <div class="layer-num">7</div>
+                    <div><strong>Application</strong> — User-facing network services (HTTP, FTP, SMTP)</div>
+                    <div class="layer-pdu" style="background:#ffece8;color:#c03020">Message</div>
+                </div>
+                <div class="layer-item l6">
+                    <div class="layer-num">6</div>
+                    <div><strong>Presentation</strong> — Translation, encryption, compression</div>
+                    <div class="layer-pdu" style="background:#fff4e8;color:#b06010">Message</div>
+                </div>
+                <div class="layer-item l5">
+                    <div class="layer-num">5</div>
+                    <div><strong>Session</strong> — Setup, management, termination of sessions</div>
+                    <div class="layer-pdu" style="background:#fffce8;color:#907010">Message</div>
+                </div>
+                <div class="layer-item l4">
+                    <div class="layer-num">4</div>
+                    <div><strong>Transport</strong> — Process-to-process reliable delivery</div>
+                    <div class="layer-pdu" style="background:#eafaf0;color:#207040">Segment</div>
+                </div>
+                <div class="layer-item l3">
+                    <div class="layer-num">3</div>
+                    <div><strong>Network</strong> — Source-to-destination routing across multiple networks</div>
+                    <div class="layer-pdu" style="background:#e8f4ff;color:#1050a0">Packet</div>
+                </div>
+                <div class="layer-item l2">
+                    <div class="layer-num">2</div>
+                    <div><strong>Data Link</strong> — Node-to-node (hop-to-hop) delivery</div>
+                    <div class="layer-pdu" style="background:#f4ecff;color:#6030a0">Frame</div>
+                </div>
+                <div class="layer-item l1">
+                    <div class="layer-num">1</div>
+                    <div><strong>Physical</strong> — Transmission of raw bits over physical medium</div>
+                    <div class="layer-pdu" style="background:#f0f0f0;color:#404040">Bits</div>
+                </div>
+            </div>
+
+            <div class="box mnem">
+                <div class="box-title">🧠 Memory Trick — Remember All 7 Layers</div>
+                <p style="font-size:1.1rem;font-weight:700;margin-bottom:8px">"<strong>A</strong>ll
+                    <strong>P</strong>eople <strong>S</strong>eem <strong>T</strong>o <strong>N</strong>eed
+                    <strong>D</strong>ata <strong>P</strong>rocessing"</p>
+                <p>→ Application, Presentation, Session, Transport, Network, Data Link, Physical</p>
+                <p style="margin-top:10px;font-size:0.9rem;color:var(--text-muted)">For bottom-up: "Please Do Not Throw
+                    Sausage Pizza Away"</p>
+            </div>
+
+            <h3>How OSI Protocols Are Implemented</h3>
+            <div class="grid-3">
+                <div class="card" style="text-align:center">
+                    <p style="font-size:2rem">💻</p>
+                    <h3 style="margin:8px 0">Software</h3>
+                    <p style="font-size:0.85rem">Layers 7, 6, 5, 4<br>(Application through Transport)</p>
+                </div>
+                <div class="card" style="text-align:center">
+                    <p style="font-size:2rem">🔀</p>
+                    <h3 style="margin:8px 0">Mixed</h3>
+                    <p style="font-size:0.85rem">Layer 3<br>(Network layer)</p>
+                </div>
+                <div class="card" style="text-align:center">
+                    <p style="font-size:2rem">🔌</p>
+                    <h3 style="margin:8px 0">Hardware</h3>
+                    <p style="font-size:0.85rem">Layers 1 & 2<br>(Physical & Data Link in NIC)</p>
+                </div>
+            </div>
+
+            <h3>Peer-to-Peer Communication</h3>
+            <div class="card">
+                <p><strong>Peers</strong> are entities (processes, hardware devices) on two or more machines
+                    communicating at a given layer.</p>
+                <p>Each layer on the <strong>sending node</strong> communicates logically with its <strong>peer
+                        layer</strong> on the receiving node, using formatted blocks of data called <strong>Protocol
+                        Data Units (PDUs)</strong>.</p>
+                <p>Important: The control information in each PDU is <strong>read and executed ONLY</strong> by the peer
+                    layer on the receiving node.</p>
+            </div>
+
+            <div class="box def">
+                <div class="box-title">📘 Definition — PDU (Protocol Data Unit)</div>
+                <p><strong>PDU = Data (payload) from the next higher layer + Control information of the current
+                        layer</strong></p>
+                <p>Control information is placed in <strong>header fields</strong> (and a trailer for the Data Link
+                    layer only).</p>
+            </div>
+
+            <div class="box exam">
+                <div class="box-title">🎯 Exam Focus — Devices at Each Layer</div>
+                <p><strong>Physical layer devices:</strong> Network card (NIC), Hub, Repeater</p>
+                <p><strong>Data Link layer device:</strong> Switch</p>
+                <p><strong>Network layer device:</strong> Router</p>
+                <p>Note: "Some devices do not use all layers" — e.g., a hub only uses Physical layer. The more layers a
+                    device supports, the more complex it is.</p>
+            </div>
+
+            <div class="summary">
+                <div class="summary-title">📌 Section Summary</div>
+                <ul>
+                    <li>OSI = 7 layers developed by ISO in the 1970s, dominated before 1990</li>
+                    <li>PDU = payload + control info; only the peer layer reads control info</li>
+                    <li>Upper layers (4-7) = software; Layer 3 = mixed; Layers 1-2 = hardware (NIC)</li>
+                    <li>Mnemonic: "All People Seem To Need Data Processing"</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- ====== SECTION 3: ALL 7 LAYERS ====== -->
+        <section id="s3">
+            <div class="section-header">
+                <span class="section-number">03</span>
+                <h2>Deep Dive: All 7 OSI Layers</h2>
+            </div>
+
+            <!-- PHYSICAL -->
+            <h3>🔌 Layer 1 — Physical Layer</h3>
+            <div class="box def">
+                <div class="box-title">📘 Definition</div>
+                <p>The Physical layer is responsible for the <strong>movement of individual bits</strong> from one hop
+                    (node) to the next. It deals with the actual communication media.</p>
+            </div>
+            <div class="card">
+                <p><strong>What it defines:</strong></p>
+                <ul class="styled">
+                    <li><strong>Physical characteristics</strong> of interfaces and transmission media</li>
+                    <li><strong>Topology</strong> — how devices are connected to each other</li>
+                    <li><strong>Connector specs</strong> — shape, size, number of pins (e.g., RJ-45)</li>
+                    <li><strong>Voltages and currents</strong> used for signaling</li>
+                    <li><strong>Transmission mode</strong> — duplex type (half/full)</li>
+                    <li><strong>Representation of bits</strong> — encoding into Electrical or Optical signals</li>
+                    <li><strong>Data Rate</strong> = transmission rate = bandwidth (bits per second)</li>
+                    <li><strong>Synchronization of bits</strong> — sender and receiver clocks must match</li>
+                </ul>
+            </div>
+            <div class="tip box">
+                <div class="box-title">💡 Quick Analogy</div>
+                <p>The Physical layer is like the <strong>road and the trucks</strong> — it doesn't care what's in the
+                    truck (data), it just handles how the truck physically moves from A to B.</p>
+            </div>
+
+            <!-- DATA LINK -->
+            <h3>🔗 Layer 2 — Data Link Layer</h3>
+            <div class="box def">
+                <div class="box-title">📘 Definition</div>
+                <p>The Data Link layer is responsible for moving <strong>frames</strong> from <strong>one hop (node) to
+                        the next</strong> (node-to-node delivery, also called hop-to-hop).</p>
+                <p><strong>PDU Name: Frame</strong></p>
+            </div>
+            <div class="card">
+                <ul class="styled">
+                    <li><strong>Framing</strong> — divides the stream of bits into units called frames</li>
+                    <li><strong>Physical Addressing</strong> — adds sender and receiver <strong>MAC addresses</strong>
+                        (also called local/hardware/NIC/LAN addresses) to the frame header</li>
+                    <li><strong>Node-to-Node delivery</strong> — moves frames across DIRECT connections only (hop by
+                        hop)</li>
+                </ul>
+            </div>
+            <div class="box conf">
+                <div class="box-title">⚠️ Common Confusion — Data Link vs Network</div>
+                <p><strong>Data Link Layer:</strong> Hop-to-hop delivery (node to adjacent node). Uses <strong>MAC
+                        address</strong> (physical). Changes at every hop.</p>
+                <p><strong>Network Layer:</strong> End-to-end delivery (source all the way to destination). Uses
+                    <strong>IP address</strong> (logical). Stays the same throughout the journey.</p>
+            </div>
+
+            <!-- NETWORK -->
+            <h3>🌐 Layer 3 — Network Layer</h3>
+            <div class="box def">
+                <div class="box-title">📘 Definition</div>
+                <p>The Network layer is responsible for the <strong>delivery of individual packets</strong> from the
+                    <strong>source host to the destination host</strong> — across multiple networks.</p>
+                <p><strong>PDU Name: Packet (or Datagram)</strong></p>
+            </div>
+            <div class="card">
+                <ul class="styled">
+                    <li><strong>Logical Addressing (IP Address)</strong> — unique global address identifying each host
+                        on the internet</li>
+                    <li><strong>Routing</strong> — routers examine the packet's destination IP and forward it toward its
+                        final destination</li>
+                    <li><strong>Source-to-Destination delivery</strong> across MULTIPLE networks (end-to-end)</li>
+                </ul>
+                <p style="margin-top:10px;font-size:0.9rem;color:var(--text-muted)">Note: If two systems are on the same
+                    link, there is theoretically no need for a network layer.</p>
+            </div>
+
+            <!-- TRANSPORT -->
+            <h3>🚚 Layer 4 — Transport Layer</h3>
+            <div class="box def">
+                <div class="box-title">📘 Definition</div>
+                <p>The Transport layer is responsible for the <strong>delivery of a message from one process to
+                        another</strong> (process-to-process delivery). It ensures the <strong>entire message</strong>
+                    arrives intact and in order.</p>
+                <p><strong>PDU Name: Segment</strong></p>
+            </div>
+            <div class="card">
+                <ul class="styled">
+                    <li><strong>Process Addressing</strong> — uses <strong>port numbers</strong> to identify which
+                        application/process to deliver data to</li>
+                    <li><strong>Segmentation</strong> — breaks large messages into segments</li>
+                    <li><strong>Whole message delivery</strong> — ensures all segments arrive and reassembles them in
+                        order</li>
+                </ul>
+            </div>
+            <div class="box conf">
+                <div class="box-title">⚠️ Common Confusion — Network vs Transport</div>
+                <p><strong>Network layer:</strong> Host-to-host delivery of <em>individual packets</em>. Each packet
+                    treated independently (no relationship between packets).</p>
+                <p><strong>Transport layer:</strong> Process-to-process delivery of the <em>entire message</em>. Ensures
+                    all pieces arrive and are in the right order.</p>
+                <p style="margin-top:8px">Think of it this way: Network layer delivers the letters (packets), Transport
+                    layer makes sure you received the whole book (message).</p>
+            </div>
+
+            <!-- SESSION -->
+            <h3>🤝 Layer 5 — Session Layer</h3>
+            <div class="card">
+                <p><strong>Main job:</strong> Setting up, managing, and <strong>terminating sessions
+                        (connections)</strong> between different applications.</p>
+                <ul class="styled">
+                    <li><strong>Session separation</strong> — keeps different applications' data separate (e.g.,
+                        multiple FTP downloads, multiple browser tabs)</li>
+                    <li><strong>Dialog control</strong> — Full/Half duplex: processes either send and receive at the
+                        same time (full) or at different times (half)</li>
+                    <li><strong>Synchronization checkpoints</strong> — allows long transmissions to resume from where
+                        they left off after a crash</li>
+                </ul>
+            </div>
+
+            <!-- PRESENTATION -->
+            <h3>🖥️ Layer 6 — Presentation Layer</h3>
+            <div class="card">
+                <p><strong>Main job:</strong> Translation between data formats so different devices can communicate
+                    (interoperability).</p>
+                <ul class="styled">
+                    <li><strong>Translation</strong> — Sender format → Common format → Receiver format (e.g., EBCDIC to
+                        ASCII)</li>
+                    <li><strong>Encryption / Decryption</strong> — securing data for transmission</li>
+                    <li><strong>Compression</strong> — reducing the number of bits (especially for multimedia)</li>
+                </ul>
+            </div>
+            <div class="tip box">
+                <div class="box-title">💡 Real Example</div>
+                <p>If you type "Cisco" on a Mainframe using EBCDIC encoding, it would show up as "¢¹½³?" on a PC using
+                    ASCII — the Presentation layer fixes this by converting formats.</p>
+            </div>
+
+            <!-- APPLICATION -->
+            <h3>📱 Layer 7 — Application Layer</h3>
+            <div class="card">
+                <p><strong>Main job:</strong> Provides the <strong>user interface</strong> and <strong>network
+                        services</strong> that allow user applications to access the network.</p>
+                <ul class="styled">
+                    <li><strong>HTTP</strong> — Web browsing (Internet Browser)</li>
+                    <li><strong>Telnet</strong> — Remote host access</li>
+                    <li><strong>FTP</strong> — File transfer, access, and management</li>
+                    <li><strong>SMTP</strong> — Mail services</li>
+                </ul>
+                <p><strong>PDU Name: Message</strong></p>
+            </div>
+
+            <div class="box exam">
+                <div class="box-title">🎯 Exam Focus — PDU Names at Each Layer</div>
+                <div class="compare-table-wrap">
+                    <table class="compare-table">
+                        <thead>
+                            <tr>
+                                <th>Layer</th>
+                                <th>Number</th>
+                                <th>PDU Name</th>
+                                <th>Address Used</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Application / Presentation / Session</td>
+                                <td>7/6/5</td>
+                                <td>Message</td>
+                                <td>—</td>
+                            </tr>
+                            <tr>
+                                <td>Transport</td>
+                                <td>4</td>
+                                <td>Segment</td>
+                                <td>Port Address</td>
+                            </tr>
+                            <tr>
+                                <td>Network</td>
+                                <td>3</td>
+                                <td>Packet / Datagram</td>
+                                <td>IP Address</td>
+                            </tr>
+                            <tr>
+                                <td>Data Link</td>
+                                <td>2</td>
+                                <td>Frame</td>
+                                <td>MAC Address (Physical)</td>
+                            </tr>
+                            <tr>
+                                <td>Physical</td>
+                                <td>1</td>
+                                <td>Bits</td>
+                                <td>—</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="summary">
+                <div class="summary-title">📌 Section Summary</div>
+                <ul>
+                    <li>Physical: raw bits, cables, voltages, encoding — PDU = Bits</li>
+                    <li>Data Link: hop-to-hop using MAC address — PDU = Frame</li>
+                    <li>Network: end-to-end using IP address — PDU = Packet</li>
+                    <li>Transport: process-to-process using Port — PDU = Segment</li>
+                    <li>Session: manages connections and dialog between apps</li>
+                    <li>Presentation: translates, encrypts, compresses data</li>
+                    <li>Application: user interface; HTTP, FTP, SMTP, Telnet</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- ====== SECTION 4: ENCAPSULATION ====== -->
+        <section id="s4">
+            <div class="section-header">
+                <span class="section-number">04</span>
+                <h2>Data Encapsulation & Decapsulation</h2>
+            </div>
+
+            <div class="box def">
+                <div class="box-title">📘 Definition — Data Encapsulation</div>
+                <p><strong>Encapsulation</strong> is the process where each layer adds its own control information
+                    (header, and in the case of Data Link, a trailer) to the data received from the layer above. The
+                    lower layer "wraps" the PDU from the upper layer without any knowledge of its content.</p>
+                <p>PDU = Data (payload from next higher layer) + Control information (headers/trailers of current layer)
+                </p>
+            </div>
+
+            <h3>Encapsulation at Each Layer (Sender Side — Top to Bottom)</h3>
+            <div class="encap-visual">
+                <div class="encap-row">
+                    <div class="encap-label">Application</div>
+                    <div class="encap-seg seg-ah">AH</div>
+                    <div class="encap-seg seg-data">Data</div>
+                </div>
+                <div class="encap-row">
+                    <div class="encap-label">Presentation</div>
+                    <div class="encap-seg seg-ph">PH</div>
+                    <div class="encap-seg seg-ah">AH</div>
+                    <div class="encap-seg seg-data">Data</div>
+                </div>
+                <div class="encap-row">
+                    <div class="encap-label">Session</div>
+                    <div class="encap-seg seg-sh">SH</div>
+                    <div class="encap-seg seg-ph">PH</div>
+                    <div class="encap-seg seg-ah">AH</div>
+                    <div class="encap-seg seg-data">Data</div>
+                </div>
+                <div class="encap-row">
+                    <div class="encap-label">Transport</div>
+                    <div class="encap-seg seg-th">TH</div>
+                    <div class="encap-seg seg-sh">SH</div>
+                    <div class="encap-seg seg-ph">PH</div>
+                    <div class="encap-seg seg-ah">AH</div>
+                    <div class="encap-seg seg-data">Data</div>
+                </div>
+                <div class="encap-row">
+                    <div class="encap-label">Network</div>
+                    <div class="encap-seg seg-nh">NH</div>
+                    <div class="encap-seg seg-th">TH</div>
+                    <div class="encap-seg seg-sh">SH</div>
+                    <div class="encap-seg seg-ph">PH</div>
+                    <div class="encap-seg seg-ah">AH</div>
+                    <div class="encap-seg seg-data">Data</div>
+                </div>
+                <div class="encap-row">
+                    <div class="encap-label">Data Link</div>
+                    <div class="encap-seg seg-dh">DH</div>
+                    <div class="encap-seg seg-nh">NH</div>
+                    <div class="encap-seg seg-th">TH</div>
+                    <div class="encap-seg seg-sh">SH</div>
+                    <div class="encap-seg seg-ph">PH</div>
+                    <div class="encap-seg seg-ah">AH</div>
+                    <div class="encap-seg seg-data">Data</div>
+                    <div class="encap-seg seg-dt">DT</div>
+                </div>
+                <div class="encap-row">
+                    <div class="encap-label">Physical</div>
+                    <div class="encap-seg seg-dh">DH</div>
+                    <div class="encap-seg seg-nh">NH</div>
+                    <div class="encap-seg seg-th">TH</div>
+                    <div class="encap-seg seg-sh">SH</div>
+                    <div class="encap-seg seg-ph">PH</div>
+                    <div class="encap-seg seg-ah">AH</div>
+                    <div class="encap-seg seg-data">Data</div>
+                    <div class="encap-seg seg-dt">DT</div>
+                </div>
+            </div>
+
+            <div class="box mnem">
+                <div class="box-title">🧠 Key Insight — Header Colors Explained</div>
+                <p>DH = Data link Header | NH = Network Header | TH = Transport Header | SH = Session Header | PH =
+                    Presentation Header | AH = Application Header | DT = Data link Trailer</p>
+                <p style="margin-top:8px">Note: <strong>Only the Data Link layer has BOTH a header AND a
+                        trailer</strong> (for error detection). All others only have headers.</p>
+            </div>
+
+            <h3>Decapsulation (Receiver Side — Bottom to Top)</h3>
+            <div class="card">
+                <p>At the receiving node, the process is <strong>reversed</strong>. Each layer reads its own
+                    header/trailer, acts on the control information, and then <strong>strips it off</strong> before
+                    passing the remaining data up to the next layer above.</p>
+                <p>By the time the data reaches the Application layer, all headers/trailers have been removed, and only
+                    the original data remains.</p>
+            </div>
+
+            <div class="box exam">
+                <div class="box-title">🎯 Exam Focus</div>
+                <p>Layer N-1 carries the PDU of Layer N <strong>without any knowledge of its content</strong>. This
+                    principle is called <strong>encapsulation</strong>. Control information is only read and acted upon
+                    by its <strong>peer layer</strong> at the receiving end.</p>
+            </div>
+
+            <div class="summary">
+                <div class="summary-title">📌 Section Summary</div>
+                <ul>
+                    <li>Encapsulation = each layer adds its own header (Data Link also adds a trailer)</li>
+                    <li>PDU = payload (from above layer) + header (current layer's control info)</li>
+                    <li>Only the Data Link layer has both a header AND a trailer</li>
+                    <li>Decapsulation = receiver strips headers layer by layer from bottom to top</li>
+                    <li>Control info is read only by the peer layer on the other machine</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- ====== SECTION 5: TCP/IP ====== -->
+        <section id="s5">
+            <div class="section-header">
+                <span class="section-number">05</span>
+                <h2>The TCP/IP Protocol Suite</h2>
+            </div>
+
+            <div class="box def">
+                <div class="box-title">📘 Definition</div>
+                <p>TCP/IP is a suite of protocols developed in the <strong>1970s</strong>. Named after the two most
+                    important protocols (TCP and IP), but includes many others (UDP, ICMP, ARP, etc.).</p>
+                <p>TCP/IP consists of <strong>5 layers</strong> (in the version taught in this course).</p>
+            </div>
+
+            <h3>TCP/IP Layers and PDUs</h3>
+            <div class="layer-stack">
+                <div class="layer-item l7">
+                    <div class="layer-num" style="width:36px;height:36px;font-size:14px">5</div>
+                    <div><strong>Application Layer</strong> — SMTP, FTP, HTTP, DNS, SNMP, TELNET …</div>
+                    <div class="layer-pdu" style="background:#ffece8;color:#c03020">Message</div>
+                </div>
+                <div class="layer-item l4">
+                    <div class="layer-num" style="width:36px;height:36px;font-size:14px">4</div>
+                    <div><strong>Transport Layer</strong> — TCP, UDP, SCTP</div>
+                    <div class="layer-pdu" style="background:#eafaf0;color:#207040">Segment</div>
+                </div>
+                <div class="layer-item l3">
+                    <div class="layer-num" style="width:36px;height:36px;font-size:14px">3</div>
+                    <div><strong>Network Layer</strong> — IP, ICMP, IGMP, ARP, RARP</div>
+                    <div class="layer-pdu" style="background:#e8f4ff;color:#1050a0">Packet</div>
+                </div>
+                <div class="layer-item l2">
+                    <div class="layer-num" style="width:36px;height:36px;font-size:14px">2</div>
+                    <div><strong>Data Link Layer</strong> — Protocols defined by underlying networks</div>
+                    <div class="layer-pdu" style="background:#f4ecff;color:#6030a0">Frame</div>
+                </div>
+                <div class="layer-item l1">
+                    <div class="layer-num" style="width:36px;height:36px;font-size:14px">1</div>
+                    <div><strong>Physical Layer</strong> — LAN and WAN technology</div>
+                    <div class="layer-pdu" style="background:#f0f0f0;color:#404040">Bits</div>
+                </div>
+            </div>
+
+            <div class="box exam">
+                <div class="box-title">🎯 Exam Focus — Key Difference from OSI</div>
+                <p>The three top layers in the OSI model (Application, Presentation, Session) are <strong>combined into
+                        a single Application layer</strong> in TCP/IP.</p>
+                <p>The bottom four layers correspond directly between both models.</p>
+                <p>The original TCP/IP model had only <strong>4 layers</strong> (combining Data Link + Physical into
+                    "Network Access" or "Host-to-Network").</p>
+            </div>
+
+            <h3>Key Protocols at Each TCP/IP Layer</h3>
+            <div class="compare-table-wrap">
+                <table class="compare-table">
+                    <thead>
+                        <tr>
+                            <th>Layer</th>
+                            <th>Key Protocols</th>
+                            <th>Role</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Application</strong></td>
+                            <td>HTTP, FTP, SMTP, DNS, SNMP, TELNET</td>
+                            <td>User-facing services</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Transport</strong></td>
+                            <td>TCP, UDP, SCTP</td>
+                            <td>Process-to-process delivery</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Network</strong></td>
+                            <td>IP, ICMP, IGMP, ARP, RARP</td>
+                            <td>Host-to-host routing</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Data Link</strong></td>
+                            <td>Defined by underlying networks (Ethernet, Wi-Fi, etc.)</td>
+                            <td>Hop-to-hop delivery</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Physical</strong></td>
+                            <td>Underlying LAN/WAN technology</td>
+                            <td>Bit transmission</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="summary">
+                <div class="summary-title">📌 Section Summary</div>
+                <ul>
+                    <li>TCP/IP has 5 layers (or 4 in original version)</li>
+                    <li>OSI's top 3 layers = TCP/IP's single Application layer</li>
+                    <li>Transport layer protocols: TCP, UDP, SCTP</li>
+                    <li>Network layer uses IP + helping protocols (ICMP, ARP, etc.)</li>
+                    <li>Data Link + Physical use underlying LAN/WAN technology</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- ====== SECTION 6: OSI vs TCP/IP ====== -->
+        <section id="s6">
+            <div class="section-header">
+                <span class="section-number">06</span>
+                <h2>OSI vs TCP/IP — Side by Side</h2>
+            </div>
+
+            <div class="compare-table-wrap">
+                <table class="compare-table">
+                    <thead>
+                        <tr>
+                            <th>Feature</th>
+                            <th>OSI Model</th>
+                            <th>TCP/IP Model</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Number of layers</td>
+                            <td>7</td>
+                            <td>5 (or 4 in original)</td>
+                        </tr>
+                        <tr>
+                            <td>Developed by</td>
+                            <td>ISO (International Organization for Standardization)</td>
+                            <td>ARPA / US Government</td>
+                        </tr>
+                        <tr>
+                            <td>Developed in</td>
+                            <td>1970s</td>
+                            <td>1970s</td>
+                        </tr>
+                        <tr>
+                            <td>Dominance period</td>
+                            <td>Before 1990</td>
+                            <td>After 1990 (still dominant)</td>
+                        </tr>
+                        <tr>
+                            <td>Upper layers</td>
+                            <td>Application + Presentation + Session (3 layers)</td>
+                            <td>Application (1 layer)</td>
+                        </tr>
+                        <tr>
+                            <td>Primary use</td>
+                            <td>Reference model / Framework</td>
+                            <td>Actual implementation in the internet</td>
+                        </tr>
+                        <tr>
+                            <td>Protocol at Layer 3</td>
+                            <td>No specific protocol defined</td>
+                            <td>IP (and ARP, ICMP, etc.)</td>
+                        </tr>
+                        <tr>
+                            <td>Transport protocols</td>
+                            <td>No specific protocol defined</td>
+                            <td>TCP, UDP, SCTP</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="box conf">
+                <div class="box-title">⚠️ Common Confusion — Mapping Between Models</div>
+                <div class="flow-row">
+                    <div class="flow-box">OSI Layer 7<br>(Application)</div>
+                    <div class="flow-arrow">⎫</div>
+                    <div class="flow-row" style="flex-direction:column;gap:2px;">
+                        <div class="flow-box">OSI Layer 6<br>(Presentation)</div>
+                        <div class="flow-box">OSI Layer 5<br>(Session)</div>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-box highlight-box">TCP/IP<br>Application<br>Layer</div>
+                </div>
+                <p style="margin-top:12px">Layers 1–4 map directly: Physical→Physical, Data Link→Data Link,
+                    Network→Network, Transport→Transport.</p>
+            </div>
+
+            <div class="box mnem">
+                <div class="box-title">🧠 Quick Comparison Summary</div>
+                <p><strong>OSI = Teaching model</strong> (great for understanding, less used in practice)</p>
+                <p><strong>TCP/IP = Real-world model</strong> (what the internet actually runs on)</p>
+                <p>OSI is like a perfect textbook — TCP/IP is what actually shipped.</p>
+            </div>
+        </section>
+
+        <!-- ====== SECTION 7: ADDRESSING ====== -->
+        <section id="s7">
+            <div class="section-header">
+                <span class="section-number">07</span>
+                <h2>Types of Addresses in Networking</h2>
+            </div>
+
+            <div class="card">
+                <p>There are <strong>three types of addresses</strong> used in network communication, each at a
+                    different layer:</p>
+            </div>
+
+            <div class="grid-3">
+                <div class="card" style="border-top: 4px solid #7040b0;">
+                    <h3 style="margin-top:0;color:#7040b0">🔌 Physical Address</h3>
+                    <p><strong>Layer:</strong> Data Link (Layer 2)</p>
+                    <p><strong>Also called:</strong> MAC address, hardware address, NIC address, LAN address</p>
+                    <p><strong>Scope:</strong> Local — changes at each hop</p>
+                    <p><strong>Example:</strong> 00:1A:2B:3C:4D:5E</p>
+                </div>
+                <div class="card" style="border-top: 4px solid #3070c0;">
+                    <h3 style="margin-top:0;color:#3070c0">🌐 IP Address</h3>
+                    <p><strong>Layer:</strong> Network (Layer 3)</p>
+                    <p><strong>Also called:</strong> Logical address, Internet address</p>
+                    <p><strong>Scope:</strong> Global — unique per host on internet, stays same throughout journey</p>
+                    <p><strong>Example:</strong> 192.168.1.1</p>
+                </div>
+                <div class="card" style="border-top: 4px solid #30a060;">
+                    <h3 style="margin-top:0;color:#30a060">⚡ Port Address</h3>
+                    <p><strong>Layer:</strong> Transport (Layer 4)</p>
+                    <p><strong>Also called:</strong> Port number</p>
+                    <p><strong>Scope:</strong> Identifies a specific process/application on a host</p>
+                    <p><strong>Example:</strong> HTTP=80, HTTPS=443, FTP=21</p>
+                </div>
+            </div>
+
+            <div class="box exam">
+                <div class="box-title">🎯 Exam Focus — Address Changes During Routing</div>
+                <p>As a packet travels from source to destination through routers:</p>
+                <ul class="styled" style="margin-top:10px">
+                    <li><strong>IP address (source & destination)</strong> — NEVER changes during the journey (stays the
+                        same end-to-end)</li>
+                    <li><strong>MAC address (physical)</strong> — CHANGES at every hop (each router creates a new frame
+                        with new MAC addresses for the next link)</li>
+                    <li><strong>Port number</strong> — stays the same throughout</li>
+                </ul>
+            </div>
+
+            <div class="summary">
+                <div class="summary-title">📌 Section Summary</div>
+                <ul>
+                    <li>Physical (MAC) address = Layer 2, local scope, changes each hop</li>
+                    <li>IP address = Layer 3, global scope, stays same entire trip</li>
+                    <li>Port address = Layer 4, identifies process/application</li>
+                    <li>TCP and UDP use port addresses; IP uses IP addresses; Ethernet uses MAC addresses</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- ====== SECTION 8: CHEAT SHEET ====== -->
+        <section id="s8">
+            <div class="section-header">
+                <span class="section-number">08</span>
+                <h2>⚡ Quick Revision Cheat Sheet</h2>
+            </div>
+
+            <div class="cheat-grid">
+                <div class="cheat-card">
+                    <h4>OSI Layer PDUs</h4>
+                    <div class="cheat-item"><span>Application (7)</span><span class="cheat-val">Message</span></div>
+                    <div class="cheat-item"><span>Presentation (6)</span><span class="cheat-val">Message</span></div>
+                    <div class="cheat-item"><span>Session (5)</span><span class="cheat-val">Message</span></div>
+                    <div class="cheat-item"><span>Transport (4)</span><span class="cheat-val">Segment</span></div>
+                    <div class="cheat-item"><span>Network (3)</span><span class="cheat-val">Packet</span></div>
+                    <div class="cheat-item"><span>Data Link (2)</span><span class="cheat-val">Frame</span></div>
+                    <div class="cheat-item"><span>Physical (1)</span><span class="cheat-val">Bits</span></div>
+                </div>
+
+                <div class="cheat-card">
+                    <h4>Addresses per Layer</h4>
+                    <div class="cheat-item"><span>Transport (4)</span><span class="cheat-val">Port #</span></div>
+                    <div class="cheat-item"><span>Network (3)</span><span class="cheat-val">IP Address</span></div>
+                    <div class="cheat-item"><span>Data Link (2)</span><span class="cheat-val">MAC Address</span></div>
+                    <div class="cheat-item"><span>Physical (1)</span><span class="cheat-val">None</span></div>
+                </div>
+
+                <div class="cheat-card">
+                    <h4>Delivery Type</h4>
+                    <div class="cheat-item"><span>Transport</span><span class="cheat-val">Process→Process</span></div>
+                    <div class="cheat-item"><span>Network</span><span class="cheat-val">Host→Host</span></div>
+                    <div class="cheat-item"><span>Data Link</span><span class="cheat-val">Node→Node</span></div>
+                    <div class="cheat-item"><span>Physical</span><span class="cheat-val">Bit→Bit</span></div>
+                </div>
+
+                <div class="cheat-card">
+                    <h4>TCP/IP Protocols</h4>
+                    <div class="cheat-item"><span>Application</span><span class="cheat-val">HTTP, FTP, SMTP</span></div>
+                    <div class="cheat-item"><span>Transport</span><span class="cheat-val">TCP, UDP, SCTP</span></div>
+                    <div class="cheat-item"><span>Network</span><span class="cheat-val">IP, ICMP, ARP</span></div>
+                </div>
+
+                <div class="cheat-card">
+                    <h4>Implementation</h4>
+                    <div class="cheat-item"><span>Layers 7,6,5,4</span><span class="cheat-val">Software</span></div>
+                    <div class="cheat-item"><span>Layer 3</span><span class="cheat-val">Mixed</span></div>
+                    <div class="cheat-item"><span>Layers 2,1</span><span class="cheat-val">Hardware (NIC)</span></div>
+                </div>
+
+                <div class="cheat-card">
+                    <h4>Devices per Layer</h4>
+                    <div class="cheat-item"><span>Physical (1)</span><span class="cheat-val">Hub, Repeater</span></div>
+                    <div class="cheat-item"><span>Data Link (2)</span><span class="cheat-val">Switch</span></div>
+                    <div class="cheat-item"><span>Network (3)</span><span class="cheat-val">Router</span></div>
+                </div>
+
+                <div class="cheat-card">
+                    <h4>OSI vs TCP/IP</h4>
+                    <div class="cheat-item"><span>OSI layers</span><span class="cheat-val">7</span></div>
+                    <div class="cheat-item"><span>TCP/IP layers</span><span class="cheat-val">5 (or 4)</span></div>
+                    <div class="cheat-item"><span>OSI developed</span><span class="cheat-val">1970s by ISO</span></div>
+                    <div class="cheat-item"><span>OSI dominated</span><span class="cheat-val">Pre-1990</span></div>
+                </div>
+
+                <div class="cheat-card">
+                    <h4>Key Mnemonics</h4>
+                    <div class="cheat-item" style="flex-direction:column;align-items:flex-start;gap:4px">
+                        <span style="font-weight:700;color:var(--accent)">Top→Bottom:</span>
+                        <span style="font-size:0.82rem">"All People Seem To Need Data Processing"</span>
+                    </div>
+                    <div class="cheat-item" style="flex-direction:column;align-items:flex-start;gap:4px;margin-top:8px">
+                        <span style="font-weight:700;color:var(--accent2)">Bottom→Top:</span>
+                        <span style="font-size:0.82rem">"Please Do Not Throw Sausage Pizza Away"</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="box mnem" style="margin-top:24px">
+                <div class="box-title">🧠 The Big Picture — One Sentence per Layer</div>
+                <ul class="styled">
+                    <li><strong>7 Application:</strong> I am the door to the network for users (HTTP, FTP, email)</li>
+                    <li><strong>6 Presentation:</strong> I translate, encrypt, and compress data between systems</li>
+                    <li><strong>5 Session:</strong> I open, manage, and close sessions between applications</li>
+                    <li><strong>4 Transport:</strong> I make sure the whole message gets there, process to process
+                        (TCP/UDP)</li>
+                    <li><strong>3 Network:</strong> I find the best path and route packets using IP addresses</li>
+                    <li><strong>2 Data Link:</strong> I move frames hop by hop using MAC addresses</li>
+                    <li><strong>1 Physical:</strong> I convert everything to 0s and 1s and push them through the wire
+                    </li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- ====== SECTION 9: PRACTICE QUESTIONS ====== -->
+        <section id="s9">
+            <div class="section-header">
+                <span class="section-number">09</span>
+                <h2>🧪 Practice Questions</h2>
+            </div>
+
+            <div class="quiz-item">
+                <div class="quiz-q"><span>Q1</span>Which OSI layer is responsible for translating, encrypting, and
+                    compressing data?</div>
+                <div class="quiz-options">
+                    <button class="quiz-opt" onclick="answer(this, false)">A. Application Layer</button>
+                    <button class="quiz-opt" onclick="answer(this, false)">B. Session Layer</button>
+                    <button class="quiz-opt" onclick="answer(this, true)">C. Presentation Layer</button>
+                    <button class="quiz-opt" onclick="answer(this, false)">D. Transport Layer</button>
+                </div>
+                <div class="quiz-explain">✅ <strong>Correct: C.</strong> The Presentation Layer handles translation
+                    (e.g., EBCDIC to ASCII), encryption/decryption, and compression. Think of it as the "translator" of
+                    the OSI model.</div>
+            </div>
+
+            <div class="quiz-item">
+                <div class="quiz-q"><span>Q2</span>What is the PDU name at the Transport layer?</div>
+                <div class="quiz-options">
+                    <button class="quiz-opt" onclick="answer(this, false)">A. Frame</button>
+                    <button class="quiz-opt" onclick="answer(this, false)">B. Packet</button>
+                    <button class="quiz-opt" onclick="answer(this, true)">C. Segment</button>
+                    <button class="quiz-opt" onclick="answer(this, false)">D. Message</button>
+                </div>
+                <div class="quiz-explain">✅ <strong>Correct: C.</strong> The Transport layer PDU is called a
+                    <strong>Segment</strong>. Remember: Physical=Bits, Data Link=Frame, Network=Packet,
+                    Transport=Segment, Upper layers=Message.</div>
+            </div>
+
+            <div class="quiz-item">
+                <div class="quiz-q"><span>Q3</span>Which layer is responsible for node-to-node (hop-to-hop) delivery
+                    using MAC addresses?</div>
+                <div class="quiz-options">
+                    <button class="quiz-opt" onclick="answer(this, false)">A. Network Layer</button>
+                    <button class="quiz-opt" onclick="answer(this, true)">B. Data Link Layer</button>
+                    <button class="quiz-opt" onclick="answer(this, false)">C. Transport Layer</button>
+                    <button class="quiz-opt" onclick="answer(this, false)">D. Physical Layer</button>
+                </div>
+                <div class="quiz-explain">✅ <strong>Correct: B.</strong> The Data Link Layer performs hop-to-hop
+                    delivery between directly connected nodes using MAC (physical) addresses. The Network layer does
+                    end-to-end delivery using IP addresses.</div>
+            </div>
+
+            <div class="quiz-item">
+                <div class="quiz-q"><span>Q4</span>In TCP/IP, the three top OSI layers (Application, Presentation,
+                    Session) are combined into which single layer?</div>
+                <div class="quiz-options">
+                    <button class="quiz-opt" onclick="answer(this, true)">A. Application Layer</button>
+                    <button class="quiz-opt" onclick="answer(this, false)">B. Session Layer</button>
+                    <button class="quiz-opt" onclick="answer(this, false)">C. Transport Layer</button>
+                    <button class="quiz-opt" onclick="answer(this, false)">D. Internet Layer</button>
+                </div>
+                <div class="quiz-explain">✅ <strong>Correct: A.</strong> In TCP/IP, the Application layer combines the
+                    functionality of OSI's Application, Presentation, and Session layers into one. TCP/IP's Application
+                    layer uses protocols like HTTP, FTP, SMTP, DNS.</div>
+            </div>
+
+            <div class="quiz-item">
+                <div class="quiz-q"><span>Q5</span>Which of the following is an advantage of layered network
+                    architecture?</div>
+                <div class="quiz-options">
+                    <button class="quiz-opt" onclick="answer(this, false)">A. Increases complexity of
+                        communication</button>
+                    <button class="quiz-opt" onclick="answer(this, false)">B. Makes all layers dependent on each
+                        other</button>
+                    <button class="quiz-opt" onclick="answer(this, true)">C. Allows changing one layer's implementation
+                        without affecting others</button>
+                    <button class="quiz-opt" onclick="answer(this, false)">D. Reduces the number of protocols
+                        needed</button>
+                </div>
+                <div class="quiz-explain">✅ <strong>Correct: C.</strong> Well-defined interfaces between layers allow
+                    changing the implementation of one layer with a completely different implementation without
+                    affecting the other layers. This is a core advantage of layered architecture.</div>
+            </div>
+
+            <div class="quiz-item">
+                <div class="quiz-q"><span>Q6</span>Which OSI layer ONLY has a header — and which layer has BOTH a header
+                    AND a trailer?</div>
+                <div class="quiz-options">
+                    <button class="quiz-opt" onclick="answer(this, false)">A. Network has both; Data Link has only a
+                        header</button>
+                    <button class="quiz-opt" onclick="answer(this, true)">B. All other layers have only headers; Data
+                        Link has both a header and trailer</button>
+                    <button class="quiz-opt" onclick="answer(this, false)">C. Physical layer has both; Transport has
+                        only a header</button>
+                    <button class="quiz-opt" onclick="answer(this, false)">D. All layers have both a header and a
+                        trailer</button>
+                </div>
+                <div class="quiz-explain">✅ <strong>Correct: B.</strong> The Data Link layer is the only layer with BOTH
+                    a header (DH) and a trailer (DT). The trailer is used for error detection (e.g., CRC checksum). All
+                    other layers only add headers.</div>
+            </div>
+
+            <div class="quiz-item">
+                <div class="quiz-q"><span>Q7</span>The OSI model was developed by which organization, and in which
+                    decade?</div>
+                <div class="quiz-options">
+                    <button class="quiz-opt" onclick="answer(this, false)">A. ARPA, 1960s</button>
+                    <button class="quiz-opt" onclick="answer(this, false)">B. IEEE, 1980s</button>
+                    <button class="quiz-opt" onclick="answer(this, true)">C. ISO, 1970s</button>
+                    <button class="quiz-opt" onclick="answer(this, false)">D. ITU, 1990s</button>
+                </div>
+                <div class="quiz-explain">✅ <strong>Correct: C.</strong> The OSI model was developed by ISO
+                    (International Organization for Standardization) in the 1970s. It dominated before 1990, after which
+                    TCP/IP became the dominant model due to the rise of the internet.</div>
+            </div>
+
+            <div class="quiz-item">
+                <div class="quiz-q"><span>Q8</span>Which type of address changes at every hop as a packet travels from
+                    source to destination?</div>
+                <div class="quiz-options">
+                    <button class="quiz-opt" onclick="answer(this, false)">A. IP Address</button>
+                    <button class="quiz-opt" onclick="answer(this, true)">B. MAC (Physical) Address</button>
+                    <button class="quiz-opt" onclick="answer(this, false)">C. Port Number</button>
+                    <button class="quiz-opt" onclick="answer(this, false)">D. Both IP and MAC Address</button>
+                </div>
+                <div class="quiz-explain">✅ <strong>Correct: B.</strong> The MAC (physical) address changes at every hop
+                    because each router creates a new Data Link frame with the MAC addresses of the next link. The IP
+                    address (source and destination) remains unchanged throughout the entire journey.</div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <p>Study Guide · Data Communications & Networking · Chapter 1 Part 2</p>
+        <p style="margin-top:8px">Prepared for <strong>Shoug Alomran</strong> · CS331</p>
+    </footer>
+
+    <script>
+        // Theme toggle
+        function toggleTheme() {
+            const html = document.documentElement;
+            const btn = document.getElementById('themeBtn');
+            if (html.getAttribute('data-theme') === 'dark') {
+                html.removeAttribute('data-theme');
+                btn.textContent = '🌙 Dark Mode';
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                btn.textContent = '☀️ Light Mode';
+            }
+        }
+
+        // Quiz answer handler
+        function answer(btn, correct) {
+            const item = btn.closest('.quiz-item');
+            const opts = item.querySelectorAll('.quiz-opt');
+            const explain = item.querySelector('.quiz-explain');
+            opts.forEach(o => { o.disabled = true; o.style.cursor = 'default'; });
+            btn.classList.add(correct ? 'correct' : 'wrong');
+            if (!correct) {
+                opts.forEach(o => {
+                    if (o.onclick.toString().includes('true')) o.classList.add('correct');
+                });
+            }
+            explain.classList.add('show');
+        }
+
+        // Progress bar
+        window.addEventListener('scroll', () => {
+            const scrollTop = window.scrollY;
+            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const pct = (scrollTop / docHeight) * 100;
+            document.getElementById('progressBar').style.width = pct + '%';
+        });
+
+        // Smooth scroll for nav links
+        document.querySelectorAll('a[href^="#"]').forEach(a => {
+            a.addEventListener('click', e => {
+                e.preventDefault();
+                const target = document.querySelector(a.getAttribute('href'));
+                if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        });
+    </script>
+</body>
+
+</html>

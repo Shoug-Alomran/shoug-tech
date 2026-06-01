@@ -1,3 +1,8 @@
+---
+title: Computer Science Courses
+description: Computer science coursework, slides, notes, projects, quizzes, and study resources for CS101, CS102, CS210, CS285, CS330, CS331, and CS340.
+---
+
 # :desktop_computer: Computer Science
 
 This section focuses on the core computer science foundations that support
@@ -23,7 +28,7 @@ performance, structure, and correctness  -  not just how to write code.
     Java programming foundations: variables, selection, loops, methods,
     arrays, files, and IDE-based debugging.
 
-    [:octicons-arrow-right-24: View CS101](cs101-computer-programming-1/intro.md)
+    [:octicons-arrow-right-24: View CS101](CS101/intro.md)
 
 -   :jigsaw: **CS102 - Computer Programming II**
 
@@ -32,7 +37,7 @@ performance, structure, and correctness  -  not just how to write code.
     Intermediate Java and object-oriented programming: classes, inheritance,
     polymorphism, interfaces, collections, generics, recursion, and projects.
 
-    [:octicons-arrow-right-24: View CS102](cs102-computer-programming-2/intro.md)
+    [:octicons-arrow-right-24: View CS102](CS102/intro.md)
 
 -   :abacus: **CS210  -  Data Structures & Algorithms**
 

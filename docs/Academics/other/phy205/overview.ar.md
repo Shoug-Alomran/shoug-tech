@@ -1,20 +1,25 @@
-# PHY205 - Physics II
+---
+title: PHY205 الفيزياء 2
+description: نظرة عامة على مقرر PHY205 الفيزياء 2 مع الكهرباء والدوائر والمغناطيسية وشرائح فصول Halliday ونسبة تنظيم الملاحظات.
+---
 
-PHY205 collects Physics II material for quick course review, with a focus on
-electricity, circuits, magnetism, and related Halliday textbook chapters.
+# PHY205 - الفيزياء 2
+
+يجمع PHY205 مواد الفيزياء 2 للمراجعة السريعة، مع التركيز على الكهرباء، الدوائر،
+المغناطيسية، وفصول Halliday ذات الصلة.
 
 <div class="grid cards" markdown>
 
--   :page_facing_up: **Slides**
+-   :page_facing_up: **الشرائح**
 
     ---
 
-    Chapter-based PHY205 slide PDFs organized for fast access.
+    ملفات PDF لشرائح PHY205 منظمة حسب الفصول للوصول السريع.
 
     [فتح الشرائح](slides/overview.md)
 
 </div>
 
-!!! note "Credit"
-    The PHY205 slides are course materials from Prince Sultan University. The
-    notes and organization were done by Yara Faris Albugami.
+!!! note "تنويه"
+    شرائح PHY205 هي مواد مقررات من جامعة الأمير سلطان. الملاحظات والتنظيم من
+    إعداد يارا فارس البقمي.

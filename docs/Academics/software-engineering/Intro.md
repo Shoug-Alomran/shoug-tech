@@ -1,3 +1,8 @@
+---
+title: Software Engineering Courses
+description: Software engineering coursework, slides, notes, projects, requirements engineering, architecture, design, UML, quizzes, and study resources.
+---
+
 # :wrench: Software Engineering
 
 This section focuses on software engineering as a structured discipline  -  from
@@ -35,6 +40,16 @@ quality.
     traceability. Includes notes, quizzes, and supporting material.
 
     [:octicons-arrow-right-24: View SE311](SE311/intro.md)
+
+-   :building_construction: **SE322  -  Software Design and Architecture**
+
+    ---
+
+    Software architecture, quality attributes, architecture patterns, detailed
+    design principles, and structural design patterns. Includes course
+    overview pages and lecture slide access.
+
+    [:octicons-arrow-right-24: View SE322](SE322/intro.md)
 
 </div>
 
