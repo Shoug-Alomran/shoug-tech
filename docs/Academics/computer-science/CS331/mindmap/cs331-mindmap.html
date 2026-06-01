@@ -1,0 +1,368 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>CS331 Complete Course Mind Map</title>
+    <style>
+        :root {
+            --bg: #0f172a;
+            --panel: #111827;
+            --panel2: #1f2937;
+            --text: #e5eefc;
+            --muted: #94a3b8;
+            --line: #334155;
+            --accent: #60a5fa;
+            --accent2: #22d3ee;
+            --root: #172554;
+            --node: #1e293b;
+            --leaf: #162033;
+            --hit: #facc15;
+            --shadow: 0 18px 45px rgba(0, 0, 0, .35)
+        }
+
+        [data-theme="light"] {
+            --bg: #f8fafc;
+            --panel: #fff;
+            --panel2: #eef2f7;
+            --text: #0f172a;
+            --muted: #526071;
+            --line: #cbd5e1;
+            --accent: #2563eb;
+            --accent2: #0891b2;
+            --root: #dbeafe;
+            --node: #fff;
+            --leaf: #f8fafc;
+            --hit: #ca8a04;
+            --shadow: 0 18px 45px rgba(15, 23, 42, .12)
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        html,
+        body {
+            height: 100%
+        }
+
+        body {
+            margin: 0;
+            overflow: hidden;
+            background: radial-gradient(circle at 12% 18%, rgba(96, 165, 250, .14), transparent 28%), var(--bg);
+            color: var(--text);
+            font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif
+        }
+
+        button,
+        input {
+            font: inherit
+        }
+
+        #toolbar {
+            position: fixed;
+            z-index: 30;
+            inset: 0 0 auto 0;
+            min-height: 64px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--line);
+            background: color-mix(in srgb, var(--panel) 88%, transparent);
+            backdrop-filter: blur(16px)
+        }
+
+        .brand {
+            font-weight: 800;
+            color: var(--accent);
+            min-width: 210px
+        }
+
+        .brand span {
+            display: block;
+            color: var(--muted);
+            font-size: 12px;
+            font-weight: 600
+        }
+
+        .search-wrap {
+            position: relative;
+            width: min(320px, 32vw);
+            min-width: 170px
+        }
+
+        #searchInput {
+            width: 100%;
+            height: 38px;
+            border: 1px solid var(--line);
+            border-radius: 11px;
+            background: var(--panel2);
+            color: var(--text);
+            padding: 0 12px;
+            outline: none
+        }
+
+        #searchResults {
+            position: absolute;
+            top: 46px;
+            left: 0;
+            width: min(420px, 80vw);
+            max-height: 340px;
+            overflow: auto;
+            display: none;
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            background: var(--panel);
+            box-shadow: var(--shadow);
+            padding: 8px
+        }
+
+        .result {
+            padding: 10px;
+            border-radius: 10px;
+            cursor: pointer
+        }
+
+        .result:hover {
+            background: var(--panel2)
+        }
+
+        .result small {
+            display: block;
+            color: var(--muted)
+        }
+
+        .actions {
+            display: flex;
+            gap: 8px;
+            margin-left: auto;
+            overflow-x: auto
+        }
+
+        .btn {
+            height: 38px;
+            border: 1px solid var(--line);
+            border-radius: 11px;
+            background: var(--panel2);
+            color: var(--text);
+            padding: 0 11px;
+            cursor: pointer;
+            white-space: nowrap
+        }
+
+        .btn:hover {
+            border-color: var(--accent);
+            color: var(--accent)
+        }
+
+        #viewport {
+            position: fixed;
+            inset: 64px 0 0;
+            overflow: hidden;
+            cursor: grab
+        }
+
+        #viewport.dragging {
+            cursor: grabbing
+        }
+
+        #world {
+            position: absolute;
+            transform-origin: 0 0;
+            transition: transform .18s ease
+        }
+
+        #links {
+            position: absolute;
+            left: 0;
+            top: 0;
+            overflow: visible;
+            pointer-events: none
+        }
+
+        .connector {
+            fill: none;
+            stroke: var(--accent);
+            stroke-width: 2.4;
+            opacity: .58;
+            stroke-linecap: round
+        }
+
+        #nodes {
+            position: absolute;
+            left: 0;
+            top: 0
+        }
+
+        .node {
+            position: absolute;
+            width: 250px;
+            min-height: 60px;
+            border: 1px solid var(--line);
+            border-left: 5px solid var(--accent);
+            border-radius: 14px;
+            background: var(--node);
+            box-shadow: var(--shadow);
+            padding: 10px 12px;
+            cursor: pointer;
+            transition: left .28s ease, top .28s ease, transform .16s ease
+        }
+
+        .node:hover {
+            transform: translateY(-2px)
+        }
+
+        .node.root {
+            width: 285px;
+            min-height: 74px;
+            background: var(--root);
+            border-left-color: var(--accent2)
+        }
+
+        .node.leaf {
+            background: var(--leaf);
+            border-left-color: var(--accent2)
+        }
+
+        .node.active {
+            outline: 3px solid rgba(96, 165, 250, .34)
+        }
+
+        .node.match {
+            box-shadow: 0 0 0 4px color-mix(in srgb, var(--hit) 32%, transparent), var(--shadow)
+        }
+
+        .node-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 800;
+            line-height: 1.25
+        }
+
+        .chev {
+            width: 20px;
+            height: 20px;
+            border-radius: 7px;
+            background: color-mix(in srgb, var(--accent) 18%, transparent);
+            display: inline-grid;
+            place-items: center;
+            color: var(--accent);
+            flex: 0 0 auto;
+            transition: transform .2s ease
+        }
+
+        .node.expanded .chev {
+            transform: rotate(90deg)
+        }
+
+        .node-desc {
+            margin-top: 5px;
+            font-size: 12px;
+            color: var(--muted);
+            line-height: 1.35
+        }
+
+        #panel {
+            position: fixed;
+            z-index: 40;
+            top: 78px;
+            right: 16px;
+            bottom: 16px;
+            width: min(430px, calc(100vw - 32px));
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            transform: translateX(calc(100% + 32px));
+            transition: transform .25s ease;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden
+        }
+
+        #panel.open {
+            transform: translateX(0)
+        }
+
+        .panel-head {
+            padding: 18px;
+            border-bottom: 1px solid var(--line);
+            display: flex;
+            gap: 12px
+        }
+
+        #panelTitle {
+            margin: 0;
+            font-size: 22px;
+            line-height: 1.2;
+            flex: 1
+        }
+
+        #panelBody {
+            padding: 18px;
+            overflow: auto;
+            line-height: 1.65
+        }
+
+        .hint {
+            position: fixed;
+            left: 16px;
+            bottom: 16px;
+            color: var(--muted);
+            background: color-mix(in srgb, var(--panel) 88%, transparent);
+            border: 1px solid var(--line);
+            border-radius: 999px;
+            padding: 8px 12px;
+            font-size: 12px
+        }
+
+        @media(max-width:900px) {
+            #toolbar {
+                flex-wrap: wrap
+            }
+
+            #viewport {
+                top: 112px
+            }
+
+            .actions {
+                width: 100%;
+                margin-left: 0
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="toolbar">
+        <div class="brand">CS331 Complete Course<span>Networking study mind map</span></div>
+        <div class="search-wrap"><input id="searchInput" type="search" placeholder="Search CS331 topics...">
+            <div id="searchResults"></div>
+        </div>
+        <div class="actions"><button class="btn" id="zoomIn">+</button><button class="btn"
+                id="zoomOut">-</button><button class="btn" id="resetView">Reset View</button><button class="btn"
+                id="expandAll">Expand All</button><button class="btn" id="collapseAll">Collapse All</button><button
+                class="btn" id="exportPng">Export PNG</button><button class="btn" id="themeToggle">Light</button></div>
+    </div>
+    <main id="viewport">
+        <div id="world"><svg id="links" width="2600" height="1600"></svg>
+            <div id="nodes"></div>
+        </div>
+    </main>
+    <aside id="panel">
+        <div class="panel-head">
+            <h2 id="panelTitle"></h2><button class="btn" id="closePanel">x</button>
+        </div>
+        <div id="panelBody"></div>
+    </aside>
+    <div class="hint">Drag to pan. Click branches to expand. Click final nodes for explanations.</div>
+    <script>
+        const mindMapData = {"id": "cs331-complete-course", "title": "CS331 Complete Course", "summary": "A complete study mind map for the CS331 networking chapters: foundations, layered models, data link control, MAC, Ethernet, interconnection, network layer, routing, transport, DNS, and applications.", "description": "<p>This complete CS331 map connects the main exam topics across the course. Expand each chapter branch, then open final nodes for compact revision explanations.</p>", "children": [{"id": "foundations", "title": "Data Communications and Networking", "summary": "Core vocabulary for communication systems, network criteria, topologies, and network categories.", "description": "<p>Start here for the basic language of networking: data, signals, senders, receivers, media, protocols, and how networks are judged.</p>", "children": [{"id": "foundations-components", "title": "Five Components", "summary": "Message, sender, receiver, transmission medium, and protocol.", "description": "<p>A communication system needs a message to send, a sender, a receiver, a medium that carries the signal, and a protocol that defines the rules.</p>"}, {"id": "foundations-flow", "title": "Data Flow", "summary": "Simplex, half-duplex, and full-duplex describe direction and timing of communication.", "description": "<p>Simplex is one-way only. Half-duplex allows both directions but not at the same time. Full-duplex allows simultaneous two-way communication.</p>"}, {"id": "foundations-criteria", "title": "Network Criteria", "summary": "Performance, reliability, and security are the main quality measures.", "description": "<p>Performance focuses on delay and throughput. Reliability focuses on failure rate and recovery. Security protects data from unauthorized access and attack.</p>"}, {"id": "foundations-topologies", "title": "Topologies and Types", "summary": "Mesh, star, bus, ring, hybrid, LAN, MAN, WAN, and the Internet.", "description": "<p>Topology describes physical or logical arrangement. LANs cover small areas, MANs cover metropolitan areas, WANs span larger regions, and the Internet connects many networks.</p>"}]}, {"id": "layering", "title": "Protocol Layering and Models", "summary": "Why networks are divided into layers and how TCP/IP and OSI organize responsibilities.", "description": "<p>Layering reduces complexity by giving each layer a focused job and clean interfaces to adjacent layers.</p>", "children": [{"id": "layering-principles", "title": "Layering Principles", "summary": "Separate bidirectional duties and group related functions.", "description": "<p>Each layer provides service to the layer above and uses service from the layer below. This makes design, troubleshooting, and standardization easier.</p>"}, {"id": "layering-tcpip", "title": "TCP/IP Model", "summary": "Application, transport, network, data link, and physical layers.", "description": "<p>The TCP/IP model is the practical Internet model. Application supports network apps, transport handles process delivery, network handles host delivery, data link handles local delivery, and physical sends bits.</p>"}, {"id": "layering-osi", "title": "OSI Model", "summary": "Seven-layer reference model with presentation and session layers added.", "description": "<p>OSI is often used for learning and exam comparison. It separates application, presentation, session, transport, network, data link, and physical responsibilities.</p>"}, {"id": "layering-addressing", "title": "Encapsulation and Addresses", "summary": "Data receives headers/trailers as it moves down the stack.", "description": "<p>Encapsulation adds control information at each layer. Addresses differ by layer: port addresses identify processes, logical/IP addresses identify hosts, and link-layer addresses identify local nodes.</p>"}]}, {"id": "dl-control", "title": "Data Link Layer Control", "summary": "Framing, flow control, error control, and link-layer delivery reliability.", "description": "<p>Data link control prepares raw bit transmission for local node-to-node delivery.</p>", "children": [{"id": "dl-control-framing", "title": "Framing", "summary": "Groups bits into frames and marks frame boundaries.", "description": "<p>Framing lets receivers identify where a frame starts and ends. Byte-oriented and bit-oriented approaches prevent data from being mistaken for control markers.</p>"}, {"id": "dl-control-flow", "title": "Flow Control", "summary": "Prevents a fast sender from overwhelming a slow receiver.", "description": "<p>Flow control coordinates sender speed with receiver capacity. Stop-and-Wait sends one frame at a time; sliding window allows several outstanding frames.</p>"}, {"id": "dl-control-error", "title": "Error Control", "summary": "Detects and recovers from corrupted, lost, or duplicated frames.", "description": "<p>Error control uses ACKs, timers, retransmissions, and sequence numbers. CRC is important for error detection in frames.</p>"}, {"id": "dl-control-protocols", "title": "ARQ Protocols", "summary": "Stop-and-Wait, Go-Back-N, and Selective Repeat.", "description": "<p>Stop-and-Wait is simple but inefficient. Go-Back-N retransmits from the error point. Selective Repeat retransmits only missing or damaged frames, but needs more buffering.</p>"}]}, {"id": "mac", "title": "MAC Protocols", "summary": "How devices share a common link without constant collisions.", "description": "<p>Medium access control decides who can transmit when multiple devices share the same channel.</p>", "children": [{"id": "mac-random", "title": "Random Access", "summary": "ALOHA and CSMA families allow stations to compete for the medium.", "description": "<p>Pure ALOHA transmits whenever ready; Slotted ALOHA restricts starts to slots. CSMA listens before sending, and CSMA/CD detects collisions on wired Ethernet-style media.</p>"}, {"id": "mac-controlled", "title": "Controlled Access", "summary": "Reservation, polling, and token passing reduce collisions by coordination.", "description": "<p>Controlled methods organize turns. Polling uses a controller, reservation asks stations to reserve slots, and token passing lets only the token holder transmit.</p>"}, {"id": "mac-channelization", "title": "Channelization", "summary": "FDMA, TDMA, and CDMA split the channel by frequency, time, or code.", "description": "<p>FDMA assigns frequency bands, TDMA assigns time slots, and CDMA uses codes so stations can share the same time and frequency space.</p>"}]}, {"id": "ethernet", "title": "Ethernet and LANs", "summary": "Ethernet frame structure, addressing, switches, and LAN behavior.", "description": "<p>Ethernet is the dominant wired LAN technology and is central to local network delivery.</p>", "children": [{"id": "ethernet-frame", "title": "Ethernet Frame", "summary": "Preamble, addresses, type/length, payload, and CRC/FCS.", "description": "<p>The Ethernet frame carries source and destination MAC addresses, identifies the payload, and uses FCS for error detection.</p>"}, {"id": "ethernet-mac", "title": "MAC Addressing", "summary": "48-bit physical addresses identify interfaces on a LAN.", "description": "<p>MAC addresses are used for local delivery. Broadcast reaches all devices on the LAN; unicast targets one interface; multicast targets a group.</p>"}, {"id": "ethernet-switching", "title": "Switching", "summary": "Switches learn MAC addresses and forward frames selectively.", "description": "<p>A switch builds a forwarding table by learning source MAC addresses. It forwards known destinations to the right port and floods unknown or broadcast frames.</p>"}]}, {"id": "interconnect", "title": "Interconnecting Devices and VLANs", "summary": "Repeaters, bridges, switches, routers, and VLAN segmentation.", "description": "<p>Interconnection devices extend, segment, or route networks depending on which layer they operate at.</p>", "children": [{"id": "interconnect-devices", "title": "Device Roles", "summary": "Repeaters/hubs work low, bridges/switches work at data link, routers work at network layer.", "description": "<p>Repeaters regenerate signals, hubs repeat to all ports, bridges and switches filter frames by MAC address, and routers forward packets by IP address.</p>"}, {"id": "interconnect-domains", "title": "Collision and Broadcast Domains", "summary": "Switches reduce collision domains; routers separate broadcast domains.", "description": "<p>A collision domain is where collisions can occur. A broadcast domain is where broadcasts travel. Switches separate collisions per port; routers stop broadcasts between networks.</p>"}, {"id": "interconnect-vlans", "title": "VLANs and Trunks", "summary": "VLANs create logical LANs; trunks carry multiple VLANs between switches.", "description": "<p>VLANs segment a switched network without requiring separate physical switches. Trunk links tag frames so multiple VLANs can share one physical connection.</p>"}]}, {"id": "network-data", "title": "Network Layer Data Transfer", "summary": "IP addressing, forwarding, datagrams, fragmentation, and address resolution.", "description": "<p>The network layer moves packets across interconnected networks from source host to destination host.</p>", "children": [{"id": "network-data-ip", "title": "IPv4 Datagrams", "summary": "Header fields support addressing, fragmentation, lifetime, and upper-layer delivery.", "description": "<p>IPv4 packets include source/destination addresses, TTL, protocol, identification, flags, fragment offset, and checksum fields.</p>"}, {"id": "network-data-forwarding", "title": "Forwarding", "summary": "Routers use destination IP addresses and forwarding tables to choose next hops.", "description": "<p>Forwarding is the per-packet action of moving a packet to the correct outgoing interface. Longest-prefix matching is key for route selection.</p>"}, {"id": "network-data-addressing", "title": "Addressing and Subnetting", "summary": "Prefixes divide IP space into network and host parts.", "description": "<p>Subnetting lets an organization divide a larger block into smaller networks. CIDR notation shows prefix length, such as /24.</p>"}, {"id": "network-data-arp", "title": "ARP and Local Delivery", "summary": "ARP maps IP addresses to MAC addresses on a local network.", "description": "<p>When a host knows the next-hop IP but needs a link-layer address, ARP resolves the MAC address for local frame delivery.</p>"}]}, {"id": "routing", "title": "Network Layer Routing", "summary": "How routers compute paths through networks.", "description": "<p>Routing chooses paths; forwarding applies those choices to individual packets.</p>", "children": [{"id": "routing-static-dynamic", "title": "Static vs Dynamic Routing", "summary": "Static routes are manually configured; dynamic routes adapt using protocols.", "description": "<p>Static routing is predictable but does not adapt automatically. Dynamic routing protocols exchange information and update paths when the network changes.</p>"}, {"id": "routing-distance", "title": "Distance-Vector Routing", "summary": "Routers share distance information with neighbors.", "description": "<p>Distance-vector protocols are based on neighbor reports. They can suffer from slow convergence and count-to-infinity problems.</p>"}, {"id": "routing-linkstate", "title": "Link-State Routing", "summary": "Routers flood link information and compute shortest paths.", "description": "<p>Each router builds a view of the topology and runs a shortest-path algorithm, commonly associated with Dijkstra-style computation.</p>"}, {"id": "routing-pathvector", "title": "Path-Vector Routing", "summary": "Used between autonomous systems, commonly associated with BGP.", "description": "<p>Path-vector routing carries path information to support policy-based interdomain routing and avoid loops.</p>"}]}, {"id": "transport", "title": "Transport Layer", "summary": "Process-to-process delivery, ports, UDP, TCP, reliability, flow, and congestion control.", "description": "<p>The transport layer connects application processes across hosts and hides many network-layer details.</p>", "children": [{"id": "transport-ports", "title": "Ports and Multiplexing", "summary": "Port numbers identify application processes.", "description": "<p>Multiplexing combines data from multiple processes; demultiplexing delivers incoming segments to the correct process using port numbers.</p>"}, {"id": "transport-udp", "title": "UDP", "summary": "Connectionless, low-overhead transport without built-in reliability.", "description": "<p>UDP is simple and fast. It is useful when applications can tolerate loss or handle reliability themselves.</p>"}, {"id": "transport-tcp", "title": "TCP", "summary": "Connection-oriented, reliable byte-stream transport.", "description": "<p>TCP uses sequence numbers, acknowledgments, retransmissions, flow control, and congestion control. It establishes connections with a three-way handshake.</p>"}, {"id": "transport-control", "title": "Flow vs Congestion Control", "summary": "Flow protects the receiver; congestion protects the network.", "description": "<p>Flow control prevents receiver buffer overflow. Congestion control reduces sending rate when the network shows signs of overload.</p>"}]}, {"id": "application", "title": "DNS and Application Layer", "summary": "Application-layer services, DNS name resolution, and client/server protocols.", "description": "<p>The application layer is where network services become visible to users and programs.</p>", "children": [{"id": "application-dns", "title": "DNS", "summary": "Maps domain names to IP addresses using a distributed hierarchy.", "description": "<p>DNS uses root, TLD, and authoritative servers. Recursive and iterative queries help clients resolve names without memorizing IP addresses.</p>"}, {"id": "application-records", "title": "DNS Records", "summary": "A, AAAA, CNAME, MX, NS, and other records store name data.", "description": "<p>A maps to IPv4, AAAA maps to IPv6, CNAME aliases one name to another, MX identifies mail servers, and NS identifies name servers.</p>"}, {"id": "application-models", "title": "Application Models", "summary": "Client-server and peer-to-peer are common organization styles.", "description": "<p>Client-server centralizes service at servers; peer-to-peer lets end systems act as both clients and servers.</p>"}]}]};
+        const state = { expanded: new Set([mindMapData.id]), active: mindMapData.id, matches: new Set(), scale: 1, panX: 80, panY: 120, dragging: false, lastX: 0, lastY: 0 }; const viewport = document.getElementById('viewport'), world = document.getElementById('world'), nodesEl = document.getElementById('nodes'), linksEl = document.getElementById('links'), panel = document.getElementById('panel'), panelTitle = document.getElementById('panelTitle'), panelBody = document.getElementById('panelBody'), searchInput = document.getElementById('searchInput'), searchResults = document.getElementById('searchResults'); const nodeMap = new Map(), parentMap = new Map(), layout = new Map(), C = { xGap: 330, yGap: 92, nodeW: 250, rootW: 285 }; function index(n, p = null, d = 0) { n.depth = d; nodeMap.set(n.id, n); if (p) parentMap.set(n.id, p.id); (n.children || []).forEach(c => index(c, n, d + 1)); } function leaf(n) { return !n.children || !n.children.length } function exp(n) { return state.expanded.has(n.id) } function tree(n, d = 0, c = { y: 0 }) { let y; if (exp(n) && !leaf(n)) { const ys = n.children.map(ch => tree(ch, d + 1, c)); y = (Math.min(...ys) + Math.max(...ys)) / 2 } else { y = c.y; c.y += C.yGap } layout.set(n.id, { x: d * C.xGap, y, depth: d }); return y } function visible(n = mindMapData, a = []) { a.push(n); if (exp(n) && n.children) n.children.forEach(ch => visible(ch, a)); return a } function conns(n = mindMapData, a = []) { if (exp(n) && n.children) n.children.forEach(ch => { a.push([n, ch]); conns(ch, a) }); return a } function esc(s) { return String(s).replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[ch])) } function strip(h) { const d = document.createElement('div'); d.innerHTML = h; return d.textContent || '' } function render() { layout.clear(); tree(mindMapData); const ns = visible(); linksEl.innerHTML = conns().map(([a, b]) => { const pa = layout.get(a.id), pb = layout.get(b.id), aw = a.depth === 0 ? C.rootW : C.nodeW, x1 = pa.x + aw, y1 = pa.y + 30, x2 = pb.x, y2 = pb.y + 30, m = (x1 + x2) / 2; return `<path class="connector" d="M ${x1} ${y1} C ${m} ${y1}, ${m} ${y2}, ${x2} ${y2}"></path>` }).join(''); nodesEl.innerHTML = ns.map(n => { const p = layout.get(n.id), cl = ['node']; if (n.depth === 0) cl.push('root'); if (leaf(n)) cl.push('leaf'); if (exp(n) && !leaf(n)) cl.push('expanded'); if (state.active === n.id) cl.push('active'); if (state.matches.has(n.id)) cl.push('match'); return `<div class="${cl.join(' ')}" data-id="${n.id}" style="left:${p.x}px;top:${p.y}px"><div class="node-title"><span class="chev">${leaf(n) ? 'i' : '›'}</span><span>${esc(n.title)}</span></div><div class="node-desc">${esc(n.summary || '')}</div></div>` }).join(''); nodesEl.querySelectorAll('.node').forEach(el => el.onclick = e => { e.stopPropagation(); select(el.dataset.id, true) }); apply() } function select(id, user = false) { const n = nodeMap.get(id); state.active = id; if (leaf(n)) openPanel(n); else if (user) { state.expanded.has(id) ? state.expanded.delete(id) : state.expanded.add(id); closePanel() } render() } function openPanel(n) { panelTitle.textContent = n.title; panelBody.innerHTML = n.description || `<p>${esc(n.summary || '')}</p>`; panel.classList.add('open') } function closePanel() { panel.classList.remove('open') } function ancestors(id) { const a = []; let c = id; while (parentMap.has(c)) { c = parentMap.get(c); a.push(c) } return a } function focus(id) { ancestors(id).forEach(a => state.expanded.add(a)); state.active = id; render(); const p = layout.get(id), r = viewport.getBoundingClientRect(); state.panX = r.width / 2 - (p.x + 120) * state.scale; state.panY = r.height / 2 - (p.y + 30) * state.scale; apply(); if (leaf(nodeMap.get(id))) openPanel(nodeMap.get(id)) } function apply() { world.style.transform = `translate(${state.panX}px,${state.panY}px) scale(${state.scale})` } function zoom(v) { state.scale = Math.min(1.8, Math.max(.45, v)); apply() } function expandAll() { nodeMap.forEach(n => { if (!leaf(n)) state.expanded.add(n.id) }); render() } function collapseAll() { state.expanded = new Set([mindMapData.id]); closePanel(); render() } function search(q) { q = q.trim().toLowerCase(); state.matches.clear(); searchResults.innerHTML = ''; if (!q) { searchResults.style.display = 'none'; render(); return } const res = []; nodeMap.forEach(n => { if (`${n.title} ${n.summary || ''} ${strip(n.description || '')}`.toLowerCase().includes(q)) { state.matches.add(n.id); res.push(n) } }); searchResults.innerHTML = res.map(n => `<div class="result" data-id="${n.id}"><strong>${esc(n.title)}</strong><small>${esc(n.summary || '')}</small></div>`).join('') || '<div class="result">No matches</div>'; searchResults.style.display = 'block'; searchResults.querySelectorAll('[data-id]').forEach(el => el.onclick = () => { searchResults.style.display = 'none'; focus(el.dataset.id) }); render() } function exportPng() { const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="700"><rect width="100%" height="100%" fill="#0f172a"/><text x="40" y="70" fill="#e5eefc" font-family="Arial" font-size="34" font-weight="700">${esc(mindMapData.title)}</text><text x="40" y="115" fill="#94a3b8" font-family="Arial" font-size="18">Export from CS331 complete course mind map</text></svg>`; const img = new Image(), url = URL.createObjectURL(new Blob([svg], { type: 'image/svg+xml' })); img.onload = () => { const c = document.createElement('canvas'); c.width = 1200; c.height = 700; const x = c.getContext('2d'); x.drawImage(img, 0, 0); URL.revokeObjectURL(url); const a = document.createElement('a'); a.download = 'cs331-complete-course-mindmap.png'; a.href = c.toDataURL('image/png'); a.click() }; img.src = url } function initTheme() { const s = localStorage.getItem('cs331-mindmap-theme') || 'dark'; document.documentElement.dataset.theme = s; document.getElementById('themeToggle').textContent = s === 'dark' ? 'Light' : 'Dark' } index(mindMapData); render(); initTheme(); document.getElementById('zoomIn').onclick = () => zoom(state.scale + .12); document.getElementById('zoomOut').onclick = () => zoom(state.scale - .12); document.getElementById('resetView').onclick = () => { state.scale = 1; state.panX = 80; state.panY = 120; apply() }; document.getElementById('expandAll').onclick = expandAll; document.getElementById('collapseAll').onclick = collapseAll; document.getElementById('exportPng').onclick = exportPng; document.getElementById('closePanel').onclick = closePanel; document.getElementById('themeToggle').onclick = () => { const n = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark'; document.documentElement.dataset.theme = n; localStorage.setItem('cs331-mindmap-theme', n); document.getElementById('themeToggle').textContent = n === 'dark' ? 'Light' : 'Dark' }; searchInput.oninput = e => search(e.target.value); viewport.onmousedown = e => { if (e.target.closest('.node')) return; state.dragging = true; state.lastX = e.clientX; state.lastY = e.clientY; viewport.classList.add('dragging') }; window.onmousemove = e => { if (!state.dragging) return; state.panX += e.clientX - state.lastX; state.panY += e.clientY - state.lastY; state.lastX = e.clientX; state.lastY = e.clientY; apply() }; window.onmouseup = () => { state.dragging = false; viewport.classList.remove('dragging') }; viewport.addEventListener('wheel', e => { e.preventDefault(); zoom(state.scale + (e.deltaY < 0 ? .08 : -.08)) }, { passive: false });
+    </script>
+</body>
+
+</html>

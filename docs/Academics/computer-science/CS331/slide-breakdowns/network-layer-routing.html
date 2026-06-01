@@ -1,0 +1,615 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Network Layer Routing - CS331 Study Guide</title>
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --paper: #ffffff;
+      --paper-2: #eef4ff;
+      --text: #172033;
+      --muted: #5c6b80;
+      --line: #dbe4ef;
+      --accent: #2563eb;
+      --accent-2: #0f766e;
+      --exam: #c2410c;
+      --warn: #a16207;
+      --ok: #047857;
+      --shadow: 0 20px 45px rgba(23, 32, 51, .10);
+      --radius: 18px;
+    }
+
+    [data-theme="dark"] {
+      --bg: #10151f;
+      --paper: #161d2a;
+      --paper-2: #1d2938;
+      --text: #edf4ff;
+      --muted: #a8b6cc;
+      --line: #2d3a4d;
+      --accent: #7aa2ff;
+      --accent-2: #58d5c9;
+      --exam: #ff9a69;
+      --warn: #f4c56a;
+      --ok: #7dd3a8;
+      --shadow: 0 20px 45px rgba(0, 0, 0, .32);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.68;
+      letter-spacing: 0;
+    }
+    a { color: inherit; }
+    .hero {
+      padding: 42px 20px 30px;
+      border-bottom: 1px solid var(--line);
+      background:
+        radial-gradient(circle at 10% 10%, rgba(37, 99, 235, .16), transparent 34%),
+        radial-gradient(circle at 85% 20%, rgba(15, 118, 110, .12), transparent 30%),
+        linear-gradient(135deg, rgba(37, 99, 235, .08), rgba(15, 118, 110, .06));
+    }
+    .wrap { max-width: 1180px; margin: 0 auto; }
+    .topbar { display: flex; justify-content: space-between; gap: 16px; align-items: center; margin-bottom: 30px; }
+    .crumb { color: var(--muted); font-size: .94rem; }
+    .toggle {
+      border: 1px solid var(--line);
+      background: var(--paper);
+      color: var(--text);
+      border-radius: 999px;
+      padding: 10px 14px;
+      box-shadow: var(--shadow);
+      cursor: pointer;
+    }
+    .kicker { color: var(--accent); font-weight: 900; text-transform: uppercase; letter-spacing: .08em; font-size: .78rem; }
+    h1 { font-size: clamp(2.25rem, 5vw, 4.8rem); line-height: 1.03; margin: 10px 0 16px; letter-spacing: 0; }
+    .hero-copy { max-width: 850px; color: var(--muted); font-size: 1.12rem; }
+    .metrics { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-top: 24px; }
+    .metric { background: var(--paper); border: 1px solid var(--line); border-radius: 15px; padding: 14px; box-shadow: var(--shadow); }
+    .metric strong { display: block; color: var(--muted); text-transform: uppercase; font-size: .74rem; letter-spacing: .07em; }
+    .navchips { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px; }
+    .navchips a { text-decoration: none; border: 1px solid var(--line); background: var(--paper); color: var(--muted); border-radius: 999px; padding: 8px 12px; font-weight: 800; font-size: .9rem; }
+    main { padding: 34px 20px 60px; }
+    .section { max-width: 1180px; margin: 0 auto 34px; }
+    .section-heading span { color: var(--accent); font-weight: 900; text-transform: uppercase; font-size: .76rem; letter-spacing: .08em; }
+    h2 { font-size: clamp(1.5rem, 3vw, 2.35rem); margin: 4px 0 10px; }
+    h3 { margin: 0 0 10px; font-size: 1.14rem; }
+    .section-heading p { max-width: 900px; color: var(--muted); margin: 0 0 16px; }
+    .study-grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 16px; }
+    .study-card, .callout, .mini-summary, .table-wrap, .qa, .cheat-card {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 18px;
+      box-shadow: var(--shadow);
+    }
+    .study-card { grid-column: span 6; }
+    .study-card.wide { grid-column: 1 / -1; }
+    .study-card.third { grid-column: span 4; }
+    .card-kicker { color: var(--accent-2); font-weight: 900; text-transform: uppercase; font-size: .72rem; letter-spacing: .08em; margin-bottom: 5px; }
+    .study-card p { margin: 0 0 10px; }
+    .study-card ul, .callout ul { margin: 0; padding-left: 20px; }
+    .callout { grid-column: 1 / -1; border-left: 6px solid var(--accent); }
+    .callout.exam { border-left-color: var(--exam); }
+    .callout.confusion { border-left-color: var(--warn); }
+    .callout.memory { border-left-color: var(--accent-2); }
+    .callout.warning { border-left-color: var(--warn); }
+    .callout strong { display: block; margin-bottom: 6px; }
+    .callout p { margin: 0; }
+    .mini-summary { grid-column: 1 / -1; background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 9%, transparent), color-mix(in srgb, var(--accent-2) 8%, transparent)); }
+    .mini-summary ul { margin: 8px 0 0; padding-left: 20px; }
+    .table-wrap { grid-column: 1 / -1; overflow-x: auto; padding: 0; }
+    table { width: 100%; border-collapse: collapse; min-width: 720px; }
+    th, td { border-bottom: 1px solid var(--line); padding: 13px 14px; text-align: left; vertical-align: top; }
+    th { color: var(--accent); background: var(--paper-2); }
+    tr:last-child td { border-bottom: 0; }
+    .cheat-card ul { columns: 2; column-gap: 34px; margin: 0; padding-left: 20px; }
+    .cheat-card li { break-inside: avoid; margin: 0 0 10px; }
+    .cheat-card span { display: block; color: var(--muted); }
+    .qa { margin-bottom: 12px; }
+    .qa summary { cursor: pointer; font-weight: 900; }
+    .qa-body { padding-top: 10px; color: var(--muted); }
+    .footer-note { text-align: center; color: var(--muted); margin-top: 40px; }
+    code { background: var(--paper-2); border: 1px solid var(--line); padding: 1px 5px; border-radius: 6px; }
+    @media (max-width: 860px) {
+      .topbar { flex-direction: column; align-items: flex-start; }
+      .metrics { grid-template-columns: 1fr; }
+      .study-card, .study-card.third { grid-column: 1 / -1; }
+      .cheat-card ul { columns: 1; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="wrap">
+      <div class="topbar">
+        <div class="crumb">CS331 / Slide Breakdowns</div>
+
+        <button class="toggle" id="themeToggle">Dark mode</button>
+      </div>
+
+      <div class="kicker">Upgraded Study Guide</div>
+
+      <h1>Network Layer: Routing Of Packets</h1>
+      <p class="hero-copy">A richer breakdown of routing tables, default routes, destination-address forwarding, shortest path routing, distance vector, link state, autonomous systems, and common routing protocols.</p>
+      <div class="metrics">
+        <div class="metric">
+<strong>Source focus</strong>Network Layer Part 2</div>
+
+        <div class="metric">
+<strong>Exam skill</strong>Apply masks and compare routes</div>
+
+        <div class="metric">
+<strong>Memory hook</strong>Default = 0.0.0.0/0</div>
+
+        <div class="metric">
+<strong>Best use</strong>Use for forwarding table problems</div>
+
+      </div>
+
+      <nav class="navchips">
+<a href="#role">Role</a>
+<a href="#graph">Graph</a>
+<a href="#tables">Tables</a>
+<a href="#algorithms">Algorithms</a>
+<a href="#internet">Internet</a>
+        <a href="#cheat">Cheat sheet</a>
+        <a href="#practice">Practice</a>
+      </nav>
+    </div>
+
+  </header>
+  <main>
+      <section id="role" class="section">
+        <div class="section-heading">
+          <span>Role</span>
+          <h2>What Routing Protocols Are Responsible For</h2>
+          <p>Routing protocols are network-layer software that implement routing algorithms and support forwarding decisions.</p>
+        </div>
+
+        <div class="study-grid">
+          <article class="study-card ">
+            <div class="card-kicker">Routing</div>
+
+            <h3>Build and update tables</h3>
+            <p>Routing finds shortest or best paths from each source to destinations, then fills and updates routing tables.</p>
+          </article>
+
+          <article class="study-card ">
+            <div class="card-kicker">Forwarding</div>
+
+            <h3>Use the table</h3>
+            <p>Forwarding decides which output interface an incoming packet should use by referring to the routing/forwarding table.</p>
+          </article>
+
+          <article class="study-card ">
+            <div class="card-kicker">Hierarchy</div>
+
+            <h3>Why Internet routing is hierarchical</h3>
+            <p>The Internet has too many routers and hosts for one flat table. Hierarchical routing divides the problem into manageable parts.</p>
+          </article>
+
+          <aside class="callout exam">
+            <strong>Exam focus</strong>
+            <p>Hosts usually use a default router. Routers need forwarding tables. Destination hosts do not forward the packet further.</p>
+          </aside>
+
+          <div class="mini-summary">
+            <strong>Mini summary</strong>
+            <ul>
+              <li>Routing computes paths.</li>
+
+              <li>Forwarding moves packets.</li>
+
+              <li>Internet routing is hierarchical.</li>
+
+            </ul>
+          </div>
+
+        </div>
+
+      </section>
+
+      <section id="graph" class="section">
+        <div class="section-heading">
+          <span>Graph</span>
+          <h2>Modeling The Network As A Graph</h2>
+          <p>Routing algorithms often treat the network as a graph so costs can be calculated systematically.</p>
+        </div>
+
+        <div class="study-grid">
+          <article class="study-card ">
+            <div class="card-kicker">Nodes and edges</div>
+
+            <h3>Graph representation</h3>
+            <p>Routers are graph nodes. Physical links are edges. Each edge has a cost such as delay or bandwidth-based cost.</p>
+          </article>
+
+          <article class="study-card ">
+            <div class="card-kicker">Cost</div>
+
+            <h3>Shortest means least cost</h3>
+            <p>The shortest path is the path with the least total cost. It does not always mean the fewest hops unless hop count is the metric.</p>
+          </article>
+
+          <article class="study-card ">
+            <div class="card-kicker">Tree</div>
+
+            <h3>Least-cost tree</h3>
+            <p>A least-cost tree shows the lowest-cost paths from one router to destinations in the routing domain.</p>
+          </article>
+
+          <aside class="callout confusion">
+            <strong>Common confusion</strong>
+            <p>Shortest path is metric-dependent. A route with more hops can be better if its total cost is lower.</p>
+          </aside>
+
+          <div class="mini-summary">
+            <strong>Mini summary</strong>
+            <ul>
+              <li>Graphs model routers and links.</li>
+
+              <li>Costs define best paths.</li>
+
+              <li>Least-cost paths feed routing tables.</li>
+
+            </ul>
+          </div>
+
+        </div>
+
+      </section>
+
+      <section id="tables" class="section">
+        <div class="section-heading">
+          <span>Tables</span>
+          <h2>Forwarding Tables And Default Route</h2>
+          <p>Destination-address forwarding applies masks to destination IP addresses and compares results with table entries.</p>
+        </div>
+
+        <div class="study-grid">
+          <article class="study-card ">
+            <div class="card-kicker">Network-specific</div>
+
+            <h3>Network route</h3>
+            <p>A network-specific route lists a destination network address. It matches many hosts in that network.</p>
+          </article>
+
+          <article class="study-card ">
+            <div class="card-kicker">Host-specific</div>
+
+            <h3>Host route</h3>
+            <p>A host-specific route lists one destination host address. It is more specific than a general network route.</p>
+          </article>
+
+          <article class="study-card ">
+            <div class="card-kicker">Default</div>
+
+            <h3>0.0.0.0/0</h3>
+            <p>The default route is used when no more specific route is found. The route <code>0.0.0.0/0</code> can match any destination and acts as fallback.</p>
+          </article>
+
+          <aside class="callout exam">
+            <strong>Forwarding-table method</strong>
+            <p>Apply the mask to the destination address, compare with destination network entries, choose the matching next hop. If no match exists, use default route if present.</p>
+          </aside>
+
+          <div class="mini-summary">
+            <strong>Mini summary</strong>
+            <ul>
+              <li>Network routes match groups.</li>
+
+              <li>Host routes match one host.</li>
+
+              <li>Default route is fallback.</li>
+
+            </ul>
+          </div>
+
+        </div>
+
+      </section>
+
+      <section id="algorithms" class="section">
+        <div class="section-heading">
+          <span>Algorithms</span>
+          <h2>Static, Distance Vector, And Link State</h2>
+          <p>Routing algorithms differ in how routers learn and update route information.</p>
+        </div>
+
+        <div class="study-grid">
+          <article class="study-card ">
+            <div class="card-kicker">Static</div>
+
+            <h3>Precomputed or manually configured</h3>
+            <p>Static routes change slowly and can be entered by an administrator or precomputed offline.</p>
+          </article>
+
+          <article class="study-card ">
+            <div class="card-kicker">Distance vector</div>
+
+            <h3>Neighbor distance exchange</h3>
+            <p>Each node maintains a distance vector table containing distances to destinations. Routers share distance information with neighbors and update minimum costs.</p>
+          </article>
+
+          <article class="study-card ">
+            <div class="card-kicker">Link state</div>
+
+            <h3>Shared network map</h3>
+            <p>Each router measures the cost to directly connected neighbors, creates link-state packets, floods them, and builds a link-state database. Routers then compute shortest paths.</p>
+          </article>
+
+          <aside class="callout memory">
+            <strong>Memory trick</strong>
+            <p>Distance vector is neighbor gossip. Link state is everyone building the same map.</p>
+          </aside>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+<th>Concept</th>
+
+<th>Meaning</th>
+
+<th>Exam clue</th>
+
+</tr>
+
+              </thead>
+              <tbody>
+              <tr>
+                <td>Distance vector</td>
+
+                <td>Sends distance information to neighbors</td>
+
+                <td>Think table sharing</td>
+
+              </tr>
+
+              <tr>
+                <td>Link state</td>
+
+                <td>Floods link facts and builds LSDB</td>
+
+                <td>Think map building</td>
+
+              </tr>
+
+              <tr>
+                <td>Static</td>
+
+                <td>Configured and slow-changing</td>
+
+                <td>No automatic adaptation</td>
+
+              </tr>
+
+              </tbody>
+            </table>
+          </div>
+
+          <div class="mini-summary">
+            <strong>Mini summary</strong>
+            <ul>
+              <li>Static is simple but manual.</li>
+
+              <li>DV shares distances with neighbors.</li>
+
+              <li>LS builds a shared database.</li>
+
+            </ul>
+          </div>
+
+        </div>
+
+      </section>
+
+      <section id="internet" class="section">
+        <div class="section-heading">
+          <span>Internet</span>
+          <h2>Autonomous Systems And Routing Protocols</h2>
+          <p>The Internet is divided into autonomous systems to make global routing manageable.</p>
+        </div>
+
+        <div class="study-grid">
+          <article class="study-card ">
+            <div class="card-kicker">AS</div>
+
+            <h3>Autonomous system</h3>
+            <p>An AS is a single network or group of networks under one administrator and assigned a globally unique AS number.</p>
+          </article>
+
+          <article class="study-card ">
+            <div class="card-kicker">Interior</div>
+
+            <h3>Inside one AS</h3>
+            <p>Interior routing protocols operate inside one autonomous system. Examples listed in the slides include RIP, OSPF, and EIGRP.</p>
+          </article>
+
+          <article class="study-card ">
+            <div class="card-kicker">Exterior</div>
+
+            <h3>Between ASs</h3>
+            <p>Exterior routing connects autonomous systems. BGP is the main protocol between ASs and border gateway routers.</p>
+          </article>
+
+          <aside class="callout exam">
+            <strong>Exam focus</strong>
+            <p>Interior = RIP, OSPF, EIGRP. Exterior = BGP. Border gateway routers connect ASs.</p>
+          </aside>
+
+          <div class="mini-summary">
+            <strong>Mini summary</strong>
+            <ul>
+              <li>AS means one administrative domain.</li>
+
+              <li>Interior protocols work inside AS.</li>
+
+              <li>BGP works between ASs.</li>
+
+            </ul>
+          </div>
+
+        </div>
+
+      </section>
+
+      <section id="cheat" class="section">
+        <div class="section-heading">
+          <span>Revise</span>
+          <h2>Final Cheat Sheet</h2>
+          <p>Use this as the last-pass memory page before a quiz or exam.</p>
+        </div>
+
+        <div class="cheat-card">
+          <ul>
+              <li>
+<strong>Routing</strong>
+<span>Finds paths and fills tables.</span>
+</li>
+
+              <li>
+<strong>Forwarding</strong>
+<span>Chooses output interface.</span>
+</li>
+
+              <li>
+<strong>Graph node</strong>
+<span>Router.</span>
+</li>
+
+              <li>
+<strong>Graph edge</strong>
+<span>Physical link.</span>
+</li>
+
+              <li>
+<strong>Default route</strong>
+<span>0.0.0.0/0.</span>
+</li>
+
+              <li>
+<strong>Network route</strong>
+<span>Matches destination network.</span>
+</li>
+
+              <li>
+<strong>Host route</strong>
+<span>Matches one host.</span>
+</li>
+
+              <li>
+<strong>DV</strong>
+<span>Neighbor distance exchange.</span>
+</li>
+
+              <li>
+<strong>LS</strong>
+<span>Flood link-state facts.</span>
+</li>
+
+              <li>
+<strong>AS</strong>
+<span>Administrative routing domain.</span>
+</li>
+
+              <li>
+<strong>Interior</strong>
+<span>RIP, OSPF, EIGRP.</span>
+</li>
+
+              <li>
+<strong>Exterior</strong>
+<span>BGP.</span>
+</li>
+
+          </ul>
+        </div>
+
+      </section>
+
+      <section id="practice" class="section">
+        <div class="section-heading">
+          <span>Practice</span>
+          <h2>Practice Questions With Answers</h2>
+          <p>These questions target the facts, comparisons, and calculations that are easiest to test.</p>
+        </div>
+
+        <details class="qa">
+          <summary>What does 0.0.0.0/0 represent?</summary>
+          <div class="qa-body">
+            <p>
+<strong>Answer:</strong> The default route.</p>
+            <p>
+<strong>Explanation:</strong> A /0 mask can match any destination when no specific route matches.</p>
+          </div>
+
+        </details>
+        <details class="qa">
+          <summary>What is the difference between distance vector and link state?</summary>
+          <div class="qa-body">
+            <p>
+<strong>Answer:</strong> DV shares distance tables with neighbors; LS floods link facts and builds a shared database.</p>
+            <p>
+<strong>Explanation:</strong> They learn topology information differently.</p>
+          </div>
+
+        </details>
+        <details class="qa">
+          <summary>Do hosts need full forwarding tables?</summary>
+          <div class="qa-body">
+            <p>
+<strong>Answer:</strong> No, hosts normally send to a default router.</p>
+            <p>
+<strong>Explanation:</strong> Routers perform most forwarding decisions.</p>
+          </div>
+
+        </details>
+        <details class="qa">
+          <summary>Which protocol is exterior routing?</summary>
+          <div class="qa-body">
+            <p>
+<strong>Answer:</strong> BGP.</p>
+            <p>
+<strong>Explanation:</strong> BGP routes between autonomous systems.</p>
+          </div>
+
+        </details>
+        <details class="qa">
+          <summary>What does shortest path mean?</summary>
+          <div class="qa-body">
+            <p>
+<strong>Answer:</strong> Least total cost according to the metric.</p>
+            <p>
+<strong>Explanation:</strong> Cost may not equal hop count.</p>
+          </div>
+
+        </details>
+      </section>
+
+      <p class="footer-note">Single-file HTML study page for CS331. Built for revision, memorization, and exam prep.</p>
+  </main>
+  <script>
+    const root = document.documentElement;
+    const btn = document.getElementById('themeToggle');
+    const saved = localStorage.getItem('cs331-study-theme');
+    if (saved) {
+      root.dataset.theme = saved;
+      btn.textContent = saved === 'dark' ? 'Light mode' : 'Dark mode';
+    }
+    btn.addEventListener('click', () => {
+      const next = root.dataset.theme === 'dark' ? 'light' : 'dark';
+      root.dataset.theme = next;
+      localStorage.setItem('cs331-study-theme', next);
+      btn.textContent = next === 'dark' ? 'Light mode' : 'Dark mode';
+    });
+  </script>
+</body>
+</html>
