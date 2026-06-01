@@ -5,7 +5,36 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Protocol Layering & Network Models — Study Guide</title>
-    <style>
+    
+  <script id="cs331-theme-preload">
+    (function () {
+      var keys = ['cs331-study-theme', 'cs331-mindmap-theme', 'cs331-chapter-mindmap-theme'];
+      function normalize(value) {
+        if (value === 'slate' || value === 'dark') return 'dark';
+        if (value === 'default' || value === 'light') return 'light';
+        return null;
+      }
+      function parentTheme() {
+        try {
+          if (window.parent && window.parent !== window && window.parent.document) {
+            var el = window.parent.document.documentElement;
+            return normalize(el.getAttribute('data-md-color-scheme') || el.dataset.theme || el.getAttribute('data-theme'));
+          }
+        } catch (e) {}
+        return null;
+      }
+      function savedTheme() {
+        for (var i = 0; i < keys.length; i++) {
+          var value = normalize(localStorage.getItem(keys[i]));
+          if (value) return value;
+        }
+        return null;
+      }
+      var systemTheme = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      document.documentElement.dataset.theme = parentTheme() || savedTheme() || systemTheme;
+    })();
+  </script>
+<style>
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
 
         :root {
@@ -2000,6 +2029,72 @@
             });
         });
     </script>
+
+  <script id="cs331-theme-sync">
+    (function () {
+      var root = document.documentElement;
+      var keys = ['cs331-study-theme', 'cs331-mindmap-theme', 'cs331-chapter-mindmap-theme'];
+      function normalize(value) {
+        if (value === 'slate' || value === 'dark') return 'dark';
+        if (value === 'default' || value === 'light') return 'light';
+        return null;
+      }
+      function parentTheme() {
+        try {
+          if (window.parent && window.parent !== window && window.parent.document) {
+            var el = window.parent.document.documentElement;
+            return normalize(el.getAttribute('data-md-color-scheme') || el.dataset.theme || el.getAttribute('data-theme'));
+          }
+        } catch (e) {}
+        return null;
+      }
+      function savedTheme() {
+        for (var i = 0; i < keys.length; i++) {
+          var value = normalize(localStorage.getItem(keys[i]));
+          if (value) return value;
+        }
+        return null;
+      }
+      function buttonLabel(button, theme) {
+        if (!button) return;
+        if (button.id === 'themeBtn') {
+          button.textContent = theme === 'dark' ? '☀️ Light Mode' : '🌙 Dark Mode';
+        } else {
+          button.textContent = theme === 'dark' ? 'Light mode' : 'Dark mode';
+        }
+      }
+      function updateButtons(theme) {
+        document.querySelectorAll('#themeToggle, #themeBtn').forEach(function (button) {
+          buttonLabel(button, theme);
+        });
+      }
+      function applyTheme(theme, persist) {
+        theme = normalize(theme) || 'dark';
+        root.dataset.theme = theme;
+        root.setAttribute('data-theme', theme);
+        if (persist) keys.forEach(function (key) { localStorage.setItem(key, theme); });
+        updateButtons(theme);
+      }
+      function currentTheme() {
+        return normalize(root.dataset.theme || root.getAttribute('data-theme')) || 'dark';
+      }
+      applyTheme(parentTheme() || savedTheme() || currentTheme(), false);
+      document.querySelectorAll('#themeToggle, #themeBtn').forEach(function (button) {
+        button.addEventListener('click', function () {
+          window.setTimeout(function () { applyTheme(currentTheme(), true); }, 0);
+        });
+      });
+      try {
+        if (window.parent && window.parent !== window && window.parent.document) {
+          var parentRoot = window.parent.document.documentElement;
+          new MutationObserver(function () {
+            var theme = parentTheme();
+            if (theme) applyTheme(theme, false);
+          }).observe(parentRoot, { attributes: true, attributeFilter: ['data-md-color-scheme', 'data-theme'] });
+        }
+      } catch (e) {}
+    })();
+  </script>
 </body>
 
 </html>

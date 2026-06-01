@@ -7,16 +7,16 @@
 ## Open The Resources
 
 <div class="overview-grid">
-  <a class="overview-card" href="data-communications-and-networking.md"><strong>Data Communications and Networking</strong><span>Open resource</span></a>
-  <a class="overview-card" href="protocol-layering.md"><strong>Protocol Layering and Network Models</strong><span>Open resource</span></a>
-  <a class="overview-card" href="data-link-layer-control.md"><strong>Data Link Layer Control</strong><span>Open resource</span></a>
-  <a class="overview-card" href="data-link-layer.md"><strong>Data Link Layer MAC Protocols</strong><span>Open resource</span></a>
-  <a class="overview-card" href="ethernet.md"><strong>Ethernet and LANs</strong><span>Open resource</span></a>
-  <a class="overview-card" href="interconnecting-devices.md"><strong>Interconnecting Devices and VLANs</strong><span>Open resource</span></a>
-  <a class="overview-card" href="network-layer-data-transfer.md"><strong>Network Layer Data Transfer</strong><span>Open resource</span></a>
-  <a class="overview-card" href="network-layer-routing.md"><strong>Network Layer Routing</strong><span>Open resource</span></a>
-  <a class="overview-card" href="transport-layer.md"><strong>Transport Layer</strong><span>Open resource</span></a>
-  <a class="overview-card" href="dns-and-application-layer.md"><strong>DNS and Application Layer</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/computer-science/CS331/slide-breakdowns/data-communications-and-networking/"><strong>Data Communications and Networking</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/computer-science/CS331/slide-breakdowns/protocol-layering/"><strong>Protocol Layering and Network Models</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/computer-science/CS331/slide-breakdowns/data-link-layer-control/"><strong>Data Link Layer Control</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/computer-science/CS331/slide-breakdowns/data-link-layer/"><strong>Data Link Layer MAC Protocols</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/computer-science/CS331/slide-breakdowns/ethernet/"><strong>Ethernet and LANs</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/computer-science/CS331/slide-breakdowns/interconnecting-devices/"><strong>Interconnecting Devices and VLANs</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/computer-science/CS331/slide-breakdowns/network-layer-data-transfer/"><strong>Network Layer Data Transfer</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/computer-science/CS331/slide-breakdowns/network-layer-routing/"><strong>Network Layer Routing</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/computer-science/CS331/slide-breakdowns/transport-layer/"><strong>Transport Layer</strong><span>Open resource</span></a>
+  <a class="overview-card" href="/Academics/computer-science/CS331/slide-breakdowns/dns-and-application-layer/"><strong>DNS and Application Layer</strong><span>Open resource</span></a>
 </div>
 
 ## Study Path

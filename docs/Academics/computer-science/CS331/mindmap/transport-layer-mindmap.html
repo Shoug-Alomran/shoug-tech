@@ -5,7 +5,36 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Transport Layer Mind Map</title>
-    <style>
+    
+  <script id="cs331-theme-preload">
+    (function () {
+      var keys = ['cs331-study-theme', 'cs331-mindmap-theme', 'cs331-chapter-mindmap-theme'];
+      function normalize(value) {
+        if (value === 'slate' || value === 'dark') return 'dark';
+        if (value === 'default' || value === 'light') return 'light';
+        return null;
+      }
+      function parentTheme() {
+        try {
+          if (window.parent && window.parent !== window && window.parent.document) {
+            var el = window.parent.document.documentElement;
+            return normalize(el.getAttribute('data-md-color-scheme') || el.dataset.theme || el.getAttribute('data-theme'));
+          }
+        } catch (e) {}
+        return null;
+      }
+      function savedTheme() {
+        for (var i = 0; i < keys.length; i++) {
+          var value = normalize(localStorage.getItem(keys[i]));
+          if (value) return value;
+        }
+        return null;
+      }
+      var systemTheme = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      document.documentElement.dataset.theme = parentTheme() || savedTheme() || systemTheme;
+    })();
+  </script>
+<style>
         :root {
             --bg: #0f172a;
             --panel: #111827;
@@ -363,6 +392,72 @@
         const mindMapData = {"id": "transport-layer", "title": "Transport Layer", "summary": "The transport layer provides process-to-process communication using ports, UDP, and TCP.", "description": "<p>The transport layer provides process-to-process communication using ports, UDP, and TCP.</p>", "children": [{"id": "transport-services", "title": "Transport Services", "summary": "Transport sits between applications and the network layer.", "description": "<p>Transport sits between applications and the network layer.</p>", "children": [{"id": "transport-process", "title": "Process-to-Process Delivery", "summary": "Transport delivers data to the correct application process, not just the correct host.", "description": "<p>Transport delivers data to the correct application process, not just the correct host.</p>"}, {"id": "transport-mux", "title": "Multiplexing and Demultiplexing", "summary": "Outgoing data from many apps is multiplexed; incoming data is demultiplexed using port numbers.", "description": "<p>Outgoing data from many apps is multiplexed; incoming data is demultiplexed using port numbers.</p>"}, {"id": "transport-ports", "title": "Port Numbers", "summary": "Port numbers identify application endpoints such as web, DNS, or custom client processes.", "description": "<p>Port numbers identify application endpoints such as web, DNS, or custom client processes.</p>"}]}, {"id": "transport-udp", "title": "UDP", "summary": "UDP is lightweight, connectionless, and does not provide built-in reliability.", "description": "<p>UDP is lightweight, connectionless, and does not provide built-in reliability.</p>", "children": [{"id": "transport-udp-header", "title": "UDP Header", "summary": "UDP has a small header with source port, destination port, length, and checksum.", "description": "<p>UDP has a small header with source port, destination port, length, and checksum.</p>"}, {"id": "transport-udp-use", "title": "When UDP Fits", "summary": "UDP fits low-delay or application-managed protocols such as DNS queries, streaming, and real-time traffic.", "description": "<p>UDP fits low-delay or application-managed protocols such as DNS queries, streaming, and real-time traffic.</p>"}, {"id": "transport-udp-limits", "title": "UDP Limits", "summary": "UDP does not guarantee delivery, order, duplicate removal, or congestion control by itself.", "description": "<p>UDP does not guarantee delivery, order, duplicate removal, or congestion control by itself.</p>"}]}, {"id": "transport-tcp", "title": "TCP", "summary": "TCP provides reliable, ordered byte-stream communication.", "description": "<p>TCP provides reliable, ordered byte-stream communication.</p>", "children": [{"id": "transport-handshake", "title": "Three-Way Handshake", "summary": "TCP uses SYN, SYN-ACK, and ACK to establish a connection before data transfer.", "description": "<p>TCP uses SYN, SYN-ACK, and ACK to establish a connection before data transfer.</p>"}, {"id": "transport-reliability", "title": "Reliability Tools", "summary": "TCP uses sequence numbers, acknowledgments, timers, and retransmissions.", "description": "<p>TCP uses sequence numbers, acknowledgments, timers, and retransmissions.</p>"}, {"id": "transport-closing", "title": "Connection Closing", "summary": "TCP closes connections carefully so both sides can finish sending data.", "description": "<p>TCP closes connections carefully so both sides can finish sending data.</p>"}]}, {"id": "transport-control", "title": "Flow and Congestion Control", "summary": "TCP adapts to receiver capacity and network congestion.", "description": "<p>TCP adapts to receiver capacity and network congestion.</p>", "children": [{"id": "transport-flow", "title": "Flow Control", "summary": "Flow control protects the receiver from being overwhelmed, commonly using a receive window.", "description": "<p>Flow control protects the receiver from being overwhelmed, commonly using a receive window.</p>"}, {"id": "transport-congestion", "title": "Congestion Control", "summary": "Congestion control protects the network by reducing sending rate during overload.", "description": "<p>Congestion control protects the network by reducing sending rate during overload.</p>"}, {"id": "transport-confusion", "title": "Flow vs Congestion", "summary": "Memory trick: flow = receiver comfort; congestion = network traffic jam.", "description": "<p>Memory trick: flow = receiver comfort; congestion = network traffic jam.</p>"}]}]};
         const state = { expanded: new Set([mindMapData.id]), active: mindMapData.id, matches: new Set(), scale: 1, panX: 80, panY: 120, dragging: false, lastX: 0, lastY: 0 }; const viewport = document.getElementById('viewport'), world = document.getElementById('world'), nodesEl = document.getElementById('nodes'), linksEl = document.getElementById('links'), panel = document.getElementById('panel'), panelTitle = document.getElementById('panelTitle'), panelBody = document.getElementById('panelBody'), searchInput = document.getElementById('searchInput'), searchResults = document.getElementById('searchResults'); const nodeMap = new Map(), parentMap = new Map(), layout = new Map(), C = { xGap: 330, yGap: 92, nodeW: 250, rootW: 285 }; function index(n, p = null, d = 0) { n.depth = d; nodeMap.set(n.id, n); if (p) parentMap.set(n.id, p.id); (n.children || []).forEach(c => index(c, n, d + 1)); } function leaf(n) { return !n.children || !n.children.length } function exp(n) { return state.expanded.has(n.id) } function tree(n, d = 0, c = { y: 0 }) { let y; if (exp(n) && !leaf(n)) { const ys = n.children.map(ch => tree(ch, d + 1, c)); y = (Math.min(...ys) + Math.max(...ys)) / 2 } else { y = c.y; c.y += C.yGap } layout.set(n.id, { x: d * C.xGap, y, depth: d }); return y } function visible(n = mindMapData, a = []) { a.push(n); if (exp(n) && n.children) n.children.forEach(ch => visible(ch, a)); return a } function conns(n = mindMapData, a = []) { if (exp(n) && n.children) n.children.forEach(ch => { a.push([n, ch]); conns(ch, a) }); return a } function esc(s) { return String(s).replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[ch])) } function strip(h) { const d = document.createElement('div'); d.innerHTML = h; return d.textContent || '' } function render() { layout.clear(); tree(mindMapData); const ns = visible(); linksEl.innerHTML = conns().map(([a, b]) => { const pa = layout.get(a.id), pb = layout.get(b.id), aw = a.depth === 0 ? C.rootW : C.nodeW, x1 = pa.x + aw, y1 = pa.y + 30, x2 = pb.x, y2 = pb.y + 30, m = (x1 + x2) / 2; return `<path class="connector" d="M ${x1} ${y1} C ${m} ${y1}, ${m} ${y2}, ${x2} ${y2}"></path>` }).join(''); nodesEl.innerHTML = ns.map(n => { const p = layout.get(n.id), cl = ['node']; if (n.depth === 0) cl.push('root'); if (leaf(n)) cl.push('leaf'); if (exp(n) && !leaf(n)) cl.push('expanded'); if (state.active === n.id) cl.push('active'); if (state.matches.has(n.id)) cl.push('match'); return `<div class="${cl.join(' ')}" data-id="${n.id}" style="left:${p.x}px;top:${p.y}px"><div class="node-title"><span class="chev">${leaf(n) ? 'i' : '›'}</span><span>${esc(n.title)}</span></div><div class="node-desc">${esc(n.summary || '')}</div></div>` }).join(''); nodesEl.querySelectorAll('.node').forEach(el => el.onclick = e => { e.stopPropagation(); select(el.dataset.id, true) }); apply() } function select(id, user = false) { const n = nodeMap.get(id); state.active = id; if (leaf(n)) openPanel(n); else if (user) { state.expanded.has(id) ? state.expanded.delete(id) : state.expanded.add(id); closePanel() } render() } function openPanel(n) { panelTitle.textContent = n.title; panelBody.innerHTML = n.description || `<p>${esc(n.summary || '')}</p>`; panel.classList.add('open') } function closePanel() { panel.classList.remove('open') } function ancestors(id) { const a = []; let c = id; while (parentMap.has(c)) { c = parentMap.get(c); a.push(c) } return a } function focus(id) { ancestors(id).forEach(a => state.expanded.add(a)); state.active = id; render(); const p = layout.get(id), r = viewport.getBoundingClientRect(); state.panX = r.width / 2 - (p.x + 120) * state.scale; state.panY = r.height / 2 - (p.y + 30) * state.scale; apply(); if (leaf(nodeMap.get(id))) openPanel(nodeMap.get(id)) } function apply() { world.style.transform = `translate(${state.panX}px,${state.panY}px) scale(${state.scale})` } function zoom(v) { state.scale = Math.min(1.8, Math.max(.45, v)); apply() } function expandAll() { nodeMap.forEach(n => { if (!leaf(n)) state.expanded.add(n.id) }); render() } function collapseAll() { state.expanded = new Set([mindMapData.id]); closePanel(); render() } function search(q) { q = q.trim().toLowerCase(); state.matches.clear(); searchResults.innerHTML = ''; if (!q) { searchResults.style.display = 'none'; render(); return } const res = []; nodeMap.forEach(n => { if (`${n.title} ${n.summary || ''} ${strip(n.description || '')}`.toLowerCase().includes(q)) { state.matches.add(n.id); res.push(n) } }); searchResults.innerHTML = res.map(n => `<div class="result" data-id="${n.id}"><strong>${esc(n.title)}</strong><small>${esc(n.summary || '')}</small></div>`).join('') || '<div class="result">No matches</div>'; searchResults.style.display = 'block'; searchResults.querySelectorAll('[data-id]').forEach(el => el.onclick = () => { searchResults.style.display = 'none'; focus(el.dataset.id) }); render() } function exportPng() { const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="700"><rect width="100%" height="100%" fill="#0f172a"/><text x="40" y="70" fill="#e5eefc" font-family="Arial" font-size="34" font-weight="700">${esc(mindMapData.title)}</text><text x="40" y="115" fill="#94a3b8" font-family="Arial" font-size="18">Export from CS331 chapter mind map</text></svg>`; const img = new Image(), url = URL.createObjectURL(new Blob([svg], { type: 'image/svg+xml' })); img.onload = () => { const c = document.createElement('canvas'); c.width = 1200; c.height = 700; const x = c.getContext('2d'); x.drawImage(img, 0, 0); URL.revokeObjectURL(url); const a = document.createElement('a'); a.download = 'transport-layer-mindmap.png'; a.href = c.toDataURL('image/png'); a.click() }; img.src = url } function initTheme() { const s = localStorage.getItem('cs331-chapter-mindmap-theme') || 'dark'; document.documentElement.dataset.theme = s; document.getElementById('themeToggle').textContent = s === 'dark' ? 'Light' : 'Dark' } index(mindMapData); render(); initTheme(); document.getElementById('zoomIn').onclick = () => zoom(state.scale + .12); document.getElementById('zoomOut').onclick = () => zoom(state.scale - .12); document.getElementById('resetView').onclick = () => { state.scale = 1; state.panX = 80; state.panY = 120; apply() }; document.getElementById('expandAll').onclick = expandAll; document.getElementById('collapseAll').onclick = collapseAll; document.getElementById('exportPng').onclick = exportPng; document.getElementById('closePanel').onclick = closePanel; document.getElementById('themeToggle').onclick = () => { const n = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark'; document.documentElement.dataset.theme = n; localStorage.setItem('cs331-chapter-mindmap-theme', n); document.getElementById('themeToggle').textContent = n === 'dark' ? 'Light' : 'Dark' }; searchInput.oninput = e => search(e.target.value); viewport.onmousedown = e => { if (e.target.closest('.node')) return; state.dragging = true; state.lastX = e.clientX; state.lastY = e.clientY; viewport.classList.add('dragging') }; window.onmousemove = e => { if (!state.dragging) return; state.panX += e.clientX - state.lastX; state.panY += e.clientY - state.lastY; state.lastX = e.clientX; state.lastY = e.clientY; apply() }; window.onmouseup = () => { state.dragging = false; viewport.classList.remove('dragging') }; viewport.addEventListener('wheel', e => { e.preventDefault(); zoom(state.scale + (e.deltaY < 0 ? .08 : -.08)) }, { passive: false });
     </script>
+
+  <script id="cs331-theme-sync">
+    (function () {
+      var root = document.documentElement;
+      var keys = ['cs331-study-theme', 'cs331-mindmap-theme', 'cs331-chapter-mindmap-theme'];
+      function normalize(value) {
+        if (value === 'slate' || value === 'dark') return 'dark';
+        if (value === 'default' || value === 'light') return 'light';
+        return null;
+      }
+      function parentTheme() {
+        try {
+          if (window.parent && window.parent !== window && window.parent.document) {
+            var el = window.parent.document.documentElement;
+            return normalize(el.getAttribute('data-md-color-scheme') || el.dataset.theme || el.getAttribute('data-theme'));
+          }
+        } catch (e) {}
+        return null;
+      }
+      function savedTheme() {
+        for (var i = 0; i < keys.length; i++) {
+          var value = normalize(localStorage.getItem(keys[i]));
+          if (value) return value;
+        }
+        return null;
+      }
+      function buttonLabel(button, theme) {
+        if (!button) return;
+        if (button.id === 'themeBtn') {
+          button.textContent = theme === 'dark' ? '☀️ Light Mode' : '🌙 Dark Mode';
+        } else {
+          button.textContent = theme === 'dark' ? 'Light mode' : 'Dark mode';
+        }
+      }
+      function updateButtons(theme) {
+        document.querySelectorAll('#themeToggle, #themeBtn').forEach(function (button) {
+          buttonLabel(button, theme);
+        });
+      }
+      function applyTheme(theme, persist) {
+        theme = normalize(theme) || 'dark';
+        root.dataset.theme = theme;
+        root.setAttribute('data-theme', theme);
+        if (persist) keys.forEach(function (key) { localStorage.setItem(key, theme); });
+        updateButtons(theme);
+      }
+      function currentTheme() {
+        return normalize(root.dataset.theme || root.getAttribute('data-theme')) || 'dark';
+      }
+      applyTheme(parentTheme() || savedTheme() || currentTheme(), false);
+      document.querySelectorAll('#themeToggle, #themeBtn').forEach(function (button) {
+        button.addEventListener('click', function () {
+          window.setTimeout(function () { applyTheme(currentTheme(), true); }, 0);
+        });
+      });
+      try {
+        if (window.parent && window.parent !== window && window.parent.document) {
+          var parentRoot = window.parent.document.documentElement;
+          new MutationObserver(function () {
+            var theme = parentTheme();
+            if (theme) applyTheme(theme, false);
+          }).observe(parentRoot, { attributes: true, attributeFilter: ['data-md-color-scheme', 'data-theme'] });
+        }
+      } catch (e) {}
+    })();
+  </script>
 </body>
 
 </html>
