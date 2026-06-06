@@ -64,4 +64,13 @@
       setDirectory(false);
     });
   });
+
+  var sidebarCollapseBtn = document.querySelector("[data-sidebar-collapse]");
+  if (sidebarCollapseBtn) {
+    sidebarCollapseBtn.addEventListener("click", function () {
+      if (document.body.classList.contains("sidebar-open")) {
+        setDirectory(false);
+      }
+    });
+  }
 })();
