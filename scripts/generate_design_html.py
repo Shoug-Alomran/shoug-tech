@@ -596,6 +596,28 @@ COMMON_HEADER_CSS = r"""
             gap: 10px;
         }
 
+        .shoug-header-menu-btn,
+        .shoug-directory-btn {
+            min-width: 34px;
+            height: 34px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(184, 41, 234, 0.45);
+            background: rgba(184, 41, 234, 0.08);
+            color: #f8f7fb;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.62rem;
+            font-weight: 800;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            cursor: pointer;
+        }
+
+        .shoug-header-backdrop {
+            display: none;
+        }
+
         .shoug-icon-btn,
         .shoug-lang-btn,
         .shoug-theme-btn {
@@ -1021,6 +1043,27 @@ COMMON_HEADER_CSS = r"""
             flex-direction: row-reverse;
         }
 
+        .layout-wrapper,
+        .app-layout,
+        .content-area,
+        .page-content,
+        .embed-area-wrapper,
+        .embed-container,
+        main,
+        section,
+        article {
+            max-width: 100%;
+            min-width: 0;
+        }
+
+        img,
+        svg,
+        video,
+        canvas,
+        iframe {
+            max-width: 100%;
+        }
+
         @media (max-width: 980px) {
             .shoug-site-header {
                 height: auto;
@@ -1047,6 +1090,210 @@ COMMON_HEADER_CSS = r"""
             }
         }
 
+        @media (max-width: 760px) {
+            body {
+                overflow-x: hidden;
+            }
+
+            .shoug-site-header {
+                min-height: 68px;
+            }
+
+            .shoug-header-inner {
+                width: calc(100% - 28px);
+                flex-wrap: nowrap;
+                gap: 8px;
+                padding: 8px 0;
+            }
+
+            .shoug-header-logo {
+                max-width: 38vw;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                font-size: 0.74rem;
+                letter-spacing: 0.12em;
+            }
+
+            .shoug-header-menu-btn {
+                display: inline-flex;
+            }
+
+            body:has(.academic-sidebar) .shoug-directory-btn {
+                display: inline-flex;
+            }
+
+            .shoug-header-actions {
+                gap: 6px;
+                margin-left: auto;
+            }
+
+            .shoug-icon-btn,
+            .shoug-lang-btn,
+            .shoug-theme-btn {
+                width: 32px;
+                height: 32px;
+                flex: 0 0 32px;
+            }
+
+            .shoug-contact-btn {
+                height: 32px;
+                padding-inline: 10px;
+                font-size: 0.58rem;
+                letter-spacing: 0.12em;
+            }
+
+            .shoug-header-nav {
+                position: fixed;
+                left: 14px;
+                right: 14px;
+                top: 74px;
+                z-index: 10020;
+                width: auto;
+                max-height: calc(100vh - 96px);
+                display: grid !important;
+                grid-template-columns: 1fr;
+                gap: 0;
+                overflow: auto;
+                padding: 10px;
+                border: 1px solid rgba(184, 41, 234, 0.38);
+                background: rgba(5, 5, 8, 0.98);
+                box-shadow: 0 22px 70px rgba(0, 0, 0, 0.62);
+                opacity: 0;
+                pointer-events: none;
+                transform: translateY(-8px);
+                transition: opacity 160ms ease, transform 160ms ease;
+            }
+
+            body.mobile-nav-open .shoug-header-nav {
+                opacity: 1;
+                pointer-events: auto;
+                transform: translateY(0);
+            }
+
+            .shoug-header-nav a {
+                min-height: 44px;
+                display: flex;
+                align-items: center;
+                padding: 0 14px;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+                font-size: 0.76rem;
+            }
+
+            .shoug-header-nav a:last-child {
+                border-bottom: 0;
+            }
+
+            .shoug-header-backdrop {
+                position: fixed;
+                inset: 68px 0 0;
+                z-index: 10010;
+                background: rgba(0, 0, 0, 0.54);
+                backdrop-filter: blur(2px);
+                -webkit-backdrop-filter: blur(2px);
+            }
+
+            body.mobile-nav-open .shoug-header-backdrop,
+            body.sidebar-open .shoug-header-backdrop {
+                display: block;
+            }
+
+            .layout-wrapper,
+            .app-layout {
+                width: 100%;
+                overflow-x: hidden !important;
+            }
+
+            .content-area,
+            .page-content,
+            .content-scroll-area {
+                width: 100%;
+                overflow-x: hidden !important;
+            }
+
+            .top-bar,
+            .content-topbar {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .page-header,
+            .content-header,
+            .content-section,
+            .embed-area-wrapper {
+                padding-left: 16px !important;
+                padding-right: 16px !important;
+            }
+
+            .embed-container {
+                width: 100%;
+                overflow: hidden;
+            }
+
+            .embed-container iframe,
+            .embed-frame {
+                width: 100% !important;
+                min-height: 72vh !important;
+                height: 72vh !important;
+            }
+
+            .hero {
+                min-height: auto !important;
+                padding-top: clamp(72px, 18vh, 132px) !important;
+                padding-left: 24px !important;
+                padding-right: 24px !important;
+            }
+
+            .hero-bg-glow {
+                left: 0 !important;
+                width: 100vw !important;
+                max-width: 100vw !important;
+                overflow: hidden !important;
+            }
+
+            .ticker-wrap {
+                max-width: 100vw !important;
+                overflow: hidden !important;
+                contain: paint;
+            }
+
+            .ticker-content {
+                width: 100% !important;
+                max-width: 100% !important;
+                overflow: hidden !important;
+            }
+
+            .hero-ctas {
+                flex-wrap: wrap;
+            }
+
+            .work-grid,
+            .projects-grid,
+            .project-grid,
+            .explore-grid,
+            .panels-grid,
+            .proof,
+            [class*="cards-grid"],
+            [class*="card-grid"] {
+                grid-template-columns: 1fr !important;
+            }
+
+            .work-card,
+            .project-card,
+            .card,
+            [class*="-card"] {
+                max-width: 100% !important;
+                min-width: 0 !important;
+                overflow-wrap: anywhere;
+            }
+
+            table {
+                display: block;
+                max-width: 100%;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+        }
+
         @media (max-width: 640px) {
             .shoug-site-footer {
                 padding-inline: 22px;
@@ -1054,6 +1301,17 @@ COMMON_HEADER_CSS = r"""
 
             .shoug-footer-grid {
                 grid-template-columns: 1fr;
+            }
+
+            .shoug-header-logo {
+                max-width: 32vw;
+            }
+
+            .shoug-header-actions a[aria-label="GitHub"],
+            .shoug-header-actions a[aria-label="LinkedIn"],
+            .shoug-header-actions a[aria-label="جيت هب"],
+            .shoug-header-actions a[aria-label="لينكدإن"] {
+                display: none;
             }
         }
 """
@@ -1072,6 +1330,8 @@ COMMON_HEADER = """
                 <a href="/about/">About</a>
             </nav>
             <div class="shoug-header-actions">
+                <button class="shoug-header-menu-btn" type="button" aria-label="Open site menu" aria-controls="shoug-mobile-nav" aria-expanded="false">Menu</button>
+                <button class="shoug-directory-btn" type="button" aria-label="Open academic directory" aria-expanded="false">Dir</button>
                 <a class="shoug-icon-btn" href="/?q=" aria-label="Search">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-4-4"></path></svg>
                 </a>
@@ -1087,6 +1347,7 @@ COMMON_HEADER = """
                 <a class="shoug-contact-btn" href="mailto:shoug.f.alomran@gmail.com">Contact</a>
             </div>
         </div>
+        <div class="shoug-header-backdrop" data-mobile-overlay></div>
     </header>
 """
 
@@ -1161,6 +1422,66 @@ COMMON_SCRIPT = """
                     localStorage.setItem('shoug-theme', document.body.classList.contains('shoug-light-mode') ? 'light' : 'dark');
                 });
             }
+
+            var mobileMenuButton = document.querySelector('.shoug-header-menu-btn');
+            var directoryButton = document.querySelector('.shoug-directory-btn');
+            var mobileOverlay = document.querySelector('[data-mobile-overlay]');
+            var primaryNav = document.querySelector('.shoug-header-nav');
+            if (primaryNav && !primaryNav.id) primaryNav.id = 'shoug-mobile-nav';
+
+            function setMobileMenu(open) {
+                document.body.classList.toggle('mobile-nav-open', open);
+                if (mobileMenuButton) {
+                    mobileMenuButton.setAttribute('aria-expanded', open ? 'true' : 'false');
+                    mobileMenuButton.setAttribute('aria-label', open ? 'Close site menu' : 'Open site menu');
+                }
+            }
+
+            function setDirectory(open) {
+                document.body.classList.toggle('sidebar-open', open);
+                if (directoryButton) {
+                    directoryButton.setAttribute('aria-expanded', open ? 'true' : 'false');
+                    directoryButton.setAttribute('aria-label', open ? 'Close academic directory' : 'Open academic directory');
+                }
+            }
+
+            if (mobileMenuButton) {
+                mobileMenuButton.addEventListener('click', function () {
+                    var next = !document.body.classList.contains('mobile-nav-open');
+                    setDirectory(false);
+                    setMobileMenu(next);
+                });
+            }
+
+            if (directoryButton) {
+                if (!document.querySelector('.academic-sidebar')) directoryButton.hidden = true;
+                directoryButton.addEventListener('click', function () {
+                    var next = !document.body.classList.contains('sidebar-open');
+                    setMobileMenu(false);
+                    setDirectory(next);
+                });
+            }
+
+            if (mobileOverlay) {
+                mobileOverlay.addEventListener('click', function () {
+                    setMobileMenu(false);
+                    setDirectory(false);
+                });
+            }
+
+            document.addEventListener('keydown', function (event) {
+                if (event.key === 'Escape') {
+                    setMobileMenu(false);
+                    setDirectory(false);
+                }
+            });
+
+            document.querySelectorAll('.shoug-header-nav a, .academic-sidebar a').forEach(function (link) {
+                link.addEventListener('click', function () {
+                    setMobileMenu(false);
+                    setDirectory(false);
+                });
+            });
 
             document.querySelectorAll('[data-tree-toggle]').forEach(function (button) {
                 button.addEventListener('click', function () {
