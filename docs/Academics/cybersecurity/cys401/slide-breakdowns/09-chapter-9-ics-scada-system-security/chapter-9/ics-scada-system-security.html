@@ -1,0 +1,1916 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <link rel="icon" type="image/png" href="/assets/favicon.png">
+    <link rel="apple-touch-icon" href="/assets/favicon.png">
+    <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chapter 9 — ICS/SCADA Security | CYS 401</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --bg: #050d1a;
+      --surface: #0a1628;
+      --surface2: #0d1f3c;
+      --accent: #00d4ff;
+      --accent2: #ff6b35;
+      --accent3: #39ff14;
+      --accent4: #ffd700;
+      --danger: #ff3366;
+      --text: #e8f4fd;
+      --muted: #7a9cc0;
+      --border: rgba(0, 212, 255, 0.2);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Exo 2', sans-serif;
+      font-weight: 300;
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    /* Animated grid background */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0, 212, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 212, 255, 0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── HEADER ── */
+    header {
+      text-align: center;
+      padding: 70px 24px 50px;
+      position: relative;
+    }
+
+    .chapter-badge {
+      display: inline-block;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.75rem;
+      letter-spacing: 0.3em;
+      color: var(--accent);
+      border: 1px solid var(--accent);
+      padding: 6px 18px;
+      border-radius: 2px;
+      margin-bottom: 20px;
+      animation: pulse-border 2s infinite;
+    }
+
+    @keyframes pulse-border {
+
+      0%,
+      100% {
+        box-shadow: 0 0 8px rgba(0, 212, 255, 0.3);
+      }
+
+      50% {
+        box-shadow: 0 0 20px rgba(0, 212, 255, 0.7), inset 0 0 10px rgba(0, 212, 255, 0.1);
+      }
+    }
+
+    h1 {
+      font-family: 'Orbitron', monospace;
+      font-size: clamp(1.8rem, 5vw, 3.2rem);
+      font-weight: 900;
+      letter-spacing: 0.05em;
+      line-height: 1.2;
+      background: linear-gradient(135deg, var(--accent) 0%, #ffffff 50%, var(--accent2) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 12px;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 1rem;
+      letter-spacing: 0.1em;
+      font-family: 'Share Tech Mono', monospace;
+    }
+
+    .scan-line {
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      margin: 30px auto;
+      max-width: 600px;
+      animation: scan 3s linear infinite;
+    }
+
+    @keyframes scan {
+      0% {
+        opacity: 0.3;
+      }
+
+      50% {
+        opacity: 1;
+      }
+
+      100% {
+        opacity: 0.3;
+      }
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky;
+      top: 0;
+      background: rgba(5, 13, 26, 0.95);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      z-index: 100;
+      padding: 12px 0;
+    }
+
+    .nav-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px;
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .nav-btn {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      background: transparent;
+      border: 1px solid rgba(0, 212, 255, 0.15);
+      padding: 5px 12px;
+      border-radius: 2px;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .nav-btn:hover {
+      color: var(--accent);
+      border-color: var(--accent);
+      background: rgba(0, 212, 255, 0.05);
+    }
+
+    /* ── SECTIONS ── */
+    section {
+      padding: 60px 0;
+      border-bottom: 1px solid rgba(0, 212, 255, 0.08);
+      animation: fadeIn 0.6s ease both;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: none;
+      }
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 36px;
+    }
+
+    .section-num {
+      font-family: 'Orbitron', monospace;
+      font-size: 2.5rem;
+      font-weight: 900;
+      color: rgba(0, 212, 255, 0.15);
+      line-height: 1;
+      min-width: 60px;
+    }
+
+    .section-title {
+      font-family: 'Orbitron', monospace;
+      font-size: clamp(1rem, 2.5vw, 1.5rem);
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: 0.05em;
+    }
+
+    .section-icon {
+      font-size: 2rem;
+    }
+
+    /* ── CARDS ── */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 22px;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--accent);
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 30px rgba(0, 212, 255, 0.15);
+    }
+
+    .card.orange::before {
+      background: var(--accent2);
+    }
+
+    .card.green::before {
+      background: var(--accent3);
+    }
+
+    .card.gold::before {
+      background: var(--accent4);
+    }
+
+    .card.red::before {
+      background: var(--danger);
+    }
+
+    .card-title {
+      font-family: 'Orbitron', monospace;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      color: var(--accent);
+      margin-bottom: 10px;
+    }
+
+    .card.orange .card-title {
+      color: var(--accent2);
+    }
+
+    .card.green .card-title {
+      color: var(--accent3);
+    }
+
+    .card.gold .card-title {
+      color: var(--accent4);
+    }
+
+    .card.red .card-title {
+      color: var(--danger);
+    }
+
+    .card p {
+      font-size: 0.9rem;
+      color: var(--text);
+      opacity: 0.85;
+    }
+
+    .card ul {
+      list-style: none;
+      margin-top: 8px;
+    }
+
+    .card ul li {
+      font-size: 0.85rem;
+      color: var(--text);
+      opacity: 0.8;
+      padding: 3px 0;
+      padding-left: 14px;
+      position: relative;
+    }
+
+    .card ul li::before {
+      content: '›';
+      position: absolute;
+      left: 0;
+      color: var(--accent);
+    }
+
+    .card.orange ul li::before {
+      color: var(--accent2);
+    }
+
+    .card.green ul li::before {
+      color: var(--accent3);
+    }
+
+    .card.gold ul li::before {
+      color: var(--accent4);
+    }
+
+    /* ── MNEMONIC BOX ── */
+    .mnemonic {
+      background: linear-gradient(135deg, rgba(57, 255, 20, 0.08), rgba(0, 212, 255, 0.05));
+      border: 1px solid rgba(57, 255, 20, 0.4);
+      border-radius: 8px;
+      padding: 24px 28px;
+      margin: 24px 0;
+      position: relative;
+    }
+
+    .mnemonic::before {
+      content: '🧠 MEMORY TRICK';
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.3em;
+      color: var(--accent3);
+      display: block;
+      margin-bottom: 12px;
+    }
+
+    .mnemonic-word {
+      font-family: 'Orbitron', monospace;
+      font-size: 1.6rem;
+      font-weight: 900;
+      color: var(--accent3);
+      letter-spacing: 0.2em;
+      margin-bottom: 14px;
+    }
+
+    .mnemonic-breakdown {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .mnem-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 4px;
+      padding: 8px 14px;
+      border: 1px solid rgba(57, 255, 20, 0.2);
+    }
+
+    .mnem-letter {
+      font-family: 'Orbitron', monospace;
+      font-size: 1.2rem;
+      font-weight: 900;
+      color: var(--accent3);
+      min-width: 20px;
+    }
+
+    .mnem-word {
+      font-size: 0.82rem;
+      color: var(--text);
+    }
+
+    .mnem-desc {
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    /* ── ARCHITECTURE FLOW ── */
+    .arch-flow {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0;
+      margin: 24px 0;
+      justify-content: center;
+    }
+
+    .arch-node {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 16px 18px;
+      text-align: center;
+      min-width: 120px;
+      position: relative;
+      flex: 0 0 auto;
+    }
+
+    .arch-node .node-icon {
+      font-size: 1.8rem;
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .arch-node .node-name {
+      font-family: 'Orbitron', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .arch-node .node-sub {
+      font-size: 0.72rem;
+      color: var(--muted);
+      margin-top: 3px;
+    }
+
+    .arch-arrow {
+      font-size: 1.4rem;
+      color: var(--accent);
+      padding: 0 6px;
+      opacity: 0.6;
+    }
+
+    /* ── PURDUE MODEL ── */
+    .purdue {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      margin: 20px 0;
+    }
+
+    .purdue-level {
+      display: grid;
+      grid-template-columns: 80px 1fr;
+      align-items: center;
+      gap: 16px;
+      padding: 14px 20px;
+      border-bottom: 1px solid rgba(0, 212, 255, 0.08);
+      transition: background 0.2s;
+    }
+
+    .purdue-level:hover {
+      background: rgba(0, 212, 255, 0.04);
+    }
+
+    .purdue-level:last-child {
+      border-bottom: none;
+    }
+
+    .purdue-num {
+      font-family: 'Orbitron', monospace;
+      font-size: 1.4rem;
+      font-weight: 900;
+      text-align: center;
+    }
+
+    .purdue-content .level-name {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.85rem;
+      color: var(--accent);
+      margin-bottom: 2px;
+    }
+
+    .purdue-content .level-desc {
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+
+    /* ── STRIDE TABLE ── */
+    .stride-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+      font-size: 0.85rem;
+    }
+
+    .stride-table th {
+      font-family: 'Orbitron', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      color: var(--accent);
+      padding: 12px 16px;
+      text-align: left;
+      background: rgba(0, 212, 255, 0.05);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .stride-table td {
+      padding: 11px 16px;
+      border-bottom: 1px solid rgba(0, 212, 255, 0.06);
+      vertical-align: top;
+    }
+
+    .stride-table tr:hover td {
+      background: rgba(0, 212, 255, 0.03);
+    }
+
+    .stride-letter {
+      font-family: 'Orbitron', monospace;
+      font-size: 1.3rem;
+      font-weight: 900;
+      color: var(--accent2);
+    }
+
+    /* ── COMPARISON TABLE ── */
+    .compare-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+      font-size: 0.85rem;
+    }
+
+    .compare-table th {
+      font-family: 'Orbitron', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      padding: 12px 16px;
+      text-align: center;
+    }
+
+    .compare-table th:nth-child(1) {
+      color: var(--muted);
+      text-align: left;
+    }
+
+    .compare-table th:nth-child(2) {
+      color: var(--accent);
+      background: rgba(0, 212, 255, 0.05);
+    }
+
+    .compare-table th:nth-child(3) {
+      color: var(--accent2);
+      background: rgba(255, 107, 53, 0.05);
+    }
+
+    .compare-table td {
+      padding: 10px 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      font-size: 0.82rem;
+    }
+
+    .compare-table td:nth-child(2) {
+      color: var(--accent);
+      background: rgba(0, 212, 255, 0.02);
+      text-align: center;
+    }
+
+    .compare-table td:nth-child(3) {
+      color: var(--accent2);
+      background: rgba(255, 107, 53, 0.02);
+      text-align: center;
+    }
+
+    /* ── CIA PRIORITY BOX ── */
+    .cia-priority {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin: 20px 0;
+    }
+
+    .cia-item {
+      flex: 1;
+      min-width: 140px;
+      border-radius: 6px;
+      padding: 20px;
+      text-align: center;
+      position: relative;
+    }
+
+    .cia-rank {
+      font-family: 'Orbitron', monospace;
+      font-size: 2.5rem;
+      font-weight: 900;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .cia-name {
+      font-family: 'Orbitron', monospace;
+      font-size: 0.8rem;
+      letter-spacing: 0.1em;
+      font-weight: 700;
+    }
+
+    .cia-note {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-top: 6px;
+    }
+
+    .cia-item.first {
+      background: rgba(57, 255, 20, 0.08);
+      border: 1px solid rgba(57, 255, 20, 0.4);
+    }
+
+    .cia-item.second {
+      background: rgba(0, 212, 255, 0.08);
+      border: 1px solid rgba(0, 212, 255, 0.3);
+    }
+
+    .cia-item.third {
+      background: rgba(255, 107, 53, 0.08);
+      border: 1px solid rgba(255, 107, 53, 0.3);
+    }
+
+    .cia-item.first .cia-rank {
+      color: var(--accent3);
+    }
+
+    .cia-item.second .cia-rank {
+      color: var(--accent);
+    }
+
+    .cia-item.third .cia-rank {
+      color: var(--accent2);
+    }
+
+    .cia-item.first .cia-name {
+      color: var(--accent3);
+    }
+
+    .cia-item.second .cia-name {
+      color: var(--accent);
+    }
+
+    .cia-item.third .cia-name {
+      color: var(--accent2);
+    }
+
+    /* ── PROTOCOL TABLE ── */
+    .proto-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0;
+      font-size: 0.83rem;
+    }
+
+    .proto-table th {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--accent);
+      padding: 10px 14px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+      background: rgba(0, 212, 255, 0.05);
+    }
+
+    .proto-table td {
+      padding: 9px 14px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    }
+
+    .proto-table tr:hover td {
+      background: rgba(0, 212, 255, 0.03);
+    }
+
+    .badge-low {
+      color: var(--danger);
+      font-weight: 600;
+    }
+
+    .badge-med {
+      color: var(--accent4);
+      font-weight: 600;
+    }
+
+    .badge-high {
+      color: var(--accent3);
+      font-weight: 600;
+    }
+
+    .port-tag {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.78rem;
+      color: var(--accent);
+      background: rgba(0, 212, 255, 0.08);
+      padding: 2px 8px;
+      border-radius: 3px;
+    }
+
+    /* ── NUMBERED LIST ── */
+    .steps {
+      counter-reset: step;
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin: 16px 0;
+    }
+
+    .steps li {
+      counter-increment: step;
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 14px 18px;
+    }
+
+    .steps li::before {
+      content: counter(step);
+      font-family: 'Orbitron', monospace;
+      font-size: 1rem;
+      font-weight: 900;
+      color: var(--accent2);
+      min-width: 28px;
+      line-height: 1.4;
+    }
+
+    .steps li strong {
+      color: var(--accent);
+    }
+
+    /* ── THREAT TYPES ── */
+    .threat-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin: 16px 0;
+    }
+
+    @media (max-width: 600px) {
+      .threat-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* ── CALLOUT ── */
+    .callout {
+      background: rgba(255, 51, 102, 0.08);
+      border-left: 3px solid var(--danger);
+      padding: 16px 20px;
+      border-radius: 0 6px 6px 0;
+      margin: 16px 0;
+      font-size: 0.88rem;
+    }
+
+    .callout.info {
+      background: rgba(0, 212, 255, 0.07);
+      border-left-color: var(--accent);
+    }
+
+    .callout.tip {
+      background: rgba(255, 215, 0, 0.07);
+      border-left-color: var(--accent4);
+    }
+
+    .callout strong {
+      display: block;
+      margin-bottom: 4px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.75rem;
+      letter-spacing: 0.15em;
+    }
+
+    .callout.info strong {
+      color: var(--accent);
+    }
+
+    .callout.tip strong {
+      color: var(--accent4);
+    }
+
+    .callout strong.red-label {
+      color: var(--danger);
+    }
+
+    /* ── AI TABLE ── */
+    .ai-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0;
+      font-size: 0.83rem;
+    }
+
+    .ai-table th {
+      font-family: 'Orbitron', monospace;
+      font-size: 0.68rem;
+      letter-spacing: 0.12em;
+      padding: 10px 14px;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .ai-table th:nth-child(1) {
+      text-align: left;
+      color: var(--muted);
+    }
+
+    .ai-table th:nth-child(2) {
+      color: var(--muted);
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .ai-table th:nth-child(3) {
+      color: var(--accent);
+      background: rgba(0, 212, 255, 0.05);
+    }
+
+    .ai-table td {
+      padding: 9px 14px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    }
+
+    .ai-table td:nth-child(2) {
+      text-align: center;
+      color: var(--muted);
+    }
+
+    .ai-table td:nth-child(3) {
+      text-align: center;
+      color: var(--accent);
+      background: rgba(0, 212, 255, 0.02);
+      font-weight: 600;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      text-align: center;
+      padding: 40px 24px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--muted);
+      border-top: 1px solid var(--border);
+    }
+
+    /* ── QUICK QUIZ ── */
+    .quiz-box {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 24px;
+      margin: 20px 0;
+    }
+
+    .quiz-q {
+      font-size: 0.9rem;
+      color: var(--text);
+      margin-bottom: 12px;
+      font-weight: 600;
+    }
+
+    .quiz-options {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .quiz-opt {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 4px;
+      padding: 10px 16px;
+      font-size: 0.84rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: left;
+      color: var(--text);
+      font-family: 'Exo 2', sans-serif;
+    }
+
+    .quiz-opt:hover {
+      border-color: var(--accent);
+      background: rgba(0, 212, 255, 0.05);
+    }
+
+    .quiz-opt.correct {
+      border-color: var(--accent3);
+      background: rgba(57, 255, 20, 0.1);
+      color: var(--accent3);
+    }
+
+    .quiz-opt.wrong {
+      border-color: var(--danger);
+      background: rgba(255, 51, 102, 0.1);
+      color: var(--danger);
+    }
+
+    .quiz-feedback {
+      margin-top: 12px;
+      font-size: 0.83rem;
+      padding: 10px 14px;
+      border-radius: 4px;
+      display: none;
+    }
+
+    .quiz-feedback.show {
+      display: block;
+    }
+
+    .quiz-feedback.good {
+      background: rgba(57, 255, 20, 0.1);
+      color: var(--accent3);
+      border: 1px solid rgba(57, 255, 20, 0.3);
+    }
+
+    .quiz-feedback.bad {
+      background: rgba(255, 51, 102, 0.1);
+      color: var(--danger);
+      border: 1px solid rgba(255, 51, 102, 0.3);
+    }
+  </style>
+    <script src="/javascripts/translation-launch-guard.js"></script>
+
+    <meta name="description" content="Cyber-Physical Systems &amp; Industrial Control Security">
+    <link rel="canonical" href="https://shoug-tech.com/Academics/cybersecurity/cys401/slide-breakdowns/chapter-9/ics-scada-system-security.html">
+    <meta property="og:title" content="Chapter 9 — ICS/SCADA Security | CYS 401">
+    <meta property="og:description" content="Cyber-Physical Systems &amp; Industrial Control Security">
+    <meta property="og:url" content="https://shoug-tech.com/Academics/cybersecurity/cys401/slide-breakdowns/chapter-9/ics-scada-system-security.html">
+    <meta property="og:type" content="article">
+    <meta property="og:image" content="https://shoug-tech.com/logo.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Chapter 9 — ICS/SCADA Security | CYS 401">
+    <meta name="twitter:description" content="Cyber-Physical Systems &amp; Industrial Control Security">
+    <meta name="twitter:image" content="https://shoug-tech.com/logo.png">
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","url":"https://shoug-tech.com/Academics/cybersecurity/cys401/slide-breakdowns/chapter-9/ics-scada-system-security.html","name":"Chapter 9 — ICS/SCADA Security | CYS 401","description":"Cyber-Physical Systems &amp; Industrial Control Security","isPartOf":{"@type":"WebSite","name":"Shoug's Digital Garden","url":"https://shoug-tech.com/"}}</script>
+
+      <link rel="alternate" hreflang="en" href="https://shoug-tech.com/Academics/cybersecurity/cys401/slide-breakdowns/chapter-9/ics-scada-system-security.html">
+      <link rel="alternate" hreflang="ar" href="https://shoug-tech.com/ar/Academics/cybersecurity/cys401/slide-breakdowns/chapter-9/ics-scada-system-security.html">
+      <link rel="alternate" hreflang="x-default" href="https://shoug-tech.com/Academics/cybersecurity/cys401/slide-breakdowns/chapter-9/ics-scada-system-security.html">
+</head>
+
+<body>
+
+  <header>
+    <div class="chapter-badge">CYS 401 · CHAPTER 9</div>
+    <h1>ICS / SCADA<br>System Security</h1>
+    <p class="subtitle">Cyber-Physical Systems & Industrial Control Security</p>
+    <div class="scan-line"></div>
+  </header>
+
+  <nav>
+    <div class="nav-inner">
+      <a class="nav-btn" href="#intro">01 INTRO</a>
+      <a class="nav-btn" href="#arch">02 ARCHITECTURE</a>
+      <a class="nav-btn" href="#it-ot">03 IT vs OT</a>
+      <a class="nav-btn" href="#protocols">04 PROTOCOLS</a>
+      <a class="nav-btn" href="#vulns">05 VULNERABILITIES</a>
+      <a class="nav-btn" href="#threats">06 THREATS</a>
+      <a class="nav-btn" href="#challenges">07 CHALLENGES</a>
+      <a class="nav-btn" href="#objectives">08 OBJECTIVES</a>
+      <a class="nav-btn" href="#requirements">09 REQUIREMENTS</a>
+      <a class="nav-btn" href="#governance">10 GOVERNANCE</a>
+      <a class="nav-btn" href="#ai">11 AI-SCADA</a>
+      <a class="nav-btn" href="#quiz">12 QUIZ</a>
+    </div>
+  </nav>
+
+  <div class="container">
+
+    <!-- ─────────────────────────────── 01 INTRO ─────────────────────────────── -->
+    <section id="intro">
+      <div class="section-header">
+        <span class="section-num">01</span>
+        <div>
+          <div class="section-title">What Is ICS/SCADA?</div>
+        </div>
+        <span class="section-icon">🏭</span>
+      </div>
+
+      <div class="mnemonic">
+        <div class="mnemonic-word">SCADA</div>
+        <div class="mnemonic-breakdown">
+          <div class="mnem-item"><span class="mnem-letter">S</span>
+            <div>
+              <div class="mnem-word">Supervisory</div>
+            </div>
+          </div>
+          <div class="mnem-item"><span class="mnem-letter">C</span>
+            <div>
+              <div class="mnem-word">Control</div>
+            </div>
+          </div>
+          <div class="mnem-item"><span class="mnem-letter">A</span>
+            <div>
+              <div class="mnem-word">And</div>
+            </div>
+          </div>
+          <div class="mnem-item"><span class="mnem-letter">D</span>
+            <div>
+              <div class="mnem-word">Data</div>
+            </div>
+          </div>
+          <div class="mnem-item"><span class="mnem-letter">A</span>
+            <div>
+              <div class="mnem-word">Acquisition</div>
+            </div>
+          </div>
+        </div>
+        <p style="margin-top:14px; font-size:0.85rem; color:var(--muted);">Think of SCADA as the <strong
+            style="color:var(--accent3)">"brain"</strong> that watches and controls physical machines from a central
+          place.</p>
+      </div>
+
+      <div class="card-grid">
+        <div class="card">
+          <div class="card-title">CPS — Cyber-Physical Systems</div>
+          <p>A fusion of ICT (software/networks) with the physical world through <strong>sensors</strong> (input) and
+            <strong>actuators</strong> (output).</p>
+        </div>
+        <div class="card orange">
+          <div class="card-title">ICS — Industrial Control Systems</div>
+          <p>The umbrella term for control systems used in <strong>critical infrastructure</strong>. SCADA and DCS
+            (Distributed Control Systems) are types of ICS.</p>
+        </div>
+        <div class="card green">
+          <div class="card-title">Why It Matters</div>
+          <ul>
+            <li>Controls power grids, water, oil & gas</li>
+            <li>A cyber attack = physical hazard</li>
+            <li>Could affect national safety & economy</li>
+            <li>Human lives are at stake</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="callout info">
+        <strong>📍 REAL-WORLD APPLICATIONS</strong>
+        Smart Grid · Water Treatment · Oil & Gas · Transportation · Telecom · Manufacturing
+      </div>
+
+      <div class="mnemonic">
+        <div class="mnemonic-word" style="font-size:1.2rem;">Remember the applications: "SWIM-TO-M"</div>
+        <div class="mnemonic-breakdown">
+          <div class="mnem-item"><span class="mnem-letter" style="font-size:1rem;">S</span>
+            <div>
+              <div class="mnem-word">Smart Grid</div>
+            </div>
+          </div>
+          <div class="mnem-item"><span class="mnem-letter" style="font-size:1rem;">W</span>
+            <div>
+              <div class="mnem-word">Water</div>
+            </div>
+          </div>
+          <div class="mnem-item"><span class="mnem-letter" style="font-size:1rem;">I</span>
+            <div>
+              <div class="mnem-word">Industrial Mfg</div>
+            </div>
+          </div>
+          <div class="mnem-item"><span class="mnem-letter" style="font-size:1rem;">M</span>
+            <div>
+              <div class="mnem-word">Medical / OT</div>
+            </div>
+          </div>
+          <div class="mnem-item"><span class="mnem-letter" style="font-size:1rem;">T</span>
+            <div>
+              <div class="mnem-word">Transportation</div>
+            </div>
+          </div>
+          <div class="mnem-item"><span class="mnem-letter" style="font-size:1rem;">O</span>
+            <div>
+              <div class="mnem-word">Oil & Gas</div>
+            </div>
+          </div>
+          <div class="mnem-item"><span class="mnem-letter" style="font-size:1rem;">M</span>
+            <div>
+              <div class="mnem-word">More Telecom</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─────────────────────────────── 02 ARCHITECTURE ─────────────────────────────── -->
+    <section id="arch">
+      <div class="section-header">
+        <span class="section-num">02</span>
+        <div>
+          <div class="section-title">ICS/SCADA Architecture</div>
+        </div>
+        <span class="section-icon">🔧</span>
+      </div>
+
+      <p style="margin-bottom:20px; color:var(--muted);">The system has <strong style="color:var(--accent)">4 main
+          hardware components</strong> that form a data pipeline from the physical world to the control center.</p>
+
+      <div class="arch-flow">
+        <div class="arch-node">
+          <span class="node-icon">🌡️</span>
+          <div class="node-name">FIELD INSTRUMENTS</div>
+          <div class="node-sub">Sensors · Actuators<br>Valves · Pumps</div>
+        </div>
+        <div class="arch-arrow">⟶</div>
+        <div class="arch-node">
+          <span class="node-icon">💻</span>
+          <div class="node-name">PLCs / RTUs</div>
+          <div class="node-sub">Process & control<br>local devices</div>
+        </div>
+        <div class="arch-arrow">⟶</div>
+        <div class="arch-node">
+          <span class="node-icon">📡</span>
+          <div class="node-name">COMMUNICATIONS</div>
+          <div class="node-sub">Wired · Wireless<br>Satellite · Fiber</div>
+        </div>
+        <div class="arch-arrow">⟶</div>
+        <div class="arch-node">
+          <span class="node-icon">🖥️</span>
+          <div class="node-name">SCADA CENTER</div>
+          <div class="node-sub">MTU · HMI<br>OPC · Database</div>
+        </div>
+      </div>
+
+      <div class="mnemonic">
+        <div class="mnemonic-word" style="font-size:1.2rem;">Mnemonic: "Fancy People Cook Soup"</div>
+        <div class="mnemonic-breakdown">
+          <div class="mnem-item"><span class="mnem-letter" style="font-size:1rem;">F</span>
+            <div>
+              <div class="mnem-word">Field Instruments</div>
+              <div class="mnem-desc">Sensors, actuators</div>
+            </div>
+          </div>
+          <div class="mnem-item"><span class="mnem-letter" style="font-size:1rem;">P</span>
+            <div>
+              <div class="mnem-word">PLCs / RTUs</div>
+              <div class="mnem-desc">Logic controllers</div>
+            </div>
+          </div>
+          <div class="mnem-item"><span class="mnem-letter" style="font-size:1rem;">C</span>
+            <div>
+              <div class="mnem-word">Communications</div>
+              <div class="mnem-desc">Network layer</div>
+            </div>
+          </div>
+          <div class="mnem-item"><span class="mnem-letter" style="font-size:1rem;">S</span>
+            <div>
+              <div class="mnem-word">SCADA Control Center</div>
+              <div class="mnem-desc">HMI, MTU, OPC</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-grid" style="margin-top:28px;">
+        <div class="card">
+          <div class="card-title">🌡️ Sensors vs Actuators</div>
+          <ul>
+            <li><strong>Sensors</strong> = INPUT — measure temp, pressure, flow, voltage</li>
+            <li><strong>Actuators</strong> = OUTPUT — take mechanical/electronic action</li>
+            <li>Both are critical analog devices for PLCs/RTUs</li>
+          </ul>
+        </div>
+        <div class="card orange">
+          <div class="card-title">💻 PLC vs RTU</div>
+          <ul>
+            <li><strong>PLC</strong> — rugged industrial computer, runs predefined logic, controls outputs directly</li>
+            <li><strong>RTU</strong> — telemetry device, collects data from sensors, sends to MTU</li>
+            <li>In sophisticated systems: PLCs can act as RTUs</li>
+          </ul>
+        </div>
+        <div class="card green">
+          <div class="card-title">🖥️ MTU — "The Heart"</div>
+          <ul>
+            <li>Master Terminal Unit = heart of SCADA</li>
+            <li>Initiates all communication</li>
+            <li>Collects & stores data in database</li>
+            <li>Provides HMI interface to operators</li>
+          </ul>
+        </div>
+        <div class="card gold">
+          <div class="card-title">🔌 OPC Server</div>
+          <p>OLE for Process Control — software interface letting Windows communicate with industrial hardware. Like a
+            translator between IT and OT.</p>
+        </div>
+      </div>
+
+      <h3
+        style="font-family:'Orbitron',monospace; font-size:1rem; color:var(--accent); margin:32px 0 14px; letter-spacing:0.1em;">
+        PURDUE ENTERPRISE REFERENCE ARCHITECTURE (6 Levels)</h3>
+      <div class="callout tip"><strong>💡 EXAM TIP</strong>Know the levels from bottom (physical) to top (cloud). Think:
+        Physical → Sensors → Control → SCADA → Enterprise → Cloud</div>
+
+      <div class="purdue">
+        <div class="purdue-level">
+          <div class="purdue-num" style="color:var(--danger);">0</div>
+          <div class="purdue-content">
+            <div class="level-name">Physical Process</div>
+            <div class="level-desc">The actual physical equipment — pipes, machines, turbines</div>
+          </div>
+        </div>
+        <div class="purdue-level">
+          <div class="purdue-num" style="color:var(--accent2);">1</div>
+          <div class="purdue-content">
+            <div class="level-name">Sensors and Actuators</div>
+            <div class="level-desc">Temperature, pressure, flow sensors; valves, motors</div>
+          </div>
+        </div>
+        <div class="purdue-level">
+          <div class="purdue-num" style="color:var(--accent4);">2</div>
+          <div class="purdue-content">
+            <div class="level-name">PLCs and RTUs</div>
+            <div class="level-desc">Local control logic; communicate with field devices</div>
+          </div>
+        </div>
+        <div class="purdue-level">
+          <div class="purdue-num" style="color:var(--accent);">3</div>
+          <div class="purdue-content">
+            <div class="level-name">SCADA and HMI</div>
+            <div class="level-desc">Supervisory control, operator interfaces, data historian</div>
+          </div>
+        </div>
+        <div class="purdue-level">
+          <div class="purdue-num" style="color:var(--accent);">4</div>
+          <div class="purdue-content">
+            <div class="level-name">Enterprise IT Systems</div>
+            <div class="level-desc">Business applications, ERP, corporate networks</div>
+          </div>
+        </div>
+        <div class="purdue-level">
+          <div class="purdue-num" style="color:var(--accent3);">5</div>
+          <div class="purdue-content">
+            <div class="level-name">Cloud and External Networks</div>
+            <div class="level-desc">Internet, third-party integrations, cloud services</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─────────────────────────────── 03 IT vs OT ─────────────────────────────── -->
+    <section id="it-ot">
+      <div class="section-header">
+        <span class="section-num">03</span>
+        <div>
+          <div class="section-title">IT vs OT Environments</div>
+        </div>
+        <span class="section-icon">⚔️</span>
+      </div>
+
+      <div class="callout tip">
+        <strong>💡 KEY INSIGHT</strong>
+        In standard IT security: CIA priority = Confidentiality first. In ICS/SCADA: the priority FLIPS — Availability
+        comes first!
+      </div>
+
+      <table class="compare-table">
+        <thead>
+          <tr>
+            <th>ASPECT</th>
+            <th>💻 IT (Information Technology)</th>
+            <th>🏭 OT (Operational Technology)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Focus</td>
+            <td>Data processing</td>
+            <td>Physical processes</td>
+          </tr>
+          <tr>
+            <td>Top Priority</td>
+            <td>Confidentiality</td>
+            <td>Availability & Safety</td>
+          </tr>
+          <tr>
+            <td>Downtime</td>
+            <td>Somewhat acceptable</td>
+            <td>Minimal — zero preferred</td>
+          </tr>
+          <tr>
+            <td>Updates/Patches</td>
+            <td>Frequent, automated</td>
+            <td>Slow, careful, rare</td>
+          </tr>
+          <tr>
+            <td>System Lifecycle</td>
+            <td>3–5 years</td>
+            <td>15–30+ years</td>
+          </tr>
+          <tr>
+            <td>Failure Impact</td>
+            <td>Data loss, financial</td>
+            <td>Physical harm, deaths</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ─────────────────────────────── 04 PROTOCOLS ─────────────────────────────── -->
+    <section id="protocols">
+      <div class="section-header">
+        <span class="section-num">04</span>
+        <div>
+          <div class="section-title">SCADA Communication Protocols</div>
+        </div>
+        <span class="section-icon">📡</span>
+      </div>
+
+      <p style="color:var(--muted); margin-bottom:20px;">Unlike standard IT which uses TCP/IP, ICS/SCADA uses
+        specialized industrial protocols. Security levels vary widely.</p>
+
+      <table class="proto-table">
+        <thead>
+          <tr>
+            <th>PROTOCOL</th>
+            <th>PORT</th>
+            <th>SECURITY</th>
+            <th>NOTES</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Modbus</strong></td>
+            <td><span class="port-tag">502</span></td>
+            <td><span class="badge-low">LOW ⚠️</span></td>
+            <td>No encryption or authentication — very legacy</td>
+          </tr>
+          <tr>
+            <td><strong>DNP3</strong></td>
+            <td><span class="port-tag">20000</span></td>
+            <td><span class="badge-med">MEDIUM</span></td>
+            <td>Supports Secure Authentication feature</td>
+          </tr>
+          <tr>
+            <td><strong>DNP</strong></td>
+            <td><span class="port-tag">19999</span></td>
+            <td><span class="badge-med">MEDIUM</span></td>
+            <td>Earlier version of DNP3</td>
+          </tr>
+          <tr>
+            <td><strong>OPC UA</strong></td>
+            <td>Various</td>
+            <td><span class="badge-high">HIGH ✓</span></td>
+            <td>Encrypted & authenticated — modern standard</td>
+          </tr>
+          <tr>
+            <td><strong>IEC 61850</strong></td>
+            <td>Various</td>
+            <td><span class="badge-high">HIGH ✓</span></td>
+            <td>Used in smart grids specifically</td>
+          </tr>
+          <tr>
+            <td><strong>EtherNet/IP</strong></td>
+            <td><span class="port-tag">2222</span></td>
+            <td><span class="badge-med">MEDIUM</span></td>
+            <td>Industrial Ethernet protocol</td>
+          </tr>
+          <tr>
+            <td><strong>PROFINET</strong></td>
+            <td><span class="port-tag">34962-64</span></td>
+            <td><span class="badge-med">MEDIUM</span></td>
+            <td>Used in factory automation</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="callout">
+        <strong class="red-label">⚠️ DANGER ZONE</strong>
+        Modbus was designed in 1979 with ZERO security in mind. It's still widely deployed. An attacker who reaches a
+        Modbus device has direct control with no authentication barrier.
+      </div>
+    </section>
+
+    <!-- ─────────────────────────────── 05 VULNERABILITIES ─────────────────────────────── -->
+    <section id="vulns">
+      <div class="section-header">
+        <span class="section-num">05</span>
+        <div>
+          <div class="section-title">ICS/SCADA Vulnerabilities</div>
+        </div>
+        <span class="section-icon">🕳️</span>
+      </div>
+
+      <div class="mnemonic">
+        <div class="mnemonic-word" style="font-size:1.1rem;">Mnemonic: "SNAIL" — 5 Root Causes</div>
+        <div class="mnemonic-breakdown">
+          <div class="mnem-item"><span class="mnem-letter" style="font-size:1rem;">S</span>
+            <div>
+              <div class="mnem-word">Scanning absent</div>
+              <div class="mnem-desc">No real-time network monitoring</div>
+            </div>
+          </div>
+          <div class="mnem-item"><span class="mnem-letter" style="font-size:1rem;">N</span>
+            <div>
+              <div class="mnem-word">No patch speed</div>
+              <div class="mnem-desc">Slow/no updates & patching</div>
+            </div>
+          </div>
+          <div class="mnem-item"><span class="mnem-letter" style="font-size:1rem;">A</span>
+            <div>
+              <div class="mnem-word">Authentication weak</div>
+              <div class="mnem-desc">Poor or no auth practices</div>
+            </div>
+          </div>
+          <div class="mnem-item"><span class="mnem-letter" style="font-size:1rem;">I</span>
+            <div>
+              <div class="mnem-word">Ignorance of devices</div>
+              <div class="mnem-desc">Unknown device capabilities</div>
+            </div>
+          </div>
+          <div class="mnem-item"><span class="mnem-letter" style="font-size:1rem;">L</span>
+            <div>
+              <div class="mnem-word">Lack of traffic visibility</div>
+              <div class="mnem-desc">Can't see abnormal activity</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─────────────────────────────── 06 THREATS ─────────────────────────────── -->
+    <section id="threats">
+      <div class="section-header">
+        <span class="section-num">06</span>
+        <div>
+          <div class="section-title">Threats & Attack Methods</div>
+        </div>
+        <span class="section-icon">☠️</span>
+      </div>
+
+      <p style="color:var(--muted); margin-bottom:20px;">ICS/SCADA threats are divided into <strong
+          style="color:var(--accent)">two main categories</strong>:</p>
+
+      <div class="threat-row">
+        <div class="card">
+          <div class="card-title">😴 UNINTENTIONAL THREATS</div>
+          <p style="margin-bottom:10px; font-size:0.83rem; color:var(--muted);">Originate inside the premises. No
+            malicious intent.</p>
+          <ul>
+            <li><strong>Human Factor</strong> — negligence, carelessness, lack of training (employees, contractors)</li>
+            <li><strong>Machine Failure</strong> — device weakness, equipment crashes</li>
+            <li><strong>Natural Disasters</strong> — floods, earthquakes, avalanches, tsunamis</li>
+          </ul>
+        </div>
+        <div class="card red">
+          <div class="card-title">😈 PURPOSEFUL THREATS</div>
+          <p style="margin-bottom:10px; font-size:0.83rem; color:var(--muted);">Intentional attacks with specific
+            objectives.</p>
+          <ul>
+            <li>Disgruntled / annoyed employees</li>
+            <li>Industrial espionage</li>
+            <li>Sabotage operations</li>
+            <li>Cyber hackers (remote)</li>
+            <li>Viruses and worms</li>
+            <li>Physical theft</li>
+            <li>Electronic terrorism</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="callout info">
+        <strong>📌 HOW ATTACK COMPLEXITY IS DETERMINED</strong>
+        3 factors: (1) How vital the attack purpose is · (2) What impact level must be achieved · (3) How well the
+        ICS/SCADA system is secured
+      </div>
+
+      <div class="callout">
+        <strong class="red-label">⚠️ KNOWN ATTACKS ON ICS/SCADA</strong>
+        Eavesdropping · Denial of Service (DoS) · Wireless Jamming · Man-in-the-Middle · Replay Attacks
+      </div>
+    </section>
+
+    <!-- ─────────────────────────────── 07 CHALLENGES ─────────────────────────────── -->
+    <section id="challenges">
+      <div class="section-header">
+        <span class="section-num">07</span>
+        <div>
+          <div class="section-title">Security Challenges</div>
+        </div>
+        <span class="section-icon">🧩</span>
+      </div>
+
+      <div class="card-grid">
+        <div class="card">
+          <div class="card-title">🏚️ Legacy Architecture</div>
+          <p>Old system designs where security was never considered. Messages still transmitted in
+            <strong>cleartext</strong> (no encryption).</p>
+        </div>
+        <div class="card orange">
+          <div class="card-title">⏱️ Patching Problem</div>
+          <p>No regular patching scheme. Some firmware is <strong>never updated</strong>. Downtime for maintenance is
+            difficult to schedule.</p>
+        </div>
+        <div class="card gold">
+          <div class="card-title">🌍 Geographic Scatter</div>
+          <p>Components (sensors, RTUs, PLCs) are geographically spread out — very hard to physically secure.</p>
+        </div>
+        <div class="card red">
+          <div class="card-title">🔗 IT/OT Gap</div>
+          <p>Managed by different departments. No coordination = security gaps. OT dept manages PLCs; IT dept manages
+            networks. Nobody owns the overlap.</p>
+        </div>
+        <div class="card green">
+          <div class="card-title">🚫 Can't Pen-Test Live</div>
+          <p>Cannot run penetration tests on production SCADA systems — the risk of disrupting real operations is too
+            high.</p>
+        </div>
+        <div class="card">
+          <div class="card-title">📋 Other Challenges</div>
+          <ul>
+            <li>Unsupported OS/applications</li>
+            <li>Shared accounts (no individual auth)</li>
+            <li>OT networks exposed to public</li>
+            <li>Limited remediation time</li>
+            <li>Vulnerability tracking problems</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─────────────────────────────── 08 OBJECTIVES ─────────────────────────────── -->
+    <section id="objectives">
+      <div class="section-header">
+        <span class="section-num">08</span>
+        <div>
+          <div class="section-title">Security Objectives</div>
+        </div>
+        <span class="section-icon">🎯</span>
+      </div>
+
+      <div class="callout tip">
+        <strong>💡 CRITICAL EXAM CONCEPT</strong>
+        In ICS/SCADA, the CIA priority order is REVERSED from standard IT! Availability → Integrity → Confidentiality
+        (AIC instead of CIA)
+      </div>
+
+      <div class="cia-priority">
+        <div class="cia-item first">
+          <span class="cia-rank">#1</span>
+          <div class="cia-name">AVAILABILITY</div>
+          <div class="cia-note">Systems must run 24/7. Even brief downtime in critical infrastructure = danger.</div>
+        </div>
+        <div class="cia-item second">
+          <span class="cia-rank">#2</span>
+          <div class="cia-name">INTEGRITY</div>
+          <div class="cia-note">Operators must TRUST sensor readings to make correct decisions.</div>
+        </div>
+        <div class="cia-item third">
+          <span class="cia-rank">#3</span>
+          <div class="cia-name">CONFIDENTIALITY</div>
+          <div class="cia-note">Sensor state data is time-specific and discarded after use — less critical.</div>
+        </div>
+      </div>
+
+      <div class="card-grid" style="margin-top:24px;">
+        <div class="card green">
+          <div class="card-title">⚡ Redundancy</div>
+          <p>Critical devices (historian servers, switches, modems, field instruments) need redundant backups to survive
+            failures.</p>
+        </div>
+        <div class="card">
+          <div class="card-title">📉 Systematic Degradation</div>
+          <p>System should gracefully degrade:<br>
+            <strong>Normal</strong> (full auto) → <strong>Emergency</strong> (partial auto) → <strong>Full
+              Manual</strong> (no auto)
+          </p>
+        </div>
+        <div class="card orange">
+          <div class="card-title">🔍 Early Detection</div>
+          <p>Detect failures early — exhausted memory, bandwidth, processor usage — before they become attacks.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─────────────────────────────── 09 REQUIREMENTS ─────────────────────────────── -->
+    <section id="requirements">
+      <div class="section-header">
+        <span class="section-num">09</span>
+        <div>
+          <div class="section-title">Security Requirements & Countermeasures</div>
+        </div>
+        <span class="section-icon">🛡️</span>
+      </div>
+
+      <div class="card-grid">
+        <div class="card green">
+          <div class="card-title">🌡️ Field Instruments</div>
+          <ul>
+            <li>Security from procurement → installation → monitoring → maintenance</li>
+            <li>Must meet auth, authorization, CIA</li>
+            <li>Physical: secure fences, gates, locks</li>
+            <li>CCTV + motion detectors at remote stations</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="card-title">🖥️ Server Security</div>
+          <ul>
+            <li>Strong <strong>multifactor authentication</strong></li>
+            <li>Application whitelisting</li>
+            <li>Physical + logical access controls</li>
+            <li>Load balancing & failover</li>
+            <li>Configuration/patch management</li>
+          </ul>
+        </div>
+        <div class="card orange">
+          <div class="card-title">🔒 Physical Perimeter</div>
+          <ul>
+            <li>Track location/movement of personnel</li>
+            <li>Video surveillance integrated with SCADA alarms</li>
+            <li>Real-time alarm capability</li>
+            <li><strong>Mantrap</strong> — single-person access control enclosure</li>
+          </ul>
+        </div>
+        <div class="card gold">
+          <div class="card-title">📡 Network Security</div>
+          <ul>
+            <li>Avoid legacy dial-up/leased-line modems</li>
+            <li>Use NSM, NDR, and SIEM tools</li>
+            <li>Encrypted communications</li>
+            <li>Network segmentation</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="callout info">
+        <strong>📌 NSM vs NDR vs SIEM — Know the Difference</strong>
+        <strong style="color:var(--accent)">NSM</strong> (Network Security Monitoring) — gather, analyze, warn about
+        intrusions<br>
+        <strong style="color:var(--accent)">NDR</strong> (Network Detection & Response) — passive, behavior-based, no
+        impact on ops<br>
+        <strong style="color:var(--accent)">SIEM</strong> — real-time analysis + data aggregation + dashboards +
+        forensics
+      </div>
+
+      <h3
+        style="font-family:'Orbitron',monospace; font-size:0.9rem; color:var(--accent); margin:28px 0 14px; letter-spacing:0.1em;">
+        ISO 27001 RECOMMENDED POLICIES</h3>
+      <div class="card-grid">
+        <div class="card" style="padding:18px;">
+          <ul style="columns:2; gap:20px;">
+            <li>Clear Desk & Screen Policy</li>
+            <li>Access Control Policy</li>
+            <li>Data Classification</li>
+            <li>Mobile Computing Policy</li>
+            <li>Password Policy</li>
+            <li>Penetration Testing Policy</li>
+            <li>Backup & Recovery Policy</li>
+            <li>Physical Security Policy</li>
+            <li>System Monitoring Policy</li>
+            <li>Third Party Access Policy</li>
+            <li>Virus/Malware Policy</li>
+            <li>Disposal Policy</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─────────────────────────────── 10 GOVERNANCE ─────────────────────────────── -->
+    <section id="governance">
+      <div class="section-header">
+        <span class="section-num">10</span>
+        <div>
+          <div class="section-title">Governance & Compliance</div>
+        </div>
+        <span class="section-icon">📋</span>
+      </div>
+
+      <div class="callout">
+        <strong class="red-label">⚠️ THE GOVERNANCE GAP PROBLEM</strong>
+        OT devices managed by engineering/automation department. IT components managed by IT department. Without
+        coordination = security gaps. Nobody clearly owns the ICS/SCADA overlap zone.
+      </div>
+
+      <div class="card-grid">
+        <div class="card">
+          <div class="card-title">📜 Key Standards & Frameworks</div>
+          <ul>
+            <li><strong>NIST SP 800-82</strong> — Guide to ICS Security</li>
+            <li><strong>NISTIR 7628</strong> — Smart Grid Cyber Security</li>
+            <li><strong>NERC CIP 002-009</strong> — Critical Infrastructure Protection</li>
+            <li><strong>DHS Catalog</strong> — Control Systems Security</li>
+            <li><strong>ISO 27001</strong> — Information Security Mgmt</li>
+          </ul>
+        </div>
+        <div class="card orange">
+          <div class="card-title">✅ Benefits of Good Governance</div>
+          <ul>
+            <li>Clear roles & responsibilities for OT & IT</li>
+            <li>Better view of ICS/SCADA threats</li>
+            <li>Improved stakeholder communication</li>
+            <li>Resource optimization</li>
+            <li>Consistent security strategy</li>
+          </ul>
+        </div>
+      </div>
+
+      <h3
+        style="font-family:'Orbitron',monospace; font-size:0.9rem; color:var(--accent); margin:28px 0 14px; letter-spacing:0.1em;">
+        7-PHASE PLANNING MODEL</h3>
+
+      <div class="mnemonic">
+        <div class="mnemonic-word" style="font-size:1rem;">Mnemonic: "A Dog Trains Security Controls Harder, Monitoring"
+        </div>
+      </div>
+
+      <ol class="steps">
+        <li><strong>Assess</strong> the existing systems</li>
+        <li><strong>Document</strong> the policies and procedures</li>
+        <li><strong>Train</strong> the employees and contractors</li>
+        <li><strong>Segment</strong> the ICS/SCADA network and security</li>
+        <li><strong>Control</strong> the access to the ICS/SCADA system</li>
+        <li><strong>Harden</strong> the components of the ICS/SCADA system</li>
+        <li><strong>Monitor</strong> and maintain the security of ICS/SCADA system</li>
+      </ol>
+    </section>
+
+    <!-- ─────────────────────────────── 11 AI-SCADA ─────────────────────────────── -->
+    <section id="ai">
+      <div class="section-header">
+        <span class="section-num">11</span>
+        <div>
+          <div class="section-title">AI-Enabled SCADA</div>
+        </div>
+        <span class="section-icon">🤖</span>
+      </div>
+
+      <p style="color:var(--muted); margin-bottom:20px;">Modern SCADA systems are integrating AI/ML to shift from
+        <strong style="color:var(--accent2)">reactive</strong> to <strong style="color:var(--accent3)">predictive &
+          proactive</strong> operations.</p>
+
+      <table class="ai-table">
+        <thead>
+          <tr>
+            <th>FEATURE</th>
+            <th>⚙️ Traditional SCADA</th>
+            <th>🤖 AI-Integrated SCADA</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Monitoring</td>
+            <td>Reactive</td>
+            <td>Predictive & Proactive</td>
+          </tr>
+          <tr>
+            <td>Maintenance</td>
+            <td>Scheduled or manual</td>
+            <td>Predictive maintenance</td>
+          </tr>
+          <tr>
+            <td>Decision-Making</td>
+            <td>Human-driven</td>
+            <td>AI-assisted or automated</td>
+          </tr>
+          <tr>
+            <td>Anomaly Detection</td>
+            <td>Rule-based signatures</td>
+            <td>Machine learning-based</td>
+          </tr>
+          <tr>
+            <td>Data Analysis</td>
+            <td>Historical reports</td>
+            <td>Real-time intelligent insights</td>
+          </tr>
+          <tr>
+            <td>Security</td>
+            <td>Signature-based detection</td>
+            <td>AI-driven threat detection</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ─────────────────────────────── 12 QUICK QUIZ ─────────────────────────────── -->
+    <section id="quiz">
+      <div class="section-header">
+        <span class="section-num">12</span>
+        <div>
+          <div class="section-title">Quick Self-Test</div>
+        </div>
+        <span class="section-icon">📝</span>
+      </div>
+
+      <!-- Q1 -->
+      <div class="quiz-box">
+        <div class="quiz-q">Q1. In ICS/SCADA systems, which CIA property has the HIGHEST priority?</div>
+        <div class="quiz-options">
+          <button class="quiz-opt" onclick="answer(this,'wrong','q1')">A) Confidentiality</button>
+          <button class="quiz-opt" onclick="answer(this,'correct','q1')">B) Availability</button>
+          <button class="quiz-opt" onclick="answer(this,'wrong','q1')">C) Integrity</button>
+          <button class="quiz-opt" onclick="answer(this,'wrong','q1')">D) Authentication</button>
+        </div>
+        <div class="quiz-feedback good" id="q1-good">✅ Correct! Availability is #1 in ICS/SCADA because systems must run
+          24/7. Even brief downtime in a power grid or water system is dangerous.</div>
+        <div class="quiz-feedback bad" id="q1-bad">❌ Wrong. In ICS/SCADA the CIA order is REVERSED: Availability →
+          Integrity → Confidentiality (AIC). This is a key difference from traditional IT security!</div>
+      </div>
+
+      <!-- Q2 -->
+      <div class="quiz-box">
+        <div class="quiz-q">Q2. What does MTU stand for in ICS/SCADA architecture?</div>
+        <div class="quiz-options">
+          <button class="quiz-opt" onclick="answer(this,'wrong','q2')">A) Main Transfer Unit</button>
+          <button class="quiz-opt" onclick="answer(this,'wrong','q2')">B) Multi-Terminal Uplink</button>
+          <button class="quiz-opt" onclick="answer(this,'correct','q2')">C) Master Terminal Unit</button>
+          <button class="quiz-opt" onclick="answer(this,'wrong','q2')">D) Managed Traffic Unit</button>
+        </div>
+        <div class="quiz-feedback good" id="q2-good">✅ Correct! MTU = Master Terminal Unit — the "heart" of SCADA. It
+          initiates all communication, collects data, provides HMI, and stores data in the database.</div>
+        <div class="quiz-feedback bad" id="q2-bad">❌ Wrong. MTU = Master Terminal Unit. Remember: it's the "HEART" of
+          the SCADA system — controls everything centrally.</div>
+      </div>
+
+      <!-- Q3 -->
+      <div class="quiz-box">
+        <div class="quiz-q">Q3. Which SCADA protocol has the LOWEST security level (no encryption or authentication)?
+        </div>
+        <div class="quiz-options">
+          <button class="quiz-opt" onclick="answer(this,'correct','q3')">A) Modbus</button>
+          <button class="quiz-opt" onclick="answer(this,'wrong','q3')">B) OPC UA</button>
+          <button class="quiz-opt" onclick="answer(this,'wrong','q3')">C) IEC 61850</button>
+          <button class="quiz-opt" onclick="answer(this,'wrong','q3')">D) DNP3</button>
+        </div>
+        <div class="quiz-feedback good" id="q3-good">✅ Correct! Modbus (port 502) was designed in 1979 with ZERO
+          security. No encryption, no authentication — any attacker who reaches it has full control.</div>
+        <div class="quiz-feedback bad" id="q3-bad">❌ Wrong. Modbus is the culprit — it's a 1979 protocol with absolutely
+          no built-in security. OPC UA and IEC 61850 are actually the safest options.</div>
+      </div>
+
+      <!-- Q4 -->
+      <div class="quiz-box">
+        <div class="quiz-q">Q4. What are the 4 main components of ICS/SCADA infrastructure? (Choose the correct set)
+        </div>
+        <div class="quiz-options">
+          <button class="quiz-opt" onclick="answer(this,'wrong','q4')">A) Firewall, Database, Router, HMI</button>
+          <button class="quiz-opt" onclick="answer(this,'correct','q4')">B) Field Instruments, PLCs/RTUs,
+            Communications, SCADA Control Center</button>
+          <button class="quiz-opt" onclick="answer(this,'wrong','q4')">C) Sensors, Servers, Internet,
+            Applications</button>
+          <button class="quiz-opt" onclick="answer(this,'wrong','q4')">D) MTU, RTU, PLC, DNS</button>
+        </div>
+        <div class="quiz-feedback good" id="q4-good">✅ Correct! Remember "Fancy People Cook Soup" — Field Instruments →
+          PLCs/RTUs → Communications → SCADA Control Center.</div>
+        <div class="quiz-feedback bad" id="q4-bad">❌ Wrong. The 4 components are: Field Instruments → PLCs/RTUs →
+          Communications → SCADA Control Center. Use the mnemonic "Fancy People Cook Soup"!</div>
+      </div>
+
+      <!-- Q5 -->
+      <div class="quiz-box">
+        <div class="quiz-q">Q5. How many phases are in the ICS/SCADA security planning model?</div>
+        <div class="quiz-options">
+          <button class="quiz-opt" onclick="answer(this,'wrong','q5')">A) 5</button>
+          <button class="quiz-opt" onclick="answer(this,'wrong','q5')">B) 6</button>
+          <button class="quiz-opt" onclick="answer(this,'correct','q5')">C) 7</button>
+          <button class="quiz-opt" onclick="answer(this,'wrong','q5')">D) 9</button>
+        </div>
+        <div class="quiz-feedback good" id="q5-good">✅ Correct! 7 phases: Assess → Document → Train → Segment → Control
+          → Harden → Monitor. Remember: "A Dog Trains Security Controls Harder, Monitoring"</div>
+        <div class="quiz-feedback bad" id="q5-bad">❌ Wrong. There are 7 phases. Remember: Assess, Document, Train,
+          Segment, Control, Harden, Monitor — "A Dog Trains Security Controls Harder, Monitoring".</div>
+      </div>
+
+    </section>
+
+  </div><!-- /container -->
+
+  <footer>
+    <p>CYS 401 · Chapter 9 Study Guide · Compiled by <strong style="color:var(--accent)">Shoug</strong></p>
+    <p style="margin-top:6px; opacity:0.5;">ICS/SCADA System Security for Cyber-Physical Systems</p>
+  </footer>
+
+  <script>
+    function answer(btn, result, qid) {
+      const box = btn.closest('.quiz-box');
+      const opts = box.querySelectorAll('.quiz-opt');
+      opts.forEach(o => o.disabled = true);
+      btn.classList.add(result);
+      const good = document.getElementById(qid + '-good');
+      const bad = document.getElementById(qid + '-bad');
+      if (result === 'correct') {
+        good.classList.add('show');
+      } else {
+        bad.classList.add('show');
+        // highlight the correct one
+        opts.forEach(o => {
+          if (o.getAttribute('onclick').includes("'correct'")) {
+            o.classList.add('correct');
+          }
+        });
+      }
+    }
+
+    // smooth scroll for nav
+    document.querySelectorAll('a.nav-btn').forEach(a => {
+      a.addEventListener('click', e => {
+        e.preventDefault();
+        const target = document.querySelector(a.getAttribute('href'));
+        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+  </script>
+</body>
+
+</html>

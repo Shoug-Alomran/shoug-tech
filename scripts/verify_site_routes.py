@@ -9,12 +9,14 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 SITE = ROOT / "site"
+if not SITE.is_dir() and (ROOT / "docs").is_dir():
+    SITE = ROOT / "docs"
 
 REQUIRED_ROUTES = (
-    "Academics/software-engineering/SE201/intro/",
-    "Academics/software-engineering/SE311/intro/",
-    "Academics/computer-science/CS340/intro/",
-    "Academics/cyber-security/CYS401/intro/",
+    "Academics/software-engineering/se201/",
+    "Academics/software-engineering/se311/",
+    "Academics/computer-science/cs340/",
+    "Academics/cybersecurity/cys401/",
 )
 
 

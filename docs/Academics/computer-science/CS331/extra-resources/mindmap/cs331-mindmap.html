@@ -1,0 +1,485 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <link rel="icon" type="image/png" href="/assets/favicon.png">
+    <link rel="apple-touch-icon" href="/assets/favicon.png">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>CS331 Complete Course Mind Map</title>
+    
+  <script id="cs331-theme-preload">
+    (function () {
+      var keys = ['shoug-theme', 'cs331-study-theme', 'cs331-mindmap-theme', 'cs331-chapter-mindmap-theme'];
+      function normalize(value) {
+        if (value === 'slate' || value === 'dark') return 'dark';
+        if (value === 'default' || value === 'light') return 'light';
+        return null;
+      }
+      function parentTheme() {
+        try {
+          if (window.parent && window.parent !== window && window.parent.document) {
+            var el = window.parent.document.documentElement;
+            return normalize(el.getAttribute('data-md-color-scheme') || el.dataset.theme || el.getAttribute('data-theme'));
+          }
+        } catch (e) {}
+        return null;
+      }
+      function savedTheme() {
+        for (var i = 0; i < keys.length; i++) {
+          var value = normalize(localStorage.getItem(keys[i]));
+          if (value) return value;
+        }
+        return null;
+      }
+      var systemTheme = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      document.documentElement.dataset.theme = parentTheme() || savedTheme() || systemTheme;
+            try { localStorage.setItem('shoug-theme', document.documentElement.dataset.theme); } catch(_e) {}
+    })();
+  </script>
+<style>
+        :root {
+            --bg: #0f172a;
+            --panel: #111827;
+            --panel2: #1f2937;
+            --text: #e5eefc;
+            --muted: #94a3b8;
+            --line: #334155;
+            --accent: #60a5fa;
+            --accent2: #22d3ee;
+            --root: #172554;
+            --node: #1e293b;
+            --leaf: #162033;
+            --hit: #facc15;
+            --shadow: 0 18px 45px rgba(0, 0, 0, .35)
+        }
+
+        [data-theme="light"] {
+            --bg: #f8fafc;
+            --panel: #fff;
+            --panel2: #eef2f7;
+            --text: #0f172a;
+            --muted: #526071;
+            --line: #cbd5e1;
+            --accent: #2563eb;
+            --accent2: #0891b2;
+            --root: #dbeafe;
+            --node: #fff;
+            --leaf: #f8fafc;
+            --hit: #ca8a04;
+            --shadow: 0 18px 45px rgba(15, 23, 42, .12)
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        html,
+        body {
+            height: 100%
+        }
+
+        body {
+            margin: 0;
+            overflow: hidden;
+            background: radial-gradient(circle at 12% 18%, rgba(96, 165, 250, .14), transparent 28%), var(--bg);
+            color: var(--text);
+            font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif
+        }
+
+        button,
+        input {
+            font: inherit
+        }
+
+        #toolbar {
+            position: fixed;
+            z-index: 30;
+            inset: 0 0 auto 0;
+            min-height: 64px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--line);
+            background: color-mix(in srgb, var(--panel) 88%, transparent);
+            backdrop-filter: blur(16px)
+        }
+
+        .brand {
+            font-weight: 800;
+            color: var(--accent);
+            min-width: 210px
+        }
+
+        .brand span {
+            display: block;
+            color: var(--muted);
+            font-size: 12px;
+            font-weight: 600
+        }
+
+        .search-wrap {
+            position: relative;
+            width: min(320px, 32vw);
+            min-width: 170px
+        }
+
+        #searchInput {
+            width: 100%;
+            height: 38px;
+            border: 1px solid var(--line);
+            border-radius: 11px;
+            background: var(--panel2);
+            color: var(--text);
+            padding: 0 12px;
+            outline: none
+        }
+
+        #searchResults {
+            position: absolute;
+            top: 46px;
+            left: 0;
+            width: min(420px, 80vw);
+            max-height: 340px;
+            overflow: auto;
+            display: none;
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            background: var(--panel);
+            box-shadow: var(--shadow);
+            padding: 8px
+        }
+
+        .result {
+            padding: 10px;
+            border-radius: 10px;
+            cursor: pointer
+        }
+
+        .result:hover {
+            background: var(--panel2)
+        }
+
+        .result small {
+            display: block;
+            color: var(--muted)
+        }
+
+        .actions {
+            display: flex;
+            gap: 8px;
+            margin-left: auto;
+            overflow-x: auto
+        }
+
+        .btn {
+            height: 38px;
+            border: 1px solid var(--line);
+            border-radius: 11px;
+            background: var(--panel2);
+            color: var(--text);
+            padding: 0 11px;
+            cursor: pointer;
+            white-space: nowrap
+        }
+
+        .btn:hover {
+            border-color: var(--accent);
+            color: var(--accent)
+        }
+
+        #viewport {
+            position: fixed;
+            inset: 64px 0 0;
+            overflow: hidden;
+            cursor: grab
+        }
+
+        #viewport.dragging {
+            cursor: grabbing
+        }
+
+        #world {
+            position: absolute;
+            transform-origin: 0 0;
+            transition: transform .18s ease
+        }
+
+        #links {
+            position: absolute;
+            left: 0;
+            top: 0;
+            overflow: visible;
+            pointer-events: none
+        }
+
+        .connector {
+            fill: none;
+            stroke: var(--accent);
+            stroke-width: 2.4;
+            opacity: .58;
+            stroke-linecap: round
+        }
+
+        #nodes {
+            position: absolute;
+            left: 0;
+            top: 0
+        }
+
+        .node {
+            position: absolute;
+            width: 250px;
+            min-height: 60px;
+            border: 1px solid var(--line);
+            border-left: 5px solid var(--accent);
+            border-radius: 14px;
+            background: var(--node);
+            box-shadow: var(--shadow);
+            padding: 10px 12px;
+            cursor: pointer;
+            transition: left .28s ease, top .28s ease, transform .16s ease
+        }
+
+        .node:hover {
+            transform: translateY(-2px)
+        }
+
+        .node.root {
+            width: 285px;
+            min-height: 74px;
+            background: var(--root);
+            border-left-color: var(--accent2)
+        }
+
+        .node.leaf {
+            background: var(--leaf);
+            border-left-color: var(--accent2)
+        }
+
+        .node.active {
+            outline: 3px solid rgba(96, 165, 250, .34)
+        }
+
+        .node.match {
+            box-shadow: 0 0 0 4px color-mix(in srgb, var(--hit) 32%, transparent), var(--shadow)
+        }
+
+        .node-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 800;
+            line-height: 1.25
+        }
+
+        .chev {
+            width: 20px;
+            height: 20px;
+            border-radius: 7px;
+            background: color-mix(in srgb, var(--accent) 18%, transparent);
+            display: inline-grid;
+            place-items: center;
+            color: var(--accent);
+            flex: 0 0 auto;
+            transition: transform .2s ease
+        }
+
+        .node.expanded .chev {
+            transform: rotate(90deg)
+        }
+
+        .node-desc {
+            margin-top: 5px;
+            font-size: 12px;
+            color: var(--muted);
+            line-height: 1.35
+        }
+
+        #panel {
+            position: fixed;
+            z-index: 40;
+            top: 78px;
+            right: 16px;
+            bottom: 16px;
+            width: min(430px, calc(100vw - 32px));
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            transform: translateX(calc(100% + 32px));
+            transition: transform .25s ease;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden
+        }
+
+        #panel.open {
+            transform: translateX(0)
+        }
+
+        .panel-head {
+            padding: 18px;
+            border-bottom: 1px solid var(--line);
+            display: flex;
+            gap: 12px
+        }
+
+        #panelTitle {
+            margin: 0;
+            font-size: 22px;
+            line-height: 1.2;
+            flex: 1
+        }
+
+        #panelBody {
+            padding: 18px;
+            overflow: auto;
+            line-height: 1.65
+        }
+
+        .hint {
+            position: fixed;
+            left: 16px;
+            bottom: 16px;
+            color: var(--muted);
+            background: color-mix(in srgb, var(--panel) 88%, transparent);
+            border: 1px solid var(--line);
+            border-radius: 999px;
+            padding: 8px 12px;
+            font-size: 12px
+        }
+
+        @media(max-width:900px) {
+            #toolbar {
+                flex-wrap: wrap
+            }
+
+            #viewport {
+                top: 112px
+            }
+
+            .actions {
+                width: 100%;
+                margin-left: 0
+            }
+        }
+    </style>
+    <script src="/javascripts/translation-launch-guard.js"></script>
+
+    <meta name="description" content="A complete nested CS331 networking mind map with chapters, categories, and exam-level details.">
+    <link rel="canonical" href="https://shoug-tech.com/Academics/computer-science/cs331/extra-resources/mindmap/cs331-mindmap.html">
+    <meta property="og:title" content="CS331 Complete Course Mind Map">
+    <meta property="og:description" content="A complete nested CS331 networking mind map with chapters, categories, and exam-level details.">
+    <meta property="og:url" content="https://shoug-tech.com/Academics/computer-science/cs331/extra-resources/mindmap/cs331-mindmap.html">
+    <meta property="og:type" content="article">
+    <meta property="og:image" content="https://shoug-tech.com/logo.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="CS331 Complete Course Mind Map">
+    <meta name="twitter:description" content="A complete nested CS331 networking mind map with chapters, categories, and exam-level details.">
+    <meta name="twitter:image" content="https://shoug-tech.com/logo.png">
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","url":"https://shoug-tech.com/Academics/computer-science/cs331/extra-resources/mindmap/cs331-mindmap.html","name":"CS331 Complete Course Mind Map","description":"A complete nested CS331 networking mind map with chapters, categories, and exam-level details.","isPartOf":{"@type":"WebSite","name":"Shoug's Digital Garden","url":"https://shoug-tech.com/"}}</script>
+
+      <link rel="alternate" hreflang="en" href="https://shoug-tech.com/Academics/computer-science/cs331/extra-resources/mindmap/cs331-mindmap.html">
+      <link rel="alternate" hreflang="ar" href="https://shoug-tech.com/ar/Academics/computer-science/cs331/extra-resources/mindmap/cs331-mindmap.html">
+      <link rel="alternate" hreflang="x-default" href="https://shoug-tech.com/Academics/computer-science/cs331/extra-resources/mindmap/cs331-mindmap.html">
+</head>
+
+<body>
+    <div id="toolbar">
+        <div class="brand">CS331 Complete Course<span>Networking study mind map</span></div>
+        <div class="search-wrap"><input id="searchInput" type="search" placeholder="Search CS331 topics...">
+            <div id="searchResults"></div>
+        </div>
+        <div class="actions"><button class="btn" id="zoomIn">+</button><button class="btn"
+                id="zoomOut">-</button><button class="btn" id="resetView">Reset View</button><button class="btn"
+                id="expandAll">Expand All</button><button class="btn" id="collapseAll">Collapse All</button><button
+                class="btn" id="exportPng">Export PNG</button><button class="btn" id="themeToggle">Light</button></div>
+    </div>
+    <main id="viewport">
+        <div id="world"><svg id="links" width="2600" height="1600"></svg>
+            <div id="nodes"></div>
+        </div>
+    </main>
+    <aside id="panel">
+        <div class="panel-head">
+            <h2 id="panelTitle"></h2><button class="btn" id="closePanel">x</button>
+        </div>
+        <div id="panelBody"></div>
+    </aside>
+    <div class="hint">Drag to pan. Click branches to expand. Click final nodes for explanations.</div>
+    <script>
+        const mindMapData = {"id": "cs331-complete-course", "title": "CS331 Complete Course", "summary": "A complete nested CS331 networking mind map with chapters, categories, and exam-level details.", "description": "<p>A complete nested CS331 networking mind map with chapters, categories, and exam-level details.</p>", "children": [{"id": "data-communications-and-networking", "title": "Data Communications and Networking", "summary": "Core foundations: what communication needs, how data flows, and how networks are judged and organized.", "description": "<p>Core foundations: what communication needs, how data flows, and how networks are judged and organized.</p>", "children": [{"id": "dcn-components", "title": "Communication System Components", "summary": "The required pieces that make data communication possible.", "description": "<p>The required pieces that make data communication possible.</p>", "children": [{"id": "dcn-components-message", "title": "Message", "summary": "The information being communicated, such as text, numbers, images, audio, or video.", "description": "<p>The information being communicated, such as text, numbers, images, audio, or video.</p>"}, {"id": "dcn-components-devices", "title": "Sender and Receiver", "summary": "The sender creates and transmits the message; the receiver accepts and interprets it.", "description": "<p>The sender creates and transmits the message; the receiver accepts and interprets it.</p>"}, {"id": "dcn-components-medium-protocol", "title": "Medium and Protocol", "summary": "The medium carries signals, while the protocol defines the rules, timing, format, and meaning of communication.", "description": "<p>The medium carries signals, while the protocol defines the rules, timing, format, and meaning of communication.</p>"}]}, {"id": "dcn-data-representation", "title": "Data Representation", "summary": "Different kinds of information are converted into bit patterns before transmission.", "description": "<p>Different kinds of information are converted into bit patterns before transmission.</p>", "children": [{"id": "dcn-text-numbers", "title": "Text and Numbers", "summary": "Text is represented with character codes such as Unicode; numbers are represented using binary patterns.", "description": "<p>Text is represented with character codes such as Unicode; numbers are represented using binary patterns.</p>"}, {"id": "dcn-media", "title": "Images, Audio, and Video", "summary": "Images use pixels, audio uses sampled sound, and video combines images over time with audio.", "description": "<p>Images use pixels, audio uses sampled sound, and video combines images over time with audio.</p>"}, {"id": "dcn-signals", "title": "Bits to Signals", "summary": "Devices transmit data by converting bit patterns into electromagnetic, optical, or radio signals.", "description": "<p>Devices transmit data by converting bit patterns into electromagnetic, optical, or radio signals.</p>"}]}, {"id": "dcn-flow-criteria", "title": "Flow and Network Criteria", "summary": "Direction of communication and quality measures are common exam targets.", "description": "<p>Direction of communication and quality measures are common exam targets.</p>", "children": [{"id": "dcn-simplex", "title": "Simplex", "summary": "One-way communication only, like a keyboard sending input to a computer.", "description": "<p>One-way communication only, like a keyboard sending input to a computer.</p>"}, {"id": "dcn-half-full", "title": "Half-Duplex vs Full-Duplex", "summary": "Half-duplex allows both directions one at a time; full-duplex allows both directions simultaneously.", "description": "<p>Half-duplex allows both directions one at a time; full-duplex allows both directions simultaneously.</p>"}, {"id": "dcn-performance-reliability-security", "title": "Performance, Reliability, Security", "summary": "Performance means throughput and delay, reliability means failure/recovery behavior, and security protects data and access.", "description": "<p>Performance means throughput and delay, reliability means failure/recovery behavior, and security protects data and access.</p>"}]}, {"id": "dcn-structures-types", "title": "Structures and Network Types", "summary": "How devices are connected and how large the network is.", "description": "<p>How devices are connected and how large the network is.</p>", "children": [{"id": "dcn-connections", "title": "Point-to-Point and Multipoint", "summary": "Point-to-point links connect two devices directly; multipoint links share one link among multiple devices.", "description": "<p>Point-to-point links connect two devices directly; multipoint links share one link among multiple devices.</p>"}, {"id": "dcn-topologies", "title": "Mesh, Star, Bus, Ring, Hybrid", "summary": "Topologies describe layout. Star is common in LANs; mesh gives redundancy; bus and ring are classic shared layouts.", "description": "<p>Topologies describe layout. Star is common in LANs; mesh gives redundancy; bus and ring are classic shared layouts.</p>"}, {"id": "dcn-lan-man-wan", "title": "LAN, MAN, WAN, Internet", "summary": "LAN covers a small area, MAN covers a city area, WAN covers large geography, and the Internet connects many networks.", "description": "<p>LAN covers a small area, MAN covers a city area, WAN covers large geography, and the Internet connects many networks.</p>"}]}]}, {"id": "protocol-layering", "title": "Protocol Layering and Network Models", "summary": "Layering organizes network tasks into manageable levels with clear responsibilities.", "description": "<p>Layering organizes network tasks into manageable levels with clear responsibilities.</p>", "children": [{"id": "pl-layering-idea", "title": "Why Layering Exists", "summary": "Layering reduces complexity and lets each layer focus on a specific service.", "description": "<p>Layering reduces complexity and lets each layer focus on a specific service.</p>", "children": [{"id": "pl-services", "title": "Services and Interfaces", "summary": "Each layer provides services to the layer above and uses services from the layer below.", "description": "<p>Each layer provides services to the layer above and uses services from the layer below.</p>"}, {"id": "pl-peer", "title": "Peer-to-Peer Layer Logic", "summary": "The same layer on different devices appears to communicate using that layer protocol.", "description": "<p>The same layer on different devices appears to communicate using that layer protocol.</p>"}, {"id": "pl-modularity", "title": "Modularity", "summary": "Changing one layer is easier when interfaces remain stable, which helps standards and troubleshooting.", "description": "<p>Changing one layer is easier when interfaces remain stable, which helps standards and troubleshooting.</p>"}]}, {"id": "pl-tcpip", "title": "TCP/IP Model", "summary": "The practical Internet model used to describe real networking.", "description": "<p>The practical Internet model used to describe real networking.</p>", "children": [{"id": "pl-application", "title": "Application Layer", "summary": "Supports network applications and protocols such as DNS, HTTP, email, and file transfer.", "description": "<p>Supports network applications and protocols such as DNS, HTTP, email, and file transfer.</p>"}, {"id": "pl-transport", "title": "Transport Layer", "summary": "Provides process-to-process delivery using TCP or UDP and port numbers.", "description": "<p>Provides process-to-process delivery using TCP or UDP and port numbers.</p>"}, {"id": "pl-network-link-physical", "title": "Network, Data Link, Physical", "summary": "Network handles host-to-host delivery, data link handles local frame delivery, and physical sends raw bits.", "description": "<p>Network handles host-to-host delivery, data link handles local frame delivery, and physical sends raw bits.</p>"}]}, {"id": "pl-osi", "title": "OSI Reference Model", "summary": "A seven-layer learning model often used for exams and comparisons.", "description": "<p>A seven-layer learning model often used for exams and comparisons.</p>", "children": [{"id": "pl-osi-upper", "title": "Application, Presentation, Session", "summary": "The top OSI layers separate user services, data representation/encryption, and dialog/session control.", "description": "<p>The top OSI layers separate user services, data representation/encryption, and dialog/session control.</p>"}, {"id": "pl-osi-lower", "title": "Transport to Physical", "summary": "The lower OSI layers match core delivery duties: reliable process delivery, routing, framing, and signals.", "description": "<p>The lower OSI layers match core delivery duties: reliable process delivery, routing, framing, and signals.</p>"}, {"id": "pl-osi-vs-tcpip", "title": "OSI vs TCP/IP", "summary": "OSI is more detailed as a reference model; TCP/IP is the deployed Internet protocol model.", "description": "<p>OSI is more detailed as a reference model; TCP/IP is the deployed Internet protocol model.</p>"}]}, {"id": "pl-encapsulation", "title": "Encapsulation and Addressing", "summary": "Data gains headers and sometimes trailers as it moves down the stack.", "description": "<p>Data gains headers and sometimes trailers as it moves down the stack.</p>", "children": [{"id": "pl-pdu", "title": "Protocol Data Units", "summary": "Names change by layer: message/data, segment/datagram, packet, frame, and bits.", "description": "<p>Names change by layer: message/data, segment/datagram, packet, frame, and bits.</p>"}, {"id": "pl-addresses", "title": "Port, IP, MAC Addresses", "summary": "Ports identify processes, IP addresses identify hosts/networks, and MAC addresses identify local interfaces.", "description": "<p>Ports identify processes, IP addresses identify hosts/networks, and MAC addresses identify local interfaces.</p>"}, {"id": "pl-decap", "title": "Decapsulation", "summary": "The receiver removes each layer header in reverse order to deliver data to the correct application.", "description": "<p>The receiver removes each layer header in reverse order to deliver data to the correct application.</p>"}]}]}, {"id": "data-link-layer-control", "title": "Data Link Layer Control", "summary": "The data link layer makes local node-to-node delivery organized, detectable, and controllable.", "description": "<p>The data link layer makes local node-to-node delivery organized, detectable, and controllable.</p>", "children": [{"id": "dllc-framing", "title": "Framing", "summary": "Frames package network-layer packets for local link delivery.", "description": "<p>Frames package network-layer packets for local link delivery.</p>", "children": [{"id": "dllc-frame-boundaries", "title": "Frame Boundaries", "summary": "The receiver must know where each frame starts and ends to avoid mixing data.", "description": "<p>The receiver must know where each frame starts and ends to avoid mixing data.</p>"}, {"id": "dllc-byte-bit", "title": "Byte-Oriented and Bit-Oriented", "summary": "Byte-oriented framing works with bytes and byte stuffing; bit-oriented framing works with bit patterns and bit stuffing.", "description": "<p>Byte-oriented framing works with bytes and byte stuffing; bit-oriented framing works with bit patterns and bit stuffing.</p>"}, {"id": "dllc-header-trailer", "title": "Header and Trailer", "summary": "Headers carry addresses/control information, and trailers commonly carry error-detection fields.", "description": "<p>Headers carry addresses/control information, and trailers commonly carry error-detection fields.</p>"}]}, {"id": "dllc-flow", "title": "Flow Control", "summary": "Flow control prevents a fast sender from overwhelming a slower receiver.", "description": "<p>Flow control prevents a fast sender from overwhelming a slower receiver.</p>", "children": [{"id": "dllc-stopwait-flow", "title": "Stop-and-Wait Flow Control", "summary": "The sender transmits one frame, then waits for permission or acknowledgment before sending the next.", "description": "<p>The sender transmits one frame, then waits for permission or acknowledgment before sending the next.</p>"}, {"id": "dllc-sliding-flow", "title": "Sliding Window Flow Control", "summary": "Allows multiple frames to be outstanding, improving link utilization.", "description": "<p>Allows multiple frames to be outstanding, improving link utilization.</p>"}, {"id": "dllc-window", "title": "Window Size", "summary": "The window limits how many frames can be sent before receiving acknowledgments.", "description": "<p>The window limits how many frames can be sent before receiving acknowledgments.</p>"}]}, {"id": "dllc-error", "title": "Error Control", "summary": "Error control deals with damaged, lost, delayed, and duplicate frames.", "description": "<p>Error control deals with damaged, lost, delayed, and duplicate frames.</p>", "children": [{"id": "dllc-detection", "title": "Error Detection", "summary": "CRC/FCS fields help receivers detect whether bits changed during transmission.", "description": "<p>CRC/FCS fields help receivers detect whether bits changed during transmission.</p>"}, {"id": "dllc-ack-timer", "title": "ACKs and Timers", "summary": "Acknowledgments confirm receipt; timers trigger retransmission when expected feedback does not arrive.", "description": "<p>Acknowledgments confirm receipt; timers trigger retransmission when expected feedback does not arrive.</p>"}, {"id": "dllc-sequence", "title": "Sequence Numbers", "summary": "Sequence numbers help identify duplicates and keep frames in order.", "description": "<p>Sequence numbers help identify duplicates and keep frames in order.</p>"}]}, {"id": "dllc-arq", "title": "ARQ Protocols", "summary": "Automatic Repeat reQuest protocols combine detection, ACKs, and retransmission.", "description": "<p>Automatic Repeat reQuest protocols combine detection, ACKs, and retransmission.</p>", "children": [{"id": "dllc-sw-arq", "title": "Stop-and-Wait ARQ", "summary": "Simple but inefficient on long-delay links because only one frame is in flight.", "description": "<p>Simple but inefficient on long-delay links because only one frame is in flight.</p>"}, {"id": "dllc-gbn", "title": "Go-Back-N ARQ", "summary": "If a frame is lost or damaged, the sender retransmits that frame and all later outstanding frames.", "description": "<p>If a frame is lost or damaged, the sender retransmits that frame and all later outstanding frames.</p>"}, {"id": "dllc-sr", "title": "Selective Repeat ARQ", "summary": "Retransmits only missing/damaged frames, requiring more receiver buffering and careful sequence numbering.", "description": "<p>Retransmits only missing/damaged frames, requiring more receiver buffering and careful sequence numbering.</p>"}]}]}, {"id": "data-link-layer-mac-protocols", "title": "Data Link Layer MAC Protocols", "summary": "MAC protocols decide who may transmit when stations share a communication medium.", "description": "<p>MAC protocols decide who may transmit when stations share a communication medium.</p>", "children": [{"id": "mac-random", "title": "Random Access", "summary": "Stations compete for the channel, so collisions are possible.", "description": "<p>Stations compete for the channel, so collisions are possible.</p>", "children": [{"id": "mac-pure-aloha", "title": "Pure ALOHA", "summary": "Stations transmit whenever they have data. It is simple but collision-prone.", "description": "<p>Stations transmit whenever they have data. It is simple but collision-prone.</p>"}, {"id": "mac-slotted-aloha", "title": "Slotted ALOHA", "summary": "Stations may start only at slot boundaries, reducing the vulnerable period compared with Pure ALOHA.", "description": "<p>Stations may start only at slot boundaries, reducing the vulnerable period compared with Pure ALOHA.</p>"}, {"id": "mac-csma", "title": "CSMA Family", "summary": "Carrier Sense Multiple Access listens before transmitting; variants define what happens when the channel is busy.", "description": "<p>Carrier Sense Multiple Access listens before transmitting; variants define what happens when the channel is busy.</p>"}]}, {"id": "mac-collision", "title": "Collision Handling", "summary": "Collision strategy depends on the network type and medium.", "description": "<p>Collision strategy depends on the network type and medium.</p>", "children": [{"id": "mac-csma-cd", "title": "CSMA/CD", "summary": "Detects collisions while transmitting and uses backoff before retrying; historically important for shared wired Ethernet.", "description": "<p>Detects collisions while transmitting and uses backoff before retrying; historically important for shared wired Ethernet.</p>"}, {"id": "mac-csma-ca", "title": "CSMA/CA", "summary": "Attempts to avoid collisions, useful where collision detection is difficult, such as wireless.", "description": "<p>Attempts to avoid collisions, useful where collision detection is difficult, such as wireless.</p>"}, {"id": "mac-backoff", "title": "Backoff", "summary": "After collision or busy medium, stations wait a calculated/random time before retrying.", "description": "<p>After collision or busy medium, stations wait a calculated/random time before retrying.</p>"}]}, {"id": "mac-controlled", "title": "Controlled Access", "summary": "Stations coordinate turns to reduce or eliminate collisions.", "description": "<p>Stations coordinate turns to reduce or eliminate collisions.</p>", "children": [{"id": "mac-reservation", "title": "Reservation", "summary": "Stations reserve future slots before transmitting data.", "description": "<p>Stations reserve future slots before transmitting data.</p>"}, {"id": "mac-polling", "title": "Polling", "summary": "A primary/controller asks stations whether they have data to send.", "description": "<p>A primary/controller asks stations whether they have data to send.</p>"}, {"id": "mac-token", "title": "Token Passing", "summary": "Only the station holding the token may transmit, which controls access fairly.", "description": "<p>Only the station holding the token may transmit, which controls access fairly.</p>"}]}, {"id": "mac-channelization", "title": "Channelization", "summary": "The shared medium is divided so users can transmit without direct competition.", "description": "<p>The shared medium is divided so users can transmit without direct competition.</p>", "children": [{"id": "mac-fdma", "title": "FDMA", "summary": "Frequency Division Multiple Access assigns separate frequency bands.", "description": "<p>Frequency Division Multiple Access assigns separate frequency bands.</p>"}, {"id": "mac-tdma", "title": "TDMA", "summary": "Time Division Multiple Access assigns separate time slots.", "description": "<p>Time Division Multiple Access assigns separate time slots.</p>"}, {"id": "mac-cdma", "title": "CDMA", "summary": "Code Division Multiple Access uses codes to separate simultaneous transmissions.", "description": "<p>Code Division Multiple Access uses codes to separate simultaneous transmissions.</p>"}]}]}, {"id": "ethernet-and-lans", "title": "Ethernet and LANs", "summary": "Ethernet defines common LAN framing, MAC addressing, and switching behavior.", "description": "<p>Ethernet defines common LAN framing, MAC addressing, and switching behavior.</p>", "children": [{"id": "eth-frame", "title": "Ethernet Frame", "summary": "Ethernet frames carry local delivery information and error detection.", "description": "<p>Ethernet frames carry local delivery information and error detection.</p>", "children": [{"id": "eth-preamble", "title": "Preamble and SFD", "summary": "These fields help the receiver synchronize and identify the start of the frame.", "description": "<p>These fields help the receiver synchronize and identify the start of the frame.</p>"}, {"id": "eth-addresses", "title": "Source and Destination MAC", "summary": "Destination MAC says who should receive the frame; source MAC says who sent it.", "description": "<p>Destination MAC says who should receive the frame; source MAC says who sent it.</p>"}, {"id": "eth-type-fcs", "title": "Type/Length, Payload, FCS", "summary": "Type/length identifies payload meaning or size, payload carries data, and FCS detects frame errors.", "description": "<p>Type/length identifies payload meaning or size, payload carries data, and FCS detects frame errors.</p>"}]}, {"id": "eth-addressing", "title": "MAC Addressing", "summary": "MAC addresses identify network interfaces on the local link.", "description": "<p>MAC addresses identify network interfaces on the local link.</p>", "children": [{"id": "eth-unicast", "title": "Unicast", "summary": "One sender sends to one specific destination MAC address.", "description": "<p>One sender sends to one specific destination MAC address.</p>"}, {"id": "eth-broadcast", "title": "Broadcast", "summary": "A frame addressed to all devices in the broadcast domain.", "description": "<p>A frame addressed to all devices in the broadcast domain.</p>"}, {"id": "eth-multicast", "title": "Multicast", "summary": "A frame addressed to a group of interested receivers.", "description": "<p>A frame addressed to a group of interested receivers.</p>"}]}, {"id": "eth-switches", "title": "Switch Operation", "summary": "Switches make Ethernet LANs efficient by learning and filtering frames.", "description": "<p>Switches make Ethernet LANs efficient by learning and filtering frames.</p>", "children": [{"id": "eth-learning", "title": "Learning", "summary": "A switch learns which MAC addresses are reachable through which ports by reading source addresses.", "description": "<p>A switch learns which MAC addresses are reachable through which ports by reading source addresses.</p>"}, {"id": "eth-forward-filter", "title": "Forwarding and Filtering", "summary": "Known destinations are sent only to the correct port; frames are filtered from unnecessary ports.", "description": "<p>Known destinations are sent only to the correct port; frames are filtered from unnecessary ports.</p>"}, {"id": "eth-flooding", "title": "Flooding", "summary": "Unknown unicast and broadcast frames are sent out multiple ports except the incoming port.", "description": "<p>Unknown unicast and broadcast frames are sent out multiple ports except the incoming port.</p>"}]}, {"id": "eth-lan-behavior", "title": "LAN Behavior", "summary": "Ethernet behavior depends on switching, duplex mode, and broadcast boundaries.", "description": "<p>Ethernet behavior depends on switching, duplex mode, and broadcast boundaries.</p>", "children": [{"id": "eth-collision-domain", "title": "Collision Domains", "summary": "Modern switches reduce collisions by giving each port its own collision domain.", "description": "<p>Modern switches reduce collisions by giving each port its own collision domain.</p>"}, {"id": "eth-duplex", "title": "Half vs Full Duplex", "summary": "Full duplex allows simultaneous sending and receiving and avoids classic shared-medium collisions.", "description": "<p>Full duplex allows simultaneous sending and receiving and avoids classic shared-medium collisions.</p>"}, {"id": "eth-broadcast-domain", "title": "Broadcast Domain", "summary": "Layer-2 broadcasts spread within the same LAN/VLAN unless a router separates them.", "description": "<p>Layer-2 broadcasts spread within the same LAN/VLAN unless a router separates them.</p>"}]}]}, {"id": "interconnecting-devices", "title": "Interconnecting Devices and VLANs", "summary": "Network devices connect, extend, segment, and route traffic at different layers.", "description": "<p>Network devices connect, extend, segment, and route traffic at different layers.</p>", "children": [{"id": "int-layer-devices", "title": "Devices by Layer", "summary": "A device role is easiest to remember by the layer where it operates.", "description": "<p>A device role is easiest to remember by the layer where it operates.</p>", "children": [{"id": "int-repeater-hub", "title": "Repeater and Hub", "summary": "Repeaters regenerate signals; hubs repeat bits to all ports and do not filter traffic.", "description": "<p>Repeaters regenerate signals; hubs repeat bits to all ports and do not filter traffic.</p>"}, {"id": "int-bridge-switch", "title": "Bridge and Switch", "summary": "Bridges and switches operate at the data link layer and use MAC addresses.", "description": "<p>Bridges and switches operate at the data link layer and use MAC addresses.</p>"}, {"id": "int-router", "title": "Router", "summary": "Routers operate at the network layer and forward packets using IP addresses.", "description": "<p>Routers operate at the network layer and forward packets using IP addresses.</p>"}]}, {"id": "int-domains", "title": "Domains and Segmentation", "summary": "Interconnection changes collision and broadcast behavior.", "description": "<p>Interconnection changes collision and broadcast behavior.</p>", "children": [{"id": "int-collision", "title": "Collision Domains", "summary": "A switch separates collision domains per port; a hub keeps devices in the same collision domain.", "description": "<p>A switch separates collision domains per port; a hub keeps devices in the same collision domain.</p>"}, {"id": "int-broadcast", "title": "Broadcast Domains", "summary": "Routers separate broadcast domains; switches usually forward broadcasts within a VLAN.", "description": "<p>Routers separate broadcast domains; switches usually forward broadcasts within a VLAN.</p>"}, {"id": "int-segmentation", "title": "Segmentation Benefit", "summary": "Segmentation improves performance, organization, and control by limiting where traffic goes.", "description": "<p>Segmentation improves performance, organization, and control by limiting where traffic goes.</p>"}]}, {"id": "int-vlans", "title": "VLANs", "summary": "VLANs create logical LANs on switched infrastructure.", "description": "<p>VLANs create logical LANs on switched infrastructure.</p>", "children": [{"id": "int-vlan-purpose", "title": "Purpose of VLANs", "summary": "VLANs group devices logically, even if they connect to different physical switch ports.", "description": "<p>VLANs group devices logically, even if they connect to different physical switch ports.</p>"}, {"id": "int-access-trunk", "title": "Access vs Trunk Ports", "summary": "Access ports carry one VLAN for end devices; trunk ports carry multiple VLANs between switches.", "description": "<p>Access ports carry one VLAN for end devices; trunk ports carry multiple VLANs between switches.</p>"}, {"id": "int-tagging", "title": "Frame Tagging", "summary": "Trunk links tag frames so switches know which VLAN each frame belongs to.", "description": "<p>Trunk links tag frames so switches know which VLAN each frame belongs to.</p>"}]}, {"id": "int-routing-vlans", "title": "Routing Between VLANs", "summary": "Different VLANs need network-layer routing to communicate.", "description": "<p>Different VLANs need network-layer routing to communicate.</p>", "children": [{"id": "int-router-on-stick", "title": "Router-on-a-Stick", "summary": "One router interface can route between VLANs using subinterfaces and trunk tagging.", "description": "<p>One router interface can route between VLANs using subinterfaces and trunk tagging.</p>"}, {"id": "int-layer3-switch", "title": "Layer-3 Switch", "summary": "A multilayer switch can perform switching and routing functions in one device.", "description": "<p>A multilayer switch can perform switching and routing functions in one device.</p>"}, {"id": "int-security", "title": "VLAN Security Note", "summary": "VLANs help segmentation, but routing and policies still need proper access control.", "description": "<p>VLANs help segmentation, but routing and policies still need proper access control.</p>"}]}]}, {"id": "network-layer-data-transfer", "title": "Network Layer Data Transfer", "summary": "The network layer moves packets across multiple networks using logical addressing and forwarding.", "description": "<p>The network layer moves packets across multiple networks using logical addressing and forwarding.</p>", "children": [{"id": "nldt-services", "title": "Network Layer Duties", "summary": "Core duties include host-to-host delivery, routing support, and forwarding.", "description": "<p>Core duties include host-to-host delivery, routing support, and forwarding.</p>", "children": [{"id": "nldt-host", "title": "Host-to-Host Delivery", "summary": "The network layer delivers packets from a source host to a destination host, possibly across many links.", "description": "<p>The network layer delivers packets from a source host to a destination host, possibly across many links.</p>"}, {"id": "nldt-routing-forwarding", "title": "Routing vs Forwarding", "summary": "Routing computes paths; forwarding applies a table decision to move each packet to the next hop.", "description": "<p>Routing computes paths; forwarding applies a table decision to move each packet to the next hop.</p>"}, {"id": "nldt-connectionless", "title": "Connectionless Service", "summary": "IP treats each datagram independently and does not guarantee delivery by itself.", "description": "<p>IP treats each datagram independently and does not guarantee delivery by itself.</p>"}]}, {"id": "nldt-ipv4", "title": "IPv4 Datagram", "summary": "IPv4 headers carry information routers and hosts need.", "description": "<p>IPv4 headers carry information routers and hosts need.</p>", "children": [{"id": "nldt-src-dst", "title": "Source and Destination IP", "summary": "These logical addresses identify the communicating hosts across networks.", "description": "<p>These logical addresses identify the communicating hosts across networks.</p>"}, {"id": "nldt-ttl-protocol", "title": "TTL and Protocol", "summary": "TTL prevents infinite looping; protocol identifies the upper-layer payload such as TCP or UDP.", "description": "<p>TTL prevents infinite looping; protocol identifies the upper-layer payload such as TCP or UDP.</p>"}, {"id": "nldt-fragment-fields", "title": "Identification, Flags, Offset", "summary": "These fields support fragmentation and reassembly when packets must cross links with smaller MTUs.", "description": "<p>These fields support fragmentation and reassembly when packets must cross links with smaller MTUs.</p>"}]}, {"id": "nldt-addressing", "title": "Addressing and Subnetting", "summary": "IP addressing divides the world into network and host portions.", "description": "<p>IP addressing divides the world into network and host portions.</p>", "children": [{"id": "nldt-prefix", "title": "Prefix Length", "summary": "CIDR notation such as /24 states how many bits belong to the network prefix.", "description": "<p>CIDR notation such as /24 states how many bits belong to the network prefix.</p>"}, {"id": "nldt-subnet", "title": "Subnetting", "summary": "Subnetting divides a block into smaller networks for organization and routing.", "description": "<p>Subnetting divides a block into smaller networks for organization and routing.</p>"}, {"id": "nldt-longest", "title": "Longest Prefix Match", "summary": "Routers choose the most specific matching prefix in the forwarding table.", "description": "<p>Routers choose the most specific matching prefix in the forwarding table.</p>"}]}, {"id": "nldt-local-delivery", "title": "Local Delivery Support", "summary": "Even IP packets need link-layer delivery on each hop.", "description": "<p>Even IP packets need link-layer delivery on each hop.</p>", "children": [{"id": "nldt-next-hop", "title": "Next Hop", "summary": "A packet is delivered hop by hop; each router chooses the next router or destination network.", "description": "<p>A packet is delivered hop by hop; each router chooses the next router or destination network.</p>"}, {"id": "nldt-arp", "title": "ARP", "summary": "ARP maps a known IPv4 address to a local MAC address for frame delivery.", "description": "<p>ARP maps a known IPv4 address to a local MAC address for frame delivery.</p>"}, {"id": "nldt-mtu", "title": "MTU", "summary": "Maximum Transmission Unit limits how large a packet can be on a link before fragmentation or adjustment is needed.", "description": "<p>Maximum Transmission Unit limits how large a packet can be on a link before fragmentation or adjustment is needed.</p>"}]}]}, {"id": "network-layer-routing", "title": "Network Layer Routing", "summary": "Routing discovers or configures paths so packets can travel through internetworks.", "description": "<p>Routing discovers or configures paths so packets can travel through internetworks.</p>", "children": [{"id": "routing-basics", "title": "Routing Basics", "summary": "Routing builds the information that forwarding tables use.", "description": "<p>Routing builds the information that forwarding tables use.</p>", "children": [{"id": "routing-table", "title": "Routing Table", "summary": "A routing table stores destination prefixes, next hops, metrics, and outgoing interfaces.", "description": "<p>A routing table stores destination prefixes, next hops, metrics, and outgoing interfaces.</p>"}, {"id": "routing-metric", "title": "Metric", "summary": "A metric is a cost value used to compare possible routes.", "description": "<p>A metric is a cost value used to compare possible routes.</p>"}, {"id": "routing-convergence", "title": "Convergence", "summary": "Convergence is when routers agree on stable paths after a change.", "description": "<p>Convergence is when routers agree on stable paths after a change.</p>"}]}, {"id": "routing-static-dynamic", "title": "Static and Dynamic Routing", "summary": "Routes may be manually configured or learned automatically.", "description": "<p>Routes may be manually configured or learned automatically.</p>", "children": [{"id": "routing-static", "title": "Static Routing", "summary": "Static routes are predictable and simple, but they do not adapt automatically to failures.", "description": "<p>Static routes are predictable and simple, but they do not adapt automatically to failures.</p>"}, {"id": "routing-dynamic", "title": "Dynamic Routing", "summary": "Dynamic protocols exchange information and update routes as topology changes.", "description": "<p>Dynamic protocols exchange information and update routes as topology changes.</p>"}, {"id": "routing-default", "title": "Default Route", "summary": "A default route catches destinations that do not match a more specific route.", "description": "<p>A default route catches destinations that do not match a more specific route.</p>"}]}, {"id": "routing-algorithms", "title": "Routing Algorithm Families", "summary": "Different protocol families learn and compare paths differently.", "description": "<p>Different protocol families learn and compare paths differently.</p>", "children": [{"id": "routing-distance-vector", "title": "Distance Vector", "summary": "Routers share distance information with neighbors. It is simpler but can converge slowly.", "description": "<p>Routers share distance information with neighbors. It is simpler but can converge slowly.</p>"}, {"id": "routing-link-state", "title": "Link State", "summary": "Routers flood link information and compute shortest paths from a topology map.", "description": "<p>Routers flood link information and compute shortest paths from a topology map.</p>"}, {"id": "routing-path-vector", "title": "Path Vector", "summary": "Path-vector routing carries path information and supports policy-based interdomain routing.", "description": "<p>Path-vector routing carries path information and supports policy-based interdomain routing.</p>"}]}, {"id": "routing-problems", "title": "Routing Problems and Controls", "summary": "Routing must avoid loops and react to failures carefully.", "description": "<p>Routing must avoid loops and react to failures carefully.</p>", "children": [{"id": "routing-loops", "title": "Routing Loops", "summary": "A loop occurs when packets circulate instead of reaching the destination.", "description": "<p>A loop occurs when packets circulate instead of reaching the destination.</p>"}, {"id": "routing-count-infinity", "title": "Count to Infinity", "summary": "A distance-vector problem where bad news propagates slowly and metrics increase step by step.", "description": "<p>A distance-vector problem where bad news propagates slowly and metrics increase step by step.</p>"}, {"id": "routing-loop-controls", "title": "Loop Controls", "summary": "Techniques such as split horizon, poisoned reverse, TTL, and triggered updates help reduce loop impact.", "description": "<p>Techniques such as split horizon, poisoned reverse, TTL, and triggered updates help reduce loop impact.</p>"}]}]}, {"id": "transport-layer", "title": "Transport Layer", "summary": "The transport layer provides process-to-process communication using ports, UDP, and TCP.", "description": "<p>The transport layer provides process-to-process communication using ports, UDP, and TCP.</p>", "children": [{"id": "transport-services", "title": "Transport Services", "summary": "Transport sits between applications and the network layer.", "description": "<p>Transport sits between applications and the network layer.</p>", "children": [{"id": "transport-process", "title": "Process-to-Process Delivery", "summary": "Transport delivers data to the correct application process, not just the correct host.", "description": "<p>Transport delivers data to the correct application process, not just the correct host.</p>"}, {"id": "transport-mux", "title": "Multiplexing and Demultiplexing", "summary": "Outgoing data from many apps is multiplexed; incoming data is demultiplexed using port numbers.", "description": "<p>Outgoing data from many apps is multiplexed; incoming data is demultiplexed using port numbers.</p>"}, {"id": "transport-ports", "title": "Port Numbers", "summary": "Port numbers identify application endpoints such as web, DNS, or custom client processes.", "description": "<p>Port numbers identify application endpoints such as web, DNS, or custom client processes.</p>"}]}, {"id": "transport-udp", "title": "UDP", "summary": "UDP is lightweight, connectionless, and does not provide built-in reliability.", "description": "<p>UDP is lightweight, connectionless, and does not provide built-in reliability.</p>", "children": [{"id": "transport-udp-header", "title": "UDP Header", "summary": "UDP has a small header with source port, destination port, length, and checksum.", "description": "<p>UDP has a small header with source port, destination port, length, and checksum.</p>"}, {"id": "transport-udp-use", "title": "When UDP Fits", "summary": "UDP fits low-delay or application-managed protocols such as DNS queries, streaming, and real-time traffic.", "description": "<p>UDP fits low-delay or application-managed protocols such as DNS queries, streaming, and real-time traffic.</p>"}, {"id": "transport-udp-limits", "title": "UDP Limits", "summary": "UDP does not guarantee delivery, order, duplicate removal, or congestion control by itself.", "description": "<p>UDP does not guarantee delivery, order, duplicate removal, or congestion control by itself.</p>"}]}, {"id": "transport-tcp", "title": "TCP", "summary": "TCP provides reliable, ordered byte-stream communication.", "description": "<p>TCP provides reliable, ordered byte-stream communication.</p>", "children": [{"id": "transport-handshake", "title": "Three-Way Handshake", "summary": "TCP uses SYN, SYN-ACK, and ACK to establish a connection before data transfer.", "description": "<p>TCP uses SYN, SYN-ACK, and ACK to establish a connection before data transfer.</p>"}, {"id": "transport-reliability", "title": "Reliability Tools", "summary": "TCP uses sequence numbers, acknowledgments, timers, and retransmissions.", "description": "<p>TCP uses sequence numbers, acknowledgments, timers, and retransmissions.</p>"}, {"id": "transport-closing", "title": "Connection Closing", "summary": "TCP closes connections carefully so both sides can finish sending data.", "description": "<p>TCP closes connections carefully so both sides can finish sending data.</p>"}]}, {"id": "transport-control", "title": "Flow and Congestion Control", "summary": "TCP adapts to receiver capacity and network congestion.", "description": "<p>TCP adapts to receiver capacity and network congestion.</p>", "children": [{"id": "transport-flow", "title": "Flow Control", "summary": "Flow control protects the receiver from being overwhelmed, commonly using a receive window.", "description": "<p>Flow control protects the receiver from being overwhelmed, commonly using a receive window.</p>"}, {"id": "transport-congestion", "title": "Congestion Control", "summary": "Congestion control protects the network by reducing sending rate during overload.", "description": "<p>Congestion control protects the network by reducing sending rate during overload.</p>"}, {"id": "transport-confusion", "title": "Flow vs Congestion", "summary": "Memory trick: flow = receiver comfort; congestion = network traffic jam.", "description": "<p>Memory trick: flow = receiver comfort; congestion = network traffic jam.</p>"}]}]}, {"id": "dns-and-application-layer", "title": "DNS and Application Layer", "summary": "Application-layer protocols provide user-visible network services, with DNS translating names to addresses.", "description": "<p>Application-layer protocols provide user-visible network services, with DNS translating names to addresses.</p>", "children": [{"id": "app-layer-role", "title": "Application Layer Role", "summary": "The application layer provides protocols directly used by applications.", "description": "<p>The application layer provides protocols directly used by applications.</p>", "children": [{"id": "app-client-server", "title": "Client-Server Model", "summary": "Clients request services and servers provide them, as with web and DNS services.", "description": "<p>Clients request services and servers provide them, as with web and DNS services.</p>"}, {"id": "app-p2p", "title": "Peer-to-Peer Model", "summary": "Peers can act as both clients and servers, sharing work among end systems.", "description": "<p>Peers can act as both clients and servers, sharing work among end systems.</p>"}, {"id": "app-protocols", "title": "Application Protocols", "summary": "Application protocols define message types, syntax, meaning, and expected actions.", "description": "<p>Application protocols define message types, syntax, meaning, and expected actions.</p>"}]}, {"id": "dns-purpose", "title": "DNS Purpose and Hierarchy", "summary": "DNS lets humans use names while networks use IP addresses.", "description": "<p>DNS lets humans use names while networks use IP addresses.</p>", "children": [{"id": "dns-name-resolution", "title": "Name Resolution", "summary": "DNS resolves domain names into IP addresses and other useful records.", "description": "<p>DNS resolves domain names into IP addresses and other useful records.</p>"}, {"id": "dns-hierarchy", "title": "Root, TLD, Authoritative", "summary": "The DNS hierarchy moves from root servers to top-level domain servers to authoritative servers.", "description": "<p>The DNS hierarchy moves from root servers to top-level domain servers to authoritative servers.</p>"}, {"id": "dns-cache", "title": "Caching", "summary": "DNS caching speeds repeated lookups and reduces server load until records expire.", "description": "<p>DNS caching speeds repeated lookups and reduces server load until records expire.</p>"}]}, {"id": "dns-queries", "title": "DNS Query Types", "summary": "DNS resolution may involve recursive and iterative behavior.", "description": "<p>DNS resolution may involve recursive and iterative behavior.</p>", "children": [{"id": "dns-recursive", "title": "Recursive Query", "summary": "The resolver takes responsibility for finding the answer and returning it to the client.", "description": "<p>The resolver takes responsibility for finding the answer and returning it to the client.</p>"}, {"id": "dns-iterative", "title": "Iterative Query", "summary": "A server gives the best referral it knows, and the resolver continues asking other servers.", "description": "<p>A server gives the best referral it knows, and the resolver continues asking other servers.</p>"}, {"id": "dns-resolver", "title": "Local Resolver", "summary": "The local resolver is often the client-facing DNS service that performs lookup work.", "description": "<p>The local resolver is often the client-facing DNS service that performs lookup work.</p>"}]}, {"id": "dns-records", "title": "DNS Records", "summary": "Records store different kinds of name-related information.", "description": "<p>Records store different kinds of name-related information.</p>", "children": [{"id": "dns-a-aaaa", "title": "A and AAAA", "summary": "A maps a name to an IPv4 address; AAAA maps a name to an IPv6 address.", "description": "<p>A maps a name to an IPv4 address; AAAA maps a name to an IPv6 address.</p>"}, {"id": "dns-cname-mx", "title": "CNAME and MX", "summary": "CNAME creates an alias; MX identifies mail servers for a domain.", "description": "<p>CNAME creates an alias; MX identifies mail servers for a domain.</p>"}, {"id": "dns-ns", "title": "NS and Authority", "summary": "NS records identify authoritative name servers for a DNS zone.", "description": "<p>NS records identify authoritative name servers for a DNS zone.</p>"}]}]}]};
+        const state = { expanded: new Set([mindMapData.id]), active: mindMapData.id, matches: new Set(), scale: 1, panX: 80, panY: 120, dragging: false, lastX: 0, lastY: 0 }; const viewport = document.getElementById('viewport'), world = document.getElementById('world'), nodesEl = document.getElementById('nodes'), linksEl = document.getElementById('links'), panel = document.getElementById('panel'), panelTitle = document.getElementById('panelTitle'), panelBody = document.getElementById('panelBody'), searchInput = document.getElementById('searchInput'), searchResults = document.getElementById('searchResults'); const nodeMap = new Map(), parentMap = new Map(), layout = new Map(), C = { xGap: 330, yGap: 92, nodeW: 250, rootW: 285 }; function index(n, p = null, d = 0) { n.depth = d; nodeMap.set(n.id, n); if (p) parentMap.set(n.id, p.id); (n.children || []).forEach(c => index(c, n, d + 1)); } function leaf(n) { return !n.children || !n.children.length } function exp(n) { return state.expanded.has(n.id) } function tree(n, d = 0, c = { y: 0 }) { let y; if (exp(n) && !leaf(n)) { const ys = n.children.map(ch => tree(ch, d + 1, c)); y = (Math.min(...ys) + Math.max(...ys)) / 2 } else { y = c.y; c.y += C.yGap } layout.set(n.id, { x: d * C.xGap, y, depth: d }); return y } function visible(n = mindMapData, a = []) { a.push(n); if (exp(n) && n.children) n.children.forEach(ch => visible(ch, a)); return a } function conns(n = mindMapData, a = []) { if (exp(n) && n.children) n.children.forEach(ch => { a.push([n, ch]); conns(ch, a) }); return a } function esc(s) { return String(s).replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[ch])) } function strip(h) { const d = document.createElement('div'); d.innerHTML = h; return d.textContent || '' } function render() { layout.clear(); tree(mindMapData); const ns = visible(); linksEl.innerHTML = conns().map(([a, b]) => { const pa = layout.get(a.id), pb = layout.get(b.id), aw = a.depth === 0 ? C.rootW : C.nodeW, x1 = pa.x + aw, y1 = pa.y + 30, x2 = pb.x, y2 = pb.y + 30, m = (x1 + x2) / 2; return `<path class="connector" d="M ${x1} ${y1} C ${m} ${y1}, ${m} ${y2}, ${x2} ${y2}"></path>` }).join(''); nodesEl.innerHTML = ns.map(n => { const p = layout.get(n.id), cl = ['node']; if (n.depth === 0) cl.push('root'); if (leaf(n)) cl.push('leaf'); if (exp(n) && !leaf(n)) cl.push('expanded'); if (state.active === n.id) cl.push('active'); if (state.matches.has(n.id)) cl.push('match'); return `<div class="${cl.join(' ')}" data-id="${n.id}" style="left:${p.x}px;top:${p.y}px"><div class="node-title"><span class="chev">${leaf(n) ? 'i' : '›'}</span><span>${esc(n.title)}</span></div><div class="node-desc">${esc(n.summary || '')}</div></div>` }).join(''); nodesEl.querySelectorAll('.node').forEach(el => el.onclick = e => { e.stopPropagation(); select(el.dataset.id, true) }); apply() } function select(id, user = false) { const n = nodeMap.get(id); state.active = id; if (leaf(n)) openPanel(n); else if (user) { state.expanded.has(id) ? state.expanded.delete(id) : state.expanded.add(id); closePanel() } render() } function openPanel(n) { panelTitle.textContent = n.title; panelBody.innerHTML = n.description || `<p>${esc(n.summary || '')}</p>`; panel.classList.add('open') } function closePanel() { panel.classList.remove('open') } function ancestors(id) { const a = []; let c = id; while (parentMap.has(c)) { c = parentMap.get(c); a.push(c) } return a } function focus(id) { ancestors(id).forEach(a => state.expanded.add(a)); state.active = id; render(); const p = layout.get(id), r = viewport.getBoundingClientRect(); state.panX = r.width / 2 - (p.x + 120) * state.scale; state.panY = r.height / 2 - (p.y + 30) * state.scale; apply(); if (leaf(nodeMap.get(id))) openPanel(nodeMap.get(id)) } function apply() { world.style.transform = `translate(${state.panX}px,${state.panY}px) scale(${state.scale})` } function zoom(v) { state.scale = Math.min(1.8, Math.max(.45, v)); apply() } function expandAll() { nodeMap.forEach(n => { if (!leaf(n)) state.expanded.add(n.id) }); render() } function collapseAll() { state.expanded = new Set([mindMapData.id]); closePanel(); render() } function search(q) { q = q.trim().toLowerCase(); state.matches.clear(); searchResults.innerHTML = ''; if (!q) { searchResults.style.display = 'none'; render(); return } const res = []; nodeMap.forEach(n => { if (`${n.title} ${n.summary || ''} ${strip(n.description || '')}`.toLowerCase().includes(q)) { state.matches.add(n.id); res.push(n) } }); searchResults.innerHTML = res.map(n => `<div class="result" data-id="${n.id}"><strong>${esc(n.title)}</strong><small>${esc(n.summary || '')}</small></div>`).join('') || '<div class="result">No matches</div>'; searchResults.style.display = 'block'; searchResults.querySelectorAll('[data-id]').forEach(el => el.onclick = () => { searchResults.style.display = 'none'; focus(el.dataset.id) }); render() } function exportPng() { const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="700"><rect width="100%" height="100%" fill="#0f172a"/><text x="40" y="70" fill="#e5eefc" font-family="Arial" font-size="34" font-weight="700">${esc(mindMapData.title)}</text><text x="40" y="115" fill="#94a3b8" font-family="Arial" font-size="18">Export from CS331 complete course mind map</text></svg>`; const img = new Image(), url = URL.createObjectURL(new Blob([svg], { type: 'image/svg+xml' })); img.onload = () => { const c = document.createElement('canvas'); c.width = 1200; c.height = 700; const x = c.getContext('2d'); x.drawImage(img, 0, 0); URL.revokeObjectURL(url); const a = document.createElement('a'); a.download = 'cs331-complete-course-mindmap.png'; a.href = c.toDataURL('image/png'); a.click() }; img.src = url } function initTheme() { const s = localStorage.getItem('shoug-theme') || localStorage.getItem('cs331-mindmap-theme') || localStorage.getItem('ethcs303-mindmap-theme') || 'dark'; document.documentElement.dataset.theme = s; document.getElementById('themeToggle').textContent = s === 'dark' ? 'Light' : 'Dark' } index(mindMapData); render(); initTheme(); document.getElementById('zoomIn').onclick = () => zoom(state.scale + .12); document.getElementById('zoomOut').onclick = () => zoom(state.scale - .12); document.getElementById('resetView').onclick = () => { state.scale = 1; state.panX = 80; state.panY = 120; apply() }; document.getElementById('expandAll').onclick = expandAll; document.getElementById('collapseAll').onclick = collapseAll; document.getElementById('exportPng').onclick = exportPng; document.getElementById('closePanel').onclick = closePanel; document.getElementById('themeToggle').onclick = () => { const n = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark'; document.documentElement.dataset.theme = n; localStorage.setItem('cs331-mindmap-theme', n); document.getElementById('themeToggle').textContent = n === 'dark' ? 'Light' : 'Dark' }; searchInput.oninput = e => search(e.target.value); viewport.onmousedown = e => { if (e.target.closest('.node')) return; state.dragging = true; state.lastX = e.clientX; state.lastY = e.clientY; viewport.classList.add('dragging') }; window.onmousemove = e => { if (!state.dragging) return; state.panX += e.clientX - state.lastX; state.panY += e.clientY - state.lastY; state.lastX = e.clientX; state.lastY = e.clientY; apply() }; window.onmouseup = () => { state.dragging = false; viewport.classList.remove('dragging') }; viewport.addEventListener('wheel', e => { e.preventDefault(); zoom(state.scale + (e.deltaY < 0 ? .08 : -.08)) }, { passive: false });
+    </script>
+
+  <script id="cs331-theme-sync">
+    (function () {
+      var root = document.documentElement;
+      var keys = ['shoug-theme', 'cs331-study-theme', 'cs331-mindmap-theme', 'cs331-chapter-mindmap-theme'];
+      function normalize(value) {
+        if (value === 'slate' || value === 'dark') return 'dark';
+        if (value === 'default' || value === 'light') return 'light';
+        return null;
+      }
+      function parentTheme() {
+        try {
+          if (window.parent && window.parent !== window && window.parent.document) {
+            var el = window.parent.document.documentElement;
+            return normalize(el.getAttribute('data-md-color-scheme') || el.dataset.theme || el.getAttribute('data-theme'));
+          }
+        } catch (e) {}
+        return null;
+      }
+      function savedTheme() {
+        for (var i = 0; i < keys.length; i++) {
+          var value = normalize(localStorage.getItem(keys[i]));
+          if (value) return value;
+        }
+        return null;
+      }
+      function buttonLabel(button, theme) {
+        if (!button) return;
+        if (button.id === 'themeBtn') {
+          button.textContent = theme === 'dark' ? '☀️ Light Mode' : '🌙 Dark Mode';
+        } else {
+          button.textContent = theme === 'dark' ? 'Light mode' : 'Dark mode';
+        }
+      }
+      function updateButtons(theme) {
+        document.querySelectorAll('#themeToggle, #themeBtn').forEach(function (button) {
+          buttonLabel(button, theme);
+        });
+      }
+      function applyTheme(theme, persist) {
+        theme = normalize(theme) || 'dark';
+        root.dataset.theme = theme;
+        root.setAttribute('data-theme', theme);
+            try { localStorage.setItem('shoug-theme', document.documentElement.getAttribute('data-theme')); } catch(_e) {}
+        if (persist) keys.forEach(function (key) { localStorage.setItem(key, theme); });
+        updateButtons(theme);
+      }
+      function currentTheme() {
+        return normalize(root.dataset.theme || root.getAttribute('data-theme')) || 'dark';
+      }
+      applyTheme(parentTheme() || savedTheme() || currentTheme(), false);
+      document.querySelectorAll('#themeToggle, #themeBtn').forEach(function (button) {
+        button.addEventListener('click', function () {
+          window.setTimeout(function () { applyTheme(currentTheme(), true); }, 0);
+        });
+      });
+      try {
+        if (window.parent && window.parent !== window && window.parent.document) {
+          var parentRoot = window.parent.document.documentElement;
+          new MutationObserver(function () {
+            var theme = parentTheme();
+            if (theme) applyTheme(theme, false);
+          }).observe(parentRoot, { attributes: true, attributeFilter: ['data-md-color-scheme', 'data-theme'] });
+        }
+      } catch (e) {}
+    })();
+  </script>
+</body>
+
+</html>

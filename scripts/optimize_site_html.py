@@ -12,6 +12,8 @@ from urllib.parse import quote
 
 ROOT = Path(__file__).resolve().parent.parent
 SITE = ROOT / "site"
+if not SITE.is_dir() and (ROOT / "docs").is_dir():
+    SITE = ROOT / "docs"
 SITE_URL = "https://shoug-tech.com/"
 SITE_NAME = "Shoug's Digital Garden"
 SITE_DESCRIPTION = (
@@ -26,6 +28,13 @@ HEADER_LOGO_SIZE = 'width="255" height="96"'
 FAVICON_SIZE = 'width="128" height="121"'
 TWEMOJI_SIZE = 'width="20" height="20" loading="lazy" decoding="async"'
 STANDALONE_SITEMAP = "standalone-sitemap.xml"
+BAD_DESCRIPTION_FRAGMENTS = (
+    "SYSTEM_DIRECTORY",
+    "ACADEMICS/",
+    "SLIDE BREAKDOWNS",
+    "STUDY MATERIAL",
+    "QUIZZES",
+)
 
 
 def escape_attr(value: str) -> str:
@@ -58,6 +67,12 @@ def trim_description(value: str, limit: int = 155) -> str:
     return value[: limit + 1].rsplit(" ", 1)[0].rstrip(".,;: -") + "."
 
 
+def is_bad_description(value: str | None) -> bool:
+    if not value:
+        return True
+    return any(fragment in value for fragment in BAD_DESCRIPTION_FRAGMENTS)
+
+
 def tag_content(document: str, pattern: str) -> str | None:
     match = re.search(pattern, document, flags=re.IGNORECASE | re.DOTALL)
     if not match:
@@ -85,11 +100,22 @@ def page_description(document: str, title: str) -> str:
         r'<meta\s+name=["\']description["\']\s+content=["\'](.*?)["\']',
     )
     if existing:
-        return trim_description(existing)
+        existing = trim_description(existing)
+        if not is_bad_description(existing):
+            return existing
 
     first_paragraph = tag_content(document, r"<p[^>]*>(.*?)</p>")
     if first_paragraph:
-        return trim_description(first_paragraph)
+        candidate = trim_description(first_paragraph)
+        nav_markers = (
+            "SYSTEM_DIRECTORY",
+            "ACADEMICS/",
+            "SLIDE BREAKDOWNS",
+            "STUDY MATERIAL",
+            "QUIZZES",
+        )
+        if len(candidate) >= 45 and not any(marker in candidate for marker in nav_markers):
+            return candidate
 
     return trim_description(f"{title} study material from {SITE_NAME}.")
 
@@ -111,7 +137,17 @@ def ensure_meta(document: str, path: Path) -> str:
     url = canonical_url(path)
 
     additions: list[str] = []
-    if not re.search(r'<meta\s+name=["\']description["\']', document, flags=re.IGNORECASE):
+    description_pattern = r'(<meta\s+name=["\']description["\']\s+content=["\'])(.*?)(["\'][^>]*>)'
+    description_match = re.search(description_pattern, document, flags=re.IGNORECASE | re.DOTALL)
+    if description_match and is_bad_description(clean_text(description_match.group(2))):
+        document = re.sub(
+            description_pattern,
+            lambda match: f"{match.group(1)}{escape_attr(description)}{match.group(3)}",
+            document,
+            count=1,
+            flags=re.IGNORECASE | re.DOTALL,
+        )
+    elif not description_match:
         additions.append(f'    <meta name="description" content="{escape_attr(description)}">')
     if not re.search(r'<link\s+rel=["\']canonical["\']', document, flags=re.IGNORECASE):
         additions.append(f'    <link rel="canonical" href="{escape_attr(url)}">')
@@ -124,7 +160,17 @@ def ensure_meta(document: str, path: Path) -> str:
         "og:image": SEO_IMAGE,
     }
     for name, value in og_tags.items():
-        if not re.search(rf'<meta\s+property=["\']{re.escape(name)}["\']', document, flags=re.IGNORECASE):
+        pattern = rf'(<meta\s+property=["\']{re.escape(name)}["\']\s+content=["\'])(.*?)(["\'][^>]*>)'
+        match = re.search(pattern, document, flags=re.IGNORECASE | re.DOTALL)
+        if name == "og:description" and match and is_bad_description(clean_text(match.group(2))):
+            document = re.sub(
+                pattern,
+                lambda item: f"{item.group(1)}{escape_attr(value)}{item.group(3)}",
+                document,
+                count=1,
+                flags=re.IGNORECASE | re.DOTALL,
+            )
+        elif not match:
             additions.append(f'    <meta property="{name}" content="{escape_attr(value)}">')
 
     twitter_tags = {
@@ -134,7 +180,17 @@ def ensure_meta(document: str, path: Path) -> str:
         "twitter:image": SEO_IMAGE,
     }
     for name, value in twitter_tags.items():
-        if not re.search(rf'<meta\s+name=["\']{re.escape(name)}["\']', document, flags=re.IGNORECASE):
+        pattern = rf'(<meta\s+name=["\']{re.escape(name)}["\']\s+content=["\'])(.*?)(["\'][^>]*>)'
+        match = re.search(pattern, document, flags=re.IGNORECASE | re.DOTALL)
+        if name == "twitter:description" and match and is_bad_description(clean_text(match.group(2))):
+            document = re.sub(
+                pattern,
+                lambda item: f"{item.group(1)}{escape_attr(value)}{item.group(3)}",
+                document,
+                count=1,
+                flags=re.IGNORECASE | re.DOTALL,
+            )
+        elif not match:
             additions.append(f'    <meta name="{name}" content="{escape_attr(value)}">')
 
     if 'application/ld+json' not in document:
@@ -145,6 +201,18 @@ def ensure_meta(document: str, path: Path) -> str:
             f'"description":"{escape_attr(description)}",'
             f'"isPartOf":{{"@type":"WebSite","name":"{SITE_NAME}","url":"{SITE_URL}"}}'
             "}</script>"
+        )
+    else:
+        document = re.sub(
+            r'("description"\s*:\s*")(.*?)(")',
+            lambda match: (
+                f'{match.group(1)}{escape_attr(description)}{match.group(3)}'
+                if is_bad_description(clean_text(match.group(2)))
+                else match.group(0)
+            ),
+            document,
+            count=1,
+            flags=re.IGNORECASE | re.DOTALL,
         )
 
     if not additions:
@@ -231,6 +299,12 @@ def patch_accessibility(html: str) -> str:
     html = html.replace(
         '<div class="md-dialog" data-md-component="dialog">',
         '<div class="md-dialog" data-md-component="dialog" role="dialog" aria-label="Site message">',
+    )
+    html = re.sub(
+        r'(<a\b(?=[^>]*\btarget=["\']_blank["\'])(?=[^>]*\brel=["\']noopener["\'])(?![^>]*\bnoreferrer\b)[^>]*\brel=["\'])([^"\']*)(["\'])',
+        lambda match: f"{match.group(1)}{match.group(2)} noreferrer{match.group(3)}",
+        html,
+        flags=re.IGNORECASE,
     )
     return html
 

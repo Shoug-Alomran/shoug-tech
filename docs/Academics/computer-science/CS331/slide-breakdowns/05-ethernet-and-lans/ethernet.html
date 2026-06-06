@@ -1,0 +1,2066 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="icon" type="image/png" href="/assets/favicon.png">
+    <link rel="apple-touch-icon" href="/assets/favicon.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ethernet & LANs — Study Guide</title>
+    
+  <script id="cs331-theme-preload">
+    (function () {
+      var keys = ['shoug-theme', 'cs331-study-theme', 'cs331-mindmap-theme', 'cs331-chapter-mindmap-theme'];
+      function normalize(value) {
+        if (value === 'slate' || value === 'dark') return 'dark';
+        if (value === 'default' || value === 'light') return 'light';
+        return null;
+      }
+      function parentTheme() {
+        try {
+          if (window.parent && window.parent !== window && window.parent.document) {
+            var b = window.parent.document.body;
+            if (b && b.classList.contains('shoug-light-mode')) return 'light';
+            var el = window.parent.document.documentElement;
+            return normalize(el.getAttribute('data-md-color-scheme') || el.dataset.theme || el.getAttribute('data-theme'));
+          }
+        } catch (e) {}
+        return null;
+      }
+      function savedTheme() {
+        var shougTheme = normalize(localStorage.getItem('shoug-theme'));
+        if (shougTheme) return shougTheme;
+        for (var i = 0; i < keys.length; i++) {
+          var value = normalize(localStorage.getItem(keys[i]));
+          if (value) return value;
+        }
+        return null;
+      }
+      var systemTheme = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      document.documentElement.dataset.theme = parentTheme() || savedTheme() || systemTheme;
+    })();
+  </script>
+<style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
+
+        :root {
+            --bg: #f4f6f8;
+            --surface: #ffffff;
+            --surface2: #eef1f5;
+            --border: #dde2ea;
+            --text: #18202c;
+            --text-muted: #5a6478;
+            --accent: #1a5fa8;
+            --accent2: #c44b10;
+            --accent3: #2a8a52;
+            --accent4: #7a3aaa;
+            --def-bg: #eef5ff;
+            --def-border: #1a5fa8;
+            --exam-bg: #fff4e6;
+            --exam-border: #d07010;
+            --mnem-bg: #edfaf3;
+            --mnem-border: #2a8a52;
+            --conf-bg: #f7f0ff;
+            --conf-border: #7a3aaa;
+            --tip-bg: #fff0ee;
+            --tip-border: #c44b10;
+            --shadow: 0 2px 18px rgba(26, 95, 168, 0.07);
+            --shadow-lg: 0 8px 36px rgba(26, 95, 168, 0.13);
+            --radius: 14px;
+        }
+
+        [data-theme="dark"] {
+            --bg: #0f1318;
+            --surface: #171d26;
+            --surface2: #1e2530;
+            --border: #2a3344;
+            --text: #e8edf5;
+            --text-muted: #8a96aa;
+            --accent: #4a8fd8;
+            --accent2: #e06830;
+            --accent3: #4aaa72;
+            --accent4: #aa6ad8;
+            --def-bg: #0a1628;
+            --exam-bg: #201408;
+            --mnem-bg: #081a10;
+            --conf-bg: #140a22;
+            --tip-bg: #220c08;
+            --shadow: 0 2px 18px rgba(0, 0, 0, 0.32);
+            --shadow-lg: 0 8px 36px rgba(0, 0, 0, 0.5);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            font-size: 16px;
+            line-height: 1.72;
+            transition: background .3s, color .3s;
+        }
+
+        /* PROGRESS */
+        .prog {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: var(--accent);
+            z-index: 9999;
+            transition: width .1s;
+        }
+
+        /* THEME BTN */
+        .theme-btn {
+            position: fixed;
+            top: 18px;
+            right: 18px;
+            background: var(--surface);
+            border: 2px solid var(--border);
+            border-radius: 40px;
+            padding: 7px 16px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text);
+            z-index: 1000;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all .2s;
+        }
+
+        .theme-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        /* HEADER */
+        header {
+            background: linear-gradient(135deg, #0d2d5a 0%, #1a5fa8 60%, #0d4080 100%);
+            color: #fff;
+            padding: 52px 24px 44px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: -80px;
+            right: -80px;
+            width: 340px;
+            height: 340px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, .05);
+        }
+
+        header::after {
+            content: '';
+            position: absolute;
+            bottom: -60px;
+            left: 15%;
+            width: 220px;
+            height: 220px;
+            border-radius: 50%;
+            background: rgba(196, 75, 16, .15);
+        }
+
+        .hdr {
+            max-width: 920px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .course-tag {
+            font-family: 'DM Mono', monospace;
+            font-size: 11px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: #7ab8f5;
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(1.9rem, 5vw, 3rem);
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 14px;
+        }
+
+        header p {
+            font-size: 1rem;
+            opacity: .72;
+            max-width: 580px;
+        }
+
+        /* NAV */
+        .toc {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            padding: 0 24px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow);
+        }
+
+        .toc-inner {
+            max-width: 920px;
+            margin: 0 auto;
+            display: flex;
+            gap: 4px;
+            overflow-x: auto;
+            padding: 11px 0;
+            scrollbar-width: none;
+        }
+
+        .toc-inner::-webkit-scrollbar {
+            display: none;
+        }
+
+        .toc a {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-decoration: none;
+            white-space: nowrap;
+            padding: 6px 14px;
+            border-radius: 40px;
+            transition: all .2s;
+            letter-spacing: .3px;
+        }
+
+        .toc a:hover {
+            background: var(--accent);
+            color: #fff;
+        }
+
+        /* MAIN */
+        main {
+            max-width: 920px;
+            margin: 0 auto;
+            padding: 48px 24px 90px;
+        }
+
+        /* SECTION */
+        section {
+            margin-bottom: 68px;
+        }
+
+        .sec-hdr {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 28px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .sec-num {
+            font-family: 'DM Mono', monospace;
+            font-size: 11px;
+            background: var(--accent);
+            color: #fff;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-weight: 600;
+        }
+
+        h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(1.35rem, 3vw, 1.75rem);
+            font-weight: 700;
+        }
+
+        h3 {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 1.05rem;
+            font-weight: 700;
+            margin: 24px 0 12px;
+            color: var(--accent);
+        }
+
+        /* CARDS */
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 22px 26px;
+            margin-bottom: 16px;
+            box-shadow: var(--shadow);
+        }
+
+        .card p {
+            margin-bottom: 9px;
+        }
+
+        .card p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* BOXES */
+        .box {
+            border-radius: var(--radius);
+            padding: 18px 22px;
+            margin: 18px 0;
+            border-left: 4px solid;
+        }
+
+        .box-title {
+            font-size: 11px;
+            font-family: 'DM Mono', monospace;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-weight: 700;
+            margin-bottom: 9px;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .def {
+            background: var(--def-bg);
+            border-color: var(--def-border);
+        }
+
+        .def .box-title {
+            color: var(--def-border);
+        }
+
+        .exam {
+            background: var(--exam-bg);
+            border-color: var(--exam-border);
+        }
+
+        .exam .box-title {
+            color: var(--exam-border);
+        }
+
+        .mnem {
+            background: var(--mnem-bg);
+            border-color: var(--mnem-border);
+        }
+
+        .mnem .box-title {
+            color: var(--mnem-border);
+        }
+
+        .conf {
+            background: var(--conf-bg);
+            border-color: var(--conf-border);
+        }
+
+        .conf .box-title {
+            color: var(--conf-border);
+        }
+
+        .tip {
+            background: var(--tip-bg);
+            border-color: var(--tip-border);
+        }
+
+        .tip .box-title {
+            color: var(--tip-border);
+        }
+
+        /* GRIDS */
+        .g2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin: 18px 0;
+        }
+
+        .g3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+            margin: 18px 0;
+        }
+
+        .g4 {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin: 18px 0;
+        }
+
+        @media(max-width:660px) {
+
+            .g2,
+            .g3,
+            .g4 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* TABLE */
+        .twrap {
+            overflow-x: auto;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            margin: 18px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 13px 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+            font-size: .88rem;
+        }
+
+        th {
+            background: var(--text);
+            color: var(--bg);
+            font-weight: 600;
+            font-size: .82rem;
+            letter-spacing: .4px;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:nth-child(even) td {
+            background: var(--surface2);
+        }
+
+        /* FRAME VISUAL */
+        .frame-vis {
+            margin: 22px 0;
+            overflow-x: auto;
+        }
+
+        .frame-row {
+            display: flex;
+            min-width: 680px;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 2px solid var(--border);
+        }
+
+        .f-cell {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 8px;
+            text-align: center;
+            font-size: .75rem;
+            font-family: 'DM Mono', monospace;
+            font-weight: 600;
+            color: #fff;
+            min-width: 60px;
+            flex: 1;
+        }
+
+        .f-cell .bytes {
+            font-size: .65rem;
+            font-weight: 400;
+            opacity: .85;
+            margin-top: 3px;
+        }
+
+        .fc1 {
+            background: #1a5fa8;
+        }
+
+        .fc2 {
+            background: #2a6ec0;
+        }
+
+        .fc3 {
+            background: #c44b10;
+        }
+
+        .fc4 {
+            background: #7a3aaa;
+        }
+
+        .fc5 {
+            background: #2a8a52;
+        }
+
+        .fc6 {
+            background: #1a7a6a;
+        }
+
+        .fc7 {
+            background: #8a5210;
+        }
+
+        /* MAC ADDRESS VISUAL */
+        .mac-vis {
+            display: flex;
+            align-items: stretch;
+            gap: 0;
+            margin: 18px 0;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 2px solid var(--border);
+        }
+
+        .mac-seg {
+            padding: 14px 12px;
+            text-align: center;
+            font-family: 'DM Mono', monospace;
+            font-size: .8rem;
+            font-weight: 700;
+            flex: 1;
+        }
+
+        .mac-vendor {
+            background: #1a5fa8;
+            color: #fff;
+        }
+
+        .mac-device {
+            background: #c44b10;
+            color: #fff;
+        }
+
+        .mac-label {
+            font-size: .65rem;
+            font-weight: 400;
+            display: block;
+            margin-top: 3px;
+            opacity: .85;
+        }
+
+        /* ADDR TYPE CARDS */
+        .addr-card {
+            border-radius: var(--radius);
+            padding: 18px;
+            text-align: center;
+            font-size: .88rem;
+        }
+
+        .addr-u {
+            background: #eef5ff;
+            border: 2px solid #1a5fa8;
+        }
+
+        .addr-m {
+            background: #fff4e6;
+            border: 2px solid #d07010;
+        }
+
+        .addr-b {
+            background: #edfaf3;
+            border: 2px solid #2a8a52;
+        }
+
+        [data-theme="dark"] .addr-u {
+            background: #0a1628;
+            border-color: #4a8fd8;
+        }
+
+        [data-theme="dark"] .addr-m {
+            background: #201408;
+            border-color: #e06830;
+        }
+
+        [data-theme="dark"] .addr-b {
+            background: #081a10;
+            border-color: #4aaa72;
+        }
+
+        .addr-card h4 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .addr-card .badge-addr {
+            display: inline-block;
+            padding: 3px 12px;
+            border-radius: 20px;
+            font-family: 'DM Mono', monospace;
+            font-size: .72rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .bu {
+            background: #1a5fa8;
+            color: #fff;
+        }
+
+        .bm {
+            background: #d07010;
+            color: #fff;
+        }
+
+        .bb {
+            background: #2a8a52;
+            color: #fff;
+        }
+
+        /* GENERATION CARDS */
+        .gen-card {
+            border-radius: var(--radius);
+            padding: 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .gen-card::before {
+            content: '';
+            position: absolute;
+            top: -20px;
+            right: -20px;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            opacity: .1;
+        }
+
+        .gen1 {
+            background: #eef5ff;
+            border: 2px solid #1a5fa8;
+        }
+
+        .gen1::before {
+            background: #1a5fa8;
+        }
+
+        .gen2 {
+            background: #fff4e6;
+            border: 2px solid #d07010;
+        }
+
+        .gen2::before {
+            background: #d07010;
+        }
+
+        .gen3 {
+            background: #edfaf3;
+            border: 2px solid #2a8a52;
+        }
+
+        .gen3::before {
+            background: #2a8a52;
+        }
+
+        .gen4 {
+            background: #f7f0ff;
+            border: 2px solid #7a3aaa;
+        }
+
+        .gen4::before {
+            background: #7a3aaa;
+        }
+
+        [data-theme="dark"] .gen1 {
+            background: #0a1628;
+            border-color: #4a8fd8;
+        }
+
+        [data-theme="dark"] .gen2 {
+            background: #201408;
+            border-color: #e06830;
+        }
+
+        [data-theme="dark"] .gen3 {
+            background: #081a10;
+            border-color: #4aaa72;
+        }
+
+        [data-theme="dark"] .gen4 {
+            background: #140a22;
+            border-color: #aa6ad8;
+        }
+
+        .gen-card .speed {
+            font-size: 1.6rem;
+            font-weight: 900;
+            font-family: 'Playfair Display', serif;
+            margin: 8px 0;
+        }
+
+        .gen-card h4 {
+            font-size: .85rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .gen-card p {
+            font-size: .8rem;
+            color: var(--text-muted);
+        }
+
+        /* DUPLEX COMPARE */
+        .duplex-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin: 18px 0;
+        }
+
+        @media(max-width:540px) {
+            .duplex-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .dup-card {
+            border-radius: var(--radius);
+            padding: 20px;
+            border: 2px solid;
+        }
+
+        .dup-half {
+            border-color: #c44b10;
+            background: #fff0ee;
+        }
+
+        .dup-full {
+            border-color: #1a5fa8;
+            background: #eef5ff;
+        }
+
+        [data-theme="dark"] .dup-half {
+            background: #220c08;
+        }
+
+        [data-theme="dark"] .dup-full {
+            background: #0a1628;
+        }
+
+        .dup-card h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        /* SUMMARY */
+        .summary {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 20px 24px;
+            margin-top: 26px;
+        }
+
+        .sum-title {
+            font-size: 11px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 11px;
+            font-family: 'DM Mono', monospace;
+        }
+
+        .summary ul {
+            list-style: none;
+        }
+
+        .summary ul li {
+            padding: 5px 0 5px 22px;
+            position: relative;
+            font-size: .93rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .summary ul li:last-child {
+            border-bottom: none;
+        }
+
+        .summary ul li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: var(--accent);
+            font-weight: 700;
+        }
+
+        /* UL STYLED */
+        ul.sty {
+            list-style: none;
+            padding: 0;
+        }
+
+        ul.sty li {
+            padding: 6px 0 6px 22px;
+            position: relative;
+            border-bottom: 1px solid var(--border);
+            font-size: .93rem;
+        }
+
+        ul.sty li:last-child {
+            border-bottom: none;
+        }
+
+        ul.sty li::before {
+            content: '◆';
+            position: absolute;
+            left: 0;
+            color: var(--accent);
+            font-size: .58rem;
+            top: 11px;
+        }
+
+        /* QUIZ */
+        .quiz-item {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 24px;
+            margin-bottom: 16px;
+            box-shadow: var(--shadow);
+        }
+
+        .quiz-q {
+            font-weight: 600;
+            margin-bottom: 15px;
+            font-size: .93rem;
+        }
+
+        .quiz-q span {
+            display: inline-block;
+            background: var(--accent);
+            color: #fff;
+            border-radius: 6px;
+            padding: 2px 10px;
+            font-size: 11px;
+            font-family: 'DM Mono', monospace;
+            margin-right: 8px;
+        }
+
+        .quiz-opt {
+            display: block;
+            padding: 10px 16px;
+            margin: 6px 0;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 2px solid var(--border);
+            background: var(--surface);
+            color: var(--text);
+            font-size: .88rem;
+            text-align: left;
+            width: 100%;
+            transition: all .2s;
+            font-family: 'DM Sans', sans-serif;
+        }
+
+        .quiz-opt:hover {
+            border-color: var(--accent);
+            background: var(--surface2);
+        }
+
+        .quiz-opt.correct {
+            background: #e8f8e8;
+            border-color: #2a8a52;
+            color: #155a25;
+        }
+
+        .quiz-opt.wrong {
+            background: #f8e8e8;
+            border-color: #c03030;
+            color: #6a1010;
+        }
+
+        [data-theme="dark"] .quiz-opt.correct {
+            background: #081a10;
+            border-color: #4aaa72;
+            color: #7ada9a;
+        }
+
+        [data-theme="dark"] .quiz-opt.wrong {
+            background: #1e0a0a;
+            border-color: #c03030;
+            color: #e08080;
+        }
+
+        .quiz-explain {
+            display: none;
+            margin-top: 13px;
+            padding: 13px 17px;
+            background: var(--def-bg);
+            border-left: 4px solid var(--def-border);
+            border-radius: 8px;
+            font-size: .88rem;
+        }
+
+        .quiz-explain.show {
+            display: block;
+        }
+
+        /* CHEAT */
+        .cheat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+            gap: 14px;
+            margin-top: 20px;
+        }
+
+        .cheat-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 18px;
+            box-shadow: var(--shadow);
+        }
+
+        .cheat-card h4 {
+            font-size: .78rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--accent);
+            margin-bottom: 12px;
+            font-family: 'DM Mono', monospace;
+        }
+
+        .ci {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: .83rem;
+        }
+
+        .ci:last-child {
+            border-bottom: none;
+        }
+
+        .cv {
+            font-family: 'DM Mono', monospace;
+            font-size: .74rem;
+            background: var(--surface2);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        /* FOOT */
+        footer {
+            background: var(--text);
+            color: var(--bg);
+            text-align: center;
+            padding: 26px 24px;
+            font-size: .84rem;
+        }
+
+        footer strong {
+            color: #7ab8f5;
+        }
+
+        strong {
+            color: var(--accent);
+        }
+
+        code {
+            font-family: 'DM Mono', monospace;
+            background: var(--surface2);
+            padding: 2px 7px;
+            border-radius: 4px;
+            font-size: .87em;
+        }
+    </style>
+    <link rel="stylesheet" href="/styles/light-mode.css">
+    <script src="/javascripts/translation-launch-guard.js"></script>
+
+    <meta name="description" content="A complete study guide covering Ethernet standards, frame format, MAC addressing, sublayers, generations, and full-duplex operation.">
+    <link rel="canonical" href="https://shoug-tech.com/Academics/computer-science/cs331/slide-breakdowns/ethernet.html">
+    <meta property="og:title" content="Ethernet &amp; LANs — Study Guide">
+    <meta property="og:description" content="A complete study guide covering Ethernet standards, frame format, MAC addressing, sublayers, generations, and full-duplex operation.">
+    <meta property="og:url" content="https://shoug-tech.com/Academics/computer-science/cs331/slide-breakdowns/ethernet.html">
+    <meta property="og:type" content="article">
+    <meta property="og:image" content="https://shoug-tech.com/logo.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Ethernet &amp; LANs — Study Guide">
+    <meta name="twitter:description" content="A complete study guide covering Ethernet standards, frame format, MAC addressing, sublayers, generations, and full-duplex operation.">
+    <meta name="twitter:image" content="https://shoug-tech.com/logo.png">
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","url":"https://shoug-tech.com/Academics/computer-science/cs331/slide-breakdowns/ethernet.html","name":"Ethernet &amp; LANs — Study Guide","description":"A complete study guide covering Ethernet standards, frame format, MAC addressing, sublayers, generations, and full-duplex operation.","isPartOf":{"@type":"WebSite","name":"Shoug's Digital Garden","url":"https://shoug-tech.com/"}}</script>
+
+      <link rel="alternate" hreflang="en" href="https://shoug-tech.com/Academics/computer-science/cs331/slide-breakdowns/ethernet.html">
+      <link rel="alternate" hreflang="ar" href="https://shoug-tech.com/ar/Academics/computer-science/cs331/slide-breakdowns/ethernet.html">
+      <link rel="alternate" hreflang="x-default" href="https://shoug-tech.com/Academics/computer-science/cs331/slide-breakdowns/ethernet.html">
+</head>
+
+<body>
+    <div class="prog" id="prog"></div>
+    <button class="theme-btn" onclick="toggleTheme()" id="themeBtn">🌙 Dark Mode</button>
+
+    <header>
+        <div class="hdr">
+            <span class="course-tag">CS331 — Data Communications & Networking</span>
+            <h1>Ethernet &amp;<br>Local Area Networks</h1>
+            <p>A complete study guide covering Ethernet standards, frame format, MAC addressing, sublayers, generations,
+                and full-duplex operation.</p>
+        </div>
+    </header>
+
+    <nav class="toc">
+        <div class="toc-inner">
+            <a href="#s1">What is Ethernet?</a>
+            <a href="#s2">IEEE &amp; Sublayers</a>
+            <a href="#s3">Frame Format</a>
+            <a href="#s4">MAC Address</a>
+            <a href="#s5">Address Types</a>
+            <a href="#s6">Generations</a>
+            <a href="#s7">Full Duplex</a>
+            <a href="#s8">Cheat Sheet</a>
+            <a href="#s9">Practice Q's</a>
+        </div>
+    </nav>
+
+    <main>
+
+        <!-- ===== S1: WHAT IS ETHERNET ===== -->
+        <section id="s1">
+            <div class="sec-hdr">
+                <span class="sec-num">01</span>
+                <h2>What Is Ethernet?</h2>
+            </div>
+
+            <div class="box def">
+                <div class="box-title">📘 Definition</div>
+                <p><strong>Ethernet</strong> is a <strong>LAN Data Link Layer protocol</strong> that is used in
+                    <strong>Bus and Star topologies</strong> and implements <strong>CSMA/CD</strong> (Carrier Sense
+                    Multiple Access with Collision Detection) as the medium access method.</p>
+            </div>
+
+            <div class="card">
+                <p>Ethernet operates at the <strong>Data Link Layer (Layer 2)</strong> of the OSI model. It is the most
+                    widely used LAN technology in the world, connecting devices within a local area network using shared
+                    or switched media.</p>
+            </div>
+
+            <h3>📅 Historical Timeline</h3>
+            <div class="g2">
+                <div class="card" style="border-top:4px solid var(--accent)">
+                    <h3 style="margin-top:0;color:var(--accent)">🕰️ 1980 — Original Ethernet (DIX)</h3>
+                    <p>Developed by three companies:</p>
+                    <ul class="sty">
+                        <li><strong>D</strong>igital Equipment Corporation</li>
+                        <li><strong>I</strong>ntel</li>
+                        <li><strong>X</strong>erox</li>
+                    </ul>
+                    <p style="margin-top:10px;font-size:.85rem;color:var(--text-muted)">Together = <strong>DIX
+                            Ethernet</strong> (the original standard)</p>
+                </div>
+                <div class="card" style="border-top:4px solid var(--accent2)">
+                    <h3 style="margin-top:0;color:var(--accent2)">📋 1985 — IEEE Project 802</h3>
+                    <p>The Computer Society of IEEE started <strong>Project 802</strong> to set standards enabling
+                        intercommunication among equipment from a variety of manufacturers.</p>
+                    <p style="margin-top:8px">Result: <strong>IEEE Ethernet</strong> (the current version)</p>
+                </div>
+            </div>
+
+            <div class="box mnem">
+                <div class="box-title">🧠 Memory Trick — DIX</div>
+                <p><strong>DIX</strong> = <strong>D</strong>igital + <strong>I</strong>ntel + <strong>X</strong>erox</p>
+                <p style="margin-top:6px">Think: "<strong>D</strong>eveloped <strong>I</strong>n
+                    e<strong>X</strong>cellence" — the three founders of original Ethernet in 1980.</p>
+            </div>
+
+            <div class="box exam">
+                <div class="box-title">🎯 Exam Focus</div>
+                <p>Know: Ethernet = LAN Data Link layer protocol, topologies = Bus &amp; Star, access method = CSMA/CD,
+                    developed 1980 by DIX, standardized 1985 by IEEE Project 802.</p>
+            </div>
+
+            <div class="summary">
+                <div class="sum-title">📌 Section Summary</div>
+                <ul>
+                    <li>Ethernet is a Data Link Layer LAN protocol using CSMA/CD</li>
+                    <li>Original Ethernet (1980) created by Digital, Intel, Xerox (DIX)</li>
+                    <li>IEEE Project 802 (1985) standardized it → current IEEE Ethernet</li>
+                    <li>Used in Bus and Star topologies</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- ===== S2: IEEE SUBLAYERS ===== -->
+        <section id="s2">
+            <div class="sec-hdr">
+                <span class="sec-num">02</span>
+                <h2>IEEE Ethernet — Two Sublayers</h2>
+            </div>
+
+            <div class="card">
+                <p>In IEEE 802.3 Ethernet, the <strong>Data Link Layer is split into two sublayers</strong>. This split
+                    allows Ethernet to be standardized in a way that different LAN protocols can share the same upper
+                    layer.</p>
+            </div>
+
+            <div class="g2">
+                <div class="card" style="border-top:4px solid var(--accent2)">
+                    <h3 style="margin-top:0;color:var(--accent2)">🔻 Bottom: MAC Sublayer</h3>
+                    <p><strong>Standard:</strong> IEEE 802.3</p>
+                    <ul class="sty" style="margin-top:10px">
+                        <li>Handles part of <strong>framing</strong></li>
+                        <li>Handles <strong>MAC addressing</strong></li>
+                        <li>Handles <strong>Medium Access Control</strong></li>
+                        <li>Specific implementation for each LAN protocol</li>
+                        <li>Defines <strong>CSMA/CD</strong> for Ethernet LANs</li>
+                        <li>Defines <strong>Token Passing</strong> for Token Ring</li>
+                    </ul>
+                </div>
+                <div class="card" style="border-top:4px solid var(--accent)">
+                    <h3 style="margin-top:0;color:var(--accent)">🔺 Top: LLC Sublayer</h3>
+                    <p><strong>Standard:</strong> IEEE 802.2</p>
+                    <ul class="sty" style="margin-top:10px">
+                        <li>Handles another part of <strong>framing</strong></li>
+                        <li>Provides <strong>error and flow control</strong> if needed</li>
+                        <li>Makes the MAC sublayer <strong>transparent</strong></li>
+                        <li>Allows interconnectivity between <strong>different LAN data link layers</strong></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="box conf">
+                <div class="box-title">⚠️ Common Confusion — MAC vs LLC</div>
+                <p><strong>MAC (802.3):</strong> Bottom sublayer. Technology-specific. Knows whether you are on
+                    Ethernet, Token Ring, etc. Handles the actual media access.</p>
+                <p><strong>LLC (802.2):</strong> Top sublayer. Technology-independent. Provides a uniform interface to
+                    the network layer above. Makes different MACs look the same.</p>
+                <p style="margin-top:8px">Think of it: MAC is the specialist (knows the hardware), LLC is the translator
+                    (hides the differences).</p>
+            </div>
+
+            <div class="box exam">
+                <div class="box-title">🎯 Exam Focus</div>
+                <p>MAC sublayer = IEEE <strong>802.3</strong> | LLC sublayer = IEEE <strong>802.2</strong></p>
+                <p>MAC is at the <strong>bottom</strong>; LLC is at the <strong>top</strong> of the Data Link layer.</p>
+                <p>LLC makes the MAC sublayer transparent, allowing interconnectivity between different LAN types.</p>
+            </div>
+
+            <div class="summary">
+                <div class="sum-title">📌 Section Summary</div>
+                <ul>
+                    <li>IEEE Data Link Layer is split into MAC (bottom) and LLC (top)</li>
+                    <li>MAC = IEEE 802.3: framing, MAC addressing, medium access (CSMA/CD)</li>
+                    <li>LLC = IEEE 802.2: error/flow control, makes MAC transparent</li>
+                    <li>LLC allows different LAN technologies to communicate through a common interface</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- ===== S3: FRAME FORMAT ===== -->
+        <section id="s3">
+            <div class="sec-hdr">
+                <span class="sec-num">03</span>
+                <h2>Ethernet Frame Format</h2>
+            </div>
+
+            <div class="card">
+                <p>There are two Ethernet frame formats: the original <strong>DIX Ethernet</strong> frame and the IEEE
+                    <strong>802.3</strong> frame. They are very similar — the key difference is that DIX uses a
+                    <strong>Type</strong> field while 802.3 uses a <strong>Length</strong> field.</p>
+            </div>
+
+            <h3>📦 IEEE 802.3 Frame Structure (Visual)</h3>
+            <div class="frame-vis">
+                <div class="frame-row">
+                    <div class="f-cell fc1">Preamble<div class="bytes">7 bytes</div>
+                    </div>
+                    <div class="f-cell fc2">SFD<div class="bytes">1 byte</div>
+                    </div>
+                    <div class="f-cell fc3">Dest. Address<div class="bytes">6 bytes</div>
+                    </div>
+                    <div class="f-cell fc4">Source Address<div class="bytes">6 bytes</div>
+                    </div>
+                    <div class="f-cell fc5">Length/Type<div class="bytes">2 bytes</div>
+                    </div>
+                    <div class="f-cell fc6">Data &amp; Padding<div class="bytes">46–1500 bytes</div>
+                    </div>
+                    <div class="f-cell fc7">CRC/FCS<div class="bytes">4 bytes</div>
+                    </div>
+                </div>
+            </div>
+
+            <h3>🔍 Field-by-Field Explanation</h3>
+
+            <div class="twrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Field</th>
+                            <th>Size</th>
+                            <th>Purpose &amp; Details</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Preamble</strong></td>
+                            <td>7 bytes (DIX: 8 bytes)</td>
+                            <td>Pattern <code>10101010</code> repeated. Used to <strong>synchronize</strong> sender and
+                                receiver clock rates before the actual frame arrives.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>SFD</strong><br><small>(Start Frame Delimiter)</small></td>
+                            <td>1 byte</td>
+                            <td>Pattern <code>10101011</code>. Marks the start of the actual frame. Together with
+                                Preamble, forms the <strong>physical layer header</strong>.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Destination Address</strong></td>
+                            <td>6 bytes</td>
+                            <td>MAC address of the receiver. Can be Unicast, Multicast, or Broadcast.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Source Address</strong></td>
+                            <td>6 bytes</td>
+                            <td>MAC address of the sender. <strong>Always Unicast</strong> (a device can only send from
+                                its own address).</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Type (DIX)</strong></td>
+                            <td>2 bytes</td>
+                            <td>Indicates the <strong>Network Layer protocol</strong> in the payload (e.g., IP=0800,
+                                ARP=0806, Novell IPX=8137, AppleTalk=809B). Value starts at <strong>0600h (1536
+                                    decimal)</strong>. Enables multiplexing.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Length (802.3)</strong></td>
+                            <td>2 bytes</td>
+                            <td>Number of bytes in the data field. Maximum = <strong>1500 bytes (05DCh)</strong>.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Data &amp; Padding</strong></td>
+                            <td>46–1500 bytes</td>
+                            <td>Carries data from upper-layer protocols. <strong>Pad</strong>: zeros added if data is
+                                less than 46 bytes to ensure minimum frame size.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>CRC / FCS</strong></td>
+                            <td>4 bytes</td>
+                            <td><strong>Cyclic Redundancy Check (CRC-32)</strong>. Checked at receiver — if error
+                                detected, frame is <strong>discarded</strong>. This is the trailer of the Data Link
+                                frame.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="box exam">
+                <div class="box-title">🎯 Exam Focus — Frame Length Limits</div>
+                <div class="g2" style="margin-top:10px">
+                    <div class="card" style="text-align:center;border-top:4px solid var(--accent3)">
+                        <p style="font-size:.8rem;color:var(--text-muted)">Minimum Frame Length</p>
+                        <p style="font-size:1.8rem;font-weight:900;color:var(--accent3)">64 bytes</p>
+                        <p style="font-size:.8rem;color:var(--text-muted)">(512 bits)</p>
+                    </div>
+                    <div class="card" style="text-align:center;border-top:4px solid var(--accent2)">
+                        <p style="font-size:.8rem;color:var(--text-muted)">Maximum Frame Length</p>
+                        <p style="font-size:1.8rem;font-weight:900;color:var(--accent2)">1518 bytes</p>
+                        <p style="font-size:.8rem;color:var(--text-muted)">(12,144 bits)</p>
+                    </div>
+                </div>
+                <p style="margin-top:12px">Minimum <strong>data (payload)</strong> = <strong>46 bytes</strong> | Maximum
+                    <strong>data</strong> = <strong>1500 bytes</strong></p>
+                <p>Why minimum 46 bytes? To satisfy CSMA/CD collision detection timing requirements. Pad zeros are added
+                    if data is smaller.</p>
+            </div>
+
+            <div class="box conf">
+                <div class="box-title">⚠️ Common Confusion — Type vs Length Field</div>
+                <p><strong>DIX Ethernet:</strong> Uses a <strong>Type</strong> field (value ≥ 0600h = 1536 decimal) to
+                    identify the upper-layer protocol. Enables multiplexing of different network layer protocols.</p>
+                <p><strong>IEEE 802.3:</strong> Uses a <strong>Length</strong> field (value ≤ 1500 = 05DCh) to specify
+                    how many bytes are in the data field.</p>
+                <p>How to tell which is which: If value > 1536 → Type field (DIX). If value ≤ 1500 → Length field
+                    (802.3).</p>
+            </div>
+
+            <div class="box mnem">
+                <div class="box-title">🧠 Memory Trick — Frame Fields</div>
+                <p><strong>"Pretty Students Do Seriously Long Data Calculations"</strong></p>
+                <p>→ Preamble | SFD | Destination | Source | Length/Type | Data | CRC</p>
+            </div>
+
+            <div class="summary">
+                <div class="sum-title">📌 Section Summary</div>
+                <ul>
+                    <li>Preamble (7B) + SFD (1B) = Physical layer header for synchronization</li>
+                    <li>Dest Address (6B) + Source Address (6B) = MAC addresses</li>
+                    <li>Type (DIX, ≥0600h) or Length (802.3, ≤1500) = 2 bytes</li>
+                    <li>Data: 46–1500 bytes; Pad added if &lt;46 bytes</li>
+                    <li>CRC-32 (4B) = error detection trailer; errors → frame discarded</li>
+                    <li>Min frame: 64 bytes (512 bits) | Max frame: 1518 bytes (12,144 bits)</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- ===== S4: MAC ADDRESS ===== -->
+        <section id="s4">
+            <div class="sec-hdr">
+                <span class="sec-num">04</span>
+                <h2>Ethernet (MAC) Address</h2>
+            </div>
+
+            <div class="box def">
+                <div class="box-title">📘 Definition — MAC Address</div>
+                <p>A MAC (Media Access Control) address is a <strong>6-byte (48-bit)</strong> hardware address used to
+                    identify network devices at the Data Link layer. It is <strong>burned into the NIC ROM</strong> at
+                    the time of manufacture.</p>
+            </div>
+
+            <h3>Structure of a MAC Address</h3>
+            <div class="mac-vis">
+                <div class="mac-seg mac-vendor">
+                    <div>Byte 1 — Byte 3</div>
+                    <span class="mac-label">OUI — Vendor/Manufacturer ID<br>First 24 bits (3 bytes)</span>
+                </div>
+                <div class="mac-seg mac-device">
+                    <div>Byte 4 — Byte 6</div>
+                    <span class="mac-label">Device ID — Unique per NIC<br>Last 24 bits (3 bytes)</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <p>Example address: <code>06-01-02-01-2C-4B</code></p>
+                <ul class="sty" style="margin-top:10px">
+                    <li><strong>Size:</strong> 6 bytes = 48 bits</li>
+                    <li><strong>Format:</strong> Flat address — <strong>NOT hierarchical</strong> (unlike IP addresses)
+                    </li>
+                    <li><strong>Storage:</strong> Burned into <strong>NIC ROM</strong> (Read-Only Memory) — permanent
+                    </li>
+                    <li><strong>First 3 bytes:</strong> Identify the <strong>vendor/manufacturer</strong> (OUI —
+                        Organizationally Unique Identifier). Example: Cisco = <code>00-00-0C</code>, Juniper =
+                        <code>00-05-85</code></li>
+                    <li><strong>Last 3 bytes:</strong> Created <strong>uniquely by the company</strong> for each device
+                    </li>
+                    <li><strong>Source address:</strong> ALWAYS Unicast — a device can only send from its own address
+                    </li>
+                </ul>
+            </div>
+
+            <div class="box exam">
+                <div class="box-title">🎯 Exam Focus — Unicast vs Multicast Determination</div>
+                <p>Look at the <strong>least significant bit (LSB) of the first byte</strong> (= the second hexadecimal
+                    digit from the left):</p>
+                <ul class="sty" style="margin-top:10px">
+                    <li>If <strong>LSB = 0</strong> (second hex digit is <strong>even</strong>) →
+                        <strong>Unicast</strong></li>
+                    <li>If <strong>LSB = 1</strong> (second hex digit is <strong>odd</strong>) →
+                        <strong>Multicast</strong></li>
+                    <li>If <strong>all bits = 1</strong> (all Fs: FF:FF:FF:FF:FF:FF) → <strong>Broadcast</strong></li>
+                </ul>
+            </div>
+
+            <h3>📝 Worked Example</h3>
+            <div class="card">
+                <p><strong>Given addresses — determine type:</strong></p>
+                <div class="twrap" style="margin-top:12px">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Address</th>
+                                <th>2nd Hex Digit</th>
+                                <th>Binary</th>
+                                <th>LSB</th>
+                                <th>Type</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>4A:30:10:21:10:1A</code></td>
+                                <td>A</td>
+                                <td>1010</td>
+                                <td>0 (even)</td>
+                                <td>✅ Unicast</td>
+                            </tr>
+                            <tr>
+                                <td><code>47:20:1B:2E:08:EE</code></td>
+                                <td>7</td>
+                                <td>0111</td>
+                                <td>1 (odd)</td>
+                                <td>📢 Multicast</td>
+                            </tr>
+                            <tr>
+                                <td><code>FF:FF:FF:FF:FF:FF</code></td>
+                                <td>F</td>
+                                <td>1111</td>
+                                <td>All 1s</td>
+                                <td>📡 Broadcast</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p style="margin-top:10px;font-size:.87rem;color:var(--text-muted)">Note: Look at the <em>second</em>
+                    hexadecimal character of the whole address (first hex char of byte 1). Even = Unicast; Odd =
+                    Multicast.</p>
+            </div>
+
+            <div class="box mnem">
+                <div class="box-title">🧠 Memory Trick</div>
+                <p><strong>"Even = One, Odd = Many"</strong></p>
+                <p>Even second digit → Unicast (one recipient) | Odd second digit → Multicast (many recipients)</p>
+                <p style="margin-top:8px">Broadcast is a <strong>special case of multicast</strong> where ALL bits are
+                    1s (FF:FF:FF:FF:FF:FF)</p>
+            </div>
+
+            <div class="summary">
+                <div class="sum-title">📌 Section Summary</div>
+                <ul>
+                    <li>MAC address = 6 bytes (48 bits), flat (non-hierarchical), burned in NIC ROM</li>
+                    <li>First 3 bytes = OUI (vendor ID), Last 3 bytes = unique device ID</li>
+                    <li>Unicast: LSB of first byte = 0 (second hex digit even)</li>
+                    <li>Multicast: LSB of first byte = 1 (second hex digit odd)</li>
+                    <li>Broadcast: all bits = 1 → FF:FF:FF:FF:FF:FF (special case of multicast)</li>
+                    <li>Source address is ALWAYS unicast</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- ===== S5: ADDRESS TYPES ===== -->
+        <section id="s5">
+            <div class="sec-hdr">
+                <span class="sec-num">05</span>
+                <h2>Types of Ethernet Destination Addresses</h2>
+            </div>
+
+            <div class="g3">
+                <div class="addr-card addr-u">
+                    <div class="addr-card h4">🎯 Unicast</div>
+                    <div class="badge-addr bu">LSB = 0</div>
+                    <p>Sent to <strong>one specific station</strong> only. The second hex digit from the left is
+                        <strong>even</strong>.</p>
+                    <p style="margin-top:8px;font-size:.82rem;color:var(--text-muted)">Example:
+                        <code>4A:30:10:21:10:1A</code><br>(A = 1010 → LSB=0)</p>
+                </div>
+                <div class="addr-card addr-m">
+                    <div class="addr-card h4">📢 Multicast</div>
+                    <div class="badge-addr bm">LSB = 1</div>
+                    <p>Sent to a <strong>group of stations</strong>. The second hex digit from the left is
+                        <strong>odd</strong>. Used in conferencing applications.</p>
+                    <p style="margin-top:8px;font-size:.82rem;color:var(--text-muted)">Example:
+                        <code>47:20:1B:2E:08:EE</code><br>(7 = 0111 → LSB=1)</p>
+                </div>
+                <div class="addr-card addr-b">
+                    <div class="addr-card h4">📡 Broadcast</div>
+                    <div class="badge-addr bb">All 1s</div>
+                    <p>Sent to <strong>ALL stations</strong> on the network. Special case of multicast where <strong>all
+                            48 bits = 1</strong>.</p>
+                    <p style="margin-top:8px;font-size:.82rem;color:var(--text-muted)">Always:
+                        <code>FF:FF:FF:FF:FF:FF</code></p>
+                </div>
+            </div>
+
+            <div class="box tip">
+                <div class="box-title">💡 Important Rule</div>
+                <p>The <strong>source address is ALWAYS unicast</strong>. A device can only originate frames from its
+                    own unique MAC address — it cannot "pretend" to send from a group address.</p>
+            </div>
+
+            <div class="box exam">
+                <div class="box-title">🎯 Exam Focus — Key Notes</div>
+                <p>The <strong>least significant bit of the first byte</strong> determines Unicast (0) vs Multicast (1).
+                </p>
+                <p>Broadcast = special case of multicast with all bits = 1 (FF:FF:FF:FF:FF:FF).</p>
+                <p>Multicast example use case: <strong>video conferencing</strong> where one station needs to send to a
+                    group simultaneously.</p>
+            </div>
+        </section>
+
+        <!-- ===== S6: GENERATIONS ===== -->
+        <section id="s6">
+            <div class="sec-hdr">
+                <span class="sec-num">06</span>
+                <h2>Ethernet Generations &amp; Standards</h2>
+            </div>
+
+            <div class="card">
+                <p>Ethernet has evolved through <strong>four generations</strong>, each offering higher speeds while
+                    maintaining backward compatibility in addressing and frame format.</p>
+            </div>
+
+            <div class="g4">
+                <div class="gen-card gen1">
+                    <h4>Standard Ethernet</h4>
+                    <div class="speed" style="color:#1a5fa8">10 Mbps</div>
+                    <p>Original. Bus or Star topology.</p>
+                </div>
+                <div class="gen-card gen2">
+                    <h4>Fast Ethernet</h4>
+                    <div class="speed" style="color:#c44b10">100 Mbps</div>
+                    <p>10× faster. Star topology.</p>
+                </div>
+                <div class="gen-card gen3">
+                    <h4>Gigabit Ethernet</h4>
+                    <div class="speed" style="color:#2a8a52">1 Gbps</div>
+                    <p>100× faster. Star topology.</p>
+                </div>
+                <div class="gen-card gen4">
+                    <h4>10 Gigabit Ethernet</h4>
+                    <div class="speed" style="color:#7a3aaa">10 Gbps</div>
+                    <p>Fiber only. Star topology.</p>
+                </div>
+            </div>
+
+            <h3>Standard Ethernet — Naming Convention</h3>
+            <div class="box mnem">
+                <div class="box-title">🧠 How to Read Ethernet Names (e.g., 10Base-T)</div>
+                <p><strong>10</strong> = Speed in Mbps &nbsp;|&nbsp; <strong>Base</strong> = Baseband (digital)
+                    &nbsp;|&nbsp; <strong>T</strong> = Twisted pair cable, <strong>F</strong> = Fiber optic</p>
+                <p style="margin-top:8px">So: <code>100Base-TX</code> = 100 Mbps, Baseband, Twisted pair (category 5
+                    UTP)</p>
+            </div>
+
+            <h3>Detailed Standards Comparison</h3>
+            <div class="twrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Standard</th>
+                            <th>Speed</th>
+                            <th>Topology</th>
+                            <th>Media</th>
+                            <th>Implementations</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Standard Ethernet</strong><br><small>10Base-T / 10Base-F</small></td>
+                            <td>10 Mbps</td>
+                            <td>Star (with switch)</td>
+                            <td>UTP or Fiber</td>
+                            <td>10Base-T (2 pairs UTP), 10Base-F (2 fiber-optic cables)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Fast Ethernet</strong><br><small>100Base-T / 100Base-F</small></td>
+                            <td>100 Mbps</td>
+                            <td>Star</td>
+                            <td>Twisted pair or Fiber</td>
+                            <td>100Base-TX (2w Cat5 UTP), 100Base-FX (2w fiber), 100Base-T4 (4w Cat3 UTP)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Gigabit Ethernet</strong><br><small>1000Base-T / 1000Base-F</small></td>
+                            <td>1000 Mbps (1 Gbps)</td>
+                            <td>Star</td>
+                            <td>Twisted pair or Fiber</td>
+                            <td>1000Base-SX (short fiber), 1000Base-LX (long fiber), 1000Base-CX (STP copper),
+                                1000Base-T (4w UTP)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>10 Gigabit Ethernet</strong><br><small>10GBase-F</small></td>
+                            <td>10,000 Mbps (10 Gbps)</td>
+                            <td>Star</td>
+                            <td><strong>Fiber optic ONLY</strong></td>
+                            <td>Fiber optic cables only — no copper support</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="box exam">
+                <div class="box-title">🎯 Exam Focus — Key Differences Between Generations</div>
+                <ul class="sty">
+                    <li>Standard: 10 Mbps | Fast: 100 Mbps | Gigabit: 1 Gbps | 10G: 10 Gbps</li>
+                    <li>All newer generations use <strong>Star topology</strong></li>
+                    <li><strong>Only 10 Gigabit Ethernet uses fiber optic cable ONLY</strong> (no twisted pair option)
+                    </li>
+                    <li>Fast Ethernet and Gigabit Ethernet support both twisted pair AND fiber</li>
+                </ul>
+            </div>
+
+            <div class="summary">
+                <div class="sum-title">📌 Section Summary</div>
+                <ul>
+                    <li>Four generations: Standard (10M), Fast (100M), Gigabit (1G), 10 Gigabit (10G)</li>
+                    <li>All use Star topology with a switch as central device</li>
+                    <li>10 Gigabit = fiber optic ONLY (no copper/UTP)</li>
+                    <li>Naming: [speed]Base-[media] → T=twisted pair, F=fiber</li>
+                    <li>Fast Ethernet implementations: 100Base-TX, 100Base-FX, 100Base-T4</li>
+                    <li>Gigabit implementations: 1000Base-SX/LX (fiber), 1000Base-CX/T (copper)</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- ===== S7: FULL DUPLEX ===== -->
+        <section id="s7">
+            <div class="sec-hdr">
+                <span class="sec-num">07</span>
+                <h2>Half Duplex vs Full Duplex Operation</h2>
+            </div>
+
+            <div class="duplex-row">
+                <div class="dup-card dup-half">
+                    <h4 style="color:var(--accent2)">📻 Half Duplex (Traditional)</h4>
+                    <ul class="sty">
+                        <li>Station can <strong>either transmit OR receive</strong> — not both simultaneously</li>
+                        <li>Uses <strong>CSMA/CD</strong> to detect collisions</li>
+                        <li>Traditional Ethernet operates this way</li>
+                        <li>Central device: <strong>Hub</strong></li>
+                        <li>Shared collision domain</li>
+                    </ul>
+                </div>
+                <div class="dup-card dup-full">
+                    <h4 style="color:var(--accent)">⚡ Full Duplex (Modern)</h4>
+                    <ul class="sty">
+                        <li>Station can <strong>transmit AND receive simultaneously</strong></li>
+                        <li><strong>Throughput is doubled</strong></li>
+                        <li>No collisions → <strong>CSMA/CD NOT needed</strong></li>
+                        <li>Central device: <strong>Switch</strong> (not hub!)</li>
+                        <li>Each station has its own collision domain</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h3>Full Duplex Throughput Examples</h3>
+            <div class="g2">
+                <div class="card" style="text-align:center;border-top:4px solid var(--accent)">
+                    <p style="color:var(--text-muted);font-size:.85rem">100 Mbps Ethernet in Full-Duplex</p>
+                    <p style="font-size:1.6rem;font-weight:900;color:var(--accent)">→ 200 Mbps</p>
+                    <p style="font-size:.8rem;color:var(--text-muted)">theoretical transfer rate</p>
+                </div>
+                <div class="card" style="text-align:center;border-top:4px solid var(--accent3)">
+                    <p style="color:var(--text-muted);font-size:.85rem">1 Gbps Ethernet in Full-Duplex</p>
+                    <p style="font-size:1.6rem;font-weight:900;color:var(--accent3)">→ 2 Gbps</p>
+                    <p style="font-size:.8rem;color:var(--text-muted)">theoretical transfer rate</p>
+                </div>
+            </div>
+
+            <h3>Requirements to Enable Full-Duplex Mode</h3>
+            <div class="card">
+                <p>To operate in full-duplex mode, <strong>4 changes</strong> must be made:</p>
+                <div class="twrap" style="margin-top:14px">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Requirement</th>
+                                <th>Why?</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>Stations must have <strong>full-duplex NIC cards</strong></td>
+                                <td>To physically support simultaneous send/receive</td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>Must use <strong>two pairs of wire</strong></td>
+                                <td>One pair: host → switch (inbound). Other pair: switch → host (outbound)</td>
+                            </tr>
+                            <tr>
+                                <td>3</td>
+                                <td>Must use a <strong>Switch</strong> as central device (NOT a hub)</td>
+                                <td>Switches create dedicated connections; hubs broadcast to all</td>
+                            </tr>
+                            <tr>
+                                <td>4</td>
+                                <td>Devices must connect <strong>point-to-point (dedicated)</strong> to the switch</td>
+                                <td>Dedicated connection = no shared medium = no collisions</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="box conf">
+                <div class="box-title">⚠️ Common Confusion — Hub vs Switch in Duplex</div>
+                <p><strong>Hub:</strong> Broadcasts all traffic to all ports. Shared medium → collisions can happen →
+                    CSMA/CD needed → half duplex only.</p>
+                <p><strong>Switch:</strong> Creates a dedicated path between sender and receiver. Each port is its own
+                    collision domain → no collisions → CSMA/CD not needed → can operate in full duplex.</p>
+                <p style="margin-top:8px">Full duplex requires a <strong>switch</strong> — never a hub.</p>
+            </div>
+
+            <div class="box exam">
+                <div class="box-title">🎯 Exam Focus</div>
+                <p>In full-duplex: (1) Throughput is <strong>doubled</strong>. (2) <strong>CSMA/CD is NOT
+                        needed</strong> because there are no collisions. (3) Each station constitutes a <strong>separate
+                        collision domain</strong>. (4) Must use a <strong>switch, not a hub</strong>.</p>
+            </div>
+
+            <div class="summary">
+                <div class="sum-title">📌 Section Summary</div>
+                <ul>
+                    <li>Half duplex: transmit OR receive (not both) — uses CSMA/CD, hub-based</li>
+                    <li>Full duplex: transmit AND receive simultaneously — doubles throughput</li>
+                    <li>Full duplex requirements: full-duplex NIC, 2 wire pairs, switch (not hub), point-to-point
+                        connection</li>
+                    <li>In full duplex: no collisions → CSMA/CD algorithm not needed</li>
+                    <li>Each station in switched Ethernet = separate collision domain</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- ===== S8: CHEAT SHEET ===== -->
+        <section id="s8">
+            <div class="sec-hdr">
+                <span class="sec-num">08</span>
+                <h2>⚡ Quick Revision Cheat Sheet</h2>
+            </div>
+
+            <div class="cheat-grid">
+                <div class="cheat-card">
+                    <h4>Ethernet Basics</h4>
+                    <div class="ci"><span>Layer</span><span class="cv">Data Link (2)</span></div>
+                    <div class="ci"><span>Access Method</span><span class="cv">CSMA/CD</span></div>
+                    <div class="ci"><span>Topologies</span><span class="cv">Bus &amp; Star</span></div>
+                    <div class="ci"><span>Created</span><span class="cv">1980 — DIX</span></div>
+                    <div class="ci"><span>Standardized</span><span class="cv">1985 — IEEE 802</span></div>
+                </div>
+
+                <div class="cheat-card">
+                    <h4>Frame Fields &amp; Sizes</h4>
+                    <div class="ci"><span>Preamble</span><span class="cv">7 bytes</span></div>
+                    <div class="ci"><span>SFD</span><span class="cv">1 byte (10101011)</span></div>
+                    <div class="ci"><span>Dest / Src Address</span><span class="cv">6 bytes each</span></div>
+                    <div class="ci"><span>Type / Length</span><span class="cv">2 bytes</span></div>
+                    <div class="ci"><span>Data</span><span class="cv">46–1500 bytes</span></div>
+                    <div class="ci"><span>CRC</span><span class="cv">4 bytes (CRC-32)</span></div>
+                </div>
+
+                <div class="cheat-card">
+                    <h4>Frame Limits</h4>
+                    <div class="ci"><span>Min frame</span><span class="cv">64 bytes / 512 bits</span></div>
+                    <div class="ci"><span>Max frame</span><span class="cv">1518 bytes</span></div>
+                    <div class="ci"><span>Min data</span><span class="cv">46 bytes</span></div>
+                    <div class="ci"><span>Max data</span><span class="cv">1500 bytes</span></div>
+                    <div class="ci"><span>Pad added when</span><span class="cv">data &lt; 46 bytes</span></div>
+                </div>
+
+                <div class="cheat-card">
+                    <h4>MAC Address</h4>
+                    <div class="ci"><span>Size</span><span class="cv">6 bytes / 48 bits</span></div>
+                    <div class="ci"><span>Type</span><span class="cv">Flat (not hierarchical)</span></div>
+                    <div class="ci"><span>Storage</span><span class="cv">NIC ROM (permanent)</span></div>
+                    <div class="ci"><span>First 3 bytes</span><span class="cv">Vendor (OUI)</span></div>
+                    <div class="ci"><span>Last 3 bytes</span><span class="cv">Unique device ID</span></div>
+                </div>
+
+                <div class="cheat-card">
+                    <h4>Address Types</h4>
+                    <div class="ci"><span>Unicast</span><span class="cv">LSB=0, even digit</span></div>
+                    <div class="ci"><span>Multicast</span><span class="cv">LSB=1, odd digit</span></div>
+                    <div class="ci"><span>Broadcast</span><span class="cv">FF:FF:FF:FF:FF:FF</span></div>
+                    <div class="ci"><span>Source address</span><span class="cv">Always Unicast</span></div>
+                </div>
+
+                <div class="cheat-card">
+                    <h4>Ethernet Generations</h4>
+                    <div class="ci"><span>Standard</span><span class="cv">10 Mbps</span></div>
+                    <div class="ci"><span>Fast</span><span class="cv">100 Mbps</span></div>
+                    <div class="ci"><span>Gigabit</span><span class="cv">1 Gbps</span></div>
+                    <div class="ci"><span>10 Gigabit</span><span class="cv">10 Gbps (fiber only)</span></div>
+                </div>
+
+                <div class="cheat-card">
+                    <h4>Sublayers</h4>
+                    <div class="ci"><span>LLC (Top)</span><span class="cv">IEEE 802.2</span></div>
+                    <div class="ci"><span>LLC handles</span><span class="cv">Error/flow control</span></div>
+                    <div class="ci"><span>MAC (Bottom)</span><span class="cv">IEEE 802.3</span></div>
+                    <div class="ci"><span>MAC handles</span><span class="cv">Framing, CSMA/CD</span></div>
+                </div>
+
+                <div class="cheat-card">
+                    <h4>Full Duplex</h4>
+                    <div class="ci"><span>Throughput</span><span class="cv">Doubled</span></div>
+                    <div class="ci"><span>CSMA/CD</span><span class="cv">Not needed</span></div>
+                    <div class="ci"><span>Central device</span><span class="cv">Switch (not hub)</span></div>
+                    <div class="ci"><span>Wire pairs</span><span class="cv">Two pairs</span></div>
+                    <div class="ci"><span>Connection</span><span class="cv">Point-to-point</span></div>
+                </div>
+            </div>
+
+            <div class="box mnem" style="margin-top:24px">
+                <div class="box-title">🧠 All Key Numbers at a Glance</div>
+                <div class="g2">
+                    <ul class="sty">
+                        <li>MAC address = <strong>6 bytes = 48 bits</strong></li>
+                        <li>Preamble = <strong>7 bytes</strong> (pattern 10101010)</li>
+                        <li>SFD = <strong>1 byte</strong> (pattern 10101011)</li>
+                        <li>Type field starts at <strong>0600h = 1536 decimal</strong></li>
+                    </ul>
+                    <ul class="sty">
+                        <li>Max Length field = <strong>1500 bytes = 05DCh</strong></li>
+                        <li>Min payload = <strong>46 bytes</strong> (pad if less)</li>
+                        <li>Max payload = <strong>1500 bytes</strong></li>
+                        <li>Min frame = <strong>64 bytes</strong>, Max = <strong>1518 bytes</strong></li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== S9: QUIZ ===== -->
+        <section id="s9">
+            <div class="sec-hdr">
+                <span class="sec-num">09</span>
+                <h2>🧪 Practice Questions</h2>
+            </div>
+
+            <div class="quiz-item">
+                <div class="quiz-q"><span>Q1</span>Ethernet was originally developed in 1980 by which three companies?
+                </div>
+                <div class="quiz-options">
+                    <button class="quiz-opt" onclick="ans(this,false)">A. Microsoft, Intel, IBM</button>
+                    <button class="quiz-opt" onclick="ans(this,true)">B. Digital, Intel, Xerox (DIX)</button>
+                    <button class="quiz-opt" onclick="ans(this,false)">C. Cisco, Juniper, Motorola</button>
+                    <button class="quiz-opt" onclick="ans(this,false)">D. Apple, Intel, Nokia</button>
+                </div>
+                <div class="quiz-explain">✅ <strong>Correct: B.</strong> The original Ethernet was developed in 1980 by
+                    <strong>Digital</strong>, <strong>Intel</strong>, and <strong>Xerox</strong> — together abbreviated
+                    as <strong>DIX</strong>. IEEE standardized it in 1985 via Project 802.</div>
+            </div>
+
+            <div class="quiz-item">
+                <div class="quiz-q"><span>Q2</span>What is the MAC sublayer standard number, and what access method does
+                    it define for Ethernet LANs?</div>
+                <div class="quiz-options">
+                    <button class="quiz-opt" onclick="ans(this,false)">A. IEEE 802.2 — Token Passing</button>
+                    <button class="quiz-opt" onclick="ans(this,false)">B. IEEE 802.2 — CSMA/CD</button>
+                    <button class="quiz-opt" onclick="ans(this,true)">C. IEEE 802.3 — CSMA/CD</button>
+                    <button class="quiz-opt" onclick="ans(this,false)">D. IEEE 802.3 — Token Passing</button>
+                </div>
+                <div class="quiz-explain">✅ <strong>Correct: C.</strong> The MAC sublayer uses standard <strong>IEEE
+                        802.3</strong> and defines <strong>CSMA/CD</strong> as the access method for Ethernet LANs.
+                    (Token Passing is for Token Ring, not Ethernet.) The LLC sublayer uses IEEE 802.2.</div>
+            </div>
+
+            <div class="quiz-item">
+                <div class="quiz-q"><span>Q3</span>What is the minimum and maximum size of the data field in an Ethernet
+                    frame?</div>
+                <div class="quiz-options">
+                    <button class="quiz-opt" onclick="ans(this,false)">A. Min: 64 bytes, Max: 1518 bytes</button>
+                    <button class="quiz-opt" onclick="ans(this,true)">B. Min: 46 bytes, Max: 1500 bytes</button>
+                    <button class="quiz-opt" onclick="ans(this,false)">C. Min: 0 bytes, Max: 1500 bytes</button>
+                    <button class="quiz-opt" onclick="ans(this,false)">D. Min: 46 bytes, Max: 1518 bytes</button>
+                </div>
+                <div class="quiz-explain">✅ <strong>Correct: B.</strong> The <strong>data field</strong> must be between
+                    <strong>46 and 1500 bytes</strong>. If the data is smaller than 46 bytes, padding (zeros) is added
+                    to meet the minimum. The total frame (including all headers) is 64–1518 bytes.</div>
+            </div>
+
+            <div class="quiz-item">
+                <div class="quiz-q"><span>Q4</span>Determine the type of this destination address:
+                    <code>47:20:1B:2E:08:EE</code></div>
+                <div class="quiz-options">
+                    <button class="quiz-opt" onclick="ans(this,false)">A. Unicast — because the first digit is
+                        4</button>
+                    <button class="quiz-opt" onclick="ans(this,true)">B. Multicast — because the second digit (7) is
+                        odd</button>
+                    <button class="quiz-opt" onclick="ans(this,false)">C. Broadcast — because all digits are the
+                        same</button>
+                    <button class="quiz-opt" onclick="ans(this,false)">D. Unicast — because the address starts with
+                        4</button>
+                </div>
+                <div class="quiz-explain">✅ <strong>Correct: B.</strong> Look at the <strong>second hexadecimal
+                        digit</strong> of the address: 7. Convert 7 to binary: 0111. The <strong>LSB (least significant
+                        bit) = 1</strong>, which means it is <strong>Multicast</strong>. Odd second digit = Multicast.
+                </div>
+            </div>
+
+            <div class="quiz-item">
+                <div class="quiz-q"><span>Q5</span>A MAC address has its first 3 bytes as 00-00-0C. What does this
+                    represent?</div>
+                <div class="quiz-options">
+                    <button class="quiz-opt" onclick="ans(this,false)">A. The device's unique serial number</button>
+                    <button class="quiz-opt" onclick="ans(this,true)">B. The vendor/manufacturer identifier (OUI) — this
+                        is Cisco</button>
+                    <button class="quiz-opt" onclick="ans(this,false)">C. The network address of the device</button>
+                    <button class="quiz-opt" onclick="ans(this,false)">D. The port number used by the device</button>
+                </div>
+                <div class="quiz-explain">✅ <strong>Correct: B.</strong> The <strong>first 3 bytes (24 bits)</strong> of
+                    a MAC address identify the <strong>vendor/manufacturer</strong> (called the OUI — Organizationally
+                    Unique Identifier). <code>00-00-0C</code> belongs to <strong>Cisco</strong>. The last 3 bytes are
+                    the unique device identifier assigned by the manufacturer.</div>
+            </div>
+
+            <div class="quiz-item">
+                <div class="quiz-q"><span>Q6</span>What is the difference between the Type field (DIX) and the Length
+                    field (IEEE 802.3)?</div>
+                <div class="quiz-options">
+                    <button class="quiz-opt" onclick="ans(this,false)">A. Type is 4 bytes; Length is 2 bytes</button>
+                    <button class="quiz-opt" onclick="ans(this,false)">B. They are identical — just different
+                        names</button>
+                    <button class="quiz-opt" onclick="ans(this,true)">C. Type (≥1536) identifies the network layer
+                        protocol; Length (≤1500) specifies data field byte count</button>
+                    <button class="quiz-opt" onclick="ans(this,false)">D. Type indicates frame priority; Length
+                        indicates frame size</button>
+                </div>
+                <div class="quiz-explain">✅ <strong>Correct: C.</strong> In DIX Ethernet, the <strong>Type</strong>
+                    field (value ≥ 0600h = 1536) identifies the upper-layer protocol (e.g., IP=0800, ARP=0806). In IEEE
+                    802.3, the <strong>Length</strong> field (value ≤ 05DCh = 1500) specifies how many bytes are in the
+                    data field. The value distinguishes which format is used.</div>
+            </div>
+
+            <div class="quiz-item">
+                <div class="quiz-q"><span>Q7</span>Which of the following is NOT a requirement for full-duplex Ethernet
+                    operation?</div>
+                <div class="quiz-options">
+                    <button class="quiz-opt" onclick="ans(this,false)">A. Full-duplex NIC cards at attached
+                        stations</button>
+                    <button class="quiz-opt" onclick="ans(this,false)">B. Two pairs of wire (one for each
+                        direction)</button>
+                    <button class="quiz-opt" onclick="ans(this,true)">C. A hub as the central connecting device</button>
+                    <button class="quiz-opt" onclick="ans(this,false)">D. Point-to-point (dedicated) connection to the
+                        switch</button>
+                </div>
+                <div class="quiz-explain">✅ <strong>Correct: C.</strong> Full duplex requires a <strong>switch</strong>
+                    (NOT a hub) as the central device. A hub broadcasts traffic to all ports creating collisions, making
+                    full duplex impossible. A switch creates dedicated connections between ports. All other options
+                    (full-duplex NIC, two wire pairs, point-to-point connection) are indeed requirements.</div>
+            </div>
+
+            <div class="quiz-item">
+                <div class="quiz-q"><span>Q8</span>Which Ethernet generation uses fiber optic cable ONLY (no copper/UTP
+                    support)?</div>
+                <div class="quiz-options">
+                    <button class="quiz-opt" onclick="ans(this,false)">A. Standard Ethernet (10 Mbps)</button>
+                    <button class="quiz-opt" onclick="ans(this,false)">B. Fast Ethernet (100 Mbps)</button>
+                    <button class="quiz-opt" onclick="ans(this,false)">C. Gigabit Ethernet (1 Gbps)</button>
+                    <button class="quiz-opt" onclick="ans(this,true)">D. 10 Gigabit Ethernet (10 Gbps)</button>
+                </div>
+                <div class="quiz-explain">✅ <strong>Correct: D.</strong> <strong>10 Gigabit Ethernet</strong> uses
+                    <strong>fiber optic cable only</strong>. Standard Ethernet, Fast Ethernet, and Gigabit Ethernet all
+                    support both twisted pair (copper) and fiber optic. The very high speed of 10 Gbps requires the
+                    bandwidth of fiber and cannot reliably run over copper at that distance.</div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <footer>
+        <p>Study Guide · Data Communications &amp; Networking · Local Area Networks — Ethernet</p>
+        <p style="margin-top:8px">Prepared for <strong>Shoug Alomran</strong> · CS331</p>
+    </footer>
+
+    <script>
+        function toggleTheme() {
+            const h = document.documentElement;
+            const b = document.getElementById('themeBtn');
+            if (h.getAttribute('data-theme') === 'dark') {
+                h.removeAttribute('data-theme');
+            try { localStorage.setItem('shoug-theme', 'light'); } catch(_e) {}
+                b.textContent = '🌙 Dark Mode';
+            } else {
+                h.setAttribute('data-theme', 'dark');
+            try { localStorage.setItem('shoug-theme', document.documentElement.getAttribute('data-theme')); } catch(_e) {}
+                b.textContent = '☀️ Light Mode';
+            }
+        }
+        function ans(btn, correct) {
+            const item = btn.closest('.quiz-item');
+            const opts = item.querySelectorAll('.quiz-opt');
+            const ex = item.querySelector('.quiz-explain');
+            opts.forEach(o => { o.disabled = true; o.style.cursor = 'default'; });
+            btn.classList.add(correct ? 'correct' : 'wrong');
+            if (!correct) {
+                opts.forEach(o => {
+                    if (o.getAttribute('onclick') && o.getAttribute('onclick').includes('true'))
+                        o.classList.add('correct');
+                });
+            }
+            ex.classList.add('show');
+        }
+        window.addEventListener('scroll', () => {
+            const st = window.scrollY;
+            const dh = document.documentElement.scrollHeight - window.innerHeight;
+            document.getElementById('prog').style.width = (st / dh * 100) + '%';
+        });
+        document.querySelectorAll('a[href^="#"]').forEach(a => {
+            a.addEventListener('click', e => {
+                e.preventDefault();
+                const t = document.querySelector(a.getAttribute('href'));
+                if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        });
+    </script>
+
+  <script id="cs331-theme-sync">
+    (function () {
+      var root = document.documentElement;
+      var keys = ['shoug-theme', 'cs331-study-theme', 'cs331-mindmap-theme', 'cs331-chapter-mindmap-theme'];
+      function normalize(value) {
+        if (value === 'slate' || value === 'dark') return 'dark';
+        if (value === 'default' || value === 'light') return 'light';
+        return null;
+      }
+      function parentTheme() {
+        try {
+          if (window.parent && window.parent !== window && window.parent.document) {
+            var b = window.parent.document.body;
+            if (b && b.classList.contains('shoug-light-mode')) return 'light';
+            var el = window.parent.document.documentElement;
+            return normalize(el.getAttribute('data-md-color-scheme') || el.dataset.theme || el.getAttribute('data-theme'));
+          }
+        } catch (e) {}
+        return null;
+      }
+      function savedTheme() {
+        var shougTheme = normalize(localStorage.getItem('shoug-theme'));
+        if (shougTheme) return shougTheme;
+        for (var i = 0; i < keys.length; i++) {
+          var value = normalize(localStorage.getItem(keys[i]));
+          if (value) return value;
+        }
+        return null;
+      }
+      function buttonLabel(button, theme) {
+        if (!button) return;
+        if (button.id === 'themeBtn') {
+          button.textContent = theme === 'dark' ? '☀️ Light Mode' : '🌙 Dark Mode';
+        } else {
+          button.textContent = theme === 'dark' ? 'Light mode' : 'Dark mode';
+        }
+      }
+      function updateButtons(theme) {
+        document.querySelectorAll('#themeToggle, #themeBtn').forEach(function (button) {
+          buttonLabel(button, theme);
+        });
+      }
+      function applyTheme(theme, persist) {
+        theme = normalize(theme) || 'dark';
+        root.dataset.theme = theme;
+        root.setAttribute('data-theme', theme);
+        if (persist) keys.forEach(function (key) { localStorage.setItem(key, theme); });
+        updateButtons(theme);
+      }
+      function currentTheme() {
+        return normalize(root.dataset.theme || root.getAttribute('data-theme')) || 'dark';
+      }
+      applyTheme(parentTheme() || savedTheme() || currentTheme(), false);
+      document.querySelectorAll('#themeToggle, #themeBtn').forEach(function (button) {
+        button.addEventListener('click', function () {
+          window.setTimeout(function () { applyTheme(currentTheme(), true); }, 0);
+        });
+      });
+      try {
+        if (window.parent && window.parent !== window && window.parent.document) {
+          var parentRoot = window.parent.document.documentElement;
+          new MutationObserver(function () {
+            var theme = parentTheme();
+            if (theme) applyTheme(theme, false);
+          }).observe(parentRoot, { attributes: true, attributeFilter: ['data-md-color-scheme', 'data-theme'] });
+          var parentBodyEl = window.parent.document.body;
+          if (parentBodyEl) {
+            new MutationObserver(function () {
+              var theme = parentTheme();
+              if (theme) applyTheme(theme, false);
+            }).observe(parentBodyEl, { attributes: true, attributeFilter: ['class'] });
+          }
+        }
+      } catch (e) {}
+    })();
+  </script>
+</body>
+
+</html>

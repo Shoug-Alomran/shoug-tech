@@ -1,0 +1,4196 @@
+<html lang="en" vid="0"><head vid="1">
+    <script>if(localStorage.getItem('shoug-theme')==='light'){document.documentElement.style.background='#f6f4fb';document.documentElement.style.color='#16111f';}</script>
+<link rel="icon" type="image/png" href="/assets/favicon.png">
+    <link rel="apple-touch-icon" href="/assets/favicon.png">
+    <meta charset="UTF-8" vid="2">
+<meta name="viewport" content="width=device-width, initial-scale=1.0" vid="3">
+<title>Cybersecurity Crash Course | LABS &amp; BANDIT NOTES</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" vid="5">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" vid="6">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500;700;800&amp;family=Rajdhani:wght@500;600;700&amp;display=swap" rel="stylesheet" vid="7">
+<style vid="8">
+    :root {
+        
+        --bg-void: #05020a;
+        --bg-surface: #0a0514;
+        --bg-elevated: #110822;
+        --brand-purple: #b829ea;
+        --alert-red: #ff2a4b;
+        
+        
+        --text-primary: #e0e0e0;
+        --text-dimmed: #7a7585;
+        --border-hard: #2a1b3d; 
+        --border-accent: rgba(184, 41, 234, 0.4);
+        
+        --font-mono: 'JetBrains Mono', monospace;
+        --font-display: 'Rajdhani', sans-serif;
+        --font-sans: 'Inter', sans-serif;
+
+        --header-height: 56px;
+    }
+
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    body {
+        background-color: var(--bg-void);
+        color: var(--text-primary);
+        font-family: var(--font-mono);
+        font-size: 13px;
+        line-height: 1.5;
+        height: 100vh;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+    }
+
+    
+    body::before {
+        content: "";
+        position: fixed;
+        top: 0; left: 0; width: 100vw; height: 100vh;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.04'/%3E%3C/svg%3E");
+        pointer-events: none;
+        z-index: 9999;
+    }
+
+    
+    .text-purple { color: var(--brand-purple); }
+    .text-dimmed { color: var(--text-dimmed); }
+    .uppercase { text-transform: uppercase; }
+
+    
+    .global-header {
+        height: var(--header-height);
+        background-color: var(--bg-surface);
+        border-bottom: 1px solid var(--border-hard);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 24px;
+        flex-shrink: 0;
+        z-index: 10;
+    }
+
+    .header-logo {
+        font-family: var(--font-display);
+        font-size: 20px;
+        font-weight: 700;
+        letter-spacing: 2px;
+        color: var(--text-primary);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    
+    .header-logo::before {
+        content: "[";
+        color: var(--brand-purple);
+        font-family: var(--font-mono);
+    }
+    .header-logo::after {
+        content: "]";
+        color: var(--brand-purple);
+        font-family: var(--font-mono);
+    }
+
+    .header-nav {
+        display: flex;
+        gap: 32px;
+    }
+
+    .header-nav a {
+        color: var(--text-dimmed);
+        text-decoration: none;
+        font-weight: 500;
+        letter-spacing: 1px;
+        transition: color 0.2s;
+        text-transform: uppercase;
+        font-size: 12px;
+    }
+
+    .header-nav a:hover {
+        color: var(--text-primary);
+    }
+
+    .header-nav a.active {
+        color: var(--brand-purple);
+        position: relative;
+    }
+    
+    
+    .header-nav a.active::after {
+        content: '';
+        position: absolute;
+        bottom: -6px;
+        left: 0;
+        width: 100%;
+        height: 1px;
+        background-color: var(--brand-purple);
+    }
+
+    .header-right {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+    }
+
+    .icon-cluster {
+        display: flex;
+        gap: 12px;
+        color: var(--text-dimmed);
+    }
+    
+    .icon-cluster span {
+        cursor: pointer;
+    }
+
+    .btn-contact {
+        background: transparent;
+        color: var(--alert-red);
+        border: 1px solid var(--alert-red);
+        padding: 6px 16px;
+        font-family: var(--font-mono);
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        cursor: pointer;
+        border-radius: 0;
+        transition: all 0.2s;
+        letter-spacing: 1px;
+    }
+
+    .btn-contact:hover {
+        background: rgba(255, 42, 75, 0.1);
+        box-shadow: 0 0 8px rgba(255, 42, 75, 0.3);
+    }
+
+    
+    .layout-wrapper {
+        display: flex;
+        flex: 1;
+        overflow: hidden;
+    }
+
+    
+    .sidebar {
+        width: 280px;
+        background-color: var(--bg-surface);
+        border-right: 1px solid var(--border-hard);
+        display: flex;
+        flex-direction: column;
+        flex-shrink: 0;
+        overflow-y: auto;
+    }
+    
+    
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg-void); border-left: 1px solid var(--border-hard); }
+    ::-webkit-scrollbar-thumb { background: var(--border-hard); }
+    ::-webkit-scrollbar-thumb:hover { background: var(--text-dimmed); }
+
+    .sidebar-header {
+        padding: 16px 20px;
+        border-bottom: 1px solid var(--border-hard);
+        font-size: 10px;
+        color: var(--text-dimmed);
+        letter-spacing: 2px;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .file-tree {
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .tree-node {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        color: var(--text-dimmed);
+    }
+
+    .tree-node:hover {
+        color: var(--text-primary);
+    }
+
+    .tree-node.active {
+        color: var(--brand-purple);
+        font-weight: 700;
+    }
+
+    .tree-indent {
+        color: var(--border-hard);
+        font-family: monospace;
+    }
+
+    .tree-icon {
+        font-size: 14px;
+        width: 14px;
+        text-align: center;
+    }
+
+    
+    .content-area {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        background-color: var(--bg-void);
+        overflow: hidden;
+    }
+
+    
+    .top-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 24px;
+        border-bottom: 1px solid var(--border-hard);
+        background-color: var(--bg-surface);
+        flex-shrink: 0;
+    }
+
+    .breadcrumb {
+        color: var(--text-dimmed);
+        display: flex;
+        gap: 8px;
+        font-size: 12px;
+    }
+    
+    .breadcrumb span.separator {
+        color: var(--border-hard);
+    }
+    
+    .breadcrumb span.current {
+        color: var(--text-primary);
+    }
+
+    .sys-time {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--brand-purple);
+        font-weight: 700;
+        border: 1px solid var(--border-accent);
+        padding: 4px 12px;
+        background: rgba(184, 41, 234, 0.05);
+        letter-spacing: 1px;
+    }
+    
+    
+    .sys-time .blink {
+        animation: blink 1s step-start infinite;
+    }
+    @keyframes blink { 50% { opacity: 0; } }
+
+    
+    .page-header {
+        padding: 32px 48px;
+        background-color: var(--bg-void);
+        border-bottom: 1px solid var(--border-hard);
+        flex-shrink: 0;
+        position: relative;
+    }
+    
+    
+    .page-header::before, .page-header::after {
+        content: "+++++";
+        position: absolute;
+        color: var(--border-hard);
+        font-size: 10px;
+        letter-spacing: 4px;
+    }
+    .page-header::before { top: 12px; right: 24px; }
+    .page-header::after { bottom: 12px; left: 24px; }
+
+    .ch-label {
+        font-size: 11px;
+        color: var(--brand-purple);
+        margin-bottom: 12px;
+        letter-spacing: 2px;
+        display: inline-block;
+        border-bottom: 1px solid var(--border-accent);
+        padding-bottom: 4px;
+    }
+
+    .ch-title {
+        font-family: var(--font-display);
+        font-size: 42px;
+        font-weight: 700;
+        color: #fff;
+        line-height: 1.1;
+        margin-bottom: 24px;
+        letter-spacing: 1px;
+        
+        text-shadow: 2px 2px 0px rgba(0,0,0,0.5);
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 16px;
+    }
+
+    .btn {
+        background: transparent;
+        font-family: var(--font-mono);
+        font-size: 12px;
+        font-weight: 700;
+        padding: 10px 20px;
+        text-transform: uppercase;
+        cursor: pointer;
+        border-radius: 0; 
+        letter-spacing: 1px;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .btn-primary {
+        color: var(--brand-purple);
+        border: 1px solid var(--brand-purple);
+        box-shadow: inset 0 0 0 1px transparent;
+    }
+
+    .btn-primary:hover {
+        background: rgba(184, 41, 234, 0.1);
+        box-shadow: 0 0 12px rgba(184, 41, 234, 0.2);
+    }
+
+    .btn-secondary {
+        color: var(--text-dimmed);
+        border: 1px solid var(--text-dimmed);
+    }
+
+    .btn-secondary:hover {
+        color: var(--text-primary);
+        border-color: var(--text-primary);
+        background: rgba(255,255,255,0.05);
+    }
+
+    
+    .nav-strip {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 24px;
+        background-color: var(--bg-surface);
+        border-bottom: 1px solid var(--border-hard);
+        font-size: 11px;
+        letter-spacing: 1px;
+        flex-shrink: 0;
+    }
+
+    .nav-link {
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: opacity 0.2s;
+    }
+
+    .nav-link:hover { opacity: 0.8; }
+    
+    .nav-link.prev { color: var(--text-dimmed); }
+    .nav-link.next { color: var(--brand-purple); font-weight: 700; }
+
+    
+    .embed-area-wrapper {
+        flex: 1;
+        padding: 24px 48px 48px 48px; 
+        display: flex;
+        flex-direction: column;
+    }
+
+    .embed-container {
+        flex: 1;
+        width: 100%;
+        border: 1px solid var(--border-hard);
+        background-color: var(--bg-elevated);
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        
+        box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+    }
+    
+    
+    .embed-container::before, .embed-container::after {
+        content: "";
+        position: absolute;
+        width: 10px; height: 10px;
+        border: 1px solid var(--border-accent);
+        pointer-events: none;
+    }
+    .embed-container::before { top: -1px; left: -1px; border-right: none; border-bottom: none; }
+    .embed-container::after { bottom: -1px; right: -1px; border-left: none; border-top: none; }
+
+    .embed-fallback {
+        color: var(--text-dimmed);
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 16px;
+    }
+
+    .fallback-icon {
+        color: var(--border-hard);
+        font-size: 24px;
+        margin-bottom: 8px;
+    }
+
+    .fallback-text {
+        letter-spacing: 1px;
+        border: 1px dashed var(--border-hard);
+        padding: 16px 32px;
+        background: rgba(0,0,0,0.2);
+    }
+    
+    .fallback-text span {
+        color: var(--alert-red);
+    }
+
+
+        .content-area {
+            overflow: visible !important;
+            min-width: 0;
+        }
+
+        .embed-area-wrapper {
+            flex: initial !important;
+            width: 100%;
+            overflow: visible !important;
+        }
+
+        .page-content {
+            flex: initial !important;
+            min-height: auto !important;
+            overflow: visible !important;
+            padding-bottom: clamp(48px, 7vw, 112px);
+        }
+
+        .embed-container {
+            flex: initial !important;
+            display: block !important;
+            align-items: stretch !important;
+            justify-content: flex-start !important;
+            min-height: min(760px, calc(100vh - 120px)) !important;
+            height: auto !important;
+            overflow: visible !important;
+        }
+
+        .embed-frame {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            min-height: min(860px, calc(100vh - 96px));
+            height: min(1100px, max(82vh, 760px));
+            border: 0;
+            background: #fff;
+            display: block;
+        }
+
+        .rendered-content iframe,
+        .rendered-content video {
+            position: relative;
+            z-index: 2;
+            display: block;
+            width: 100%;
+            max-width: 100%;
+        }
+
+        .rendered-content iframe {
+            min-height: min(860px, calc(100vh - 96px));
+            height: min(1100px, max(82vh, 760px));
+            border: 0;
+            background: #fff;
+        }
+
+        .rendered-content video {
+            height: auto;
+            background: #050508;
+        }
+
+        .action-buttons a.btn {
+            text-decoration: none;
+        }
+
+        .rendered-content {
+            position: relative;
+            z-index: 2;
+            min-height: auto;
+            max-height: none;
+            padding: clamp(24px, 4vw, 56px);
+            background: rgba(5, 2, 10, 0.72);
+            border: 1px solid rgba(184, 41, 234, 0.26);
+            color: var(--text-main);
+            font-family: var(--font-sans);
+            line-height: 1.75;
+            overflow: visible;
+        }
+
+        .rendered-content h1,
+        .rendered-content h2,
+        .rendered-content h3 {
+            margin: 1.35em 0 0.65em;
+            color: var(--text-main);
+            font-family: var(--font-display);
+            letter-spacing: 0;
+        }
+
+        .rendered-content h1:first-child,
+        .rendered-content h2:first-child,
+        .rendered-content h3:first-child {
+            margin-top: 0;
+        }
+
+        .rendered-content p,
+        .rendered-content ul,
+        .rendered-content ol,
+        .rendered-content table,
+        .rendered-content blockquote {
+            margin: 0 0 1rem;
+        }
+
+        .rendered-content a {
+            color: var(--brand-purple);
+            text-decoration: underline;
+            text-underline-offset: 4px;
+        }
+
+        .rendered-content code,
+        .rendered-content pre {
+            font-family: var(--font-mono);
+        }
+
+        .rendered-content pre {
+            overflow: auto;
+            padding: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            background: rgba(0, 0, 0, 0.32);
+        }
+
+        .legacy-embed-placeholder {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid rgba(184, 41, 234, 0.36);
+            color: var(--text-dimmed);
+            font-family: var(--font-mono);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+    
+        body {
+            padding-top: 68px;
+        }
+
+        body:has(.app-layout),
+        body:has(.layout-wrapper),
+        body:has(.sys-layout),
+        body:has(.page-shell) {
+            height: auto !important;
+            min-height: 100vh;
+            display: block !important;
+            overflow-y: auto !important;
+        }
+
+        body:has(.app-layout) .app-layout,
+        body:has(.layout-wrapper) .layout-wrapper {
+            min-height: calc(100vh - 68px);
+            height: auto !important;
+            overflow: visible !important;
+            align-items: stretch;
+        }
+
+        body:has(.app-layout) .main-wrapper,
+        body:has(.layout-wrapper) .main-wrapper {
+            min-height: calc(100vh - 68px);
+            overflow: visible !important;
+        }
+
+        body:has(.app-layout) .sys-main,
+        body:has(.layout-wrapper) .sys-main {
+            min-height: calc(100vh - 68px);
+            overflow: visible !important;
+        }
+
+        body:has(.app-layout) .content-scroll-area,
+        body:has(.layout-wrapper) .content-scroll-area {
+            flex: initial !important;
+            overflow: visible !important;
+        }
+
+        body:has(.layout-wrapper) .content-area,
+        body:has(.app-layout) .content-area,
+        body:has(.app-layout) .page-content,
+        body:has(.layout-wrapper) .page-content,
+        body:has(.layout-wrapper) .embed-area-wrapper,
+        body:has(.app-layout) .embed-container {
+            overflow: visible !important;
+            min-height: auto !important;
+        }
+
+        body:has(.layout-wrapper) .content-area {
+            flex: 1 1 auto;
+            min-width: 0;
+        }
+
+        body:has(.layout-wrapper) .embed-area-wrapper {
+            flex: initial !important;
+        }
+
+        body:has(.app-layout) .sidebar,
+        body:has(.layout-wrapper) .sidebar {
+            position: sticky;
+            top: 68px;
+            height: calc(100vh - 68px) !important;
+            align-self: flex-start;
+        }
+
+        body:has(.app-layout) .shoug-site-footer,
+        body:has(.layout-wrapper) .shoug-site-footer {
+            margin-top: 0;
+        }
+
+        .shoug-site-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 68px;
+            z-index: 10000;
+            background: rgba(5, 5, 8, 0.92);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+        }
+
+        .shoug-header-inner {
+            width: min(1440px, calc(100% - 48px));
+            height: 100%;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 28px;
+        }
+
+        .shoug-header-logo {
+            color: #f8f7fb;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.86rem;
+            font-weight: 800;
+            letter-spacing: 0.16em;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .shoug-header-nav {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: clamp(14px, 2vw, 30px);
+            flex: 1;
+        }
+
+        .shoug-header-nav a {
+            color: #8f8b9a;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.13em;
+            text-transform: uppercase;
+            text-decoration: none;
+            transition: color 160ms ease, text-shadow 160ms ease;
+        }
+
+        .shoug-header-nav a:hover,
+        .shoug-header-nav a.active {
+            color: #b829ea;
+            text-shadow: 0 0 14px rgba(184, 41, 234, 0.35);
+        }
+
+        .shoug-header-actions {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .breadcrumb-link {
+            color: var(--text-dim, #8b7ea8);
+            text-decoration: none;
+        }
+        .breadcrumb-link:hover {
+            color: var(--brand-purple, #b829ea);
+        }
+        .shoug-icon-btn:focus,
+        .shoug-lang-btn:focus,
+        .shoug-theme-btn:focus {
+            outline: none;
+        }
+        .shoug-icon-btn,
+        .shoug-lang-btn,
+        .shoug-theme-btn {
+            width: 34px;
+            height: 34px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            background: rgba(255, 255, 255, 0.02);
+            color: #f8f7fb;
+            text-decoration: none;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.64rem;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            cursor: pointer;
+            transition: border-color 160ms ease, color 160ms ease, background 160ms ease;
+        }
+
+        .shoug-icon-btn:hover,
+        .shoug-lang-btn:hover,
+        .shoug-theme-btn:hover {
+            color: #b829ea;
+            border-color: rgba(184, 41, 234, 0.55);
+            background: rgba(184, 41, 234, 0.08);
+        }
+
+        .shoug-icon-btn svg,
+        .shoug-theme-btn svg {
+            width: 15px;
+            height: 15px;
+            display: block;
+        }
+
+        .shoug-contact-btn {
+            height: 34px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 16px;
+            border: 1px solid #ff2a4b;
+            background: transparent;
+            color: #ff2a4b;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.68rem;
+            font-weight: 800;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            text-decoration: none;
+            transition: background 160ms ease, color 160ms ease, box-shadow 160ms ease;
+        }
+
+        .shoug-contact-btn:hover {
+            background: #ff2a4b;
+            color: #050508;
+            box-shadow: 0 0 24px rgba(255, 42, 75, 0.28);
+        }
+
+        .shoug-site-footer {
+            position: relative;
+            z-index: 5;
+            width: 100%;
+            display: block !important;
+            box-sizing: border-box;
+            margin-top: 80px;
+            padding: 64px clamp(28px, 5vw, 96px) 52px;
+            background: #050508;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            color: #f8f7fb;
+            font-family: Inter, sans-serif;
+        }
+
+        .shoug-footer-grid {
+            width: min(1440px, 100%);
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: minmax(260px, 1.5fr) repeat(3, minmax(150px, 0.8fr));
+            gap: clamp(32px, 5vw, 92px);
+            align-items: start;
+        }
+
+        .shoug-footer-label {
+            margin-bottom: 16px;
+            color: #ff2a4b;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.68rem;
+            font-weight: 800;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+        }
+
+        .shoug-footer-brand {
+            color: #f8f7fb;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.92rem;
+            font-weight: 800;
+            letter-spacing: 0.18em;
+            text-decoration: none;
+        }
+
+        .shoug-footer-text,
+        .shoug-footer-link,
+        .shoug-footer-meta {
+            display: block;
+            color: #8f8b9a;
+            font-family: Inter, sans-serif;
+            font-size: 0.86rem;
+            line-height: 1.85;
+            text-decoration: none;
+            max-width: 34ch;
+        }
+
+        .shoug-footer-link {
+            transition: color 160ms ease;
+            width: fit-content;
+        }
+
+        .shoug-footer-link:hover {
+            color: #b829ea;
+        }
+
+        .shoug-footer-meta {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.72rem;
+        }
+
+        .tree-course-link,
+        a.tree-file,
+        a.tree-row,
+        .sys-sidebar a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .tree-course-link {
+            display: inline-block;
+            width: 100%;
+        }
+
+        .academic-sidebar {
+            width: 280px;
+            flex: 0 0 280px;
+            display: flex !important;
+            flex-direction: column;
+            background: var(--bg-surface, #0a0514);
+            border-right: 1px solid var(--border-dim, rgba(184, 41, 234, 0.24));
+            color: var(--text-dim, #8f8b9a);
+            font-family: 'JetBrains Mono', monospace;
+            z-index: 20;
+            transition: width 180ms ease, flex-basis 180ms ease;
+        }
+
+        .academic-sidebar .sidebar-header {
+            min-height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            padding: 0 20px;
+            border-bottom: 1px solid var(--border-dim, rgba(184, 41, 234, 0.24));
+            color: var(--text-dim, #8f8b9a);
+            font-size: 0.66rem;
+            font-weight: 700;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+        }
+
+        .academic-sidebar .file-tree {
+            display: block !important;
+            flex: 1 1 auto;
+            padding: 28px 0 34px;
+            overflow-y: auto;
+            max-height: calc(100vh - 124px);
+        }
+
+        .sidebar-collapse-button {
+            appearance: none;
+            width: 30px;
+            height: 30px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(184, 41, 234, 0.34);
+            background: rgba(184, 41, 234, 0.06);
+            color: var(--brand-purple, #b829ea);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.78rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: background 160ms ease, border-color 160ms ease, color 160ms ease;
+        }
+
+        .sidebar-collapse-button:hover {
+            border-color: var(--brand-purple, #b829ea);
+            background: rgba(184, 41, 234, 0.14);
+            color: var(--text-main, #f8f7fb);
+        }
+
+        body.sidebar-collapsed .academic-sidebar {
+            width: 58px;
+            flex-basis: 58px;
+            overflow: hidden;
+        }
+
+        body.sidebar-collapsed .academic-sidebar .sidebar-title,
+        body.sidebar-collapsed .academic-sidebar .file-tree {
+            display: none !important;
+        }
+
+        body.sidebar-collapsed .academic-sidebar .sidebar-header {
+            justify-content: center;
+            padding-inline: 0;
+        }
+
+        body.sidebar-collapsed .sidebar-collapse-button::before {
+            content: ">";
+        }
+
+        body.sidebar-collapsed .sidebar-collapse-button .collapse-icon {
+            display: none;
+        }
+
+        .academic-sidebar ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .academic-sidebar .tree-item {
+            min-height: 28px;
+            display: flex;
+            align-items: center;
+            padding: 4px 20px;
+            color: var(--text-dim, #8f8b9a);
+            font-size: 0.76rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            line-height: 1.45;
+        }
+
+        .academic-sidebar .root-dir {
+            color: var(--text-main, #f8f7fb);
+            margin-bottom: 12px;
+        }
+
+        .academic-sidebar .tree-course-link,
+        .academic-sidebar .tree-file {
+            color: inherit;
+            text-decoration: none;
+            width: 100%;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: color 160ms ease, background 160ms ease, text-shadow 160ms ease;
+        }
+
+        .academic-sidebar .tree-toggle-button {
+            appearance: none;
+            border: 0;
+            background: transparent;
+            padding: 0;
+            font: inherit;
+            text-align: left;
+            cursor: pointer;
+        }
+
+        .academic-sidebar .tree-course-link:hover,
+        .academic-sidebar .tree-file:hover {
+            color: var(--brand-purple, #b829ea);
+        }
+
+        .academic-sidebar .tree-toggle {
+            color: var(--brand-purple, #b829ea);
+        }
+
+        .academic-sidebar .cyber-track {
+            color: var(--alert-red, #ff2a4b);
+        }
+
+        .academic-sidebar .tree-children {
+            display: none;
+            margin: 0 0 10px 20px;
+            padding-left: 8px;
+            border-left: 1px solid rgba(184, 41, 234, 0.28);
+        }
+
+        .academic-sidebar .tree-children.is-open,
+        .academic-sidebar .section-children {
+            display: block;
+        }
+
+        .academic-sidebar .section-children {
+            margin-left: 54px;
+            margin-bottom: 12px;
+        }
+
+        .academic-sidebar .item-children {
+            display: block;
+            margin-left: 72px;
+            margin-bottom: 12px;
+            max-height: 360px;
+            overflow-y: auto;
+            border-left-color: rgba(184, 41, 234, 0.42);
+        }
+
+        .academic-sidebar .section-children .tree-item {
+            padding-left: 14px;
+            font-size: 0.68rem;
+        }
+
+        .academic-sidebar .tree-viewer {
+            font-size: 0.62rem;
+            letter-spacing: 0.04em;
+            text-transform: none;
+        }
+
+        .academic-sidebar .file-active {
+            color: var(--brand-purple, #b829ea);
+            background: rgba(184, 41, 234, 0.08);
+            text-shadow: 0 0 16px rgba(184, 41, 234, 0.3);
+            border-left: 2px solid var(--brand-purple, #b829ea);
+        }
+
+        .academic-sidebar .status-dot {
+            width: 6px;
+            height: 6px;
+            flex: 0 0 6px;
+            background: var(--alert-red, #ff2a4b);
+            box-shadow: 0 0 12px rgba(255, 42, 75, 0.65);
+            display: inline-block;
+        }
+
+        [data-card-url] {
+            cursor: pointer;
+        }
+
+        body.shoug-light-mode {
+            --bg: #f6f4fb;
+            --bg-void: #f6f4fb;
+            --bg-surface: #ffffff;
+            --bg-elevated: #ebe7f4;
+            --surface: rgba(255, 255, 255, 0.88);
+            --text-main: #16111f;
+            --text-primary: #16111f;
+            --text-bright: #16111f;
+            --text-high: #241a31;
+            --text-secondary: #534a61;
+            --text-med: #534a61;
+            --text-dim: #6d6478;
+            --text-dimmed: #6d6478;
+            --text-muted: #776d85;
+            --text-low: #81778e;
+            --border: rgba(22, 17, 31, 0.14);
+            --border-color: rgba(22, 17, 31, 0.14);
+            --border-dim: rgba(22, 17, 31, 0.1);
+            --border-subtle: rgba(22, 17, 31, 0.1);
+            --border-main: rgba(22, 17, 31, 0.18);
+            --border-med: rgba(22, 17, 31, 0.2);
+            --border-medium: rgba(22, 17, 31, 0.2);
+            --border-hard: rgba(22, 17, 31, 0.26);
+            --grid-line: rgba(184, 41, 234, 0.08);
+            --grid-pattern: rgba(184, 41, 234, 0.08);
+            background: #f6f4fb !important;
+            color: #16111f !important;
+        }
+
+        body.shoug-light-mode canvas,
+        body.shoug-light-mode .bg-canvas,
+        body.shoug-light-mode #matrix-canvas,
+        body.shoug-light-mode #webgl-canvas {
+            opacity: 0.18;
+        }
+
+        body.shoug-light-mode .top-bar,
+        body.shoug-light-mode .sidebar,
+        body.shoug-light-mode .academic-sidebar,
+        body.shoug-light-mode .sidebar-header {
+            background-color: #ffffff !important;
+            border-color: rgba(22, 17, 31, 0.12) !important;
+            color: #16111f !important;
+        }
+        body.shoug-light-mode .shoug-site-header,
+        body.shoug-light-mode .shoug-site-footer {
+            background: rgba(246, 244, 251, 0.94) !important;
+            color: #16111f;
+            border-color: rgba(22, 17, 31, 0.14);
+        }
+
+        body.shoug-light-mode .shoug-header-logo,
+        body.shoug-light-mode .shoug-icon-btn,
+        body.shoug-light-mode .shoug-lang-btn,
+        body.shoug-light-mode .shoug-theme-btn,
+        body.shoug-light-mode .shoug-footer-brand {
+            color: #16111f;
+        }
+
+        body.shoug-light-mode .shoug-icon-btn,
+        body.shoug-light-mode .shoug-lang-btn,
+        body.shoug-light-mode .shoug-theme-btn {
+            border-color: rgba(22, 17, 31, 0.16);
+            background: rgba(255, 255, 255, 0.66);
+        }
+
+        body.shoug-light-mode .shoug-footer-text,
+        body.shoug-light-mode .shoug-footer-link,
+        body.shoug-light-mode .shoug-footer-meta,
+        body.shoug-light-mode .shoug-header-nav a {
+            color: #6d6478;
+        }
+
+        html[dir="rtl"] .shoug-header-inner,
+        html[dir="rtl"] .shoug-footer-grid {
+            direction: rtl;
+        }
+
+        html[dir="rtl"] .shoug-header-actions {
+            flex-direction: row-reverse;
+        }
+
+        @media (max-width: 980px) {
+            .shoug-site-header {
+                height: auto;
+            }
+
+            .shoug-header-inner {
+                width: min(100% - 28px, 720px);
+                min-height: 68px;
+                flex-wrap: wrap;
+                padding: 12px 0;
+                gap: 14px;
+            }
+
+            .shoug-header-nav {
+                order: 3;
+                width: 100%;
+                justify-content: flex-start;
+                overflow-x: auto;
+                padding-bottom: 4px;
+            }
+
+            .shoug-footer-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 640px) {
+            .shoug-site-footer {
+                padding-inline: 22px;
+            }
+
+            .shoug-footer-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ── SIDEBAR NAVIGATION FIX ── */
+        /* Prevent section-children from showing inside a collapsed tree-children */
+        .academic-sidebar .tree-children:not(.is-open) { display: none !important; }
+        .academic-sidebar .tree-children.is-open { display: block !important; }
+        /* Make sidebar items more readable */
+        .academic-sidebar .section-children .tree-item { font-size: 0.74rem !important; }
+        .academic-sidebar .tree-item { line-height: 1.55; }
+
+        /* ── RENDERED CONTENT ENHANCEMENTS ── */
+        .rendered-content { font-family: 'Inter', sans-serif; font-size: 0.93rem; line-height: 1.8; color: #c8c3d8; }
+        .rendered-content h1 { font-family: 'Rajdhani', sans-serif; font-size: 1.9rem; font-weight: 700; color: #fff; text-transform: uppercase; letter-spacing: 0.02em; margin: 0 0 20px !important; }
+        .rendered-content h2 { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; font-weight: 700; color: var(--brand-purple, #b829ea); text-transform: uppercase; letter-spacing: 0.12em; border-bottom: 1px solid rgba(184,41,234,0.2); padding-bottom: 6px; margin: 32px 0 14px !important; }
+        .rendered-content h3 { font-size: 1rem; font-weight: 600; color: #e0dcee; margin: 22px 0 10px !important; }
+        .rendered-content p { color: #c8c3d8; margin-bottom: 14px !important; }
+        .rendered-content strong { color: #f0ecf8; }
+        .rendered-content a { color: var(--brand-purple, #b829ea); text-decoration: underline; text-underline-offset: 3px; }
+        .rendered-content hr { border: none; border-top: 1px solid rgba(184,41,234,0.18); margin: 28px 0 !important; }
+        .rendered-content ul, .rendered-content ol { padding-left: 0; margin: 0 0 16px !important; }
+        .rendered-content ul li, .rendered-content ol li { padding: 5px 0 5px 22px; color: #c8c3d8; position: relative; list-style: none; border-bottom: 1px solid rgba(255,255,255,0.04); }
+        .rendered-content ul li::before { content: '>'; position: absolute; left: 4px; color: var(--brand-purple, #b829ea); font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; font-weight: 700; }
+        .rendered-content ol { counter-reset: li; }
+        .rendered-content ol li::before { content: counter(li, decimal-leading-zero); counter-increment: li; color: var(--alert-red, #ff2a4b); }
+        .rendered-content code { font-family: 'JetBrains Mono', monospace; font-size: 0.82em; background: rgba(184,41,234,0.1); color: #d4aaff; padding: 2px 6px; border: 1px solid rgba(184,41,234,0.18); }
+        .rendered-content pre { background: rgba(0,0,0,0.4); border: 1px solid rgba(184,41,234,0.2); border-left: 3px solid var(--brand-purple, #b829ea); padding: 16px 18px; margin: 12px 0 20px !important; overflow-x: auto; }
+        .rendered-content pre code { background: none; border: none; padding: 0; color: #a8ff78; font-size: 0.82rem; }
+        .rendered-content blockquote { border-left: 3px solid var(--alert-red, #ff2a4b); background: rgba(255,42,75,0.04); padding: 12px 18px; margin: 14px 0 !important; color: #c8c3d8; }
+        .rendered-content .level-hero { font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; font-weight: 700; color: var(--alert-red, #ff2a4b) !important; border-bottom: 1px solid rgba(255,42,75,0.28); padding-bottom: 8px; margin: 36px 0 14px !important; text-shadow: 0 0 8px rgba(255,42,75,0.3); letter-spacing: 0.06em; }
+        .rendered-content .grid.cards > ul { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; list-style: none; padding: 0; margin: 16px 0 24px; }
+        .rendered-content .grid.cards > ul > li { background: rgba(184,41,234,0.04); border: 1px solid rgba(184,41,234,0.22); padding: 18px 20px; border-top: 2px solid rgba(184,41,234,0.4); }
+        .rendered-content .grid.cards > ul > li::before { display: none; }
+        .rendered-content .grid.cards > ul > li > p { margin: 0 0 6px !important; color: #ddd8f0; }
+        .rendered-content .grid.cards > ul > li strong { color: #f0ecf8; }
+        .rendered-content .grid.cards > ul > li hr { border-color: rgba(184,41,234,0.15); margin: 10px 0 !important; }
+        .rendered-content .lab-phase { background: rgba(255,42,75,0.04); border-left: 3px solid var(--alert-red, #ff2a4b); padding: 18px 22px; margin: 36px 0 20px; }
+        .rendered-content .lab-phase__eyebrow { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; color: var(--alert-red, #ff2a4b); letter-spacing: 0.16em; text-transform: uppercase; margin-bottom: 6px !important; }
+        .rendered-content .lab-phase__title { font-size: 1.15rem; font-weight: 600; color: #fff; margin: 4px 0 8px !important; }
+        .rendered-content .lab-phase__summary { font-size: 0.88rem; color: #8f8b9a; margin: 0 !important; }
+        .rendered-content .report-intro { background: rgba(184,41,234,0.05); border: 1px solid rgba(184,41,234,0.22); border-top: 2px solid rgba(184,41,234,0.5); padding: 22px; margin-bottom: 28px; }
+        .rendered-content .report-intro__eyebrow { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; color: var(--brand-purple, #b829ea); letter-spacing: 0.16em; text-transform: uppercase; margin-bottom: 8px !important; }
+        .rendered-content .report-intro__summary { font-size: 0.93rem; color: #c8c3d8; margin: 0 !important; }
+        .rendered-content .reflection-card { background: rgba(184,41,234,0.04); border: 1px solid rgba(184,41,234,0.18); border-left: 3px solid rgba(184,41,234,0.5); padding: 18px 22px; margin: 20px 0; }
+        .rendered-content .reflection-card__eyebrow { font-family: 'JetBrains Mono', monospace; font-size: 0.62rem; color: var(--brand-purple, #b829ea); letter-spacing: 0.16em; text-transform: uppercase; margin-bottom: 6px !important; }
+        .rendered-content .reflection-card__title { color: #fff; font-size: 1.05rem; margin: 0 0 10px !important; }
+        .rendered-content table { width: 100%; border-collapse: collapse; margin: 14px 0 22px; font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; }
+        .rendered-content th { background: rgba(184,41,234,0.1); color: var(--brand-purple, #b829ea); padding: 9px 14px; text-align: left; border: 1px solid rgba(184,41,234,0.18); font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; }
+        .rendered-content td { padding: 9px 14px; border: 1px solid rgba(255,255,255,0.07); color: #c8c3d8; }
+        .rendered-content tr:hover td { background: rgba(184,41,234,0.04); }
+        .rendered-content details.img-collapse { border: 1px solid rgba(255,42,75,0.26); background: rgba(5,2,10,0.55); margin: 10px 0 20px; }
+        .rendered-content details.img-collapse > summary { cursor: pointer; padding: 8px 14px; font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; font-weight: 700; color: var(--alert-red, #ff2a4b); letter-spacing: 0.1em; text-transform: uppercase; list-style: none; display: flex; align-items: center; gap: 10px; user-select: none; transition: background 150ms ease; }
+        .rendered-content details.img-collapse > summary::-webkit-details-marker { display: none; }
+        .rendered-content details.img-collapse > summary::before { content: '[+]'; font-weight: 800; }
+        .rendered-content details.img-collapse[open] > summary::before { content: '[-]'; }
+        .rendered-content details.img-collapse > summary:hover { background: rgba(255,42,75,0.06); }
+        .rendered-content details.img-collapse > .img-collapse-body { padding: 14px; border-top: 1px solid rgba(255,42,75,0.18); }
+        .rendered-content details.img-collapse img { max-width: 100%; display: block; border: 1px solid rgba(255,255,255,0.08); }
+        .rendered-content details.img-collapse figcaption { font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; color: #8f8b9a; margin-top: 10px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.06); }
+        .rendered-content .adm-box { border: 1px solid rgba(184,41,234,0.28); background: rgba(184,41,234,0.04); padding: 13px 18px; margin: 14px 0; }
+        .rendered-content .adm-box.adm-warning { border-color: rgba(255,42,75,0.28); background: rgba(255,42,75,0.04); }
+        .rendered-content .adm-title { font-family: 'JetBrains Mono', monospace; font-size: 0.64rem; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; color: var(--brand-purple, #b829ea); margin-bottom: 8px; }
+        .rendered-content .adm-box.adm-warning .adm-title { color: var(--alert-red, #ff2a4b); }
+
+    
+        /* ──────────────────────────────────────────────────────
+           RESPONSIVE: Tablet (≤1024px) and Mobile (≤768px)
+           ────────────────────────────────────────────────────── */
+
+        /* Scrollable tab bars on any size */
+        .sub-nav, .content-tabs {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            flex-wrap: nowrap !important;
+            white-space: nowrap;
+        }
+        .sub-nav::-webkit-scrollbar,
+        .content-tabs::-webkit-scrollbar { display: none; }
+
+        @media (max-width: 1024px) {
+            .academic-sidebar {
+                width: 240px;
+                flex: 0 0 240px;
+            }
+            .academic-sidebar .section-children { margin-left: 44px; }
+            .academic-sidebar .item-children { margin-left: 60px; }
+            .content-topbar,
+            .top-bar { padding: 12px 24px; }
+            .content-section,
+            .directory-container,
+            .embed-area-wrapper { padding-left: 24px; padding-right: 24px; }
+            .content-header { padding: 40px 24px 28px; }
+            .course-code, .ch-title { font-size: 3.5rem; }
+        }
+
+        @media (max-width: 768px) {
+            /* Sidebar becomes a fixed overlay */
+            .academic-sidebar {
+                position: fixed !important;
+                top: 68px;
+                left: 0;
+                height: calc(100vh - 68px) !important;
+                z-index: 200;
+                transform: translateX(-100%);
+                transition: transform 220ms ease, box-shadow 220ms ease;
+                width: 280px !important;
+                flex-basis: 280px !important;
+                box-shadow: none;
+            }
+            body.sidebar-open .academic-sidebar {
+                transform: translateX(0);
+                box-shadow: 8px 0 32px rgba(0,0,0,0.6);
+            }
+            /* Dim overlay behind open sidebar */
+            body.sidebar-open::before {
+                content: '';
+                position: fixed;
+                inset: 68px 0 0 0;
+                background: rgba(0,0,0,0.55);
+                z-index: 199;
+            }
+            /* Main content takes full width */
+            .app-layout { flex-direction: column; }
+            .sys-main, .main-wrapper { min-height: calc(100vh - 68px); width: 100%; }
+
+            /* Mobile menu toggle button (inserted via JS) */
+            .mobile-sidebar-toggle {
+                display: inline-flex !important;
+                align-items: center;
+                justify-content: center;
+                width: 34px;
+                height: 34px;
+                border: 1px solid rgba(255,255,255,0.12);
+                background: rgba(255,255,255,0.02);
+                color: #f8f7fb;
+                cursor: pointer;
+                font-size: 1rem;
+                flex-shrink: 0;
+            }
+            .mobile-sidebar-toggle:hover {
+                color: #b829ea;
+                border-color: rgba(184,41,234,0.55);
+                background: rgba(184,41,234,0.08);
+            }
+
+            /* Header layout on mobile */
+            .shoug-header-inner {
+                gap: 10px;
+            }
+
+            /* Content padding */
+            .content-topbar,
+            .top-bar { padding: 10px 16px; font-size: 0.65rem; }
+            .content-header { padding: 32px 16px 20px; }
+            .content-section { padding: 24px 16px; }
+            .embed-area-wrapper { padding: 12px 16px 24px; }
+            .page-header { padding: 20px 16px 16px; }
+            .nav-strip { padding: 10px 16px; }
+
+            /* Typography scale-down */
+            .course-code { font-size: 2.8rem; }
+            .ch-title { font-size: 1.8rem; }
+            .course-name { font-size: 1.2rem; }
+
+            /* Directory rows */
+            .dir-header,
+            .dir-row {
+                grid-template-columns: 40px 1fr 80px 32px;
+                padding: 14px 16px;
+            }
+            .dir-row:hover { padding-left: 14px; border-left: 2px solid var(--brand-purple); }
+            .dir-title { font-size: 1rem; }
+            .dir-num { font-size: 0.65rem; }
+            .dir-header { font-size: 0.58rem; }
+
+            /* Action buttons wrap */
+            .action-buttons { flex-wrap: wrap; gap: 8px; }
+            .btn { font-size: 0.65rem; padding: 8px 14px; }
+
+            /* Data blocks - single column */
+            .grid-data-blocks { grid-template-columns: 1fr 1fr; gap: 10px; }
+
+            /* Footer */
+            .shoug-footer-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 32px;
+            }
+
+            /* Embed iframe min height lower */
+            .embed-container { min-height: 50vh; }
+            .embed-container iframe { min-height: 50vh; }
+        }
+
+        @media (max-width: 480px) {
+            .shoug-header-nav { display: none; } /* hide nav links on very small screens */
+            .course-code { font-size: 2.2rem; }
+            .ch-title { font-size: 1.5rem; }
+            .grid-data-blocks { grid-template-columns: 1fr; }
+            .dir-header,
+            .dir-row { grid-template-columns: 34px 1fr 0 28px; }
+            .dir-status { display: none; }
+            .shoug-footer-grid { grid-template-columns: 1fr; }
+        }
+        /* END RESPONSIVE */
+        
+        /* ── light-mode: rendered-content overrides ── */
+        body.shoug-light-mode .rendered-content {
+            background: #ffffff !important;
+            color: #24172e !important;
+            border-color: rgba(22,17,31,0.14) !important;
+            box-shadow: none !important;
+        }
+        body.shoug-light-mode .rendered-content h1,
+        body.shoug-light-mode .rendered-content h2,
+        body.shoug-light-mode .rendered-content h3 {
+            color: #16111f !important;
+            text-shadow: none !important;
+        }
+        body.shoug-light-mode .rendered-content h2 {
+            border-bottom-color: rgba(184,41,234,0.22) !important;
+        }
+        body.shoug-light-mode .rendered-content p,
+        body.shoug-light-mode .rendered-content ul li,
+        body.shoug-light-mode .rendered-content ol li {
+            color: #3a2d4a !important;
+            border-bottom-color: rgba(22,17,31,0.07) !important;
+        }
+        body.shoug-light-mode .rendered-content pre {
+            background: rgba(22,17,31,0.05) !important;
+            border-color: rgba(184,41,234,0.2) !important;
+        }
+        body.shoug-light-mode .rendered-content pre code { color: #5c10a0 !important; }
+        body.shoug-light-mode .rendered-content code {
+            background: rgba(184,41,234,0.08) !important;
+            color: #6d19c7 !important;
+            border-color: rgba(184,41,234,0.2) !important;
+        }
+        body.shoug-light-mode .rendered-content blockquote {
+            color: #534a61 !important;
+            background: rgba(255,42,75,0.03) !important;
+        }
+        body.shoug-light-mode .rendered-content details.img-collapse {
+            background: rgba(22,17,31,0.03) !important;
+            border-color: rgba(255,42,75,0.2) !important;
+        }
+        body.shoug-light-mode .rendered-content .adm-box {
+            background: rgba(184,41,234,0.04) !important;
+            border-color: rgba(184,41,234,0.22) !important;
+            color: #3a2d4a !important;
+        }
+        body.shoug-light-mode .rendered-content .adm-box.adm-warning {
+            background: rgba(255,42,75,0.04) !important;
+            border-color: rgba(255,42,75,0.22) !important;
+        }
+        body.shoug-light-mode .rendered-content .grid.cards > ul > li {
+            background: rgba(184,41,234,0.04) !important;
+            border-color: rgba(184,41,234,0.2) !important;
+        }
+        body.shoug-light-mode .rendered-content .grid.cards > ul > li > p { color: #534a61 !important; }
+        body.shoug-light-mode .rendered-content .grid.cards > ul > li strong { color: #24172e !important; }
+        body.shoug-light-mode .rendered-content .lab-phase {
+            background: rgba(255,42,75,0.04) !important;
+            border-color: rgba(255,42,75,0.25) !important;
+            color: #3a2d4a !important;
+        }
+        body.shoug-light-mode .rendered-content .report-intro {
+            background: rgba(184,41,234,0.04) !important;
+            border-color: rgba(184,41,234,0.22) !important;
+            color: #3a2d4a !important;
+        }
+        body.shoug-light-mode .rendered-content .reflection-card {
+            border-color: rgba(184,41,234,0.3) !important;
+            color: #3a2d4a !important;
+        }
+        </style>
+    <style id="academic-sidebar-embed-fix">
+    .academic-sidebar {
+        display: flex !important;
+        flex-direction: column !important;
+        align-self: stretch !important;
+        overflow: hidden !important;
+    }
+    .academic-sidebar .file-tree {
+        display: block !important;
+        flex: 1 1 auto !important;
+        min-height: 0 !important;
+        padding: 28px 0 34px !important;
+        overflow-y: auto !important;
+    }
+    .academic-sidebar .tree-node {
+        display: block !important;
+        align-items: initial !important;
+        gap: 0 !important;
+        cursor: default !important;
+        color: inherit !important;
+    }
+    .academic-sidebar .tree-node:hover {
+        color: inherit !important;
+    }
+    .academic-sidebar .tree-item {
+        margin-top: 0 !important;
+    }
+    </style>
+    <script src="/javascripts/translation-launch-guard.js"></script>
+    <link rel="stylesheet" href="/styles/light-mode.css">
+
+    <meta name="description" content="Contact WORKSHOP_DIRECTORY WORKSHOPS/ [-] CYBERSECURITY CRASH COURSE/ OVERVIEW SCHEDULE &amp; AGENDA TOPICS &amp; LEARNING OUTCOMES HANDOUTS LABS &amp; BANDIT NOTES.">
+    <link rel="canonical" href="https://shoug-tech.com/workshops/cybersecurity-crash-course/labs-bandit-notes/">
+    <meta property="og:title" content="Cybersecurity Crash Course | LABS &amp; BANDIT NOTES">
+    <meta property="og:description" content="Contact WORKSHOP_DIRECTORY WORKSHOPS/ [-] CYBERSECURITY CRASH COURSE/ OVERVIEW SCHEDULE &amp; AGENDA TOPICS &amp; LEARNING OUTCOMES HANDOUTS LABS &amp; BANDIT NOTES.">
+    <meta property="og:url" content="https://shoug-tech.com/workshops/cybersecurity-crash-course/labs-bandit-notes/">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://shoug-tech.com/logo.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Cybersecurity Crash Course | LABS &amp; BANDIT NOTES">
+    <meta name="twitter:description" content="Contact WORKSHOP_DIRECTORY WORKSHOPS/ [-] CYBERSECURITY CRASH COURSE/ OVERVIEW SCHEDULE &amp; AGENDA TOPICS &amp; LEARNING OUTCOMES HANDOUTS LABS &amp; BANDIT NOTES.">
+    <meta name="twitter:image" content="https://shoug-tech.com/logo.png">
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","url":"https://shoug-tech.com/workshops/cybersecurity-crash-course/labs-bandit-notes/","name":"Cybersecurity Crash Course | LABS &amp; BANDIT NOTES","description":"Contact WORKSHOP_DIRECTORY WORKSHOPS/ [-] CYBERSECURITY CRASH COURSE/ OVERVIEW SCHEDULE &amp; AGENDA TOPICS &amp; LEARNING OUTCOMES HANDOUTS LABS &amp; BANDIT NOTES.","isPartOf":{"@type":"WebSite","name":"Shoug's Digital Garden","url":"https://shoug-tech.com/"}}</script>
+
+      <link rel="alternate" hreflang="en" href="https://shoug-tech.com/workshops/cybersecurity-crash-course/labs-bandit-notes/">
+      <link rel="alternate" hreflang="ar" href="https://shoug-tech.com/ar/workshops/cybersecurity-crash-course/labs-bandit-notes/">
+      <link rel="alternate" hreflang="x-default" href="https://shoug-tech.com/workshops/cybersecurity-crash-course/labs-bandit-notes/">
+</head>
+<body vid="9">
+<script>if(localStorage.getItem('shoug-theme')==='light')document.body.classList.add('shoug-light-mode');</script>
+
+    
+    
+    <header class="shoug-site-header">
+        <div class="shoug-header-inner">
+            <a class="shoug-header-logo" href="/">SHOUG.TECH</a>
+            <nav class="shoug-header-nav" aria-label="Primary">
+                <a href="/">Home</a>
+                <a href="/academics/">Academics</a>
+                <a href="/work/">Work</a>
+                <a href="/workshops/" class="active">Workshops</a>
+                <a href="/resources/">Resources</a>
+                <a href="/about/">About</a>
+            </nav>
+            <div class="shoug-header-actions">
+                <a class="shoug-icon-btn" href="/?q=" aria-label="Search">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-4-4"></path></svg>
+                </a>
+                <a class="shoug-icon-btn" href="https://github.com/Shoug-Alomran" aria-label="GitHub">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5A12 12 0 0 0 8.2 23.9c.6.1.8-.3.8-.6v-2.1c-3.3.7-4-1.4-4-1.4-.5-1.3-1.2-1.7-1.2-1.7-1-.7.1-.7.1-.7 1.1.1 1.8 1.2 1.8 1.2 1 1.8 2.7 1.3 3.3 1 .1-.7.4-1.3.7-1.6-2.6-.3-5.4-1.3-5.4-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17.7 4.4 18.7 4.7 18.7 4.7c.6 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.4 5.9.4.4.8 1.1.8 2.2v4.1c0 .3.2.7.8.6A12 12 0 0 0 12 .5Z"></path></svg>
+                </a>
+                <a class="shoug-icon-btn" href="https://www.linkedin.com/in/shoug-alomran/" aria-label="LinkedIn">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.4 20.4h-3.6v-5.6c0-1.3 0-3-1.9-3s-2.1 1.4-2.1 2.9v5.7H9.3V9h3.4v1.6h.1c.5-.9 1.6-1.9 3.4-1.9 3.6 0 4.3 2.4 4.3 5.5v6.2ZM5.3 7.4a2.1 2.1 0 1 1 0-4.1 2.1 2.1 0 0 1 0 4.1Zm1.8 13H3.6V9h3.5v11.4ZM22.2 0H1.8C.8 0 0 .8 0 1.7v20.5C0 23.2.8 24 1.8 24h20.4c1 0 1.8-.8 1.8-1.8V1.7C24 .8 23.2 0 22.2 0Z"></path></svg>
+                </a>
+                <button class="shoug-theme-btn" type="button" aria-label="Toggle dark and light mode">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path></svg>
+                </button>
+                <a class="shoug-contact-btn" href="mailto:shoug.f.alomran@gmail.com">Contact</a>
+            </div>
+        </div>
+    </header>
+
+
+    <div class="layout-wrapper" vid="24">
+        
+        
+                <nav class="sidebar academic-sidebar" aria-label="Workshop directory">
+                    <div class="sidebar-header"><span class="sidebar-title">WORKSHOP_DIRECTORY</span><button class="sidebar-collapse-button" type="button" data-sidebar-collapse aria-expanded="true"><span class="collapse-icon">&lt;</span></button></div>
+                    <div class="file-tree">
+                        <ul class="tree-node">
+                            <li class="tree-item root-dir"><a class="tree-course-link" href="/workshops/">WORKSHOPS/</a></li>
+                            <li class="tree-item dir-open"><button class="tree-course-link tree-toggle-button" type="button" data-tree-toggle="tree-cyber-workshop" aria-expanded="true"><span class="tree-toggle">[-]</span> CYBERSECURITY CRASH COURSE/</button></li><ul id="tree-cyber-workshop" class="tree-children is-open"><li class="tree-item"><a class="tree-file" href="/workshops/cybersecurity-crash-course/">OVERVIEW</a></li><ul class="tree-children section-children is-open"><li class="tree-item tree-section"><a class="tree-file" href="/workshops/cybersecurity-crash-course/schedule-agenda/">SCHEDULE &amp; AGENDA</a></li><li class="tree-item tree-section"><a class="tree-file" href="/workshops/cybersecurity-crash-course/topics-learning-outcomes/">TOPICS &amp; LEARNING OUTCOMES</a></li><li class="tree-item tree-section"><a class="tree-file" href="/workshops/cybersecurity-crash-course/handouts/">HANDOUTS</a></li><li class="tree-item tree-section file-active"><a class="tree-file" href="/workshops/cybersecurity-crash-course/labs-bandit-notes/"><span class="status-dot"></span>LABS &amp; BANDIT NOTES</a></li><li class="tree-item tree-section"><a class="tree-file" href="/workshops/cybersecurity-crash-course/reflection-impact/">REFLECTION &amp; IMPACT</a></li></ul></ul><li class="tree-item"><button class="tree-course-link tree-toggle-button" type="button" data-tree-toggle="tree-tutor-workshop" aria-expanded="false"><span class="tree-toggle">[+]</span> MY JOURNEY AS A STUDENT TUTOR/</button></li><ul id="tree-tutor-workshop" class="tree-children"><li class="tree-item"><a class="tree-file" href="/workshops/student-tutor/">OVERVIEW</a></li><ul class="tree-children section-children"><li class="tree-item tree-section"><a class="tree-file" href="/workshops/student-tutor/agenda/">AGENDA</a></li><li class="tree-item tree-section"><a class="tree-file" href="/workshops/student-tutor/timeline/">TIMELINE</a></li><li class="tree-item tree-section"><a class="tree-file" href="/workshops/student-tutor/skills/">SKILLS</a></li><li class="tree-item tree-section"><a class="tree-file" href="/workshops/student-tutor/growth/">GROWTH</a></li><li class="tree-item tree-section"><a class="tree-file" href="/workshops/student-tutor/feedback/">FEEDBACK</a></li><li class="tree-item tree-section"><a class="tree-file" href="/workshops/student-tutor/tips/">TIPS</a></li><li class="tree-item tree-section"><a class="tree-file" href="/workshops/student-tutor/reflection/">REFLECTION</a></li><li class="tree-item tree-section"><a class="tree-file" href="/workshops/student-tutor/video/">VIDEO</a></li></ul></ul>
+                        </ul>
+                    </div>
+                </nav>
+
+        
+        <main class="content-area" vid="58">
+            
+            
+            <div class="top-bar uppercase" vid="59">
+                <div class="breadcrumb"><a class="breadcrumb-link" href="/workshops/">Workshops</a> <span class="separator">/</span> <a class="breadcrumb-link" href="/workshops/cybersecurity-crash-course/">Cybersecurity Crash Course</a> <span class="separator">/</span> <span class="current">LABS &amp; BANDIT NOTES</span></div>
+                <div class="sys-time" id="clock" vid="70">
+                    SYS_TIME [ 14<span class="blink" vid="71">:</span>30<span class="blink" vid="72">:</span>45 ]
+                </div>
+            </div>
+
+            
+            <div class="page-header" vid="73">
+                <div class="ch-label uppercase">WORKSHOP // CYBERSECURITY CRASH COURSE</div>
+                <h1 class="ch-title uppercase">LABS &amp; BANDIT NOTES</h1>
+                <div class="action-buttons"><a class="btn btn-primary" href="#embedded-content">[ VIEW CONTENT -> ]</a><a class="btn btn-secondary" href="/workshops/cybersecurity-crash-course/">[ <- BACK TO WORKSHOP ]</a></div>
+            </div>
+
+            
+            <div class="nav-strip uppercase"><a href="/workshops/cybersecurity-crash-course/handouts/" class="nav-link prev"><- PREVIOUS</a><a href="/workshops/cybersecurity-crash-course/reflection-impact/" class="nav-link next">NEXT -></a></div>
+
+            
+            <div class="embed-area-wrapper" vid="82">
+                <div class="embed-container" id="embedded-content"><div class="rendered-content" data-lang-panel="en"><h1 id="overthewire-bandit-complete-walkthrough-level-0-33">OverTheWire Bandit  -  Complete Walkthrough (Level 0 → 33)</h1>
+<p>← <a href="#embedded-content">Back to Workshop Overview</a></p>
+<div class="report-intro">
+  <p class="report-intro__eyebrow">Cybersecurity Lab Notes</p>
+  <p class="report-intro__summary">
+    A complete Bandit walkthrough from Level 0 to Level 33, preserving every
+    command, explanation, password, and screenshot while packaging the notes in
+    a cleaner workshop-report format.
+  </p>
+</div>
+
+<div class="grid cards">
+<ul>
+<li>
+<p>:joystick: <strong>Wargame</strong></p>
+<p><a href="https://overthewire.org/wargames/bandit/">OverTheWire Bandit</a></p>
+</li>
+<li>
+<p>:calendar: <strong>Completed</strong></p>
+<p>January 2026</p>
+</li>
+<li>
+<p>:material-shield-check-outline: <strong>Coverage</strong></p>
+<p>Levels 0 → 33</p>
+</li>
+<li>
+<p>:material-console-line: <strong>Core Objective</strong></p>
+<p>Build fluency in Linux, networking, file permissions, Git, and privilege
+escalation through hands-on problem solving.</p>
+</li>
+</ul>
+</div>
+<h2 id="quick-navigation">Quick Navigation</h2>
+<div class="grid cards">
+<ul>
+<li>
+<p>:material-console-line: <strong>Levels 0  -  3</strong></p>
+<p>SSH, basic file reading, hidden files</p>
+<p><a href="#phase-1">Jump to early levels</a></p>
+</li>
+<li>
+<p>:material-file-search: <strong>Levels 4  -  6</strong></p>
+<p>File types, <code>find</code>, filesystem-wide search</p>
+<p><a href="#phase-2">Jump to filesystem levels</a></p>
+</li>
+<li>
+<p>:material-filter-outline: <strong>Levels 7  -  9</strong></p>
+<p><code>grep</code>, <code>sort</code>, <code>uniq</code>, <code>strings</code></p>
+<p><a href="#phase-3">Jump to text-hunting levels</a></p>
+</li>
+<li>
+<p>:material-lock-open-variant-outline: <strong>Levels 10  -  12</strong></p>
+<p>Base64, ROT13, layered compression</p>
+<p><a href="#phase-4">Jump to decoding levels</a></p>
+</li>
+<li>
+<p>:material-lan-connect: <strong>Levels 13  -  16</strong></p>
+<p>SSH keys, <code>nc</code>, SSL/TLS, port scanning</p>
+<p><a href="#phase-5">Jump to networking levels</a></p>
+</li>
+<li>
+<p>:material-key-chain-variant: <strong>Levels 17  -  20</strong></p>
+<p><code>diff</code>, <code>.bashrc</code> bypass, setuid binaries</p>
+<p><a href="#phase-6">Jump to access-control levels</a></p>
+</li>
+<li>
+<p>:material-clock-outline: <strong>Levels 21  -  24</strong></p>
+<p>Cron jobs, MD5-derived paths, brute force</p>
+<p><a href="#phase-7">Jump to automation levels</a></p>
+</li>
+<li>
+<p>:material-open-in-app: <strong>Levels 25  -  27</strong></p>
+<p>Restricted shell escape, <code>vim</code> exploit, SUID</p>
+<p><a href="#phase-8">Jump to escape levels</a></p>
+</li>
+<li>
+<p>:material-source-branch: <strong>Levels 27  -  31</strong></p>
+<p>Git history, branches, tags, hooks</p>
+<p><a href="#phase-9">Jump to Git levels</a></p>
+</li>
+<li>
+<p>:material-arrow-expand-up: <strong>Levels 32  -  33</strong></p>
+<p>Uppercase shell bypass</p>
+<p><a href="#phase-10">Jump to final levels</a></p>
+</li>
+</ul>
+</div>
+<hr />
+<h2 id="report-highlights">Report Highlights</h2>
+<div class="grid cards">
+<ul>
+<li>
+<p>:material-target-account: <strong>Why This Matters</strong></p>
+<p>These notes show not just the final answers, but the reasoning path:
+enumeration, validation, exploitation, and proof of access.</p>
+</li>
+<li>
+<p>:material-tools: <strong>Tooling Spectrum</strong></p>
+<p>The walkthrough spans <code>ssh</code>, <code>cat</code>, <code>find</code>, <code>grep</code>, <code>strings</code>, <code>base64</code>,
+<code>tr</code>, <code>xxd</code>, <code>nc</code>, <code>openssl</code>, <code>nmap</code>, cron inspection, and Git forensics.</p>
+</li>
+<li>
+<p>:material-school: <strong>Workshop Value</strong></p>
+<p>Bandit turns command-line theory into repeatable habits for CTF work,
+systems troubleshooting, and secure engineering.</p>
+</li>
+</ul>
+</div>
+<hr />
+<section class="lab-phase" id="phase-1">
+  <p class="lab-phase__eyebrow">Phase 1</p>
+  <h3 class="lab-phase__title">Access, Files, and First Linux Habits</h3>
+  <p class="lab-phase__summary">
+    Levels 0 through 3 establish the rhythm of Bandit: connect, enumerate,
+    inspect filenames carefully, and read exactly what the system gives you.
+  </p>
+</section>
+
+<h2 class="level-hero" id="level-0">Level 0</h2>
+<p><strong>Goal</strong>
+Connect to the Bandit server using SSH and retrieve the password for the next level.</p>
+<p><strong>Commands Used</strong></p>
+<pre><code class="language-bash">ssh bandit0@bandit.labs.overthewire.org -p 2220
+</code></pre>
+<p><strong>Solution Explanation</strong></p>
+<ul>
+<li>The <code>ssh</code> command establishes a Secure Shell connection to a remote system</li>
+<li><code>bandit0@bandit.labs.overthewire.org</code> specifies the username and target host</li>
+<li>The <code>-p 2220</code> option connects through port 2220 (required by Bandit instead of default port 22)</li>
+<li>The Level 0 password was provided directly: <code>bandit0</code></li>
+</ul>
+<p><strong>Password for Next Level</strong>
+<code>bandit0</code></p>
+<p>??? example "Screenshot"
+    <figure class="report-shot">
+      <img src="/career-development/workshops/cybersecurity-crash-course/pics/level-0.png" alt="Level 0 Screenshot" loading="lazy" decoding="async">
+      <figcaption>Initial SSH access into the Bandit environment.</figcaption>
+    </figure></p>
+<hr />
+<h2 class="level-hero" id="level-0-1">Level 0 → Level 1</h2>
+<p><strong>Goal</strong>
+Locate the file containing the password for the next level and use it to authenticate as bandit1.</p>
+<p><strong>Commands Used</strong></p>
+<pre><code class="language-bash">ls
+cat readme
+</code></pre>
+<p><strong>Solution Explanation</strong></p>
+<ul>
+<li>The <code>ls</code> command listed files in the current directory, confirming the presence of a file named <code>readme</code></li>
+<li>The <code>cat readme</code> command printed the contents of the readme file to the terminal, revealing the password</li>
+</ul>
+<p><strong>Common Mistakes</strong>
+- Attempting to use <code>cd readme</code> (treating it as a directory instead of a file)</p>
+<p><strong>Password for Next Level</strong>
+<code>ZjLjTmM6FvvyrNrb2rfNWOZ0TA6ip5If</code></p>
+<p>??? example "Screenshot"
+    <figure class="report-shot">
+      <img src="/career-development/workshops/cybersecurity-crash-course/pics/level-0-→-level-1.png" alt="Level 0 to Level 1 Screenshot" loading="lazy" decoding="async">
+      <figcaption>Reading the <code>readme</code> file to capture the next credential.</figcaption>
+    </figure></p>
+<hr />
+<h2 class="level-hero" id="level-1-2">Level 1 → Level 2</h2>
+<p><strong>Goal</strong>
+Read a file named <code>-</code> which requires special handling due to the special character.</p>
+<p><strong>Commands Used</strong></p>
+<pre><code class="language-bash">ls
+cat ./-
+</code></pre>
+<p><strong>Solution Explanation</strong></p>
+<ul>
+<li>The <code>ls</code> command revealed a file named <code>-</code></li>
+<li>The <code>cat ./-</code> command displayed the contents of the file</li>
+<li>The <code>./</code> prefix is required because <code>-</code> alone is interpreted as a stdin indicator, so <code>./-</code> specifies it as a filename in the current directory</li>
+</ul>
+<p><strong>Password for Next Level</strong>
+<code>263JGJPfgU6LdtEvgfWU1XP5yac29mFx</code></p>
+<p>??? example "Screenshot"
+    <figure class="report-shot">
+      <img src="/career-development/workshops/cybersecurity-crash-course/pics/level-1-→-level-2.png" alt="Level 1 to Level 2 Screenshot" loading="lazy" decoding="async">
+      <figcaption>Using <code>./-</code> so the filename is treated as a real path.</figcaption>
+    </figure></p>
+<hr />
+<h2 class="level-hero" id="level-2-3">Level 2 → Level 3</h2>
+<p><strong>Goal</strong>
+Read a file containing spaces in its name that also begins with dashes.</p>
+<p><strong>Commands Used</strong></p>
+<pre><code class="language-bash">ls
+cat -- &quot;--spaces in this filename--&quot;
+</code></pre>
+<p><strong>Solution Explanation</strong></p>
+<ul>
+<li>The <code>ls</code> command revealed a file named <code>--spaces in this filename--</code></li>
+<li>Because the filename starts with <code>--</code> and contains spaces, the command uses:</li>
+<li>The first <code>--</code> to signal the end of options</li>
+<li>Quotes around the filename to handle spaces</li>
+<li>This ensures the filename is treated as a regular file argument</li>
+</ul>
+<p><strong>Password for Next Level</strong>
+<code>MNk8KNH3USiio41PRUEoDFPqFxLPlSmx</code></p>
+<p>??? example "Screenshot"
+    <figure class="report-shot">
+      <img src="/career-development/workshops/cybersecurity-crash-course/pics/level-2-→level-3.png" alt="Level 2 to Level 3 Screenshot" loading="lazy" decoding="async">
+      <figcaption>Handling a filename that begins with dashes and contains spaces.</figcaption>
+    </figure></p>
+<hr />
+<h2 class="level-hero" id="level-3-4">Level 3 → Level 4</h2>
+<p><strong>Goal</strong>
+Locate and read a hidden file inside the <code>inhere</code> directory.</p>
+<p><strong>Commands Used</strong></p>
+<pre><code class="language-bash">ls
+cd inhere
+ls -a
+cat &quot;...Hiding-From-You&quot;
+</code></pre>
+<p><strong>Solution Explanation</strong></p>
+<ul>
+<li>The <code>ls</code> command identified the presence of the <code>inhere</code> directory</li>
+<li>After entering the directory, a second <code>ls</code> showed no visible files</li>
+<li><code>ls -a</code> was used to list all files, including hidden ones (files beginning with <code>.</code>)</li>
+<li>The hidden file <code>...Hiding-From-You</code> was revealed and read with <code>cat</code></li>
+<li>Quotes were used because the filename begins with multiple dots</li>
+</ul>
+<p><strong>Password for Next Level</strong>
+<code>2WmrDFRmJIq3IPxneAaMGhap0pFhF3NJ</code></p>
+<hr />
+<section class="lab-phase" id="phase-2">
+  <p class="lab-phase__eyebrow">Phase 2</p>
+  <h3 class="lab-phase__title">Filesystem Discovery and Targeted Search</h3>
+  <p class="lab-phase__summary">
+    Levels 4 through 6 shift from basic reading into selective discovery:
+    identify human-readable files, search by file properties, and query the
+    wider filesystem safely.
+  </p>
+</section>
+
+<h2 class="level-hero" id="level-4-5">Level 4 → Level 5</h2>
+<p><strong>Goal</strong>
+Locate and read the password from the only human-readable file among several files in the <code>inhere</code> directory.</p>
+<p><strong>Commands Used</strong></p>
+<pre><code class="language-bash">cd inhere
+ls
+file ./*
+cat ./-file07
+</code></pre>
+<p><strong>Solution Explanation</strong></p>
+<ul>
+<li>The <code>ls</code> command revealed multiple files named with a hyphen prefix (<code>-file00</code>, <code>-file01</code>, etc.)</li>
+<li><code>file ./*</code> was used to determine the type of each file</li>
+<li>Only <code>-file07</code> was ASCII text (human-readable)</li>
+<li><code>cat ./-file07</code> displayed the contents (the <code>./</code> prefix prevents the <code>-</code> from being interpreted as an option)</li>
+</ul>
+<p><strong>Password for Next Level</strong>
+<code>4oQYVPkXZOOEO5pTW8IFB8jLXxXGUQw</code></p>
+<p>??? example "Screenshot"
+    <figure class="report-shot">
+      <img src="/career-development/workshops/cybersecurity-crash-course/pics/level-4-→-level-5.png" alt="Level 4 to Level 5 Screenshot" loading="lazy" decoding="async">
+      <figcaption>Using <code>file</code> output to isolate the only human-readable target.</figcaption>
+    </figure></p>
+<hr />
+<h2 class="level-hero" id="level-5-6">Level 5 → Level 6</h2>
+<p><strong>Goal</strong>
+Find the password stored in a file with specific properties: human-readable, 1033 bytes in size, not executable.</p>
+<p><strong>Commands Used</strong></p>
+<pre><code class="language-bash">cd inhere
+ls
+find . -type f -size 1033c
+cat ./maybehere07/.file2
+</code></pre>
+<p><strong>Solution Explanation</strong></p>
+<ul>
+<li>The <code>ls</code> command listed multiple subdirectories (<code>maybehere00</code> through <code>maybehere19</code>)</li>
+<li>Instead of manually checking each folder, <code>find . -type f -size 1033c</code> searched recursively for files exactly 1033 bytes in size</li>
+<li>The command returned <code>./maybehere07/.file2</code></li>
+<li><code>cat</code> displayed its contents, revealing the password</li>
+</ul>
+<p><strong>Password for Next Level</strong>
+<code>HWasnPhtq9AVKe0dmk45knq0vcUahz0E6G</code></p>
+<p>??? example "Screenshot"
+    <figure class="report-shot">
+      <img src="/career-development/workshops/cybersecurity-crash-course/pics/level-5-→-level-6.png" alt="Level 5 to Level 6 Screenshot" loading="lazy" decoding="async">
+      <figcaption>Searching recursively for the one file matching the required size.</figcaption>
+    </figure></p>
+<hr />
+<h2 class="level-hero" id="level-6-7">Level 6 → Level 7</h2>
+<p><strong>Goal</strong>
+Locate a file anywhere on the system owned by user <code>bandit7</code>, group <code>bandit6</code>, and exactly 33 bytes in size.</p>
+<p><strong>Commands Used</strong></p>
+<pre><code class="language-bash">find / -type f -user bandit7 -group bandit6 -size 33c 2&gt;/dev/null
+cat /var/lib/dpkg/info/bandit7.password
+</code></pre>
+<p><strong>Solution Explanation</strong></p>
+<ul>
+<li>The <code>find</code> command searched the entire filesystem (<code>/</code>) for files matching all three criteria</li>
+<li><code>2&gt;/dev/null</code> suppressed permission denied errors</li>
+<li>The command returned <code>/var/lib/dpkg/info/bandit7.password</code></li>
+<li><code>cat</code> displayed the password</li>
+</ul>
+<p><strong>Password for Next Level</strong>
+<code>z7WtoNQU2XfjmMtKjX3iql6i6cA99Ce</code></p>
+<p>??? example "Screenshot"
+    <figure class="report-shot">
+      <img src="/career-development/workshops/cybersecurity-crash-course/pics/level-6-→-level-7.png" alt="Level 6 to Level 7 Screenshot" loading="lazy" decoding="async">
+      <figcaption>Finding the system-owned password file with constrained search filters.</figcaption>
+    </figure></p>
+<hr />
+<section class="lab-phase" id="phase-3">
+  <p class="lab-phase__eyebrow">Phase 3</p>
+  <h3 class="lab-phase__title">Text Extraction and Signal Hunting</h3>
+  <p class="lab-phase__summary">
+    Levels 7 through 9 build pattern-recognition skills with `grep`, `sort`,
+    `uniq`, and `strings`, turning noisy files into readable evidence.
+  </p>
+</section>
+
+<h2 class="level-hero" id="level-7-8">Level 7 → Level 8</h2>
+<p><strong>Goal</strong>
+Find the password stored in <code>data.txt</code> next to the word "millionth".</p>
+<p><strong>Commands Used</strong></p>
+<pre><code class="language-bash">ls
+grep &quot;millionth&quot; data.txt
+</code></pre>
+<p><strong>Solution Explanation</strong></p>
+<ul>
+<li>The <code>grep</code> command searches for patterns inside files</li>
+<li><code>grep "millionth" data.txt</code> quickly located the line containing "millionth"</li>
+<li>The password appeared on the same line after the word</li>
+</ul>
+<p><strong>Password for Next Level</strong>
+<code>dfwvzFQi4mU0wFnNbFOe9ROwskMLg7eEc</code></p>
+<p>??? example "Screenshot"
+    <figure class="report-shot">
+      <img src="/career-development/workshops/cybersecurity-crash-course/pics/level-7-→-level-8.png" alt="Level 7 to Level 8 Screenshot" loading="lazy" decoding="async">
+      <figcaption>Pinpointing the keyword match inside <code>data.txt</code> with <code>grep</code>.</figcaption>
+    </figure></p>
+<hr />
+<h2 class="level-hero" id="level-8-9">Level 8 → Level 9</h2>
+<p><strong>Goal</strong>
+Find the password in <code>data.txt</code> that is the only line occurring exactly once.</p>
+<p><strong>Commands Used</strong></p>
+<pre><code class="language-bash">sort data.txt | uniq -u
+</code></pre>
+<p><strong>Solution Explanation</strong></p>
+<ul>
+<li><code>sort data.txt</code> rearranges all lines so duplicates appear adjacent</li>
+<li><code>uniq -u</code> filters and shows only lines that occur exactly once</li>
+<li>The unique line is the password</li>
+</ul>
+<p><strong>Password for Next Level</strong>
+<code>4CKMh1Jl9IbUIZZPXDQGamal4xvAgOJIM</code></p>
+<p>??? example "Screenshot"
+    <figure class="report-shot">
+      <img src="/career-development/workshops/cybersecurity-crash-course/pics/level-8-→-level-9.png" alt="Level 8 to Level 9 Screenshot" loading="lazy" decoding="async">
+      <figcaption>Sorting the file so <code>uniq -u</code> can expose the only unique line.</figcaption>
+    </figure></p>
+<hr />
+<h2 class="level-hero" id="level-9-10">Level 9 → Level 10</h2>
+<p><strong>Goal</strong>
+Extract the password from a binary file. The password is human-readable and preceded by several <code>=</code> characters.</p>
+<p><strong>Commands Used</strong></p>
+<pre><code class="language-bash">ls
+strings data.txt | grep '='
+</code></pre>
+<p><strong>Solution Explanation</strong></p>
+<ul>
+<li><code>cat data.txt</code> produces unreadable binary content</li>
+<li><code>strings data.txt</code> extracts human-readable text from the binary file</li>
+<li><code>grep '='</code> filters for lines containing <code>=</code> characters</li>
+<li>The password appeared after multiple <code>=</code> signs</li>
+</ul>
+<p><strong>Password for Next Level</strong>
+<code>FGUVW5ilLVJrxX9kMYMMnlN4MgbpfMiqey</code></p>
+<p>??? example "Screenshot"
+    <figure class="report-shot">
+      <img src="/career-development/workshops/cybersecurity-crash-course/pics/level-9-→-level-10.png" alt="Level 9 to Level 10 Screenshot" loading="lazy" decoding="async">
+      <figcaption>Extracting readable strings from binary content before filtering them.</figcaption>
+    </figure></p>
+<hr />
+<section class="lab-phase" id="phase-4">
+  <p class="lab-phase__eyebrow">Phase 4</p>
+  <h3 class="lab-phase__title">Decoding and Layered File Analysis</h3>
+  <p class="lab-phase__summary">
+    Levels 10 through 12 focus on translation and transformation: Base64,
+    ROT13, and nested compression chains that require repeated file-type checks.
+  </p>
+</section>
+
+<h2 class="level-hero" id="level-10-11">Level 10 → Level 11</h2>
+<p><strong>Goal</strong>
+Extract the password from a file containing Base64 encoded data.</p>
+<p><strong>Commands Used</strong></p>
+<pre><code class="language-bash">cat data.txt
+cat data.txt | base64 -d
+</code></pre>
+<p><strong>Solution Explanation</strong></p>
+<ul>
+<li>Viewing the file with <code>cat</code> shows Base64 encoded text</li>
+<li><code>base64 -d</code> decodes the data into human-readable text</li>
+<li>The decoded output reveals the password</li>
+</ul>
+<p><strong>Common Mistakes</strong>
+- Assuming the Base64 output is already the password (it still needs to be decoded)</p>
+<p><strong>Password for Next Level</strong>
+<code>dtR173fZKb0RRsDFSGsg2RWnpNVj3qRr</code></p>
+<p>??? example "Screenshot"
+    <figure class="report-shot">
+      <img src="/career-development/workshops/cybersecurity-crash-course/pics/level-10-→-level-11.png" alt="Level 10 to Level 11 Screenshot" loading="lazy" decoding="async">
+      <figcaption>Decoding Base64 content back into human-readable output.</figcaption>
+    </figure></p>
+<hr />
+<h2 class="level-hero" id="level-11-12">Level 11 → Level 12</h2>
+<p><strong>Goal</strong>
+Decode text stored in <code>data.txt</code> that is encoded using ROT13.</p>
+<p><strong>Commands Used</strong></p>
+<pre><code class="language-bash">cat data.txt | tr 'A-Za-z' 'N-ZA-Mn-za-m'
+</code></pre>
+<p><strong>Solution Explanation</strong></p>
+<ul>
+<li>The file contains text where alphabetical characters are shifted by 13 positions</li>
+<li>The <code>tr</code> command rotates uppercase and lowercase letters by 13 positions</li>
+<li>This reveals the password</li>
+</ul>
+<p><strong>Common Mistakes</strong>
+- Attempting to use <code>sort</code> which does not decode ROT13</p>
+<p><strong>Password for Next Level</strong>
+<code>7x16WNeHIi5YkIhWsfFIqoognUTyj9Q4</code></p>
+<p>??? example "Screenshot"
+    <figure class="report-shot">
+      <img src="/career-development/workshops/cybersecurity-crash-course/pics/level-11-→-level-12.png" alt="Level 11 to Level 12 Screenshot" loading="lazy" decoding="async">
+      <figcaption>Applying ROT13 with <code>tr</code> to recover the original text.</figcaption>
+    </figure></p>
+<hr />
+<h2 class="level-hero" id="level-12-13">Level 12 → Level 13</h2>
+<p><strong>Goal</strong>
+Extract the password from a repeatedly compressed hex-dumped file.</p>
+<p><strong>Commands Used</strong></p>
+<pre><code class="language-bash">xxd -r data.txt &gt; data.bin
+file data.bin
+# Repeated decompression with gzip, bzip2, tar, etc.
+</code></pre>
+<p><strong>Solution Explanation</strong></p>
+<ul>
+<li>The data is provided as a hex dump that needs to be reversed to binary using <code>xxd -r</code></li>
+<li>The resulting file underwent multiple layers of compression</li>
+<li>Each compression layer was identified using <code>file</code>, then decompressed appropriately</li>
+</ul>
+<p><strong>Command Mapping</strong></p>
+<table>
+<thead>
+<tr>
+<th>If <code>file</code> shows...</th>
+<th>Then do...</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ASCII text</td>
+<td>Display using <code>cat</code></td>
+</tr>
+<tr>
+<td>gzip compressed data</td>
+<td>Rename to <code>.gz</code> and decompress with <code>gzip -d</code></td>
+</tr>
+<tr>
+<td>bzip2 compressed data</td>
+<td>Rename to <code>.bz2</code> and decompress with <code>bzip2 -d</code></td>
+</tr>
+<tr>
+<td>POSIX tar archive</td>
+<td>Rename to <code>.tar</code> and extract with <code>tar -xf</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Common Mistakes</strong>
+- Attempting decompression without identifying the file type first
+- Renaming to incorrect extensions</p>
+<p><strong>Password for Next Level</strong>
+<code>FO9dwdCWjbaiIh0h8J2eUKs2vdTDwAn</code></p>
+<p>??? example "Screenshot"
+    <figure class="report-shot">
+      <img src="/career-development/workshops/cybersecurity-crash-course/pics/level-12-→-level-13.png" alt="Level 12 to Level 13 Screenshot" loading="lazy" decoding="async">
+      <figcaption>Peeling back compression layers one format at a time.</figcaption>
+    </figure></p>
+<hr />
+<section class="lab-phase" id="phase-5">
+  <p class="lab-phase__eyebrow">Phase 5</p>
+  <h3 class="lab-phase__title">Network Services, TLS, and Port Recon</h3>
+  <p class="lab-phase__summary">
+    Levels 13 through 16 move from local inspection into remote interaction:
+    SSH key auth, plaintext sockets, encrypted services, and port scanning to
+    find the right target.
+  </p>
+</section>
+
+<h2 class="level-hero" id="level-13-14">Level 13 → Level 14</h2>
+<p><strong>Goal</strong>
+Use the provided private SSH key to log in as bandit14.</p>
+<p><strong>Commands Used</strong></p>
+<pre><code class="language-bash">ls -l
+chmod 600 sshkey.private
+ssh -i sshkey.private bandit14@bandit.labs.overthewire.org -p 2220
+</code></pre>
+<p><strong>Solution Explanation</strong></p>
+<ul>
+<li>Listed files and found <code>sshkey.private</code></li>
+<li>Adjusted file permissions using <code>chmod 600</code> (required by SSH for private keys)</li>
+<li>Successfully authenticated as bandit14 using the private key with <code>-i</code> flag</li>
+<li>Note: connecting to localhost is blocked, so the remote hostname must be used</li>
+</ul>
+<p><strong>Password for Next Level</strong>
+No password required  -  access to the bandit14 account is the goal.</p>
+<hr />
+<h2 class="level-hero" id="level-14-15">Level 14 → Level 15</h2>
+<p><strong>Goal</strong>
+Retrieve the password for bandit15 by sending the current level's password to port 30000 on localhost.</p>
+<p><strong>Commands Used</strong></p>
+<pre><code class="language-bash">cat /etc/bandit_pass/bandit14
+nc localhost 30000
+</code></pre>
+<p><strong>Solution Explanation</strong></p>
+<ul>
+<li>Read the current password from <code>/etc/bandit_pass/bandit14</code></li>
+<li>Connected to port 30000 using netcat (<code>nc</code>)</li>
+<li>Submitted the current password as input</li>
+<li>Received the password for the next level</li>
+</ul>
+<p><strong>Password for Next Level</strong>
+<code>8xCjnmgoKbgGLhHFAZ1GE5Tmu4M2tKJQo</code></p>
+<p>??? example "Screenshot"
+    <figure class="report-shot">
+      <img src="/career-development/workshops/cybersecurity-crash-course/pics/level-14-→-level-15.png" alt="Level 14 to Level 15 Screenshot" loading="lazy" decoding="async">
+      <figcaption>Submitting the current password over a local netcat session.</figcaption>
+    </figure></p>
+<hr />
+<h2 class="level-hero" id="level-15-16">Level 15 → Level 16</h2>
+<p><strong>Goal</strong>
+Retrieve the Level 16 password by submitting the current password to port 30001 using SSL/TLS encryption.</p>
+<p><strong>Commands Used</strong></p>
+<pre><code class="language-bash">cat /etc/bandit_pass/bandit15
+openssl s_client -connect localhost:30001
+</code></pre>
+<p><strong>Solution Explanation</strong></p>
+<ul>
+<li>Read the current password</li>
+<li>Established an SSL/TLS connection using <code>openssl s_client</code></li>
+<li>Manually entered the password into the SSL session</li>
+<li>Received the next level password</li>
+</ul>
+<p><strong>Common Mistakes</strong>
+- Using plain netcat (encryption is required on this port)</p>
+<p><strong>Password for Next Level</strong>
+<code>kSkvUpMQ7lBYyCM4GBPvCvT1BfWRy0Dx</code></p>
+<p>??? example "Screenshot"
+    <figure class="report-shot">
+      <img src="/career-development/workshops/cybersecurity-crash-course/pics/level-15-→-level-16.png" alt="Level 15 to Level 16 Screenshot" loading="lazy" decoding="async">
+      <figcaption>Using an SSL/TLS session instead of plain TCP for the next secret.</figcaption>
+    </figure></p>
+<hr />
+<h2 class="level-hero" id="level-16-17">Level 16 → Level 17</h2>
+<p><strong>Goal</strong>
+Find the correct SSL-enabled port between 31000 - 32000 and submit the password to retrieve credentials for bandit17.</p>
+<p><strong>Commands Used</strong></p>
+<pre><code class="language-bash">cat /etc/bandit_pass/bandit16
+nmap -sV -p31000-32000 localhost
+openssl s_client -connect localhost:31790
+</code></pre>
+<p><strong>Solution Explanation</strong></p>
+<ul>
+<li>Scanned ports 31000 - 32000 using <code>nmap</code> with service detection</li>
+<li>Nmap revealed several open ports, with 31518 and 31790 speaking SSL</li>
+<li>Port 31518 returned only an echo with KEYUPDATE</li>
+<li>Port 31790 returned an RSA private key for bandit17 after submitting the password</li>
+<li>Saved the RSA key locally, set permissions to 600, and used it to SSH into bandit17</li>
+</ul>
+<p><strong>Nmap Results</strong></p>
+<table>
+<thead>
+<tr>
+<th>Port</th>
+<th>Status</th>
+<th>Service</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>31046</td>
+<td>open</td>
+<td>echo</td>
+</tr>
+<tr>
+<td>31518</td>
+<td>open</td>
+<td>ssl/echo</td>
+</tr>
+<tr>
+<td>31691</td>
+<td>open</td>
+<td>echo</td>
+</tr>
+<tr>
+<td>31790</td>
+<td>open</td>
+<td>ssl/unknown</td>
+</tr>
+<tr>
+<td>31960</td>
+<td>open</td>
+<td>echo</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Password for Next Level</strong>
+RSA Private Key (used for SSH authentication)</p>
+<p>??? example "Screenshot"
+    <figure class="report-shot">
+      <img src="/career-development/workshops/cybersecurity-crash-course/pics/level-16-→-level-17.png" alt="Level 16 to Level 17 Screenshot" loading="lazy" decoding="async">
+      <figcaption>Recon results leading to the SSL-enabled port that returns the SSH key.</figcaption>
+    </figure></p>
+<hr />
+<section class="lab-phase" id="phase-6">
+  <p class="lab-phase__eyebrow">Phase 6</p>
+  <h3 class="lab-phase__title">Diffing, Shell Bypass, and Controlled Privilege Use</h3>
+  <p class="lab-phase__summary">
+    Levels 17 through 20 highlight access-control edge cases: changed files,
+    non-interactive shell entry, SUID helpers, and daemon interaction across
+    multiple terminals.
+  </p>
+</section>
+
+<h2 class="level-hero" id="level-17-18">Level 17 → Level 18</h2>
+<p><strong>Goal</strong>
+Compare two files to find the password that has changed.</p>
+<p><strong>Commands Used</strong></p>
+<pre><code class="language-bash">ls
+diff passwords.old passwords.new
+</code></pre>
+<p><strong>Solution Explanation</strong></p>
+<ul>
+<li>Listed files to find <code>passwords.old</code> and <code>passwords.new</code></li>
+<li>Used <code>diff</code> to compare the two files</li>
+<li>The changed line indicates the new password</li>
+</ul>
+<p><strong>Password for Next Level</strong>
+<code>x2gLTTjFwMOhQ8oWNbMN362QKxfRqGl0</code></p>
+<p><strong>Screenshots</strong></p>
+<div class="report-shot-grid">
+  <figure class="report-shot">
+    <img src="/career-development/workshops/cybersecurity-crash-course/pics/level-17-→-level-18.png" alt="Level 17 to Level 18 Screenshot 1" loading="lazy" decoding="async">
+    <figcaption>Comparing the old and new password files with `diff`.</figcaption>
+  </figure>
+  <figure class="report-shot">
+    <img src="/career-development/workshops/cybersecurity-crash-course/pics/level-17-→-level-18_2.png" alt="Level 17 to Level 18 Screenshot 2" loading="lazy" decoding="async">
+    <figcaption>The changed line reveals the credential for the next level.</figcaption>
+  </figure>
+</div>
+
+<hr />
+<h2 class="level-hero" id="level-18-19">Level 18 → Level 19</h2>
+<p><strong>Goal</strong>
+The password is in a file named <code>readme</code>, but logging in normally triggers a modified <code>.bashrc</code> that immediately terminates the session.</p>
+<p><strong>Commands Used</strong></p>
+<pre><code class="language-bash">ssh bandit18@bandit.labs.overthewire.org -p 2220 cat readme
+</code></pre>
+<p><strong>Solution Explanation</strong></p>
+<ul>
+<li>Normal SSH login is not possible because <code>.bashrc</code> executes <code>exit</code></li>
+<li>Non-interactive SSH commands bypass <code>.bashrc</code></li>
+<li>Executing <code>cat readme</code> directly over SSH retrieves the password without triggering the logout</li>
+</ul>
+<p><strong>Password for Next Level</strong>
+<code>cGWpMaKXVwDUNgPAVJbWYuGHVn9zl3j8</code></p>
+<p>??? example "Screenshot"
+    <figure class="report-shot">
+      <img src="/career-development/workshops/cybersecurity-crash-course/pics/level-18-→-level-19.png" alt="Level 18 to Level 19 Screenshot" loading="lazy" decoding="async">
+      <figcaption>Bypassing the sabotaged interactive shell with a direct SSH command.</figcaption>
+    </figure></p>
+<hr />
+<h2 class="level-hero" id="level-19-20">Level 19 → Level 20</h2>
+<p><strong>Goal</strong>
+Use a setuid binary to access the next level password.</p>
+<p><strong>Commands Used</strong></p>
+<pre><code class="language-bash">ls -l
+./bandit20-do cat /etc/bandit_pass/bandit20
+</code></pre>
+<p><strong>Solution Explanation</strong></p>
+<ul>
+<li>The file <code>bandit20-do</code> has the setuid bit set (<code>rws</code>) and is owned by bandit20</li>
+<li>This binary runs commands with bandit20 privileges</li>
+<li>Used it to read the password file for bandit20</li>
+</ul>
+<p><strong>Key Concepts</strong></p>
+<ul>
+<li><strong>setuid binary:</strong> A program that runs with the privileges of its owner instead of the calling user</li>
+<li><strong>Privilege escalation:</strong> Using controlled mechanisms to run commands as another user</li>
+</ul>
+<p><strong>Password for Next Level</strong>
+<code>0qXahG8ZjOVMN9Ghs7iOWsCfZyXOUbYO</code></p>
+<p>??? example "Screenshot"
+    <figure class="report-shot">
+      <img src="/career-development/workshops/cybersecurity-crash-course/pics/level-19-→-level-20.png" alt="Level 19 to Level 20 Screenshot" loading="lazy" decoding="async">
+      <figcaption>Using the setuid helper to read the next password file safely.</figcaption>
+    </figure></p>
+<hr />
+<h2 class="level-hero" id="level-20-21">Level 20 → Level 21</h2>
+<p><strong>Goal</strong>
+Use the <code>suconnect</code> binary to retrieve the password by setting up a listener and client connection.</p>
+<p><strong>Commands Used</strong></p>
+<pre><code class="language-bash"># Terminal 1
+nc -l -p 1234
+
+# Terminal 2
+./suconnect 1234
+</code></pre>
+<p><strong>Solution Explanation</strong></p>
+<ul>
+<li>The <code>suconnect</code> binary connects to a local TCP port as a client</li>
+<li>It receives a password, validates it against the current level password</li>
+<li>If correct, it sends back the next level password</li>
+<li>Two terminals are required: one runs a listener (<code>nc -l -p 1234</code>), the other runs <code>./suconnect 1234</code></li>
+<li>After connection is established, send the current password through the listener to receive bandit21's password</li>
+</ul>
+<p><strong>Common Mistakes</strong>
+- Running <code>./suconnect &lt;port&gt;</code> before starting a listener (results in "Could not connect" error)</p>
+<p><strong>Password for Next Level</strong>
+<code>EeoULMCra2q0dSkYj561DX7s1CpBuOBt</code></p>
+<p>??? example "Screenshot"
+    <figure class="report-shot">
+      <img src="/career-development/workshops/cybersecurity-crash-course/pics/level-20-→-level-21.png" alt="Level 20 to Level 21 Screenshot" loading="lazy" decoding="async">
+      <figcaption>Listener and client coordination to validate the current credential.</figcaption>
+    </figure></p>
+<hr />
+<section class="lab-phase" id="phase-7">
+  <p class="lab-phase__eyebrow">Phase 7</p>
+  <h3 class="lab-phase__title">Cron Jobs, Derived Paths, and Automation Abuse</h3>
+  <p class="lab-phase__summary">
+    Levels 21 through 24 are all about scheduled execution: read the cron
+    configuration, inspect the helper script, predict the output path, and
+    weaponize automation against itself.
+  </p>
+</section>
+
+<h2 class="level-hero" id="level-21-22">Level 21 → Level 22</h2>
+<p><strong>Goal</strong>
+Investigate a cron job that runs automatically and retrieve the password it writes.</p>
+<p><strong>Commands Used</strong></p>
+<pre><code class="language-bash">cd /etc/cron.d
+ls
+cat cronjob_bandit22
+cat /usr/bin/cronjob_bandit22.sh
+cat /tmp/t7O6lds9S0RqQh9aMcz6ShpAoZKF7fgv
+</code></pre>
+<p><strong>Solution Explanation</strong></p>
+<ul>
+<li>The cron configuration file <code>cronjob_bandit22</code> in <code>/etc/cron.d</code> shows a script running every minute as bandit22</li>
+<li>The script <code>/usr/bin/cronjob_bandit22.sh</code> sets permissions on a file in <code>/tmp/</code> and copies the password there</li>
+<li>Reading the generated file in <code>/tmp/</code> reveals the password</li>
+</ul>
+<p><strong>Password for Next Level</strong>
+<code>tRae0UfB9v0UzbCdn9cY0gQnds9GF58Q</code></p>
+<p>??? example "Screenshot"
+    <figure class="report-shot">
+      <img src="/career-development/workshops/cybersecurity-crash-course/pics/level-21-→-level-22.png" alt="Level 21 to Level 22 Screenshot" loading="lazy" decoding="async">
+      <figcaption>Tracing the cron job output file to the leaked password.</figcaption>
+    </figure></p>
+<hr />
+<h2 class="level-hero" id="level-22-23">Level 22 → Level 23</h2>
+<p><strong>Goal</strong>
+Understand a cron script that uses MD5 hashing to create dynamic filenames, then retrieve the password.</p>
+<p><strong>Commands Used</strong></p>
+<pre><code class="language-bash">cd /etc/cron.d
+cat cronjob_bandit23
+cat /usr/bin/cronjob_bandit23.sh
+echo I am user bandit23 | md5sum | cut -d ' ' -f 1
+cat /tmp/&lt;hash&gt;
+</code></pre>
+<p><strong>Solution Explanation</strong></p>
+<ul>
+<li>The cron script computes an MD5 hash of the string "I am user <code>&lt;username&gt;</code>"</li>
+<li>It uses that hash as a filename in <code>/tmp/</code> and copies the password there</li>
+<li>Manually generating the hash for "I am user bandit23" and reading the corresponding file reveals the password</li>
+</ul>
+<p><strong>Common Mistakes</strong>
+- Looking for a static file in <code>/tmp/</code> instead of generating the hash name
+- Incorrect spacing in the echo command (spacing matters for MD5)</p>
+<p><strong>Password for Next Level</strong>
+<code>0Zf11ioIjMVN551jX3CmStKLYqjk54Ga</code></p>
+<p>??? example "Screenshot"
+    <figure class="report-shot">
+      <img src="/career-development/workshops/cybersecurity-crash-course/pics/level-22-→-level-23.png" alt="Level 22 to Level 23 Screenshot" loading="lazy" decoding="async">
+      <figcaption>Reproducing the MD5-based filename used by the scheduled script.</figcaption>
+    </figure></p>
+<hr />
+<h2 class="level-hero" id="level-23-24">Level 23 → Level 24</h2>
+<p><strong>Goal</strong>
+Exploit a cron job that executes and deletes scripts from a specific directory.</p>
+<p><strong>Commands Used</strong></p>
+<pre><code class="language-bash">cd /etc/cron.d
+cat cronjob_bandit24
+cat /usr/bin/cronjob_bandit24.sh
+echo '#!/bin/bash
+cat /etc/bandit_pass/bandit24 &gt; /tmp/b24pass' &gt; exploit.sh
+chmod +x exploit.sh
+cp exploit.sh /var/spool/bandit24/foo/
+sleep 90
+cat /tmp/b24pass
+</code></pre>
+<p><strong>Solution Explanation</strong></p>
+<ul>
+<li>A cron job running as bandit24 executes any script owned by bandit23 in <code>/var/spool/bandit24/foo/</code></li>
+<li>Created a script that reads <code>/etc/bandit_pass/bandit24</code> and writes it to a readable location</li>
+<li>Copied the script to the monitored directory (ownership stays bandit23)</li>
+<li>Waited for cron to execute it (runs every minute)</li>
+<li>Read the output file to get the password</li>
+</ul>
+<p><strong>Common Mistakes</strong>
+- Placing scripts in wrong directory (must be in <code>/var/spool/bandit24/foo/</code>)
+- Not waiting long enough for cron to run
+- Not verifying file ownership</p>
+<p><strong>Password for Next Level</strong>
+<code>gb8KRRCsshuZXI0tUuR6ypOFjiZbf3G8</code></p>
+<p>??? example "Screenshot"
+    <figure class="report-shot">
+      <img src="/career-development/workshops/cybersecurity-crash-course/pics/level-23-→-level-24.png" alt="Level 23 to Level 24 Screenshot" loading="lazy" decoding="async">
+      <figcaption>Dropping an executable payload into the watched spool directory.</figcaption>
+    </figure></p>
+<hr />
+<h2 class="level-hero" id="level-24-25">Level 24 → Level 25</h2>
+<p><strong>Goal</strong>
+Brute-force a 4-digit PIN by submitting password and PIN combinations to a daemon on port 30002.</p>
+<p><strong>Commands Used</strong></p>
+<pre><code class="language-bash">PW=&quot;gb8KRRCsshuZXI0tUuR6ypOFjiZbf3G8&quot;
+for i in $(seq -w 0000 9999); do
+  echo &quot;$PW $i&quot;
+done | nc localhost 30002
+</code></pre>
+<p><strong>Solution Explanation</strong></p>
+<ul>
+<li>A daemon on port 30002 requires the current password and a secret 4-digit PIN (0000 - 9999)</li>
+<li>Used a for loop with <code>seq -w 0000 9999</code> to generate zero-padded PIN codes</li>
+<li>Piped all 10,000 attempts through one netcat connection</li>
+<li>Eventually received: "Correct! The password of user bandit25 is..."</li>
+</ul>
+<p><strong>Common Mistakes</strong>
+- Trying manual trial and error (10,000 combinations)
+- Starting a new connection for each PIN (inefficient)
+- Forgetting zero-padding (daemon expects exactly 4 digits)</p>
+<p><strong>Password for Next Level</strong>
+<code>iCi86ttT4KSNe1armKiwbQNmB3YJP3q4</code></p>
+<p><strong>Screenshots</strong></p>
+<div class="report-shot-grid">
+  <figure class="report-shot">
+    <img src="/career-development/workshops/cybersecurity-crash-course/pics/level-24-→-level-25.png" alt="Level 24 to Level 25 Screenshot 1" loading="lazy" decoding="async">
+    <figcaption>Generating all zero-padded PIN attempts in a single stream.</figcaption>
+  </figure>
+  <figure class="report-shot">
+    <img src="/career-development/workshops/cybersecurity-crash-course/pics/level-24-→-level-25_2.png" alt="Level 24 to Level 25 Screenshot 2" loading="lazy" decoding="async">
+    <figcaption>The daemon eventually returns the valid next-level password.</figcaption>
+  </figure>
+</div>
+
+<hr />
+<section class="lab-phase" id="phase-8">
+  <p class="lab-phase__eyebrow">Phase 8</p>
+  <h3 class="lab-phase__title">Restricted Shell Escapes and Binary-Assisted Access</h3>
+  <p class="lab-phase__summary">
+    Levels 25 and 26 demonstrate how usability features become attack paths:
+    pager escapes, editor shell access, and setuid helpers chained together for
+    privilege transfer.
+  </p>
+</section>
+
+<h2 class="level-hero" id="level-25-26">Level 25 → Level 26</h2>
+<p><strong>Goal</strong>
+Access the bandit26 account which uses a custom shell that immediately logs out. Exploit terminal size and pager behavior to gain access.</p>
+<p>!!! tip "Notable Exploit Chain"
+    This level chains three separate escapes together:
+    terminal size manipulation → <code>more</code> pager → <code>vim</code> → <code>bash</code>.
+    Each step exploits a legitimate tool's feature in an unintended way.</p>
+<p><strong>Commands Used</strong></p>
+<pre><code class="language-bash"># Make terminal very small (resize window)
+ssh bandit26@bandit.labs.overthewire.org -p 2220 -i bandit26.sshkey
+
+# When more pauses:
+v                     # Opens vim
+:set shell=/bin/bash  # Set shell in vim
+:shell                # Spawn shell
+cat /etc/bandit_pass/bandit26
+</code></pre>
+<p><strong>Solution Explanation</strong></p>
+<ul>
+<li>bandit26's shell is <code>/usr/bin/showtext</code> which displays text via <code>more</code> then exits</li>
+<li>Made terminal very small so <code>more</code> doesn't fit content on one screen</li>
+<li>This forces <code>more</code> to display <code>--More--</code> and wait for input</li>
+<li>Pressed <code>v</code> to open vim from more</li>
+<li>In vim, set shell to bash and spawned a shell</li>
+<li>Now have full bash access as bandit26</li>
+</ul>
+<p><strong>Exploit Chain</strong></p>
+<ol>
+<li>Terminal size manipulation → triggers interactive <code>more</code></li>
+<li><code>more</code> → vim escape (pressing <code>v</code>)</li>
+<li><code>vim</code> → bash escape (<code>:set shell=/bin/bash</code> then <code>:shell</code>)</li>
+<li><code>bash</code> → password access</li>
+</ol>
+<p><strong>Password for Next Level</strong>
+<code>s0773xxkk0MXfdqOfPRVr9L3jJBUOgCZ</code></p>
+<p>??? example "Screenshot"
+    <figure class="report-shot">
+      <img src="/career-development/workshops/cybersecurity-crash-course/pics/level-25-→-level-26.png" alt="Level 25 to Level 26 Screenshot" loading="lazy" decoding="async">
+      <figcaption>Triggering the pager path that leads from <code>more</code> into <code>vim</code> and then a shell.</figcaption>
+    </figure></p>
+<hr />
+<h2 class="level-hero" id="level-26-27">Level 26 → Level 27</h2>
+<p><strong>Goal</strong>
+Having escaped the restricted shell, use a setuid binary to retrieve the bandit27 password.</p>
+<p><strong>Commands Used</strong></p>
+<pre><code class="language-bash">ls -la
+./bandit27-do cat /etc/bandit_pass/bandit27
+</code></pre>
+<p><strong>Solution Explanation</strong></p>
+<ul>
+<li>The file <code>bandit27-do</code> has the SUID bit set and is owned by bandit27</li>
+<li>When executed, it runs as user bandit27 even though invoked by bandit26</li>
+<li>Used it to read the password file for bandit27</li>
+</ul>
+<p><strong>Password for Next Level</strong>
+<code>upsNCc7vzaRDx6oZC6GiR6ERwe1MowGB</code></p>
+<p>??? example "Screenshot"
+    <figure class="report-shot">
+      <img src="/career-development/workshops/cybersecurity-crash-course/pics/level-26-→-level-27.png" alt="Level 26 to Level 27 Screenshot" loading="lazy" decoding="async">
+      <figcaption>Using the setuid helper after escaping the restricted environment.</figcaption>
+    </figure></p>
+<hr />
+<section class="lab-phase" id="phase-9">
+  <p class="lab-phase__eyebrow">Phase 9</p>
+  <h3 class="lab-phase__title">Git Reconnaissance and Repository Secrets</h3>
+  <p class="lab-phase__summary">
+    Levels 27 through 31 turn Git into the attack surface: clone repos, inspect
+    history, search alternate branches, reveal tag contents, and trigger remote
+    hooks to exfiltrate secrets.
+  </p>
+</section>
+
+<h2 class="level-hero" id="level-27-28">Level 27 → Level 28</h2>
+<p><strong>Goal</strong>
+Clone a Git repository and retrieve the password from its contents.</p>
+<p><strong>Commands Used</strong></p>
+<pre><code class="language-bash">git clone ssh://bandit27-git@bandit.labs.overthewire.org:2220/home/bandit27-git/repo
+cd repo
+ls
+cat README
+</code></pre>
+<p><strong>Solution Explanation</strong></p>
+<ul>
+<li>Cloned the repository from the local machine (not from within Bandit SSH)</li>
+<li>The repository contains a README file with the password directly visible</li>
+<li>This level introduces Git as a mechanism for distributing secrets</li>
+</ul>
+<p><strong>Password for Next Level</strong>
+<code>Yz9IpL0sBcCeuG7m9uQFt8ZNpS4HZRcN</code></p>
+<p>??? example "Screenshot"
+    <figure class="report-shot">
+      <img src="/career-development/workshops/cybersecurity-crash-course/pics/level-27-→-level-28.png" alt="Level 27 to Level 28 Screenshot" loading="lazy" decoding="async">
+      <figcaption>Cloning the repository and reading the exposed secret from its contents.</figcaption>
+    </figure></p>
+<hr />
+<h2 class="level-hero" id="level-28-29">Level 28 → Level 29</h2>
+<p><strong>Goal</strong>
+Clone a Git repository and analyze its commit history to find a leaked password.</p>
+<p>!!! warning "Real-World Relevance"
+    This is a genuine security issue in production systems  -  credentials committed 
+    to Git and later removed are still fully recoverable via <code>git log</code>. Always use 
+    environment variables or secrets managers. Never commit credentials directly.</p>
+<p><strong>Commands Used</strong></p>
+<pre><code class="language-bash">git clone ssh://bandit28-git@bandit.labs.overthewire.org:2220/home/bandit28-git/repo
+cd repo
+cat README.md
+git log -p
+</code></pre>
+<p><strong>Solution Explanation</strong></p>
+<ul>
+<li>The current README shows the password as <code>xxxxxxxx</code> (redacted)</li>
+<li>Used <code>git log -p</code> to inspect commit history and diffs</li>
+<li>Found a previous commit that contained the actual password before it was removed</li>
+<li>This demonstrates that Git history can leak sensitive data even after removal</li>
+</ul>
+<p><strong>Password for Next Level</strong>
+<code>4pT1t5DENaYuqnqvadYs1oE4QLCdjmJ7</code></p>
+<p>??? example "Screenshot"
+    <figure class="report-shot">
+      <img src="/career-development/workshops/cybersecurity-crash-course/pics/level-28-→-level-29.png" alt="Level 28 to Level 29 Screenshot" loading="lazy" decoding="async">
+      <figcaption>Using commit history and diffs to recover redacted credentials.</figcaption>
+    </figure></p>
+<hr />
+<h2 class="level-hero" id="level-29-30">Level 29 → Level 30</h2>
+<p><strong>Goal</strong>
+Clone a Git repository and check non-default branches to find the password.</p>
+<p><strong>Commands Used</strong></p>
+<pre><code class="language-bash">git clone ssh://bandit29-git@bandit.labs.overthewire.org:2220/home/bandit29-git/repo
+cd repo
+cat README.md
+git branch -r
+git checkout dev
+cat README.md
+</code></pre>
+<p><strong>Solution Explanation</strong></p>
+<ul>
+<li>The master branch README contains: <code>password: &lt;no passwords in production!&gt;</code></li>
+<li>Used <code>git branch -r</code> to list remote branches, revealing <code>origin/dev</code></li>
+<li>Checked out the dev branch with <code>git checkout dev</code></li>
+<li>The README on the dev branch contained the actual password</li>
+</ul>
+<p><strong>Common Mistakes</strong>
+- Only checking the master branch
+- Assuming password was in commit history (like Level 28)</p>
+<p><strong>Password for Next Level</strong>
+<code>qp30ex3VLz5MDG1n91YowTv4Q8l7CDZL</code></p>
+<p>??? example "Screenshot"
+    <figure class="report-shot">
+      <img src="/career-development/workshops/cybersecurity-crash-course/pics/level-29-→-level-30.png" alt="Level 29 to Level 30 Screenshot" loading="lazy" decoding="async">
+      <figcaption>Switching away from the default branch to locate the real password.</figcaption>
+    </figure></p>
+<hr />
+<h2 class="level-hero" id="level-30-31">Level 30 → Level 31</h2>
+<p><strong>Goal</strong>
+Clone a Git repository and examine Git tags to find the password.</p>
+<p><strong>Commands Used</strong></p>
+<pre><code class="language-bash">git clone ssh://bandit30-git@bandit.labs.overthewire.org:2220/home/bandit30-git/repo
+cd repo
+cat README.md
+git tag
+git show secret
+</code></pre>
+<p><strong>Solution Explanation</strong></p>
+<ul>
+<li>The README contains only: <code>just an empty file... muahaha</code></li>
+<li>Used <code>git tag</code> to list tags, revealing a tag named <code>secret</code></li>
+<li><code>git show secret</code> displayed the tag content, which contained the password</li>
+<li>This demonstrates that Git tags can contain sensitive data not visible in the working tree</li>
+</ul>
+<p><strong>Password for Next Level</strong>
+<code>fb5S2xb7bRyFmAvQYQGEqsbhVyJqhnDy</code></p>
+<p>??? example "Screenshot"
+    <figure class="report-shot">
+      <img src="/career-development/workshops/cybersecurity-crash-course/pics/level-30-→-level-31.png" alt="Level 30 to Level 31 Screenshot" loading="lazy" decoding="async">
+      <figcaption>Inspecting the <code>secret</code> tag to reveal hidden repository data.</figcaption>
+    </figure></p>
+<hr />
+<h2 class="level-hero" id="level-31-32">Level 31 → Level 32</h2>
+<p><strong>Goal</strong>
+Push a specific file to a remote Git repository to trigger a validation hook that returns the password.</p>
+<p><strong>Commands Used</strong></p>
+<pre><code class="language-bash">git clone ssh://bandit31-git@bandit.labs.overthewire.org:2220/home/bandit31-git/repo
+cd repo
+cat README.md
+echo &quot;May I come in?&quot; &gt; key.txt
+git add -f key.txt
+git commit -m &quot;Force adding key.txt&quot;
+git push origin master
+</code></pre>
+<p><strong>Solution Explanation</strong></p>
+<ul>
+<li>The README specifies creating <code>key.txt</code> with content "May I come in?" and pushing to master</li>
+<li>The file is ignored by <code>.gitignore</code>, so <code>git add -f</code> is required to force-add it</li>
+<li>After pushing, the remote server runs a validation hook and returns the password</li>
+<li>The push is rejected after validation, but the password is still printed</li>
+</ul>
+<p><strong>Common Mistakes</strong>
+- Not using <code>-f</code> flag when <code>.gitignore</code> blocks the file
+- Stopping when seeing the push rejection (password is still displayed)</p>
+<p><strong>Password for Next Level</strong>
+<code>3O9RfhqyAlVBEZpVb6LYStshZoqoSx5K</code></p>
+<p>??? example "Screenshot"
+    <figure class="report-shot">
+      <img src="/career-development/workshops/cybersecurity-crash-course/pics/level-31-→-level-32.png" alt="Level 31 to Level 32 Screenshot" loading="lazy" decoding="async">
+      <figcaption>Force-adding the required file so the remote validation hook executes.</figcaption>
+    </figure></p>
+<hr />
+<section class="lab-phase" id="phase-10">
+  <p class="lab-phase__eyebrow">Phase 10</p>
+  <h3 class="lab-phase__title">Final Restricted-Shell Bypass</h3>
+  <p class="lab-phase__summary">
+    The last level is short but memorable: the shell mutates normal commands, so
+    the win comes from exploiting expansion behavior instead of typing a command
+    name directly.
+  </p>
+</section>
+
+<h2 class="level-hero" id="level-32-33">Level 32 → Level 33</h2>
+<p><strong>Goal</strong>
+Escape the "uppercase shell" that converts all input to uppercase, preventing normal command execution.</p>
+<p>!!! tip "Key Insight"
+    <code>$0</code> expands to the current shell's binary path before the uppercase filter 
+    processes it  -  making it the only way to reference a command without it 
+    being uppercased into an invalid form.</p>
+<p><strong>Commands Used</strong></p>
+<pre><code class="language-bash">$0
+whoami
+cat /etc/bandit_pass/bandit33
+</code></pre>
+<p><strong>Solution Explanation</strong></p>
+<ul>
+<li>Logging into bandit32 places the user in a restricted shell that forces uppercase conversion</li>
+<li>Normal commands like <code>ls</code> become <code>LS</code> (invalid)</li>
+<li>The binary <code>uppershell</code> is SUID and owned by bandit33</li>
+<li>Used <code>$0</code> which expands to the shell's binary path and is not modified by the uppercase filter</li>
+<li>This dropped into a normal <code>sh</code> session with bandit33 privileges</li>
+<li>From there, standard commands worked and the password file became readable</li>
+</ul>
+<p><strong>Common Mistakes</strong>
+- Trying to run commands like <code>ls</code>, <code>cat</code>, <code>sh</code>, or <code>bash</code> directly (all get uppercased)</p>
+<p><strong>Password for Next Level</strong>
+<code>tQdtbs5D5i2vJwkO8mEyYEyTL8izoeJ0</code></p>
+<p>??? example "Screenshot"
+    <figure class="report-shot">
+      <img src="/career-development/workshops/cybersecurity-crash-course/pics/level-32-→-level-33.png" alt="Level 32 to Level 33 Screenshot" loading="lazy" decoding="async">
+      <figcaption>Escaping the uppercase shell by expanding <code>$0</code> into a normal shell path.</figcaption>
+    </figure></p>
+<hr />
+<h2 id="completion">Completion</h2>
+<div class="grid cards">
+<ul>
+<li>
+<p>:material-trophy-outline: <strong>Levels Completed</strong></p>
+<p>0 → 33</p>
+</li>
+<li>
+<p>:material-check-decagram-outline: <strong>Status</strong></p>
+<p>Complete</p>
+</li>
+<li>
+<p>:material-notebook-check-outline: <strong>Outcome</strong></p>
+<p>Full walkthrough documented with commands, explanations, screenshots, and
+next-level credentials.</p>
+</li>
+</ul>
+</div>
+<hr />
+<h2 id="key-concepts-summary">Key Concepts Summary</h2>
+<div class="grid cards">
+<ul>
+<li>
+<p>:material-folder-cog-outline: <strong>Linux Fundamentals</strong></p>
+<ul>
+<li>File navigation and manipulation</li>
+<li>Hidden files and special characters in filenames</li>
+<li>File permissions and ownership</li>
+<li>Process privileges and setuid binaries</li>
+</ul>
+</li>
+<li>
+<p>:material-text-search: <strong>Text Processing</strong></p>
+<ul>
+<li>Pattern matching with <code>grep</code></li>
+<li>Sorting and filtering with <code>sort</code> and <code>uniq</code></li>
+<li>Extracting strings from binary files</li>
+<li>Encoding and decoding (Base64, ROT13)</li>
+</ul>
+</li>
+<li>
+<p>:material-archive-outline: <strong>Compression &amp; Archiving</strong></p>
+<ul>
+<li>Multiple compression formats (<code>gzip</code>, <code>bzip2</code>, <code>tar</code>)</li>
+<li>Hex dump reversal</li>
+<li>Iterative decompression</li>
+</ul>
+</li>
+<li>
+<p>:material-access-point-network: <strong>Networking</strong></p>
+<ul>
+<li>TCP connections with <code>netcat</code></li>
+<li>SSL/TLS connections with OpenSSL</li>
+<li>Port scanning with <code>nmap</code></li>
+<li>Client-server communication</li>
+</ul>
+</li>
+<li>
+<p>:material-timer-cog-outline: <strong>Automation &amp; Scheduling</strong></p>
+<ul>
+<li>Cron job analysis</li>
+<li>Script-based privilege escalation</li>
+<li>Brute-force automation</li>
+</ul>
+</li>
+<li>
+<p>:material-git: <strong>Version Control (Git)</strong></p>
+<ul>
+<li>Repository cloning</li>
+<li>Commit history analysis</li>
+<li>Branch management</li>
+<li>Tag inspection</li>
+<li>Remote repository interaction</li>
+</ul>
+</li>
+<li>
+<p>:material-lock-open-check-outline: <strong>Privilege Escalation</strong></p>
+<ul>
+<li>Setuid binary exploitation</li>
+<li>Shell escaping techniques</li>
+<li>Restricted shell bypass</li>
+<li>Pager and editor abuse</li>
+</ul>
+</li>
+</ul>
+</div>
+<hr />
+<p><strong>Author:</strong> Shoug Alomran · <strong>Completed:</strong> January 2026</p></div><div class="rendered-content" data-lang-panel="ar" hidden><p>!!! warning "تنبيه"
+    إنذار : تم ترجمة هذه الصفحة باستخدام الذكاء الاصطناعي.</p>
+<h1 id="overthewire-bandit-0-33">OverTheWire Bandit  -  شرح كامل للمستويات (0 ← 33)</h1>
+<p>← <a href="#embedded-content">رجوع إلى نظرة عامة على الورشة</a></p>
+<p><strong>لعبة Bandit:</strong> <a href="https://overthewire.org/wargames/bandit/">overthewire.org/wargames/bandit</a><br />
+<strong>تاريخ الإكمال:</strong> يناير 2026 · <strong>المستويات:</strong> 0 ← 33</p>
+<p><strong>الهدف:</strong> التعرف على أوامر لينكس، الشبكات، صلاحيات الملفات، أنظمة التحكم بالنسخ (Git)، وتصعيد الصلاحيات من خلال تحديات متدرجة.</p>
+<hr />
+<h2 id="_1">تصفح سريع</h2>
+<table>
+<thead>
+<tr>
+<th>المستويات</th>
+<th>التركيز</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="#level-0">0  -  3</a></td>
+<td>اتصال SSH، قراءة الملفات الأساسية، الملفات المخفية</td>
+</tr>
+<tr>
+<td><a href="#level-4-5">4  -  6</a></td>
+<td>أنواع الملفات، أمر find، البحث في نظام الملفات</td>
+</tr>
+<tr>
+<td><a href="#level-7-8">7  -  9</a></td>
+<td>grep، sort/uniq، strings</td>
+</tr>
+<tr>
+<td><a href="#level-10-11">10  -  12</a></td>
+<td>Base64، ROT13، طبقات الضغط</td>
+</tr>
+<tr>
+<td><a href="#level-13-14">13  -  16</a></td>
+<td>مفاتيح SSH، netcat، SSL/TLS، مسح المنافذ</td>
+</tr>
+<tr>
+<td><a href="#level-17-18">17  -  20</a></td>
+<td>diff، تجاوز bashrc، برامج setuid</td>
+</tr>
+<tr>
+<td><a href="#level-21-22">21  -  24</a></td>
+<td>مهام cron، تشفير MD5، هجوم تخمين</td>
+</tr>
+<tr>
+<td><a href="#level-25-26">25  -  27</a></td>
+<td>الهروب من الشل، استغلال vim، SUID</td>
+</tr>
+<tr>
+<td><a href="#level-27-28">27  -  31</a></td>
+<td>تاريخ Git، الفروع، العلامات، hooks</td>
+</tr>
+<tr>
+<td><a href="#level-32-33">32  -  33</a></td>
+<td>تجاوز شل الأحرف الكبيرة</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 class="level-hero" id="level-0">المستوى 0</h2>
+<p><strong>الهدف</strong>
+الاتصال بسيرفر Bandit باستخدام SSH واسترجاع كلمة المرور للمستوى التالي.</p>
+<p><strong>الأوامر المستخدمة</strong></p>
+<pre><code class="language-bash">ssh bandit0@bandit.labs.overthewire.org -p 2220
+</code></pre>
+<p><strong>شرح الحل</strong></p>
+<ul>
+<li>أمر <code>ssh</code> ينشئ اتصال آمن (Secure Shell) بالنظام البعيد</li>
+<li><code>bandit0@bandit.labs.overthewire.org</code> يحدد اسم المستخدم والجهاز المستهدف</li>
+<li>الخيار <code>-p 2220</code> يتصل عبر المنفذ 2220 (مطلوب في Bandit بدلاً من المنفذ الافتراضي 22)</li>
+<li>كلمة مرور المستوى 0 معطاة مباشرة: <code>bandit0</code></li>
+</ul>
+<p><strong>كلمة المرور للمستوى التالي</strong>
+<code>bandit0</code></p>
+<p>??? example "لقطة شاشة"
+    <img alt="المستوى 0" src="/career-development/workshops/cybersecurity-crash-course/pics/level-0.png" loading="lazy" decoding="async"></p>
+<hr />
+<h2 class="level-hero" id="level-0-1">المستوى 0 ← المستوى 1</h2>
+<p><strong>الهدف</strong>
+تحديد موقع الملف الذي يحتوي على كلمة مرور المستوى التالي واستخدامها للدخول كمستخدم bandit1.</p>
+<p><strong>الأوامر المستخدمة</strong></p>
+<pre><code class="language-bash">ls
+cat readme
+</code></pre>
+<p><strong>شرح الحل</strong></p>
+<ul>
+<li>أمر <code>ls</code> عرض الملفات في المجلد الحالي، وأكد وجود ملف اسمه <code>readme</code></li>
+<li>أمر <code>cat readme</code> طبع محتويات ملف readme على الشاشة، وظهرت كلمة المرور</li>
+</ul>
+<p><strong>أخطاء شائعة</strong>
+- محاولة استخدام <code>cd readme</code> (التعامل معه كمجلد بدلاً من ملف)</p>
+<p><strong>كلمة المرور للمستوى التالي</strong>
+<code>ZjLjTmM6FvvyrNrb2rfNWOZ0TA6ip5If</code></p>
+<p>??? example "لقطة شاشة"
+    <img alt="المستوى 0 ← المستوى 1" src="/career-development/workshops/cybersecurity-crash-course/pics/level-0-→-level-1.png" loading="lazy" decoding="async"></p>
+<hr />
+<h2 class="level-hero" id="level-1-2">المستوى 1 ← المستوى 2</h2>
+<p><strong>الهدف</strong>
+قراءة ملف اسمه <code>-</code> ويتطلب معاملة خاصة بسبب وجود الرمز الخاص.</p>
+<p><strong>الأوامر المستخدمة</strong></p>
+<pre><code class="language-bash">ls
+cat ./-
+</code></pre>
+<p><strong>شرح الحل</strong></p>
+<ul>
+<li>أمر <code>ls</code> أظهر ملفًا اسمه <code>-</code></li>
+<li>الأمر <code>cat ./-</code> عرض محتويات الملف</li>
+<li>البادئة <code>./</code> مطلوبة لأن <code>-</code> لوحده يتم تفسيره كمؤشر للإدخال القياسي (stdin)، لذا <code>./-</code> تحدد أنه اسم ملف في المجلد الحالي</li>
+</ul>
+<p><strong>كلمة المرور للمستوى التالي</strong>
+<code>263JGJPfgU6LdtEvgfWU1XP5yac29mFx</code></p>
+<p>??? example "لقطة شاشة"
+    <img alt="المستوى 1 ← المستوى 2" src="/career-development/workshops/cybersecurity-crash-course/pics/level-1-→-level-2.png" loading="lazy" decoding="async"></p>
+<hr />
+<h2 class="level-hero" id="level-2-3">المستوى 2 ← المستوى 3</h2>
+<p><strong>الهدف</strong>
+قراءة ملف يحتوي على مسافات في اسمه ويبدأ بشرطات.</p>
+<p><strong>الأوامر المستخدمة</strong></p>
+<pre><code class="language-bash">ls
+cat -- &quot;--spaces in this filename--&quot;
+</code></pre>
+<p><strong>شرح الحل</strong></p>
+<ul>
+<li>أمر <code>ls</code> أظهر ملفًا اسمه <code>--spaces in this filename--</code></li>
+<li>لأن اسم الملف يبدأ بـ <code>--</code> ويحتوي على مسافات، الأمر استخدم:</li>
+<li>أول <code>--</code> للإشارة إلى نهاية الخيارات</li>
+<li>علامات اقتباس حول اسم الملف للتعامل مع المسافات</li>
+<li>هذا يضمن معاملة اسم الملف كوسيط ملف عادي</li>
+</ul>
+<p><strong>كلمة المرور للمستوى التالي</strong>
+<code>MNk8KNH3USiio41PRUEoDFPqFxLPlSmx</code></p>
+<p>??? example "لقطة شاشة"
+    <img alt="المستوى 2 ←المستوى 3" src="/career-development/workshops/cybersecurity-crash-course/pics/level-2-→level-3.png" loading="lazy" decoding="async"></p>
+<hr />
+<h2 class="level-hero" id="level-3-4">المستوى 3 ← المستوى 4</h2>
+<p><strong>الهدف</strong>
+تحديد موقع وقراءة ملف مخفي داخل مجلد <code>inhere</code>.</p>
+<p><strong>الأوامر المستخدمة</strong></p>
+<pre><code class="language-bash">ls
+cd inhere
+ls -a
+cat &quot;...Hiding-From-You&quot;
+</code></pre>
+<p><strong>شرح الحل</strong></p>
+<ul>
+<li>أمر <code>ls</code> حدد وجود مجلد <code>inhere</code></li>
+<li>بعد الدخول للمجلد، أمر <code>ls</code> ثاني أظهر عدم وجود ملفات مرئية</li>
+<li><code>ls -a</code> استُخدم لعرض كل الملفات، بما فيها المخفية (الملفات التي تبدأ بـ <code>.</code>)</li>
+<li>الملف المخفي <code>...Hiding-From-You</code> ظهر وتمت قراءته بـ <code>cat</code></li>
+<li>تم استخدام علامات اقتباس لأن اسم الملف يبدأ بعدة نقاط</li>
+</ul>
+<p><strong>كلمة المرور للمستوى التالي</strong>
+<code>2WmrDFRmJIq3IPxneAaMGhap0pFhF3NJ</code></p>
+<hr />
+<h2 class="level-hero" id="level-4-5">المستوى 4 ← المستوى 5</h2>
+<p><strong>الهدف</strong>
+تحديد موقع وقراءة كلمة المرور من الملف الوحيد المقروء (نص بشري) بين عدة ملفات في مجلد <code>inhere</code>.</p>
+<p><strong>الأوامر المستخدمة</strong></p>
+<pre><code class="language-bash">cd inhere
+ls
+file ./*
+cat ./-file07
+</code></pre>
+<p><strong>شرح الحل</strong></p>
+<ul>
+<li>أمر <code>ls</code> أظهر عدة ملفات مسماة ببادئة شرطة (<code>-file00</code>, <code>-file01</code>, إلخ)</li>
+<li><code>file ./*</code> استُخدم لتحديد نوع كل ملف</li>
+<li>فقط <code>-file07</code> كان نص ASCII (نص بشري مقروء)</li>
+<li><code>cat ./-file07</code> عرض المحتويات (البادئة <code>./</code> تمنع تفسير <code>-</code> كخيار)</li>
+</ul>
+<p><strong>كلمة المرور للمستوى التالي</strong>
+<code>4oQYVPkXZOOEO5pTW8IFB8jLXxXGUQw</code></p>
+<p>??? example "لقطة شاشة"
+    <img alt="المستوى 4 ← المستوى 5" src="/career-development/workshops/cybersecurity-crash-course/pics/level-4-→-level-5.png" loading="lazy" decoding="async"></p>
+<hr />
+<h2 class="level-hero" id="level-5-6">المستوى 5 ← المستوى 6</h2>
+<p><strong>الهدف</strong>
+إيجاد كلمة المرور المخزنة في ملف بخصائص محددة: مقروء بشريًا، حجمه 1033 بايت، وغير قابل للتنفيذ.</p>
+<p><strong>الأوامر المستخدمة</strong></p>
+<pre><code class="language-bash">cd inhere
+ls
+find . -type f -size 1033c
+cat ./maybehere07/.file2
+</code></pre>
+<p><strong>شرح الحل</strong></p>
+<ul>
+<li>أمر <code>ls</code> عرض عدة مجلدات فرعية (<code>maybehere00</code> إلى <code>maybehere19</code>)</li>
+<li>بدلاً من فحص كل مجلد يدويًا، <code>find . -type f -size 1033c</code> بحث بشكل متكرر عن ملفات حجمها بالضبط 1033 بايت</li>
+<li>الأمر أرجع <code>./maybehere07/.file2</code></li>
+<li><code>cat</code> عرض محتوياته وكلمة المرور</li>
+</ul>
+<p><strong>كلمة المرور للمستوى التالي</strong>
+<code>HWasnPhtq9AVKe0dmk45knq0vcUahz0E6G</code></p>
+<p>??? example "لقطة شاشة"
+    <img alt="المستوى 5 ← المستوى 6" src="/career-development/workshops/cybersecurity-crash-course/pics/level-5-→-level-6.png" loading="lazy" decoding="async"></p>
+<hr />
+<h2 class="level-hero" id="level-6-7">المستوى 6 ← المستوى 7</h2>
+<p><strong>الهدف</strong>
+تحديد موقع ملف في أي مكان بالنظام مملوك للمستخدم <code>bandit7</code> والمجموعة <code>bandit6</code> وحجمه بالضبط 33 بايت.</p>
+<p><strong>الأوامر المستخدمة</strong></p>
+<pre><code class="language-bash">find / -type f -user bandit7 -group bandit6 -size 33c 2&gt;/dev/null
+cat /var/lib/dpkg/info/bandit7.password
+</code></pre>
+<p><strong>شرح الحل</strong></p>
+<ul>
+<li>أمر <code>find</code> بحث في نظام الملفات بالكامل (<code>/</code>) عن ملفات تطابق المعايير الثلاثة</li>
+<li><code>2&gt;/dev/null</code> أخفى أخطاء رفض الصلاحية</li>
+<li>الأمر أرجع <code>/var/lib/dpkg/info/bandit7.password</code></li>
+<li><code>cat</code> عرض كلمة المرور</li>
+</ul>
+<p><strong>كلمة المرور للمستوى التالي</strong>
+<code>z7WtoNQU2XfjmMtKjX3iql6i6cA99Ce</code></p>
+<p>??? example "لقطة شاشة"
+    <img alt="المستوى 6 ← المستوى 7" src="/career-development/workshops/cybersecurity-crash-course/pics/level-6-→-level-7.png" loading="lazy" decoding="async"></p>
+<hr />
+<h2 class="level-hero" id="level-7-8">المستوى 7 ← المستوى 8</h2>
+<p><strong>الهدف</strong>
+إيجاد كلمة المرور المخزنة في <code>data.txt</code> بجانب كلمة "millionth".</p>
+<p><strong>الأوامر المستخدمة</strong></p>
+<pre><code class="language-bash">ls
+grep &quot;millionth&quot; data.txt
+</code></pre>
+<p><strong>شرح الحل</strong></p>
+<ul>
+<li>أمر <code>grep</code> يبحث عن أنماط داخل الملفات</li>
+<li><code>grep "millionth" data.txt</code> حدد بسرعة السطر الذي يحتوي على "millionth"</li>
+<li>كلمة المرور ظهرت في نفس السطر بعد الكلمة</li>
+</ul>
+<p><strong>كلمة المرور للمستوى التالي</strong>
+<code>dfwvzFQi4mU0wFnNbFOe9ROwskMLg7eEc</code></p>
+<p>??? example "لقطة شاشة"
+    <img alt="المستوى 7 ← المستوى 8" src="/career-development/workshops/cybersecurity-crash-course/pics/level-7-→-level-8.png" loading="lazy" decoding="async"></p>
+<hr />
+<h2 class="level-hero" id="level-8-9">المستوى 8 ← المستوى 9</h2>
+<p><strong>الهدف</strong>
+إيجاد كلمة المرور في <code>data.txt</code> التي هي السطر الوحيد الذي يتكرر مرة واحدة بالضبط.</p>
+<p><strong>الأوامر المستخدمة</strong></p>
+<pre><code class="language-bash">sort data.txt | uniq -u
+</code></pre>
+<p><strong>شرح الحل</strong></p>
+<ul>
+<li><code>sort data.txt</code> يعيد ترتيب كل الأسطر بحيث تظهر التكرارات متجاورة</li>
+<li><code>uniq -u</code> يصفى ويعرض فقط الأسطر التي تحدث مرة واحدة بالضبط</li>
+<li>السطر الفريد هو كلمة المرور</li>
+</ul>
+<p><strong>كلمة المرور للمستوى التالي</strong>
+<code>4CKMh1Jl9IbUIZZPXDQGamal4xvAgOJIM</code></p>
+<p>??? example "لقطة شاشة"
+    <img alt="المستوى 8 ← المستوى 9" src="/career-development/workshops/cybersecurity-crash-course/pics/level-8-→-level-9.png" loading="lazy" decoding="async"></p>
+<hr />
+<h2 class="level-hero" id="level-9-10">المستوى 9 ← المستوى 10</h2>
+<p><strong>الهدف</strong>
+استخراج كلمة المرور من ملف ثنائي. كلمة المرور نص بشري مقروء وتسبقها عدة علامات <code>=</code>.</p>
+<p><strong>الأوامر المستخدمة</strong></p>
+<pre><code class="language-bash">ls
+strings data.txt | grep '='
+</code></pre>
+<p><strong>شرح الحل</strong></p>
+<ul>
+<li><code>cat data.txt</code> يعطي محتوى ثنائي غير مقروء</li>
+<li><code>strings data.txt</code> يستخرج النص المقروء بشريًا من الملف الثنائي</li>
+<li><code>grep '='</code> يصفى للأسطر التي تحتوي على علامات <code>=</code></li>
+<li>كلمة المرور ظهرت بعد عدة علامات <code>=</code></li>
+</ul>
+<p><strong>كلمة المرور للمستوى التالي</strong>
+<code>FGUVW5ilLVJrxX9kMYMMnlN4MgbpfMiqey</code></p>
+<p>??? example "لقطة شاشة"
+    <img alt="المستوى 9 ← المستوى 10" src="/career-development/workshops/cybersecurity-crash-course/pics/level-9-→-level-10.png" loading="lazy" decoding="async"></p>
+<hr />
+<h2 class="level-hero" id="level-10-11">المستوى 10 ← المستوى 11</h2>
+<p><strong>الهدف</strong>
+استخراج كلمة المرور من ملف يحتوي على بيانات مشفرة بـ Base64.</p>
+<p><strong>الأوامر المستخدمة</strong></p>
+<pre><code class="language-bash">cat data.txt
+cat data.txt | base64 -d
+</code></pre>
+<p><strong>شرح الحل</strong></p>
+<ul>
+<li>عرض الملف بـ <code>cat</code> يظهر نصًا مشفرًا بـ Base64</li>
+<li><code>base64 -d</code> يفك تشفير البيانات إلى نص مقروء</li>
+<li>المخرجات المفكوكة تظهر كلمة المرور</li>
+</ul>
+<p><strong>أخطاء شائعة</strong>
+- افتراض أن مخرجات Base64 هي كلمة المرور نفسها (ما زالت بحاجة لفك التشفير)</p>
+<p><strong>كلمة المرور للمستوى التالي</strong>
+<code>dtR173fZKb0RRsDFSGsg2RWnpNVj3qRr</code></p>
+<p>??? example "لقطة شاشة"
+    <img alt="المستوى 10 ← المستوى 11" src="/career-development/workshops/cybersecurity-crash-course/pics/level-10-→-level-11.png" loading="lazy" decoding="async"></p>
+<hr />
+<h2 class="level-hero" id="level-11-12">المستوى 11 ← المستوى 12</h2>
+<p><strong>الهدف</strong>
+فك تشفير نص مخزن في <code>data.txt</code> مشفر باستخدام ROT13.</p>
+<p><strong>الأوامر المستخدمة</strong></p>
+<pre><code class="language-bash">cat data.txt | tr 'A-Za-z' 'N-ZA-Mn-za-m'
+</code></pre>
+<p><strong>شرح الحل</strong></p>
+<ul>
+<li>الملف يحتوي على نص حيث الحروف الأبجدية منقولة 13 موضعًا</li>
+<li>أمر <code>tr</code> يدور الحروف الكبيرة والصغيرة 13 موضعًا</li>
+<li>هذا يظهر كلمة المرور</li>
+</ul>
+<p><strong>أخطاء شائعة</strong>
+- محاولة استخدام <code>sort</code> الذي لا يفك تشفير ROT13</p>
+<p><strong>كلمة المرور للمستوى التالي</strong>
+<code>7x16WNeHIi5YkIhWsfFIqoognUTyj9Q4</code></p>
+<p>??? example "لقطة شاشة"
+    <img alt="المستوى 11 ← المستوى 12" src="/career-development/workshops/cybersecurity-crash-course/pics/level-11-→-level-12.png" loading="lazy" decoding="async"></p>
+<hr />
+<h2 class="level-hero" id="level-12-13">المستوى 12 ← المستوى 13</h2>
+<p><strong>الهدف</strong>
+استخراج كلمة المرور من ملف مضغوط بشكل متكرر وتم تفريغه بصيغة hex dump.</p>
+<p><strong>الأوامر المستخدمة</strong></p>
+<pre><code class="language-bash">xxd -r data.txt &gt; data.bin
+file data.bin
+# فك الضغط المتكرر باستخدام gzip, bzip2, tar, إلخ
+</code></pre>
+<p><strong>شرح الحل</strong></p>
+<ul>
+<li>البيانات معطاة كـ hex dump وتحتاج لعكسها لملف ثنائي باستخدام <code>xxd -r</code></li>
+<li>الملف الناتج مر بعدة طبقات من الضغط</li>
+<li>كل طبقة ضغط تم تحديدها باستخدام <code>file</code>، ثم فك ضغطها بشكل مناسب</li>
+</ul>
+<p><strong>دليل الأوامر</strong></p>
+<table>
+<thead>
+<tr>
+<th>إذا أظهر <code>file</code>...</th>
+<th>إذن افعل...</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ASCII text</td>
+<td>اعرض باستخدام <code>cat</code></td>
+</tr>
+<tr>
+<td>gzip compressed data</td>
+<td>غيّر الاسم إلى <code>.gz</code> وفك الضغط بـ <code>gzip -d</code></td>
+</tr>
+<tr>
+<td>bzip2 compressed data</td>
+<td>غيّر الاسم إلى <code>.bz2</code> وفك الضغط بـ <code>bzip2 -d</code></td>
+</tr>
+<tr>
+<td>POSIX tar archive</td>
+<td>غيّر الاسم إلى <code>.tar</code> واستخرج بـ <code>tar -xf</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>أخطاء شائعة</strong>
+- محاولة فك الضغط دون تحديد نوع الملف أولاً
+- تغيير الامتداد إلى امتدادات غير صحيحة</p>
+<p><strong>كلمة المرور للمستوى التالي</strong>
+<code>FO9dwdCWjbaiIh0h8J2eUKs2vdTDwAn</code></p>
+<p>??? example "لقطة شاشة"
+    <img alt="المستوى 12 ← المستوى 13" src="/career-development/workshops/cybersecurity-crash-course/pics/level-12-→-level-13.png" loading="lazy" decoding="async"></p>
+<hr />
+<h2 class="level-hero" id="level-13-14">المستوى 13 ← المستوى 14</h2>
+<p><strong>الهدف</strong>
+استخدام مفتاح SSH الخاص المُعطى للدخول كمستخدم bandit14.</p>
+<p><strong>الأوامر المستخدمة</strong></p>
+<pre><code class="language-bash">ls -l
+chmod 600 sshkey.private
+ssh -i sshkey.private bandit14@bandit.labs.overthewire.org -p 2220
+</code></pre>
+<p><strong>شرح الحل</strong></p>
+<ul>
+<li>عرض الملفات ووجدنا <code>sshkey.private</code></li>
+<li>تعديل صلاحيات الملف باستخدام <code>chmod 600</code> (مطلوب من SSH للمفاتيح الخاصة)</li>
+<li>تم تسجيل الدخول بنجاح كمستخدم bandit14 باستخدام المفتاح الخاص مع الخيار <code>-i</code></li>
+<li>ملاحظة: الاتصال بـ localhost محظور، لذا يجب استخدام اسم الجهاز البعيد</li>
+</ul>
+<p><strong>كلمة المرور للمستوى التالي</strong>
+لا توجد كلمة مرور  -  الوصول لحساب bandit14 هو الهدف.</p>
+<hr />
+<h2 class="level-hero" id="level-14-15">المستوى 14 ← المستوى 15</h2>
+<p><strong>الهدف</strong>
+استرجاع كلمة مرور bandit15 بإرسال كلمة مرور المستوى الحالي إلى المنفذ 30000 على الجهاز المحلي (localhost).</p>
+<p><strong>الأوامر المستخدمة</strong></p>
+<pre><code class="language-bash">cat /etc/bandit_pass/bandit14
+nc localhost 30000
+</code></pre>
+<p><strong>شرح الحل</strong></p>
+<ul>
+<li>قراءة كلمة المرور الحالية من <code>/etc/bandit_pass/bandit14</code></li>
+<li>الاتصال بالمنفذ 30000 باستخدام netcat (<code>nc</code>)</li>
+<li>إرسال كلمة المرور الحالية كمدخلات</li>
+<li>استلام كلمة مرور المستوى التالي</li>
+</ul>
+<p><strong>كلمة المرور للمستوى التالي</strong>
+<code>8xCjnmgoKbgGLhHFAZ1GE5Tmu4M2tKJQo</code></p>
+<p>??? example "لقطة شاشة"
+    <img alt="المستوى 14 ← المستوى 15" src="/career-development/workshops/cybersecurity-crash-course/pics/level-14-→-level-15.png" loading="lazy" decoding="async"></p>
+<hr />
+<h2 class="level-hero" id="level-15-16">المستوى 15 ← المستوى 16</h2>
+<p><strong>الهدف</strong>
+استرجاع كلمة مرور المستوى 16 بإرسال كلمة المرور الحالية إلى المنفذ 30001 باستخدام تشفير SSL/TLS.</p>
+<p><strong>الأوامر المستخدمة</strong></p>
+<pre><code class="language-bash">cat /etc/bandit_pass/bandit15
+openssl s_client -connect localhost:30001
+</code></pre>
+<p><strong>شرح الحل</strong></p>
+<ul>
+<li>قراءة كلمة المرور الحالية</li>
+<li>إنشاء اتصال SSL/TLS باستخدام <code>openssl s_client</code></li>
+<li>إدخال كلمة المرور يدويًا في جلسة SSL</li>
+<li>استلام كلمة مرور المستوى التالي</li>
+</ul>
+<p><strong>أخطاء شائعة</strong>
+- استخدام netcat العادي (التشفير مطلوب على هذا المنفذ)</p>
+<p><strong>كلمة المرور للمستوى التالي</strong>
+<code>kSkvUpMQ7lBYyCM4GBPvCvT1BfWRy0Dx</code></p>
+<p>??? example "لقطة شاشة"
+    <img alt="المستوى 15 ← المستوى 16" src="/career-development/workshops/cybersecurity-crash-course/pics/level-15-→-level-16.png" loading="lazy" decoding="async"></p>
+<hr />
+<h2 class="level-hero" id="level-16-17">المستوى 16 ← المستوى 17</h2>
+<p><strong>الهدف</strong>
+إيجاد المنفذ الصحيح الذي يدعم SSL بين 31000 - 32000 وإرسال كلمة المرور لاسترجاع بيانات الدخول لـ bandit17.</p>
+<p><strong>الأوامر المستخدمة</strong></p>
+<pre><code class="language-bash">cat /etc/bandit_pass/bandit16
+nmap -sV -p31000-32000 localhost
+openssl s_client -connect localhost:31790
+</code></pre>
+<p><strong>شرح الحل</strong></p>
+<ul>
+<li>فحص المنافذ 31000 - 32000 باستخدام <code>nmap</code> مع كشف الخدمات</li>
+<li>Nmap أظهر عدة منافذ مفتوحة، مع 31518 و 31790 يتحدثان SSL</li>
+<li>المنفذ 31518 أعاد فقط صدى مع KEYUPDATE</li>
+<li>المنفذ 31790 أعاد مفتاح RSA خاص لـ bandit17 بعد إرسال كلمة المرور</li>
+<li>حفظ المفتاح RSA محليًا، تعديل الصلاحيات إلى 600، واستخدامه للدخول SSH إلى bandit17</li>
+</ul>
+<p><strong>نتائج Nmap</strong></p>
+<table>
+<thead>
+<tr>
+<th>المنفذ</th>
+<th>الحالة</th>
+<th>الخدمة</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>31046</td>
+<td>مفتوح</td>
+<td>echo</td>
+</tr>
+<tr>
+<td>31518</td>
+<td>مفتوح</td>
+<td>ssl/echo</td>
+</tr>
+<tr>
+<td>31691</td>
+<td>مفتوح</td>
+<td>echo</td>
+</tr>
+<tr>
+<td>31790</td>
+<td>مفتوح</td>
+<td>ssl/unknown</td>
+</tr>
+<tr>
+<td>31960</td>
+<td>مفتوح</td>
+<td>echo</td>
+</tr>
+</tbody>
+</table>
+<p><strong>كلمة المرور للمستوى التالي</strong>
+مفتاح RSA خاص (يستخدم للدخول عبر SSH)</p>
+<p>??? example "لقطة شاشة"
+    <img alt="المستوى 16 ← المستوى 17" src="/career-development/workshops/cybersecurity-crash-course/pics/level-16-→-level-17.png" loading="lazy" decoding="async"></p>
+<hr />
+<h2 class="level-hero" id="level-17-18">المستوى 17 ← المستوى 18</h2>
+<p><strong>الهدف</strong>
+مقارنة ملفين لإيجاد كلمة المرور التي تغيرت.</p>
+<p><strong>الأوامر المستخدمة</strong></p>
+<pre><code class="language-bash">ls
+diff passwords.old passwords.new
+</code></pre>
+<p><strong>شرح الحل</strong></p>
+<ul>
+<li>عرض الملفات للعثور على <code>passwords.old</code> و <code>passwords.new</code></li>
+<li>استخدام <code>diff</code> لمقارنة الملفين</li>
+<li>السطر المختلف يشير إلى كلمة المرور الجديدة</li>
+</ul>
+<p><strong>كلمة المرور للمستوى التالي</strong>
+<code>x2gLTTjFwMOhQ8oWNbMN362QKxfRqGl0</code></p>
+<p><strong>لقطات شاشة</strong>
+<img alt="المستوى 17 ← المستوى 18 لقطة 1" src="/career-development/workshops/cybersecurity-crash-course/pics/level-17-→-level-18.png" loading="lazy" decoding="async">
+<img alt="المستوى 17 ← المستوى 18 لقطة 2" src="/career-development/workshops/cybersecurity-crash-course/pics/level-17-→-level-18_2.png" loading="lazy" decoding="async"></p>
+<hr />
+<h2 class="level-hero" id="level-18-19">المستوى 18 ← المستوى 19</h2>
+<p><strong>الهدف</strong>
+كلمة المرور في ملف اسمه <code>readme</code>، لكن تسجيل الدخول العادي يشغل <code>.bashrc</code> معدلاً ينهي الجلسة فورًا.</p>
+<p><strong>الأوامر المستخدمة</strong></p>
+<pre><code class="language-bash">ssh bandit18@bandit.labs.overthewire.org -p 2220 cat readme
+</code></pre>
+<p><strong>شرح الحل</strong></p>
+<ul>
+<li>تسجيل الدخول العادي عبر SSH غير ممكن لأن <code>.bashrc</code> ينفذ <code>exit</code></li>
+<li>أوامر SSH غير التفاعلية تتجاوز <code>.bashrc</code></li>
+<li>تنفيذ <code>cat readme</code> مباشرة عبر SSH يسترجع كلمة المرور دون تشغيل أمر الخروج</li>
+</ul>
+<p><strong>كلمة المرور للمستوى التالي</strong>
+<code>cGWpMaKXVwDUNgPAVJbWYuGHVn9zl3j8</code></p>
+<p>??? example "لقطة شاشة"
+    <img alt="المستوى 18 ← المستوى 19" src="/career-development/workshops/cybersecurity-crash-course/pics/level-18-→-level-19.png" loading="lazy" decoding="async"></p>
+<hr />
+<h2 class="level-hero" id="level-19-20">المستوى 19 ← المستوى 20</h2>
+<p><strong>الهدف</strong>
+استخدام برنامج setuid للوصول لكلمة مرور المستوى التالي.</p>
+<p><strong>الأوامر المستخدمة</strong></p>
+<pre><code class="language-bash">ls -l
+./bandit20-do cat /etc/bandit_pass/bandit20
+</code></pre>
+<p><strong>شرح الحل</strong></p>
+<ul>
+<li>الملف <code>bandit20-do</code> لديه بت setuid (<code>rws</code>) وهو مملوك لـ bandit20</li>
+<li>هذا البرنامج ينفذ الأوامر بصلاحيات bandit20</li>
+<li>تم استخدامه لقراءة ملف كلمة المرور لـ bandit20</li>
+</ul>
+<p><strong>مفاهيم أساسية</strong></p>
+<ul>
+<li><strong>برنامج setuid:</strong> برنامج يعمل بصلاحيات مالكه بدلاً من صلاحيات المستخدم المنفذ</li>
+<li><strong>تصعيد الصلاحيات:</strong> استخدام آليات مسموح بها لتشغيل أوامر كمستخدم آخر</li>
+</ul>
+<p><strong>كلمة المرور للمستوى التالي</strong>
+<code>0qXahG8ZjOVMN9Ghs7iOWsCfZyXOUbYO</code></p>
+<p>??? example "لقطة شاشة"
+    <img alt="المستوى 19 ← المستوى 20" src="/career-development/workshops/cybersecurity-crash-course/pics/level-19-→-level-20.png" loading="lazy" decoding="async"></p>
+<hr />
+<h2 class="level-hero" id="level-20-21">المستوى 20 ← المستوى 21</h2>
+<p><strong>الهدف</strong>
+استخدام برنامج <code>suconnect</code> لاسترجاع كلمة المرور بإعداد مستمع واتصال عميل.</p>
+<p><strong>الأوامر المستخدمة</strong></p>
+<pre><code class="language-bash"># الطرفية 1
+nc -l -p 1234
+
+# الطرفية 2
+./suconnect 1234
+</code></pre>
+<p><strong>شرح الحل</strong></p>
+<ul>
+<li>برنامج <code>suconnect</code> يتصل بمنفذ TCP محلي كعميل</li>
+<li>يستقبل كلمة مرور، يتحقق منها مع كلمة مرور المستوى الحالي</li>
+<li>إذا كانت صحيحة، يرسل كلمة مرور المستوى التالي</li>
+<li>تحتاج طرفيتين: واحدة تشغل مستمعًا (<code>nc -l -p 1234</code>)، والأخرى تشغل <code>./suconnect 1234</code></li>
+<li>بعد إنشاء الاتصال، أرسل كلمة المرور الحالية عبر المستمع لاستقبال كلمة مرور bandit21</li>
+</ul>
+<p><strong>أخطاء شائعة</strong>
+- تشغيل <code>./suconnect &lt;port&gt;</code> قبل بدء المستمع (يسبب خطأ "Could not connect")</p>
+<p><strong>كلمة المرور للمستوى التالي</strong>
+<code>EeoULMCra2q0dSkYj561DX7s1CpBuOBt</code></p>
+<p>??? example "لقطة شاشة"
+    <img alt="المستوى 20 ← المستوى 21" src="/career-development/workshops/cybersecurity-crash-course/pics/level-20-→-level-21.png" loading="lazy" decoding="async"></p>
+<hr />
+<h2 class="level-hero" id="level-21-22">المستوى 21 ← المستوى 22</h2>
+<p><strong>الهدف</strong>
+التحقق من مهمة cron تعمل تلقائيًا واسترجاع كلمة المرور التي تكتبها.</p>
+<p><strong>الأوامر المستخدمة</strong></p>
+<pre><code class="language-bash">cd /etc/cron.d
+ls
+cat cronjob_bandit22
+cat /usr/bin/cronjob_bandit22.sh
+cat /tmp/t7O6lds9S0RqQh9aMcz6ShpAoZKF7fgv
+</code></pre>
+<p><strong>شرح الحل</strong></p>
+<ul>
+<li>ملف تهيئة cron <code>cronjob_bandit22</code> في <code>/etc/cron.d</code> يظهر سكريبت يعمل كل دقيقة كمستخدم bandit22</li>
+<li>السكريبت <code>/usr/bin/cronjob_bandit22.sh</code> يضبط الصلاحيات على ملف في <code>/tmp/</code> وينسخ كلمة المرور هناك</li>
+<li>قراءة الملف المُنشأ في <code>/tmp/</code> تظهر كلمة المرور</li>
+</ul>
+<p><strong>كلمة المرور للمستوى التالي</strong>
+<code>tRae0UfB9v0UzbCdn9cY0gQnds9GF58Q</code></p>
+<p>??? example "لقطة شاشة"
+    <img alt="المستوى 21 ← المستوى 22" src="/career-development/workshops/cybersecurity-crash-course/pics/level-21-→-level-22.png" loading="lazy" decoding="async"></p>
+<hr />
+<h2 class="level-hero" id="level-22-23">المستوى 22 ← المستوى 23</h2>
+<p><strong>الهدف</strong>
+فهم سكريبت cron يستخدم تشفير MD5 لإنشاء أسماء ملفات ديناميكية، ثم استرجاع كلمة المرور.</p>
+<p><strong>الأوامر المستخدمة</strong></p>
+<pre><code class="language-bash">cd /etc/cron.d
+cat cronjob_bandit23
+cat /usr/bin/cronjob_bandit23.sh
+echo I am user bandit23 | md5sum | cut -d ' ' -f 1
+cat /tmp/&lt;hash&gt;
+</code></pre>
+<p><strong>شرح الحل</strong></p>
+<ul>
+<li>سكريبت cron يحسب تجزئة MD5 للنص "I am user <code>&lt;username&gt;</code>"</li>
+<li>يستخدم هذه التجزئة كاسم ملف في <code>/tmp/</code> وينسخ كلمة المرور هناك</li>
+<li>توليد التجزئة يدويًا لـ "I am user bandit23" وقراءة الملف المقابل يظهر كلمة المرور</li>
+</ul>
+<p><strong>أخطاء شائعة</strong>
+- البحث عن ملف ثابت في <code>/tmp/</code> بدلاً من توليد اسم التجزئة
+- مسافات غير صحيحة في أمر echo (المسافات مهمة لـ MD5)</p>
+<p><strong>كلمة المرور للمستوى التالي</strong>
+<code>0Zf11ioIjMVN551jX3CmStKLYqjk54Ga</code></p>
+<p>??? example "لقطة شاشة"
+    <img alt="المستوى 22 ← المستوى 23" src="/career-development/workshops/cybersecurity-crash-course/pics/level-22-→-level-23.png" loading="lazy" decoding="async"></p>
+<hr />
+<h2 class="level-hero" id="level-23-24">المستوى 23 ← المستوى 24</h2>
+<p><strong>الهدف</strong>
+استغلال مهمة cron تنفذ وتحذف السكريبتات من مجلد محدد.</p>
+<p><strong>الأوامر المستخدمة</strong></p>
+<pre><code class="language-bash">cd /etc/cron.d
+cat cronjob_bandit24
+cat /usr/bin/cronjob_bandit24.sh
+echo '#!/bin/bash
+cat /etc/bandit_pass/bandit24 &gt; /tmp/b24pass' &gt; exploit.sh
+chmod +x exploit.sh
+cp exploit.sh /var/spool/bandit24/foo/
+sleep 90
+cat /tmp/b24pass
+</code></pre>
+<p><strong>شرح الحل</strong></p>
+<ul>
+<li>مهمة cron تعمل كمستخدم bandit24 وتنفذ أي سكريبت مملوك لـ bandit23 في <code>/var/spool/bandit24/foo/</code></li>
+<li>تم إنشاء سكريبت يقرأ <code>/etc/bandit_pass/bandit24</code> ويكتبه في مكان مقروء</li>
+<li>نسخ السكريبت للمجلد المراقب (الملكية تبقى لـ bandit23)</li>
+<li>انتظار حتى ينفذه cron (يعمل كل دقيقة)</li>
+<li>قراءة ملف المخرجات للحصول على كلمة المرور</li>
+</ul>
+<p><strong>أخطاء شائعة</strong>
+- وضع السكريبتات في مجلد خاطئ (يجب أن يكون في <code>/var/spool/bandit24/foo/</code>)
+- عدم الانتظار كافيًا لتنفيذ cron
+- عدم التحقق من ملكية الملف</p>
+<p><strong>كلمة المرور للمستوى التالي</strong>
+<code>gb8KRRCsshuZXI0tUuR6ypOFjiZbf3G8</code></p>
+<p>??? example "لقطة شاشة"
+    <img alt="المستوى 23 ← المستوى 24" src="/career-development/workshops/cybersecurity-crash-course/pics/level-23-→-level-24.png" loading="lazy" decoding="async"></p>
+<hr />
+<h2 class="level-hero" id="level-24-25">المستوى 24 ← المستوى 25</h2>
+<p><strong>الهدف</strong>
+تخمين رمز PIN من 4 أرقام بإرسال تركيبات كلمة المرور والرقم السري لخدمة على المنفذ 30002.</p>
+<p><strong>الأوامر المستخدمة</strong></p>
+<pre><code class="language-bash">PW=&quot;gb8KRRCsshuZXI0tUuR6ypOFjiZbf3G8&quot;
+for i in $(seq -w 0000 9999); do
+  echo &quot;$PW $i&quot;
+done | nc localhost 30002
+</code></pre>
+<p><strong>شرح الحل</strong></p>
+<ul>
+<li>خدمة على المنفذ 30002 تطلب كلمة المرور الحالية ورقم PIN سري من 4 أرقام (0000 - 9999)</li>
+<li>استخدام حلقة for مع <code>seq -w 0000 9999</code> لتوليد رموز PIN معبأة بالأصفار</li>
+<li>تمرير 10,000 محاولة عبر اتصال netcat واحد</li>
+<li>في النهاية استلام: "Correct! The password of user bandit25 is..."</li>
+</ul>
+<p><strong>أخطاء شائعة</strong>
+- محاولة التجربة والخطأ يدويًا (10,000 تركيبة)
+- بدء اتصال جديد لكل PIN (غير فعال)
+- نسيان تعبئة الأصفار (الخدمة تتوقع 4 أرقام بالضبط)</p>
+<p><strong>كلمة المرور للمستوى التالي</strong>
+<code>iCi86ttT4KSNe1armKiwbQNmB3YJP3q4</code></p>
+<p><strong>لقطات شاشة</strong>
+<img alt="المستوى 24 ← المستوى 25 لقطة 1" src="/career-development/workshops/cybersecurity-crash-course/pics/level-24-→-level-25.png" loading="lazy" decoding="async">
+<img alt="المستوى 24 ← المستوى 25 لقطة 2" src="/career-development/workshops/cybersecurity-crash-course/pics/level-24-→-level-25_2.png" loading="lazy" decoding="async"></p>
+<hr />
+<h2 class="level-hero" id="level-25-26">المستوى 25 ← المستوى 26</h2>
+<p><strong>الهدف</strong>
+الوصول لحساب bandit26 الذي يستخدم شل مخصص يخرج فورًا. استغلال حجم الطرفية وسلوك برنامج الصفح (pager) للوصول.</p>
+<p>!!! tip "سلسلة استغلال ملحوظة"
+    هذا المستوى يربط ثلاث عمليات هروب معًا:
+    التحكم بحجم الطرفية ← برنامج الصفح <code>more</code> ← <code>vim</code> ← <code>bash</code>.
+    كل خطوة تستغل ميزة شرعية في أداة بطريقة غير مقصودة.</p>
+<p><strong>الأوامر المستخدمة</strong></p>
+<pre><code class="language-bash"># جعل الطرفية صغيرة جدًا (تصغير حجم النافذة)
+ssh bandit26@bandit.labs.overthewire.org -p 2220 -i bandit26.sshkey
+
+# عندما يتوقف more:
+v                     # فتح vim
+:set shell=/bin/bash  # تعيين الشل في vim
+:shell                # تشغيل الشل
+cat /etc/bandit_pass/bandit26
+</code></pre>
+<p><strong>شرح الحل</strong></p>
+<ul>
+<li>شل bandit26 هو <code>/usr/bin/showtext</code> الذي يعرض نصًا عبر <code>more</code> ثم يخرج</li>
+<li>جعل الطرفية صغيرة جدًا حتى لا يتسع المحتوى في شاشة واحدة</li>
+<li>هذا يجبر <code>more</code> على عرض <code>--More--</code> وانتظار إدخال</li>
+<li>الضغط على <code>v</code> لفتح vim من more</li>
+<li>في vim، تعيين الشل إلى bash وتشغيل شل</li>
+<li>الآن لدينا وصول كامل bash كمستخدم bandit26</li>
+</ul>
+<p><strong>سلسلة الاستغلال</strong></p>
+<ol>
+<li>التحكم بحجم الطرفية → تشغيل <code>more</code> التفاعلي</li>
+<li><code>more</code> → الهروب إلى vim (الضغط على <code>v</code>)</li>
+<li><code>vim</code> → الهروب إلى bash (<code>:set shell=/bin/bash</code> ثم <code>:shell</code>)</li>
+<li><code>bash</code> → الوصول لكلمة المرور</li>
+</ol>
+<p><strong>كلمة المرور للمستوى التالي</strong>
+<code>s0773xxkk0MXfdqOfPRVr9L3jJBUOgCZ</code></p>
+<p>??? example "لقطة شاشة"
+    <img alt="المستوى 25 ← المستوى 26" src="/career-development/workshops/cybersecurity-crash-course/pics/level-25-→-level-26.png" loading="lazy" decoding="async"></p>
+<hr />
+<h2 class="level-hero" id="level-26-27">المستوى 26 ← المستوى 27</h2>
+<p><strong>الهدف</strong>
+بعد الهروب من الشل المقيد، استخدام برنامج setuid لاسترجاع كلمة مرور bandit27.</p>
+<p><strong>الأوامر المستخدمة</strong></p>
+<pre><code class="language-bash">ls -la
+./bandit27-do cat /etc/bandit_pass/bandit27
+</code></pre>
+<p><strong>شرح الحل</strong></p>
+<ul>
+<li>الملف <code>bandit27-do</code> لديه بت SUID ومملوك لـ bandit27</li>
+<li>عند تنفيذه، يعمل كمستخدم bandit27 رغم أنه شُغل بواسطة bandit26</li>
+<li>استخدامه لقراءة ملف كلمة المرور لـ bandit27</li>
+</ul>
+<p><strong>كلمة المرور للمستوى التالي</strong>
+<code>upsNCc7vzaRDx6oZC6GiR6ERwe1MowGB</code></p>
+<p>??? example "لقطة شاشة"
+    <img alt="المستوى 26 ← المستوى 27" src="/career-development/workshops/cybersecurity-crash-course/pics/level-26-→-level-27.png" loading="lazy" decoding="async"></p>
+<hr />
+<h2 class="level-hero" id="level-27-28">المستوى 27 ← المستوى 28</h2>
+<p><strong>الهدف</strong>
+استنساخ مستودع Git واسترجاع كلمة المرور من محتوياته.</p>
+<p><strong>الأوامر المستخدمة</strong></p>
+<pre><code class="language-bash">git clone ssh://bandit27-git@bandit.labs.overthewire.org:2220/home/bandit27-git/repo
+cd repo
+ls
+cat README
+</code></pre>
+<p><strong>شرح الحل</strong></p>
+<ul>
+<li>استنساخ المستودع من الجهاز المحلي (ليس من داخل اتصال SSH لـ Bandit)</li>
+<li>المستودع يحتوي على ملف README بكلمة المرور ظاهرة مباشرة</li>
+<li>هذا المستوى يقدم Git كآلية لتوزيع الأسرار</li>
+</ul>
+<p><strong>كلمة المرور للمستوى التالي</strong>
+<code>Yz9IpL0sBcCeuG7m9uQFt8ZNpS4HZRcN</code></p>
+<p>??? example "لقطة شاشة"
+    <img alt="المستوى 27 ← المستوى 28" src="/career-development/workshops/cybersecurity-crash-course/pics/level-27-→-level-28.png" loading="lazy" decoding="async"></p>
+<hr />
+<h2 class="level-hero" id="level-28-29">المستوى 28 ← المستوى 29</h2>
+<p><strong>الهدف</strong>
+استنساخ مستودع Git وتحليل تاريخ التعديلات (commit history) لإيجاد كلمة مرور مسربة.</p>
+<p>!!! warning "أهمية واقعية"
+    هذه مشكلة أمنية حقيقية في أنظمة الإنتاج  -  بيانات الدخول التي تُرسل إلى Git ثم تُحذف لا تزال قابلة للاسترجاع بالكامل عبر <code>git log</code>. استخدم دائمًا متغيرات البيئة أو أدوات إدارة الأسرار. لا ترسل بيانات الدخول مباشرة أبدًا.</p>
+<p><strong>الأوامر المستخدمة</strong></p>
+<pre><code class="language-bash">git clone ssh://bandit28-git@bandit.labs.overthewire.org:2220/home/bandit28-git/repo
+cd repo
+cat README.md
+git log -p
+</code></pre>
+<p><strong>شرح الحل</strong></p>
+<ul>
+<li>README الحالي يظهر كلمة المرور كـ <code>xxxxxxxx</code> (مخفية)</li>
+<li>استخدام <code>git log -p</code> لفحص تاريخ التعديلات والفروق</li>
+<li>العثور على تعديل سابق كان يحتوي على كلمة المرور الفعلية قبل إزالتها</li>
+<li>هذا يوضح أن تاريخ Git يمكن أن يسرب بيانات حساسة حتى بعد إزالتها</li>
+</ul>
+<p><strong>كلمة المرور للمستوى التالي</strong>
+<code>4pT1t5DENaYuqnqvadYs1oE4QLCdjmJ7</code></p>
+<p>??? example "لقطة شاشة"
+    <img alt="المستوى 28 ← المستوى 29" src="/career-development/workshops/cybersecurity-crash-course/pics/level-28-→-level-29.png" loading="lazy" decoding="async"></p>
+<hr />
+<h2 class="level-hero" id="level-29-30">المستوى 29 ← المستوى 30</h2>
+<p><strong>الهدف</strong>
+استنساخ مستودع Git وفحص الفروع غير الافتراضية للعثور على كلمة المرور.</p>
+<p><strong>الأوامر المستخدمة</strong></p>
+<pre><code class="language-bash">git clone ssh://bandit29-git@bandit.labs.overthewire.org:2220/home/bandit29-git/repo
+cd repo
+cat README.md
+git branch -r
+git checkout dev
+cat README.md
+</code></pre>
+<p><strong>شرح الحل</strong></p>
+<ul>
+<li>README في الفرع الرئيسي (master) يحتوي: <code>password: &lt;no passwords in production!&gt;</code></li>
+<li>استخدام <code>git branch -r</code> لعرض الفروع البعيدة، وكشف <code>origin/dev</code></li>
+<li>الانتقال للفرع dev باستخدام <code>git checkout dev</code></li>
+<li>README في فرع dev يحتوي على كلمة المرور الفعلية</li>
+</ul>
+<p><strong>أخطاء شائعة</strong>
+- فحص الفرع الرئيسي فقط
+- افتراض أن كلمة المرور في تاريخ التعديلات (مثل المستوى 28)</p>
+<p><strong>كلمة المرور للمستوى التالي</strong>
+<code>qp30ex3VLz5MDG1n91YowTv4Q8l7CDZL</code></p>
+<p>??? example "لقطة شاشة"
+    <img alt="المستوى 29 ← المستوى 30" src="/career-development/workshops/cybersecurity-crash-course/pics/level-29-→-level-30.png" loading="lazy" decoding="async"></p>
+<hr />
+<h2 class="level-hero" id="level-30-31">المستوى 30 ← المستوى 31</h2>
+<p><strong>الهدف</strong>
+استنساخ مستودع Git وفحص علامات Git (tags) للعثور على كلمة المرور.</p>
+<p><strong>الأوامر المستخدمة</strong></p>
+<pre><code class="language-bash">git clone ssh://bandit30-git@bandit.labs.overthewire.org:2220/home/bandit30-git/repo
+cd repo
+cat README.md
+git tag
+git show secret
+</code></pre>
+<p><strong>شرح الحل</strong></p>
+<ul>
+<li>README يحتوي فقط: <code>just an empty file... muahaha</code></li>
+<li>استخدام <code>git tag</code> لعرض العلامات، وكشف علامة باسم <code>secret</code></li>
+<li><code>git show secret</code> عرض محتوى العلامة، الذي احتوى على كلمة المرور</li>
+<li>هذا يوضح أن علامات Git يمكن أن تحتوي على بيانات حساسة غير ظاهرة في شجرة العمل</li>
+</ul>
+<p><strong>كلمة المرور للمستوى التالي</strong>
+<code>fb5S2xb7bRyFmAvQYQGEqsbhVyJqhnDy</code></p>
+<p>??? example "لقطة شاشة"
+    <img alt="المستوى 30 ← المستوى 31" src="/career-development/workshops/cybersecurity-crash-course/pics/level-30-→-level-31.png" loading="lazy" decoding="async"></p>
+<hr />
+<h2 class="level-hero" id="level-31-32">المستوى 31 ← المستوى 32</h2>
+<p><strong>الهدف</strong>
+دفع ملف محدد إلى مستودع Git بعيد لتشغيل خطاف تحقق (validation hook) يعيد كلمة المرور.</p>
+<p><strong>الأوامر المستخدمة</strong></p>
+<pre><code class="language-bash">git clone ssh://bandit31-git@bandit.labs.overthewire.org:2220/home/bandit31-git/repo
+cd repo
+cat README.md
+echo &quot;May I come in?&quot; &gt; key.txt
+git add -f key.txt
+git commit -m &quot;Force adding key.txt&quot;
+git push origin master
+</code></pre>
+<p><strong>شرح الحل</strong></p>
+<ul>
+<li>README يحدد إنشاء <code>key.txt</code> بمحتوى "May I come in؟" ودفعه للفرع الرئيسي</li>
+<li>الملف متجاهل بواسطة <code>.gitignore</code>، لذا <code>git add -f</code> مطلوب لإضافته قسريًا</li>
+<li>بعد الدفع، الخادم البعيد يشغل خطاف تحقق ويعيد كلمة المرور</li>
+<li>الدفع مرفوض بعد التحقق، لكن كلمة المرور ما زالت مطبوعة</li>
+</ul>
+<p><strong>أخطاء شائعة</strong>
+- عدم استخدام <code>-f</code> عندما يمنع <code>.gitignore</code> الملف
+- التوقف عند رؤية رفض الدفع (كلمة المرور لا تزال تظهر)</p>
+<p><strong>كلمة المرور للمستوى التالي</strong>
+<code>3O9RfhqyAlVBEZpVb6LYStshZoqoSx5K</code></p>
+<p>??? example "لقطة شاشة"
+    <img alt="المستوى 31 ← المستوى 32" src="/career-development/workshops/cybersecurity-crash-course/pics/level-31-→-level-32.png" loading="lazy" decoding="async"></p>
+<hr />
+<h2 class="level-hero" id="level-32-33">المستوى 32 ← المستوى 33</h2>
+<p><strong>الهدف</strong>
+الهروب من "شل الأحرف الكبيرة" الذي يحول كل الإدخال لأحرف كبيرة، مما يمنع تنفيذ الأوامر العادية.</p>
+<p>!!! tip "نقطة أساسية"
+    <code>$0</code> يتم توسيعه إلى مسار الشل الحالي قبل معالجة مرشح الأحرف الكبيرة  -  مما يجعله الطريقة الوحيدة للإشارة إلى أمر دون تحويله لأحرف كبيرة إلى صيغة غير صالحة.</p>
+<p><strong>الأوامر المستخدمة</strong></p>
+<pre><code class="language-bash">$0
+whoami
+cat /etc/bandit_pass/bandit33
+</code></pre>
+<p><strong>شرح الحل</strong></p>
+<ul>
+<li>تسجيل الدخول إلى bandit32 يضع المستخدم في شل مقيد يجبر تحويل الأحرف إلى كبيرة</li>
+<li>الأوامر العادية مثل <code>ls</code> تصبح <code>LS</code> (غير صالحة)</li>
+<li>البرنامج <code>uppershell</code> هو SUID ومملوك لـ bandit33</li>
+<li>استخدام <code>$0</code> الذي يتوسع إلى مسار الشل ولا يتأثر بمرشح الأحرف الكبيرة</li>
+<li>هذا أنزلني إلى جلسة <code>sh</code> عادية بصلاحيات bandit33</li>
+<li>من هناك، الأوامر العادية عملت وأصبح ملف كلمة المرور مقروءًا</li>
+</ul>
+<p><strong>أخطاء شائعة</strong>
+- محاولة تشغيل أوامر مثل <code>ls</code>, <code>cat</code>, <code>sh</code>, أو <code>bash</code> مباشرة (كلها تتحول لأحرف كبيرة)</p>
+<p><strong>كلمة المرور للمستوى التالي</strong>
+<code>tQdtbs5D5i2vJwkO8mEyYEyTL8izoeJ0</code></p>
+<p>??? example "لقطة شاشة"
+    <img alt="المستوى 32 ← المستوى 33" src="/career-development/workshops/cybersecurity-crash-course/pics/level-32-→-level-33.png" loading="lazy" decoding="async"></p>
+<hr />
+<h2 id="_2">إكمال التحدي</h2>
+<p><strong>المستويات المكتملة:</strong> 0 ← 33 ✓</p>
+<hr />
+<h2 id="_3">ملخص المفاهيم الأساسية</h2>
+<h3 id="_4">أساسيات لينكس</h3>
+<ul>
+<li>التنقل في الملفات والتعامل معها</li>
+<li>الملفات المخفية والأحرف الخاصة في أسماء الملفات</li>
+<li>صلاحيات الملفات والملكية</li>
+<li>صلاحيات العمليات وبرامج setuid</li>
+</ul>
+<h3 id="_5">معالجة النصوص</h3>
+<ul>
+<li>البحث عن الأنماط بـ <code>grep</code></li>
+<li>الترتيب والتصفية بـ <code>sort</code> و <code>uniq</code></li>
+<li>استخراج النصوص من الملفات الثنائية</li>
+<li>التشفير وفك التشفير (Base64، ROT13)</li>
+</ul>
+<h3 id="_6">الضغط والأرشفة</h3>
+<ul>
+<li>صيغ ضغط متعددة (gzip، bzip2، tar)</li>
+<li>عكس تفريغ hex</li>
+<li>فك ضغط متكرر</li>
+</ul>
+<h3 id="_7">الشبكات</h3>
+<ul>
+<li>اتصالات TCP مع netcat</li>
+<li>اتصالات SSL/TLS مع OpenSSL</li>
+<li>فحص المنافذ بـ nmap</li>
+<li>اتصال خادم-عميل</li>
+</ul>
+<h3 id="_8">الأتمتة والجدولة</h3>
+<ul>
+<li>تحليل مهام cron</li>
+<li>تصعيد الصلاحيات عبر السكريبتات</li>
+<li>أتمتة التخمين</li>
+</ul>
+<h3 id="git">أنظمة التحكم بالنسخ (Git)</h3>
+<ul>
+<li>استنساخ المستودعات</li>
+<li>تحليل تاريخ التعديلات</li>
+<li>إدارة الفروع</li>
+<li>فحص العلامات</li>
+<li>التفاعل مع المستودعات البعيدة</li>
+</ul>
+<h3 id="_9">تصعيد الصلاحيات</h3>
+<ul>
+<li>استغلال برامج setuid</li>
+<li>تقنيات الهروب من الشل</li>
+<li>تجاوز الشل المقيد</li>
+<li>استغلال برامج الصفح والمحررات</li>
+</ul>
+<hr />
+<p><strong>الكاتبة:</strong> شوق العمران · <strong>تاريخ الإكمال:</strong> يناير 2026</p></div></div></div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script vid="90">
+        
+        function updateTime() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            
+            document.getElementById('clock').innerHTML = `SYS_TIME [ ${hours}<span class="blink">:</span>${minutes}<span class="blink">:</span>${seconds} ]`;
+        }
+        setInterval(updateTime, 1000);
+        updateTime();
+    </script>
+
+
+    <footer class="shoug-site-footer">
+        <div class="shoug-footer-grid">
+            <div>
+                <a class="shoug-footer-brand" href="/">SHOUG.TECH</a>
+                <p class="shoug-footer-text">Software Engineering and Cybersecurity portfolio. Documenting projects, study systems, workshops, and technical resources.</p>
+            </div>
+            <div>
+                <div class="shoug-footer-label">Navigate</div>
+                <a class="shoug-footer-link" href="/academics/">Academics</a>
+                <a class="shoug-footer-link" href="/work/projects/">Projects</a>
+                <a class="shoug-footer-link" href="/workshops/">Workshops</a>
+                <a class="shoug-footer-link" href="/resources/">Resources</a>
+            </div>
+            <div>
+                <div class="shoug-footer-label">Connect</div>
+                <a class="shoug-footer-link" href="https://www.linkedin.com/in/shoug-alomran/">LinkedIn</a>
+                <a class="shoug-footer-link" href="https://github.com/Shoug-Alomran">GitHub</a>
+                <a class="shoug-footer-link" href="mailto:shoug.f.alomran@gmail.com">Email</a>
+                <a class="shoug-footer-link" href="https://blueprint.shoug-tech.com/">Blueprint Studio</a>
+            </div>
+            <div>
+                <div class="shoug-footer-label">System</div>
+                <span class="shoug-footer-meta">Status: Operational</span>
+                <span class="shoug-footer-meta">Protocol: HTTPS</span>
+                <a class="shoug-footer-link" href="/policy/">Copyright &amp; Policy</a>
+            </div>
+        </div>
+    </footer>
+
+
+    <script>
+        (function () {
+            function normalizeLabel(value) {
+                return String(value || '').split('[').join('').split(']').join('').replace(/\s+/g, ' ').trim().toLowerCase();
+            }
+
+            function initialLang() {
+                var requestedLang = new URLSearchParams(window.location.search).get('lang');
+                if (requestedLang === 'ar' || requestedLang === 'en') return requestedLang;
+                var savedLang = localStorage.getItem('shoug-lang');
+                if (savedLang === 'ar' || savedLang === 'en') return savedLang;
+                var pageLang = String(document.documentElement.lang || '').toLowerCase();
+                if (pageLang.indexOf('ar') === 0) return 'ar';
+                return 'en';
+            }
+
+            function syncLanguagePanels(lang) {
+                var panels = Array.prototype.slice.call(document.querySelectorAll('[data-lang-panel]'));
+                if (!panels.length) return;
+                var hasRequestedPanel = panels.some(function (panel) {
+                    return panel.getAttribute('data-lang-panel') === lang;
+                });
+                panels.forEach(function (panel) {
+                    panel.hidden = hasRequestedPanel && panel.getAttribute('data-lang-panel') !== lang;
+                });
+            }
+
+            var toggle = document.querySelector('.shoug-theme-btn');
+            var saved = localStorage.getItem('shoug-theme');
+            if (saved === 'light') document.body.classList.add('shoug-light-mode');
+            if (toggle) {
+                toggle.addEventListener('click', function () {
+                    document.body.classList.toggle('shoug-light-mode');
+                    localStorage.setItem('shoug-theme', document.body.classList.contains('shoug-light-mode') ? 'light' : 'dark');
+                });
+            }
+
+            document.querySelectorAll('[data-tree-toggle]').forEach(function (button) {
+                button.addEventListener('click', function () {
+                    var target = document.getElementById(button.getAttribute('data-tree-toggle'));
+                    if (!target) return;
+                    var isOpen = target.classList.toggle('is-open');
+                    button.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+                    var marker = button.querySelector('.tree-toggle');
+                    if (marker) marker.textContent = isOpen ? '[-]' : '[+]';
+                });
+            });
+
+            var sidebarCollapse = document.querySelector('[data-sidebar-collapse]');
+            document.body.classList.remove('sidebar-collapsed');
+            function syncSidebarCollapseLabel() {
+                if (!sidebarCollapse) return;
+                var collapsed = document.body.classList.contains('sidebar-collapsed');
+                sidebarCollapse.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+                sidebarCollapse.setAttribute('aria-label', collapsed ? 'Expand side navigation' : 'Collapse side navigation');
+                sidebarCollapse.setAttribute('title', collapsed ? 'Expand navigation' : 'Collapse navigation');
+            }
+            syncSidebarCollapseLabel();
+            if (sidebarCollapse) {
+                sidebarCollapse.addEventListener('click', function () {
+                    document.body.classList.toggle('sidebar-collapsed');
+                    syncSidebarCollapseLabel();
+                });
+            }
+
+            document.querySelectorAll('[data-card-url]').forEach(function (card) {
+                card.setAttribute('role', 'link');
+                card.setAttribute('tabindex', '0');
+                card.addEventListener('click', function () {
+                    window.location.href = card.getAttribute('data-card-url');
+                });
+                card.addEventListener('keydown', function (event) {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                        event.preventDefault();
+                        window.location.href = card.getAttribute('data-card-url');
+                    }
+                });
+            });
+
+            var langToggle = document.querySelector('[data-lang-toggle]');
+            var labels = {
+                en: {
+                    htmlLang: 'en',
+                    dir: 'ltr',
+                    toggle: 'AR',
+                    toggleAria: 'Switch to Arabic',
+                    searchAria: 'Search',
+                    githubAria: 'GitHub',
+                    linkedinAria: 'LinkedIn',
+                    nav: ['Home', 'Academics', 'Work', 'Workshops', 'Resources', 'About'],
+                    contact: 'Contact',
+                    footerLabels: ['Navigate', 'Connect', 'System'],
+                    footerLinks: ['Academics', 'Projects', 'Workshops', 'Resources', 'LinkedIn', 'GitHub', 'Email', 'Blueprint Studio', 'Copyright & Policy'],
+                    status: 'Status: Operational',
+                    protocol: 'Protocol: HTTPS',
+                    footerText: 'Software Engineering and Cybersecurity portfolio. Documenting projects, study systems, workshops, and technical resources.',
+                    breadcrumbAcademics: 'Academics',
+                    projectLabels: ['Role', 'Stack', 'Outputs'],
+                    projectCategories: {
+                        'software engineering': 'Software Engineering',
+                        'computer science': 'Computer Science',
+                        mathematics: 'Mathematics'
+                    },
+                    projectActions: {
+                        documentation: 'Documentation',
+                        repository: 'Repository',
+                        app: 'App'
+                    },
+                    filterLabels: {
+                        all: 'ALL',
+                        'software-engineering': 'SOFTWARE ENGINEERING',
+                        'computer-science': 'COMPUTER SCIENCE',
+                        mathematics: 'MATHEMATICS'
+                    },
+                    sectionLabels: {
+                        overview: 'Overview',
+                        topics: 'Topics',
+                        'study material': 'Study Material',
+                        slides: 'Slides',
+                        quizzes: 'Quizzes',
+                        'slide breakdowns': 'Slide Breakdowns',
+                        summary: 'Summary',
+                        mindmap: 'Mindmap',
+                        mindmaps: 'Mindmaps',
+                        exams: 'Exams',
+                        'extra resources': 'Extra Resources',
+                        'writing resources': 'Writing Resources'
+                    },
+                    metaLabels: {
+                        'course code': 'Course Code',
+                        'credit hours': 'Credit Hours',
+                        prerequisites: 'Prerequisites'
+                    },
+                    statusLabels: {
+                        available: 'AVAILABLE',
+                        complete: 'COMPLETE'
+                    },
+                    trackLabels: {
+                        'computer science': 'COMPUTER SCIENCE',
+                        'software engineering': 'SOFTWARE ENGINEERING',
+                        cybersecurity: 'CYBERSECURITY',
+                        'other courses': 'OTHER COURSES'
+                    },
+                    trackTitles: {
+                        'computer science': '7 courses.<br>Structured, documented,<br>and ready to use.',
+                        'software engineering': '2 courses.<br>Requirements, design,<br>and engineering practice.',
+                        cybersecurity: '1 course.<br>Security foundations,<br>threats, and defense.',
+                        'other courses': '4 courses.<br>Writing, ethics,<br>physics, and foundations.'
+                    },
+                    trackMeta: {
+                        'computer science': ['CS Track', '7 Courses', 'Programming', 'Networks', 'Databases'],
+                        'software engineering': ['SE Track', '2 Courses', 'Process', 'Requirements', 'Design'],
+                        cybersecurity: ['Cyber Track', '1 Course', 'Security', 'Risk', 'Defense'],
+                        'other courses': ['General Track', '4 Courses', 'Writing', 'Ethics', 'Science']
+                    }
+                },
+                ar: {
+                    htmlLang: 'ar-SA',
+                    dir: 'rtl',
+                    toggle: 'EN',
+                    toggleAria: 'حوّل إلى الإنجليزية',
+                    searchAria: 'ابحث',
+                    githubAria: 'جيت هب',
+                    linkedinAria: 'لينكدإن',
+                    nav: ['الرئيسية', 'الدراسة', 'أعمالي', 'الورش', 'الموارد', 'عن شوق'],
+                    contact: 'تواصل معي',
+                    footerLabels: ['التنقّل', 'التواصل', 'النظام'],
+                    footerLinks: ['الدراسة', 'المشاريع', 'الورش', 'الموارد', 'لينكدإن', 'جيت هب', 'البريد', 'بلو برنت ستوديو', 'حقوق النشر والسياسة'],
+                    status: 'الحالة: شغّال',
+                    protocol: 'البروتوكول: HTTPS',
+                    footerText: 'ملف أعمال في هندسة البرمجيات والأمن السيبراني، أوثّق فيه المشاريع والأنظمة الدراسية والورش والموارد التقنية.',
+                    breadcrumbAcademics: 'الدراسة',
+                    projectLabels: ['الدور', 'التقنيات', 'المخرجات'],
+                    projectCategories: {
+                        'software engineering': 'هندسة البرمجيات',
+                        'computer science': 'علوم الحاسب',
+                        mathematics: 'الرياضيات'
+                    },
+                    projectActions: {
+                        documentation: 'الوثائق',
+                        repository: 'المستودع',
+                        app: 'التطبيق'
+                    },
+                    filterLabels: {
+                        all: 'الكل',
+                        'software-engineering': 'هندسة البرمجيات',
+                        'computer-science': 'علوم الحاسب',
+                        mathematics: 'الرياضيات'
+                    },
+                    sectionLabels: {
+                        overview: 'نظرة عامة',
+                        topics: 'الموضوعات',
+                        'study material': 'مواد الدراسة',
+                        slides: 'الشرائح',
+                        quizzes: 'الاختبارات',
+                        'slide breakdowns': 'تفكيك الشرائح',
+                        summary: 'الملخص',
+                        mindmap: 'الخريطة الذهنية',
+                        mindmaps: 'الخرائط الذهنية',
+                        exams: 'الاختبارات',
+                        'extra resources': 'مراجع إضافية',
+                        'writing resources': 'موارد الكتابة'
+                    },
+                    metaLabels: {
+                        'course code': 'رمز المقرر',
+                        'credit hours': 'الساعات المعتمدة',
+                        prerequisites: 'المتطلبات السابقة'
+                    },
+                    statusLabels: {
+                        available: 'متاح',
+                        complete: 'مكتمل'
+                    },
+                    trackLabels: {
+                        'computer science': 'علوم الحاسب',
+                        'software engineering': 'هندسة البرمجيات',
+                        cybersecurity: 'الأمن السيبراني',
+                        'other courses': 'مواد ثانية'
+                    },
+                    trackTitles: {
+                        'computer science': '7 مواد.<br>مرتبة، موثقة،<br>وجاهزة للاستخدام.',
+                        'software engineering': 'مادتين.<br>المتطلبات، التصميم،<br>وممارسة الهندسة.',
+                        cybersecurity: 'مادة وحدة.<br>أساسيات الأمن،<br>والتهديدات، والدفاع.',
+                        'other courses': '4 مواد.<br>الكتابة، والأخلاقيات،<br>والفيزياء، والأساسيات.'
+                    },
+                    trackMeta: {
+                        'computer science': ['مسار علوم الحاسب', '7 مواد', 'برمجة', 'شبكات', 'قواعد بيانات'],
+                        'software engineering': ['مسار هندسة البرمجيات', 'مادتين', 'العمليات', 'المتطلبات', 'التصميم'],
+                        cybersecurity: ['مسار الأمن السيبراني', 'مادة وحدة', 'الأمن', 'المخاطر', 'الدفاع'],
+                        'other courses': ['مسار عام', '4 مواد', 'الكتابة', 'الأخلاقيات', 'العلوم']
+                    }
+                }
+            };
+
+            function applyLang(lang) {
+                var t = labels[lang] || labels.en;
+                document.documentElement.lang = t.htmlLang;
+                document.documentElement.dir = t.dir;
+                document.body.classList.toggle('shoug-arabic-mode', lang === 'ar');
+                if (langToggle) langToggle.textContent = t.toggle;
+                if (langToggle) langToggle.setAttribute('aria-label', t.toggleAria);
+                document.querySelectorAll('.shoug-icon-btn').forEach(function (node) {
+                    if (node.getAttribute('aria-label') === 'Search' || node.getAttribute('aria-label') === 'ابحث') {
+                        node.setAttribute('aria-label', t.searchAria);
+                    }
+                    if (node.getAttribute('aria-label') === 'GitHub' || node.getAttribute('aria-label') === 'جيت هب') {
+                        node.setAttribute('aria-label', t.githubAria);
+                    }
+                    if (node.getAttribute('aria-label') === 'LinkedIn' || node.getAttribute('aria-label') === 'لينكدإن') {
+                        node.setAttribute('aria-label', t.linkedinAria);
+                    }
+                });
+                document.querySelectorAll('.shoug-header-nav a').forEach(function (link, index) {
+                    if (t.nav[index]) link.textContent = t.nav[index];
+                });
+                var contact = document.querySelector('.shoug-contact-btn');
+                if (contact) contact.textContent = t.contact;
+                document.querySelectorAll('.shoug-footer-label').forEach(function (node, index) {
+                    if (t.footerLabels[index]) node.textContent = t.footerLabels[index];
+                });
+                document.querySelectorAll('.shoug-footer-link').forEach(function (node, index) {
+                    if (t.footerLinks[index]) node.textContent = t.footerLinks[index];
+                });
+                var metas = document.querySelectorAll('.shoug-footer-meta');
+                if (metas[0]) metas[0].textContent = t.status;
+                if (metas[1]) metas[1].textContent = t.protocol;
+                var footerText = document.querySelector('.shoug-footer-text');
+                if (footerText) footerText.textContent = t.footerText;
+                document.querySelectorAll('.project-label').forEach(function (node, index) {
+                    if (t.projectLabels[index]) node.textContent = t.projectLabels[index];
+                });
+                document.querySelectorAll('.project-category').forEach(function (node) {
+                    var key = normalizeLabel(node.textContent);
+                    if (t.projectCategories[key]) node.textContent = t.projectCategories[key];
+                });
+                document.querySelectorAll('.project-action').forEach(function (node) {
+                    var key = normalizeLabel(node.textContent);
+                    if (t.projectActions[key]) node.textContent = t.projectActions[key];
+                });
+                document.querySelectorAll('.filter-btn[data-filter]').forEach(function (node) {
+                    var filter = node.getAttribute('data-filter');
+                    if (t.filterLabels[filter]) node.textContent = t.filterLabels[filter];
+                });
+                document.querySelectorAll('.sub-nav-item, .tab, .quick-link-btn').forEach(function (node) {
+                    if (!node.dataset.i18nKey) { node.dataset.i18nKey = normalizeLabel(node.textContent); }
+                    var key = node.dataset.i18nKey;
+                    if (t.sectionLabels[key]) node.textContent = t.sectionLabels[key];
+                });
+                document.querySelectorAll('.data-block-label, .meta-key').forEach(function (node) {
+                    if (!node.dataset.i18nKey) { node.dataset.i18nKey = normalizeLabel(node.textContent); }
+                    var key = node.dataset.i18nKey;
+                    if (t.metaLabels[key]) node.textContent = t.metaLabels[key];
+                });
+                document.querySelectorAll('.status-tag, .tag-complete, .tag-available').forEach(function (node) {
+                    if (!node.dataset.i18nKey) { node.dataset.i18nKey = normalizeLabel(node.textContent); }
+                    var key = node.dataset.i18nKey;
+                    if (t.statusLabels[key]) node.textContent = t.statusLabels[key];
+                });
+                document.querySelectorAll('.breadcrumb').forEach(function (node) {
+                    node.querySelectorAll('a').forEach(function (link) {
+                        if (normalizeLabel(link.textContent) === 'academics' || normalizeLabel(link.textContent) === 'الدراسة') {
+                            link.textContent = t.breadcrumbAcademics;
+                        }
+                    });
+                });
+                document.querySelectorAll('.hero-label').forEach(function (node) {
+                    var key = normalizeLabel(node.textContent).replace(/^\[|\]$/g, '');
+                    if (t.trackLabels[key]) node.textContent = '[ ' + t.trackLabels[key] + ' ]';
+                });
+                document.querySelectorAll('.hero-title').forEach(function (node) {
+                    var key = normalizeLabel(node.textContent);
+                    if (t.trackTitles[key]) node.innerHTML = t.trackTitles[key];
+                });
+                document.querySelectorAll('.hero-metadata-strip').forEach(function (node) {
+                    var key = normalizeLabel(document.querySelector('.hero-label') ? document.querySelector('.hero-label').textContent : '').replace(/^\[|\]$/g, '');
+                    var values = t.trackMeta[key];
+                    if (!values) return;
+                    node.innerHTML = '<span>' + values[0] + '</span><span class="meta-sep">//</span><span>' + values[1] + '</span><span class="meta-sep">//</span>' + values.slice(2).map(function (value) { return '<span>' + value + '</span><span class="meta-sep">·</span>'; }).join('').replace(/<span class="meta-sep">·<\/span>$/, '');
+                });
+                document.querySelectorAll('.dir-row[data-ar-title] .dir-title').forEach(function (node) {
+                    var row = node.closest('.dir-row');
+                    if (!row) return;
+                    if (!row.dataset.enTitle) row.dataset.enTitle = node.textContent;
+                    node.textContent = lang === 'ar' && row.dataset.arTitle ? row.dataset.arTitle : row.dataset.enTitle;
+                });
+                syncLanguagePanels(lang);
+                localStorage.setItem('shoug-lang', lang);
+            }
+
+            applyLang(initialLang());
+            if (langToggle) {
+                langToggle.addEventListener('click', function () {
+                    applyLang(document.documentElement.lang && document.documentElement.lang.indexOf('ar') === 0 ? 'en' : 'ar');
+                });
+            }
+        })();
+    </script>
+
+        <script>
+    (function() {
+        document.querySelectorAll('.rendered-content').forEach(function(rc) {
+            // Convert ??? example "Title" to collapsible <details>
+            // browsers move <figure> out of <p>, so also check next sibling
+            var pNodes = Array.prototype.slice.call(rc.querySelectorAll('p'));
+            pNodes.forEach(function(p) {
+                var raw = p.textContent || '';
+                var m = raw.match(/^\?\?\? example "([^"]+)"/);
+                if (!m) return;
+                var title = m[1];
+                var fig = p.querySelector('figure');
+                var figSibling = null;
+                if (!fig) {
+                    var next = p.nextElementSibling;
+                    if (next && next.tagName === 'FIGURE') figSibling = next;
+                }
+                var details = document.createElement('details');
+                details.className = 'img-collapse';
+                var summ = document.createElement('summary');
+                summ.textContent = '// ' + title.toUpperCase();
+                var body = document.createElement('div');
+                body.className = 'img-collapse-body';
+                if (fig) body.appendChild(fig.cloneNode(true));
+                if (figSibling) body.appendChild(figSibling.cloneNode(true));
+                details.appendChild(summ);
+                details.appendChild(body);
+                p.parentNode.replaceChild(details, p);
+                if (figSibling) figSibling.parentNode.removeChild(figSibling);
+            });
+            // Convert !!! type "Title" admonitions
+            var pNodes2 = Array.prototype.slice.call(rc.querySelectorAll('p'));
+            pNodes2.forEach(function(p) {
+                var raw = p.innerHTML || '';
+                var m = raw.match(/^!!! (\w+) &quot;([^&]+)&quot;\s*([\s\S]*)/) || raw.match(/^!!! (\w+) "([^"]+)"\s*([\s\S]*)/);
+                if (!m) return;
+                var type = m[1].toLowerCase();
+                var title = m[2];
+                var content = (m[3] || '').trim();
+                var div = document.createElement('div');
+                div.className = 'adm-box' + (type === 'warning' ? ' adm-warning' : '');
+                div.innerHTML = '<div class="adm-title">// ' + title + '</div><div>' + content + '</div>';
+                p.parentNode.replaceChild(div, p);
+            });
+            // Strip :emoji: codes
+            var walker = document.createTreeWalker(rc, NodeFilter.SHOW_TEXT, null, false);
+            var textNodes = [], node;
+            while ((node = walker.nextNode())) textNodes.push(node);
+            textNodes.forEach(function(tn) {
+                if (/:[-\w]+:/.test(tn.nodeValue)) tn.nodeValue = tn.nodeValue.replace(/:[-\w]+:/g, '').replace(/^\s+/, '');
+            });
+        });
+    })();
+    </script>
+
+    <script>
+    (function() {
+        // Accordion: opening one workshop closes the other
+        document.querySelectorAll('[data-tree-toggle]').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                var targetId = btn.getAttribute('data-tree-toggle');
+                var target = document.getElementById(targetId);
+                if (!target) return;
+                var willOpen = !target.classList.contains('is-open');
+                if (willOpen) {
+                    // Close all other tree sections
+                    document.querySelectorAll('.academic-sidebar .tree-children.is-open').forEach(function(el) {
+                        if (el !== target) {
+                            el.classList.remove('is-open');
+                            var otherBtn = document.querySelector('[data-tree-toggle="' + el.id + '"]');
+                            if (otherBtn) {
+                                otherBtn.setAttribute('aria-expanded', 'false');
+                                var marker = otherBtn.querySelector('.tree-toggle');
+                                if (marker) marker.textContent = '[+]';
+                            }
+                        }
+                    });
+                }
+            }, true); // capture phase so it runs before the existing toggle
+        });
+
+        // Auto-scroll sidebar to show the active workshop section
+        window.addEventListener('DOMContentLoaded', function() {
+            var fileTree = document.querySelector('.academic-sidebar .file-tree');
+            var dirOpen = document.querySelector('.academic-sidebar .dir-open');
+            if (fileTree && dirOpen) {
+                var rect = dirOpen.getBoundingClientRect();
+                var treeRect = fileTree.getBoundingClientRect();
+                var relTop = rect.top - treeRect.top + fileTree.scrollTop - 12;
+                fileTree.scrollTop = Math.max(0, relTop);
+            }
+        });
+    })();
+    </script>
+    <script src="/javascripts/arabic-localization.js"></script>
+</body></html>

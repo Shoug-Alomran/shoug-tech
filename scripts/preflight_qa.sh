@@ -4,11 +4,17 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT_DIR"
 
-echo "[1/5] Checking EN/AR markdown parity (strict)..."
-python3 scripts/check_i18n_parity.py --autofix-missing-ar --strict
+if [[ -f mkdocs.yml ]]; then
+  echo "[1/5] Checking EN/AR markdown parity (strict)..."
+  python3 scripts/check_i18n_parity.py --autofix-missing-ar --strict
 
-echo "[2/5] Building MkDocs site in strict mode..."
-mkdocs build --strict --clean
+  echo "[2/5] Building MkDocs site in strict mode..."
+  mkdocs build --strict --clean
+else
+  echo "[1/5] Skipping MkDocs source checks; mkdocs.yml is not present."
+  echo "[2/5] Optimizing committed docs/ static artifact..."
+  python3 scripts/optimize_site_html.py
+fi
 
 echo "[3/5] Verifying generated course routes..."
 python3 scripts/verify_site_routes.py
@@ -16,14 +22,22 @@ python3 scripts/verify_site_routes.py
 echo "[4/5] Checking generated internal links and assets..."
 python3 scripts/check_site_links.py
 
-echo "[5/5] Verifying configured theme assets exist..."
+echo "[5/6] Checking generated SEO metadata..."
+python3 scripts/check_seo_metadata.py
+
+echo "[6/6] Verifying configured theme assets exist..."
 python3 - <<'PY'
 from pathlib import Path
 import re
 import sys
 
 root = Path(".")
-config_text = (root / "mkdocs.yml").read_text(encoding="utf-8")
+config_path = root / "mkdocs.yml"
+if not config_path.exists():
+    print("[ok] mkdocs.yml not present; static docs artifact mode")
+    raise SystemExit(0)
+
+config_text = config_path.read_text(encoding="utf-8")
 
 required = []
 for key in ("favicon", "logo"):

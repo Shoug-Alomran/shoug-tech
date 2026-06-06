@@ -11,8 +11,16 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 SITE = ROOT / "site"
+if not SITE.is_dir() and (ROOT / "docs").is_dir():
+    SITE = ROOT / "docs"
 GENERIC_TITLES = {"overview", "intro", "introduction", "home", "index"}
 SITE_DESCRIPTION_START = "Shoug Fawaz Alomran: Software Engineering & Cybersecurity student"
+BAD_DESCRIPTION_FRAGMENTS = {
+    "SYSTEM_DIRECTORY",
+    "ACADEMICS/",
+    "SLIDE BREAKDOWNS",
+    "STUDY MATERIAL",
+}
 
 
 def attr(html: str, pattern: str) -> str | None:
@@ -48,7 +56,7 @@ def main() -> int:
 
         checked += 1
         route = route_for(path)
-        title = attr(html, r"<title>(.*?)</title>")
+        title = attr(html, r"<title\b[^>]*>(.*?)</title>")
         description = attr(
             html,
             r'<meta\s+name=["\']description["\']\s+content=["\'](.*?)["\']',
@@ -64,7 +72,11 @@ def main() -> int:
 
         if not title or title.split(" - ", 1)[0].strip().lower() in GENERIC_TITLES:
             failures.append(f"{route}: generic or missing title")
-        if not description or description.startswith(SITE_DESCRIPTION_START):
+        if (
+            not description
+            or description.startswith(SITE_DESCRIPTION_START)
+            or any(fragment in description for fragment in BAD_DESCRIPTION_FRAGMENTS)
+        ):
             failures.append(f"{route}: generic or missing description")
         if canonical and og_url and canonical != og_url:
             failures.append(f"{route}: og:url does not match canonical")

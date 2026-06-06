@@ -31,8 +31,9 @@ from urllib.request import Request, urlopen
 CACHE_FILE = Path(".translation-cache-ar.json")
 SYSTEM_PROMPT = (
     "You are a professional Arabic localization editor for a Saudi audience. "
-    "Translate English Markdown to Saudi-friendly formal Arabic. "
-    "Use clear, natural Arabic suitable for university students in Saudi Arabia. "
+    "Translate English Markdown to natural Saudi Arabic. "
+    "Use clear, conversational Arabic suitable for university students in Saudi Arabia, "
+    "and lean into Saudi dialect when the original tone is informal or promotional. "
     "Keep the same Markdown structure exactly: headings, bullet levels, numbering, "
     "tables, links, references, and spacing patterns. "
     "Do not add commentary. Output only the translated Markdown. "

@@ -1,4 +1,4 @@
-name: Deploy MkDocs site to GitHub Pages
+name: Deploy static site to GitHub Pages
 
 on:
   push:
@@ -18,30 +18,17 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@v5
         with:
           python-version: "3.x"
-          cache: "pip"
-          cache-dependency-path: requirements.txt
 
-      - name: Install dependencies
+      - name: Validate static site
         run: |
-          pip install --upgrade pip
-          pip install -r requirements.txt
-
-      - name: Ensure EN/AR parity
-        run: python3 scripts/check_i18n_parity.py --autofix-missing-ar --strict
-
-      - name: Build site
-        run: |
-          mkdocs build --strict --clean
-          python3 scripts/trim_search_index.py
           python3 scripts/optimize_site_html.py
-          python3 scripts/apply_legacy_aliases.py
           python3 scripts/verify_site_routes.py
           python3 scripts/check_site_links.py
           python3 scripts/check_seo_metadata.py
@@ -49,7 +36,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v5
         with:
-          path: ./site
+          path: ./docs
 
   deploy:
     needs: build

@@ -4,6 +4,7 @@
   var DARK = "dark";
   var LIGHT = "light";
   var lastMode = null;
+  var _settingTheme = false;
   var searchState = {
     query: "",
     marks: [],
@@ -20,6 +21,9 @@
 
   function modeFromPalette() {
     try {
+      var shougTheme = localStorage.getItem("shoug-theme");
+      if (shougTheme === "light") return LIGHT;
+      if (shougTheme === "dark") return DARK;
       var raw = localStorage.getItem("__palette");
       if (!raw) return null;
       var palette = JSON.parse(raw);
@@ -34,9 +38,10 @@
       if (window.parent === window || !window.parent.document) return null;
       var parentBody = window.parent.document.body;
       var parentRoot = window.parent.document.documentElement;
+      if (parentBody && parentBody.classList.contains("shoug-light-mode")) return LIGHT;
       return normalizeScheme(
         (parentBody && parentBody.getAttribute("data-md-color-scheme")) ||
-          (parentRoot && parentRoot.getAttribute("data-md-color-scheme"))
+        (parentRoot && parentRoot.getAttribute("data-md-color-scheme"))
       );
     } catch (e) {
       return null;
@@ -48,7 +53,7 @@
       modeFromParent() ||
       modeFromPalette() ||
       (window.matchMedia &&
-      window.matchMedia("(prefers-color-scheme: dark)").matches
+        window.matchMedia("(prefers-color-scheme: dark)").matches
         ? DARK
         : LIGHT)
     );
@@ -64,7 +69,12 @@
     });
   }
 
+  function hasSelfTheme() {
+    return document.documentElement.hasAttribute('data-sg-styled');
+  }
+
   function ensureContrastStyle() {
+    if (hasSelfTheme()) return;
     if (document.getElementById("html-theme-contrast-style")) return;
 
     var style = document.createElement("style");
@@ -96,6 +106,39 @@
         --border-color: #4b5563 !important;
       }
 
+      html[data-theme="light"] {
+        color-scheme: light;
+        --bg: #f8f9fa !important;
+        --bg2: #ffffff !important;
+        --bg3: #f0f2f5 !important;
+        --background: #f8f9fa !important;
+        --bg-void: #f8f9fa !important;
+        --bg-surface: #ffffff !important;
+        --bg-elevated: #f0f2f5 !important;
+        --card-bg: #ffffff !important;
+        --card: #ffffff !important;
+        --surface: #ffffff !important;
+        --white: #ffffff !important;
+        --light-bg: #f0f2f5 !important;
+        --text: #1e2433 !important;
+        --text-color: #1e2433 !important;
+        --text-dark: #1e2433 !important;
+        --text-main: #1e2433 !important;
+        --muted: #6b7280 !important;
+        --ink: #1e2433 !important;
+        --ink-1: #1e2433 !important;
+        --ink-2: #4b5568 !important;
+        --border: rgba(0,0,0,0.1) !important;
+        --border-color: rgba(0,0,0,0.15) !important;
+        --border-dim: rgba(0,0,0,0.1) !important;
+        --border-med: rgba(0,0,0,0.2) !important;
+      }
+
+      html[data-theme="light"] body {
+        background: #f8f9fa !important;
+        color: #1e2433 !important;
+      }
+
       html[data-theme="dark"] body {
         background: #0b1020 !important;
         color: #e5e7eb !important;
@@ -109,8 +152,6 @@
       html[data-theme="dark"] section,
       html[data-theme="dark"] article,
       html[data-theme="dark"] aside,
-      html[data-theme="dark"] nav,
-      html[data-theme="dark"] header,
       html[data-theme="dark"] footer,
       html[data-theme="dark"] .container,
       html[data-theme="dark"] .content,
@@ -163,16 +204,122 @@
       html[data-theme="dark"] [style*="background-color:#fff"],
       html[data-theme="dark"] [style*="background-color: #ffffff"],
       html[data-theme="dark"] [style*="background-color:#ffffff"],
+      html[data-theme="dark"] [style*="background: #fee"],
+      html[data-theme="dark"] [style*="background:#fee"],
+      html[data-theme="dark"] [style*="background: #fef"],
+      html[data-theme="dark"] [style*="background:#fef"],
+      html[data-theme="dark"] [style*="background: #ffe"],
+      html[data-theme="dark"] [style*="background:#ffe"],
+      html[data-theme="dark"] [style*="background: #ffd"],
+      html[data-theme="dark"] [style*="background:#ffd"],
+      html[data-theme="dark"] [style*="background: #ffc"],
+      html[data-theme="dark"] [style*="background:#ffc"],
+      html[data-theme="dark"] [style*="background: #ffb"],
+      html[data-theme="dark"] [style*="background:#ffb"],
+      html[data-theme="dark"] [style*="background: #fff0"],
+      html[data-theme="dark"] [style*="background:#fff0"],
+      html[data-theme="dark"] [style*="background: #fff3"],
+      html[data-theme="dark"] [style*="background:#fff3"],
+      html[data-theme="dark"] [style*="background: #fff8"],
+      html[data-theme="dark"] [style*="background:#fff8"],
+      html[data-theme="dark"] [style*="background: #fff9"],
+      html[data-theme="dark"] [style*="background:#fff9"],
+      html[data-theme="dark"] [style*="background: #fffb"],
+      html[data-theme="dark"] [style*="background:#fffb"],
+      html[data-theme="dark"] [style*="background: #fffc"],
+      html[data-theme="dark"] [style*="background:#fffc"],
+      html[data-theme="dark"] [style*="background: #fffe"],
+      html[data-theme="dark"] [style*="background:#fffe"],
+      html[data-theme="dark"] [style*="background: #f0f"],
+      html[data-theme="dark"] [style*="background:#f0f"],
+      html[data-theme="dark"] [style*="background: #f5f"],
+      html[data-theme="dark"] [style*="background:#f5f"],
+      html[data-theme="dark"] [style*="background: #f8f"],
+      html[data-theme="dark"] [style*="background:#f8f"],
+      html[data-theme="dark"] [style*="background: #faf"],
+      html[data-theme="dark"] [style*="background:#faf"],
       html[data-theme="dark"] [style*="linear-gradient"] {
-        background: #111827 !important;
+        background: #1f2937 !important;
         color: #e5e7eb !important;
         border-color: #374151 !important;
       }
 
-      html[data-theme="dark"] header,
-      html[data-theme="dark"] .hero,
-      html[data-theme="dark"] .title-section,
-      html[data-theme="dark"] .cover {
+      html[data-theme="dark"] .important,
+      html[data-theme="dark"] .important-note,
+      html[data-theme="dark"] .caution,
+      html[data-theme="dark"] .caution-box,
+      html[data-theme="dark"] .notice,
+      html[data-theme="dark"] .notice-box,
+      html[data-theme="dark"] .note-box,
+      html[data-theme="dark"] .alert-box,
+      html[data-theme="dark"] .info-panel,
+      html[data-theme="dark"] .hint,
+      html[data-theme="dark"] .quote,
+      html[data-theme="dark"] .quote-block,
+      html[data-theme="dark"] .blockquote,
+      html[data-theme="dark"] .step,
+      html[data-theme="dark"] .steps,
+      html[data-theme="dark"] .step-item,
+      html[data-theme="dark"] .numbered-step,
+      html[data-theme="dark"] .process-step,
+      html[data-theme="dark"] .lifecycle-phase,
+      html[data-theme="dark"] .figure,
+      html[data-theme="dark"] .visual,
+      html[data-theme="dark"] .visual-rep,
+      html[data-theme="dark"] .visual-diagram,
+      html[data-theme="dark"] .accordion-item,
+      html[data-theme="dark"] .accordion-content,
+      html[data-theme="dark"] .premises,
+      html[data-theme="dark"] .conclusion,
+      html[data-theme="dark"] .comparison-side,
+      html[data-theme="dark"] .comparison-item,
+      html[data-theme="dark"] .matrix,
+      html[data-theme="dark"] .data-table,
+      html[data-theme="dark"] .qCard,
+      html[data-theme="dark"] .score-summary,
+      html[data-theme="dark"] .your-answer,
+      html[data-theme="dark"] .user-story,
+      html[data-theme="dark"] .model-answer,
+      html[data-theme="dark"] .rotation-card,
+      html[data-theme="dark"] .scenario-section,
+      html[data-theme="dark"] .rendered-content,
+      html[data-theme="dark"] .svg-diagram,
+      html[data-theme="dark"] .flowchart,
+      html[data-theme="dark"] .proof-step {
+        background: #1f2937 !important;
+        color: #e5e7eb !important;
+        border-color: #4b5563 !important;
+      }
+
+      .sg-theme-toggle {
+        position: fixed;
+        z-index: 9999;
+        bottom: max(0.85rem, env(safe-area-inset-bottom));
+        left: max(0.85rem, env(safe-area-inset-left));
+        width: 2.6rem;
+        height: 2.6rem;
+        border-radius: 50%;
+        border: 1px solid rgba(148, 163, 184, 0.35);
+        background: rgba(15, 23, 42, 0.88);
+        color: #f8fafc;
+        font-size: 1.15rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.28);
+        backdrop-filter: blur(10px);
+        padding: 0;
+        transition: transform 0.12s ease, box-shadow 0.12s ease;
+      }
+
+      .sg-theme-toggle:hover {
+        transform: scale(1.1);
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+      }
+
+      html[data-theme="dark"] .page-hero-cover,
+      html[data-theme="dark"] .course-cover {
         background: linear-gradient(135deg, #312e81 0%, #581c87 100%) !important;
         color: #ffffff !important;
       }
@@ -592,6 +739,7 @@
   function applyMode(mode) {
     mode = mode === DARK ? DARK : LIGHT;
     lastMode = mode;
+    _settingTheme = true;
     ensureContrastStyle();
 
     document.documentElement.setAttribute("data-theme", mode);
@@ -599,6 +747,9 @@
       "data-md-color-scheme",
       mode === DARK ? "slate" : "default"
     );
+    document.documentElement.classList.toggle("dark", mode === DARK);
+    document.documentElement.classList.toggle("light", mode !== DARK);
+    document.documentElement.classList.toggle("force-light", mode !== DARK);
     document.documentElement.style.colorScheme = mode;
 
     if (document.body) {
@@ -607,11 +758,19 @@
         "data-md-color-scheme",
         mode === DARK ? "slate" : "default"
       );
+      document.body.classList.toggle("dark", mode === DARK);
+      document.body.classList.toggle("light", mode !== DARK);
+      document.body.classList.toggle("shoug-light-mode", mode !== DARK);
       document.body.classList.toggle("parent-dark", mode === DARK);
       document.body.classList.toggle("parent-light", mode !== DARK);
     }
 
     setButtonState(mode);
+    _settingTheme = false;
+
+    if (mode === DARK && document.readyState !== 'loading') {
+      fixLightBgsInDark();
+    }
   }
 
   function syncTheme() {
@@ -629,9 +788,9 @@
 
       new MutationObserver(syncTheme).observe(parentBody, {
         attributes: true,
-        attributeFilter: ["data-md-color-scheme"]
+        attributeFilter: ["data-md-color-scheme", "class"]
       });
-    } catch (e) {}
+    } catch (e) { }
   }
 
   function installToggle() {
@@ -649,9 +808,98 @@
           })
         );
         localStorage.setItem("theme", next);
-      } catch (e) {}
+        localStorage.setItem("shoug-theme", next);
+      } catch (e) { }
       applyMode(next);
     };
+  }
+
+  function installThemeButton() {
+    if (!document.body) return;
+    if (hasSelfTheme()) return;
+    if (document.querySelector('.sg-theme-toggle')) return;
+    if (document.querySelector('#themeToggle, #themeBtn, .theme-toggle, .shoug-theme-btn')) return;
+    if (document.querySelector('[onclick*="toggleTheme"]')) return;
+
+    var btn = document.createElement('button');
+    btn.className = 'sg-theme-toggle';
+    btn.id = 'themeIcon';
+    btn.setAttribute('aria-label', 'Toggle dark/light mode');
+    btn.textContent = lastMode === DARK ? '☀️' : '🌙';
+    document.body.appendChild(btn);
+    btn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      if (typeof window.toggleTheme === 'function') window.toggleTheme();
+    });
+  }
+
+  function fixLightBgsInDark() {
+    if (!document.body) return;
+    if (document.documentElement.getAttribute('data-theme') !== DARK) return;
+    if (hasSelfTheme()) return;
+
+    var SKIP = /^(SCRIPT|STYLE|IMG|SVG|CANVAS|VIDEO|AUDIO|IFRAME|INPUT|BUTTON|SELECT|TEXTAREA|OPTION|NOSCRIPT)$/;
+    var all = document.body.querySelectorAll('*');
+    var batch = Array.prototype.slice.call(all);
+    var idx = 0;
+
+    function run() {
+      var end = Math.min(idx + 80, batch.length);
+      for (; idx < end; idx++) {
+        var el = batch[idx];
+        if (SKIP.test(el.tagName)) continue;
+        if (el.hasAttribute('data-sg-dark')) continue;
+        if (el.style.backgroundColor) continue; // inline style already handled by CSS
+
+        var bg = window.getComputedStyle(el).backgroundColor;
+        if (!bg || bg === 'transparent' || bg === 'rgba(0, 0, 0, 0)') continue;
+
+        var m = bg.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
+        if (!m) continue;
+
+        var lum = (0.299 * +m[1] + 0.587 * +m[2] + 0.114 * +m[3]) / 255;
+        if (lum > 0.72) {
+          el.style.setProperty('background-color', '#1f2937', 'important');
+          el.style.setProperty('color', '#e5e7eb', 'important');
+          el.style.setProperty('border-color', '#374151', 'important');
+          el.setAttribute('data-sg-dark', '1');
+        }
+      }
+      if (idx < batch.length) {
+        window.requestAnimationFrame ? requestAnimationFrame(run) : setTimeout(run, 16);
+      }
+    }
+
+    window.requestAnimationFrame ? requestAnimationFrame(run) : setTimeout(run, 0);
+  }
+
+  function bindSelfAttrObserver() {
+    if (!window.MutationObserver) return;
+    if (hasSelfTheme()) return;
+
+    var _observer = new window.MutationObserver(function (mutations) {
+      mutations.forEach(function (m) {
+        if (_settingTheme) return;
+        if (m.attributeName === 'data-theme') {
+          var theme = document.documentElement.getAttribute('data-theme');
+          if ((theme === DARK || theme === LIGHT) && theme !== lastMode) {
+            lastMode = theme;
+            try { localStorage.setItem('shoug-theme', theme); } catch (e) { }
+            setButtonState(theme);
+          }
+        }
+      });
+    });
+
+    // Delay attachment so page init scripts (which run before window.load) don't corrupt shoug-theme
+    function attach() {
+      _observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    }
+    if (document.readyState === 'complete') {
+      setTimeout(attach, 200);
+    } else {
+      window.addEventListener('load', function () { setTimeout(attach, 200); }, { once: true });
+    }
   }
 
   function currentHeight() {
@@ -673,7 +921,7 @@
         path: window.location.pathname,
         height: currentHeight()
       }, window.location.origin);
-    } catch (e) {}
+    } catch (e) { }
   }
 
   function bindDynamicHeight() {
@@ -880,32 +1128,39 @@
       installToggle();
       syncTheme();
       installSearch();
+      installThemeButton();
       wrapResponsiveTables();
       bindDynamicHeight();
       loadPastExamPractice();
+      fixLightBgsInDark();
     }, { once: true });
   } else {
     installToggle();
     syncTheme();
     installSearch();
+    installThemeButton();
     wrapResponsiveTables();
     bindDynamicHeight();
     loadPastExamPractice();
+    fixLightBgsInDark();
   }
 
   bindParentObserver();
+  bindSelfAttrObserver();
 
   window.addEventListener("load", function () {
     installToggle();
     syncTheme();
     installSearch();
+    installThemeButton();
     wrapResponsiveTables();
     loadPastExamPractice();
     postHeightToParent();
+    fixLightBgsInDark();
   });
 
   window.addEventListener("storage", function (event) {
-    if (!event.key || event.key === "__palette" || event.key === "theme") {
+    if (!event.key || event.key === "__palette" || event.key === "theme" || event.key === "shoug-theme") {
       syncTheme();
     }
   });

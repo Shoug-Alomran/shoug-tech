@@ -33,13 +33,14 @@
       var pdoc = window.parent.document;
       var pbody = pdoc.body;
       var proot = pdoc.documentElement;
+      if (pbody && pbody.classList.contains("shoug-light-mode")) return "light";
       var scheme = (pbody && pbody.getAttribute("data-md-color-scheme")) ||
-                   (proot && proot.getAttribute("data-md-color-scheme"));
+        (proot && proot.getAttribute("data-md-color-scheme"));
       var fromScheme = schemeToTheme(scheme);
       if (fromScheme) return fromScheme;
 
       var parentTheme = (pbody && pbody.getAttribute("data-theme")) ||
-                        (proot && proot.getAttribute("data-theme"));
+        (proot && proot.getAttribute("data-theme"));
       var fromTheme = schemeToTheme(parentTheme);
       if (fromTheme) return fromTheme;
 
@@ -47,7 +48,7 @@
       if (pbody && pbody.classList.contains("light")) return "light";
       if (proot && proot.classList.contains("dark")) return "dark";
       if (proot && proot.classList.contains("light")) return "light";
-    } catch (e) {}
+    } catch (e) { }
     return null;
   }
 
@@ -57,12 +58,18 @@
 
   function readStoredScheme() {
     try {
+      var shougTheme = window.localStorage && window.localStorage.getItem("shoug-theme");
+      if (shougTheme === "light") return "light";
+      if (shougTheme === "dark") return "dark";
+    } catch (e) { }
+
+    try {
       if (window.parent && typeof window.parent.__md_get === "function") {
         var parentPalette = window.parent.__md_get("__palette");
         var parentTheme = paletteToTheme(parentPalette);
         if (parentTheme) return parentTheme;
       }
-    } catch (e) {}
+    } catch (e) { }
 
     try {
       if (typeof window.__md_get === "function") {
@@ -70,7 +77,7 @@
         var theme = paletteToTheme(palette);
         if (theme) return theme;
       }
-    } catch (e) {}
+    } catch (e) { }
 
     try {
       var direct = paletteToTheme(parsePalette(window.localStorage && window.localStorage.getItem("__palette")));
@@ -82,7 +89,7 @@
         var scoped = paletteToTheme(parsePalette(window.localStorage.getItem(key)));
         if (scoped) return scoped;
       }
-    } catch (e) {}
+    } catch (e) { }
 
     return null;
   }
@@ -92,6 +99,8 @@
   }
 
   function ensureFallbackStyle() {
+    if (root.hasAttribute("data-sg-styled")) return;
+
     var id = "standalone-dark-fallback";
     var style = document.getElementById(id);
     if (!style) {
@@ -168,10 +177,12 @@
     root.setAttribute("data-theme", dark ? "dark" : "light");
     root.classList.toggle("dark", dark);
     root.classList.toggle("light", !dark);
+    root.classList.toggle("force-light", !dark);
 
     if (document.body) {
       document.body.classList.toggle("dark", dark);
       document.body.classList.toggle("light", !dark);
+      document.body.classList.toggle("shoug-light-mode", !dark);
     }
   }
 
@@ -219,6 +230,6 @@
           attributeFilter: ["data-md-color-scheme", "data-theme", "class"]
         });
       });
-    } catch (e) {}
+    } catch (e) { }
   }
 })();

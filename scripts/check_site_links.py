@@ -11,6 +11,8 @@ from urllib.parse import unquote, urljoin, urlsplit
 
 ROOT = Path(__file__).resolve().parent.parent
 SITE = ROOT / "site"
+if not SITE.is_dir() and (ROOT / "docs").is_dir():
+    SITE = ROOT / "docs"
 IGNORED_SCHEMES = {"http", "https", "mailto", "tel", "javascript", "data", "blob"}
 HTML_SUFFIXES = {"", ".html"}
 

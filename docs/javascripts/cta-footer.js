@@ -32,7 +32,7 @@
     // MkDocs Material base path (GitHub Pages subpath safe)
     try {
       if (typeof __md_get === "function") return __md_get("__base") || "";
-    } catch (e) {}
+    } catch (e) { }
     return "";
   }
 
@@ -133,45 +133,45 @@
 
     const t = isArabic()
       ? {
-          brand: "حديقة شوق الرقمية",
-          title: "ملاحظات جديدة وتحديثات",
-          subtitle: "مساحة شخصية أجمع فيها ملاحظات المواد والملخصات والروابط والمشاريع.",
-          placeholder: "البريد الإلكتروني",
-          subscribe: "اشتراك",
-          note: "بإدخال بريدك، أنتِ توافقين على التواصل معك عند نشر ملاحظات أو تحديثات جديدة.",
-          explore: "استكشف",
-          policies: "السياسات",
-          contact: "التواصل",
-          home: "الرئيسية",
-          academics: "المسار الأكاديمي",
-          career: "التطوير المهني",
-          links: "الروابط",
-          privacy: "إشعار الخصوصية",
-          disclaimer: "إخلاء مسؤولية أكاديمي",
-          copyright: "حقوق النشر",
-          linkedin: "LinkedIn",
-          github: "GitHub",
-        }
+        brand: "حديقة شوق الرقمية",
+        title: "ملاحظات جديدة وتحديثات",
+        subtitle: "مساحة شخصية أجمع فيها ملاحظات المواد والملخصات والروابط والمشاريع.",
+        placeholder: "البريد الإلكتروني",
+        subscribe: "اشتراك",
+        note: "بإدخال بريدك، أنتِ توافقين على التواصل معك عند نشر ملاحظات أو تحديثات جديدة.",
+        explore: "استكشف",
+        policies: "السياسات",
+        contact: "التواصل",
+        home: "الرئيسية",
+        academics: "المسار الأكاديمي",
+        career: "التطوير المهني",
+        links: "الروابط",
+        privacy: "إشعار الخصوصية",
+        disclaimer: "إخلاء مسؤولية أكاديمي",
+        copyright: "حقوق النشر",
+        linkedin: "LinkedIn",
+        github: "GitHub",
+      }
       : {
-          brand: "Shoug’s Digital Garden",
-          title: "New notes & updates",
-          subtitle: "A personal knowledge base for course notes, summaries, links, and projects.",
-          placeholder: "Email address",
-          subscribe: "Subscribe",
-          note: "By entering your email, you agree to be contacted when new notes or updates are published.",
-          explore: "Explore",
-          policies: "Policies",
-          contact: "Contact",
-          home: "Home",
-          academics: "Academics",
-          career: "Career Development",
-          links: "Links",
-          privacy: "Privacy Notice",
-          disclaimer: "Academic Disclaimer",
-          copyright: "Copyright",
-          linkedin: "LinkedIn",
-          github: "GitHub",
-        };
+        brand: "Shoug’s Digital Garden",
+        title: "New notes & updates",
+        subtitle: "A personal knowledge base for course notes, summaries, links, and projects.",
+        placeholder: "Email address",
+        subscribe: "Subscribe",
+        note: "By entering your email, you agree to be contacted when new notes or updates are published.",
+        explore: "Explore",
+        policies: "Policies",
+        contact: "Contact",
+        home: "Home",
+        academics: "Academics",
+        career: "Career Development",
+        links: "Links",
+        privacy: "Privacy Notice",
+        disclaimer: "Academic Disclaimer",
+        copyright: "Copyright",
+        linkedin: "LinkedIn",
+        github: "GitHub",
+      };
 
     // Navigation links
     const homeHref = isArabic() ? url("ar/") : url("");
@@ -396,9 +396,9 @@
     const copyrightText = highlight
       ? highlight.innerHTML.trim()
       : copyright.textContent
-          .replace(/\s*Made with\s*/i, " ")
-          .replace(/\s*Material for MkDocs\s*/i, " ")
-          .trim();
+        .replace(/\s*Made with\s*/i, " ")
+        .replace(/\s*Material for MkDocs\s*/i, " ")
+        .trim();
 
     copyright.innerHTML = `
       <div class="custom-footer-meta">
@@ -421,29 +421,29 @@
 
     const links = isArabic()
       ? [
-          ["الرئيسية", url("ar/")],
-          ["ابدأ من هنا", url("ar/start-here/")],
-          ["نظرة عامة أكاديمية", url("ar/Academics/Intro/")],
-          ["الخطة الأكاديمية", url("ar/academic-plan-themes/academic-plan/")],
-          ["SE201", url("ar/Academics/software-engineering/SE201/intro/")],
-          ["CS340", url("ar/Academics/computer-science/CS340/intro/")],
-          ["CYS401", url("ar/Academics/cyber-security/CYS401/intro/")],
-          ["التطوير المهني", url("ar/career-development/Intro/")],
-          ["خدمات Blueprint", url("ar/career-development/services/")],
-          ["Blueprint", "https://blueprint.shoug-tech.com/"]
-        ]
+        ["الرئيسية", url("ar/")],
+        ["ابدأ من هنا", url("ar/start-here/")],
+        ["نظرة عامة أكاديمية", url("ar/Academics/Intro/")],
+        ["الخطة الأكاديمية", url("ar/academic-plan-themes/academic-plan/")],
+        ["SE201", url("ar/Academics/software-engineering/SE201/intro/")],
+        ["CS340", url("ar/Academics/computer-science/CS340/intro/")],
+        ["CYS401", url("ar/Academics/cyber-security/CYS401/intro/")],
+        ["التطوير المهني", url("ar/career-development/Intro/")],
+        ["خدمات Blueprint", url("ar/career-development/services/")],
+        ["Blueprint", "https://blueprint.shoug-tech.com/"]
+      ]
       : [
-          ["Home", url("")],
-          ["Start Here", url("start-here/")],
-          ["Academics Overview", url("Academics/Intro/")],
-          ["Academic Plan", url("academic-plan-themes/academic-plan/")],
-          ["SE201", url("Academics/software-engineering/SE201/intro/")],
-          ["CS340", url("Academics/computer-science/CS340/intro/")],
-          ["CYS401", url("Academics/cyber-security/CYS401/intro/")],
-          ["Career Development", url("career-development/Intro/")],
-          ["Blueprint Services", url("career-development/services/")],
-          ["Blueprint", "https://blueprint.shoug-tech.com/"]
-        ];
+        ["Home", url("")],
+        ["Start Here", url("start-here/")],
+        ["Academics Overview", url("Academics/Intro/")],
+        ["Academic Plan", url("academic-plan-themes/academic-plan/")],
+        ["SE201", url("Academics/software-engineering/SE201/intro/")],
+        ["CS340", url("Academics/computer-science/CS340/intro/")],
+        ["CYS401", url("Academics/cyber-security/CYS401/intro/")],
+        ["Career Development", url("career-development/Intro/")],
+        ["Blueprint Services", url("career-development/services/")],
+        ["Blueprint", "https://blueprint.shoug-tech.com/"]
+      ];
 
     const block = document.createElement("details");
     block.className = "quick-links-widget";
@@ -496,7 +496,7 @@
           if (isStartHerePage()) {
             localStorage.setItem(LS_START_LEFT_OPEN_KEY, hide ? "0" : "1");
           }
-        } catch (e) {}
+        } catch (e) { }
         setToggleVisualState();
       });
     }
@@ -511,7 +511,7 @@
           if (hasEmbeddedHtmlPage()) {
             localStorage.setItem(LS_HTML_TOC_OPEN_KEY, hide ? "0" : "1");
           }
-        } catch (e) {}
+        } catch (e) { }
         setToggleVisualState();
       });
     }
@@ -532,14 +532,14 @@
       }
       document.body.classList.toggle("sg-hide-left-sidebar", hideLeft);
       document.body.classList.toggle("sg-hide-right-sidebar", hideRight);
-    } catch (e) {}
+    } catch (e) { }
 
     // Always keep TOC visible in Arabic pages.
     if (isArabic() && !hasEmbeddedHtmlPage()) {
       document.body.classList.remove("sg-hide-right-sidebar");
       try {
         localStorage.setItem(LS_RIGHT_KEY, "0");
-      } catch (e) {}
+      } catch (e) { }
     }
 
     setToggleVisualState();
