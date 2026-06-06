@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Verify high-value generated routes exist after an MkDocs build."""
+"""Verify high-value generated routes exist in the deployable site artifact."""
 
 from __future__ import annotations
 
@@ -8,15 +8,15 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parent.parent
-SITE = ROOT / "site"
-if not SITE.is_dir() and (ROOT / "docs").is_dir():
-    SITE = ROOT / "docs"
+SITE = ROOT / "site" if (ROOT / "mkdocs.yml").is_file() else ROOT / "docs"
+if not SITE.is_dir():
+    SITE = ROOT / "docs" if (ROOT / "docs").is_dir() else ROOT / "site"
 
 REQUIRED_ROUTES = (
-    "Academics/software-engineering/se201/",
-    "Academics/software-engineering/se311/",
-    "Academics/computer-science/cs340/",
-    "Academics/cybersecurity/cys401/",
+    "academics/software-engineering/se201/",
+    "academics/software-engineering/se311/",
+    "academics/computer-science/cs340/",
+    "academics/cybersecurity/cys401/",
 )
 
 
