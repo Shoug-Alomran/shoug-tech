@@ -1085,8 +1085,8 @@
             </div>
             <div class="stat-cell">
                 <span class="stat-label">GPA Track</span>
-                <div><span class="stat-num" style="font-size:16px;padding-top:6px;display:block;color:var(--ink3)"> - /
-                        5.0</span></div>
+                <div><span class="stat-num" id="statGpa" style="font-size:16px;padding-top:6px;display:block;color:var(--ink3)"> - /
+                        4.00</span></div>
             </div>
             <div class="stat-cell stat-bar-cell">
                 <span class="stat-label">Progress</span>
@@ -2007,6 +2007,20 @@
         ];
 
         let completed = new Set();
+        let grades = {};
+        const GRADE_POINTS = { 'A+': 4.00, 'A': 3.75, 'B+': 3.50, 'B': 3.00, 'C+': 2.50, 'C': 2.00, 'D+': 1.50, 'D': 1.00, 'F': 0.00 };
+        const GRADE_LIST = ['A+', 'A', 'B+', 'B', 'C+', 'C', 'D+', 'D', 'F'];
+        function computeGPA() {
+            let hours = 0, points = 0;
+            Object.keys(grades).forEach(id => {
+                if (!completed.has(id) || !(grades[id] in GRADE_POINTS)) return;
+                const c = COURSES_RAW.find(x => x.id === id);
+                if (!c) return;
+                hours += c.hours;
+                points += c.hours * GRADE_POINTS[grades[id]];
+            });
+            return hours > 0 ? Math.round((points / hours) * 100) / 100 : null;
+        }
         let choices = { A: 'HPE101', B: 'CS316', C: 'BUS101', D: 'CYS406', E: ['CULT101', 'ACT101'] };
         const GROUP_META = { A: 'Physical Education - choose 1', B: 'CS Elective - choose 1', C: 'Business Elective - choose 1', D: 'CYS Elective - choose 1', E: 'General Electives - choose 2' };
         const GROUP_LIMITS = { A: 1, B: 1, C: 1, D: 1, E: 2 };
@@ -2062,12 +2076,15 @@
             localStorage.setItem('psu2_cs_cys_v2_done', JSON.stringify([...completed]));
             localStorage.setItem('psu2_cs_cys_v2_choices', JSON.stringify(choices));
             localStorage.setItem('psu2_cs_cys_v2_dark', darkMode ? '1' : '0');
+            localStorage.setItem('psu2_cs_cys_v2_grades', JSON.stringify(grades));
         }
         function loadState() {
             const d = localStorage.getItem('psu2_cs_cys_v2_done');
             if (d) completed = new Set(JSON.parse(d));
             const c = localStorage.getItem('psu2_cs_cys_v2_choices');
             if (c) choices = JSON.parse(c);
+            const g = localStorage.getItem('psu2_cs_cys_v2_grades');
+            if (g) grades = JSON.parse(g);
             const th = localStorage.getItem('psu2_cs_cys_v2_dark');
             if (th !== null) darkMode = th === '1';
             const siteTheme = localStorage.getItem('shoug-theme');
@@ -2118,6 +2135,8 @@
             document.getElementById('statRemain').textContent = th - ch;
             document.getElementById('statPct').textContent = pct + '%';
             document.getElementById('progressFill').style.width = pct + '%';
+            const gpa = computeGPA();
+            document.getElementById('statGpa').textContent = (gpa === null ? ' - ' : gpa.toFixed(2)) + ' / 4.00';
         }
 
         function render() {
@@ -2181,7 +2200,7 @@
                     }).join('');
 
                     let stampHtml = '';
-                    if (st === 'completed') stampHtml = `<span class="status-stamp done">DONE</span>`;
+                    if (st === 'completed') stampHtml = `<span class="status-stamp done">DONE</span><span class="grade-chip" data-grade-edit="${course.id}" style="font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:.5px;padding:1px 6px;margin-left:6px;border:1px solid var(--accent);color:var(--accent);cursor:pointer;white-space:nowrap;">${grades[course.id] || '+ GRADE'}</span>`;
                     else if (st === 'available') stampHtml = `<span class="status-stamp avail">OPEN</span>`;
                     else stampHtml = `<span class="status-stamp lock">LOCKED</span>`;
 
@@ -2213,6 +2232,19 @@
                             if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
                         });
                     });
+                    row.querySelectorAll('[data-grade-edit]').forEach(chip => {
+                        chip.addEventListener('click', e => {
+                            e.stopPropagation();
+                            const cid = chip.dataset.gradeEdit;
+                            const c = COURSES_RAW.find(x => x.id === cid);
+                            if (!c) return;
+                            pickGrade(c, grade => {
+                                if (grade) grades[cid] = grade; else delete grades[cid];
+                                persist(); render();
+                                toast(grade ? `${cid} graded ${grade}.` : `${cid} grade cleared.`, 'ok');
+                            });
+                        });
+                    });
 
                     body.appendChild(row);
                 });
@@ -2230,13 +2262,13 @@
                 const deps = allDependents(id).filter(d => completed.has(d));
                 if (deps.length) {
                     showModal('Remove Dependents', `Unchecking <b>${id}</b> will also remove:`, deps, () => {
-                        completed.delete(id);
-                        deps.forEach(d => completed.delete(d));
+                        completed.delete(id); delete grades[id];
+                        deps.forEach(d => { completed.delete(d); delete grades[d]; });
                         persist(); render();
                         toast(`${id} and ${deps.length} dependent(s) removed.`, 'err');
                     });
                 } else {
-                    completed.delete(id);
+                    completed.delete(id); delete grades[id];
                     persist(); render();
                     toast(`${course.id} unchecked.`, 'err');
                 }
@@ -2246,10 +2278,36 @@
                     toast(`Missing prereqs for ${id}: ${missing.join(', ')}`, 'err');
                     return;
                 }
-                completed.add(id);
-                persist(); render();
-                toast(`${course.id}  -  ${course.name}`, 'ok');
+                pickGrade(course, grade => {
+                    completed.add(id);
+                    if (grade) grades[id] = grade; else delete grades[id];
+                    persist(); render();
+                    toast(`${course.id}  -  ${course.name}`, 'ok');
+                });
             }
+        }
+
+        function pickGrade(course, onPick) {
+            const ov = document.createElement('div');
+            ov.className = 'modal-overlay';
+            ov.innerHTML = `
+    <div class="modal-box">
+      <div class="modal-header"><span>Grade for ${course.id}</span><span></span></div>
+      <div class="modal-body">
+        <p>What grade did you earn in <b>${course.name}</b>? This feeds your cumulative GPA Track.</p>
+        <div class="choice-btns">${GRADE_LIST.map(g => `<button class="choice-btn" data-grade="${g}">${g} · ${GRADE_POINTS[g].toFixed(2)}</button>`).join('')}</div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-stamp" id="gSkip">SKIP</button>
+      </div>
+    </div>
+  `;
+            document.body.appendChild(ov);
+            ov.querySelectorAll('[data-grade]').forEach(btn => {
+                btn.addEventListener('click', () => { ov.remove(); onPick(btn.dataset.grade); });
+            });
+            ov.querySelector('#gSkip').addEventListener('click', () => { ov.remove(); onPick(null); });
+            ov.addEventListener('click', e => { if (e.target === ov) ov.remove(); });
         }
 
         function showModal(title, msg, items, onOk) {
@@ -2318,7 +2376,7 @@
         });
         document.getElementById('resetBtn').addEventListener('click', () => {
             showModal('Reset All Progress', 'Clear all completion data?', [], () => {
-                completed.clear(); persist(); render();
+                completed.clear(); grades = {}; persist(); render();
                 toast('Progress reset.', 'err');
             });
         });
@@ -2351,6 +2409,7 @@
 
         // Init
         loadState();
+        normalizeChoices();
         document.body.classList.toggle('dark', darkMode);
         document.body.classList.toggle('light', !darkMode);
         document.body.classList.toggle('shoug-light-mode', !darkMode);
