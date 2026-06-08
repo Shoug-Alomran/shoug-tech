@@ -74,3 +74,11 @@
     });
   }
 })();
+
+// Load search on every page
+(function () {
+  var s = document.createElement("script");
+  s.src = "/javascripts/search.js";
+  s.async = true;
+  document.head.appendChild(s);
+})();
