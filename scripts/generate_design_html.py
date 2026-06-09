@@ -1344,7 +1344,7 @@ COMMON_HEADER = """
                 <button class="shoug-theme-btn" type="button" aria-label="Toggle dark and light mode">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path></svg>
                 </button>
-                <a class="shoug-contact-btn" href="mailto:shoug.f.alomran@gmail.com">Contact</a>
+                <a class="shoug-contact-btn" href="mailto:shoug.alomran@shoug-tech.com">Contact</a>
             </div>
         </div>
         <div class="shoug-header-backdrop" data-mobile-overlay></div>
@@ -1370,7 +1370,7 @@ COMMON_FOOTER = """
                 <div class="shoug-footer-label">Connect</div>
                 <a class="shoug-footer-link" href="https://www.linkedin.com/in/shoug-alomran/">LinkedIn</a>
                 <a class="shoug-footer-link" href="https://github.com/Shoug-Alomran">GitHub</a>
-                <a class="shoug-footer-link" href="mailto:shoug.f.alomran@gmail.com">Email</a>
+                <a class="shoug-footer-link" href="mailto:shoug.alomran@shoug-tech.com">Email</a>
                 <a class="shoug-footer-link" href="https://blueprint.shoug-tech.com/">Blueprint Studio</a>
             </div>
             <div>
@@ -3646,8 +3646,8 @@ def replace_common_links(text: str) -> str:
     social = {
         "LinkedIn": "https://www.linkedin.com/in/shoug-alomran/",
         "GitHub": "https://github.com/Shoug-Alomran",
-        "Email": "mailto:shoug.f.alomran@gmail.com",
-        "Email Me": "mailto:shoug.f.alomran@gmail.com",
+        "Email": "mailto:shoug.alomran@shoug-tech.com",
+        "Email Me": "mailto:shoug.alomran@shoug-tech.com",
     }
     for label, url in social.items():
         text = re.sub(
@@ -3658,7 +3658,7 @@ def replace_common_links(text: str) -> str:
     text = re.sub(r'href="#"([^>]*class="[^"]*logo[^"]*")', r'href="/"\1', text)
     text = re.sub(r'href="#"([^>]*aria-label="Search")', r'href="/?q="\1', text)
     text = re.sub(r'href="#"([^>]*aria-label="Github")', r'href="https://github.com/Shoug-Alomran"\1', text)
-    text = re.sub(r'href="#"([^>]*class="contact-btn")', r'href="mailto:shoug.f.alomran@gmail.com"\1', text)
+    text = re.sub(r'href="#"([^>]*class="contact-btn")', r'href="mailto:shoug.alomran@shoug-tech.com"\1', text)
     text = re.sub(r'href="#"([^>]*class="icon-btn"[^>]*>\s*<svg[^>]*>\s*<path d="M20\.447)', r'href="https://www.linkedin.com/in/shoug-alomran/"\1', text)
     text = re.sub(r'href="#"([^>]*class="icon-btn"[^>]*>\s*<svg[^>]*>\s*<path d="M12 0c-6\.626)', r'href="https://github.com/Shoug-Alomran"\1', text)
     return text

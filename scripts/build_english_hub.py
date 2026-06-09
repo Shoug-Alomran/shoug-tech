@@ -15,8 +15,8 @@ ENG101 = OTHER / "eng101" / "index.html"
 OTHER_INDEX = OTHER / "index.html"
 
 
-ENG101_STYLE = """
-    <style id="eng101-layout-fix">
+ENGL101_STYLE = """
+ n    <style id="eng101-layout-fix">
     .page-container {
         width: min(1480px, 100%) !important;
         margin: 0 auto !important;
@@ -146,24 +146,10 @@ def add_before_head_end(text: str, addition: str) -> str:
     return text if addition.strip() in text else text.replace("</head>", f"{addition}\n</head>", 1)
 
 
-def normalize_eng101_routes() -> None:
-    replacements = {
-        "/Academics/other-courses/engl101/": "/Academics/other-courses/eng101/",
-        "ENGL101": "ENG101",
-    }
-    for path in DOCS.rglob("*.html"):
-        text = path.read_text(encoding="utf-8")
-        updated = text
-        for old, new in replacements.items():
-            updated = updated.replace(old, new)
-        if updated != text:
-            path.write_text(updated, encoding="utf-8")
-
-
-def repair_eng101() -> None:
+def repair_engl101() -> None:
     text = ENG101.read_text(encoding="utf-8")
-    text = re.sub(r'\s*<style id="(?:engl101|eng101)-layout-fix">.*?</style>', "", text, flags=re.S)
-    text = add_before_head_end(text, ENG101_STYLE)
+    text = re.sub(r'\s*<style id="eng101-layout-fix">.*?</style>', "", text, flags=re.S)
+    text = add_before_head_end(text, ENGL101_STYLE)
     text = text.replace(">TBD</span>", ">None</span>")
     text = text.replace(
         "<ul class=\"learning-outcomes\">\n                                    <li>TBD</li>\n                                </ul>",
@@ -222,8 +208,7 @@ def add_hub_to_sidebars() -> None:
 
 
 def main() -> None:
-    normalize_eng101_routes()
-    repair_eng101()
+    repair_engl101()
     update_other_courses()
     build_hub()
     add_hub_to_sidebars()
