@@ -1,0 +1,1184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>if(localStorage.getItem('shoug-theme')==='light'){document.documentElement.style.background='#f6f4fb';document.documentElement.style.color='#16111f';}</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profile — SHOUG.TECH</title>
+  <meta name="description" content="Student profile page.">
+  <link rel="icon" type="image/png" href="/assets/favicon.png?v=2">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles/light-mode.css">
+  <script src="/javascripts/translation-launch-guard.js"></script>
+  <style>
+    :root{--bg:#050508;--surface:#0a0514;--raised:#110822;--brand:#b829ea;--red:#ff2a4b;--green:#22c55e;--text:#f8f7fb;--dim:#8f8b9a;--muted:#4a4258;--border:rgba(255,255,255,0.07);}
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh;padding-top:0;}
+    .page{max-width:1440px;margin:0 auto;padding:48px 32px 100px;}
+    /* ── Two-column layout on wide screens ── */
+    .profile-layout,.profile-left,.profile-right{display:block;}
+    @media(min-width:1120px){
+      .profile-layout{display:grid;grid-template-columns:420px 1fr;gap:16px;align-items:start;}
+      .profile-left,.profile-right{min-width:0;}
+    }
+
+    .breadcrumb{font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--muted);letter-spacing:.1em;margin-bottom:32px;display:flex;align-items:center;gap:8px;}
+    .breadcrumb a{color:var(--muted);text-decoration:none;transition:color 150ms;}.breadcrumb a:hover{color:var(--brand);}
+    .breadcrumb-sep{opacity:.4;}.breadcrumb-cur{color:var(--brand);}
+
+    .state-box{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:100px 0;text-align:center;gap:14px;}
+    .state-tag{font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--muted);letter-spacing:.16em;text-transform:uppercase;}
+    .state-msg{font-family:'JetBrains Mono',monospace;font-size:.88rem;color:var(--dim);}
+    .state-link{display:inline-flex;align-items:center;height:34px;padding:0 18px;border:1px solid var(--brand);background:transparent;color:var(--brand);font-family:'JetBrains Mono',monospace;font-size:.65rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;text-decoration:none;transition:background 150ms;margin-top:6px;}
+    .state-link:hover{background:rgba(184,41,234,.12);}
+
+    /* ── Hero ── */
+    .profile-hero{background:var(--surface);border:1px solid var(--border);padding:36px 40px;margin-bottom:12px;position:relative;overflow:hidden;}
+    .profile-hero::before{content:'';position:absolute;top:-100px;right:-100px;width:320px;height:320px;background:radial-gradient(circle,rgba(184,41,234,.08),transparent 70%);pointer-events:none;}
+    .profile-hero::after{content:'';position:absolute;top:0;left:0;width:48px;height:2px;background:var(--brand);}
+    .profile-hero-inner{display:flex;align-items:flex-start;gap:28px;}
+    .profile-avatar{display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-weight:800;flex-shrink:0;width:80px;height:80px;font-size:2rem;}
+    .profile-main{flex:1;min-width:0;}
+    .profile-eyebrow{font-family:'JetBrains Mono',monospace;font-size:.55rem;color:var(--muted);letter-spacing:.2em;text-transform:uppercase;margin-bottom:6px;}
+    .profile-displayname{font-family:'JetBrains Mono',monospace;font-size:1.6rem;font-weight:800;letter-spacing:-.01em;margin-bottom:5px;line-height:1.2;}
+    .profile-handle-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px;}
+    .profile-username{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--muted);}
+    .profile-joined{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--muted);opacity:.6;}
+    .profile-tags{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+    .profile-tag{font-family:'JetBrains Mono',monospace;font-size:.58rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:4px 10px;border:1px solid;}
+    .profile-tag.major{border-color:rgba(184,41,234,.5);color:#b829ea;background:rgba(184,41,234,.08);}
+    .profile-tag.track{border-color:rgba(255,255,255,.12);color:var(--dim);background:rgba(255,255,255,.03);}
+    .profile-bio{font-size:.86rem;color:var(--dim);line-height:1.65;max-width:520px;margin-bottom:20px;}
+    .profile-actions{display:flex;gap:10px;flex-wrap:wrap;}
+    .profile-btn{height:34px;padding:0 16px;font-family:'JetBrains Mono',monospace;font-size:.62rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;border:1px solid;transition:background 150ms,color 150ms,border-color 150ms;background:transparent;}
+    .profile-btn.primary{border-color:var(--brand);color:var(--brand);}
+    .profile-btn.primary:hover{background:rgba(184,41,234,.12);}
+    .profile-btn.secondary{border-color:rgba(255,255,255,.15);color:var(--dim);}
+    .profile-btn.secondary:hover{border-color:var(--red);color:var(--red);}
+    .profile-btn:disabled{opacity:.5;cursor:not-allowed;}
+
+    /* ── Stats grid ── */
+    .profile-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border:1px solid var(--border);background:var(--surface);margin-bottom:12px;}
+    .profile-stat{padding:22px 16px;text-align:center;border-right:1px solid var(--border);position:relative;}
+    .profile-stat:last-child{border-right:none;}
+    .profile-stat-num{font-family:'JetBrains Mono',monospace;font-size:1.55rem;font-weight:800;display:block;margin-bottom:5px;}
+    .profile-stat-label{font-family:'JetBrains Mono',monospace;font-size:.55rem;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;display:block;}
+    .profile-stat-private{font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--muted);opacity:.5;}
+
+    /* ── Privacy notice ── */
+    .privacy-notice{border:1px solid rgba(255,255,255,.05);background:rgba(255,255,255,.02);padding:14px 18px;font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--muted);letter-spacing:.06em;display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+    .privacy-lock{font-size:.75rem;}
+
+    /* ── Light mode ── */
+    body.shoug-light-mode{background:#f6f4fb;color:#16111f;}
+    body.shoug-light-mode .profile-hero,
+    body.shoug-light-mode .profile-stats,
+    body.shoug-light-mode .profile-stat,
+    body.shoug-light-mode .privacy-notice{background:#fff;border-color:rgba(22,17,31,.1);}
+    body.shoug-light-mode .profile-tag.track{border-color:rgba(22,17,31,.15);}
+
+    /* ── Modal shared styles ── */
+    .pick-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+    .pick-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);color:#8f8b9a;font-family:'JetBrains Mono',monospace;font-size:.57rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:12px 6px;cursor:pointer;transition:background 150ms,border-color 150ms,color 150ms;text-align:center;line-height:1.4;width:100%;}
+    .pick-card:hover{background:rgba(184,41,234,.08);border-color:rgba(184,41,234,.3);color:#b829ea;}
+    .pick-card.selected{background:rgba(184,41,234,.15);border-color:#b829ea;color:#b829ea;}
+
+    /* ── Privacy toggle ── */
+    .privacy-toggle-row{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.02);}
+    .privacy-toggle-label{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:#8f8b9a;letter-spacing:.08em;}
+    .privacy-toggle-label span{display:block;font-size:.52rem;color:#4a4258;margin-top:2px;}
+    .toggle-pill{width:36px;height:20px;border-radius:10px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);cursor:pointer;position:relative;transition:background 200ms,border-color 200ms;flex-shrink:0;}
+    .toggle-pill.on{background:rgba(184,41,234,.4);border-color:rgba(184,41,234,.6);}
+    .toggle-pill::after{content:'';position:absolute;top:3px;left:3px;width:12px;height:12px;border-radius:50%;background:#fff;transition:transform 200ms;}
+    .toggle-pill.on::after{transform:translateX(16px);}
+
+    @media(max-width:600px){
+      .page{padding:28px 16px 80px;}
+      .profile-hero{padding:24px 20px;}
+      .profile-hero-inner{flex-direction:column;gap:16px;}
+      .profile-stats{grid-template-columns:repeat(2,1fr);}
+      .profile-stat:nth-child(2){border-right:none;}
+      .profile-stat:nth-child(1),.profile-stat:nth-child(2){border-bottom:1px solid var(--border);}
+      .pick-grid{grid-template-columns:repeat(2,1fr);}
+      .av-grid{grid-template-columns:repeat(4,1fr);}
+    }
+
+    /* ── Avatar picker ── */
+    .av-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;}
+    .av-item{background:#0a0514;border:2px solid rgba(255,255,255,.07);cursor:pointer;padding:0;transition:border-color 150ms,background 150ms;aspect-ratio:1;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+    .av-item:hover{border-color:rgba(184,41,234,.45);}
+    .av-item.selected{border-color:#b829ea;box-shadow:0 0 0 1px #b829ea inset;}
+    .av-item img{width:100%;height:100%;display:block;object-fit:cover;}
+
+    /* ── Detail sections ── */
+    .profile-section{background:var(--surface);border:1px solid var(--border);margin-bottom:12px;position:relative;overflow:hidden;}
+    .profile-section::after{content:'';position:absolute;top:0;left:0;width:32px;height:2px;background:var(--brand);}
+    .section-hdr{font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--brand);letter-spacing:.2em;text-transform:uppercase;padding:16px 24px;border-bottom:1px solid var(--border);}
+    .section-hdr-meta{color:var(--muted);opacity:.5;font-weight:400;}
+    .section-body{padding:16px 24px;}
+    .section-empty{font-family:'JetBrains Mono',monospace;font-size:.62rem;color:#4a4258;padding:28px 24px;}
+
+    /* Course rows */
+    .course-row{padding:11px 0;border-bottom:1px solid rgba(255,255,255,.04);display:flex;flex-direction:column;gap:8px;}
+    .course-row:first-child{padding-top:0;}
+    .course-row:last-child{border-bottom:none;padding-bottom:0;}
+    .course-meta{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+    .course-id{font-family:'JetBrains Mono',monospace;font-size:.72rem;font-weight:800;letter-spacing:.04em;color:var(--text);}
+    .course-count{font-family:'JetBrains Mono',monospace;font-size:.56rem;color:var(--dim);white-space:nowrap;display:flex;align-items:center;gap:8px;}
+    .cpct-badge{font-family:'JetBrains Mono',monospace;font-size:.5rem;font-weight:700;padding:2px 6px;border-radius:2px;letter-spacing:.06em;}
+    .cpct-done{background:rgba(34,197,94,.1);color:#22c55e;border:1px solid rgba(34,197,94,.25);}
+    .cpct-prog{background:rgba(184,41,234,.1);color:#b829ea;border:1px solid rgba(184,41,234,.25);}
+    .cpct-start{background:rgba(255,255,255,.03);color:#4a4258;border:1px solid rgba(255,255,255,.07);}
+    .prog-track{height:3px;background:rgba(255,255,255,.06);width:100%;border-radius:2px;overflow:hidden;}
+    .prog-fill{height:3px;border-radius:2px;transition:width 900ms cubic-bezier(.4,0,.2,1);}
+
+    /* Subject bars */
+    .subj-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 24px;}
+    .subj-row{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.03);}
+    .subj-row:last-child{border-bottom:none;}
+    .subj-label{font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--dim);width:56px;text-align:right;flex-shrink:0;letter-spacing:.04em;}
+    .subj-track{flex:1;height:4px;background:rgba(255,255,255,.05);border-radius:2px;overflow:hidden;}
+    .subj-bar{height:4px;border-radius:2px;transition:width 900ms cubic-bezier(.4,0,.2,1);}
+    .subj-val{font-family:'JetBrains Mono',monospace;font-size:.52rem;color:var(--muted);min-width:20px;text-align:right;flex-shrink:0;}
+
+    /* Study stats panel */
+    .sstat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0;}
+    .sstat-card{padding:24px 20px;border-right:1px solid var(--border);text-align:center;}
+    .sstat-card:last-child{border-right:none;}
+    .sstat-num{font-family:'JetBrains Mono',monospace;font-size:1.35rem;font-weight:800;margin-bottom:6px;letter-spacing:-.01em;line-height:1.1;word-break:break-all;}
+    .sstat-label{font-family:'JetBrains Mono',monospace;font-size:.52rem;color:var(--text);text-transform:uppercase;letter-spacing:.1em;margin-bottom:3px;}
+    .sstat-sub{font-family:'JetBrains Mono',monospace;font-size:.48rem;color:var(--muted);letter-spacing:.04em;}
+
+    body.shoug-light-mode .profile-section{background:#fff;border-color:rgba(22,17,31,.1);}
+    body.shoug-light-mode .prog-track{background:rgba(0,0,0,.07);}
+    body.shoug-light-mode .subj-track{background:rgba(0,0,0,.05);}
+    body.shoug-light-mode .course-row{border-color:rgba(0,0,0,.05);}
+    body.shoug-light-mode .subj-row{border-color:rgba(0,0,0,.04);}
+    body.shoug-light-mode .sstat-card{border-color:rgba(22,17,31,.1);}
+    /* text colors that use --text var (white in dark, invisible in light) */
+    body.shoug-light-mode .course-id,
+    body.shoug-light-mode .exam-title,
+    body.shoug-light-mode .sstat-label,
+    body.shoug-light-mode .exam-alert-text{color:#16111f;}
+    body.shoug-light-mode .profile-bio,
+    body.shoug-light-mode .profile-username,
+    body.shoug-light-mode .profile-joined,
+    body.shoug-light-mode .section-hdr-meta,
+    body.shoug-light-mode .subj-label,
+    body.shoug-light-mode .subj-val,
+    body.shoug-light-mode .course-count,
+    body.shoug-light-mode .sstat-sub,
+    body.shoug-light-mode .exam-date,
+    body.shoug-light-mode .state-tag,
+    body.shoug-light-mode .state-msg{color:#534a61;}
+    body.shoug-light-mode .exam-del{color:#9a8fb0;}
+    body.shoug-light-mode .pick-card{background:#f3f0fa;border-color:rgba(22,17,31,.1);color:#534a61;}
+    body.shoug-light-mode .pick-card:hover{background:rgba(184,41,234,.08);border-color:rgba(184,41,234,.3);color:#b829ea;}
+    body.shoug-light-mode .privacy-toggle-row{border-color:rgba(22,17,31,.08);background:rgba(22,17,31,.02);}
+    body.shoug-light-mode .privacy-notice{background:rgba(22,17,31,.02);border-color:rgba(22,17,31,.06);}
+    body.shoug-light-mode #exam-notif-bar{background:rgba(184,41,234,.05);border-color:rgba(184,41,234,.15);}
+
+    @media(max-width:600px){
+      .subj-grid{grid-template-columns:1fr;}
+      .section-hdr{padding:14px 16px;}
+      .section-body{padding:12px 16px;}
+      .sstat-grid{grid-template-columns:repeat(2,1fr);}
+      .sstat-card:nth-child(2){border-right:none;}
+      .sstat-card:nth-child(1),.sstat-card:nth-child(2){border-bottom:1px solid var(--border);}
+    }
+
+    /* Exam countdown */
+    .exam-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.04);}
+    .exam-row:first-child{padding-top:0;}
+    .exam-row:last-child{border-bottom:none;padding-bottom:0;}
+    .exam-type-badge{font-family:'JetBrains Mono',monospace;font-size:.48rem;font-weight:800;padding:3px 7px;border-radius:2px;letter-spacing:.1em;text-transform:uppercase;flex-shrink:0;}
+    .badge-midterm{background:rgba(59,130,246,.12);color:#3b82f6;border:1px solid rgba(59,130,246,.3);}
+    .badge-final{background:rgba(255,42,75,.12);color:#ff2a4b;border:1px solid rgba(255,42,75,.3);}
+    .badge-quiz{background:rgba(184,41,234,.12);color:#b829ea;border:1px solid rgba(184,41,234,.3);}
+    .badge-project{background:rgba(34,197,94,.12);color:#22c55e;border:1px solid rgba(34,197,94,.3);}
+    .exam-info{flex:1;min-width:0;}
+    .exam-title{font-family:'JetBrains Mono',monospace;font-size:.72rem;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .exam-course{font-family:'JetBrains Mono',monospace;font-size:.56rem;color:var(--muted);margin-top:2px;}
+    .exam-countdown{font-family:'JetBrains Mono',monospace;font-size:.65rem;font-weight:800;text-align:right;flex-shrink:0;min-width:70px;}
+    .exam-date{font-family:'JetBrains Mono',monospace;font-size:.5rem;color:var(--muted);text-align:right;margin-top:2px;}
+    .exam-del{background:transparent;border:none;color:#2e2840;font-size:.75rem;cursor:pointer;padding:0 4px;flex-shrink:0;line-height:1;transition:color 120ms;}
+    .exam-del:hover{color:#ff2a4b;}
+    .exam-add-btn{height:30px;padding:0 14px;background:transparent;border:1px solid rgba(184,41,234,.35);color:#b829ea;font-family:'JetBrains Mono',monospace;font-size:.56rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:background 150ms;white-space:nowrap;}
+    .exam-add-btn:hover{background:rgba(184,41,234,.1);}
+    body.shoug-light-mode .exam-row{border-color:rgba(0,0,0,.05);}
+
+    /* Exam alert strip */
+    .exam-alert{display:flex;align-items:center;gap:12px;padding:12px 16px;margin-bottom:4px;border-left:3px solid;font-family:'JetBrains Mono',monospace;}
+    .exam-alert.urgent{border-color:#ff2a4b;background:rgba(255,42,75,.06);}
+    .exam-alert.warn{border-color:#f59e0b;background:rgba(245,158,11,.06);}
+    .exam-alert.notice{border-color:#3b82f6;background:rgba(59,130,246,.06);}
+    .exam-alert-icon{font-size:.9rem;flex-shrink:0;}
+    .exam-alert-text{font-size:.66rem;color:var(--text);line-height:1.5;}
+    .exam-alert-text strong{color:inherit;}
+    .exam-alert-when{margin-left:auto;font-size:.6rem;font-weight:800;flex-shrink:0;}
+    .exam-alert.urgent .exam-alert-when{color:#ff2a4b;}
+    .exam-alert.warn .exam-alert-when{color:#f59e0b;}
+    .exam-alert.notice .exam-alert-when{color:#3b82f6;}
+
+    /* Notification permission banner */
+    #exam-notif-bar{display:none;align-items:center;gap:12px;padding:10px 16px;background:rgba(184,41,234,.08);border:1px solid rgba(184,41,234,.2);margin-bottom:8px;font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--dim);}
+    #exam-notif-bar button{margin-left:auto;flex-shrink:0;height:26px;padding:0 12px;background:#b829ea;border:none;color:#0a0514;font-family:'JetBrains Mono',monospace;font-size:.56rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;}
+    #exam-notif-bar .notif-dismiss{background:transparent;border:none;color:#4a4258;font-size:.85rem;cursor:pointer;padding:0 4px;margin-left:6px;}
+  </style>
+</head>
+<body>
+<script>if(localStorage.getItem('shoug-theme')==='light')document.body.classList.add('shoug-light-mode');</script>
+<script src="/javascripts/course-manifest.js"></script>
+<script src="/javascripts/mobile-navigation.js" defer></script>
+
+<main class="page">
+  <div class="breadcrumb">
+    <a href="/">Home</a><span class="breadcrumb-sep">/</span>
+    <a href="/community/">Community</a><span class="breadcrumb-sep">/</span>
+    <span class="breadcrumb-cur" id="breadcrumb-name">Profile</span>
+  </div>
+
+  <div id="loading-state" class="state-box">
+    <div class="state-tag">// Loading…</div>
+  </div>
+  <div id="signout-state" class="state-box" style="display:none">
+    <div class="state-tag">// Access Denied</div>
+    <div class="state-msg">Sign in to view profiles.</div>
+    <a class="state-link" href="/community/">Community</a>
+  </div>
+  <div id="notfound-state" class="state-box" style="display:none">
+    <div class="state-tag">// Not Found</div>
+    <div class="state-msg">This profile doesn't exist.</div>
+    <a class="state-link" href="/community/">Back to Community</a>
+  </div>
+  <div id="profile-app" style="display:none"></div>
+  <div id="exam-notif-bar">
+    <span>🔔 Enable browser notifications to get reminders 7, 3, and 1 day before your exams.</span>
+    <button id="notif-enable-btn">Enable</button>
+    <button class="notif-dismiss" title="Dismiss">✕</button>
+  </div>
+</main>
+
+<script>
+(function(){
+  var currentUser = null;
+  var _rendered = false;
+  var targetUid = null;
+  var targetProfile = null;
+  var isFollowing = false;
+
+  function escHtml(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+  function getParam(name){ return new URLSearchParams(window.location.search).get(name); }
+
+  // ── Avatar presets (local custom pixel-art avatars) ──────────────────────────
+  var AV = '/assets/avatars/';
+  var AVATAR_PRESETS = [
+    // ── Women (0-5) ───────────────────────────────────────────────────────────
+    AV + 'av-f1.png',   // long wavy hair, shoug.tech hoodie
+    AV + 'av-f2.png',   // hijab, KSA patch
+    AV + 'av-f3.png',   // bun + glasses + headphones + laptop
+    AV + 'av-f4.png',   // short hair, مبدعة patch
+    AV + 'av-f5.png',   // cap, KSA laptop (Riyadh Code Build Impact)
+    AV + 'av-f6.png',   // hijab + hoodie + glasses + laptop (السعودية)
+    // ── Men (6-10) ────────────────────────────────────────────────────────────
+    AV + 'av-m1.png',   // purple shemagh, مبدع KSA shoug.tech
+    AV + 'av-m2.png',   // white jacket, curly hair, KSA earring
+    AV + 'av-m3.png',   // white jacket, glasses, coffee (Riyadh Code Deploy)
+    AV + 'av-m4.png',   // curly hair, headphones, mask, shoug.tech
+    AV + 'av-m5.png',   // curly hair, VR goggles, hack sleep repeat
+  ];
+
+  function getAvatarUrl(preset){ var i = parseInt(preset, 10); return (!isNaN(i) && AVATAR_PRESETS[i]) ? AVATAR_PRESETS[i] : null; }
+
+  function show(id){
+    ["loading-state","signout-state","notfound-state","profile-app"].forEach(function(s){
+      var el = document.getElementById(s);
+      if (el) el.style.display = s === id ? (s === "profile-app" ? "block" : "flex") : "none";
+    });
+  }
+
+  function formatDate(ts){
+    if (!ts) return "";
+    var d = ts.toDate ? ts.toDate() : new Date(ts);
+    return d.toLocaleDateString("en-US", { month:"short", year:"numeric" });
+  }
+
+  // ── Progress helpers ─────────────────────────────────────────────────────────
+  var SUBJ_LABELS = {
+    'computer-science':'CS','software-engineering':'SE','information-systems':'IS',
+    'cybersecurity':'CYS','cyber-security':'CYS','ethics':'ETHCS',
+    'mathematics':'MATH','physics':'PHYS','english':'ENGL','management':'MGMT',
+    'general-education':'GEN ED','general':'GEN'
+  };
+
+  function fmtSubject(raw){ return SUBJ_LABELS[raw] || raw.toUpperCase().replace(/-/g,' '); }
+
+  function processProgress(snap){
+    var courses={}, subjects={}, activityMap={}, hasTimestamps=false, totalCompleted=0;
+    var manifest=window.COURSE_MANIFEST||{};
+    snap.forEach(function(doc){
+      var data=doc.data();
+      var url=(data.url||'').replace(/^\/+/,'');
+      var parts=url.split('/').filter(Boolean);
+      if(parts.length>=3){
+        var subjRaw=parts[1], cid=parts[2];
+        if(!courses[cid]){
+          var realTotal=manifest[cid]||0;
+          courses[cid]={name:cid.toUpperCase(),total:realTotal,completed:0};
+        }
+        if(data.completed){ courses[cid].completed++; totalCompleted++; }
+        if(!subjects[subjRaw]) subjects[subjRaw]={name:fmtSubject(subjRaw),completed:0,total:0};
+        subjects[subjRaw].total++;
+        if(data.completed) subjects[subjRaw].completed++;
+      }
+      if(data.completed && data.completedAt){
+        hasTimestamps=true;
+        var d=data.completedAt.toDate?data.completedAt.toDate():new Date(data.completedAt);
+        var k=d.toISOString().slice(0,10);
+        activityMap[k]=(activityMap[k]||0)+1;
+      }
+    });
+    return{courses:courses,subjects:subjects,activityMap:activityMap,hasTimestamps:hasTimestamps,totalCompleted:totalCompleted};
+  }
+
+  function buildCoursesSection(courses, accent){
+    var keys=Object.keys(courses).filter(function(k){return courses[k].completed>0;});
+    if(!keys.length) return '<div class="profile-section"><div class="section-hdr">// Course Progress</div><div class="section-empty">No progress recorded yet.</div></div>';
+    // Sort: completed courses last (bottom), in-progress by % desc
+    keys.sort(function(a,b){
+      var ca=courses[a], cb=courses[b];
+      var pctA=ca.total?ca.completed/ca.total:0;
+      var pctB=cb.total?cb.completed/cb.total:0;
+      var doneA=ca.total&&ca.completed>=ca.total?1:0;
+      var doneB=cb.total&&cb.completed>=cb.total?1:0;
+      if(doneA!==doneB) return doneA-doneB; // in-progress first
+      return pctB-pctA;
+    });
+    var rows=keys.map(function(k){
+      var c=courses[k];
+      var pct=c.total>0?Math.min(100,Math.round(c.completed/c.total*100)):0;
+      var done=c.total>0&&c.completed>=c.total;
+      var badge=done
+        ?'<span class="cpct-badge cpct-done">DONE</span>'
+        :c.total>0
+          ?'<span class="cpct-badge cpct-prog">'+pct+'%</span>'
+          :'<span class="cpct-badge cpct-start">'+c.completed+' pg</span>';
+      var countStr=c.total>0?(c.completed+' / '+c.total+' pages'):(c.completed+' pages');
+      return [
+        '<div class="course-row">',
+        '<div class="course-meta">',
+        '<span class="course-id">'+escHtml(c.name)+'</span>',
+        '<span class="course-count">'+countStr+' &nbsp;'+badge+'</span>',
+        '</div>',
+        '<div class="prog-track"><div class="prog-fill" data-pct="'+(c.total>0?pct:0)+'" style="width:0;background:'+accent+';'+(done?'opacity:.5;':'')+'"></div></div>',
+        '</div>',
+      ].join('');
+    }).join('');
+    return '<div class="profile-section"><div class="section-hdr">// Course Progress <span class="section-hdr-meta">&nbsp;· '+keys.length+' course'+(keys.length!==1?'s':'')+'</span></div><div class="section-body">'+rows+'</div></div>';
+  }
+
+  function buildSubjectSection(subjects, accent){
+    var keys=Object.keys(subjects).filter(function(k){return subjects[k].completed>0;});
+    if(!keys.length) return '';
+    keys.sort(function(a,b){return subjects[b].completed-subjects[a].completed;});
+    var max=subjects[keys[0]].completed;
+    // Split into two columns
+    var half=Math.ceil(keys.length/2);
+    var col1=keys.slice(0,half), col2=keys.slice(half);
+    function makeRow(k){
+      var s=subjects[k], pct=max?Math.round(s.completed/max*100):0;
+      return '<div class="subj-row"><span class="subj-label">'+escHtml(s.name)+'</span><div class="subj-track"><div class="subj-bar" data-pct="'+pct+'" style="width:0;background:'+accent+';opacity:.75;"></div></div><span class="subj-val">'+s.completed+'</span></div>';
+    }
+    var gridHtml='<div class="subj-grid"><div>'+col1.map(makeRow).join('')+'</div><div>'+col2.map(makeRow).join('')+'</div></div>';
+    return '<div class="profile-section"><div class="section-hdr">// Subject Breakdown</div><div class="section-body">'+gridHtml+'</div></div>';
+  }
+
+  function buildStatsPanel(data, coursesActive, accent){
+    var courses=data.courses, subjects=data.subjects, total=data.totalCompleted;
+    // Top course by pages completed
+    var courseKeys=Object.keys(courses).filter(function(k){return courses[k].completed>0;});
+    courseKeys.sort(function(a,b){return courses[b].completed-courses[a].completed;});
+    var topCourse=courseKeys.length?courses[courseKeys[0]].name:'—';
+    // Top subject
+    var subjKeys=Object.keys(subjects).filter(function(k){return subjects[k].completed>0;});
+    subjKeys.sort(function(a,b){return subjects[b].completed-subjects[a].completed;});
+    var topSubject=subjKeys.length?subjects[subjKeys[0]].name:'—';
+    // Pages per course avg
+    var avgPages=courseKeys.length?Math.round(total/courseKeys.length):0;
+
+    function statCard(val, label, sub){
+      return [
+        '<div class="sstat-card">',
+        '<div class="sstat-num" style="color:'+accent+'">'+val+'</div>',
+        '<div class="sstat-label">'+label+'</div>',
+        (sub?'<div class="sstat-sub">'+sub+'</div>':''),
+        '</div>',
+      ].join('');
+    }
+
+    var cards=[
+      statCard(total, 'Pages Completed', 'across all courses'),
+      statCard(courseKeys.length, 'Courses', courseKeys.length===1?'1 active':'active'),
+      statCard(topCourse, 'Top Course', 'most pages'),
+      statCard(avgPages, 'Avg Pages', 'per course'),
+    ].join('');
+
+    return '<div class="profile-section"><div class="section-hdr">// Study Stats</div><div class="sstat-grid">'+cards+'</div></div>';
+  }
+
+  function daysUntil(dateStr) {
+    var now = new Date(); now.setHours(0,0,0,0);
+    var then = new Date(dateStr); then.setHours(0,0,0,0);
+    return Math.round((then - now) / 86400000);
+  }
+
+  function countdownLabel(days) {
+    if (days < 0) return { text: 'PAST', color: '#4a4258' };
+    if (days === 0) return { text: 'TODAY', color: '#ff2a4b' };
+    if (days <= 3) return { text: days + 'd left', color: '#ff2a4b' };
+    if (days <= 7) return { text: days + 'd left', color: '#f59e0b' };
+    if (days <= 14) return { text: days + 'd left', color: '#eab308' };
+    return { text: days + 'd left', color: '#22c55e' };
+  }
+
+  function buildExamsSection(exams, uid) {
+    var db = firebase.firestore();
+    var sectionId = 'exam-section-body';
+    var _localExams = exams.slice(); // local copy we mutate
+
+    function renderRows(examList) {
+      if (!examList.length) return '<div style="font-family:\'JetBrains Mono\',monospace;font-size:.62rem;color:#4a4258;padding:8px 0;">No upcoming exams. Add one to start tracking.</div>';
+      examList.sort(function(a,b){ return new Date(a.date)-new Date(b.date); });
+      return examList.map(function(e) {
+        var days = daysUntil(e.date);
+        var cd = countdownLabel(days);
+        var dateLabel = new Date(e.date).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+        var badgeClass = 'badge-' + (e.type || 'quiz');
+        return [
+          '<div class="exam-row" data-examid="'+escHtml(e.id)+'">',
+          '<span class="exam-type-badge '+badgeClass+'">'+escHtml((e.type||'quiz').toUpperCase())+'</span>',
+          '<div class="exam-info">',
+          '<div class="exam-title">'+escHtml(e.course||'Exam')+'</div>',
+          '</div>',
+          '<div style="text-align:right;flex-shrink:0;">',
+          '<div class="exam-countdown" style="color:'+cd.color+'">'+cd.text+'</div>',
+          '<div class="exam-date">'+escHtml(dateLabel)+'</div>',
+          '</div>',
+          '<button class="exam-del" data-examid="'+escHtml(e.id)+'" title="Remove">✕</button>',
+          '</div>',
+        ].join('');
+      }).join('');
+    }
+
+    function refresh() {
+      var body = document.getElementById(sectionId);
+      if (!body) return;
+      body.innerHTML = renderRows(_localExams);
+      var hdr = document.querySelector('#exam-section .section-hdr-meta');
+      if (hdr) hdr.textContent = ' · ' + _localExams.filter(function(e){return daysUntil(e.date)>=0;}).length + ' upcoming';
+      attachDeleteHandlers();
+    }
+
+    function attachDeleteHandlers() {
+      var body = document.getElementById(sectionId);
+      if (!body) return;
+      body.querySelectorAll('.exam-del').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          var id = btn.dataset.examid;
+          // Delete from users/{uid}.exams map using FieldValue.delete()
+          var update = {};
+          update['exams.' + id] = firebase.firestore.FieldValue.delete();
+          db.collection('users').doc(uid).update(update).then(function() {
+            _localExams = _localExams.filter(function(e){ return e.id !== id; });
+            refresh();
+          }).catch(function(){});
+        });
+      });
+    }
+
+    var alertsHtml = buildExamAlerts(_localExams);
+    var rows = renderRows(_localExams);
+    var html = [
+      (alertsHtml ? '<div id="exam-alerts-strip">'+alertsHtml+'</div>' : ''),
+      '<div class="profile-section" id="exam-section">',
+      '<div class="section-hdr" style="display:flex;align-items:center;justify-content:space-between;">',
+      '<span>// Upcoming Exams <span class="section-hdr-meta">&nbsp;· '+(_localExams.filter(function(e){return daysUntil(e.date)>=0;}).length)+' upcoming</span></span>',
+      '<button class="exam-add-btn" id="exam-add-btn">+ Add Exam</button>',
+      '</div>',
+      '<div class="section-body" id="'+sectionId+'">'+rows+'</div>',
+      '</div>',
+    ].join('');
+
+    setTimeout(function() {
+      attachDeleteHandlers();
+      var addBtn = document.getElementById('exam-add-btn');
+      if (addBtn) addBtn.addEventListener('click', function() {
+        openAddExamModal(uid, function(newExam) {
+          _localExams.push(newExam);
+          refresh();
+        });
+      });
+    }, 0);
+
+    return html;
+  }
+
+  // ── Exam notifications ─────────────────────────────────────────────────────
+  function buildExamAlerts(exams) {
+    var alerts = [];
+    exams.forEach(function(e) {
+      var days = daysUntil(e.date);
+      if (days < 0 || days > 7) return;
+      var cls, icon, when;
+      if (days === 0) { cls='urgent'; icon='🚨'; when='TODAY'; }
+      else if (days === 1) { cls='urgent'; icon='⚠️'; when='TOMORROW'; }
+      else if (days <= 3) { cls='warn'; icon='⏰'; when='IN '+days+' DAYS'; }
+      else { cls='notice'; icon='📅'; when='IN '+days+' DAYS'; }
+      alerts.push('<div class="exam-alert '+cls+'">'+
+        '<span class="exam-alert-icon">'+icon+'</span>'+
+        '<span class="exam-alert-text"><strong>'+escHtml(e.course)+' '+escHtml((e.type||'').toUpperCase())+'</strong> — '+
+        new Date(e.date).toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'})+'</span>'+
+        '<span class="exam-alert-when">'+when+'</span>'+
+        '</div>');
+    });
+    return alerts.join('');
+  }
+
+  function fireExamNotifications(exams) {
+    if (!('Notification' in window)) return;
+    if (Notification.permission === 'denied') return;
+    if (localStorage.getItem('exam-notif-dismissed')) return;
+
+    var pending = exams.filter(function(e) {
+      var days = daysUntil(e.date);
+      return days === 7 || days === 3 || days === 1;
+    });
+    if (!pending.length) return;
+
+    function doFire() {
+      if (Notification.permission !== 'granted') return;
+      pending.forEach(function(e) {
+        var days = daysUntil(e.date);
+        var key = 'exam-notif-' + e.id + '-d' + days;
+        if (localStorage.getItem(key)) return;
+        var when = days === 1 ? 'tomorrow' : 'in ' + days + ' days';
+        new Notification('Exam Reminder — ' + e.course, {
+          body: e.course + ' ' + (e.type||'exam').toUpperCase() + ' is ' + when + ' (' +
+            new Date(e.date).toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'}) + ')',
+          icon: '/assets/favicon.png?v=2',
+          badge: '/assets/favicon.png?v=2',
+          tag: key,
+        });
+        localStorage.setItem(key, '1');
+      });
+    }
+
+    if (Notification.permission === 'granted') {
+      doFire();
+    } else {
+      // Show permission banner — don't auto-prompt (browsers block it)
+      var bar = document.getElementById('exam-notif-bar');
+      if (bar) {
+        bar.style.display = 'flex';
+        var enableBtn = bar.querySelector('#notif-enable-btn');
+        if (enableBtn) enableBtn.addEventListener('click', function() {
+          Notification.requestPermission().then(function(p) {
+            bar.style.display = 'none';
+            if (p === 'granted') doFire();
+          });
+        });
+        var dismissBtn = bar.querySelector('.notif-dismiss');
+        if (dismissBtn) dismissBtn.addEventListener('click', function() {
+          bar.style.display = 'none';
+          localStorage.setItem('exam-notif-dismissed', '1');
+        });
+      }
+    }
+  }
+
+  function openAddExamModal(uid, onSaved) {
+    var existing = document.getElementById('add-exam-modal');
+    if (existing) existing.remove();
+
+    var TYPES = ['midterm', 'final', 'quiz', 'project'];
+    var COURSES = [
+      'CS101','CS102','CS210','CS285','CS330','CS331','CS340',
+      'CYS401','ENGLISH','ETHCS303','ISC113','PHY205',
+      'SE201','SE311','SE322','SE401','SE423'
+    ];
+    var labelStyle = "font-size:.56rem;color:#4a4258;letter-spacing:.12em;text-transform:uppercase;display:block;margin-bottom:8px;font-family:'JetBrains Mono',monospace;";
+    var selectStyle = "width:100%;box-sizing:border-box;background:#0d0820;border:1px solid rgba(255,255,255,.1);color:#f8f7fb;font-family:'JetBrains Mono',monospace;font-size:.78rem;padding:10px 12px;outline:none;cursor:pointer;appearance:none;-webkit-appearance:none;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%234a4258' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E\");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px;";
+
+    var courseOptions = '<option value="" disabled selected style="color:#4a4258;">— Select a course —</option>' +
+      COURSES.map(function(c){ return '<option value="'+c+'">'+c+'</option>'; }).join('');
+
+    var typeCards = TYPES.map(function(t) {
+      return '<button type="button" class="pick-card" data-val="'+t+'" style="font-size:.55rem;">'+t.toUpperCase()+'</button>';
+    }).join('');
+
+    var m = document.createElement('div');
+    m.id = 'add-exam-modal';
+    m.style.cssText = "position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.8);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:32px 16px;";
+    m.innerHTML = [
+      '<div style="width:min(400px,100%);background:#0a0514;border:1px solid rgba(184,41,234,.4);font-family:\'JetBrains Mono\',monospace;padding:28px;position:relative;">',
+      '<div style="position:absolute;top:0;left:0;width:36px;height:2px;background:#b829ea;"></div>',
+      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:22px;">',
+      '<span style="font-size:.58rem;color:#b829ea;letter-spacing:.2em;text-transform:uppercase;font-weight:800;">// Add Exam</span>',
+      '<button id="ae-close" style="background:transparent;border:none;color:#4a4258;font-size:1rem;cursor:pointer;">✕</button>',
+      '</div>',
+      '<div style="display:flex;flex-direction:column;gap:16px;">',
+      '<div><label style="'+labelStyle+'">Course</label>',
+      '<select id="ae-course" style="'+selectStyle+'">'+courseOptions+'</select></div>',
+      '<div><label style="'+labelStyle+'">Type</label>',
+      '<input type="hidden" id="ae-type" value="midterm">',
+      '<div class="pick-grid" style="grid-template-columns:repeat(4,1fr);gap:6px;">'+typeCards+'</div>',
+      '</div>',
+      '<div><label style="'+labelStyle+'">Date</label><input id="ae-date" type="date" style="width:100%;box-sizing:border-box;background:#0d0820;border:1px solid rgba(255,255,255,.1);color:#f8f7fb;font-family:\'JetBrains Mono\',monospace;font-size:.78rem;padding:10px 12px;outline:none;color-scheme:dark;"></div>',
+      '<div id="ae-error" style="font-size:.6rem;color:#ff2a4b;min-height:12px;"></div>',
+      '<button id="ae-save" style="height:38px;background:#b829ea;color:#0a0514;border:none;font-family:\'JetBrains Mono\',monospace;font-size:.66rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;width:100%;">Save Exam</button>',
+      '</div></div>',
+    ].join('');
+    document.body.appendChild(m);
+
+    // Pre-select midterm
+    m.querySelector('.pick-card[data-val="midterm"]').classList.add('selected');
+
+    // Type card clicks
+    m.querySelectorAll('.pick-card').forEach(function(card) {
+      card.addEventListener('click', function() {
+        m.querySelectorAll('.pick-card').forEach(function(c){ c.classList.remove('selected'); });
+        card.classList.add('selected');
+        document.getElementById('ae-type').value = card.dataset.val;
+      });
+    });
+
+    // Highlight select on focus
+    var sel = document.getElementById('ae-course');
+    sel.addEventListener('focus', function(){ this.style.borderColor='rgba(184,41,234,.5)'; });
+    sel.addEventListener('blur',  function(){ this.style.borderColor='rgba(255,255,255,.1)'; });
+
+    document.getElementById('ae-close').addEventListener('click', function(){ m.remove(); });
+    m.addEventListener('click', function(e){ if (e.target === m) m.remove(); });
+
+    document.getElementById('ae-save').addEventListener('click', function() {
+      var course = document.getElementById('ae-course').value;
+      var type   = document.getElementById('ae-type').value;
+      var date   = document.getElementById('ae-date').value;
+      var errEl  = document.getElementById('ae-error');
+      if (!course) { errEl.textContent = 'Please select a course.'; return; }
+      if (!date)   { errEl.textContent = 'Date is required.'; return; }
+      var btn = document.getElementById('ae-save');
+      btn.disabled = true; btn.textContent = 'Saving…';
+      var newId = Date.now().toString(36) + Math.random().toString(36).slice(2,6);
+      var update = {};
+      update['exams.' + newId] = { course: course, type: type, date: date };
+      firebase.firestore().collection('users').doc(uid).update(update).then(function() {
+        m.remove();
+        if (onSaved) onSaved({ id: newId, course: course, type: type, date: date });
+      }).catch(function(err) { errEl.textContent = err.message; btn.disabled=false; btn.textContent='Save Exam'; });
+    });
+  }
+
+  function animateBars(){
+    requestAnimationFrame(function(){
+      document.querySelectorAll('.prog-fill[data-pct],.subj-bar[data-pct]').forEach(function(el){
+        el.style.width=el.dataset.pct+'%';
+      });
+    });
+  }
+
+  // ── Render profile ──────────────────────────────────────────────────────────
+  function renderProfile(profile, followerCount, followingCount, coursesActive, allProgressData, exams){
+    document.title = (profile.displayName || profile.username || "Profile") + " — SHOUG.TECH";
+    var el = document.getElementById("breadcrumb-name");
+    if (el) el.textContent = "@" + (profile.username || "profile");
+
+    var c = profile.avatarColor || "#b829ea";
+    var initial = (profile.displayName || profile.username || "?")[0].toUpperCase();
+    var isSelf = targetUid === currentUser.uid;
+    var privacyPublic = profile.privacyPublic !== false; // default true
+    var showStats = isSelf || privacyPublic;
+
+    var tagsHtml = "";
+    if (profile.major) tagsHtml += '<span class="profile-tag major">'+escHtml(profile.major)+'</span>';
+    if (profile.track) tagsHtml += '<span class="profile-tag track">'+escHtml(profile.track)+'</span>';
+
+    var joinedStr = profile.createdAt ? "Joined " + formatDate(profile.createdAt) : "";
+
+    var actionBtns = isSelf
+      ? '<button class="profile-btn primary" id="edit-btn">Edit Profile</button>'
+      : '<button class="profile-btn '+(isFollowing?"secondary":"primary")+'" id="follow-btn">'+(isFollowing?"Unfollow":"Follow")+'</button>';
+
+    var statsHtml;
+    if (showStats) {
+      var pagesNum = (isSelf && allProgressData) ? allProgressData.totalCompleted : (profile.totalCompleted || 0);
+      var coursesNum = (isSelf && coursesActive != null) ? coursesActive : (profile.coursesActive || 0);
+      statsHtml = [
+        '<div class="profile-stats">',
+        '  <div class="profile-stat">',
+        '    <span class="profile-stat-num" id="live-stat-pages" style="color:'+c+'">'+pagesNum+'</span>',
+        '    <span class="profile-stat-label">Pages Complete</span>',
+        '  </div>',
+        '  <div class="profile-stat">',
+        '    <span class="profile-stat-num" id="live-stat-courses" style="color:'+c+'">'+coursesNum+'</span>',
+        '    <span class="profile-stat-label">Courses Active</span>',
+        '  </div>',
+        '  <div class="profile-stat" id="stat-following">',
+        '    <span class="profile-stat-num">'+followingCount+'</span>',
+        '    <span class="profile-stat-label">Following</span>',
+        '  </div>',
+        '  <div class="profile-stat" id="stat-followers">',
+        '    <span class="profile-stat-num">'+followerCount+'</span>',
+        '    <span class="profile-stat-label">Followers</span>',
+        '  </div>',
+        '</div>',
+      ].join("");
+    } else {
+      // Private — show social stats only, hide progress
+      statsHtml = [
+        '<div class="profile-stats">',
+        '  <div class="profile-stat">',
+        '    <span class="profile-stat-num profile-stat-private">—</span>',
+        '    <span class="profile-stat-label">Pages Complete</span>',
+        '  </div>',
+        '  <div class="profile-stat">',
+        '    <span class="profile-stat-num profile-stat-private">—</span>',
+        '    <span class="profile-stat-label">Courses Active</span>',
+        '  </div>',
+        '  <div class="profile-stat" id="stat-following">',
+        '    <span class="profile-stat-num">'+followingCount+'</span>',
+        '    <span class="profile-stat-label">Following</span>',
+        '  </div>',
+        '  <div class="profile-stat" id="stat-followers">',
+        '    <span class="profile-stat-num">'+followerCount+'</span>',
+        '    <span class="profile-stat-label">Followers</span>',
+        '  </div>',
+        '</div>',
+        '<div class="privacy-notice"><span class="privacy-lock">🔒</span> This student keeps their progress private.</div>',
+      ].join("");
+    }
+
+    var avatarUrl = getAvatarUrl(profile.avatarPreset);
+    var avatarHtml = avatarUrl
+      ? '<div class="profile-avatar" style="padding:0;overflow:hidden;border:1px solid '+c+'55;background:#0d0720;"><img src="'+avatarUrl+'" style="width:80px;height:80px;display:block;object-fit:cover;" loading="lazy" alt="avatar"></div>'
+      : '<div class="profile-avatar" style="background:'+c+'1a;border:1px solid '+c+'55;color:'+c+'">'+escHtml(initial)+'</div>';
+
+    var coursesHtml = (isSelf && allProgressData) ? buildCoursesSection(allProgressData.courses, c) : "";
+    var subjectHtml = (isSelf && allProgressData) ? buildSubjectSection(allProgressData.subjects, c) : "";
+    var heatmapHtml = (isSelf && allProgressData) ? buildStatsPanel(allProgressData, coursesActive, c) : "";
+
+    var hasDetailCols = !!(isSelf && allProgressData);
+    document.getElementById("profile-app").innerHTML = [
+      (hasDetailCols ? '<div class="profile-layout"><div class="profile-left">' : ''),
+      '<div class="profile-hero">',
+      '  <div class="profile-hero-inner">',
+      '    '+avatarHtml,
+      '    <div class="profile-main">',
+      '      <div class="profile-eyebrow">// Student Profile · PSU</div>',
+      '      <div class="profile-displayname" style="color:'+c+'">'+escHtml(profile.displayName||profile.username||"Unknown")+'</div>',
+      '      <div class="profile-handle-row">',
+      '        <span class="profile-username">@'+escHtml(profile.username||"")+'</span>',
+      (joinedStr ? '<span class="profile-joined">· '+escHtml(joinedStr)+'</span>' : ""),
+      '      </div>',
+      (tagsHtml ? '<div class="profile-tags">'+tagsHtml+'</div>' : ""),
+      (profile.bio ? '<div class="profile-bio">'+escHtml(profile.bio)+'</div>' : ""),
+      '      <div class="profile-actions">'+actionBtns+'</div>',
+      '    </div>',
+      '  </div>',
+      '</div>',
+      statsHtml,
+      (hasDetailCols ? '</div><div class="profile-right">' : ''),
+      coursesHtml,
+      subjectHtml,
+      heatmapHtml,
+      (isSelf ? buildExamsSection(exams || [], targetUid) : ""),
+      (hasDetailCols ? '</div></div>' : ''),
+    ].join("");
+
+    show("profile-app");
+    animateBars();
+
+    // Fire exam notifications for self (7d / 3d / 1d reminders)
+    if (isSelf && exams && exams.length) {
+      setTimeout(function(){ fireExamNotifications(exams); }, 800);
+    }
+
+    // Live sync: keep stats bar updated whenever users/{uid} doc changes
+    if (isSelf) {
+      if (window._profileStatUnsub) window._profileStatUnsub();
+      window._profileStatUnsub = firebase.firestore().collection("users").doc(targetUid)
+        .onSnapshot(function(doc) {
+          if (!doc.exists) return;
+          var d = doc.data();
+          var pEl = document.getElementById("live-stat-pages");
+          var cEl = document.getElementById("live-stat-courses");
+          if (pEl && d.totalCompleted != null) pEl.textContent = d.totalCompleted;
+          if (cEl && d.coursesActive != null)  cEl.textContent = d.coursesActive;
+        }, function() {});
+    }
+
+    var followBtn = document.getElementById("follow-btn");
+    if (followBtn){
+      followBtn.addEventListener("click", function(){
+        followBtn.disabled = true;
+        if (isFollowing) unfollowUser(); else followUser();
+      });
+    }
+    var editBtn = document.getElementById("edit-btn");
+    if (editBtn) editBtn.addEventListener("click", function(){ openEditModal(profile); });
+  }
+
+  // ── Edit modal ──────────────────────────────────────────────────────────────
+  function openEditModal(profile){
+    var existing = document.getElementById("profile-edit-modal");
+    if (existing) existing.remove();
+
+    var MAJORS = [
+      "Computer Science (CS)",
+      "Information Systems (IS)",
+      "Software Engineering (SE)"
+    ];
+    var TRACKS = [
+      "Artificial Intelligence & Data Science (AI&DS)",
+      "Cyber Security (CYS)",
+      "Digital Media Systems (DMS)",
+      "Digital Transformation (DX)",
+      "Business Computing & E-Commerce (BCE)"
+    ];
+
+    var currentMajor = profile.major || "";
+    var currentTrack = profile.track || "";
+    var privacyPublic = profile.privacyPublic !== false;
+
+    function makeCards(list, current, inputId){
+      return list.map(function(v){
+        var sel = v === current;
+        return '<button type="button" class="pick-card'+(sel?" selected":"")+'" data-val="'+escHtml(v)+'" data-input="'+inputId+'">'+escHtml(v)+'</button>';
+      }).join("");
+    }
+
+    var fieldStyle = "width:100%;box-sizing:border-box;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);color:#f8f7fb;font-family:'JetBrains Mono',monospace;font-size:.8rem;padding:9px 12px;outline:none;";
+    var labelStyle = "font-size:.58rem;color:#4a4258;letter-spacing:.12em;text-transform:uppercase;display:block;margin-bottom:8px;";
+    var sectionStyle = "display:flex;flex-direction:column;gap:0;";
+
+    var modal = document.createElement("div");
+    modal.id = "profile-edit-modal";
+    modal.style.cssText = "position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.8);backdrop-filter:blur(6px);display:flex;align-items:flex-start;justify-content:center;overflow-y:auto;padding:32px 16px;";
+    modal.innerHTML = [
+      '<div style="width:min(540px,100%);background:#0a0514;border:1px solid rgba(184,41,234,.4);font-family:\'JetBrains Mono\',monospace;padding:32px;position:relative;">',
+      '  <div style="position:absolute;top:0;left:0;width:40px;height:2px;background:#b829ea;"></div>',
+      '  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;">',
+      '    <span style="font-size:.6rem;color:#b829ea;letter-spacing:.2em;text-transform:uppercase;font-weight:800;">// Edit Profile</span>',
+      '    <button id="edit-modal-close" style="background:transparent;border:none;color:#4a4258;font-size:1rem;cursor:pointer;line-height:1;">✕</button>',
+      '  </div>',
+      '  <div style="display:flex;flex-direction:column;gap:20px;">',
+
+      // Avatar picker
+      '    <div style="'+sectionStyle+'">',
+      '      <label style="'+labelStyle+'">Avatar</label>',
+      '      <input type="hidden" id="edit-avatarid" value="'+escHtml(profile.avatarPreset != null ? String(profile.avatarPreset) : "")+'">',
+      '      <p style="font-size:.5rem;color:#4a4258;letter-spacing:.14em;text-transform:uppercase;margin:4px 0 6px;font-family:\'JetBrains Mono\',monospace;">Women</p>',
+      '      <div class="av-grid" style="grid-template-columns:repeat(6,1fr);margin-bottom:10px;">',
+      AVATAR_PRESETS.slice(0,6).map(function(url,i){
+        var sel = String(i) === String(profile.avatarPreset);
+        return '<button type="button" class="av-item'+(sel?' selected':'')+'" data-avid="'+i+'"><img src="'+url+'" loading="lazy" alt="avatar '+(i+1)+'"></button>';
+      }).join(""),
+      '      </div>',
+      '      <p style="font-size:.5rem;color:#4a4258;letter-spacing:.14em;text-transform:uppercase;margin:4px 0 6px;font-family:\'JetBrains Mono\',monospace;">Men</p>',
+      '      <div class="av-grid" style="grid-template-columns:repeat(5,1fr);">',
+      AVATAR_PRESETS.slice(6).map(function(url,j){
+        var i = j + 6;
+        var sel = String(i) === String(profile.avatarPreset);
+        return '<button type="button" class="av-item'+(sel?' selected':'')+'" data-avid="'+i+'"><img src="'+url+'" loading="lazy" alt="avatar '+(i+1)+'"></button>';
+      }).join(""),
+      '      </div>',
+      '    </div>',
+
+      // Display name
+      '    <div style="'+sectionStyle+'"><label style="'+labelStyle+'">Display Name</label>',
+      '      <input id="edit-displayname" style="'+fieldStyle+'" value="'+escHtml(profile.displayName||"")+'"></div>',
+
+      // Bio
+      '    <div style="'+sectionStyle+'"><label style="'+labelStyle+'">Bio <span style="color:#4a4258;font-size:.5rem;">(optional)</span></label>',
+      '      <textarea id="edit-bio" rows="3" maxlength="160" style="'+fieldStyle+'resize:vertical;">'+escHtml(profile.bio||"")+'</textarea></div>',
+
+      // Major
+      '    <div style="'+sectionStyle+'">',
+      '      <label style="'+labelStyle+'">Major</label>',
+      '      <input type="hidden" id="edit-major" value="'+escHtml(currentMajor)+'">',
+      '      <div class="pick-grid" style="grid-template-columns:repeat(3,1fr);">'+makeCards(MAJORS, currentMajor, "edit-major")+'</div>',
+      '    </div>',
+
+      // Track
+      '    <div style="'+sectionStyle+'">',
+      '      <label style="'+labelStyle+'">Track <span style="color:#4a4258;font-size:.5rem;">(optional · click again to deselect)</span></label>',
+      '      <input type="hidden" id="edit-track" value="'+escHtml(currentTrack)+'">',
+      '      <div class="pick-grid" style="grid-template-columns:repeat(2,1fr);">'+makeCards(TRACKS, currentTrack, "edit-track")+'</div>',
+      '    </div>',
+
+      // Privacy toggle
+      '    <div class="privacy-toggle-row">',
+      '      <div class="privacy-toggle-label">Show progress to others',
+      '        <span>When off, pages and courses completed are hidden from your public profile</span>',
+      '      </div>',
+      '      <div class="toggle-pill'+(privacyPublic?" on":"")+'" id="privacy-pill"></div>',
+      '    </div>',
+      '    <input type="hidden" id="edit-privacy" value="'+(privacyPublic?"true":"false")+'">',
+
+      // Account section
+      '    <div style="border-top:1px solid rgba(255,255,255,.06);padding-top:20px;display:flex;flex-direction:column;gap:16px;">',
+      '      <span style="font-size:.55rem;color:#b829ea;letter-spacing:.2em;text-transform:uppercase;font-weight:800;">// Account</span>',
+
+      // Update email
+      '      <div style="'+sectionStyle+'">',
+      '        <label style="'+labelStyle+'">Update Email</label>',
+      '        <input id="acct-new-email" type="email" placeholder="New email address" style="'+fieldStyle+'margin-bottom:8px;" autocomplete="email">',
+      '        <input id="acct-email-pass" type="password" placeholder="Current password (to confirm)" style="'+fieldStyle+'margin-bottom:8px;" autocomplete="current-password">',
+      '        <div id="acct-email-msg" style="font-size:.58rem;min-height:12px;margin-bottom:6px;"></div>',
+      '        <button id="acct-email-btn" style="height:36px;background:rgba(184,41,234,.15);border:1px solid rgba(184,41,234,.4);color:#b829ea;font-family:\'JetBrains Mono\',monospace;font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;">Update Email</button>',
+      '      </div>',
+
+      // Change password
+      '      <div style="'+sectionStyle+'">',
+      '        <label style="'+labelStyle+'">Change Password</label>',
+      '        <div style="font-size:.6rem;color:#4a4258;margin-bottom:8px;">A reset link will be sent to '+escHtml(currentUser.email||"your email")+'</div>',
+      '        <div id="acct-pass-msg" style="font-size:.58rem;min-height:12px;margin-bottom:6px;"></div>',
+      '        <button id="acct-pass-btn" style="height:36px;background:rgba(184,41,234,.15);border:1px solid rgba(184,41,234,.4);color:#b829ea;font-family:\'JetBrains Mono\',monospace;font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;">Send Reset Link</button>',
+      '      </div>',
+
+      '    </div>',
+
+      '    <div id="edit-error" style="font-size:.62rem;color:#ff2a4b;min-height:14px;"></div>',
+      '    <button id="edit-save" style="height:40px;background:#b829ea;color:#0a0514;border:none;font-family:\'JetBrains Mono\',monospace;font-size:.68rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;transition:background 150ms;">Save Changes</button>',
+      '  </div>',
+      '</div>',
+    ].join("");
+    document.body.appendChild(modal);
+
+    // Close
+    document.getElementById("edit-modal-close").addEventListener("click", function(){ modal.remove(); });
+    modal.addEventListener("click", function(e){ if (e.target === modal) modal.remove(); });
+
+    // Avatar item clicks
+    modal.querySelectorAll(".av-item[data-avid]").forEach(function(item){
+      item.addEventListener("click", function(){
+        modal.querySelectorAll(".av-item[data-avid]").forEach(function(i){ i.classList.remove("selected"); });
+        item.classList.add("selected");
+        document.getElementById("edit-avatarid").value = item.dataset.avid;
+      });
+    });
+
+    // Major / track card clicks
+    modal.querySelectorAll(".pick-card").forEach(function(card){
+      card.addEventListener("click", function(){
+        var inputId = card.dataset.input;
+        var input = document.getElementById(inputId);
+        var isTrack = inputId === "edit-track";
+        if (isTrack && card.classList.contains("selected")){
+          card.classList.remove("selected");
+          input.value = "";
+          return;
+        }
+        modal.querySelectorAll('[data-input="'+inputId+'"]').forEach(function(c){ c.classList.remove("selected"); });
+        card.classList.add("selected");
+        input.value = card.dataset.val;
+      });
+    });
+
+    // Privacy pill toggle
+    var pill = document.getElementById("privacy-pill");
+    var privacyInput = document.getElementById("edit-privacy");
+    pill.addEventListener("click", function(){
+      var isOn = pill.classList.toggle("on");
+      privacyInput.value = isOn ? "true" : "false";
+    });
+
+    // Update Email
+    document.getElementById("acct-email-btn").addEventListener("click", function(){
+      var newEmail = document.getElementById("acct-new-email").value.trim();
+      var pass = document.getElementById("acct-email-pass").value;
+      var msgEl = document.getElementById("acct-email-msg");
+      var btn = document.getElementById("acct-email-btn");
+      msgEl.style.color = "#ff2a4b";
+      if (!newEmail) { msgEl.textContent = "Enter a new email address."; return; }
+      if (!pass) { msgEl.textContent = "Enter your current password to confirm."; return; }
+      btn.disabled = true; btn.textContent = "Updating…";
+      var cred = firebase.auth.EmailAuthProvider.credential(currentUser.email, pass);
+      currentUser.reauthenticateWithCredential(cred).then(function(){
+        return currentUser.updateEmail(newEmail);
+      }).then(function(){
+        msgEl.style.color = "#22c55e";
+        msgEl.textContent = "Email updated. You may need to re-verify.";
+        btn.textContent = "Updated ✓";
+      }).catch(function(err){
+        msgEl.textContent = err.code === "auth/wrong-password" ? "Incorrect password." :
+          err.code === "auth/email-already-in-use" ? "That email is already in use." :
+          err.code === "auth/invalid-email" ? "Invalid email address." : err.message;
+        btn.disabled = false; btn.textContent = "Update Email";
+      });
+    });
+
+    // Change Password
+    document.getElementById("acct-pass-btn").addEventListener("click", function(){
+      var msgEl = document.getElementById("acct-pass-msg");
+      var btn = document.getElementById("acct-pass-btn");
+      btn.disabled = true; btn.textContent = "Sending…";
+      firebase.auth().sendPasswordResetEmail(currentUser.email).then(function(){
+        msgEl.style.color = "#22c55e";
+        msgEl.textContent = "Reset link sent — check your inbox.";
+        btn.textContent = "Sent ✓";
+      }).catch(function(err){
+        msgEl.style.color = "#ff2a4b";
+        msgEl.textContent = err.message;
+        btn.disabled = false; btn.textContent = "Send Reset Link";
+      });
+    });
+
+    // Save
+    document.getElementById("edit-save").addEventListener("click", function(){
+      var displayName = document.getElementById("edit-displayname").value.trim();
+      var bio = document.getElementById("edit-bio").value.trim();
+      var major = document.getElementById("edit-major").value;
+      var track = document.getElementById("edit-track").value;
+      var privacyPub = document.getElementById("edit-privacy").value === "true";
+      var avatarPresetRaw = document.getElementById("edit-avatarid").value;
+      var avatarPreset = avatarPresetRaw !== "" ? parseInt(avatarPresetRaw, 10) : null;
+      var errEl = document.getElementById("edit-error");
+      if (!displayName){ errEl.textContent = "Display name is required."; return; }
+      if (!major){ errEl.textContent = "Please select your major."; return; }
+      var btn = document.getElementById("edit-save");
+      btn.disabled = true; btn.textContent = "Saving…";
+      var updateData = {
+        displayName: displayName, bio: bio, major: major, track: track,
+        privacyPublic: privacyPub,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+      };
+      if (avatarPreset !== null) updateData.avatarPreset = avatarPreset;
+      firebase.firestore().collection("users").doc(currentUser.uid).update(updateData).then(function(){
+        modal.remove();
+        window.location.reload();
+      }).catch(function(err){ errEl.textContent = err.message; btn.disabled=false; btn.textContent="Save Changes"; });
+    });
+  }
+
+  // ── Follow / Unfollow ───────────────────────────────────────────────────────
+  function followUser(){
+    var db = firebase.firestore();
+    var now = firebase.firestore.FieldValue.serverTimestamp();
+    Promise.all([
+      db.collection("users").doc(currentUser.uid).collection("following").doc(targetUid).set({createdAt:now}),
+      db.collection("users").doc(targetUid).collection("followers").doc(currentUser.uid).set({createdAt:now}),
+    ]).then(function(){
+      isFollowing = true;
+      var btn = document.getElementById("follow-btn");
+      if (btn){ btn.textContent="Unfollow"; btn.className="profile-btn secondary"; btn.disabled=false; }
+      var el = document.getElementById("stat-followers");
+      if (el){ var n = parseInt(el.querySelector(".profile-stat-num").textContent,10)||0; el.querySelector(".profile-stat-num").textContent = n+1; }
+    }).catch(function(){ var btn=document.getElementById("follow-btn"); if(btn)btn.disabled=false; });
+  }
+
+  function unfollowUser(){
+    var db = firebase.firestore();
+    Promise.all([
+      db.collection("users").doc(currentUser.uid).collection("following").doc(targetUid).delete(),
+      db.collection("users").doc(targetUid).collection("followers").doc(currentUser.uid).delete(),
+    ]).then(function(){
+      isFollowing = false;
+      var btn = document.getElementById("follow-btn");
+      if (btn){ btn.textContent="Follow"; btn.className="profile-btn primary"; btn.disabled=false; }
+      var el = document.getElementById("stat-followers");
+      if (el){ var n = parseInt(el.querySelector(".profile-stat-num").textContent,10)||0; el.querySelector(".profile-stat-num").textContent = Math.max(0,n-1); }
+    }).catch(function(){ var btn=document.getElementById("follow-btn"); if(btn)btn.disabled=false; });
+  }
+
+  // ── Load profile ────────────────────────────────────────────────────────────
+  function loadProfile(){
+    targetUid = getParam("u");
+    if (!targetUid){ show("notfound-state"); return; }
+    var db = firebase.firestore();
+    var isSelf = targetUid === currentUser.uid;
+    var done = false;
+    var timeout = setTimeout(function(){ if (!done){ done=true; show("notfound-state"); } }, 10000);
+
+    var queries = [
+      db.collection("users").doc(targetUid).get(),
+      db.collection("users").doc(targetUid).collection("followers").get(),
+      db.collection("users").doc(targetUid).collection("following").get(),
+      db.collection("users").doc(currentUser.uid).collection("following").doc(targetUid).get(),
+    ];
+    if (isSelf){
+      queries.push(db.collection("userProgress").doc(targetUid).collection("pages").get());
+    }
+
+    Promise.all(queries).then(function(res){
+      if (done) return;
+      done = true; clearTimeout(timeout);
+      var profileDoc = res[0], followersSnap = res[1], followingSnap = res[2], myFollowDoc = res[3];
+      var allPagesSnap = res[4] || null;
+      if (!profileDoc.exists){ show("notfound-state"); return; }
+      targetProfile = profileDoc.data();
+      isFollowing = myFollowDoc.exists;
+
+      // Compute unique courses + full progress data from all pages
+      var coursesActive = null;
+      var allProgressData = null;
+      if (allPagesSnap){
+        var seen = {};
+        allPagesSnap.forEach(function(doc){
+          var data = doc.data();
+          if (!data.completed) return;
+          var url = (data.url || "").replace(/^\/+/, "");
+          var parts = url.split("/").filter(Boolean);
+          if (parts.length >= 3) seen[parts[0]+"/"+parts[1]+"/"+parts[2]] = true;
+        });
+        coursesActive = Object.keys(seen).length;
+        allProgressData = processProgress(allPagesSnap);
+        var syncData = {};
+        if (coursesActive !== (targetProfile.coursesActive || 0)) syncData.coursesActive = coursesActive;
+        if (allProgressData.totalCompleted !== (targetProfile.totalCompleted || 0)) syncData.totalCompleted = allProgressData.totalCompleted;
+        if (Object.keys(syncData).length) db.collection("users").doc(targetUid).update(syncData).catch(function(){});
+      }
+
+      var examsPromise = isSelf
+        ? db.collection('users').doc(targetUid).get()
+        : Promise.resolve(null);
+
+      examsPromise.then(function(userDoc) {
+        var exams = [];
+        if (userDoc && userDoc.exists) {
+          var examsMap = userDoc.data().exams || {};
+          Object.keys(examsMap).forEach(function(id) {
+            var e = examsMap[id];
+            exams.push({ id: id, title: e.title, course: e.course, type: e.type, date: e.date });
+          });
+        }
+        renderProfile(targetProfile, followersSnap.size, followingSnap.size, coursesActive, allProgressData, exams);
+      }).catch(function() {
+        renderProfile(targetProfile, followersSnap.size, followingSnap.size, coursesActive, allProgressData, []);
+      });
+    }).catch(function(){
+      if (done) return;
+      done = true; clearTimeout(timeout);
+      show("notfound-state");
+    });
+  }
+
+  // ── Auth boot ───────────────────────────────────────────────────────────────
+  function onUser(user){ if (_rendered) return; _rendered=true; currentUser=user; loadProfile(); }
+  function onNull(){ setTimeout(function(){ if (!_rendered) show("signout-state"); }, 4000); }
+
+  window.__shoug_onAuth = function(user){ if (user) onUser(user); else onNull(); };
+
+  var _poll = setInterval(function(){
+    try{
+      firebase.app(); clearInterval(_poll);
+      if (!_rendered) firebase.auth().onAuthStateChanged(function(u){ if (u) onUser(u); else onNull(); });
+    }catch(e){}
+  }, 200);
+  setTimeout(function(){ clearInterval(_poll); if (!_rendered) show("signout-state"); }, 15000);
+})();
+</script>
+</body>
+</html>

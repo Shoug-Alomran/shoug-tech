@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>if(localStorage.getItem('shoug-theme')==='light'){document.documentElement.style.background='#f6f4fb';document.documentElement.style.color='#16111f';}</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Community — SHOUG.TECH</title>
+  <meta name="description" content="Connect with other students, see leaderboards, and discuss courses.">
+  <link rel="icon" type="image/png" href="/assets/favicon.png?v=2">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles/light-mode.css">
+  <script src="/javascripts/translation-launch-guard.js"></script>
+  <style>
+    :root{--bg:#050508;--surface:#0a0514;--raised:#110822;--brand:#b829ea;--red:#ff2a4b;--green:#22c55e;--text:#f8f7fb;--dim:#8f8b9a;--muted:#4a4258;--border:rgba(255,255,255,0.07);}
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh;padding-top:0;}
+    .page{max-width:1100px;margin:0 auto;padding:48px 32px 100px;}
+
+    /* Breadcrumb */
+    .breadcrumb{font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--muted);letter-spacing:.1em;margin-bottom:28px;display:flex;align-items:center;gap:8px;}
+    .breadcrumb a{color:var(--muted);text-decoration:none;transition:color 150ms;}.breadcrumb a:hover{color:var(--brand);}
+    .breadcrumb-sep{opacity:.4;}.breadcrumb-cur{color:var(--brand);}
+
+    /* Page header */
+    .page-eyebrow{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--brand);letter-spacing:.2em;text-transform:uppercase;margin-bottom:8px;}
+    .page-title{font-family:'JetBrains Mono',monospace;font-size:2.2rem;font-weight:800;letter-spacing:-.02em;margin-bottom:6px;}
+    .page-sub{font-size:.875rem;color:var(--dim);margin-bottom:36px;}
+
+    /* States */
+    .state-box{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:100px 0;text-align:center;gap:14px;}
+    .state-tag{font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--muted);letter-spacing:.16em;text-transform:uppercase;}
+    .state-msg{font-family:'JetBrains Mono',monospace;font-size:.95rem;color:var(--dim);}
+    .state-btn{display:inline-flex;align-items:center;height:36px;padding:0 20px;border:1px solid var(--brand);background:transparent;color:var(--brand);font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;text-decoration:none;transition:background 150ms;margin-top:6px;}
+    .state-btn:hover{background:rgba(184,41,234,.12);}
+
+    /* Profile setup (shown if no username) */
+    .setup-card{background:var(--surface);border:1px solid rgba(184,41,234,.25);padding:32px;max-width:560px;width:100%;}
+    .setup-tag{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--brand);letter-spacing:.2em;text-transform:uppercase;margin-bottom:8px;}
+    .setup-title{font-family:'JetBrains Mono',monospace;font-size:1.1rem;font-weight:800;letter-spacing:.04em;margin-bottom:6px;}
+    .setup-sub{font-size:.82rem;color:var(--dim);margin-bottom:24px;}
+    .setup-field{display:flex;flex-direction:column;margin-bottom:14px;}
+    .setup-label{font-family:'JetBrains Mono',monospace;font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:5px;}
+    .setup-input{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:.82rem;padding:10px 12px;outline:none;width:100%;transition:border-color 150ms;}
+    .setup-input:focus{border-color:rgba(184,41,234,.5);}
+    .major-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+    .major-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);color:var(--dim);font-family:'JetBrains Mono',monospace;font-size:.58rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:12px 6px;cursor:pointer;transition:background 150ms,border-color 150ms,color 150ms;text-align:center;line-height:1.4;width:100%;}
+    .major-card:hover{background:rgba(184,41,234,.08);border-color:rgba(184,41,234,.3);color:var(--brand);}
+    .major-card.selected{background:rgba(184,41,234,.15);border-color:var(--brand);color:var(--brand);}
+    @media(max-width:480px){.major-grid{grid-template-columns:repeat(2,1fr);}}
+    textarea.setup-input{resize:vertical;}
+    .setup-error{font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--red);min-height:16px;margin-bottom:8px;}
+    .setup-submit{height:40px;width:100%;background:var(--brand);color:#0a0514;border:none;font-family:'JetBrains Mono',monospace;font-size:.7rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;transition:background 150ms;}
+    .setup-submit:hover{background:#c940f5;}
+    .setup-submit:disabled{opacity:.5;cursor:not-allowed;}
+
+    /* Tab nav */
+    .comm-tabs{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:32px;}
+    .comm-tab{padding:10px 20px;font-family:'JetBrains Mono',monospace;font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);border:none;background:transparent;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:color 120ms,border-color 120ms;}
+    .comm-tab:hover{color:var(--text);}
+    .comm-tab.active{color:var(--brand);border-bottom-color:var(--brand);}
+
+    /* Generic tab helpers */
+    .tab-loading{font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--muted);padding:48px 0;text-align:center;}
+    .tab-empty{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--muted);padding:64px 0;text-align:center;}
+    .tab-panel{display:none;}
+    .tab-panel.active{display:block;}
+
+    /* User avatar */
+    .u-avatar{display:inline-flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-weight:800;flex-shrink:0;border-radius:0;}
+
+    /* Browse tab */
+    .browse-search-wrap{margin-bottom:24px;}
+    .browse-search{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:.8rem;padding:10px 14px;outline:none;width:100%;max-width:400px;transition:border-color 150ms;}
+    .browse-search:focus{border-color:rgba(184,41,234,.5);}
+    .user-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;}
+    .user-card{background:var(--surface);border:1px solid var(--border);padding:18px;display:flex;align-items:center;gap:14px;text-decoration:none;color:inherit;transition:border-color 150ms,background 150ms;cursor:pointer;}
+    .user-card:hover{border-color:rgba(255,255,255,.14);background:var(--raised);}
+    .user-card-info{flex:1;min-width:0;}
+    .user-card-name{font-family:'JetBrains Mono',monospace;font-size:.78rem;font-weight:800;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .user-card-username{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--muted);}
+    .user-card-stat{display:flex;flex-direction:column;align-items:flex-end;flex-shrink:0;}
+    .user-card-num{font-family:'JetBrains Mono',monospace;font-size:1.1rem;font-weight:800;}
+    .user-card-label{font-family:'JetBrains Mono',monospace;font-size:.52rem;color:var(--muted);}
+
+    /* Activity feed */
+    .feed-title{font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--muted);letter-spacing:.14em;text-transform:uppercase;margin-bottom:20px;}
+    .feed-list{display:flex;flex-direction:column;gap:10px;}
+    .feed-item{background:var(--surface);border:1px solid var(--border);padding:16px 18px;display:flex;align-items:center;gap:14px;text-decoration:none;color:inherit;transition:border-color 150ms;}
+    .feed-item:hover{border-color:rgba(255,255,255,.14);}
+    .feed-info{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;}
+    .feed-name{font-family:'JetBrains Mono',monospace;font-size:.78rem;font-weight:800;}
+    .feed-meta{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--muted);}
+    .feed-btn{font-family:'JetBrains Mono',monospace;font-size:.62rem;font-weight:700;flex-shrink:0;}
+
+    /* Leaderboard */
+    .lb-title{font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--muted);letter-spacing:.14em;text-transform:uppercase;margin-bottom:4px;}
+    .lb-subtitle{font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--muted);margin-bottom:28px;}
+    .lb-list{display:flex;flex-direction:column;gap:8px;}
+    .lb-row{background:var(--surface);border:1px solid var(--border);padding:14px 18px;display:flex;align-items:center;gap:14px;text-decoration:none;color:inherit;transition:border-color 150ms;}
+    .lb-row:hover{border-color:rgba(255,255,255,.12);}
+    .lb-row.lb-me{border-color:rgba(184,41,234,.3);}
+    .lb-rank{font-family:'JetBrains Mono',monospace;font-size:1rem;font-weight:800;width:28px;text-align:center;flex-shrink:0;}
+    .lb-info{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;}
+    .lb-name{font-family:'JetBrains Mono',monospace;font-size:.78rem;font-weight:800;}
+    .lb-username{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--muted);}
+    .lb-count{font-family:'JetBrains Mono',monospace;font-size:1rem;font-weight:800;flex-shrink:0;}
+    /* Leaderboard podium */
+    .lb-podium{display:flex;flex-direction:row;justify-content:center;align-items:flex-end;gap:16px;margin-bottom:40px;}
+    .lb-podium-item{display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;text-decoration:none;color:inherit;}
+    .lb-podium-slot{display:flex;align-items:center;justify-content:center;padding:0 24px;width:100%;}
+    .lb-podium-rank{font-family:'JetBrains Mono',monospace;font-size:1.8rem;font-weight:800;}
+    .lb-podium-name{font-family:'JetBrains Mono',monospace;font-size:.72rem;font-weight:800;text-align:center;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+    .lb-podium-score{font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--muted);}
+    .lb-podium-avatar{width:42px;height:42px;display:flex;align-items:center;justify-content:center;}
+    .lb-section-label{font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--muted);letter-spacing:.14em;text-transform:uppercase;margin-bottom:12px;}
+    .lb-bar{height:3px;background:rgba(255,255,255,.06);border-radius:2px;margin-top:4px;width:100%;}
+    .lb-bar-fill{height:100%;border-radius:2px;}
+    .lb-me-label{font-size:.5rem;background:rgba(184,41,234,.15);border:1px solid rgba(184,41,234,.3);color:#b829ea;padding:1px 6px;margin-left:6px;vertical-align:middle;}
+    .lb-you-row{border-top:1px solid rgba(255,255,255,.06);margin-top:16px;}
+
+    /* Discussions */
+    .discuss-guidelines{background:rgba(184,41,234,.06);border:1px solid rgba(184,41,234,.18);padding:14px 18px;margin-bottom:20px;font-family:'JetBrains Mono',monospace;font-size:.64rem;color:var(--dim);line-height:1.7;letter-spacing:.02em;}
+    .discuss-guidelines strong{color:var(--text);}
+    .discuss-guidelines-tag{display:block;color:var(--brand);font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;margin-bottom:5px;}
+    body.shoug-light-mode .discuss-guidelines{background:rgba(184,41,234,.04);border-color:rgba(184,41,234,.2);}
+    .discuss-select-wrap{margin-bottom:24px;}
+    .discuss-select{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:.75rem;padding:10px 14px;outline:none;cursor:pointer;min-width:320px;transition:border-color 150ms;}
+    .discuss-select:focus{border-color:rgba(184,41,234,.5);}
+    .comments-list{display:flex;flex-direction:column;gap:10px;margin-bottom:20px;max-height:520px;overflow-y:auto;}
+    .comment{background:var(--surface);border:1px solid var(--border);padding:14px 16px;}
+    .comment.comment-me{border-color:rgba(184,41,234,.2);}
+    .comment-header{display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap;}
+    .comment-author{font-family:'JetBrains Mono',monospace;font-size:.72rem;font-weight:800;}
+    .comment-username{font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--muted);}
+    .comment-time{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--muted);margin-left:auto;}
+    .comment-delete{margin-left:8px;background:transparent;border:none;color:var(--muted);font-size:.65rem;cursor:pointer;padding:0 4px;transition:color 150ms;}
+    .comment-delete:hover{color:var(--red);}
+    .comment-text{font-size:.82rem;color:var(--text);line-height:1.6;white-space:pre-wrap;word-break:break-word;}
+    .comment-form{background:var(--surface);border:1px solid var(--border);padding:16px;}
+    .comment-input{background:transparent;border:none;color:var(--text);font-family:'Inter',sans-serif;font-size:.85rem;line-height:1.5;width:100%;outline:none;resize:vertical;}
+    .comment-form-footer{display:flex;align-items:center;justify-content:space-between;margin-top:12px;gap:12px;}
+    .comment-hint{font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--muted);}
+    .comment-submit{height:34px;padding:0 18px;background:var(--brand);color:#0a0514;border:none;font-family:'JetBrains Mono',monospace;font-size:.65rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;transition:background 150ms;}
+    .comment-submit:hover{background:#c940f5;}
+    .comment-submit:disabled{opacity:.5;cursor:not-allowed;}
+
+    /* Reply threads */
+    .comment-reply-wrap{display:flex;flex-direction:column;}
+    .comment-replies{margin-left:40px;border-left:2px solid rgba(255,255,255,.06);padding-left:12px;display:flex;flex-direction:column;gap:6px;margin-top:6px;}
+    body.shoug-light-mode .comment-replies{border-left-color:rgba(22,17,31,.08);}
+    .comment--reply{background:rgba(255,255,255,.015);}
+    body.shoug-light-mode .comment--reply{background:rgba(22,17,31,.015);}
+    .comment-reply-to{font-size:.58rem;color:var(--muted);font-style:italic;}
+    .comment-actions{margin-top:6px;}
+    .comment-reply-btn{background:transparent;border:none;font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--muted);cursor:pointer;padding:0;letter-spacing:.06em;text-transform:uppercase;transition:color 120ms;}
+    .comment-reply-btn:hover{color:var(--brand);}
+    .comment-inline-form{margin-top:8px;display:none;flex-direction:row;gap:8px;align-items:flex-start;}
+    .comment-inline-form.open{display:flex;}
+    .comment-inline-input{flex:1;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);color:var(--text);font-family:'Inter',sans-serif;font-size:.82rem;padding:8px 11px;outline:none;resize:vertical;transition:border-color 150ms;min-height:56px;line-height:1.5;box-sizing:border-box;}
+    .comment-inline-input:focus{border-color:rgba(184,41,234,.45);}
+    .comment-inline-actions{display:flex;flex-direction:column;gap:6px;flex-shrink:0;}
+    .comment-inline-post{height:32px;padding:0 14px;background:var(--brand);color:#0a0514;border:none;font-family:'JetBrains Mono',monospace;font-size:.58rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:background 150ms;white-space:nowrap;}
+    .comment-inline-post:hover{background:#c940f5;}
+    .comment-inline-post:disabled{opacity:.45;cursor:not-allowed;}
+    .comment-inline-cancel{height:32px;padding:0 10px;background:transparent;border:1px solid rgba(255,255,255,.1);color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:.58rem;cursor:pointer;text-transform:uppercase;letter-spacing:.06em;transition:border-color 150ms,color 150ms;}
+    .comment-inline-cancel:hover{border-color:rgba(255,255,255,.2);color:var(--dim);}
+    body.shoug-light-mode .comment-inline-input{color:#16111f;background:rgba(0,0,0,.02);border-color:rgba(0,0,0,.1);}
+    body.shoug-light-mode .comment-inline-cancel{border-color:rgba(0,0,0,.12);}
+
+    /* Light mode */
+    body.shoug-light-mode{background:#f6f4fb;color:#16111f;}
+    body.shoug-light-mode .setup-card,body.shoug-light-mode .user-card,body.shoug-light-mode .feed-item,
+    body.shoug-light-mode .lb-row,body.shoug-light-mode .comment,body.shoug-light-mode .comment-form{background:#fff;border-color:rgba(22,17,31,.1);}
+    body.shoug-light-mode .setup-input,body.shoug-light-mode .browse-search,body.shoug-light-mode .discuss-select{color:#16111f;background:rgba(0,0,0,.03);border-color:rgba(0,0,0,.12);}
+    body.shoug-light-mode .comment-input{color:#16111f;}
+
+    @media(max-width:700px){
+      .page{padding:28px 16px 80px;}
+      .page-title{font-size:1.5rem;}
+      .comm-tab{padding:10px 12px;font-size:.6rem;}
+      .user-grid{grid-template-columns:1fr;}
+      .discuss-select{min-width:0;width:100%;}
+    }
+  </style>
+</head>
+<body>
+<script>if(localStorage.getItem('shoug-theme')==='light')document.body.classList.add('shoug-light-mode');</script>
+<script src="/javascripts/mobile-navigation.js" defer></script>
+
+<main class="page">
+  <div class="breadcrumb">
+    <a href="/">Home</a><span class="breadcrumb-sep">/</span>
+    <span class="breadcrumb-cur">Community</span>
+  </div>
+  <div class="page-eyebrow">// STUDENT COMMUNITY</div>
+  <h1 class="page-title">Community</h1>
+  <p class="page-sub">Follow students, compare progress, and discuss courses.</p>
+
+  <!-- loading -->
+  <div id="loading-state" class="state-box">
+    <div class="state-tag">// Loading…</div>
+  </div>
+
+  <!-- signed out -->
+  <div id="signout-state" class="state-box" style="display:none">
+    <div class="state-tag">// Access Denied</div>
+    <div class="state-msg">Sign in to access the community.</div>
+    <button class="state-btn" id="open-signin-btn">Sign In</button>
+  </div>
+
+  <!-- profile setup (signed in but no username) -->
+  <div id="setup-state" class="state-box" style="display:none">
+    <div class="setup-card">
+      <div class="setup-tag">// Set Up Profile</div>
+      <div class="setup-title">Join the Community</div>
+      <div class="setup-sub">Choose a username to appear in leaderboards, follow others, and post in discussions.</div>
+      <div class="setup-field">
+        <label class="setup-label">Username <span style="font-size:.52rem;color:var(--muted)">(3–20 chars, a-z 0-9 _)</span></label>
+        <input class="setup-input" id="setup-username" placeholder="your_username" maxlength="20">
+      </div>
+      <div class="setup-field">
+        <label class="setup-label">Display Name</label>
+        <input class="setup-input" id="setup-displayname" placeholder="Your Name" maxlength="40">
+      </div>
+      <div class="setup-field">
+        <label class="setup-label">Major</label>
+        <input type="hidden" id="setup-major" value="">
+        <div class="major-grid">
+          <button type="button" class="major-card" data-major="Computer Science (CS)">Computer Science (CS)</button>
+          <button type="button" class="major-card" data-major="Information Systems (IS)">Information Systems (IS)</button>
+          <button type="button" class="major-card" data-major="Software Engineering (SE)">Software Engineering (SE)</button>
+        </div>
+      </div>
+      <div class="setup-field" id="setup-track-field" style="display:none">
+        <label class="setup-label">Track <span style="color:var(--muted)">(optional — click to toggle)</span></label>
+        <input type="hidden" id="setup-track" value="">
+        <div class="major-grid" style="grid-template-columns:repeat(2,1fr);">
+          <button type="button" class="major-card" data-track="Artificial Intelligence & Data Science (AI&DS)">Artificial Intelligence & Data Science (AI&DS)</button>
+          <button type="button" class="major-card" data-track="Cyber Security (CYS)">Cyber Security (CYS)</button>
+          <button type="button" class="major-card" data-track="Digital Media Systems (DMS)">Digital Media Systems (DMS)</button>
+          <button type="button" class="major-card" data-track="Digital Transformation (DX)">Digital Transformation (DX)</button>
+          <button type="button" class="major-card" data-track="Business Computing & E-Commerce (BCE)">Business Computing & E-Commerce (BCE)</button>
+        </div>
+      </div>
+      <div class="setup-field">
+        <label class="setup-label">Bio <span style="color:var(--muted)">(optional)</span></label>
+        <textarea class="setup-input" id="setup-bio" placeholder="Tell the community about yourself…" rows="3" maxlength="160"></textarea>
+      </div>
+      <div class="setup-error" id="setup-error"></div>
+      <button class="setup-submit" id="setup-submit">Create Profile</button>
+    </div>
+  </div>
+
+  <!-- main app -->
+  <div id="app" style="display:none">
+    <nav class="comm-tabs">
+      <button class="comm-tab" data-tab="browse">Browse</button>
+      <button class="comm-tab" data-tab="feed">Activity</button>
+      <button class="comm-tab" data-tab="leaderboard">Leaderboards</button>
+      <button class="comm-tab active" data-tab="discuss">Discussions</button>
+    </nav>
+
+    <div id="tab-browse" class="tab-panel"></div>
+    <div id="tab-feed" class="tab-panel"></div>
+    <div id="tab-leaderboard" class="tab-panel"></div>
+    <div id="tab-discuss" class="tab-panel active"></div>
+  </div>
+</main>
+
+<script>
+(function(){
+  var currentUser = null;
+  var currentProfile = null;
+  var loaded = {};
+  var discussUnsub = null;
+  var allUsers = [];
+
+  var AVATAR_COLORS = ["#b829ea","#3b82f6","#22c55e","#f59e0b","#ff2a4b","#06b6d4","#ec4899"];
+
+  var COURSES = [
+    {id:"general", label:"General — Open Discussion"},
+    {id:"__sep__", label:"── Courses ──", disabled:true},
+    {id:"cs101",  label:"CS101 — Computer Programming I"},
+    {id:"cs102",  label:"CS102 — Computer Programming II"},
+    {id:"cs210",  label:"CS210 — Data Structures & Algorithms"},
+    {id:"cs285",  label:"CS285 — Discrete Mathematics"},
+    {id:"cs330",  label:"CS330 — Operating Systems"},
+    {id:"cs331",  label:"CS331 — Data Communications"},
+    {id:"cs340",  label:"CS340 — Database Systems"},
+    {id:"se201",  label:"SE201 — Intro to Software Engineering"},
+    {id:"se311",  label:"SE311 — Software Requirements"},
+    {id:"se322",  label:"SE322 — Software Design & Architecture"},
+    {id:"se365",  label:"SE365 — Human-Computer Interaction"},
+    {id:"se371",  label:"SE371 — Web Engineering"},
+    {id:"se401",  label:"SE401 — Software Testing & Quality"},
+    {id:"se411",  label:"SE411 — Software Construction"},
+    {id:"se423",  label:"SE423 — Software Project Management"},
+    {id:"se499",  label:"SE499 — Senior Project"},
+    {id:"cys401", label:"CYS401 — Fundamentals of Cybersecurity"},
+    {id:"cys402", label:"CYS402 — Network Security"},
+    {id:"cys403", label:"CYS403 — Digital Forensics"},
+    {id:"cys406", label:"CYS406 — Advanced Cybersecurity"},
+    {id:"eng101", label:"ENG101 — Academic English"},
+    {id:"eng103", label:"ENG103 — Academic Writing"},
+    {id:"ethcs303",label:"ETHCS303 — Ethics & Cybersecurity"},
+    {id:"isc113", label:"ISC113 — Islamic Economy"},
+    {id:"phy205", label:"PHY205 — Physics II"},
+  ];
+
+  function escHtml(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+
+  function avatar(profile, size){
+    size = size || 36;
+    var c = profile.avatarColor || "#b829ea";
+    var init = (profile.displayName || profile.username || "?")[0].toUpperCase();
+    return '<div class="u-avatar" style="width:'+size+'px;height:'+size+'px;background:'+c+'1a;border:1px solid '+c+'55;color:'+c+';font-size:'+(size*0.38).toFixed(0)+'px">'+escHtml(init)+'</div>';
+  }
+
+  function show(id){
+    ["loading-state","signout-state","setup-state","app"].forEach(function(s){
+      var el = document.getElementById(s);
+      if (!el) return;
+      el.style.display = s === id ? (s === "app" ? "block" : "flex") : "none";
+    });
+  }
+
+  // ── Tab switching ─────────────────────────────────────────────────────────
+  document.querySelectorAll(".comm-tab").forEach(function(btn){
+    btn.addEventListener("click", function(){ switchTab(btn.dataset.tab); });
+  });
+
+  function switchTab(name){
+    document.querySelectorAll(".comm-tab").forEach(function(b){ b.classList.toggle("active", b.dataset.tab === name); });
+    document.querySelectorAll(".tab-panel").forEach(function(p){ p.classList.remove("active"); });
+    var panel = document.getElementById("tab-"+name);
+    if (panel) panel.classList.add("active");
+    if (name === "browse")      loadBrowse();
+    else if (name === "feed")       loadFeed();
+    else if (name === "leaderboard") loadLeaderboard();
+    else if (name === "discuss")     loadDiscuss();
+  }
+
+  // ── Browse ────────────────────────────────────────────────────────────────
+  function loadBrowse(){
+    if (loaded.browse) return;
+    var panel = document.getElementById("tab-browse");
+    panel.innerHTML = '<div class="tab-loading">Loading users…</div>';
+    firebase.firestore().collection("users").orderBy("createdAt","desc").limit(60).get()
+    .then(function(snap){
+      loaded.browse = true;
+      allUsers = [];
+      snap.forEach(function(doc){ allUsers.push(Object.assign({uid:doc.id}, doc.data())); });
+      renderBrowse("");
+    }).catch(function(){
+      panel.innerHTML = '<div class="tab-empty">Failed to load users.</div>';
+    });
+  }
+
+  function renderBrowse(query){
+    var panel = document.getElementById("tab-browse");
+    var q = query.toLowerCase();
+    var users = q ? allUsers.filter(function(u){
+      return (u.username||"").includes(q) || (u.displayName||"").toLowerCase().includes(q);
+    }) : allUsers;
+    var others = users.filter(function(u){ return u.uid !== currentUser.uid; });
+
+    var html = '<div class="browse-search-wrap"><input class="browse-search" id="browse-q" placeholder="Search by username or name…" value="'+escHtml(query)+'"></div>';
+    if (!others.length){
+      html += '<div class="tab-empty">'+(q ? "No users match that search." : "No other users yet.")+'</div>';
+    } else {
+      html += '<div class="user-grid">'+others.map(function(u){
+        var c = u.avatarColor || "#b829ea";
+        return '<a class="user-card" href="/community/profile/?u='+escHtml(u.uid)+'">'
+          + avatar(u, 40)
+          + '<div class="user-card-info">'
+          + '<div class="user-card-name">'+escHtml(u.displayName||u.username||"Unknown")+'</div>'
+          + '<div class="user-card-username">@'+escHtml(u.username||"")+'</div>'
+          + '</div>'
+          + '<div class="user-card-stat"><span class="user-card-num" style="color:'+c+'">'+(u.totalCompleted||0)+'</span><span class="user-card-label">completed</span></div>'
+          + '</a>';
+      }).join("") + '</div>';
+    }
+    panel.innerHTML = html;
+    var inp = document.getElementById("browse-q");
+    if (inp){ inp.addEventListener("input", function(){ renderBrowse(this.value.trim()); }); }
+  }
+
+  // ── Activity feed ─────────────────────────────────────────────────────────
+  function loadFeed(){
+    if (loaded.feed) return;
+    loaded.feed = true;
+    var panel = document.getElementById("tab-feed");
+    panel.innerHTML = '<div class="tab-loading">Loading feed…</div>';
+
+    firebase.firestore().collection("users").doc(currentUser.uid).collection("following").get()
+    .then(function(snap){
+      var uids = [];
+      snap.forEach(function(doc){ uids.push(doc.id); });
+      if (!uids.length){
+        panel.innerHTML = '<div class="tab-empty">Follow students to see their activity here.</div>';
+        return;
+      }
+      return Promise.all(uids.slice(0,20).map(function(uid){
+        return firebase.firestore().collection("users").doc(uid).get();
+      })).then(function(docs){
+        var html = '<div class="feed-title">People You Follow</div><div class="feed-list">';
+        docs.forEach(function(doc){
+          if (!doc.exists) return;
+          var u = Object.assign({uid:doc.id}, doc.data());
+          html += '<a class="feed-item" href="/community/profile/?u='+escHtml(u.uid)+'">'
+            + avatar(u, 32)
+            + '<div class="feed-info"><span class="feed-name">'+escHtml(u.displayName||u.username||"Unknown")+'</span><span class="feed-meta">@'+escHtml(u.username||"")+' · '+(u.totalCompleted||0)+' pages completed</span></div>'
+            + '<span class="feed-btn" style="color:'+(u.avatarColor||"#b829ea")+'">View →</span>'
+            + '</a>';
+        });
+        html += '</div>';
+        panel.innerHTML = html;
+      });
+    }).catch(function(){
+      panel.innerHTML = '<div class="tab-empty">Failed to load feed.</div>';
+    });
+  }
+
+  // ── Leaderboard ───────────────────────────────────────────────────────────
+  function loadLeaderboard(){
+    if (loaded.leaderboard) return;
+    loaded.leaderboard = true;
+    var panel = document.getElementById("tab-leaderboard");
+    panel.innerHTML = '<div class="tab-loading">Loading leaderboard…</div>';
+
+    firebase.firestore().collection("users").orderBy("totalCompleted","desc").limit(50).get()
+    .then(function(snap){
+      var users = [];
+      snap.forEach(function(doc){ users.push(Object.assign({uid:doc.id}, doc.data())); });
+
+      if (!users.length){
+        panel.innerHTML = '<div class="tab-empty" style="padding:40px 0">No users yet.</div>';
+        return;
+      }
+
+      var top3 = users.slice(0, 3);
+      var rest = users.slice(3);
+      var topScore = users[0].totalCompleted || 1;
+      var meInTop50 = users.findIndex(function(u){ return u.uid === currentUser.uid; });
+
+      var MEDAL_COLORS = { 1: "#f59e0b", 2: "#94a3b8", 3: "#cd7f32" };
+      var MEDALS = { 1: "🥇", 2: "🥈", 3: "🥉" };
+      var SLOT_HEIGHTS = { 1: 80, 2: 60, 3: 48 };
+
+      // Podium order: 2nd, 1st, 3rd
+      var podiumOrder = [1, 0, 2].filter(function(i){ return top3[i]; });
+
+      var podiumHtml = '<div class="lb-podium">';
+      podiumOrder.forEach(function(idx){
+        var u = top3[idx];
+        var rank = idx + 1;
+        var mc = MEDAL_COLORS[rank];
+        var h = SLOT_HEIGHTS[rank];
+        var isMe = u.uid === currentUser.uid;
+        podiumHtml += '<a class="lb-podium-item" href="/community/profile/?u='+escHtml(u.uid)+'">'
+          + '<div class="lb-podium-avatar">'+avatar(u, 42)+'</div>'
+          + '<div class="lb-podium-name">'+escHtml(u.displayName||u.username||"Unknown")+(isMe?' <span class="lb-me-label">you</span>':'')+'</div>'
+          + '<div class="lb-podium-score">'+(u.totalCompleted||0)+' pages</div>'
+          + '<div class="lb-podium-slot" style="height:'+h+'px;background:'+mc+'1a;border-top:3px solid '+mc+';box-shadow:0 0 18px '+mc+'33;">'
+          + '<span class="lb-podium-rank">'+MEDALS[rank]+'</span>'
+          + '</div>'
+          + '</a>';
+      });
+      podiumHtml += '</div>';
+
+      var restHtml = '';
+      if (rest.length){
+        restHtml += '<div class="lb-section-label">// Rest of Rankings</div><div class="lb-list">';
+        rest.forEach(function(u, i){
+          var rank = i + 4;
+          var isMe = u.uid === currentUser.uid;
+          var c = u.avatarColor || "#b829ea";
+          var pct = Math.round(((u.totalCompleted||0) / topScore) * 100);
+          restHtml += '<a class="lb-row'+(isMe?" lb-me":"")+'" href="/community/profile/?u='+escHtml(u.uid)+'">'
+            + '<span class="lb-rank" style="color:var(--muted)">'+rank+'</span>'
+            + avatar(u, 32)
+            + '<div class="lb-info">'
+            +   '<span class="lb-name">'+escHtml(u.displayName||u.username||"Unknown")+(isMe?' <span class="lb-me-label">you</span>':'')+'</span>'
+            +   '<span class="lb-username">@'+escHtml(u.username||"")+'</span>'
+            +   '<div class="lb-bar"><div class="lb-bar-fill" style="width:'+pct+'%;background:'+c+'"></div></div>'
+            + '</div>'
+            + '<span class="lb-count" style="color:'+c+'">'+(u.totalCompleted||0)+' <span style="color:var(--muted);font-size:.58rem">pages</span></span>'
+            + '</a>';
+        });
+        restHtml += '</div>';
+      }
+
+      var youRowHtml = '';
+      if (meInTop50 === -1){
+        // Current user not in top 50 — fetch their own data
+        firebase.firestore().collection("users").doc(currentUser.uid).get().then(function(doc){
+          if (!doc.exists) return;
+          var me = Object.assign({uid:doc.id}, doc.data());
+          var c = me.avatarColor || "#b829ea";
+          var youEl = document.getElementById("lb-you-row-wrap");
+          if (!youEl) return;
+          var pct = Math.round(((me.totalCompleted||0) / topScore) * 100);
+          youEl.innerHTML = '<div class="lb-section-label lb-you-row">// Your Rank</div><div class="lb-list">'
+            + '<a class="lb-row lb-me" href="/community/profile/?u='+escHtml(me.uid)+'">'
+            + '<span class="lb-rank" style="color:var(--muted)">—</span>'
+            + avatar(me, 32)
+            + '<div class="lb-info">'
+            +   '<span class="lb-name">'+escHtml(me.displayName||me.username||"Unknown")+' <span class="lb-me-label">you</span></span>'
+            +   '<span class="lb-username">@'+escHtml(me.username||"")+'</span>'
+            +   '<div class="lb-bar"><div class="lb-bar-fill" style="width:'+pct+'%;background:'+c+'"></div></div>'
+            + '</div>'
+            + '<span class="lb-count" style="color:'+c+'">'+(me.totalCompleted||0)+' <span style="color:var(--muted);font-size:.58rem">pages</span></span>'
+            + '</a></div>';
+        });
+        youRowHtml = '<div id="lb-you-row-wrap"></div>';
+      }
+
+      panel.innerHTML = '<div class="lb-title">// LEADERBOARD</div>'
+        + '<div class="lb-subtitle">Top students by pages completed</div>'
+        + podiumHtml
+        + restHtml
+        + youRowHtml;
+    }).catch(function(){
+      panel.innerHTML = '<div class="tab-empty">Failed to load leaderboard.</div>';
+    });
+  }
+
+  // ── Discussions ───────────────────────────────────────────────────────────
+  var activeCourse = null;
+
+  function loadDiscuss(){
+    if (loaded.discuss) return;
+    loaded.discuss = true;
+    var panel = document.getElementById("tab-discuss");
+    var opts = COURSES.map(function(c){
+      if (c.disabled) return '<option value="" disabled>'+escHtml(c.label)+'</option>';
+      return '<option value="'+c.id+'">'+escHtml(c.label)+'</option>';
+    }).join("");
+    panel.innerHTML = [
+      '<div class="discuss-guidelines">',
+      '  <span class="discuss-guidelines-tag">// Community Guidelines</span>',
+      '  Keep all discussions <strong>respectful</strong>, <strong>helpful</strong>, and <strong>on-topic</strong> to CS, SE, CYS, AI, or DX.',
+      '  No spam, offensive language, or sharing of exam answers.',
+      '  Violations may result in removal from the community.',
+      '</div>',
+      '<div class="discuss-select-wrap">',
+      '  <select class="discuss-select" id="discuss-select"><option value="">Select a channel…</option>'+opts+'</select>',
+      '</div>',
+      '<div id="discuss-body"><div class="tab-empty">Select a channel above to see its discussion.</div></div>',
+    ].join("");
+    document.getElementById("discuss-select").addEventListener("change", function(){
+      if (this.value) openCourse(this.value);
+    });
+  }
+
+  function openCourse(courseId){
+    activeCourse = courseId;
+    if (discussUnsub){ discussUnsub(); discussUnsub = null; }
+    document.getElementById("discuss-body").innerHTML = '<div class="tab-loading">Loading…</div>';
+    discussUnsub = firebase.firestore()
+      .collection("discussions").doc(courseId).collection("comments")
+      .orderBy("createdAt","desc").limit(60)
+      .onSnapshot(function(snap){ renderComments(courseId, snap); }, function(){
+        var b = document.getElementById("discuss-body");
+        if (b) b.innerHTML = '<div class="tab-empty">Failed to load comments.</div>';
+      });
+  }
+
+  function renderComments(courseId, snap){
+    var body = document.getElementById("discuss-body");
+    if (!body) return;
+    var all = [];
+    snap.forEach(function(doc){ all.push(Object.assign({id:doc.id}, doc.data())); });
+
+    // Split into top-level and replies
+    var topLevel = all.filter(function(c){ return !c.replyTo; });
+    var replyMap = {};
+    all.forEach(function(c){
+      if (c.replyTo){
+        if (!replyMap[c.replyTo]) replyMap[c.replyTo] = [];
+        replyMap[c.replyTo].push(c);
+      }
+    });
+    Object.keys(replyMap).forEach(function(k){
+      replyMap[k].sort(function(a,b){
+        var ta = a.createdAt && a.createdAt.toDate ? a.createdAt.toDate().getTime() : 0;
+        var tb = b.createdAt && b.createdAt.toDate ? b.createdAt.toDate().getTime() : 0;
+        return ta - tb;
+      });
+    });
+
+    function fmtTime(createdAt){
+      var ts = createdAt && typeof createdAt.toDate==="function" ? createdAt.toDate() : new Date();
+      return ts.toLocaleDateString("en-US",{month:"short",day:"numeric"}) + " · " + ts.toLocaleTimeString("en-US",{hour:"2-digit",minute:"2-digit"});
+    }
+
+    function commentHtml(c, isReply){
+      var isMe = c.uid === currentUser.uid;
+      return '<div class="comment'+(isMe?" comment-me":"")+(isReply?" comment--reply":"")+'">'
+        + '<div class="comment-header">'
+        + (isReply && c.replyToUsername ? '<span class="comment-reply-to">↳ @'+escHtml(c.replyToUsername)+'&nbsp;&nbsp;</span>' : "")
+        + '<span class="comment-author" style="color:'+(c.avatarColor||"#b829ea")+'">'+escHtml(c.displayName||c.username||"Unknown")+'</span>'
+        + '<span class="comment-username">@'+escHtml(c.username||"")+'</span>'
+        + '<span class="comment-time">'+escHtml(fmtTime(c.createdAt))+'</span>'
+        + (isMe ? '<button class="comment-delete" data-id="'+escHtml(c.id)+'" data-course="'+escHtml(courseId)+'">✕</button>' : "")
+        + '</div>'
+        + '<div class="comment-text">'+escHtml(c.text)+'</div>'
+        + (!isReply ? '<div class="comment-actions"><button class="comment-reply-btn" data-id="'+escHtml(c.id)+'">↳ Reply</button></div>' : "")
+        + '</div>';
+    }
+
+    var listHtml = topLevel.length
+      ? topLevel.map(function(c){
+          var replies = replyMap[c.id] || [];
+          var html = '<div class="comment-reply-wrap">' + commentHtml(c, false);
+          html += '<div class="comment-inline-form" id="crform-'+escHtml(c.id)+'">'
+            + '<textarea class="comment-inline-input" placeholder="Write a reply…" rows="2" maxlength="500"></textarea>'
+            + '<div class="comment-inline-actions">'
+            + '<button class="comment-inline-post">Reply</button>'
+            + '<button class="comment-inline-cancel">Cancel</button>'
+            + '</div></div>';
+          if (replies.length){
+            html += '<div class="comment-replies">' + replies.map(function(r){ return commentHtml(r, true); }).join("") + '</div>';
+          }
+          return html + '</div>';
+        }).join("")
+      : '<div class="tab-empty" style="padding:32px 0">No comments yet — be the first!</div>';
+
+    body.innerHTML = [
+      '<div class="comments-list">'+listHtml+'</div>',
+      '<div class="comment-form">',
+      '  <textarea class="comment-input" id="comment-input" placeholder="Add a comment… Be respectful and helpful." rows="3" maxlength="1000"></textarea>',
+      '  <div class="comment-form-footer">',
+      '    <span class="comment-hint">Posting as <strong style="color:'+(currentProfile.avatarColor||"#b829ea")+'">'+escHtml(currentProfile.displayName||currentProfile.username||"")+'</strong> &nbsp;·&nbsp; Ctrl+Enter to post</span>',
+      '    <button class="comment-submit" id="comment-submit">Post</button>',
+      '  </div>',
+      '</div>',
+    ].join("");
+
+    document.getElementById("comment-submit").addEventListener("click", function(){ postComment(courseId); });
+    document.getElementById("comment-input").addEventListener("keydown", function(e){
+      if ((e.ctrlKey||e.metaKey) && e.key==="Enter") postComment(courseId);
+    });
+
+    body.querySelectorAll(".comment-delete").forEach(function(btn){
+      btn.addEventListener("click", function(e){
+        e.stopPropagation();
+        if (!confirm("Delete this comment?")) return;
+        firebase.firestore().collection("discussions").doc(btn.dataset.course).collection("comments").doc(btn.dataset.id).delete();
+      });
+    });
+
+    // Reply buttons → open inline form
+    body.querySelectorAll(".comment-reply-btn").forEach(function(btn){
+      btn.addEventListener("click", function(){
+        var parentId = btn.dataset.id;
+        body.querySelectorAll(".comment-inline-form.open").forEach(function(f){ f.classList.remove("open"); });
+        var form = document.getElementById("crform-"+parentId);
+        if (!form) return;
+        form.classList.add("open");
+        var ta = form.querySelector(".comment-inline-input");
+        if (ta){ ta.value = ""; ta.focus(); }
+      });
+    });
+
+    body.querySelectorAll(".comment-inline-form").forEach(function(form){
+      var parentId = form.id.replace("crform-","");
+      var parentCm = topLevel.filter(function(c){ return c.id === parentId; })[0];
+      var parentUsername = parentCm ? (parentCm.username || "") : "";
+      var ta = form.querySelector(".comment-inline-input");
+      var postBtn = form.querySelector(".comment-inline-post");
+      var cancelBtn = form.querySelector(".comment-inline-cancel");
+
+      if (cancelBtn) cancelBtn.addEventListener("click", function(){ form.classList.remove("open"); });
+
+      function doReply(){
+        var text = ta ? ta.value.trim() : "";
+        if (!text) return;
+        postBtn.disabled = true;
+        firebase.firestore().collection("discussions").doc(courseId).collection("comments").add({
+          uid: currentUser.uid,
+          username: currentProfile.username || "",
+          displayName: currentProfile.displayName || "",
+          avatarColor: currentProfile.avatarColor || "#b829ea",
+          text: text,
+          replyTo: parentId,
+          replyToUsername: parentUsername,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        }).then(function(){
+          if (ta) ta.value = "";
+          form.classList.remove("open");
+          postBtn.disabled = false;
+          // Notify the parent comment's author
+          if (parentCm && parentCm.uid && parentCm.uid !== currentUser.uid) {
+            firebase.firestore()
+              .collection("notifications").doc(parentCm.uid).collection("items")
+              .add({
+                type: "reply",
+                fromUid: currentUser.uid,
+                fromUsername: currentProfile.username || "",
+                fromDisplayName: currentProfile.displayName || "",
+                fromAvatarColor: currentProfile.avatarColor || "#b829ea",
+                pageUrl: "/community/",
+                commentPreview: text.slice(0, 120),
+                read: false,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+              }).catch(function(){});
+          }
+        }).catch(function(){ postBtn.disabled = false; });
+      }
+
+      if (postBtn) postBtn.addEventListener("click", doReply);
+      if (ta){
+        ta.addEventListener("keydown", function(e){
+          if ((e.ctrlKey||e.metaKey) && e.key==="Enter") doReply();
+          if (e.key==="Escape") form.classList.remove("open");
+        });
+      }
+    });
+  }
+
+  function postComment(courseId){
+    var input = document.getElementById("comment-input");
+    var text = input ? input.value.trim() : "";
+    if (!text) return;
+    var btn = document.getElementById("comment-submit");
+    if (btn) btn.disabled = true;
+    firebase.firestore().collection("discussions").doc(courseId).collection("comments").add({
+      uid: currentUser.uid,
+      username: currentProfile.username || "",
+      displayName: currentProfile.displayName || "",
+      avatarColor: currentProfile.avatarColor || "#b829ea",
+      text: text,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+    }).then(function(){
+      if (input) input.value = "";
+      if (btn) btn.disabled = false;
+    }).catch(function(){
+      if (btn) btn.disabled = false;
+      alert("Failed to post. Try again.");
+    });
+  }
+
+  // ── Profile setup ─────────────────────────────────────────────────────────
+  function setupProfileFlow(uid){
+    show("setup-state");
+    document.getElementById("setup-username").addEventListener("input", function(){
+      this.value = this.value.toLowerCase().replace(/[^a-z0-9_]/g,"");
+    });
+    document.querySelectorAll(".major-card[data-major]").forEach(function(card){
+      card.addEventListener("click", function(){
+        document.querySelectorAll(".major-card[data-major]").forEach(function(c){ c.classList.remove("selected"); });
+        card.classList.add("selected");
+        document.getElementById("setup-major").value = card.dataset.major;
+        document.getElementById("setup-track-field").style.display = "flex";
+      });
+    });
+    document.querySelectorAll(".major-card[data-track]").forEach(function(card){
+      card.addEventListener("click", function(){
+        if (card.classList.contains("selected")) {
+          card.classList.remove("selected");
+          document.getElementById("setup-track").value = "";
+          return;
+        }
+        document.querySelectorAll(".major-card[data-track]").forEach(function(c){ c.classList.remove("selected"); });
+        card.classList.add("selected");
+        document.getElementById("setup-track").value = card.dataset.track;
+      });
+    });
+    document.getElementById("setup-submit").addEventListener("click", function(){
+      var username = document.getElementById("setup-username").value.trim();
+      var displayName = document.getElementById("setup-displayname").value.trim();
+      var bio = document.getElementById("setup-bio").value.trim();
+      var major = document.getElementById("setup-major").value.trim();
+      var track = document.getElementById("setup-track") ? document.getElementById("setup-track").value.trim() : "";
+      var errEl = document.getElementById("setup-error");
+      errEl.textContent = "";
+      if (!username || username.length < 3){ errEl.textContent = "Username must be at least 3 characters."; return; }
+      if (!displayName){ errEl.textContent = "Display name is required."; return; }
+      if (!major){ errEl.textContent = "Please select your major."; return; }
+      var btn = document.getElementById("setup-submit");
+      btn.disabled = true; btn.textContent = "Checking…";
+      var color = AVATAR_COLORS[Math.floor(Math.random()*AVATAR_COLORS.length)];
+      var db = firebase.firestore();
+      db.collection("usernames").doc(username).get().then(function(doc){
+        if (doc.exists){ errEl.textContent = "That username is taken. Try another."; btn.disabled=false; btn.textContent="Create Profile"; return; }
+        btn.textContent = "Saving…";
+        var profile = { username:username, displayName:displayName, bio:bio, major:major, track:track,
+          avatarColor:color, totalCompleted:0, createdAt:firebase.firestore.FieldValue.serverTimestamp(),
+          updatedAt:firebase.firestore.FieldValue.serverTimestamp() };
+        return Promise.all([
+          db.collection("users").doc(uid).set(profile),
+          db.collection("usernames").doc(username).set({uid:uid}),
+        ]).then(function(){
+          currentProfile = profile;
+          show("app");
+          loadDiscuss();
+        });
+      }).catch(function(err){ errEl.textContent = err.message; btn.disabled=false; btn.textContent="Create Profile"; });
+    });
+  }
+
+  // ── Auth ──────────────────────────────────────────────────────────────────
+  var _rendered = false;
+
+  function onUser(user){
+    if (_rendered) return;
+    _rendered = true;
+    currentUser = user;
+    firebase.firestore().collection("users").doc(user.uid).get().then(function(doc){
+      if (doc.exists && doc.data().username){
+        currentProfile = doc.data();
+        show("app");
+        loadDiscuss();
+      } else {
+        setupProfileFlow(user.uid);
+      }
+    }).catch(function(){
+      // Firestore rules may not allow reads yet — show setup form so profile can be created
+      setupProfileFlow(user.uid);
+    });
+  }
+
+  function onNull(){
+    setTimeout(function(){ if (!_rendered) show("signout-state"); }, 4000);
+  }
+
+  var _signinBtn = document.getElementById("open-signin-btn");
+  if (_signinBtn){
+    _signinBtn.addEventListener("click", function(){
+      // If Firebase already has a current user, something went wrong — reload to retry
+      try { if (firebase.auth().currentUser){ window.location.reload(); return; } } catch(e) {}
+      var btn = document.getElementById("shoug-fb-user"); if (btn) btn.click();
+    });
+  }
+
+  window.__shoug_onAuth = function(user){ if (user) onUser(user); else onNull(); };
+
+  var _poll = setInterval(function(){
+    try{
+      firebase.app(); clearInterval(_poll);
+      if (!_rendered) firebase.auth().onAuthStateChanged(function(u){ if (u) onUser(u); else onNull(); });
+    }catch(e){}
+  }, 200);
+  setTimeout(function(){ clearInterval(_poll); if (!_rendered) show("signout-state"); }, 15000);
+})();
+</script>
+</body>
+</html>

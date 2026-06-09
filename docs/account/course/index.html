@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>if(localStorage.getItem("shoug-theme")==="light"){document.documentElement.style.background="#f8f6ff";document.documentElement.style.color="#21152f";}</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SHOUG.TECH // Course Progress</title>
+  <link rel="icon" type="image/png" href="/assets/favicon.png?v=2">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles/light-mode.css">
+  <script src="/javascripts/translation-launch-guard.js"></script>
+  <style>
+    :root {
+      --bg:     #050508;
+      --surface:#0a0514;
+      --raised: #110822;
+      --brand:  #b829ea;
+      --red:    #ff2a4b;
+      --text:   #f8f7fb;
+      --dim:    #8f8b9a;
+      --muted:  #4a4258;
+      --border: rgba(255,255,255,0.07);
+      --green:  #22c55e;
+      --color:  var(--brand);
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { background:var(--bg); color:var(--text); font-family:'Inter',sans-serif; min-height:100vh; padding-top:68px; }
+    .page { max-width:1100px; margin:0 auto; padding:48px 32px 100px; }
+
+    /* Breadcrumb */
+    .breadcrumb { font-family:'JetBrains Mono',monospace; font-size:0.62rem; color:var(--muted); letter-spacing:0.1em; margin-bottom:32px; display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+    .breadcrumb a { color:var(--muted); text-decoration:none; transition:color 150ms; }
+    .breadcrumb a:hover { color:var(--brand); }
+    .breadcrumb-sep { opacity:0.4; }
+    .breadcrumb-cur { color:var(--color); }
+
+    /* Hero */
+    .course-hero { display:grid; grid-template-columns:auto 1fr; gap:40px; align-items:center; margin-bottom:56px; padding:40px; background:var(--surface); border:1px solid var(--border); position:relative; overflow:hidden; }
+    .course-hero::after { content:''; position:absolute; top:-80px; right:-80px; width:320px; height:320px; background:radial-gradient(circle, rgba(184,41,234,0.07) 0%, transparent 70%); pointer-events:none; }
+    .hero-ring { display:flex; flex-direction:column; align-items:center; gap:10px; }
+    .hero-ring-label { font-family:'JetBrains Mono',monospace; font-size:0.58rem; color:var(--muted); letter-spacing:0.14em; text-transform:uppercase; }
+    .hero-ring-pct { font-family:'JetBrains Mono',monospace; font-size:1rem; font-weight:800; color:var(--color); }
+    .hero-info { }
+    .hero-eyebrow { font-family:'JetBrains Mono',monospace; font-size:0.6rem; color:var(--color); letter-spacing:0.2em; text-transform:uppercase; margin-bottom:8px; }
+    .hero-title { font-family:'JetBrains Mono',monospace; font-size:1.8rem; font-weight:800; letter-spacing:-0.02em; margin-bottom:8px; line-height:1.15; }
+    .hero-sub { font-size:0.875rem; color:var(--dim); margin-bottom:24px; }
+    .hero-stats { display:flex; gap:32px; }
+    .hero-stat { }
+    .hero-stat-num { font-family:'JetBrains Mono',monospace; font-size:1.6rem; font-weight:800; color:var(--text); display:block; }
+    .hero-stat-label { font-family:'JetBrains Mono',monospace; font-size:0.58rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.12em; }
+
+    /* Section cards */
+    .sections-title { font-family:'JetBrains Mono',monospace; font-size:0.62rem; color:var(--muted); letter-spacing:0.18em; text-transform:uppercase; margin-bottom:20px; padding-bottom:12px; border-bottom:1px solid var(--border); }
+    .sections-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:20px; margin-bottom:48px; }
+    .section-card { background:var(--surface); border:1px solid var(--border); overflow:hidden; }
+    .section-head { display:flex; align-items:center; gap:16px; padding:20px; border-bottom:1px solid var(--border); cursor:pointer; transition:background 150ms; }
+    .section-head:hover { background:var(--raised); }
+    .section-ring { flex-shrink:0; }
+    .section-meta { flex:1; min-width:0; }
+    .section-name { font-family:'JetBrains Mono',monospace; font-size:0.72rem; font-weight:800; letter-spacing:0.1em; text-transform:uppercase; margin-bottom:2px; }
+    .section-stat { font-family:'JetBrains Mono',monospace; font-size:0.6rem; color:var(--muted); }
+    .section-pct { font-family:'JetBrains Mono',monospace; font-size:1rem; font-weight:800; color:var(--color); }
+    .section-chevron { font-size:0.65rem; color:var(--muted); transition:transform 200ms; flex-shrink:0; }
+    .section-card.open .section-chevron { transform:rotate(180deg); }
+    .section-pages { display:none; }
+    .section-card.open .section-pages { display:block; }
+    .page-row { display:flex; align-items:center; gap:12px; padding:11px 20px; border-bottom:1px solid var(--border); text-decoration:none; color:inherit; transition:background 120ms; }
+    .page-row:last-child { border-bottom:none; }
+    .page-row:hover { background:var(--raised); }
+    .page-check { width:15px; height:15px; border:1px solid var(--muted); flex-shrink:0; display:flex; align-items:center; justify-content:center; }
+    .page-check.done { border-color:var(--green); background:rgba(34,197,94,0.1); }
+    .page-title-text { font-size:0.78rem; color:var(--text); flex:1; }
+    .page-row-url { font-family:'JetBrains Mono',monospace; font-size:0.58rem; color:var(--muted); }
+
+    /* Progress bar inside section head */
+    .section-bar-wrap { height:2px; background:rgba(255,255,255,0.06); }
+    .section-bar-fill { height:100%; transition:width 700ms cubic-bezier(0.4,0,0.2,1); }
+
+    /* SVG ring */
+    .ring-bg { fill:none; stroke:rgba(255,255,255,0.06); }
+    .ring-fg { fill:none; stroke-linecap:round; transition:stroke-dashoffset 900ms cubic-bezier(0.4,0,0.2,1); }
+
+    /* States */
+    .state-box { display:flex; flex-direction:column; align-items:center; padding:100px 0; text-align:center; gap:14px; }
+    .state-tag { font-family:'JetBrains Mono',monospace; font-size:0.62rem; color:var(--muted); letter-spacing:0.16em; text-transform:uppercase; }
+    .state-msg { font-family:'JetBrains Mono',monospace; font-size:0.95rem; color:var(--dim); }
+    .state-btn { display:inline-flex; align-items:center; height:36px; padding:0 20px; border:1px solid var(--brand); background:transparent; color:var(--brand); font-family:'JetBrains Mono',monospace; font-size:0.68rem; font-weight:800; letter-spacing:0.12em; text-transform:uppercase; cursor:pointer; text-decoration:none; transition:background 150ms; margin-top:6px; }
+    .state-btn:hover { background:rgba(184,41,234,0.12); }
+
+    /* Light mode */
+    body.shoug-light-mode { background:#f6f4fb; color:#16111f; }
+    body.shoug-light-mode .course-hero,
+    body.shoug-light-mode .section-card { background:#fff; border-color:rgba(22,17,31,0.1); }
+    body.shoug-light-mode .section-head:hover,
+    body.shoug-light-mode .page-row:hover { background:#f0ecfb; }
+    body.shoug-light-mode .ring-bg { stroke:rgba(22,17,31,0.08); }
+
+    /* Analytics */
+    .analytics-section { margin-bottom:48px; }
+    .analytics-row { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+    .analytics-card { background:var(--surface); border:1px solid var(--border); padding:24px 28px; }
+    .analytics-label { font-family:'JetBrains Mono',monospace; font-size:0.58rem; color:var(--muted); letter-spacing:0.18em; text-transform:uppercase; margin-bottom:18px; }
+    .sbar-row { display:flex; align-items:center; gap:10px; margin-bottom:9px; }
+    .sbar-row:last-child { margin-bottom:0; }
+    .sbar-name { font-family:'JetBrains Mono',monospace; font-size:0.6rem; color:var(--dim); width:108px; flex-shrink:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .sbar-track { flex:1; height:5px; background:rgba(255,255,255,0.06); }
+    .sbar-fill { height:100%; transition:width 700ms cubic-bezier(0.4,0,0.2,1); }
+    .sbar-count { font-family:'JetBrains Mono',monospace; font-size:0.58rem; color:var(--muted); width:38px; text-align:right; flex-shrink:0; }
+    .sbar-pct { font-family:'JetBrains Mono',monospace; font-size:0.65rem; font-weight:800; width:32px; text-align:right; flex-shrink:0; }
+    .spark-empty { font-family:'JetBrains Mono',monospace; font-size:0.7rem; color:var(--muted); text-align:center; padding:28px 0; }
+    body.shoug-light-mode .analytics-card { background:#fff; border-color:rgba(22,17,31,0.1); }
+
+    @media (max-width:800px) {
+      .course-hero { grid-template-columns:1fr; }
+      .sections-grid { grid-template-columns:1fr; }
+      .analytics-row { grid-template-columns:1fr; }
+      .hero-stats { flex-wrap:wrap; gap:20px; }
+    }
+    @media (max-width:500px) {
+      .page { padding:28px 16px 80px; }
+      .hero-title { font-size:1.3rem; }
+      .page-row-url { display:none; }
+    }
+  </style>
+</head>
+<body>
+<script>if(localStorage.getItem('shoug-theme')==='light')document.body.classList.add('shoug-light-mode');</script>
+<script src="/javascripts/mobile-navigation.js" defer></script>
+
+<main class="page">
+  <div id="loading-state" class="state-box">
+    <div class="state-tag">Loading…</div>
+  </div>
+  <div id="error-state" class="state-box" style="display:none">
+    <div class="state-tag">// ERROR</div>
+    <div class="state-msg">Could not load course data.</div>
+    <a class="state-btn" href="/account/">Back to Progress</a>
+  </div>
+  <div id="signed-out-state" class="state-box" style="display:none">
+    <div class="state-tag">// ACCESS DENIED</div>
+    <div class="state-msg">Sign in to view your progress.</div>
+    <button class="state-btn" id="open-signin-btn">Sign In</button>
+  </div>
+  <div id="content" style="display:none"></div>
+</main>
+
+<script>
+(function () {
+  var FB_VERSION = "10.12.0";
+  var FB_BASE    = "https://www.gstatic.com/firebasejs/" + FB_VERSION + "/firebase-";
+  var FB_CONFIG  = {
+    apiKey: "AIzaSyDUklr3u8laDZH2jhHVAO3BPE12GaPpOmI",
+    authDomain: "shoug-tech.firebaseapp.com",
+    projectId: "shoug-tech",
+    storageBucket: "shoug-tech.firebasestorage.app",
+    messagingSenderId: "621041999813",
+    appId: "1:621041999813:web:8982befd8b0ccc1d9475ac"
+  };
+
+  var TRACK_COLORS = {
+    "computer-science":    "#3b82f6",
+    "cybersecurity":       "#ff2a4b",
+    "software-engineering":"#b829ea",
+    "other-courses":       "#f59e0b",
+  };
+
+  var SECTION_LABELS = {
+    "slides":            "Lecture Slides",
+    "slide-breakdowns":  "Slide Breakdowns",
+    "slides-with-notes": "Slides with Notes",
+    "quizzes":           "Quizzes",
+    "extra-resources":   "Extra Resources",
+    "extra-resorces":    "Extra Resources",
+    "exams":             "Exams",
+  };
+
+  function params() {
+    var p = new URLSearchParams(window.location.search);
+    return { track: p.get("track"), course: p.get("course") };
+  }
+
+  function escHtml(s) {
+    return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+  }
+
+  function ring(r, pct, color, size) {
+    size = size || (r * 2 + 8);
+    var cx = size / 2, cy = size / 2;
+    var circ = 2 * Math.PI * r;
+    var offset = circ * (1 - pct / 100);
+    return [
+      '<svg width="' + size + '" height="' + size + '" viewBox="0 0 ' + size + ' ' + size + '">',
+      '<circle class="ring-bg" cx="' + cx + '" cy="' + cy + '" r="' + r + '" stroke-width="4"/>',
+      '<circle class="ring-fg" cx="' + cx + '" cy="' + cy + '" r="' + r + '" stroke="' + color + '" stroke-width="4" stroke-dasharray="' + circ.toFixed(2) + '" stroke-dashoffset="' + offset.toFixed(2) + '" transform="rotate(-90 ' + cx + ' ' + cy + ')"/>',
+      '</svg>',
+    ].join("");
+  }
+
+  function show(id) {
+    ["loading-state","error-state","signed-out-state","content"].forEach(function(s) {
+      var el = document.getElementById(s);
+      el.style.display = s === id ? (s === "content" ? "block" : "flex") : "none";
+    });
+  }
+
+  function renderSectionBars(sections, sectionOrder, completedSet, color) {
+    if (!sectionOrder.length) return '';
+    var rows = sectionOrder.map(function(sKey) {
+      var pages = sections[sKey];
+      var done  = pages.filter(function(p){ return completedSet[p.url]; }).length;
+      var total = pages.length;
+      var pct   = total ? Math.round(done / total * 100) : 0;
+      var label = SECTION_LABELS[sKey] || sKey.replace(/-/g,' ').replace(/\b\w/g,function(c){return c.toUpperCase();});
+      return '<div class="sbar-row">'
+        + '<span class="sbar-name">' + escHtml(label) + '</span>'
+        + '<div class="sbar-track"><div class="sbar-fill" style="width:'+pct+'%;background:'+color+'"></div></div>'
+        + '<span class="sbar-count">'+done+'/'+total+'</span>'
+        + '<span class="sbar-pct" style="color:'+color+'">'+pct+'%</span>'
+        + '</div>';
+    }).join('');
+    return '<div class="analytics-card"><div class="analytics-label">Section Progress</div>' + rows + '</div>';
+  }
+
+  function renderActivitySparkline(courseDates, color) {
+    var DAYS = 30;
+    var today = new Date(); today.setHours(0,0,0,0);
+    var buckets = [];
+    for (var i = DAYS-1; i >= 0; i--) {
+      var d = new Date(today); d.setDate(d.getDate()-i);
+      buckets.push({date:d, count:0});
+    }
+    courseDates.forEach(function(d) {
+      var dn = new Date(d); dn.setHours(0,0,0,0);
+      var diff = Math.round((today-dn)/86400000);
+      var idx  = DAYS-1-diff;
+      if (idx >= 0 && idx < DAYS) buckets[idx].count++;
+    });
+    var total = courseDates.length;
+    if (!total) {
+      return '<div class="analytics-card"><div class="analytics-label">Activity — Last 30 Days</div>'
+        + '<div class="spark-empty">No completions yet</div></div>';
+    }
+    var maxCount = Math.max(1, Math.max.apply(null, buckets.map(function(b){return b.count;})));
+    var W=560, H=80, PAD={t:4,r:0,b:20,l:0};
+    var chartW=W-PAD.l-PAD.r, chartH=H-PAD.t-PAD.b;
+    var barW = chartW/DAYS*0.7, gap = chartW/DAYS;
+    var bars = buckets.map(function(b,i) {
+      var bh = (b.count/maxCount)*chartH;
+      var x  = PAD.l + i*gap + gap*0.15;
+      var y  = PAD.t + chartH - bh;
+      if (!b.count) return '<rect x="'+x+'" y="'+(PAD.t+chartH-2)+'" width="'+barW+'" height="2" fill="rgba(255,255,255,0.05)"/>';
+      return '<rect x="'+x+'" y="'+y+'" width="'+barW+'" height="'+bh+'" fill="'+color+'" opacity="0.85"/>';
+    }).join('');
+    var MONTHS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    var s0=buckets[0].date, sE=buckets[DAYS-1].date;
+    var xLabels = '<text x="0" y="'+H+'" fill="#4a4258" font-family="JetBrains Mono,monospace" font-size="9">'
+      +MONTHS[s0.getMonth()]+' '+s0.getDate()+'</text>'
+      +'<text x="'+W+'" y="'+H+'" fill="#4a4258" font-family="JetBrains Mono,monospace" font-size="9" text-anchor="end">'
+      +MONTHS[sE.getMonth()]+' '+sE.getDate()+'</text>';
+    var svg = '<svg width="100%" viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none">'+bars+xLabels+'</svg>';
+    return '<div class="analytics-card"><div class="analytics-label">Activity — Last 30 Days <span style="color:'+color+';font-weight:800">'+total+' completed</span></div>'+svg+'</div>';
+  }
+
+  function render(track, course, allPages, completedSet, courseDates, color) {
+    var coursePrefix = "/academics/" + track + "/" + course + "/";
+
+    // Filter to only this course's pages
+    var coursePages = allPages.filter(function(p) {
+      return p.url === coursePrefix || p.url.startsWith(coursePrefix);
+    });
+
+    // Get course title from index page
+    var courseTitle = course.toUpperCase();
+    var courseSubtitle = "";
+    coursePages.forEach(function(p) {
+      var parts = p.url.split("/").filter(Boolean);
+      if (parts.length === 3) {
+        var t = p.title.split("//");
+        courseTitle   = t[0] ? t[0].trim() : course.toUpperCase();
+        courseSubtitle = t[1] ? t[1].trim() : "";
+      }
+    });
+
+    // Group by section — skip any page that has children (listing/overview pages).
+    // This works for all URL depths: regular (/track/course/section/page/)
+    // and nested (/other-courses/lang/course/section/page/ or deeper).
+    var sections = {};
+    var sectionOrder = [];
+    coursePages.forEach(function(p) {
+      var parts = p.url.split("/").filter(Boolean);
+      // Depth < 5 means course index or direct section listing — never content
+      if (parts.length < 5) return;
+      // Also skip any page that still has children (listing pages deeper than depth 4)
+      var hasChildren = coursePages.some(function(other){
+        return other.url !== p.url && other.url.startsWith(p.url);
+      });
+      if (hasChildren) return;
+      var sectionKey = parts[3];
+      if (!sectionKey) return;
+      if (!sections[sectionKey]) { sections[sectionKey] = []; sectionOrder.push(sectionKey); }
+      sections[sectionKey].push(p);
+    });
+
+    // Totals (content pages only)
+    var totalPages = 0, totalDone = 0;
+    sectionOrder.forEach(function(sKey){
+      totalPages += sections[sKey].length;
+      totalDone  += sections[sKey].filter(function(p){ return completedSet[p.url]; }).length;
+    });
+    var totalPct   = totalPages ? Math.round((totalDone / totalPages) * 100) : 0;
+
+    // Update page title
+    document.title = "SHOUG.TECH // " + courseTitle;
+
+    // Build breadcrumb
+    var trackLabel = track.replace(/-/g, " ").replace(/\b\w/g, function(c){ return c.toUpperCase(); });
+    var breadcrumb = [
+      '<div class="breadcrumb">',
+      '<a href="/">Home</a><span class="breadcrumb-sep">/</span>',
+      '<a href="/account/">My Progress</a><span class="breadcrumb-sep">/</span>',
+      '<span class="breadcrumb-cur" style="color:' + color + '">' + escHtml(courseTitle) + '</span>',
+      '</div>',
+    ].join("");
+
+    // Build hero
+    var hero = [
+      '<div class="course-hero" style="--color:' + color + '">',
+      '  <div class="hero-ring">',
+      ring(56, totalPct, color, 130),
+      '    <div class="hero-ring-label">Progress</div>',
+      '    <div class="hero-ring-pct" style="color:' + color + '">' + totalPct + '%</div>',
+      '  </div>',
+      '  <div class="hero-info">',
+      '    <div class="hero-eyebrow" style="color:' + color + '">' + escHtml(trackLabel) + '</div>',
+      '    <div class="hero-title">' + escHtml(courseTitle) + '</div>',
+      courseSubtitle ? '<div class="hero-sub">' + escHtml(courseSubtitle) + '</div>' : '',
+      '    <div class="hero-stats">',
+      '      <div class="hero-stat"><span class="hero-stat-num" style="color:' + color + '">' + totalDone + '</span><span class="hero-stat-label">Completed</span></div>',
+      '      <div class="hero-stat"><span class="hero-stat-num">' + totalPages + '</span><span class="hero-stat-label">Total Pages</span></div>',
+      '      <div class="hero-stat"><span class="hero-stat-num">' + (totalPages - totalDone) + '</span><span class="hero-stat-label">Remaining</span></div>',
+      '      <div class="hero-stat"><span class="hero-stat-num">' + sectionOrder.length + '</span><span class="hero-stat-label">Sections</span></div>',
+      '    </div>',
+      '  </div>',
+      '</div>',
+    ].join("");
+
+    // Build section cards
+    var sectionCards = sectionOrder.map(function(sKey) {
+      var pages = sections[sKey];
+      var sDone = pages.filter(function(p){ return completedSet[p.url]; }).length;
+      var sTotal = pages.length;
+      var sPct = sTotal ? Math.round((sDone / sTotal) * 100) : 0;
+      var sLabel = SECTION_LABELS[sKey] || sKey.replace(/-/g," ").replace(/\b\w/g,function(c){return c.toUpperCase();});
+
+      var pageRows = pages.map(function(p) {
+        var isDone = !!completedSet[p.url];
+        var title = p.title
+          .replace(courseTitle, "").replace("//","").replace(courseSubtitle,"").trim()
+          || p.url.split("/").filter(Boolean).pop() || p.url;
+        return [
+          '<a class="page-row" href="' + escHtml(p.url) + '">',
+          '  <div class="page-check' + (isDone ? ' done' : '') + '">',
+          isDone ? '<svg width="9" height="9" viewBox="0 0 9 9" fill="none"><path d="M1 4.5l2.5 2.5 4.5-4.5" stroke="#22c55e" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>' : '',
+          '  </div>',
+          '  <span class="page-title-text">' + escHtml(title) + '</span>',
+          '  <span class="page-row-url">' + escHtml(p.url) + '</span>',
+          '</a>',
+        ].join("");
+      }).join("");
+
+      return [
+        '<div class="section-card">',
+        '  <div class="section-head">',
+        '    <div class="section-ring">' + ring(22, sPct, color, 52) + '</div>',
+        '    <div class="section-meta">',
+        '      <div class="section-name">' + escHtml(sLabel) + '</div>',
+        '      <div class="section-stat">' + sDone + ' / ' + sTotal + ' pages</div>',
+        '    </div>',
+        '    <div class="section-pct" style="color:' + color + '">' + sPct + '%</div>',
+        '    <div class="section-chevron">▼</div>',
+        '  </div>',
+        '  <div class="section-bar-wrap"><div class="section-bar-fill" style="width:' + sPct + '%;background:' + color + '"></div></div>',
+        '  <div class="section-pages">' + pageRows + '</div>',
+        '</div>',
+      ].join("");
+    }).join("");
+
+    var analytics = '<div class="analytics-section"><div class="analytics-row">'
+      + renderSectionBars(sections, sectionOrder, completedSet, color)
+      + renderActivitySparkline(courseDates, color)
+      + '</div></div>';
+
+    var html = [
+      breadcrumb,
+      hero,
+      analytics,
+      '<div class="sections-title">Section Breakdown</div>',
+      '<div class="sections-grid">' + sectionCards + '</div>',
+    ].join("");
+
+    document.getElementById("content").innerHTML = html;
+    show("content");
+
+    // Toggle section accordion
+    document.querySelectorAll(".section-head").forEach(function(head) {
+      head.addEventListener("click", function() {
+        head.closest(".section-card").classList.toggle("open");
+      });
+    });
+  }
+
+  function boot() {
+    if (!firebase.apps.length) firebase.initializeApp(FB_CONFIG);
+
+    document.getElementById("open-signin-btn").addEventListener("click", function() {
+      var btn = document.getElementById("shoug-fb-user");
+      if (btn) btn.click();
+    });
+
+    var p = params();
+    if (!p.track || !p.course) { show("error-state"); return; }
+
+    var color = TRACK_COLORS[p.track] || "#b829ea";
+
+    firebase.auth().onAuthStateChanged(function(user) {
+      if (!user) { show("signed-out-state"); return; }
+
+      Promise.all([
+        fetch("/search-index.json?v="+Date.now()).then(function(r){ return r.json(); }),
+        firebase.firestore().collection("userProgress").doc(user.uid).collection("pages").get()
+      ]).then(function(results) {
+        var allPages     = results[0];
+        var snap         = results[1];
+        var completedSet = {};
+        var courseDates  = [];
+        var coursePrefix = "/academics/" + p.track + "/" + p.course + "/";
+        snap.forEach(function(doc) {
+          var d = doc.data();
+          if (!d.completed) return;
+          completedSet[d.url] = true;
+          if (!d.url.startsWith(coursePrefix)) return;
+          var dt = null;
+          if (d.completedAt) {
+            if (typeof d.completedAt.toDate === "function") dt = d.completedAt.toDate();
+            else if (d.completedAt instanceof Date) dt = d.completedAt;
+            else if (typeof d.completedAt.seconds === "number") dt = new Date(d.completedAt.seconds * 1000);
+          }
+          if (!dt && d.updatedAt) {
+            if (typeof d.updatedAt.toDate === "function") dt = d.updatedAt.toDate();
+            else if (typeof d.updatedAt.seconds === "number") dt = new Date(d.updatedAt.seconds * 1000);
+          }
+          if (dt) courseDates.push(dt);
+        });
+        render(p.track, p.course, allPages, completedSet, courseDates, color);
+      }).catch(function() { show("error-state"); });
+    });
+  }
+
+  function loadScript(src, cb) {
+    var s = document.createElement("script");
+    s.src = src; s.onload = cb;
+    document.head.appendChild(s);
+  }
+
+  loadScript(FB_BASE + "app-compat.js", function() {
+    loadScript(FB_BASE + "auth-compat.js", function() {
+      loadScript(FB_BASE + "firestore-compat.js", boot);
+    });
+  });
+})();
+</script>
+</body>
+</html>
