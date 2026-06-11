@@ -4,7 +4,7 @@ Use this page as a quick launcher for the CS331 mind maps.
 
 <div class="grid cards" markdown>
 
--   **CS331 Complete Course Mind Map**
+-   **CS331 Complete Course Mindmap**
 
     [Open mindmap](cs331-mindmap.md)
 

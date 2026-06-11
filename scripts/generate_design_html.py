@@ -134,6 +134,48 @@ COURSES: dict[str, dict[str, Any]] = {
         "credits": "TBD",
         "prereq": "TBD",
     },
+    "CYS402": {
+        "track": "Cybersecurity",
+        "url": "/Academics/cybersecurity/cys402/",
+        "sections": {
+            "Overview": "/Academics/cybersecurity/cys402/",
+            "Slide Breakdowns": "/Academics/cybersecurity/cys402/slide-breakdowns/",
+            "Slides": "/Academics/cybersecurity/cys402/slides/",
+            "Study Material": "/Academics/cybersecurity/cys402/extra-resources/",
+            "Quizzes": "/Academics/cybersecurity/cys402/quizzes/",
+        },
+        "title_override": "Cybersecurity",
+        "credits": "TBD",
+        "prereq": "TBD",
+    },
+    "CYS403": {
+        "track": "Cybersecurity",
+        "url": "/Academics/cybersecurity/cys403/",
+        "sections": {
+            "Overview": "/Academics/cybersecurity/cys403/",
+            "Slide Breakdowns": "/Academics/cybersecurity/cys403/slide-breakdowns/",
+            "Slides": "/Academics/cybersecurity/cys403/slides/",
+            "Study Material": "/Academics/cybersecurity/cys403/extra-resources/",
+            "Quizzes": "/Academics/cybersecurity/cys403/quizzes/",
+        },
+        "title_override": "Cybersecurity",
+        "credits": "TBD",
+        "prereq": "TBD",
+    },
+    "CYS406": {
+        "track": "Cybersecurity",
+        "url": "/Academics/cybersecurity/cys406/",
+        "sections": {
+            "Overview": "/Academics/cybersecurity/cys406/",
+            "Slide Breakdowns": "/Academics/cybersecurity/cys406/slide-breakdowns/",
+            "Slides": "/Academics/cybersecurity/cys406/slides/",
+            "Study Material": "/Academics/cybersecurity/cys406/extra-resources/",
+            "Quizzes": "/Academics/cybersecurity/cys406/quizzes/",
+        },
+        "title_override": "Cybersecurity",
+        "credits": "TBD",
+        "prereq": "TBD",
+    },
     "ETHCS303": {
         "track": "Other Courses",
         "path": "docs/Academics/other/ethc303/overview.md",
@@ -146,8 +188,8 @@ COURSES: dict[str, dict[str, Any]] = {
             "Mindmaps": "/Academics/other/ethc303/mindmap/overview/",
             "Extra Resources": "/Academics/other/ethc303/extra-resources/overview/",
         },
-        "credits": "TBD",
-        "prereq": "TBD",
+        "credits": "3",
+        "prereq": "Junior level",
     },
     "PHY205": {
         "track": "Other Courses",
@@ -216,9 +258,9 @@ TRACKS: dict[str, dict[str, Any]] = {
     },
     "cybersecurity": {
         "label": "CYBERSECURITY",
-        "title": "1 course.<br>Security foundations,<br>threats, and defense.",
-        "meta": ["Cyber Track", "1 Course", "Security", "Risk", "Defense"],
-        "courses": ["CYS401"],
+        "title": "4 courses.<br>Security foundations,<br>threats, and defense.",
+        "meta": ["Cyber Track", "4 Courses", "Security", "Risk", "Defense"],
+        "courses": ["CYS401", "CYS402", "CYS403", "CYS406"],
         "url": "/track-cybersecurity.html",
     },
     "other-courses": {
@@ -1565,7 +1607,7 @@ COMMON_SCRIPT = """
                         topics: 'Topics',
                         'study material': 'Study Material',
                         slides: 'Slides',
-                        quizzes: 'Quizzes',
+                        quizzes: 'Exams',
                         'slide breakdowns': 'Slide Breakdowns',
                         summary: 'Summary',
                         mindmap: 'Mindmap',
@@ -2953,7 +2995,8 @@ def section_nav(sections: dict[str, str], class_name: str, active: str = "Overvi
     links = []
     for label, url in sections.items():
         active_class = " active" if label == active else ""
-        content = f"[ {label.upper()} ]" if class_name == "sub-nav-item" else label
+        display_label = "Exams" if label == "Quizzes" else label
+        content = f"[ {display_label.upper()} ]" if class_name == "sub-nav-item" else display_label
         links.append(f'<a href="{html.escape(url)}" class="{class_name}{active_class}">{content}</a>')
     return "\\n                        ".join(links)
 

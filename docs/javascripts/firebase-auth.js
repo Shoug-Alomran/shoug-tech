@@ -28,6 +28,8 @@
   function isContentPage() {
     var path = window.location.pathname;
     if (path === "/" || path.indexOf("/account") === 0 || path.indexOf("/community") === 0 || path.indexOf("/bookmarks") === 0) return false;
+    // Listing/overview pages (directory indexes) are never content pages, regardless of depth.
+    if (document.querySelector(".directory-container")) return false;
     // For academics pages only show on actual leaf content pages, not listing/overview pages.
     // Content pages have 5+ segments: /academics/track/course/section/page/
     if (path.indexOf("/academics/") === 0) {
@@ -42,6 +44,21 @@
       .replace(/</g, "&lt;")
       .replace(/>/g, "&gt;")
       .replace(/"/g, "&quot;");
+  }
+
+  // ── Avatar presets (shared with /community/profile/) ──────────────────────
+  var AVATAR_PRESETS = [
+    'av-f1.png','av-f2.png','av-f3.png','av-f4.png','av-f5.png','av-f6.png','av-f7.png',
+    'av-m1.png','av-m2.png','av-m3.png','av-m4.png','av-m5.png','av-m6.png','av-m7.png'
+  ];
+  function avatarUrl(preset) {
+    var i = parseInt(preset, 10);
+    return (!isNaN(i) && AVATAR_PRESETS[i]) ? '/assets/avatars/' + AVATAR_PRESETS[i] : null;
+  }
+  function avatarBlock(className, preset, color, initial) {
+    var url = avatarUrl(preset);
+    if (url) return '<div class="' + className + '" style="padding:0;background:#0d0720;border:1px solid ' + color + '55;"><img src="' + url + '" alt=""></div>';
+    return '<div class="' + className + '" style="background:' + color + '1a;border:1px solid ' + color + '55;color:' + color + '">' + initial + '</div>';
   }
 
   function loadScript(src, cb) {
@@ -64,6 +81,7 @@
       /* user avatar */
       ".shoug-user-btn{width:34px;height:34px;display:inline-flex;align-items:center;justify-content:center;border:1px solid rgba(184,41,234,.5);background:rgba(184,41,234,.1);color:#b829ea;font-family:'JetBrains Mono',monospace;font-size:.72rem;font-weight:800;cursor:pointer;position:relative;user-select:none}",
       ".shoug-user-btn:hover{background:rgba(184,41,234,.2)}",
+      ".shoug-user-avatar-img{width:32px;height:32px;object-fit:cover;display:block;}",
       /* dropdown */
       ".shoug-user-dropdown{position:absolute;top:calc(100% + 8px);right:0;background:#0a0514;border:1px solid rgba(184,41,234,.3);min-width:220px;z-index:99998;display:none;flex-direction:column;box-shadow:0 8px 32px rgba(0,0,0,.5)}",
       ".shoug-user-btn.open .shoug-user-dropdown{display:flex}",
@@ -142,7 +160,8 @@
       ".scmt-empty{font-size:.72rem;color:#4a4258;padding:28px 32px;text-align:center;border:1px dashed rgba(184,41,234,.12);letter-spacing:.06em;}",
       ".scmt-item{display:flex;gap:14px;align-items:flex-start;padding:18px 20px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);transition:border-color 150ms;}",
       ".scmt-item:hover{border-color:rgba(184,41,234,.18);}",
-      ".scmt-av{width:34px;height:34px;display:inline-flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:800;flex-shrink:0;}",
+      ".scmt-av{width:34px;height:34px;display:inline-flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:800;flex-shrink:0;overflow:hidden;}",
+      ".scmt-av img{width:100%;height:100%;object-fit:cover;display:block;}",
       ".scmt-body{flex:1;min-width:0;}",
       ".scmt-meta{display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap;}",
       ".scmt-author{font-size:.72rem;font-weight:800;}",
@@ -599,7 +618,7 @@
       el.className = "shoug-user-btn";
       el.style.position = "relative";
       el.innerHTML = [
-        escHtml((user.email || "U")[0].toUpperCase()),
+        '<span id="shoug-user-avatar">' + escHtml((user.email || "U")[0].toUpperCase()) + '</span>',
         '<span class="shoug-notif-badge" id="shoug-notif-badge" style="display:none"></span>',
         '<div class="shoug-user-dropdown">',
         '  <div class="shoug-notif-section" id="shoug-notif-section">',
@@ -632,6 +651,15 @@
         firebase.auth().signOut();
       });
       startNotifListener(user);
+
+      firebase.firestore().collection("users").doc(user.uid).get().then(function (doc) {
+        if (!doc.exists) return;
+        var url = avatarUrl(doc.data().avatarPreset);
+        if (!url) return;
+        var av = el.querySelector("#shoug-user-avatar");
+        if (av) av.outerHTML = '<img id="shoug-user-avatar" class="shoug-user-avatar-img" src="' + url + '" alt="">';
+      }).catch(function () {});
+
       return;
     }
 
@@ -754,7 +782,7 @@
       ? '<div class="scmt-form">'
           + '<span class="scmt-form-label">Leave a comment</span>'
           + '<div class="scmt-form-row">'
-          + '<div class="scmt-av" style="background:'+c+'1a;border:1px solid '+c+'55;color:'+c+'">'+init+'</div>'
+          + avatarBlock("scmt-av", p.avatarPreset, c, init)
           + '<textarea class="scmt-input" id="scmt-input" placeholder="Share your thoughts, ask a question, or help a classmate…" rows="3" maxlength="1000"></textarea>'
           + '</div>'
           + '<div class="scmt-form-foot">'
@@ -847,7 +875,7 @@
       var cc = cm.avatarColor || "#b829ea";
       var ci = escHtml((cm.displayName || cm.username || "?")[0].toUpperCase());
       return '<div class="scmt-item' + (isReply ? " scmt-item--reply" : "") + '" data-id="' + escHtml(cm.id) + '">'
-        + '<div class="scmt-av" style="background:'+cc+'1a;border:1px solid '+cc+'55;color:'+cc+'">'+ci+'</div>'
+        + avatarBlock("scmt-av", cm.avatarPreset, cc, ci)
         + '<div class="scmt-body">'
         + '<div class="scmt-meta">'
         + (isReply && cm.replyToUsername ? '<span class="scmt-reply-to">↳ @'+escHtml(cm.replyToUsername)+'&nbsp;&nbsp;</span>' : "")
@@ -921,6 +949,7 @@
             username: _cmtProfile.username || "",
             displayName: _cmtProfile.displayName || "",
             avatarColor: _cmtProfile.avatarColor || "#b829ea",
+            avatarPreset: _cmtProfile.avatarPreset != null ? _cmtProfile.avatarPreset : null,
             text: text,
             replyTo: parentId,
             replyToUsername: parentUsername,
@@ -964,6 +993,7 @@
       username: _cmtProfile.username || "",
       displayName: _cmtProfile.displayName || "",
       avatarColor: _cmtProfile.avatarColor || "#b829ea",
+      avatarPreset: _cmtProfile.avatarPreset != null ? _cmtProfile.avatarPreset : null,
       text: text,
       createdAt: firebase.firestore.FieldValue.serverTimestamp(),
     }).then(function() {
@@ -1121,7 +1151,7 @@
           position: "bottom",
           tag: "Step 3 of 6 · Section Tabs",
           title: "Course Sections",
-          body: "The tab bar above the content switches between sections of this course:<br><br><strong>Overview</strong> — course summary, syllabus, and grade breakdown.<br><strong>Slide Breakdowns</strong> — chapter-by-chapter detailed notes.<br><strong>Slides</strong> — the raw lecture slide decks.<br><strong>Study Material</strong> — extra resources and references.<br><strong>Quizzes</strong> — practice questions with answers.",
+          body: "The tab bar above the content switches between sections of this course:<br><br><strong>Overview</strong> — course summary, syllabus, and grade breakdown.<br><strong>Slide Breakdowns</strong> — chapter-by-chapter detailed notes.<br><strong>Slides</strong> — the raw lecture slide decks.<br><strong>Study Material</strong> — extra resources and references.<br><strong>Exams</strong> — practice questions with answers.",
         },
         {
           target: function(){
@@ -1948,6 +1978,13 @@
     document.getElementById("shoug-theme-toggle").addEventListener("click", function() {
       var nowLight = document.body.classList.toggle("shoug-light-mode");
       localStorage.setItem("shoug-theme", nowLight ? "light" : "dark");
+      if (nowLight) {
+        document.documentElement.style.background = "#f8f6ff";
+        document.documentElement.style.color = "#21152f";
+      } else {
+        document.documentElement.style.background = "";
+        document.documentElement.style.color = "";
+      }
       this.innerHTML = nowLight ? MOON_SVG : SUN_SVG;
     });
   }
@@ -1987,6 +2024,13 @@
     btn.addEventListener("click", function () {
       var nowLight = document.body.classList.toggle("shoug-light-mode");
       localStorage.setItem("shoug-theme", nowLight ? "light" : "dark");
+      if (nowLight) {
+        document.documentElement.style.background = "#f8f6ff";
+        document.documentElement.style.color = "#21152f";
+      } else {
+        document.documentElement.style.background = "";
+        document.documentElement.style.color = "";
+      }
       btn.innerHTML = nowLight ? SUN_SVG : MOON_SVG;
     });
 

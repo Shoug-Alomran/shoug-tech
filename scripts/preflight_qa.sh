@@ -4,6 +4,10 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT_DIR"
 
+echo "[0/6] Regenerating page inventories..."
+node scripts/build-course-manifest.js
+node scripts/build-search-index.js
+
 if [[ -f mkdocs.yml ]]; then
   echo "[1/5] Checking EN/AR markdown parity (strict)..."
   python3 scripts/check_i18n_parity.py --autofix-missing-ar --strict

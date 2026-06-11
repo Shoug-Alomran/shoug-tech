@@ -11,6 +11,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/styles/light-mode.css">
   <script src="/javascripts/translation-launch-guard.js"></script>
+  <script src="/javascripts/course-manifest.js"></script>
   <style>
     :root {
       --bg:     #050508;
@@ -124,6 +125,23 @@
       .page-row-url { display:none; }
     }
   </style>
+
+    <meta name="description" content="SHOUG.TECH // Course Progress study material from Shoug&#x27;s Digital Garden.">
+    <link rel="canonical" href="https://shoug-tech.com/account/course/">
+    <meta property="og:title" content="SHOUG.TECH // Course Progress">
+    <meta property="og:description" content="SHOUG.TECH // Course Progress study material from Shoug&#x27;s Digital Garden.">
+    <meta property="og:url" content="https://shoug-tech.com/account/course/">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://shoug-tech.com/logo.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="SHOUG.TECH // Course Progress">
+    <meta name="twitter:description" content="SHOUG.TECH // Course Progress study material from Shoug&#x27;s Digital Garden.">
+    <meta name="twitter:image" content="https://shoug-tech.com/logo.png">
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","url":"https://shoug-tech.com/account/course/","name":"SHOUG.TECH // Course Progress","description":"SHOUG.TECH // Course Progress study material from Shoug&#x27;s Digital Garden.","isPartOf":{"@type":"WebSite","name":"Shoug's Digital Garden","url":"https://shoug-tech.com/"}}</script>
+
+      <link rel="alternate" hreflang="en" href="https://shoug-tech.com/account/course/">
+      <link rel="alternate" hreflang="ar" href="https://shoug-tech.com/ar/account/course/">
+      <link rel="alternate" hreflang="x-default" href="https://shoug-tech.com/account/course/">
 </head>
 <body>
 <script>if(localStorage.getItem('shoug-theme')==='light')document.body.classList.add('shoug-light-mode');</script>
@@ -264,40 +282,18 @@
   }
 
   function render(track, course, allPages, completedSet, courseDates, color) {
-    var coursePrefix = "/academics/" + track + "/" + course + "/";
-
-    // Filter to only this course's pages
     var coursePages = allPages.filter(function(p) {
-      return p.url === coursePrefix || p.url.startsWith(coursePrefix);
+      return p.track === track && p.course === course;
     });
 
-    // Get course title from index page
-    var courseTitle = course.toUpperCase();
+    var courseTitle = coursePages[0] && coursePages[0].courseTitle ? coursePages[0].courseTitle : course.toUpperCase();
     var courseSubtitle = "";
-    coursePages.forEach(function(p) {
-      var parts = p.url.split("/").filter(Boolean);
-      if (parts.length === 3) {
-        var t = p.title.split("//");
-        courseTitle   = t[0] ? t[0].trim() : course.toUpperCase();
-        courseSubtitle = t[1] ? t[1].trim() : "";
-      }
-    });
 
-    // Group by section — skip any page that has children (listing/overview pages).
-    // This works for all URL depths: regular (/track/course/section/page/)
-    // and nested (/other-courses/lang/course/section/page/ or deeper).
+    // Group by section using the generated academic inventory.
     var sections = {};
     var sectionOrder = [];
     coursePages.forEach(function(p) {
-      var parts = p.url.split("/").filter(Boolean);
-      // Depth < 5 means course index or direct section listing — never content
-      if (parts.length < 5) return;
-      // Also skip any page that still has children (listing pages deeper than depth 4)
-      var hasChildren = coursePages.some(function(other){
-        return other.url !== p.url && other.url.startsWith(p.url);
-      });
-      if (hasChildren) return;
-      var sectionKey = parts[3];
+      var sectionKey = p.section;
       if (!sectionKey) return;
       if (!sections[sectionKey]) { sections[sectionKey] = []; sectionOrder.push(sectionKey); }
       sections[sectionKey].push(p);
@@ -427,20 +423,22 @@
     firebase.auth().onAuthStateChanged(function(user) {
       if (!user) { show("signed-out-state"); return; }
 
+      var allPages = Array.isArray(window.COURSE_PAGES) ? window.COURSE_PAGES : [];
+      var coursePageUrls = {};
+      allPages.forEach(function(page){
+        if (page.track === p.track && page.course === p.course) coursePageUrls[page.url] = true;
+      });
       Promise.all([
-        fetch("/search-index.json?v="+Date.now()).then(function(r){ return r.json(); }),
         firebase.firestore().collection("userProgress").doc(user.uid).collection("pages").get()
       ]).then(function(results) {
-        var allPages     = results[0];
-        var snap         = results[1];
+        var snap         = results[0];
         var completedSet = {};
         var courseDates  = [];
-        var coursePrefix = "/academics/" + p.track + "/" + p.course + "/";
         snap.forEach(function(doc) {
           var d = doc.data();
           if (!d.completed) return;
+          if (!coursePageUrls[d.url]) return;
           completedSet[d.url] = true;
-          if (!d.url.startsWith(coursePrefix)) return;
           var dt = null;
           if (d.completedAt) {
             if (typeof d.completedAt.toDate === "function") dt = d.completedAt.toDate();

@@ -23,6 +23,11 @@
     return SECTION_LABELS[s] || s;
   }
 
+  function searchHint() {
+    var count = Array.isArray(index) ? index.length : null;
+    return count ? "Type to search " + count + " pages&hellip;" : "Type to search pages&hellip;";
+  }
+
   function injectStyles() {
     if (document.getElementById("shoug-search-styles")) return;
     var style = document.createElement("style");
@@ -147,7 +152,7 @@
 
   function renderResults(q) {
     if (!q || q.length < 2) {
-      results.innerHTML = '<div class="shoug-sr-empty">Type to search 681 pages&hellip;</div>';
+      results.innerHTML = '<div class="shoug-sr-empty">' + searchHint() + '</div>';
       return;
     }
     var matches = search(q);
@@ -225,7 +230,7 @@
     requestAnimationFrame(function () {
       modal.classList.add("is-open");
     });
-    results.innerHTML = '<div class="shoug-sr-empty">Type to search 681 pages&hellip;</div>';
+    results.innerHTML = '<div class="shoug-sr-empty">' + searchHint() + '</div>';
     input.value = "";
     activeIdx = -1;
     input.focus();
@@ -236,6 +241,7 @@
         .then(function (r) { return r.json(); })
         .then(function (data) {
           index = data;
+          if (input.value.trim().length < 2) results.innerHTML = '<div class="shoug-sr-empty">' + searchHint() + '</div>';
           if (input.value.trim().length >= 2) renderResults(input.value.trim());
         })
         .catch(function () {

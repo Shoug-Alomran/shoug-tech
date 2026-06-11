@@ -19,7 +19,7 @@
     "SLIDE BREAKDOWNS": "تفكيك الشرائح",
     "SLIDES": "الشرائح",
     "STUDY MATERIAL": "المواد الدراسية",
-    "QUIZZES": "الاختبارات",
+    "Exams": "الاختبارات",
     "EXAMS": "الاختبارات",
     "EXTRA RESOURCES": "موارد إضافية",
     "WRITING RESOURCES": "موارد الكتابة",

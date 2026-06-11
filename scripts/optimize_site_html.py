@@ -33,7 +33,7 @@ BAD_DESCRIPTION_FRAGMENTS = (
     "ACADEMICS/",
     "SLIDE BREAKDOWNS",
     "STUDY MATERIAL",
-    "QUIZZES",
+    "Exams",
 )
 
 
@@ -112,7 +112,7 @@ def page_description(document: str, title: str) -> str:
             "ACADEMICS/",
             "SLIDE BREAKDOWNS",
             "STUDY MATERIAL",
-            "QUIZZES",
+            "Exams",
         )
         if len(candidate) >= 45 and not any(marker in candidate for marker in nav_markers):
             return candidate

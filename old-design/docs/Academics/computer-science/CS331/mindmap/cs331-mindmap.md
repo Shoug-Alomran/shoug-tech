@@ -1,4 +1,4 @@
-# CS331 Complete Course Mind Map
+# CS331 Complete Course Mindmap
 
 - [Open in new tab](/Academics/computer-science/CS331/mindmap/cs331-mindmap.html)
 

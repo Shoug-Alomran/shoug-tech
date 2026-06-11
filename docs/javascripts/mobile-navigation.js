@@ -86,7 +86,7 @@
 // Load Firebase auth + progress tracking on every page
 (function () {
   var s = document.createElement("script");
-  s.src = "/javascripts/firebase-auth.js?v=52";
+  s.src = "/javascripts/firebase-auth.js?v=53";
   s.async = true;
   document.head.appendChild(s);
 })();

@@ -11,6 +11,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/styles/light-mode.css">
   <script src="/javascripts/translation-launch-guard.js"></script>
+  <script src="/javascripts/course-manifest.js"></script>
   <style>
     :root {
       --bg:     #050508; --surface:#0a0514; --raised:#110822;
@@ -162,6 +163,11 @@
     .setup-submit{height:36px;padding:0 20px;background:var(--brand);color:#0a0514;border:none;font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;transition:background 150ms;}
     .setup-submit:hover{background:#c940f5;}
     .setup-submit:disabled{opacity:.5;cursor:not-allowed;}
+    .setup-avatar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:10px;max-width:420px;}
+    .setup-avatar-item{background:#0a0514;border:2px solid rgba(255,255,255,.07);cursor:pointer;padding:0;transition:border-color 150ms,background 150ms;aspect-ratio:1;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+    .setup-avatar-item:hover{border-color:rgba(184,41,234,.45);}
+    .setup-avatar-item.selected{border-color:#b829ea;box-shadow:0 0 0 1px #b829ea inset;}
+    .setup-avatar-item img{width:100%;height:100%;display:block;object-fit:cover;}
 
     /* Light mode */
     body.shoug-light-mode{background:#f6f4fb;color:#16111f;}
@@ -196,6 +202,23 @@
       .course-list{grid-template-columns:1fr;}
     }
   </style>
+
+    <meta name="description" content="A full breakdown of your learning progress across all courses and sections.">
+    <link rel="canonical" href="https://shoug-tech.com/account/">
+    <meta property="og:title" content="SHOUG.TECH // My Progress">
+    <meta property="og:description" content="A full breakdown of your learning progress across all courses and sections.">
+    <meta property="og:url" content="https://shoug-tech.com/account/">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://shoug-tech.com/logo.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="SHOUG.TECH // My Progress">
+    <meta name="twitter:description" content="A full breakdown of your learning progress across all courses and sections.">
+    <meta name="twitter:image" content="https://shoug-tech.com/logo.png">
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","url":"https://shoug-tech.com/account/","name":"SHOUG.TECH // My Progress","description":"A full breakdown of your learning progress across all courses and sections.","isPartOf":{"@type":"WebSite","name":"Shoug's Digital Garden","url":"https://shoug-tech.com/"}}</script>
+
+      <link rel="alternate" hreflang="en" href="https://shoug-tech.com/account/">
+      <link rel="alternate" hreflang="ar" href="https://shoug-tech.com/ar/account/">
+      <link rel="alternate" hreflang="x-default" href="https://shoug-tech.com/account/">
 </head>
 <body>
 <script>if(localStorage.getItem('shoug-theme')==='light')document.body.classList.add('shoug-light-mode');</script>
@@ -248,32 +271,31 @@
 
   function escHtml(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
 
+  var AVATAR_PRESETS = [
+    'av-f1.png','av-f2.png','av-f3.png','av-f4.png','av-f5.png','av-f6.png','av-f7.png',
+    'av-m1.png','av-m2.png','av-m3.png','av-m4.png','av-m5.png','av-m6.png','av-m7.png'
+  ];
+  function avatarUrl(preset){
+    var i = parseInt(preset, 10);
+    return (!isNaN(i) && AVATAR_PRESETS[i]) ? '/assets/avatars/'+AVATAR_PRESETS[i] : null;
+  }
+
   function ring(r,pct,color,size){
     size=size||(r*2+8);
     var cx=size/2,cy=size/2,circ=2*Math.PI*r,offset=circ*(1-pct/100);
     return '<svg width="'+size+'" height="'+size+'" viewBox="0 0 '+size+' '+size+'"><circle class="ring-bg" cx="'+cx+'" cy="'+cy+'" r="'+r+'" stroke-width="4"/><circle class="ring-fg" cx="'+cx+'" cy="'+cy+'" r="'+r+'" stroke="'+color+'" stroke-width="4" stroke-dasharray="'+circ.toFixed(2)+'" stroke-dashoffset="'+offset.toFixed(2)+'" transform="rotate(-90 '+cx+' '+cy+')"/></svg>';
   }
 
-  // ── Build page map from search index ─────────────────────────────────
-  function buildPageMap(index){
+  // ── Build page map from generated academic content inventory ──────────
+  function buildPageMap(pages){
     var map={};
-    // Build a URL set so we can detect listing pages (any URL that is a prefix of another)
-    var urlSet={};
-    index.forEach(function(item){ urlSet[item.url]=true; });
-    index.forEach(function(item){
-      var parts=item.url.split("/").filter(Boolean);
-      if(parts[0]!=="academics"||parts.length<3)return;
-      var track=parts[1],course=parts[2];
+    pages.forEach(function(item){
+      if(!item.track||!item.course||!item.url)return;
+      var track=item.track,course=item.course;
       if(!map[track])map[track]={};
-      if(!map[track][course])map[track][course]={total:0,title:course.toUpperCase(),url:item.url};
-      if(parts.length===3){map[track][course].title=item.title;return;}
-      // Skip direct section listings (depth 4) and any deeper listing with children
-      if(parts.length<5)return;
-      var hasChildren=index.some(function(other){
-        return other.url!==item.url&&other.url.startsWith(item.url);
-      });
-      if(hasChildren)return;
+      if(!map[track][course])map[track][course]={total:0,title:item.courseTitle||course.toUpperCase(),url:item.courseUrl||("/academics/"+track+"/"+course+"/"),pages:[]};
       map[track][course].total++;
+      map[track][course].pages.push(item);
     });
     return map;
   }
@@ -284,11 +306,8 @@
       result[track]={};
       Object.keys(pageMap[track]).forEach(function(course){
         var info=pageMap[track][course],total=info.total,done=0;
-        Object.keys(completedSet).forEach(function(url){
-          var prefix="/academics/"+track+"/"+course+"/";
-          if(url===prefix||url.startsWith(prefix))done++;
-        });
-        result[track][course]={total:total,done:done,pct:total?Math.round(done/total*100):0,title:info.title,url:"/academics/"+track+"/"+course+"/"};
+        info.pages.forEach(function(page){ if(completedSet[page.url]) done++; });
+        result[track][course]={total:total,done:done,pct:total?Math.round(done/total*100):0,title:info.title,url:info.url};
       });
     });
     return result;
@@ -570,6 +589,13 @@
       '  </div>',
       '  <div class="setup-field" style="margin-bottom:12px"><label class="setup-label">Bio <span style="color:var(--muted)">(optional)</span></label>',
       '    <input class="setup-input" id="su-bio" placeholder="Tell the community about yourself…" maxlength="160"></div>',
+      '  <div class="setup-field" style="margin-bottom:12px"><label class="setup-label">Avatar <span style="color:var(--muted)">(optional)</span></label>',
+      '    <input type="hidden" id="su-avatarid" value="">',
+      '    <div class="setup-avatar-grid">',
+      AVATAR_PRESETS.map(function(file, i){
+        return '<button type="button" class="setup-avatar-item" data-avid="'+i+'" aria-label="Choose avatar '+(i+1)+'"><img src="/assets/avatars/'+file+'" loading="lazy" alt="" decoding="async"></button>';
+      }).join(""),
+      '    </div></div>',
       '  <div class="setup-error" id="su-error"></div>',
       '  <button class="setup-submit" id="su-submit">Create Profile</button>',
       '</div>',
@@ -578,10 +604,19 @@
     document.getElementById("su-username").addEventListener("input", function(){
       this.value = this.value.toLowerCase().replace(/[^a-z0-9_]/g,"");
     });
+    el.querySelectorAll(".setup-avatar-item[data-avid]").forEach(function(item){
+      item.addEventListener("click", function(){
+        el.querySelectorAll(".setup-avatar-item[data-avid]").forEach(function(i){ i.classList.remove("selected"); });
+        item.classList.add("selected");
+        document.getElementById("su-avatarid").value = item.dataset.avid;
+      });
+    });
     document.getElementById("su-submit").addEventListener("click", function(){
       var username = document.getElementById("su-username").value.trim();
       var displayName = document.getElementById("su-displayname").value.trim();
       var bio = document.getElementById("su-bio").value.trim();
+      var avatarPresetRaw = document.getElementById("su-avatarid").value;
+      var avatarPreset = avatarPresetRaw !== "" ? parseInt(avatarPresetRaw, 10) : null;
       var errEl = document.getElementById("su-error");
       errEl.textContent = "";
       if (!username || username.length < 3) { errEl.textContent = "Username must be at least 3 characters."; return; }
@@ -596,6 +631,7 @@
         btn.textContent = "Saving…";
         var profile = { username:username, displayName:displayName, bio:bio, avatarColor:color, totalCompleted:0,
           createdAt:firebase.firestore.FieldValue.serverTimestamp(), updatedAt:firebase.firestore.FieldValue.serverTimestamp() };
+        if (avatarPreset !== null) profile.avatarPreset = avatarPreset;
         return Promise.all([
           db.collection("users").doc(uid).set(profile),
           db.collection("usernames").doc(username).set({ uid:uid }),
@@ -612,9 +648,13 @@
     el.style.display = "flex";
     var c = profile.avatarColor || "#b829ea";
     var initials = (profile.displayName||profile.username||"?")[0].toUpperCase();
+    var avatarImgUrl = avatarUrl(profile.avatarPreset);
+    var avatarHtml = avatarImgUrl
+      ? '<div class="profile-avatar" style="padding:0;overflow:hidden;border:1px solid '+c+'55;background:#0d0720;"><img src="'+avatarImgUrl+'" style="width:100%;height:100%;display:block;object-fit:cover;" loading="lazy" alt="" decoding="async"></div>'
+      : '<div class="profile-avatar" style="background:'+c+'1a;border:1px solid '+c+'55;color:'+c+'">'+escHtml(initials)+'</div>';
     el.innerHTML = [
       '<div class="profile-card">',
-      '  <div class="profile-avatar" style="background:'+c+'1a;border:1px solid '+c+'55;color:'+c+'">'+escHtml(initials)+'</div>',
+      '  '+avatarHtml,
       '  <div class="profile-info">',
       '    <div class="profile-displayname" style="color:'+c+'">'+escHtml(profile.displayName||"")+'</div>',
       '    <div class="profile-username">@'+escHtml(profile.username||"")+'</div>',
@@ -635,13 +675,15 @@
     if (signinBtn) signinBtn.addEventListener("click", function(){
       var btn = document.getElementById("shoug-fb-user"); if (btn) btn.click();
     });
+    var coursePages = Array.isArray(window.COURSE_PAGES) ? window.COURSE_PAGES : [];
+    var validPageUrls = {};
+    coursePages.forEach(function(p){ validPageUrls[p.url]=true; });
     Promise.all([
-      fetch("/search-index.json?v="+Date.now()).then(function(r){ return r.json(); }),
       firebase.firestore().collection("userProgress").doc(user.uid).collection("pages").get(),
       firebase.firestore().collection("users").doc(user.uid).get()
         .catch(function(){ return {exists:false, data:function(){return null;}}; })
     ]).then(function(res){
-      var searchIndex=res[0], snap=res[1], profileDoc=res[2];
+      var snap=res[0], profileDoc=res[1];
       var userProfile = profileDoc.exists ? profileDoc.data() : null;
 
       // Show profile card or setup banner
@@ -666,14 +708,15 @@
           else if(typeof d.updatedAt.seconds==="number") dt=new Date(d.updatedAt.seconds*1000);
         }
         d.completedAt=dt;
-        userPages.push(d);
         if(d.completed){
+          if(!validPageUrls[d.url]) return;
+          userPages.push(d);
           completedSet[d.url]=true;
           if(dt) completedDates.push(dt);
         }
       });
       if(!userPages.length){ show("empty-state"); return; }
-      var pageMap=buildPageMap(searchIndex);
+      var pageMap=buildPageMap(coursePages);
       var progress=calcProgress(pageMap,completedSet);
       var grandDone=0, grandTotal=0;
       Object.keys(TRACK_META).forEach(function(track){

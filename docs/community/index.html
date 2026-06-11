@@ -141,7 +141,7 @@
     .comment-form{background:var(--surface);border:1px solid var(--border);padding:16px;}
     .comment-input{background:transparent;border:none;color:var(--text);font-family:'Inter',sans-serif;font-size:.85rem;line-height:1.5;width:100%;outline:none;resize:vertical;}
     .comment-form-footer{display:flex;align-items:center;justify-content:space-between;margin-top:12px;gap:12px;}
-    .comment-hint{font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--muted);}
+    .comment-hint{font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--muted);display:inline-flex;align-items:center;gap:6px;}
     .comment-submit{height:34px;padding:0 18px;background:var(--brand);color:#0a0514;border:none;font-family:'JetBrains Mono',monospace;font-size:.65rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;transition:background 150ms;}
     .comment-submit:hover{background:#c940f5;}
     .comment-submit:disabled{opacity:.5;cursor:not-allowed;}
@@ -184,6 +184,22 @@
       .discuss-select{min-width:0;width:100%;}
     }
   </style>
+
+    <link rel="canonical" href="https://shoug-tech.com/community/">
+    <meta property="og:title" content="Community — SHOUG.TECH">
+    <meta property="og:description" content="Connect with other students, see leaderboards, and discuss courses.">
+    <meta property="og:url" content="https://shoug-tech.com/community/">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://shoug-tech.com/logo.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Community — SHOUG.TECH">
+    <meta name="twitter:description" content="Connect with other students, see leaderboards, and discuss courses.">
+    <meta name="twitter:image" content="https://shoug-tech.com/logo.png">
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","url":"https://shoug-tech.com/community/","name":"Community — SHOUG.TECH","description":"Connect with other students, see leaderboards, and discuss courses.","isPartOf":{"@type":"WebSite","name":"Shoug's Digital Garden","url":"https://shoug-tech.com/"}}</script>
+
+      <link rel="alternate" hreflang="en" href="https://shoug-tech.com/community/">
+      <link rel="alternate" hreflang="ar" href="https://shoug-tech.com/ar/community/">
+      <link rel="alternate" hreflang="x-default" href="https://shoug-tech.com/community/">
 </head>
 <body>
 <script>if(localStorage.getItem('shoug-theme')==='light')document.body.classList.add('shoug-light-mode');</script>
@@ -311,9 +327,21 @@
 
   function escHtml(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
 
+  var AVATAR_PRESETS = [
+    'av-f1.png','av-f2.png','av-f3.png','av-f4.png','av-f5.png','av-f6.png','av-f7.png',
+    'av-m1.png','av-m2.png','av-m3.png','av-m4.png','av-m5.png','av-m6.png','av-m7.png'
+  ];
+  function avatarUrl(preset){
+    var i = parseInt(preset, 10);
+    return (!isNaN(i) && AVATAR_PRESETS[i]) ? '/assets/avatars/'+AVATAR_PRESETS[i] : null;
+  }
   function avatar(profile, size){
     size = size || 36;
     var c = profile.avatarColor || "#b829ea";
+    var url = avatarUrl(profile.avatarPreset);
+    if (url) {
+      return '<div class="u-avatar" style="width:'+size+'px;height:'+size+'px;padding:0;overflow:hidden;border:1px solid '+c+'55;background:#0d0720;"><img src="'+url+'" style="width:100%;height:100%;display:block;object-fit:cover;" loading="lazy" alt="" decoding="async"></div>';
+    }
     var init = (profile.displayName || profile.username || "?")[0].toUpperCase();
     return '<div class="u-avatar" style="width:'+size+'px;height:'+size+'px;background:'+c+'1a;border:1px solid '+c+'55;color:'+c+';font-size:'+(size*0.38).toFixed(0)+'px">'+escHtml(init)+'</div>';
   }
@@ -600,6 +628,7 @@
       var isMe = c.uid === currentUser.uid;
       return '<div class="comment'+(isMe?" comment-me":"")+(isReply?" comment--reply":"")+'">'
         + '<div class="comment-header">'
+        + avatar(c, 22)
         + (isReply && c.replyToUsername ? '<span class="comment-reply-to">↳ @'+escHtml(c.replyToUsername)+'&nbsp;&nbsp;</span>' : "")
         + '<span class="comment-author" style="color:'+(c.avatarColor||"#b829ea")+'">'+escHtml(c.displayName||c.username||"Unknown")+'</span>'
         + '<span class="comment-username">@'+escHtml(c.username||"")+'</span>'
@@ -633,7 +662,7 @@
       '<div class="comment-form">',
       '  <textarea class="comment-input" id="comment-input" placeholder="Add a comment… Be respectful and helpful." rows="3" maxlength="1000"></textarea>',
       '  <div class="comment-form-footer">',
-      '    <span class="comment-hint">Posting as <strong style="color:'+(currentProfile.avatarColor||"#b829ea")+'">'+escHtml(currentProfile.displayName||currentProfile.username||"")+'</strong> &nbsp;·&nbsp; Ctrl+Enter to post</span>',
+      '    <span class="comment-hint">'+avatar(currentProfile, 18)+' Posting as <strong style="color:'+(currentProfile.avatarColor||"#b829ea")+'">'+escHtml(currentProfile.displayName||currentProfile.username||"")+'</strong> &nbsp;·&nbsp; Ctrl+Enter to post</span>',
       '    <button class="comment-submit" id="comment-submit">Post</button>',
       '  </div>',
       '</div>',
@@ -684,6 +713,7 @@
           username: currentProfile.username || "",
           displayName: currentProfile.displayName || "",
           avatarColor: currentProfile.avatarColor || "#b829ea",
+          avatarPreset: currentProfile.avatarPreset != null ? currentProfile.avatarPreset : null,
           text: text,
           replyTo: parentId,
           replyToUsername: parentUsername,
@@ -732,6 +762,7 @@
       username: currentProfile.username || "",
       displayName: currentProfile.displayName || "",
       avatarColor: currentProfile.avatarColor || "#b829ea",
+      avatarPreset: currentProfile.avatarPreset != null ? currentProfile.avatarPreset : null,
       text: text,
       createdAt: firebase.firestore.FieldValue.serverTimestamp(),
     }).then(function(){
