@@ -173,6 +173,33 @@ var COURSE_PAGES = [
     "courseTitle": "CS102 // Computer Programming II"
   },
   {
+    "url": "/academics/computer-science/cs210/exams/01-midterm-1/",
+    "title": "CS210 | Midterm 1",
+    "track": "computer-science",
+    "course": "cs210",
+    "section": "exams",
+    "courseUrl": "/academics/computer-science/cs210/",
+    "courseTitle": "CS210 // Data Structures and Algorithms"
+  },
+  {
+    "url": "/academics/computer-science/cs210/exams/02-quiz-1/",
+    "title": "CS210 | Quiz 1",
+    "track": "computer-science",
+    "course": "cs210",
+    "section": "exams",
+    "courseUrl": "/academics/computer-science/cs210/",
+    "courseTitle": "CS210 // Data Structures and Algorithms"
+  },
+  {
+    "url": "/academics/computer-science/cs210/exams/03-quiz-2/",
+    "title": "CS210 | Quiz 2",
+    "track": "computer-science",
+    "course": "cs210",
+    "section": "exams",
+    "courseUrl": "/academics/computer-science/cs210/",
+    "courseTitle": "CS210 // Data Structures and Algorithms"
+  },
+  {
     "url": "/academics/computer-science/cs210/extra-resources/01-cheat-sheet/",
     "title": "CS210 | Cheat Sheet",
     "track": "computer-science",
@@ -182,134 +209,8 @@ var COURSE_PAGES = [
     "courseTitle": "CS210 // Data Structures and Algorithms"
   },
   {
-    "url": "/academics/computer-science/cs210/extra-resources/01-exams/",
-    "title": "CS210 | Exams",
-    "track": "computer-science",
-    "course": "cs210",
-    "section": "extra-resources",
-    "courseUrl": "/academics/computer-science/cs210/",
-    "courseTitle": "CS210 // Data Structures and Algorithms"
-  },
-  {
-    "url": "/academics/computer-science/cs210/extra-resources/01-midterm-1/",
-    "title": "CS210 | Midterm 1",
-    "track": "computer-science",
-    "course": "cs210",
-    "section": "extra-resources",
-    "courseUrl": "/academics/computer-science/cs210/",
-    "courseTitle": "CS210 // Data Structures and Algorithms"
-  },
-  {
     "url": "/academics/computer-science/cs210/extra-resources/02-cheat-sheet-2/",
     "title": "CS210 | Cheat Sheet (2)",
-    "track": "computer-science",
-    "course": "cs210",
-    "section": "extra-resources",
-    "courseUrl": "/academics/computer-science/cs210/",
-    "courseTitle": "CS210 // Data Structures and Algorithms"
-  },
-  {
-    "url": "/academics/computer-science/cs210/extra-resources/02-quiz-1/",
-    "title": "CS210 | Quiz 1",
-    "track": "computer-science",
-    "course": "cs210",
-    "section": "extra-resources",
-    "courseUrl": "/academics/computer-science/cs210/",
-    "courseTitle": "CS210 // Data Structures and Algorithms"
-  },
-  {
-    "url": "/academics/computer-science/cs210/extra-resources/03-quiz-2/",
-    "title": "CS210 | Quiz 2",
-    "track": "computer-science",
-    "course": "cs210",
-    "section": "extra-resources",
-    "courseUrl": "/academics/computer-science/cs210/",
-    "courseTitle": "CS210 // Data Structures and Algorithms"
-  },
-  {
-    "url": "/academics/computer-science/cs210/extra-resources/topics/01-lists/",
-    "title": "CS210 | Lists",
-    "track": "computer-science",
-    "course": "cs210",
-    "section": "extra-resources",
-    "courseUrl": "/academics/computer-science/cs210/",
-    "courseTitle": "CS210 // Data Structures and Algorithms"
-  },
-  {
-    "url": "/academics/computer-science/cs210/extra-resources/topics/02-trees/",
-    "title": "CS210 | Trees",
-    "track": "computer-science",
-    "course": "cs210",
-    "section": "extra-resources",
-    "courseUrl": "/academics/computer-science/cs210/",
-    "courseTitle": "CS210 // Data Structures and Algorithms"
-  },
-  {
-    "url": "/academics/computer-science/cs210/extra-resources/topics/03-avl-trees/",
-    "title": "CS210 | AVL Trees",
-    "track": "computer-science",
-    "course": "cs210",
-    "section": "extra-resources",
-    "courseUrl": "/academics/computer-science/cs210/",
-    "courseTitle": "CS210 // Data Structures and Algorithms"
-  },
-  {
-    "url": "/academics/computer-science/cs210/extra-resources/topics/04-heaps/",
-    "title": "CS210 | Heaps",
-    "track": "computer-science",
-    "course": "cs210",
-    "section": "extra-resources",
-    "courseUrl": "/academics/computer-science/cs210/",
-    "courseTitle": "CS210 // Data Structures and Algorithms"
-  },
-  {
-    "url": "/academics/computer-science/cs210/extra-resources/topics/05-hash-tables/",
-    "title": "CS210 | Hash Tables",
-    "track": "computer-science",
-    "course": "cs210",
-    "section": "extra-resources",
-    "courseUrl": "/academics/computer-science/cs210/",
-    "courseTitle": "CS210 // Data Structures and Algorithms"
-  },
-  {
-    "url": "/academics/computer-science/cs210/extra-resources/topics/06-binary-search-trees-bst/",
-    "title": "CS210 | Binary Search Trees (BST)",
-    "track": "computer-science",
-    "course": "cs210",
-    "section": "extra-resources",
-    "courseUrl": "/academics/computer-science/cs210/",
-    "courseTitle": "CS210 // Data Structures and Algorithms"
-  },
-  {
-    "url": "/academics/computer-science/cs210/extra-resources/topics/07-recursion/",
-    "title": "CS210 | Recursion",
-    "track": "computer-science",
-    "course": "cs210",
-    "section": "extra-resources",
-    "courseUrl": "/academics/computer-science/cs210/",
-    "courseTitle": "CS210 // Data Structures and Algorithms"
-  },
-  {
-    "url": "/academics/computer-science/cs210/extra-resources/topics/08-quick-sort/",
-    "title": "CS210 | Quick Sort",
-    "track": "computer-science",
-    "course": "cs210",
-    "section": "extra-resources",
-    "courseUrl": "/academics/computer-science/cs210/",
-    "courseTitle": "CS210 // Data Structures and Algorithms"
-  },
-  {
-    "url": "/academics/computer-science/cs210/extra-resources/topics/09-merge-sort/",
-    "title": "CS210 | Merge Sort",
-    "track": "computer-science",
-    "course": "cs210",
-    "section": "extra-resources",
-    "courseUrl": "/academics/computer-science/cs210/",
-    "courseTitle": "CS210 // Data Structures and Algorithms"
-  },
-  {
-    "url": "/academics/computer-science/cs210/extra-resources/topics/10-stacks-and-queues/",
-    "title": "CS210 | Stacks & Queues",
     "track": "computer-science",
     "course": "cs210",
     "section": "extra-resources",
@@ -805,15 +706,6 @@ var COURSE_PAGES = [
   {
     "url": "/academics/computer-science/cs330/quizzes/08-quiz-1-ch-1-and-2/",
     "title": "CS330 | Quiz 1 (Ch. 1 & 2)",
-    "track": "computer-science",
-    "course": "cs330",
-    "section": "quizzes",
-    "courseUrl": "/academics/computer-science/cs330/",
-    "courseTitle": "CS330 // Introduction to Operating Systems"
-  },
-  {
-    "url": "/academics/computer-science/cs330/quizzes/08-quiz-1/",
-    "title": "CS330 | Quiz 1",
     "track": "computer-science",
     "course": "cs330",
     "section": "quizzes",
@@ -1471,15 +1363,6 @@ var COURSE_PAGES = [
   {
     "url": "/academics/computer-science/cs340/extra-resources/mindmap/01-chapter-1-mind-map/",
     "title": "CS340 | Chapter 1 Mindmap",
-    "track": "computer-science",
-    "course": "cs340",
-    "section": "extra-resources",
-    "courseUrl": "/academics/computer-science/cs340/",
-    "courseTitle": "CS340 // Introduction to Database Systems"
-  },
-  {
-    "url": "/academics/computer-science/cs340/extra-resources/mindmap/01-mindmap/",
-    "title": "CS340 | Mindmap",
     "track": "computer-science",
     "course": "cs340",
     "section": "extra-resources",
@@ -4343,11 +4226,11 @@ var COURSE_PAGES = [
 var COURSE_MANIFEST = {
   "cs101": 8,
   "cs102": 11,
-  "cs210": 42,
+  "cs210": 31,
   "cs285": 16,
-  "cs330": 36,
+  "cs330": 35,
   "cs331": 46,
-  "cs340": 37,
+  "cs340": 36,
   "cys401": 29,
   "eng101": 37,
   "eng103": 7,
@@ -4363,11 +4246,11 @@ var COURSE_MANIFEST = {
 var COURSE_MANIFEST_BY_TRACK = {
   "computer-science/cs101": 8,
   "computer-science/cs102": 11,
-  "computer-science/cs210": 42,
+  "computer-science/cs210": 31,
   "computer-science/cs285": 16,
-  "computer-science/cs330": 36,
+  "computer-science/cs330": 35,
   "computer-science/cs331": 46,
-  "computer-science/cs340": 37,
+  "computer-science/cs340": 36,
   "cybersecurity/cys401": 29,
   "other-courses/eng101": 37,
   "other-courses/eng103": 7,
