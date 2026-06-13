@@ -2441,8 +2441,35 @@ var COURSE_PAGES = [
     "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
   },
   {
+    "url": "/academics/other-courses/ethcs303/extra-resources/acm-code-of-ethics-and-professional-conduct/",
+    "title": "ETHCS303 | ACM Code of Ethics and Professional Conduct",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "extra-resources",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
+    "url": "/academics/other-courses/ethcs303/extra-resources/case-scenario-on-whistle-blowing/",
+    "title": "ETHCS303 | Case Scenario: Whistle Blowing",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "extra-resources",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
     "url": "/academics/other-courses/ethcs303/extra-resources/ethical-theories-comparison-table/",
     "title": "ETHCS303 | Ethical Theories Comparison Table",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "extra-resources",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
+    "url": "/academics/other-courses/ethcs303/extra-resources/ieee-code-of-conduct/",
+    "title": "ETHCS303 | IEEE Code of Conduct",
     "track": "other-courses",
     "course": "ethcs303",
     "section": "extra-resources",
@@ -2594,6 +2621,51 @@ var COURSE_PAGES = [
     "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
   },
   {
+    "url": "/academics/other-courses/ethcs303/extra-resources/practice-questions/case-scenarios/",
+    "title": "ETHCS303 | Case Scenarios",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "extra-resources",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
+    "url": "/academics/other-courses/ethcs303/extra-resources/practice-questions/scenario-1/",
+    "title": "ETHCS303 | Resolving Dilemmas: Scenario 1",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "extra-resources",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
+    "url": "/academics/other-courses/ethcs303/extra-resources/practice-questions/scenario-2/",
+    "title": "ETHCS303 | Resolving Dilemmas: Scenario 2",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "extra-resources",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
+    "url": "/academics/other-courses/ethcs303/extra-resources/practice-questions/scenario-3/",
+    "title": "ETHCS303 | Resolving Dilemmas: Scenario 3",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "extra-resources",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
+    "url": "/academics/other-courses/ethcs303/extra-resources/software-engineering-code-of-ethics-and-professional-practice/",
+    "title": "ETHCS303 | Software Engineering Code of Ethics and Professional Practice",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "extra-resources",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
     "url": "/academics/other-courses/ethcs303/quizzes/01-moral-systems-ethical-concepts-and-theories-quiz/",
     "title": "ETHCS303 | Moral Systems, Ethical Concepts, and Theories Quiz",
     "track": "other-courses",
@@ -2630,7 +2702,25 @@ var COURSE_PAGES = [
     "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
   },
   {
-    "url": "/academics/other-courses/ethcs303/quizzes/05-ethical-issues-in-systems-analysis-and-software-engineering-quiz/",
+    "url": "/academics/other-courses/ethcs303/quizzes/05-professional-ethics-quiz/",
+    "title": "ETHCS303 | Professional Ethics Quiz",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "quizzes",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
+    "url": "/academics/other-courses/ethcs303/quizzes/06-quiz-1-practice/",
+    "title": "ETHCS303 | Quiz 1 Practice",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "quizzes",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
+    "url": "/academics/other-courses/ethcs303/quizzes/07-ethical-issues-in-systems-analysis-and-software-engineering-quiz/",
     "title": "ETHCS303 | Ethical Issues in Systems Analysis and Software Engineering Quiz",
     "track": "other-courses",
     "course": "ethcs303",
@@ -2639,7 +2729,7 @@ var COURSE_PAGES = [
     "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
   },
   {
-    "url": "/academics/other-courses/ethcs303/quizzes/06-network-security-and-privacy-quiz/",
+    "url": "/academics/other-courses/ethcs303/quizzes/08-network-security-and-privacy-quiz/",
     "title": "ETHCS303 | Network Security and Privacy Quiz",
     "track": "other-courses",
     "course": "ethcs303",
@@ -2648,7 +2738,7 @@ var COURSE_PAGES = [
     "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
   },
   {
-    "url": "/academics/other-courses/ethcs303/quizzes/07-cloud-computing-and-privacy-issues-quiz/",
+    "url": "/academics/other-courses/ethcs303/quizzes/09-cloud-computing-and-privacy-issues-quiz/",
     "title": "ETHCS303 | Cloud Computing and Privacy Issues Quiz",
     "track": "other-courses",
     "course": "ethcs303",
@@ -2657,7 +2747,7 @@ var COURSE_PAGES = [
     "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
   },
   {
-    "url": "/academics/other-courses/ethcs303/quizzes/08-privacy-issues-in-cyberspace-quiz/",
+    "url": "/academics/other-courses/ethcs303/quizzes/10-privacy-issues-in-cyberspace-quiz/",
     "title": "ETHCS303 | Privacy Issues in Cyberspace Quiz",
     "track": "other-courses",
     "course": "ethcs303",
@@ -2666,7 +2756,7 @@ var COURSE_PAGES = [
     "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
   },
   {
-    "url": "/academics/other-courses/ethcs303/quizzes/09-social-media-ethical-legal-and-security-issues-quiz/",
+    "url": "/academics/other-courses/ethcs303/quizzes/11-social-media-ethical-legal-and-security-issues-quiz/",
     "title": "ETHCS303 | Social Media Ethical, Legal, and Security Issues Quiz",
     "track": "other-courses",
     "course": "ethcs303",
@@ -2675,7 +2765,7 @@ var COURSE_PAGES = [
     "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
   },
   {
-    "url": "/academics/other-courses/ethcs303/quizzes/10-social-engineering-quiz/",
+    "url": "/academics/other-courses/ethcs303/quizzes/12-social-engineering-quiz/",
     "title": "ETHCS303 | Social Engineering Quiz",
     "track": "other-courses",
     "course": "ethcs303",
@@ -2684,7 +2774,7 @@ var COURSE_PAGES = [
     "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
   },
   {
-    "url": "/academics/other-courses/ethcs303/quizzes/11-introduction-to-ethical-hacking-quiz/",
+    "url": "/academics/other-courses/ethcs303/quizzes/13-introduction-to-ethical-hacking-quiz/",
     "title": "ETHCS303 | Introduction to Ethical Hacking Quiz",
     "track": "other-courses",
     "course": "ethcs303",
@@ -2693,7 +2783,7 @@ var COURSE_PAGES = [
     "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
   },
   {
-    "url": "/academics/other-courses/ethcs303/quizzes/12-business-ethics-quiz/",
+    "url": "/academics/other-courses/ethcs303/quizzes/14-business-ethics-quiz/",
     "title": "ETHCS303 | Business Ethics Quiz",
     "track": "other-courses",
     "course": "ethcs303",
@@ -2702,7 +2792,7 @@ var COURSE_PAGES = [
     "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
   },
   {
-    "url": "/academics/other-courses/ethcs303/quizzes/13-cyber-laws-in-saudi-arabia-quiz/",
+    "url": "/academics/other-courses/ethcs303/quizzes/15-cyber-laws-in-saudi-arabia-quiz/",
     "title": "ETHCS303 | Cyber Laws in Saudi Arabia Quiz",
     "track": "other-courses",
     "course": "ethcs303",
@@ -2747,7 +2837,16 @@ var COURSE_PAGES = [
     "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
   },
   {
-    "url": "/academics/other-courses/ethcs303/slide-breakdowns/05-ethical-issues-in-systems-analysis-and-software-engineering/",
+    "url": "/academics/other-courses/ethcs303/slide-breakdowns/05-professional-ethics/",
+    "title": "ETHCS303 | Breakdown: Professional Ethics",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "slide-breakdowns",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
+    "url": "/academics/other-courses/ethcs303/slide-breakdowns/06-ethical-issues-in-systems-analysis-and-software-engineering/",
     "title": "ETHCS303 | Breakdown: Ethical Issues in Systems Analysis and Software Engineering",
     "track": "other-courses",
     "course": "ethcs303",
@@ -2756,7 +2855,7 @@ var COURSE_PAGES = [
     "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
   },
   {
-    "url": "/academics/other-courses/ethcs303/slide-breakdowns/06-network-security-and-privacy/",
+    "url": "/academics/other-courses/ethcs303/slide-breakdowns/07-network-security-and-privacy/",
     "title": "ETHCS303 | Breakdown: Network Security and Privacy",
     "track": "other-courses",
     "course": "ethcs303",
@@ -2765,7 +2864,7 @@ var COURSE_PAGES = [
     "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
   },
   {
-    "url": "/academics/other-courses/ethcs303/slide-breakdowns/07-network-security-and-privacy-in-the-cloud/",
+    "url": "/academics/other-courses/ethcs303/slide-breakdowns/08-network-security-and-privacy-in-the-cloud/",
     "title": "ETHCS303 | Breakdown: Network Security and Privacy in the Cloud",
     "track": "other-courses",
     "course": "ethcs303",
@@ -2774,7 +2873,7 @@ var COURSE_PAGES = [
     "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
   },
   {
-    "url": "/academics/other-courses/ethcs303/slide-breakdowns/08-privacy-issues-in-cyberspace/",
+    "url": "/academics/other-courses/ethcs303/slide-breakdowns/09-privacy-issues-in-cyberspace/",
     "title": "ETHCS303 | Breakdown: Privacy Issues in Cyberspace",
     "track": "other-courses",
     "course": "ethcs303",
@@ -2783,7 +2882,7 @@ var COURSE_PAGES = [
     "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
   },
   {
-    "url": "/academics/other-courses/ethcs303/slide-breakdowns/09-social-media-ethical-legal-and-security-issues/",
+    "url": "/academics/other-courses/ethcs303/slide-breakdowns/10-social-media-ethical-legal-and-security-issues/",
     "title": "ETHCS303 | Breakdown: Social Media Ethical, Legal, and Security Issues",
     "track": "other-courses",
     "course": "ethcs303",
@@ -2792,7 +2891,7 @@ var COURSE_PAGES = [
     "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
   },
   {
-    "url": "/academics/other-courses/ethcs303/slide-breakdowns/10-social-engineering/",
+    "url": "/academics/other-courses/ethcs303/slide-breakdowns/11-social-engineering/",
     "title": "ETHCS303 | Breakdown: Social Engineering",
     "track": "other-courses",
     "course": "ethcs303",
@@ -2801,7 +2900,16 @@ var COURSE_PAGES = [
     "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
   },
   {
-    "url": "/academics/other-courses/ethcs303/slide-breakdowns/11-business-ethics/",
+    "url": "/academics/other-courses/ethcs303/slide-breakdowns/12-introduction-to-ethical-hacking/",
+    "title": "ETHCS303 | Breakdown: Introduction to Ethical Hacking",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "slide-breakdowns",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
+    "url": "/academics/other-courses/ethcs303/slide-breakdowns/13-business-ethics/",
     "title": "ETHCS303 | Breakdown: Business Ethics",
     "track": "other-courses",
     "course": "ethcs303",
@@ -2810,7 +2918,16 @@ var COURSE_PAGES = [
     "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
   },
   {
-    "url": "/academics/other-courses/ethcs303/slide-breakdowns/12-cyber-laws-in-saudi-arabia/",
+    "url": "/academics/other-courses/ethcs303/slide-breakdowns/14-intellectual-property-laws/",
+    "title": "ETHCS303 | Breakdown: Intellectual Property Laws",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "slide-breakdowns",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
+    "url": "/academics/other-courses/ethcs303/slide-breakdowns/15-cyber-laws-in-saudi-arabia/",
     "title": "ETHCS303 | Breakdown: Cyber Laws in Saudi Arabia",
     "track": "other-courses",
     "course": "ethcs303",
@@ -2938,6 +3055,15 @@ var COURSE_PAGES = [
   {
     "url": "/academics/other-courses/ethcs303/slides/cyber-laws-in-saudi-arabia/",
     "title": "ETHCS303 | Cyber Laws In Saudi Arabia",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "slides",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
+    "url": "/academics/other-courses/ethcs303/slides/professional-ethics/",
+    "title": "ETHCS303 | Professional Ethics",
     "track": "other-courses",
     "course": "ethcs303",
     "section": "slides",
@@ -4225,7 +4351,7 @@ var COURSE_MANIFEST = {
   "cys401": 29,
   "eng101": 37,
   "eng103": 7,
-  "ethcs303": 58,
+  "ethcs303": 72,
   "isc113": 23,
   "phy205": 8,
   "se201": 32,
@@ -4245,7 +4371,7 @@ var COURSE_MANIFEST_BY_TRACK = {
   "cybersecurity/cys401": 29,
   "other-courses/eng101": 37,
   "other-courses/eng103": 7,
-  "other-courses/ethcs303": 58,
+  "other-courses/ethcs303": 72,
   "other-courses/isc113": 23,
   "other-courses/phy205": 8,
   "software-engineering/se201": 32,
