@@ -25,8 +25,19 @@
       .replace("SHOUG.TECH - ", "");
   }
 
+  function isLegalPage() {
+    var path = window.location.pathname;
+    if (document.body && document.body.getAttribute("data-legal-document") === "true") return true;
+    return path.indexOf("/policy") === 0 ||
+           path.indexOf("/privacy") === 0 ||
+           path.indexOf("/copyright") === 0 ||
+           path.indexOf("/terms") === 0 ||
+           path.indexOf("/legal") === 0;
+  }
+
   function isContentPage() {
     var path = window.location.pathname;
+    if (isLegalPage()) return false;
     if (path === "/" || path.indexOf("/account") === 0 || path.indexOf("/community") === 0 || path.indexOf("/bookmarks") === 0) return false;
     // Listing/overview pages (directory indexes) are never content pages, regardless of depth.
     if (document.querySelector(".directory-container")) return false;
@@ -258,10 +269,12 @@
       "#shoug-ue-box{width:min(380px,calc(100vw - 32px));background:#0a0514;border:1px solid rgba(184,41,234,.4);font-family:'JetBrains Mono',monospace;box-shadow:0 0 60px rgba(184,41,234,.15);}",
       "body.shoug-light-mode #shoug-ue-box{background:#fff;}",
       /* Blueprint credit bar */
-      "#shoug-blueprint-bar{width:100%;padding:10px max(4vw,20px);display:flex;align-items:center;justify-content:flex-end;border-top:1px solid rgba(255,255,255,.05);font-family:'JetBrains Mono',monospace;font-size:.55rem;color:#4a4258;letter-spacing:.1em;box-sizing:border-box;}",
+      ".shoug-site-footer:has(#shoug-blueprint-bar){padding-bottom:18px;}",
+      "#shoug-blueprint-bar{width:min(1440px,100%);margin:16px auto 0;padding:0;display:flex;align-items:center;justify-content:flex-end;border-top:0;font-family:'JetBrains Mono',monospace;font-size:.68rem;color:#5a5266;letter-spacing:.12em;box-sizing:border-box;}",
       "#shoug-blueprint-bar a{color:#b829ea;text-decoration:none;font-weight:700;transition:color 120ms;}",
       "#shoug-blueprint-bar a:hover{color:#c940f5;}",
-      "body.shoug-light-mode #shoug-blueprint-bar{border-top-color:rgba(0,0,0,.07);color:#8f8b9a;}",
+      "body.shoug-light-mode #shoug-blueprint-bar{color:#8f8b9a;}",
+      "@media(max-width:760px){.shoug-site-footer:has(#shoug-blueprint-bar){padding-bottom:22px;}#shoug-blueprint-bar{justify-content:flex-start;margin-top:20px;font-size:.66rem;}}",
     ].join("");
     document.head.appendChild(el);
   }
