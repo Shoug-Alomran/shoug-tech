@@ -19,6 +19,8 @@
     "OVERVIEW": "نظرة عامة",
     "SLIDE BREAKDOWNS": "تفكيك الشرائح",
     "SLIDES": "الشرائح",
+    "SLIDES WITH NOTES": "شرائح مع ملاحظات",
+    "SYLLABUS": "الخطة الدراسية",
     "STUDY MATERIAL": "المواد الدراسية",
     "Exams": "الاختبارات",
     "EXAMS": "الاختبارات",
@@ -33,6 +35,7 @@
     "SYS_STATE": "الحالة",
     "SYS_TIME": "وقت_النظام",
     "AVAILABLE": "متاح",
+    "IN PROGRESS": "قيد التنفيذ",
     "COMPLETE": "مكتمل",
     "COMING SOON": "قريبا",
     "Content for this section is being prepared and will be available soon.": "يتم تجهيز محتوى هذا القسم وسيكون متاحا قريبا.",
@@ -40,6 +43,9 @@
     "Overview": "نظرة عامة",
     "Slide Breakdowns": "تفكيك الشرائح",
     "Slides": "الشرائح",
+    "Slides With Notes": "شرائح مع ملاحظات",
+    "Slides with Notes": "شرائح مع ملاحظات",
+    "Syllabus": "الخطة الدراسية",
     "Study Material": "المواد الدراسية",
     "Quizzes": "الاختبارات",
     "Exams": "الاختبارات",
@@ -296,8 +302,14 @@
       }
     });
     document.querySelectorAll('[data-ar-text]').forEach(function (node) {
-      if (!node.dataset.arOriginal) node.dataset.arOriginal = node.textContent;
-      node.textContent = node.getAttribute('data-ar-text');
+      var textNode = node.children.length ? findTrailingTextNode(node) : null;
+      if (textNode) {
+        if (!node.dataset.arOriginal) node.dataset.arOriginal = textNode.textContent;
+        textNode.textContent = node.getAttribute('data-ar-text');
+      } else {
+        if (!node.dataset.arOriginal) node.dataset.arOriginal = node.textContent;
+        node.textContent = node.getAttribute('data-ar-text');
+      }
     });
     document.querySelectorAll(".sys-time").forEach(function (node) {
       if (!node.dataset.arOriginal) node.dataset.arOriginal = node.textContent;
@@ -314,6 +326,36 @@
         node.textContent = node.dataset.arOriginal;
       }
     });
+  }
+
+  function requestedLanguage() {
+    try {
+      var queryLang = new URLSearchParams(window.location.search).get("lang");
+      if (queryLang === "ar" || queryLang === "en") return queryLang;
+      var storedLang = localStorage.getItem("shoug-lang");
+      if (storedLang === "ar" || storedLang === "en") return storedLang;
+    } catch (error) {
+      // Ignore storage/query failures and fall back to the document language.
+    }
+    return String(document.documentElement.lang || "").toLowerCase().indexOf("ar") === 0 ? "ar" : "en";
+  }
+
+  function setDocumentLanguage(lang) {
+    document.documentElement.lang = lang === "ar" ? "ar-SA" : "en";
+    document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
+    if (document.body) document.body.classList.toggle("shoug-arabic-mode", lang === "ar");
+  }
+
+  function ensureLanguageToggle() {
+    return document.querySelector("[data-lang-toggle]");
+  }
+
+  function syncToggleLabel() {
+    var toggle = ensureLanguageToggle();
+    if (!toggle) return;
+    var isArabic = String(document.documentElement.lang || "").toLowerCase().indexOf("ar") === 0;
+    toggle.textContent = isArabic ? "EN" : "AR";
+    toggle.setAttribute("aria-label", isArabic ? "حوّل إلى الإنجليزية" : "Switch to Arabic");
   }
 
   function showAiWarning() {
@@ -353,19 +395,20 @@
       restoreEnglish();
       hideAiWarning();
     }
+    syncToggleLabel();
   }
 
+  setDocumentLanguage(requestedLanguage());
   sync();
   document.addEventListener("DOMContentLoaded", function () {
+    setDocumentLanguage(requestedLanguage());
     sync();
-    var toggle = document.querySelector("[data-lang-toggle]");
-    if (toggle) toggle.addEventListener("click", function () {
-      setTimeout(sync, 0);
-      setTimeout(sync, 100);
-    });
   });
   window.addEventListener("storage", function (event) {
-    if (event.key === "shoug-lang") setTimeout(sync, 0);
+    if (event.key === "shoug-lang") {
+      setDocumentLanguage(requestedLanguage());
+      setTimeout(sync, 0);
+    }
   });
   new MutationObserver(function (mutations) {
     if (mutations.some(function (mutation) { return mutation.attributeName === "lang"; })) {

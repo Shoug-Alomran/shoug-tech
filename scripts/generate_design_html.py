@@ -1402,6 +1402,7 @@ COMMON_HEADER = """
                 <button class="shoug-theme-btn" type="button" aria-label="Toggle dark and light mode">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path></svg>
                 </button>
+                <button class="shoug-lang-btn" type="button" data-lang-toggle aria-label="Switch to Arabic">AR</button>
                 <a class="shoug-contact-btn" href="mailto:shoug.alomran@shoug-tech.com">Contact</a>
             </div>
         </div>
@@ -1623,6 +1624,8 @@ COMMON_SCRIPT = """
                         topics: 'Topics',
                         'study material': 'Study Material',
                         slides: 'Slides',
+                        'slides with notes': 'Slides With Notes',
+                        syllabus: 'Syllabus',
                         quizzes: 'Exams',
                         'slide breakdowns': 'Slide Breakdowns',
                         summary: 'Summary',
@@ -1639,6 +1642,7 @@ COMMON_SCRIPT = """
                     },
                     statusLabels: {
                         available: 'AVAILABLE',
+                        'in progress': 'IN PROGRESS',
                         complete: 'COMPLETE'
                     },
                     trackLabels: {
@@ -1698,6 +1702,8 @@ COMMON_SCRIPT = """
                         topics: 'الموضوعات',
                         'study material': 'مواد الدراسة',
                         slides: 'الشرائح',
+                        'slides with notes': 'شرائح مع ملاحظات',
+                        syllabus: 'الخطة الدراسية',
                         quizzes: 'الاختبارات',
                         'slide breakdowns': 'تفكيك الشرائح',
                         summary: 'الملخص',
@@ -1714,6 +1720,7 @@ COMMON_SCRIPT = """
                     },
                     statusLabels: {
                         available: 'متاح',
+                        'in progress': 'قيد التنفيذ',
                         complete: 'مكتمل'
                     },
                     trackLabels: {
@@ -1800,8 +1807,16 @@ COMMON_SCRIPT = """
                 });
                 document.querySelectorAll('[data-ar-text]').forEach(function (node) {
                     var enText = node.getAttribute('data-en-text');
-                    if (!node.dataset.i18nEn) node.dataset.i18nEn = enText || node.textContent;
-                    node.textContent = lang === 'ar' ? node.getAttribute('data-ar-text') : node.dataset.i18nEn;
+                    var textNode = node.children.length ? Array.prototype.find.call(node.childNodes, function (child) {
+                        return child.nodeType === 3 && child.textContent.trim();
+                    }) : null;
+                    if (textNode) {
+                        if (!node.dataset.i18nEn) node.dataset.i18nEn = enText || textNode.textContent;
+                        textNode.textContent = lang === 'ar' ? node.getAttribute('data-ar-text') : node.dataset.i18nEn;
+                    } else {
+                        if (!node.dataset.i18nEn) node.dataset.i18nEn = enText || node.textContent;
+                        node.textContent = lang === 'ar' ? node.getAttribute('data-ar-text') : node.dataset.i18nEn;
+                    }
                 });
                 document.querySelectorAll('.breadcrumb').forEach(function (node) {
                     node.querySelectorAll('a').forEach(function (link) {
@@ -1844,7 +1859,6 @@ COMMON_SCRIPT = """
     </script>
 """
 
-TRANSLATION_LAUNCH_GUARD = '    <script src="/javascripts/translation-launch-guard.js"></script>\n'
 LIGHT_MODE_STYLESHEET = '    <link rel="stylesheet" href="/styles/light-mode.css">\n'
 
 
@@ -1880,7 +1894,6 @@ def add_common_script(text: str) -> str:
         text = text.replace("</head>", LIGHT_MODE_STYLESHEET + "</head>", 1)
     if "data-lang-toggle" in text and "localStorage.getItem('shoug-theme')" in text:
         return text
-    text = text.replace("</head>", TRANSLATION_LAUNCH_GUARD + "</head>", 1)
     return text.replace("</body>", COMMON_SCRIPT + "\n</body>", 1)
 
 
@@ -2175,6 +2188,40 @@ def generated_sections(code: str) -> dict[str, str]:
     return {label: section_url(code, label) for label in COURSES[code]["sections"]}
 
 
+SECTION_AR_LABELS = {
+    "Overview": "نظرة عامة",
+    "Slide Breakdowns": "تفكيك الشرائح",
+    "Slides": "الشرائح",
+    "Slides With Notes": "شرائح مع ملاحظات",
+    "Syllabus": "الخطة الدراسية",
+    "Study Material": "المواد الدراسية",
+    "Quizzes": "الاختبارات",
+    "Exams": "الاختبارات",
+    "Extra Resources": "موارد إضافية",
+    "Writing Resources": "موارد الكتابة",
+    "Mindmap": "الخريطة الذهنية",
+    "Mindmaps": "الخرائط الذهنية",
+    "Summary": "الملخص",
+    "Topics": "الموضوعات",
+}
+
+
+def display_section_label(label: str) -> str:
+    return "Exams" if label == "Quizzes" else label
+
+
+def section_i18n_attrs(label: str, uppercase: bool = False, bracketed: bool = False) -> str:
+    display_label = display_section_label(label)
+    english = display_label.upper() if uppercase else display_label
+    arabic = SECTION_AR_LABELS.get(display_label) or SECTION_AR_LABELS.get(label)
+    if not arabic:
+        return ""
+    if bracketed:
+        english = f"[ {english.upper()} ]"
+        arabic = f"[ {arabic} ]"
+    return f' data-en-text="{html.escape(english)}" data-ar-text="{html.escape(arabic)}"'
+
+
 def track_for_course(code: str) -> str:
     for slug, track in TRACKS.items():
         if code in track["courses"]:
@@ -2217,7 +2264,7 @@ def academic_sidebar(active_code: str | None = None, active_section: str | None 
                             )
                         item_children = f'<ul class="tree-children item-children is-open">{"".join(item_rows)}</ul>' if item_rows else ""
                     section_children.append(
-                        f'<li class="{section_classes}"><a class="tree-file" href="{html.escape(url)}">'
+                        f'<li class="{section_classes}"><a class="tree-file" href="{html.escape(url)}"{section_i18n_attrs(section_label, uppercase=True)}>'
                         f'{"<span class=\"status-dot\"></span>" if section_active and not active_item else ""}{html.escape(section_label.upper())}</a></li>{item_children}'
                     )
                 children.append(
@@ -3017,9 +3064,9 @@ def section_nav(sections: dict[str, str], class_name: str, active: str = "Overvi
     links = []
     for label, url in sections.items():
         active_class = " active" if label == active else ""
-        display_label = "Exams" if label == "Quizzes" else label
+        display_label = display_section_label(label)
         content = f"[ {display_label.upper()} ]" if class_name == "sub-nav-item" else display_label
-        links.append(f'<a href="{html.escape(url)}" class="{class_name}{active_class}">{content}</a>')
+        links.append(f'<a href="{html.escape(url)}" class="{class_name}{active_class}"{section_i18n_attrs(label, uppercase=False, bracketed=class_name == "sub-nav-item")}>{content}</a>')
     return "\\n                        ".join(links)
 
 

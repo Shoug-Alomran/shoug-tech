@@ -28,6 +28,7 @@ HEADER_LOGO_SIZE = 'width="255" height="96"'
 FAVICON_SIZE = 'width="128" height="121"'
 TWEMOJI_SIZE = 'width="20" height="20" loading="lazy" decoding="async"'
 STANDALONE_SITEMAP = "standalone-sitemap.xml"
+SITEMAP = "sitemap.xml"
 BAD_DESCRIPTION_FRAGMENTS = (
     "SYSTEM_DIRECTORY",
     "ACADEMICS/",
@@ -324,7 +325,15 @@ def is_indexable_standalone(path: Path, html: str) -> bool:
     return True
 
 
-def write_standalone_sitemap(paths: list[Path]) -> None:
+def is_indexable(path: Path, html: str) -> bool:
+    if path.name == "404.html":
+        return False
+    if is_redirect(html):
+        return False
+    return True
+
+
+def write_urlset(filename: str, paths: list[Path]) -> None:
     urls = []
     for path in sorted(paths):
         urls.append(
@@ -339,7 +348,11 @@ def write_standalone_sitemap(paths: list[Path]) -> None:
         + "\n".join(urls)
         + "\n</urlset>\n"
     )
-    (SITE / STANDALONE_SITEMAP).write_text(sitemap, encoding="utf-8")
+    (SITE / filename).write_text(sitemap, encoding="utf-8")
+
+
+def write_standalone_sitemap(paths: list[Path]) -> None:
+    write_urlset(STANDALONE_SITEMAP, paths)
 
 
 def main() -> int:
@@ -349,6 +362,7 @@ def main() -> int:
 
     changed = 0
     standalone_pages: list[Path] = []
+    all_pages: list[Path] = []
     for path in SITE.rglob("*.html"):
         original = path.read_text(encoding="utf-8")
         html = patch_accessibility(original)
@@ -362,10 +376,14 @@ def main() -> int:
 
         if is_indexable_standalone(path, html):
             standalone_pages.append(path)
+        if is_indexable(path, html):
+            all_pages.append(path)
 
     print(f"[ok] optimized generated HTML: {changed} files")
     write_standalone_sitemap(standalone_pages)
     print(f"[ok] wrote {STANDALONE_SITEMAP}: {len(standalone_pages)} URLs")
+    write_urlset(SITEMAP, all_pages)
+    print(f"[ok] wrote {SITEMAP}: {len(all_pages)} URLs")
     return 0
 
 
