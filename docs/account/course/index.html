@@ -10,7 +10,6 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/styles/light-mode.css">
-  <script src="/javascripts/translation-launch-guard.js"></script>
   <script src="/javascripts/course-manifest.js"></script>
   <style>
     :root {
@@ -133,6 +132,9 @@
       .hero-title { font-size:1.3rem; }
       .page-row-url { display:none; }
     }
+    .shoug-lang-btn{position:fixed;top:16px;inset-inline-end:16px;z-index:500;width:34px;height:34px;display:inline-flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,.12);background:rgba(5,5,8,.7);color:#f8f7fb;text-decoration:none;font-family:'JetBrains Mono',monospace;font-size:.64rem;font-weight:800;letter-spacing:.08em;cursor:pointer;transition:border-color 160ms ease,color 160ms ease,background 160ms ease;}
+    .shoug-lang-btn:hover{color:#b829ea;border-color:rgba(184,41,234,.55);}
+    body.shoug-light-mode .shoug-lang-btn{color:#16111f;background:rgba(255,255,255,.7);}
   </style>
 
     <meta name="description" content="SHOUG.TECH // Course Progress study material from Shoug&#x27;s Digital Garden.">
@@ -155,26 +157,95 @@
 <body>
 <script>if(localStorage.getItem('shoug-theme')==='light')document.body.classList.add('shoug-light-mode');</script>
 <script src="/javascripts/mobile-navigation.js" defer></script>
+<script src="/javascripts/arabic-localization.js" defer></script>
+
+<button class="shoug-lang-btn" type="button" data-lang-toggle aria-label="Switch to Arabic">AR</button>
 
 <main class="page">
   <div id="loading-state" class="state-box">
-    <div class="state-tag">Loading…</div>
+    <div class="state-tag" data-ar-text="جار التحميل…">Loading…</div>
   </div>
   <div id="error-state" class="state-box" style="display:none">
-    <div class="state-tag">// ERROR</div>
-    <div class="state-msg">Could not load course data.</div>
-    <a class="state-btn" href="/account/">Back to Progress</a>
+    <div class="state-tag" data-ar-text="// خطأ">// ERROR</div>
+    <div class="state-msg" data-ar-text="تعذر تحميل بيانات المادة.">Could not load course data.</div>
+    <a class="state-btn" href="/account/" data-ar-text="العودة إلى التقدم">Back to Progress</a>
   </div>
   <div id="signed-out-state" class="state-box" style="display:none">
-    <div class="state-tag">// ACCESS DENIED</div>
-    <div class="state-msg">Sign in to view your progress.</div>
-    <button class="state-btn" id="open-signin-btn">Sign In</button>
+    <div class="state-tag" data-ar-text="// الوصول مرفوض">// ACCESS DENIED</div>
+    <div class="state-msg" data-ar-text="سجل الدخول لعرض تقدمك.">Sign in to view your progress.</div>
+    <button class="state-btn" id="open-signin-btn" data-ar-text="تسجيل الدخول">Sign In</button>
   </div>
   <div id="content" style="display:none"></div>
 </main>
 
 <script>
+(function(){
+  var STR = {
+    en: {
+      home: "Home",
+      myProgress: "My Progress",
+      trackLabels: {"computer-science":"Computer Science","cybersecurity":"Cybersecurity","software-engineering":"Software Engineering","other-courses":"Other Courses"},
+      sectionLabels: {"slides":"Lecture Slides","slide-breakdowns":"Slide Breakdowns","slides-with-notes":"Slides with Notes","quizzes":"Quizzes","extra-resources":"Extra Resources","extra-resorces":"Extra Resources","exams":"Exams"},
+      progress: "Progress",
+      completed: "Completed",
+      totalPages: "Total Pages",
+      remaining: "Remaining",
+      sections: "Sections",
+      sectionProgress: "Section Progress",
+      activity30: "Activity — Last 30 Days",
+      noCompletions: "No completions yet",
+      completedWord: "completed",
+      sectionBreakdown: "Section Breakdown",
+      months: ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],
+      pageWord: function(count){ return count===1?"page":"pages"; },
+    },
+    ar: {
+      home: "الرئيسية",
+      myProgress: "تقدمي",
+      trackLabels: {"computer-science":"علوم الحاسب","cybersecurity":"الأمن السيبراني","software-engineering":"هندسة البرمجيات","other-courses":"مواد أخرى"},
+      sectionLabels: {"slides":"شرائح المحاضرات","slide-breakdowns":"تفكيك الشرائح","slides-with-notes":"شرائح مع ملاحظات","quizzes":"اختبارات قصيرة","extra-resources":"موارد إضافية","extra-resorces":"موارد إضافية","exams":"الاختبارات"},
+      progress: "التقدم",
+      completed: "مكتمل",
+      totalPages: "إجمالي الصفحات",
+      remaining: "متبق",
+      sections: "الأقسام",
+      sectionProgress: "تقدم الأقسام",
+      activity30: "النشاط — آخر 30 يوما",
+      noCompletions: "لا توجد إنجازات بعد",
+      completedWord: "مكتمل",
+      sectionBreakdown: "تفكيك الأقسام",
+      months: ["ينا","فبر","مار","أبر","ماي","يون","يول","أغس","سبت","أكت","نوف","ديس"],
+      pageWord: function(count){ return count===1?"صفحة":"صفحات"; },
+    }
+  };
+  function curLang(){ return (document.documentElement.lang||"en").slice(0,2)==="ar" ? "ar" : "en"; }
+  function L(){ return STR[curLang()]; }
+  window.__shougL = L;
+  window.__shougRerender = null;
+
+  function setLang(lang){
+    document.documentElement.lang = lang === "ar" ? "ar-SA" : "en";
+    document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
+    var btn = document.querySelector("[data-lang-toggle]");
+    if (btn) {
+      btn.textContent = lang === "ar" ? "EN" : "AR";
+      btn.setAttribute("aria-label", lang === "ar" ? "Switch to English" : "Switch to Arabic");
+    }
+    try { localStorage.setItem("shoug-lang", lang); } catch(e){}
+    if (typeof window.__shougRerender === "function") window.__shougRerender();
+  }
+  var initialLang = (function(){ try { return localStorage.getItem("shoug-lang")==="ar" ? "ar" : "en"; } catch(e){ return "en"; } })();
+  setLang(initialLang);
+  var langBtn = document.querySelector("[data-lang-toggle]");
+  if (langBtn) langBtn.addEventListener("click", function(){
+    setLang(curLang()==="ar" ? "en" : "ar");
+  });
+})();
+</script>
+
+<script>
 (function () {
+  var L = window.__shougL;
   var FB_VERSION = "10.12.0";
   var FB_BASE    = "https://www.gstatic.com/firebasejs/" + FB_VERSION + "/firebase-";
   var FB_CONFIG  = {
@@ -239,7 +310,7 @@
       var done  = pages.filter(function(p){ return completedSet[p.url]; }).length;
       var total = pages.length;
       var pct   = total ? Math.round(done / total * 100) : 0;
-      var label = SECTION_LABELS[sKey] || sKey.replace(/-/g,' ').replace(/\b\w/g,function(c){return c.toUpperCase();});
+      var label = L().sectionLabels[sKey] || sKey.replace(/-/g,' ').replace(/\b\w/g,function(c){return c.toUpperCase();});
       return '<div class="sbar-row">'
         + '<span class="sbar-name">' + escHtml(label) + '</span>'
         + '<div class="sbar-track"><div class="sbar-fill" style="width:'+pct+'%;background:'+color+'"></div></div>'
@@ -247,7 +318,7 @@
         + '<span class="sbar-pct" style="color:'+color+'">'+pct+'%</span>'
         + '</div>';
     }).join('');
-    return '<div class="analytics-card"><div class="analytics-label">Section Progress</div>' + rows + '</div>';
+    return '<div class="analytics-card"><div class="analytics-label">' + escHtml(L().sectionProgress) + '</div>' + rows + '</div>';
   }
 
   function renderActivitySparkline(courseDates, color) {
@@ -266,8 +337,8 @@
     });
     var total = courseDates.length;
     if (!total) {
-      return '<div class="analytics-card"><div class="analytics-label">Activity — Last 30 Days</div>'
-        + '<div class="spark-empty">No completions yet</div></div>';
+      return '<div class="analytics-card"><div class="analytics-label">' + escHtml(L().activity30) + '</div>'
+        + '<div class="spark-empty">' + escHtml(L().noCompletions) + '</div></div>';
     }
     var maxCount = Math.max(1, Math.max.apply(null, buckets.map(function(b){return b.count;})));
     var W=560, H=80, PAD={t:4,r:0,b:20,l:0};
@@ -280,14 +351,14 @@
       if (!b.count) return '<rect x="'+x+'" y="'+(PAD.t+chartH-2)+'" width="'+barW+'" height="2" fill="rgba(255,255,255,0.05)"/>';
       return '<rect x="'+x+'" y="'+y+'" width="'+barW+'" height="'+bh+'" fill="'+color+'" opacity="0.85"/>';
     }).join('');
-    var MONTHS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    var MONTHS=L().months;
     var s0=buckets[0].date, sE=buckets[DAYS-1].date;
     var xLabels = '<text x="0" y="'+H+'" fill="#4a4258" font-family="JetBrains Mono,monospace" font-size="9">'
       +MONTHS[s0.getMonth()]+' '+s0.getDate()+'</text>'
       +'<text x="'+W+'" y="'+H+'" fill="#4a4258" font-family="JetBrains Mono,monospace" font-size="9" text-anchor="end">'
       +MONTHS[sE.getMonth()]+' '+sE.getDate()+'</text>';
     var svg = '<svg width="100%" viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none">'+bars+xLabels+'</svg>';
-    return '<div class="analytics-card"><div class="analytics-label">Activity — Last 30 Days <span style="color:'+color+';font-weight:800">'+total+' completed</span></div>'+svg+'</div>';
+    return '<div class="analytics-card"><div class="analytics-label">' + escHtml(L().activity30) + ' <span style="color:'+color+';font-weight:800">'+total+' ' + escHtml(L().completedWord) + '</span></div>'+svg+'</div>';
   }
 
   function render(track, course, allPages, completedSet, courseDates, color) {
@@ -320,11 +391,11 @@
     document.title = "SHOUG.TECH // " + courseTitle;
 
     // Build breadcrumb
-    var trackLabel = track.replace(/-/g, " ").replace(/\b\w/g, function(c){ return c.toUpperCase(); });
+    var trackLabel = L().trackLabels[track] || track.replace(/-/g, " ").replace(/\b\w/g, function(c){ return c.toUpperCase(); });
     var breadcrumb = [
       '<div class="breadcrumb">',
-      '<a href="/">Home</a><span class="breadcrumb-sep">/</span>',
-      '<a href="/account/">My Progress</a><span class="breadcrumb-sep">/</span>',
+      '<a href="/">' + escHtml(L().home) + '</a><span class="breadcrumb-sep">/</span>',
+      '<a href="/account/">' + escHtml(L().myProgress) + '</a><span class="breadcrumb-sep">/</span>',
       '<span class="breadcrumb-cur" style="color:' + color + '">' + escHtml(courseTitle) + '</span>',
       '</div>',
     ].join("");
@@ -334,7 +405,7 @@
       '<div class="course-hero" style="--color:' + color + '">',
       '  <div class="hero-ring">',
       ring(56, totalPct, color, 130),
-      '    <div class="hero-ring-label">Progress</div>',
+      '    <div class="hero-ring-label">' + escHtml(L().progress) + '</div>',
       '    <div class="hero-ring-pct" style="color:' + color + '">' + totalPct + '%</div>',
       '  </div>',
       '  <div class="hero-info">',
@@ -342,10 +413,10 @@
       '    <div class="hero-title">' + escHtml(courseTitle) + '</div>',
       courseSubtitle ? '<div class="hero-sub">' + escHtml(courseSubtitle) + '</div>' : '',
       '    <div class="hero-stats">',
-      '      <div class="hero-stat"><span class="hero-stat-num" style="color:' + color + '">' + totalDone + '</span><span class="hero-stat-label">Completed</span></div>',
-      '      <div class="hero-stat"><span class="hero-stat-num">' + totalPages + '</span><span class="hero-stat-label">Total Pages</span></div>',
-      '      <div class="hero-stat"><span class="hero-stat-num">' + (totalPages - totalDone) + '</span><span class="hero-stat-label">Remaining</span></div>',
-      '      <div class="hero-stat"><span class="hero-stat-num">' + sectionOrder.length + '</span><span class="hero-stat-label">Sections</span></div>',
+      '      <div class="hero-stat"><span class="hero-stat-num" style="color:' + color + '">' + totalDone + '</span><span class="hero-stat-label">' + escHtml(L().completed) + '</span></div>',
+      '      <div class="hero-stat"><span class="hero-stat-num">' + totalPages + '</span><span class="hero-stat-label">' + escHtml(L().totalPages) + '</span></div>',
+      '      <div class="hero-stat"><span class="hero-stat-num">' + (totalPages - totalDone) + '</span><span class="hero-stat-label">' + escHtml(L().remaining) + '</span></div>',
+      '      <div class="hero-stat"><span class="hero-stat-num">' + sectionOrder.length + '</span><span class="hero-stat-label">' + escHtml(L().sections) + '</span></div>',
       '    </div>',
       '  </div>',
       '</div>',
@@ -357,7 +428,7 @@
       var sDone = pages.filter(function(p){ return completedSet[p.url]; }).length;
       var sTotal = pages.length;
       var sPct = sTotal ? Math.round((sDone / sTotal) * 100) : 0;
-      var sLabel = SECTION_LABELS[sKey] || sKey.replace(/-/g," ").replace(/\b\w/g,function(c){return c.toUpperCase();});
+      var sLabel = L().sectionLabels[sKey] || sKey.replace(/-/g," ").replace(/\b\w/g,function(c){return c.toUpperCase();});
 
       var pageRows = pages.map(function(p) {
         var isDone = !!completedSet[p.url];
@@ -383,7 +454,7 @@
         '    <div class="section-ring">' + ring(22, sPct, color, 52) + '</div>',
         '    <div class="section-meta">',
         '      <div class="section-name">' + escHtml(sLabel) + '</div>',
-        '      <div class="section-stat">' + sDone + ' / ' + sTotal + ' pages</div>',
+        '      <div class="section-stat">' + sDone + ' / ' + sTotal + ' ' + escHtml(L().pageWord(2)) + '</div>',
         '    </div>',
         '    <div class="section-pct" style="color:' + color + '">' + sPct + '%</div>',
         '    <div class="section-chevron">▼</div>',
@@ -403,7 +474,7 @@
       breadcrumb,
       hero,
       analytics,
-      '<div class="sections-title">Section Breakdown</div>',
+      '<div class="sections-title">' + escHtml(L().sectionBreakdown) + '</div>',
       '<div class="sections-grid">' + sectionCards + '</div>',
     ].join("");
 
@@ -463,6 +534,9 @@
           if (dt) courseDates.push(dt);
         });
         render(p.track, p.course, allPages, completedSet, courseDates, color);
+        window.__shougRerender = function(){
+          render(p.track, p.course, allPages, completedSet, courseDates, color);
+        };
       }).catch(function() { show("error-state"); });
     });
   }

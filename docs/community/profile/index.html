@@ -11,7 +11,6 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/styles/light-mode.css">
-  <script src="/javascripts/translation-launch-guard.js"></script>
   <style>
     :root{--bg:#050508;--surface:#0a0514;--raised:#110822;--brand:#b829ea;--red:#ff2a4b;--green:#22c55e;--text:#f8f7fb;--dim:#8f8b9a;--muted:#4a4258;--border:rgba(255,255,255,0.07);}
     *{margin:0;padding:0;box-sizing:border-box;}
@@ -226,6 +225,10 @@
     #exam-notif-bar{display:none;align-items:center;gap:12px;padding:10px 16px;background:rgba(184,41,234,.08);border:1px solid rgba(184,41,234,.2);margin-bottom:8px;font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--dim);}
     #exam-notif-bar button{margin-left:auto;flex-shrink:0;height:26px;padding:0 12px;background:#b829ea;border:none;color:#0a0514;font-family:'JetBrains Mono',monospace;font-size:.56rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;}
     #exam-notif-bar .notif-dismiss{background:transparent;border:none;color:#4a4258;font-size:.85rem;cursor:pointer;padding:0 4px;margin-left:6px;}
+
+    .shoug-lang-btn{position:fixed;top:16px;inset-inline-end:16px;z-index:500;width:34px;height:34px;display:inline-flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,.12);background:rgba(5,5,8,.7);color:#f8f7fb;text-decoration:none;font-family:'JetBrains Mono',monospace;font-size:.64rem;font-weight:800;letter-spacing:.08em;cursor:pointer;transition:border-color 160ms ease,color 160ms ease,background 160ms ease;}
+    .shoug-lang-btn:hover{color:#b829ea;border-color:rgba(184,41,234,.55);}
+    body.shoug-light-mode .shoug-lang-btn{color:#16111f;background:rgba(255,255,255,.7);}
   </style>
 
     <link rel="canonical" href="https://shoug-tech.com/community/profile/">
@@ -248,31 +251,33 @@
 <script>if(localStorage.getItem('shoug-theme')==='light')document.body.classList.add('shoug-light-mode');</script>
 <script src="/javascripts/course-manifest.js"></script>
 <script src="/javascripts/mobile-navigation.js" defer></script>
+<script src="/javascripts/arabic-localization.js" defer></script>
+<button class="shoug-lang-btn" type="button" data-lang-toggle aria-label="Switch to Arabic">AR</button>
 
 <main class="page">
   <div class="breadcrumb">
-    <a href="/">Home</a><span class="breadcrumb-sep">/</span>
-    <a href="/community/">Community</a><span class="breadcrumb-sep">/</span>
-    <span class="breadcrumb-cur" id="breadcrumb-name">Profile</span>
+    <a href="/" data-ar-text="الرئيسية">Home</a><span class="breadcrumb-sep">/</span>
+    <a href="/community/" data-ar-text="المجتمع">Community</a><span class="breadcrumb-sep">/</span>
+    <span class="breadcrumb-cur" id="breadcrumb-name" data-ar-text="الملف الشخصي">Profile</span>
   </div>
 
   <div id="loading-state" class="state-box">
-    <div class="state-tag">// Loading…</div>
+    <div class="state-tag" data-ar-text="// جار التحميل…">// Loading…</div>
   </div>
   <div id="signout-state" class="state-box" style="display:none">
-    <div class="state-tag">// Access Denied</div>
-    <div class="state-msg">Sign in to view profiles.</div>
-    <a class="state-link" href="/community/">Community</a>
+    <div class="state-tag" data-ar-text="// تم رفض الوصول">// Access Denied</div>
+    <div class="state-msg" data-ar-text="سجل الدخول لعرض الملفات الشخصية.">Sign in to view profiles.</div>
+    <a class="state-link" href="/community/" data-ar-text="المجتمع">Community</a>
   </div>
   <div id="notfound-state" class="state-box" style="display:none">
-    <div class="state-tag">// Not Found</div>
-    <div class="state-msg">This profile doesn't exist.</div>
-    <a class="state-link" href="/community/">Back to Community</a>
+    <div class="state-tag" data-ar-text="// غير موجود">// Not Found</div>
+    <div class="state-msg" data-ar-text="هذا الملف الشخصي غير موجود.">This profile doesn't exist.</div>
+    <a class="state-link" href="/community/" data-ar-text="العودة إلى المجتمع">Back to Community</a>
   </div>
   <div id="profile-app" style="display:none"></div>
   <div id="exam-notif-bar">
-    <span>🔔 Enable browser notifications to get reminders 7, 3, and 1 day before your exams.</span>
-    <button id="notif-enable-btn">Enable</button>
+    <span data-ar-text="🔔 فعل إشعارات المتصفح لتصلك تذكيرات قبل اختباراتك ب 7 و 3 و 1 يوم.">🔔 Enable browser notifications to get reminders 7, 3, and 1 day before your exams.</span>
+    <button id="notif-enable-btn" data-ar-text="تفعيل">Enable</button>
     <button class="notif-dismiss" title="Dismiss">✕</button>
   </div>
 </main>
@@ -284,6 +289,7 @@
   var targetUid = null;
   var targetProfile = null;
   var isFollowing = false;
+  var _lastRenderArgs = null;
 
   function escHtml(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
   function getParam(name){ return new URLSearchParams(window.location.search).get(name); }
@@ -292,24 +298,268 @@
   var AV = '/assets/avatars/';
   var AVATAR_PRESETS = [
     // ── Women (0-6) ───────────────────────────────────────────────────────────
-    AV + 'av-f1.png',   // long wavy hair, shoug.tech hoodie
-    AV + 'av-f2.png',   // hijab, KSA patch
-    AV + 'av-f3.png',   // bun + glasses + headphones + laptop
-    AV + 'av-f4.png',   // short hair, مبدعة patch
-    AV + 'av-f5.png',   // cap, KSA laptop (Riyadh Code Build Impact)
-    AV + 'av-f6.png',   // hijab + hoodie + glasses + laptop (السعودية)
-    AV + 'av-f7.png',   // niqab, shoug.tech hoodie, KSA patch
+    AV + 'av-f1.webp',   // long wavy hair, shoug.tech hoodie
+    AV + 'av-f2.webp',   // hijab, KSA patch
+    AV + 'av-f3.webp',   // bun + glasses + headphones + laptop
+    AV + 'av-f4.webp',   // short hair, مبدعة patch
+    AV + 'av-f5.webp',   // cap, KSA laptop (Riyadh Code Build Impact)
+    AV + 'av-f6.webp',   // hijab + hoodie + glasses + laptop (السعودية)
+    AV + 'av-f7.webp',   // niqab, shoug.tech hoodie, KSA patch
     // ── Men (7-13) ────────────────────────────────────────────────────────────
-    AV + 'av-m1.png',   // purple shemagh, مبدع KSA shoug.tech
-    AV + 'av-m2.png',   // white jacket, curly hair, KSA earring
-    AV + 'av-m3.png',   // white jacket, glasses, coffee (Riyadh Code Deploy)
-    AV + 'av-m4.png',   // curly hair, headphones, mask, shoug.tech
-    AV + 'av-m5.png',   // curly hair, VR goggles, hack sleep repeat
-    AV + 'av-m6.png',   // man-bun, beard, shoug.tech hoodie
-    AV + 'av-m7.png',   // bald, full beard, KSA patch, shoug.tech
+    AV + 'av-m1.webp',   // purple shemagh, مبدع KSA shoug.tech
+    AV + 'av-m2.webp',   // white jacket, curly hair, KSA earring
+    AV + 'av-m3.webp',   // white jacket, glasses, coffee (Riyadh Code Deploy)
+    AV + 'av-m4.webp',   // curly hair, headphones, mask, shoug.tech
+    AV + 'av-m5.webp',   // curly hair, VR goggles, hack sleep repeat
+    AV + 'av-m6.webp',   // man-bun, beard, shoug.tech hoodie
+    AV + 'av-m7.webp',   // bald, full beard, KSA patch, shoug.tech
   ];
 
   function getAvatarUrl(preset){ var i = parseInt(preset, 10); return (!isNaN(i) && AVATAR_PRESETS[i]) ? AVATAR_PRESETS[i] : null; }
+
+  // ── i18n ──────────────────────────────────────────────────────────────────
+  var STR = {
+    en: {
+      sectionHdrCourseProgress: "// Course Progress",
+      noProgressYet: "No progress recorded yet.",
+      doneWord: "DONE",
+      pagesOfTotal: function(done,total){ return done+' / '+total+' pages'; },
+      pagesOnly: function(n){ return n+' pages'; },
+      pgAbbrev: function(n){ return n+' pg'; },
+      coursesCountSuffix: function(n){ return '&nbsp;· '+n+' course'+(n!==1?'s':''); },
+
+      sectionHdrSubjectBreakdown: "// Subject Breakdown",
+
+      sectionHdrStudyStats: "// Study Stats",
+      statPagesCompleted: "Pages Completed",
+      statAcrossAllCourses: "across all courses",
+      statCourses: "Courses",
+      stat1Active: "1 active",
+      statActive: "active",
+      statTopCourse: "Top Course",
+      statMostPages: "most pages",
+      statAvgPages: "Avg Pages",
+      statPerCourse: "per course",
+
+      cdPast: "PAST",
+      cdToday: "TODAY",
+      cdDaysLeft: function(n){ return n+'d left'; },
+
+      noUpcomingExams: "No upcoming exams. Add one to start tracking.",
+      sectionHdrUpcomingExams: "// Upcoming Exams",
+      upcomingCount: function(n){ return '&nbsp;· '+n+' upcoming'; },
+      addExamBtn: "+ Add Exam",
+
+      alertTomorrow: "TOMORROW",
+      alertInDays: function(n){ return 'IN '+n+' DAYS'; },
+
+      examReminderTitle: function(course){ return 'Exam Reminder — '+course; },
+      examIsTomorrow: "tomorrow",
+      examIsInDays: function(n){ return 'in '+n+' days'; },
+      examNotifBody: function(course,type,when,date){ return course+' '+type+' is '+when+' ('+date+')'; },
+
+      selectCourseOption: "— Select a course —",
+      courseLabel: "Course",
+      typeLabel: "Type",
+      dateLabelWord: "Date",
+      pleaseSelectCourse: "Please select a course.",
+      dateRequired: "Date is required.",
+      savingDots: "Saving…",
+      saveExamBtn: "Save Exam",
+      addExamHeader: "// Add Exam",
+
+      profileFallback: "Profile",
+      joinedLabel: function(date){ return "Joined "+date; },
+      editProfileBtn: "Edit Profile",
+      followBtnText: "Follow",
+      unfollowBtnText: "Unfollow",
+      statPagesComplete: "Pages Complete",
+      statCoursesActive: "Courses Active",
+      statFollowing: "Following",
+      statFollowers: "Followers",
+      eyebrowStudentProfile: "// Student Profile · PSU",
+      unknownLabel: "Unknown",
+      privacyNotice: "This student keeps their progress private.",
+
+      editProfileHeader: "// Edit Profile",
+      avatarLabel: "Avatar",
+      womenLabel: "Women",
+      menLabel: "Men",
+      displayNameLabel: "Display Name",
+      bioLabel: "Bio",
+      optionalWord: "(optional)",
+      majorLabel: "Major",
+      trackLabel: "Track",
+      trackHint: "(optional · click again to deselect)",
+      showProgressLabel: "Show progress to others",
+      showProgressHint: "When off, pages and courses completed are hidden from your public profile",
+      accountSectionHeader: "// Account",
+      updateEmailLabel: "Update Email",
+      newEmailPlaceholder: "New email address",
+      currentPasswordPlaceholder: "Current password (to confirm)",
+      updateEmailBtn: "Update Email",
+      updatingDots: "Updating…",
+      updatedCheck: "Updated ✓",
+      enterNewEmail: "Enter a new email address.",
+      enterCurrentPassword: "Enter your current password to confirm.",
+      incorrectPassword: "Incorrect password.",
+      emailInUse: "That email is already in use.",
+      invalidEmail: "Invalid email address.",
+      emailUpdatedMsg: "Email updated. You may need to re-verify.",
+      changePasswordLabel: "Change Password",
+      resetLinkWillBeSent: function(email){ return "A reset link will be sent to "+email; },
+      sendResetLinkBtn: "Send Reset Link",
+      sendingDots: "Sending…",
+      sentCheck: "Sent ✓",
+      resetLinkSentMsg: "Reset link sent — check your inbox.",
+      displayNameRequired: "Display name is required.",
+      selectMajorRequired: "Please select your major.",
+      saveChangesBtn: "Save Changes",
+      yourEmailFallback: "your email",
+    },
+    ar: {
+      sectionHdrCourseProgress: "// تقدم المقررات",
+      noProgressYet: "لا يوجد تقدم مسجل حتى الآن.",
+      doneWord: "مكتمل",
+      pagesOfTotal: function(done,total){ return done+' / '+total+' صفحة'; },
+      pagesOnly: function(n){ return n+' صفحة'; },
+      pgAbbrev: function(n){ return n+' صفحة'; },
+      coursesCountSuffix: function(n){ return '&nbsp;· '+n+' مقرر'; },
+
+      sectionHdrSubjectBreakdown: "// تفاصيل المواد",
+
+      sectionHdrStudyStats: "// إحصائات الدراسة",
+      statPagesCompleted: "الصفحات المكتملة",
+      statAcrossAllCourses: "في جميع المقررات",
+      statCourses: "المقررات",
+      stat1Active: "1 نشط",
+      statActive: "نشط",
+      statTopCourse: "أفضل مقرر",
+      statMostPages: "أكثر الصفحات",
+      statAvgPages: "متوسط الصفحات",
+      statPerCourse: "لكل مقرر",
+
+      cdPast: "انتهى",
+      cdToday: "اليوم",
+      cdDaysLeft: function(n){ return 'باقي '+n+' يوم'; },
+
+      noUpcomingExams: "لا توجد اختبارات قادمة. أضف اختبارا لتتبعه.",
+      sectionHdrUpcomingExams: "// الاختبارات القادمة",
+      upcomingCount: function(n){ return '&nbsp;· '+n+' قادم'; },
+      addExamBtn: "+ إضافة اختبار",
+
+      alertTomorrow: "غدا",
+      alertInDays: function(n){ return 'بعد '+n+' أيام'; },
+
+      examReminderTitle: function(course){ return 'تذكير بالاختبار — '+course; },
+      examIsTomorrow: "غدا",
+      examIsInDays: function(n){ return 'بعد '+n+' أيام'; },
+      examNotifBody: function(course,type,when,date){ return course+' '+type+' '+when+' ('+date+')'; },
+
+      selectCourseOption: "— اختر مقررا —",
+      courseLabel: "المقرر",
+      typeLabel: "النوع",
+      dateLabelWord: "التاريخ",
+      pleaseSelectCourse: "يرجى اختيار مقرر.",
+      dateRequired: "التاريخ مطلوب.",
+      savingDots: "جار الحفظ…",
+      saveExamBtn: "حفظ الاختبار",
+      addExamHeader: "// إضافة اختبار",
+
+      profileFallback: "الملف الشخصي",
+      joinedLabel: function(date){ return "انضم في "+date; },
+      editProfileBtn: "تعديل الملف الشخصي",
+      followBtnText: "متابعة",
+      unfollowBtnText: "إلغاء المتابعة",
+      statPagesComplete: "الصفحات المكتملة",
+      statCoursesActive: "المقررات النشطة",
+      statFollowing: "المتابعون",
+      statFollowers: "المتابعون",
+      eyebrowStudentProfile: "// ملف الطالب · جامعة الأمير سلطان",
+      unknownLabel: "غير معروف",
+      privacyNotice: "هذا الطالب يحتفظ بتقدمه كخاص.",
+
+      editProfileHeader: "// تعديل الملف الشخصي",
+      avatarLabel: "الصورة الرمزية",
+      womenLabel: "نساء",
+      menLabel: "رجال",
+      displayNameLabel: "الاسم المعروض",
+      bioLabel: "نبذة عنك",
+      optionalWord: "(اختياري)",
+      majorLabel: "التخصص",
+      trackLabel: "المسار",
+      trackHint: "(اختياري · اضغط مرة أخرى للإلغاء)",
+      showProgressLabel: "إظهار التقدم للآخرين",
+      showProgressHint: "عند إيقافه، يتم إخفاء الصفحات والمقررات المكتملة من ملفك العام",
+      accountSectionHeader: "// الحساب",
+      updateEmailLabel: "تحديث البريد الإلكتروني",
+      newEmailPlaceholder: "البريد الإلكتروني الجديد",
+      currentPasswordPlaceholder: "كلمة المرور الحالية (للتأكيد)",
+      updateEmailBtn: "تحديث البريد الإلكتروني",
+      updatingDots: "جار التحديث…",
+      updatedCheck: "تم التحديث ✓",
+      enterNewEmail: "أدخل بريدا إلكترونيا جديدا.",
+      enterCurrentPassword: "أدخل كلمة مرورك الحالية للتأكيد.",
+      incorrectPassword: "كلمة المرور غير صحيحة.",
+      emailInUse: "هذا البريد الإلكتروني مستخدم بالفعل.",
+      invalidEmail: "بريد إلكتروني غير صالح.",
+      emailUpdatedMsg: "تم تحديث البريد الإلكتروني. قد تحتاج لإعادة التحقق.",
+      changePasswordLabel: "تغيير كلمة المرور",
+      resetLinkWillBeSent: function(email){ return "سيتم إرسال رابط إعادة التعيين إلى "+email; },
+      sendResetLinkBtn: "إرسال رابط إعادة التعيين",
+      sendingDots: "جار الإرسال…",
+      sentCheck: "تم الإرسال ✓",
+      resetLinkSentMsg: "تم إرسال رابط إعادة التعيين — تحقق من بريدك.",
+      displayNameRequired: "الاسم المعروض مطلوب.",
+      selectMajorRequired: "يرجى اختيار تخصصك.",
+      saveChangesBtn: "حفظ التعديلات",
+      yourEmailFallback: "بريدك الإلكتروني",
+    }
+  };
+
+  function curLang(){ return (document.documentElement.lang||"en").slice(0,2)==="ar" ? "ar" : "en"; }
+  function L(){ return STR[curLang()]; }
+  window.__shougL = L;
+
+  var MAJOR_TRACK_AR = {
+    "Computer Science (CS)": "علوم الحاسب (CS)",
+    "Information Systems (IS)": "نظم المعلومات (IS)",
+    "Software Engineering (SE)": "هندسة البرمجيات (SE)",
+    "Artificial Intelligence & Data Science (AI&DS)": "الذكاء الاصطناعي وعلوم البيانات (AI&DS)",
+    "Cyber Security (CYS)": "الأمن السيبراني (CYS)",
+    "Digital Media Systems (DMS)": "نظم الوسائط الرقمية (DMS)",
+    "Digital Transformation (DX)": "التحول الرقمي (DX)",
+    "Business Computing & E-Commerce (BCE)": "حوسبة الأعمال والتجارة الإلكترونية (BCE)",
+  };
+  function majorTrackLabel(v){ return (curLang()==="ar" && MAJOR_TRACK_AR[v]) ? MAJOR_TRACK_AR[v] : v; }
+
+  var EXAM_TYPE_AR = {
+    midterm: "منتصف الفصل",
+    final: "نهائي",
+    quiz: "كويز",
+    project: "مشروع",
+  };
+  function examTypeLabel(t){ t = t || "quiz"; return (curLang()==="ar" && EXAM_TYPE_AR[t]) ? EXAM_TYPE_AR[t] : t.toUpperCase(); }
+
+  function setLang(lang){
+    var html = document.documentElement;
+    if (lang === "ar"){ html.lang = "ar-SA"; html.dir = "rtl"; }
+    else { html.lang = "en"; html.dir = "ltr"; }
+    var btn = document.querySelector("[data-lang-toggle]");
+    if (btn){
+      btn.textContent = lang === "ar" ? "EN" : "AR";
+      btn.setAttribute("aria-label", lang === "ar" ? "Switch to English" : "Switch to Arabic");
+    }
+    try { localStorage.setItem("shoug-lang", lang); } catch(e){}
+    if (typeof window.__shougRerender === "function") window.__shougRerender();
+  }
+
+  (function(){
+    var initialLang = (function(){ try { return localStorage.getItem("shoug-lang")==="ar" ? "ar" : "en"; } catch(e){ return "en"; } })();
+    setLang(initialLang);
+    var btn = document.querySelector("[data-lang-toggle]");
+    if (btn) btn.addEventListener("click", function(){ setLang(curLang()==="ar" ? "en" : "ar"); });
+  })();
 
   function show(id){
     ["loading-state","signout-state","notfound-state","profile-app"].forEach(function(s){
@@ -321,7 +571,7 @@
   function formatDate(ts){
     if (!ts) return "";
     var d = ts.toDate ? ts.toDate() : new Date(ts);
-    return d.toLocaleDateString("en-US", { month:"short", year:"numeric" });
+    return d.toLocaleDateString(curLang()==="ar"?"ar-SA":"en-US", { month:"short", year:"numeric" });
   }
 
   // ── Progress helpers ─────────────────────────────────────────────────────────
@@ -364,7 +614,7 @@
 
   function buildCoursesSection(courses, accent){
     var keys=Object.keys(courses).filter(function(k){return courses[k].completed>0;});
-    if(!keys.length) return '<div class="profile-section"><div class="section-hdr">// Course Progress</div><div class="section-empty">No progress recorded yet.</div></div>';
+    if(!keys.length) return '<div class="profile-section"><div class="section-hdr">'+L().sectionHdrCourseProgress+'</div><div class="section-empty">'+L().noProgressYet+'</div></div>';
     // Sort: completed courses last (bottom), in-progress by % desc
     keys.sort(function(a,b){
       var ca=courses[a], cb=courses[b];
@@ -380,11 +630,11 @@
       var pct=c.total>0?Math.min(100,Math.round(c.completed/c.total*100)):0;
       var done=c.total>0&&c.completed>=c.total;
       var badge=done
-        ?'<span class="cpct-badge cpct-done">DONE</span>'
+        ?'<span class="cpct-badge cpct-done">'+L().doneWord+'</span>'
         :c.total>0
           ?'<span class="cpct-badge cpct-prog">'+pct+'%</span>'
-          :'<span class="cpct-badge cpct-start">'+c.completed+' pg</span>';
-      var countStr=c.total>0?(c.completed+' / '+c.total+' pages'):(c.completed+' pages');
+          :'<span class="cpct-badge cpct-start">'+L().pgAbbrev(c.completed)+'</span>';
+      var countStr=c.total>0?L().pagesOfTotal(c.completed,c.total):L().pagesOnly(c.completed);
       return [
         '<div class="course-row">',
         '<div class="course-meta">',
@@ -395,7 +645,7 @@
         '</div>',
       ].join('');
     }).join('');
-    return '<div class="profile-section"><div class="section-hdr">// Course Progress <span class="section-hdr-meta">&nbsp;· '+keys.length+' course'+(keys.length!==1?'s':'')+'</span></div><div class="section-body">'+rows+'</div></div>';
+    return '<div class="profile-section"><div class="section-hdr">'+L().sectionHdrCourseProgress+' <span class="section-hdr-meta">'+L().coursesCountSuffix(keys.length)+'</span></div><div class="section-body">'+rows+'</div></div>';
   }
 
   function buildSubjectSection(subjects, accent){
@@ -411,7 +661,7 @@
       return '<div class="subj-row"><span class="subj-label">'+escHtml(s.name)+'</span><div class="subj-track"><div class="subj-bar" data-pct="'+pct+'" style="width:0;background:'+accent+';opacity:.75;"></div></div><span class="subj-val">'+s.completed+'</span></div>';
     }
     var gridHtml='<div class="subj-grid"><div>'+col1.map(makeRow).join('')+'</div><div>'+col2.map(makeRow).join('')+'</div></div>';
-    return '<div class="profile-section"><div class="section-hdr">// Subject Breakdown</div><div class="section-body">'+gridHtml+'</div></div>';
+    return '<div class="profile-section"><div class="section-hdr">'+L().sectionHdrSubjectBreakdown+'</div><div class="section-body">'+gridHtml+'</div></div>';
   }
 
   function buildStatsPanel(data, coursesActive, accent){
@@ -438,13 +688,13 @@
     }
 
     var cards=[
-      statCard(total, 'Pages Completed', 'across all courses'),
-      statCard(courseKeys.length, 'Courses', courseKeys.length===1?'1 active':'active'),
-      statCard(topCourse, 'Top Course', 'most pages'),
-      statCard(avgPages, 'Avg Pages', 'per course'),
+      statCard(total, L().statPagesCompleted, L().statAcrossAllCourses),
+      statCard(courseKeys.length, L().statCourses, courseKeys.length===1?L().stat1Active:L().statActive),
+      statCard(topCourse, L().statTopCourse, L().statMostPages),
+      statCard(avgPages, L().statAvgPages, L().statPerCourse),
     ].join('');
 
-    return '<div class="profile-section"><div class="section-hdr">// Study Stats</div><div class="sstat-grid">'+cards+'</div></div>';
+    return '<div class="profile-section"><div class="section-hdr">'+L().sectionHdrStudyStats+'</div><div class="sstat-grid">'+cards+'</div></div>';
   }
 
   function daysUntil(dateStr) {
@@ -454,12 +704,12 @@
   }
 
   function countdownLabel(days) {
-    if (days < 0) return { text: 'PAST', color: '#4a4258' };
-    if (days === 0) return { text: 'TODAY', color: '#ff2a4b' };
-    if (days <= 3) return { text: days + 'd left', color: '#ff2a4b' };
-    if (days <= 7) return { text: days + 'd left', color: '#f59e0b' };
-    if (days <= 14) return { text: days + 'd left', color: '#eab308' };
-    return { text: days + 'd left', color: '#22c55e' };
+    if (days < 0) return { text: L().cdPast, color: '#4a4258' };
+    if (days === 0) return { text: L().cdToday, color: '#ff2a4b' };
+    if (days <= 3) return { text: L().cdDaysLeft(days), color: '#ff2a4b' };
+    if (days <= 7) return { text: L().cdDaysLeft(days), color: '#f59e0b' };
+    if (days <= 14) return { text: L().cdDaysLeft(days), color: '#eab308' };
+    return { text: L().cdDaysLeft(days), color: '#22c55e' };
   }
 
   function buildExamsSection(exams, uid) {
@@ -468,16 +718,16 @@
     var _localExams = exams.slice(); // local copy we mutate
 
     function renderRows(examList) {
-      if (!examList.length) return '<div style="font-family:\'JetBrains Mono\',monospace;font-size:.62rem;color:#4a4258;padding:8px 0;">No upcoming exams. Add one to start tracking.</div>';
+      if (!examList.length) return '<div style="font-family:\'JetBrains Mono\',monospace;font-size:.62rem;color:#4a4258;padding:8px 0;">'+L().noUpcomingExams+'</div>';
       examList.sort(function(a,b){ return new Date(a.date)-new Date(b.date); });
       return examList.map(function(e) {
         var days = daysUntil(e.date);
         var cd = countdownLabel(days);
-        var dateLabel = new Date(e.date).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+        var dateLabel = new Date(e.date).toLocaleDateString(curLang()==="ar"?"ar-SA":"en-US",{month:'short',day:'numeric',year:'numeric'});
         var badgeClass = 'badge-' + (e.type || 'quiz');
         return [
           '<div class="exam-row" data-examid="'+escHtml(e.id)+'">',
-          '<span class="exam-type-badge '+badgeClass+'">'+escHtml((e.type||'quiz').toUpperCase())+'</span>',
+          '<span class="exam-type-badge '+badgeClass+'">'+escHtml(examTypeLabel(e.type))+'</span>',
           '<div class="exam-info">',
           '<div class="exam-title">'+escHtml(e.course||'Exam')+'</div>',
           '</div>',
@@ -496,7 +746,7 @@
       if (!body) return;
       body.innerHTML = renderRows(_localExams);
       var hdr = document.querySelector('#exam-section .section-hdr-meta');
-      if (hdr) hdr.textContent = ' · ' + _localExams.filter(function(e){return daysUntil(e.date)>=0;}).length + ' upcoming';
+      if (hdr) hdr.innerHTML = L().upcomingCount(_localExams.filter(function(e){return daysUntil(e.date)>=0;}).length);
       attachDeleteHandlers();
     }
 
@@ -523,8 +773,8 @@
       (alertsHtml ? '<div id="exam-alerts-strip">'+alertsHtml+'</div>' : ''),
       '<div class="profile-section" id="exam-section">',
       '<div class="section-hdr" style="display:flex;align-items:center;justify-content:space-between;">',
-      '<span>// Upcoming Exams <span class="section-hdr-meta">&nbsp;· '+(_localExams.filter(function(e){return daysUntil(e.date)>=0;}).length)+' upcoming</span></span>',
-      '<button class="exam-add-btn" id="exam-add-btn">+ Add Exam</button>',
+      '<span>'+L().sectionHdrUpcomingExams+' <span class="section-hdr-meta">'+L().upcomingCount(_localExams.filter(function(e){return daysUntil(e.date)>=0;}).length)+'</span></span>',
+      '<button class="exam-add-btn" id="exam-add-btn">'+L().addExamBtn+'</button>',
       '</div>',
       '<div class="section-body" id="'+sectionId+'">'+rows+'</div>',
       '</div>',
@@ -551,14 +801,14 @@
       var days = daysUntil(e.date);
       if (days < 0 || days > 7) return;
       var cls, icon, when;
-      if (days === 0) { cls='urgent'; icon='🚨'; when='TODAY'; }
-      else if (days === 1) { cls='urgent'; icon='⚠️'; when='TOMORROW'; }
-      else if (days <= 3) { cls='warn'; icon='⏰'; when='IN '+days+' DAYS'; }
-      else { cls='notice'; icon='📅'; when='IN '+days+' DAYS'; }
+      if (days === 0) { cls='urgent'; icon='🚨'; when=L().cdToday; }
+      else if (days === 1) { cls='urgent'; icon='⚠️'; when=L().alertTomorrow; }
+      else if (days <= 3) { cls='warn'; icon='⏰'; when=L().alertInDays(days); }
+      else { cls='notice'; icon='📅'; when=L().alertInDays(days); }
       alerts.push('<div class="exam-alert '+cls+'">'+
         '<span class="exam-alert-icon">'+icon+'</span>'+
-        '<span class="exam-alert-text"><strong>'+escHtml(e.course)+' '+escHtml((e.type||'').toUpperCase())+'</strong> — '+
-        new Date(e.date).toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'})+'</span>'+
+        '<span class="exam-alert-text"><strong>'+escHtml(e.course)+' '+escHtml(examTypeLabel(e.type))+'</strong> — '+
+        new Date(e.date).toLocaleDateString(curLang()==="ar"?"ar-SA":"en-US",{weekday:'short',month:'short',day:'numeric'})+'</span>'+
         '<span class="exam-alert-when">'+when+'</span>'+
         '</div>');
     });
@@ -582,10 +832,10 @@
         var days = daysUntil(e.date);
         var key = 'exam-notif-' + e.id + '-d' + days;
         if (localStorage.getItem(key)) return;
-        var when = days === 1 ? 'tomorrow' : 'in ' + days + ' days';
-        new Notification('Exam Reminder — ' + e.course, {
-          body: e.course + ' ' + (e.type||'exam').toUpperCase() + ' is ' + when + ' (' +
-            new Date(e.date).toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'}) + ')',
+        var when = days === 1 ? L().examIsTomorrow : L().examIsInDays(days);
+        new Notification(L().examReminderTitle(e.course), {
+          body: L().examNotifBody(e.course, examTypeLabel(e.type), when,
+            new Date(e.date).toLocaleDateString(curLang()==="ar"?"ar-SA":"en-US",{weekday:'long',month:'long',day:'numeric'})),
           icon: '/assets/favicon.png?v=2',
           badge: '/assets/favicon.png?v=2',
           tag: key,
@@ -630,11 +880,11 @@
     var labelStyle = "font-size:.56rem;color:#4a4258;letter-spacing:.12em;text-transform:uppercase;display:block;margin-bottom:8px;font-family:'JetBrains Mono',monospace;";
     var selectStyle = "width:100%;box-sizing:border-box;background:#0d0820;border:1px solid rgba(255,255,255,.1);color:#f8f7fb;font-family:'JetBrains Mono',monospace;font-size:.78rem;padding:10px 12px;outline:none;cursor:pointer;appearance:none;-webkit-appearance:none;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%234a4258' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E\");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px;";
 
-    var courseOptions = '<option value="" disabled selected style="color:#4a4258;">— Select a course —</option>' +
+    var courseOptions = '<option value="" disabled selected style="color:#4a4258;">'+L().selectCourseOption+'</option>' +
       COURSES.map(function(c){ return '<option value="'+c+'">'+c+'</option>'; }).join('');
 
     var typeCards = TYPES.map(function(t) {
-      return '<button type="button" class="pick-card" data-val="'+t+'" style="font-size:.55rem;">'+t.toUpperCase()+'</button>';
+      return '<button type="button" class="pick-card" data-val="'+t+'" style="font-size:.55rem;">'+escHtml(examTypeLabel(t))+'</button>';
     }).join('');
 
     var m = document.createElement('div');
@@ -644,19 +894,19 @@
       '<div style="width:min(400px,100%);background:#0a0514;border:1px solid rgba(184,41,234,.4);font-family:\'JetBrains Mono\',monospace;padding:28px;position:relative;">',
       '<div style="position:absolute;top:0;left:0;width:36px;height:2px;background:#b829ea;"></div>',
       '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:22px;">',
-      '<span style="font-size:.58rem;color:#b829ea;letter-spacing:.2em;text-transform:uppercase;font-weight:800;">// Add Exam</span>',
+      '<span style="font-size:.58rem;color:#b829ea;letter-spacing:.2em;text-transform:uppercase;font-weight:800;">'+L().addExamHeader+'</span>',
       '<button id="ae-close" style="background:transparent;border:none;color:#4a4258;font-size:1rem;cursor:pointer;">✕</button>',
       '</div>',
       '<div style="display:flex;flex-direction:column;gap:16px;">',
-      '<div><label style="'+labelStyle+'">Course</label>',
+      '<div><label style="'+labelStyle+'">'+L().courseLabel+'</label>',
       '<select id="ae-course" style="'+selectStyle+'">'+courseOptions+'</select></div>',
-      '<div><label style="'+labelStyle+'">Type</label>',
+      '<div><label style="'+labelStyle+'">'+L().typeLabel+'</label>',
       '<input type="hidden" id="ae-type" value="midterm">',
       '<div class="pick-grid" style="grid-template-columns:repeat(4,1fr);gap:6px;">'+typeCards+'</div>',
       '</div>',
-      '<div><label style="'+labelStyle+'">Date</label><input id="ae-date" type="date" style="width:100%;box-sizing:border-box;background:#0d0820;border:1px solid rgba(255,255,255,.1);color:#f8f7fb;font-family:\'JetBrains Mono\',monospace;font-size:.78rem;padding:10px 12px;outline:none;color-scheme:dark;"></div>',
+      '<div><label style="'+labelStyle+'">'+L().dateLabelWord+'</label><input id="ae-date" type="date" style="width:100%;box-sizing:border-box;background:#0d0820;border:1px solid rgba(255,255,255,.1);color:#f8f7fb;font-family:\'JetBrains Mono\',monospace;font-size:.78rem;padding:10px 12px;outline:none;color-scheme:dark;"></div>',
       '<div id="ae-error" style="font-size:.6rem;color:#ff2a4b;min-height:12px;"></div>',
-      '<button id="ae-save" style="height:38px;background:#b829ea;color:#0a0514;border:none;font-family:\'JetBrains Mono\',monospace;font-size:.66rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;width:100%;">Save Exam</button>',
+      '<button id="ae-save" style="height:38px;background:#b829ea;color:#0a0514;border:none;font-family:\'JetBrains Mono\',monospace;font-size:.66rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;width:100%;">'+L().saveExamBtn+'</button>',
       '</div></div>',
     ].join('');
     document.body.appendChild(m);
@@ -686,17 +936,17 @@
       var type   = document.getElementById('ae-type').value;
       var date   = document.getElementById('ae-date').value;
       var errEl  = document.getElementById('ae-error');
-      if (!course) { errEl.textContent = 'Please select a course.'; return; }
-      if (!date)   { errEl.textContent = 'Date is required.'; return; }
+      if (!course) { errEl.textContent = L().pleaseSelectCourse; return; }
+      if (!date)   { errEl.textContent = L().dateRequired; return; }
       var btn = document.getElementById('ae-save');
-      btn.disabled = true; btn.textContent = 'Saving…';
+      btn.disabled = true; btn.textContent = L().savingDots;
       var newId = Date.now().toString(36) + Math.random().toString(36).slice(2,6);
       var update = {};
       update['exams.' + newId] = { course: course, type: type, date: date };
       firebase.firestore().collection('users').doc(uid).update(update).then(function() {
         m.remove();
         if (onSaved) onSaved({ id: newId, course: course, type: type, date: date });
-      }).catch(function(err) { errEl.textContent = err.message; btn.disabled=false; btn.textContent='Save Exam'; });
+      }).catch(function(err) { errEl.textContent = err.message; btn.disabled=false; btn.textContent=L().saveExamBtn; });
     });
   }
 
@@ -710,7 +960,8 @@
 
   // ── Render profile ──────────────────────────────────────────────────────────
   function renderProfile(profile, followerCount, followingCount, coursesActive, allProgressData, exams){
-    document.title = (profile.displayName || profile.username || "Profile") + " — SHOUG.TECH";
+    _lastRenderArgs = [profile, followerCount, followingCount, coursesActive, allProgressData, exams];
+    document.title = (profile.displayName || profile.username || L().profileFallback) + " — SHOUG.TECH";
     var el = document.getElementById("breadcrumb-name");
     if (el) el.textContent = "@" + (profile.username || "profile");
 
@@ -721,14 +972,14 @@
     var showStats = isSelf || privacyPublic;
 
     var tagsHtml = "";
-    if (profile.major) tagsHtml += '<span class="profile-tag major">'+escHtml(profile.major)+'</span>';
-    if (profile.track) tagsHtml += '<span class="profile-tag track">'+escHtml(profile.track)+'</span>';
+    if (profile.major) tagsHtml += '<span class="profile-tag major">'+escHtml(majorTrackLabel(profile.major))+'</span>';
+    if (profile.track) tagsHtml += '<span class="profile-tag track">'+escHtml(majorTrackLabel(profile.track))+'</span>';
 
-    var joinedStr = profile.createdAt ? "Joined " + formatDate(profile.createdAt) : "";
+    var joinedStr = profile.createdAt ? L().joinedLabel(formatDate(profile.createdAt)) : "";
 
     var actionBtns = isSelf
-      ? '<button class="profile-btn primary" id="edit-btn">Edit Profile</button>'
-      : '<button class="profile-btn '+(isFollowing?"secondary":"primary")+'" id="follow-btn">'+(isFollowing?"Unfollow":"Follow")+'</button>';
+      ? '<button class="profile-btn primary" id="edit-btn">'+L().editProfileBtn+'</button>'
+      : '<button class="profile-btn '+(isFollowing?"secondary":"primary")+'" id="follow-btn">'+(isFollowing?L().unfollowBtnText:L().followBtnText)+'</button>';
 
     var statsHtml;
     if (showStats) {
@@ -738,19 +989,19 @@
         '<div class="profile-stats">',
         '  <div class="profile-stat">',
         '    <span class="profile-stat-num" id="live-stat-pages" style="color:'+c+'">'+pagesNum+'</span>',
-        '    <span class="profile-stat-label">Pages Complete</span>',
+        '    <span class="profile-stat-label">'+L().statPagesComplete+'</span>',
         '  </div>',
         '  <div class="profile-stat">',
         '    <span class="profile-stat-num" id="live-stat-courses" style="color:'+c+'">'+coursesNum+'</span>',
-        '    <span class="profile-stat-label">Courses Active</span>',
+        '    <span class="profile-stat-label">'+L().statCoursesActive+'</span>',
         '  </div>',
         '  <div class="profile-stat" id="stat-following">',
         '    <span class="profile-stat-num">'+followingCount+'</span>',
-        '    <span class="profile-stat-label">Following</span>',
+        '    <span class="profile-stat-label">'+L().statFollowing+'</span>',
         '  </div>',
         '  <div class="profile-stat" id="stat-followers">',
         '    <span class="profile-stat-num">'+followerCount+'</span>',
-        '    <span class="profile-stat-label">Followers</span>',
+        '    <span class="profile-stat-label">'+L().statFollowers+'</span>',
         '  </div>',
         '</div>',
       ].join("");
@@ -760,22 +1011,22 @@
         '<div class="profile-stats">',
         '  <div class="profile-stat">',
         '    <span class="profile-stat-num profile-stat-private">—</span>',
-        '    <span class="profile-stat-label">Pages Complete</span>',
+        '    <span class="profile-stat-label">'+L().statPagesComplete+'</span>',
         '  </div>',
         '  <div class="profile-stat">',
         '    <span class="profile-stat-num profile-stat-private">—</span>',
-        '    <span class="profile-stat-label">Courses Active</span>',
+        '    <span class="profile-stat-label">'+L().statCoursesActive+'</span>',
         '  </div>',
         '  <div class="profile-stat" id="stat-following">',
         '    <span class="profile-stat-num">'+followingCount+'</span>',
-        '    <span class="profile-stat-label">Following</span>',
+        '    <span class="profile-stat-label">'+L().statFollowing+'</span>',
         '  </div>',
         '  <div class="profile-stat" id="stat-followers">',
         '    <span class="profile-stat-num">'+followerCount+'</span>',
-        '    <span class="profile-stat-label">Followers</span>',
+        '    <span class="profile-stat-label">'+L().statFollowers+'</span>',
         '  </div>',
         '</div>',
-        '<div class="privacy-notice"><span class="privacy-lock">🔒</span> This student keeps their progress private.</div>',
+        '<div class="privacy-notice"><span class="privacy-lock">🔒</span> '+L().privacyNotice+'</div>',
       ].join("");
     }
 
@@ -795,8 +1046,8 @@
       '  <div class="profile-hero-inner">',
       '    '+avatarHtml,
       '    <div class="profile-main">',
-      '      <div class="profile-eyebrow">// Student Profile · PSU</div>',
-      '      <div class="profile-displayname" style="color:'+c+'">'+escHtml(profile.displayName||profile.username||"Unknown")+'</div>',
+      '      <div class="profile-eyebrow">'+L().eyebrowStudentProfile+'</div>',
+      '      <div class="profile-displayname" style="color:'+c+'">'+escHtml(profile.displayName||profile.username||L().unknownLabel)+'</div>',
       '      <div class="profile-handle-row">',
       '        <span class="profile-username">@'+escHtml(profile.username||"")+'</span>',
       (joinedStr ? '<span class="profile-joined">· '+escHtml(joinedStr)+'</span>' : ""),
@@ -874,7 +1125,7 @@
     function makeCards(list, current, inputId){
       return list.map(function(v){
         var sel = v === current;
-        return '<button type="button" class="pick-card'+(sel?" selected":"")+'" data-val="'+escHtml(v)+'" data-input="'+inputId+'">'+escHtml(v)+'</button>';
+        return '<button type="button" class="pick-card'+(sel?" selected":"")+'" data-val="'+escHtml(v)+'" data-input="'+inputId+'">'+escHtml(majorTrackLabel(v))+'</button>';
       }).join("");
     }
 
@@ -889,23 +1140,23 @@
       '<div style="width:min(540px,100%);background:#0a0514;border:1px solid rgba(184,41,234,.4);font-family:\'JetBrains Mono\',monospace;padding:32px;position:relative;">',
       '  <div style="position:absolute;top:0;left:0;width:40px;height:2px;background:#b829ea;"></div>',
       '  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;">',
-      '    <span style="font-size:.6rem;color:#b829ea;letter-spacing:.2em;text-transform:uppercase;font-weight:800;">// Edit Profile</span>',
+      '    <span style="font-size:.6rem;color:#b829ea;letter-spacing:.2em;text-transform:uppercase;font-weight:800;">'+L().editProfileHeader+'</span>',
       '    <button id="edit-modal-close" style="background:transparent;border:none;color:#4a4258;font-size:1rem;cursor:pointer;line-height:1;">✕</button>',
       '  </div>',
       '  <div style="display:flex;flex-direction:column;gap:20px;">',
 
       // Avatar picker
       '    <div style="'+sectionStyle+'">',
-      '      <label style="'+labelStyle+'">Avatar</label>',
+      '      <label style="'+labelStyle+'">'+L().avatarLabel+'</label>',
       '      <input type="hidden" id="edit-avatarid" value="'+escHtml(profile.avatarPreset != null ? String(profile.avatarPreset) : "")+'">',
-      '      <p style="font-size:.5rem;color:#4a4258;letter-spacing:.14em;text-transform:uppercase;margin:4px 0 6px;font-family:\'JetBrains Mono\',monospace;">Women</p>',
+      '      <p style="font-size:.5rem;color:#4a4258;letter-spacing:.14em;text-transform:uppercase;margin:4px 0 6px;font-family:\'JetBrains Mono\',monospace;">'+L().womenLabel+'</p>',
       '      <div class="av-grid" style="grid-template-columns:repeat(7,1fr);margin-bottom:10px;">',
       AVATAR_PRESETS.slice(0,7).map(function(url,i){
         var sel = String(i) === String(profile.avatarPreset);
         return '<button type="button" class="av-item'+(sel?' selected':'')+'" data-avid="'+i+'"><img src="'+url+'" loading="lazy" alt="avatar '+(i+1)+'" decoding="async"></button>';
       }).join(""),
       '      </div>',
-      '      <p style="font-size:.5rem;color:#4a4258;letter-spacing:.14em;text-transform:uppercase;margin:4px 0 6px;font-family:\'JetBrains Mono\',monospace;">Men</p>',
+      '      <p style="font-size:.5rem;color:#4a4258;letter-spacing:.14em;text-transform:uppercase;margin:4px 0 6px;font-family:\'JetBrains Mono\',monospace;">'+L().menLabel+'</p>',
       '      <div class="av-grid" style="grid-template-columns:repeat(7,1fr);">',
       AVATAR_PRESETS.slice(7).map(function(url,j){
         var i = j + 7;
@@ -916,31 +1167,31 @@
       '    </div>',
 
       // Display name
-      '    <div style="'+sectionStyle+'"><label style="'+labelStyle+'">Display Name</label>',
+      '    <div style="'+sectionStyle+'"><label style="'+labelStyle+'">'+L().displayNameLabel+'</label>',
       '      <input id="edit-displayname" style="'+fieldStyle+'" value="'+escHtml(profile.displayName||"")+'"></div>',
 
       // Bio
-      '    <div style="'+sectionStyle+'"><label style="'+labelStyle+'">Bio <span style="color:#4a4258;font-size:.5rem;">(optional)</span></label>',
+      '    <div style="'+sectionStyle+'"><label style="'+labelStyle+'">'+L().bioLabel+' <span style="color:#4a4258;font-size:.5rem;">'+L().optionalWord+'</span></label>',
       '      <textarea id="edit-bio" rows="3" maxlength="160" style="'+fieldStyle+'resize:vertical;">'+escHtml(profile.bio||"")+'</textarea></div>',
 
       // Major
       '    <div style="'+sectionStyle+'">',
-      '      <label style="'+labelStyle+'">Major</label>',
+      '      <label style="'+labelStyle+'">'+L().majorLabel+'</label>',
       '      <input type="hidden" id="edit-major" value="'+escHtml(currentMajor)+'">',
       '      <div class="pick-grid" style="grid-template-columns:repeat(3,1fr);">'+makeCards(MAJORS, currentMajor, "edit-major")+'</div>',
       '    </div>',
 
       // Track
       '    <div style="'+sectionStyle+'">',
-      '      <label style="'+labelStyle+'">Track <span style="color:#4a4258;font-size:.5rem;">(optional · click again to deselect)</span></label>',
+      '      <label style="'+labelStyle+'">'+L().trackLabel+' <span style="color:#4a4258;font-size:.5rem;">'+L().trackHint+'</span></label>',
       '      <input type="hidden" id="edit-track" value="'+escHtml(currentTrack)+'">',
       '      <div class="pick-grid" style="grid-template-columns:repeat(2,1fr);">'+makeCards(TRACKS, currentTrack, "edit-track")+'</div>',
       '    </div>',
 
       // Privacy toggle
       '    <div class="privacy-toggle-row">',
-      '      <div class="privacy-toggle-label">Show progress to others',
-      '        <span>When off, pages and courses completed are hidden from your public profile</span>',
+      '      <div class="privacy-toggle-label">'+L().showProgressLabel,
+      '        <span>'+L().showProgressHint+'</span>',
       '      </div>',
       '      <div class="toggle-pill'+(privacyPublic?" on":"")+'" id="privacy-pill"></div>',
       '    </div>',
@@ -948,29 +1199,29 @@
 
       // Account section
       '    <div style="border-top:1px solid rgba(255,255,255,.06);padding-top:20px;display:flex;flex-direction:column;gap:16px;">',
-      '      <span style="font-size:.55rem;color:#b829ea;letter-spacing:.2em;text-transform:uppercase;font-weight:800;">// Account</span>',
+      '      <span style="font-size:.55rem;color:#b829ea;letter-spacing:.2em;text-transform:uppercase;font-weight:800;">'+L().accountSectionHeader+'</span>',
 
       // Update email
       '      <div style="'+sectionStyle+'">',
-      '        <label style="'+labelStyle+'">Update Email</label>',
-      '        <input id="acct-new-email" type="email" placeholder="New email address" style="'+fieldStyle+'margin-bottom:8px;" autocomplete="email">',
-      '        <input id="acct-email-pass" type="password" placeholder="Current password (to confirm)" style="'+fieldStyle+'margin-bottom:8px;" autocomplete="current-password">',
+      '        <label style="'+labelStyle+'">'+L().updateEmailLabel+'</label>',
+      '        <input id="acct-new-email" type="email" placeholder="'+L().newEmailPlaceholder+'" style="'+fieldStyle+'margin-bottom:8px;" autocomplete="email">',
+      '        <input id="acct-email-pass" type="password" placeholder="'+L().currentPasswordPlaceholder+'" style="'+fieldStyle+'margin-bottom:8px;" autocomplete="current-password">',
       '        <div id="acct-email-msg" style="font-size:.58rem;min-height:12px;margin-bottom:6px;"></div>',
-      '        <button id="acct-email-btn" style="height:36px;background:rgba(184,41,234,.15);border:1px solid rgba(184,41,234,.4);color:#b829ea;font-family:\'JetBrains Mono\',monospace;font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;">Update Email</button>',
+      '        <button id="acct-email-btn" style="height:36px;background:rgba(184,41,234,.15);border:1px solid rgba(184,41,234,.4);color:#b829ea;font-family:\'JetBrains Mono\',monospace;font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;">'+L().updateEmailBtn+'</button>',
       '      </div>',
 
       // Change password
       '      <div style="'+sectionStyle+'">',
-      '        <label style="'+labelStyle+'">Change Password</label>',
-      '        <div style="font-size:.6rem;color:#4a4258;margin-bottom:8px;">A reset link will be sent to '+escHtml(currentUser.email||"your email")+'</div>',
+      '        <label style="'+labelStyle+'">'+L().changePasswordLabel+'</label>',
+      '        <div style="font-size:.6rem;color:#4a4258;margin-bottom:8px;">'+L().resetLinkWillBeSent(escHtml(currentUser.email||L().yourEmailFallback))+'</div>',
       '        <div id="acct-pass-msg" style="font-size:.58rem;min-height:12px;margin-bottom:6px;"></div>',
-      '        <button id="acct-pass-btn" style="height:36px;background:rgba(184,41,234,.15);border:1px solid rgba(184,41,234,.4);color:#b829ea;font-family:\'JetBrains Mono\',monospace;font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;">Send Reset Link</button>',
+      '        <button id="acct-pass-btn" style="height:36px;background:rgba(184,41,234,.15);border:1px solid rgba(184,41,234,.4);color:#b829ea;font-family:\'JetBrains Mono\',monospace;font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;">'+L().sendResetLinkBtn+'</button>',
       '      </div>',
 
       '    </div>',
 
       '    <div id="edit-error" style="font-size:.62rem;color:#ff2a4b;min-height:14px;"></div>',
-      '    <button id="edit-save" style="height:40px;background:#b829ea;color:#0a0514;border:none;font-family:\'JetBrains Mono\',monospace;font-size:.68rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;transition:background 150ms;">Save Changes</button>',
+      '    <button id="edit-save" style="height:40px;background:#b829ea;color:#0a0514;border:none;font-family:\'JetBrains Mono\',monospace;font-size:.68rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;transition:background 150ms;">'+L().saveChangesBtn+'</button>',
       '  </div>',
       '</div>',
     ].join("");
@@ -1021,21 +1272,21 @@
       var msgEl = document.getElementById("acct-email-msg");
       var btn = document.getElementById("acct-email-btn");
       msgEl.style.color = "#ff2a4b";
-      if (!newEmail) { msgEl.textContent = "Enter a new email address."; return; }
-      if (!pass) { msgEl.textContent = "Enter your current password to confirm."; return; }
-      btn.disabled = true; btn.textContent = "Updating…";
+      if (!newEmail) { msgEl.textContent = L().enterNewEmail; return; }
+      if (!pass) { msgEl.textContent = L().enterCurrentPassword; return; }
+      btn.disabled = true; btn.textContent = L().updatingDots;
       var cred = firebase.auth.EmailAuthProvider.credential(currentUser.email, pass);
       currentUser.reauthenticateWithCredential(cred).then(function(){
         return currentUser.updateEmail(newEmail);
       }).then(function(){
         msgEl.style.color = "#22c55e";
-        msgEl.textContent = "Email updated. You may need to re-verify.";
-        btn.textContent = "Updated ✓";
+        msgEl.textContent = L().emailUpdatedMsg;
+        btn.textContent = L().updatedCheck;
       }).catch(function(err){
-        msgEl.textContent = err.code === "auth/wrong-password" ? "Incorrect password." :
-          err.code === "auth/email-already-in-use" ? "That email is already in use." :
-          err.code === "auth/invalid-email" ? "Invalid email address." : err.message;
-        btn.disabled = false; btn.textContent = "Update Email";
+        msgEl.textContent = err.code === "auth/wrong-password" ? L().incorrectPassword :
+          err.code === "auth/email-already-in-use" ? L().emailInUse :
+          err.code === "auth/invalid-email" ? L().invalidEmail : err.message;
+        btn.disabled = false; btn.textContent = L().updateEmailBtn;
       });
     });
 
@@ -1043,15 +1294,15 @@
     document.getElementById("acct-pass-btn").addEventListener("click", function(){
       var msgEl = document.getElementById("acct-pass-msg");
       var btn = document.getElementById("acct-pass-btn");
-      btn.disabled = true; btn.textContent = "Sending…";
+      btn.disabled = true; btn.textContent = L().sendingDots;
       firebase.auth().sendPasswordResetEmail(currentUser.email).then(function(){
         msgEl.style.color = "#22c55e";
-        msgEl.textContent = "Reset link sent — check your inbox.";
-        btn.textContent = "Sent ✓";
+        msgEl.textContent = L().resetLinkSentMsg;
+        btn.textContent = L().sentCheck;
       }).catch(function(err){
         msgEl.style.color = "#ff2a4b";
         msgEl.textContent = err.message;
-        btn.disabled = false; btn.textContent = "Send Reset Link";
+        btn.disabled = false; btn.textContent = L().sendResetLinkBtn;
       });
     });
 
@@ -1065,10 +1316,10 @@
       var avatarPresetRaw = document.getElementById("edit-avatarid").value;
       var avatarPreset = avatarPresetRaw !== "" ? parseInt(avatarPresetRaw, 10) : null;
       var errEl = document.getElementById("edit-error");
-      if (!displayName){ errEl.textContent = "Display name is required."; return; }
-      if (!major){ errEl.textContent = "Please select your major."; return; }
+      if (!displayName){ errEl.textContent = L().displayNameRequired; return; }
+      if (!major){ errEl.textContent = L().selectMajorRequired; return; }
       var btn = document.getElementById("edit-save");
-      btn.disabled = true; btn.textContent = "Saving…";
+      btn.disabled = true; btn.textContent = L().savingDots;
       var updateData = {
         displayName: displayName, bio: bio, major: major, track: track,
         privacyPublic: privacyPub,
@@ -1078,7 +1329,7 @@
       firebase.firestore().collection("users").doc(currentUser.uid).update(updateData).then(function(){
         modal.remove();
         window.location.reload();
-      }).catch(function(err){ errEl.textContent = err.message; btn.disabled=false; btn.textContent="Save Changes"; });
+      }).catch(function(err){ errEl.textContent = err.message; btn.disabled=false; btn.textContent=L().saveChangesBtn; });
     });
   }
 
@@ -1092,7 +1343,7 @@
     ]).then(function(){
       isFollowing = true;
       var btn = document.getElementById("follow-btn");
-      if (btn){ btn.textContent="Unfollow"; btn.className="profile-btn secondary"; btn.disabled=false; }
+      if (btn){ btn.textContent=L().unfollowBtnText; btn.className="profile-btn secondary"; btn.disabled=false; }
       var el = document.getElementById("stat-followers");
       if (el){ var n = parseInt(el.querySelector(".profile-stat-num").textContent,10)||0; el.querySelector(".profile-stat-num").textContent = n+1; }
     }).catch(function(){ var btn=document.getElementById("follow-btn"); if(btn)btn.disabled=false; });
@@ -1106,7 +1357,7 @@
     ]).then(function(){
       isFollowing = false;
       var btn = document.getElementById("follow-btn");
-      if (btn){ btn.textContent="Follow"; btn.className="profile-btn primary"; btn.disabled=false; }
+      if (btn){ btn.textContent=L().followBtnText; btn.className="profile-btn primary"; btn.disabled=false; }
       var el = document.getElementById("stat-followers");
       if (el){ var n = parseInt(el.querySelector(".profile-stat-num").textContent,10)||0; el.querySelector(".profile-stat-num").textContent = Math.max(0,n-1); }
     }).catch(function(){ var btn=document.getElementById("follow-btn"); if(btn)btn.disabled=false; });
@@ -1183,6 +1434,15 @@
       show("notfound-state");
     });
   }
+
+  // ── Rerender on language toggle ───────────────────────────────────────────
+  window.__shougRerender = function(){
+    var editModal = document.getElementById("profile-edit-modal");
+    if (editModal) editModal.remove();
+    var examModal = document.getElementById("add-exam-modal");
+    if (examModal) examModal.remove();
+    if (_lastRenderArgs) renderProfile.apply(null, _lastRenderArgs);
+  };
 
   // ── Auth boot ───────────────────────────────────────────────────────────────
   function onUser(user){ if (_rendered) return; _rendered=true; currentUser=user; loadProfile(); }

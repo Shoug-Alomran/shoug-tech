@@ -197,6 +197,22 @@ COURSES: dict[str, dict[str, Any]] = {
         "url": "/course-phy205.html",
         "sections": {"Overview": "/Academics/other/phy205/overview/", "Slides": "/Academics/other/phy205/slides/overview/"},
     },
+    "PHY105": {
+        "track": "Other Courses",
+        "path": "docs/academics/other-courses/phy105/",
+        "url": "/academics/other-courses/phy105/",
+        "sections": {
+            "Overview": "/academics/other-courses/phy105/",
+            "Slide Breakdowns": "/academics/other-courses/phy105/slide-breakdowns/",
+            "Syllabus": "/academics/other-courses/phy105/syllabus/",
+            "Slides": "/academics/other-courses/phy105/slides/",
+            "Study Material": "/academics/other-courses/phy105/extra-resources/",
+            "Quizzes": "/academics/other-courses/phy105/quizzes/",
+        },
+        "title_override": "Physics I",
+        "credits": "4",
+        "prereq": "TBD",
+    },
     "ENG101": {
         "track": "Other Courses",
         "path": "docs/Academics/other/english/ENG101/overview.md",
@@ -265,9 +281,9 @@ TRACKS: dict[str, dict[str, Any]] = {
     },
     "other-courses": {
         "label": "OTHER COURSES",
-        "title": "5 courses.<br>One English hub,<br>and shared resources.",
-        "meta": ["General Track", "5 Courses", "Writing", "Ethics", "Science"],
-        "courses": ["ETHCS303", "PHY205", "ENG101", "ENG103", "ISC113"],
+        "title": "6 courses.<br>One English hub,<br>and shared resources.",
+        "meta": ["General Track", "6 Courses", "Writing", "Ethics", "Science"],
+        "courses": ["ETHCS303", "PHY105", "PHY205", "ENG101", "ENG103", "ISC113"],
         "url": "/track-other-courses.html",
     },
 }
@@ -1782,6 +1798,11 @@ COMMON_SCRIPT = """
                     var key = normalizeLabel(node.textContent);
                     if (t.statusLabels[key]) node.textContent = t.statusLabels[key];
                 });
+                document.querySelectorAll('[data-ar-text]').forEach(function (node) {
+                    var enText = node.getAttribute('data-en-text');
+                    if (!node.dataset.i18nEn) node.dataset.i18nEn = enText || node.textContent;
+                    node.textContent = lang === 'ar' ? node.getAttribute('data-ar-text') : node.dataset.i18nEn;
+                });
                 document.querySelectorAll('.breadcrumb').forEach(function (node) {
                     node.querySelectorAll('a').forEach(function (link) {
                         if (normalizeLabel(link.textContent) === 'academics' || normalizeLabel(link.textContent) === 'الدراسة') {
@@ -2301,6 +2322,7 @@ def course_nav_label(code: str) -> str:
         "ETHCS303": "ETHCS 303",
         "ENG101": "ENG 101",
         "ENG103": "ENG 103",
+        "PHY105": "PHY105",
         "PHY205": "PHY205",
         "ISC113": "ISC 113",
     }
@@ -3149,6 +3171,134 @@ def track_page(slug: str) -> str:
     track = TRACKS[slug]
     text = read_template("track")
     text = replace_common_links(text)
+    status_legend_css = """
+
+        .status-legend-card {
+            width: min(100%, 860px);
+            margin: -8px auto var(--spacing-lg);
+            border: 1px solid var(--border-main);
+            border-top: 2px solid var(--brand-purple);
+            background: rgba(10, 2, 18, 0.82);
+            padding: 14px 18px 16px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .status-legend-kicker {
+            font-family: var(--font-mono);
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 0.18em;
+            color: var(--brand-purple);
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .status-legend-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 10px;
+        }
+
+        .status-legend-row {
+            display: grid;
+            grid-template-columns: 104px 1fr;
+            gap: 10px;
+            align-items: start;
+            min-width: 0;
+        }
+
+        .status-legend-row .status-tag {
+            justify-content: center;
+            width: 104px;
+            white-space: nowrap;
+            text-align: center;
+        }
+
+        .status-legend-row p {
+            margin: 0;
+            color: var(--text-muted);
+            font-size: 0.78rem;
+            line-height: 1.45;
+            overflow-wrap: anywhere;
+        }
+
+        html[dir="rtl"] .status-legend-card,
+        body.shoug-arabic-mode .status-legend-card {
+            direction: rtl;
+            text-align: right;
+        }
+
+        html[dir="rtl"] .status-legend-row p,
+        body.shoug-arabic-mode .status-legend-row p,
+        html[dir="rtl"] .status-legend-note,
+        body.shoug-arabic-mode .status-legend-note {
+            text-align: right;
+        }
+
+        .status-legend-note {
+            margin: 12px 0 0;
+            padding-top: 10px;
+            border-top: 1px dashed var(--border-main);
+            color: var(--text-muted);
+            font-family: var(--font-mono);
+            font-size: 0.68rem;
+            line-height: 1.5;
+        }
+
+        .status-pending {
+            color: #f5a623;
+        }
+
+        .status-available,
+        .status-active {
+            color: var(--alert-red);
+        }
+"""
+    status_legend_mobile_css = """
+
+            .status-legend-card {
+                width: 100%;
+                margin: 0 0 18px;
+                padding: 14px;
+            }
+
+            .status-legend-grid {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+
+            .status-legend-row {
+                grid-template-columns: 104px 1fr;
+                gap: 10px;
+            }
+
+            .status-legend-row p {
+                font-size: 0.76rem;
+            }
+"""
+    status_legend_html = """                <section class="status-legend-card" aria-labelledby="course-status-legend-title">
+                    <div class="status-legend-kicker" id="course-status-legend-title" data-en-text="// COURSE STATUS GUIDE" data-ar-text="// دليل حالة المقرر">// COURSE STATUS GUIDE</div>
+                    <div class="status-legend-grid">
+                        <div class="status-legend-row">
+                            <span class="status-tag status-active" data-en-text="AVAILABLE" data-ar-text="متاح">AVAILABLE</span>
+                            <p data-en-text="Slides are available; personal notes have not yet been prepared." data-ar-text="الشرائح متوفرة، ولم يتم إعداد الملاحظات الشخصية بعد.">Slides are available; personal notes have not yet been prepared.</p>
+                        </div>
+                        <div class="status-legend-row">
+                            <span class="status-tag status-pending" data-en-text="IN PROGRESS" data-ar-text="قيد التنفيذ">IN PROGRESS</span>
+                            <p data-en-text="Slides and personal notes have not yet been added." data-ar-text="لم تتم إضافة الشرائح أو الملاحظات الشخصية بعد.">Slides and personal notes have not yet been added.</p>
+                        </div>
+                        <div class="status-legend-row">
+                            <span class="status-tag status-complete" data-en-text="COMPLETE" data-ar-text="مكتمل">COMPLETE</span>
+                            <p data-en-text="Slides are available and personal notes have been prepared." data-ar-text="الشرائح متوفرة، وقد تم إعداد الملاحظات الشخصية.">Slides are available and personal notes have been prepared.</p>
+                        </div>
+                    </div>
+                    <p class="status-legend-note" data-en-text="Personal notes refer to slide breakdowns and extra resources prepared for independent study and revision." data-ar-text="تشير الملاحظات الشخصية إلى تفصيل الشرائح والموارد الإضافية المعدّة للدراسة والمراجعة الذاتية.">Personal notes refer to slide breakdowns and extra resources prepared for independent study and revision.</p>
+                </section>
+
+"""
+    text = text.replace("\n\n\n\n        .course-list {", status_legend_css + "\n\n\n\n        .course-list {", 1)
+    text = text.replace("\n\n            /* ── Course rows: allow wrapping ── */", status_legend_mobile_css + "\n\n            /* ── Course rows: allow wrapping ── */", 1)
     text = replace_first(r"<title[^>]*>.*?</title>", f"<title>SHOUG.TECH // {track['label']}</title>", text)
     text = re.sub(r"Computer Science", str(track["label"]).title(), text)
     text = replace_first(r'<div class="hero-label"[^>]*>.*?</div>', f'<div class="hero-label">[ {track["label"]} ]</div>', text)
@@ -3167,7 +3317,7 @@ def track_page(slug: str) -> str:
         text,
         '<div class="course-list"',
         '\n\n        </div>\n    </main>',
-        f'<div class="course-list">{"".join(rows)}</div>',
+        f'{status_legend_html}<div class="course-list">{"".join(rows)}</div>',
     )
     text = link_track_sidebar(text)
     text = replace_academic_sidebar(text, active_track=slug)

@@ -175,8 +175,11 @@ def build_hub() -> None:
 
 def update_other_courses() -> None:
     text = OTHER_INDEX.read_text(encoding="utf-8")
-    text = text.replace("4 courses.<br>Writing, ethics,<br>physics, and foundations.", "5 courses.<br>One English hub,<br>and shared resources.")
-    text = text.replace("<span>4\n                            Courses</span>", "<span>5 Courses</span>")
+    text = text.replace("4 courses.<br>Writing, ethics,<br>physics, and foundations.", "6 courses.<br>One English hub,<br>and shared resources.")
+    text = text.replace("5 courses.<br>One English hub,<br>and shared resources.", "6 courses.<br>One English hub,<br>and shared resources.")
+    text = text.replace("<span>4\n                            Courses</span>", "<span>6 Courses</span>")
+    text = text.replace("<span>5\n                            Courses</span>", "<span>6 Courses</span>")
+    text = text.replace("<span>5 Courses</span>", "<span>6 Courses</span>")
     hub_row = '''<a class="course-row" href="/Academics/other-courses/english/">
                         <div class="course-code">ENGLISH</div>
                         <div class="course-name"><span>English Learning Hub</span></div>

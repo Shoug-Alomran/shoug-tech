@@ -59,8 +59,8 @@
 
   // ── Avatar presets (shared with /community/profile/) ──────────────────────
   var AVATAR_PRESETS = [
-    'av-f1.png','av-f2.png','av-f3.png','av-f4.png','av-f5.png','av-f6.png','av-f7.png',
-    'av-m1.png','av-m2.png','av-m3.png','av-m4.png','av-m5.png','av-m6.png','av-m7.png'
+    'av-f1.webp','av-f2.webp','av-f3.webp','av-f4.webp','av-f5.webp','av-f6.webp','av-f7.webp',
+    'av-m1.webp','av-m2.webp','av-m3.webp','av-m4.webp','av-m5.webp','av-m6.webp','av-m7.webp'
   ];
   function avatarUrl(preset) {
     var i = parseInt(preset, 10);
@@ -94,10 +94,12 @@
       ".shoug-user-btn:hover{background:rgba(184,41,234,.2)}",
       ".shoug-user-avatar-img{width:32px;height:32px;object-fit:cover;display:block;}",
       /* dropdown */
-      ".shoug-user-dropdown{position:absolute;top:calc(100% + 8px);right:0;background:#0a0514;border:1px solid rgba(184,41,234,.3);min-width:220px;z-index:99998;display:none;flex-direction:column;box-shadow:0 8px 32px rgba(0,0,0,.5)}",
+      ".shoug-user-dropdown{position:absolute;top:calc(100% + 8px);right:0;background:#0a0514;border:1px solid rgba(184,41,234,.3);width:min(280px,calc(100vw - 28px));min-width:220px;max-width:calc(100vw - 28px);max-height:calc(100vh - 96px);overflow:auto;z-index:99998;display:none;flex-direction:column;box-shadow:0 8px 32px rgba(0,0,0,.5);box-sizing:border-box}",
+      "html[dir='rtl'] .shoug-user-dropdown,body.shoug-arabic-mode .shoug-user-dropdown{left:0;right:auto;direction:rtl;text-align:right}",
       ".shoug-user-btn.open .shoug-user-dropdown{display:flex}",
       ".shoug-drop-email{padding:10px 14px;font-family:'JetBrains Mono',monospace;font-size:.6rem;color:#4a4258;border-bottom:1px solid rgba(255,255,255,.06);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}",
       ".shoug-drop-link{display:block;padding:10px 14px;font-family:'JetBrains Mono',monospace;font-size:.68rem;color:#f8f7fb;text-decoration:none;letter-spacing:.06em;cursor:pointer;border:none;background:transparent;text-align:left;width:100%;transition:background 120ms,color 120ms;box-sizing:border-box}",
+      "html[dir='rtl'] .shoug-drop-link,body.shoug-arabic-mode .shoug-drop-link{text-align:right}",
       ".shoug-drop-link:hover{background:rgba(184,41,234,.1);color:#b829ea}",
       ".shoug-drop-link.red:hover{background:rgba(255,42,75,.1);color:#ff2a4b}",
       /* notification badge */
@@ -260,6 +262,11 @@
       "body.shoug-light-mode #shoug-app-nav{background:rgba(255,255,255,.96);border-bottom-color:rgba(0,0,0,.08);}",
       "body.shoug-light-mode .shoug-app-tab.active{color:#b829ea;}",
       "@media(max-width:480px){#shoug-app-nav{height:38px;}.shoug-app-tab{padding:0 14px;font-size:.54rem;}#shoug-theme-toggle{margin-right:14px;}}",
+      /* shift the AR/EN language toggle so it doesn't overlap the theme toggle in the app nav */
+      "body:has(#shoug-app-nav) .shoug-lang-btn{top:3px;}",
+      "html:not([dir='rtl']) body:has(#shoug-app-nav) .shoug-lang-btn{inset-inline-end:62px;}",
+      "html[dir='rtl'] body:has(#shoug-app-nav) .shoug-lang-btn{inset-inline-end:42px;}",
+      "@media(max-width:480px){html:not([dir='rtl']) body:has(#shoug-app-nav) .shoug-lang-btn{inset-inline-end:56px;}}",
       /* forgot password / reset link */
       ".auth-forgot{background:transparent;border:none;color:#4a4258;font-family:'JetBrains Mono',monospace;font-size:.58rem;cursor:pointer;padding:0;text-align:left;letter-spacing:.04em;transition:color 120ms;}",
       ".auth-forgot:hover{color:#b829ea;}",
@@ -614,6 +621,19 @@
 
   // ── Header button ─────────────────────────────────────────────────────────
 
+  function keepUserDropdownInViewport(btn) {
+    if (!btn || !btn.classList.contains("open")) return;
+    var dropdown = btn.querySelector(".shoug-user-dropdown");
+    if (!dropdown) return;
+    dropdown.style.transform = "";
+    var rect = dropdown.getBoundingClientRect();
+    var pad = 14;
+    var shift = 0;
+    if (rect.left < pad) shift = pad - rect.left;
+    if (rect.right > window.innerWidth - pad) shift = (window.innerWidth - pad) - rect.right;
+    if (shift) dropdown.style.transform = "translateX(" + shift + "px)";
+  }
+
   function setHeaderButton(user) {
     var old = document.getElementById("shoug-fb-user");
     var actions = document.querySelector(".shoug-header-actions");
@@ -651,10 +671,12 @@
       el.addEventListener("click", function (e) {
         var wasOpen = el.classList.contains("open");
         el.classList.toggle("open");
+        keepUserDropdownInViewport(el);
         e.stopPropagation();
         // Mark read when closing (so user can see notifications while dropdown is open)
         if (wasOpen) markNotifsRead(user);
       });
+      window.addEventListener("resize", function () { keepUserDropdownInViewport(el); });
       document.addEventListener("click", function () {
         if (el.classList.contains("open")) markNotifsRead(user);
         el.classList.remove("open");
@@ -1957,30 +1979,49 @@
            p.indexOf("/community") === 0;
   }
 
+  function curNavLang() { return (document.documentElement.lang||"en").slice(0,2)==="ar" ? "ar" : "en"; }
+
+  var APP_NAV_LABELS = {
+    en: { home: "Home", profile: "My Profile", bookmarks: "Bookmarks", progress: "My Progress", community: "Community", theme: "Toggle dark and light mode" },
+    ar: { home: "الرئيسية", profile: "ملفي الشخصي", bookmarks: "المحفوظات", progress: "تقدمي", community: "المجتمع", theme: "تبديل الوضع الفاتح والداكن" },
+  };
+  var APP_NAV_KEYS = ["home", "profile", "bookmarks", "progress", "community"];
+
+  function updateAppNavLang() {
+    var nav = document.getElementById("shoug-app-nav");
+    if (!nav) return;
+    var labels = APP_NAV_LABELS[curNavLang()];
+    var tabs = nav.querySelectorAll(".shoug-app-tab");
+    tabs.forEach(function(t, i) { if (APP_NAV_KEYS[i]) t.textContent = labels[APP_NAV_KEYS[i]]; });
+    var themeBtn = document.getElementById("shoug-theme-toggle");
+    if (themeBtn) themeBtn.setAttribute("aria-label", labels.theme);
+  }
+
   function injectAppNav(user) {
     if (!isAppPage()) return;
     if (document.getElementById("shoug-app-nav")) return;
     var path = window.location.pathname;
+    var labels = APP_NAV_LABELS[curNavLang()];
     var tabs = [
-      { label: "Home",        href: "/",
+      { key: "home",        href: "/",
         active: false },
-      { label: "My Profile",  href: "/community/profile/?u=" + encodeURIComponent(user.uid),
+      { key: "profile",     href: "/community/profile/?u=" + encodeURIComponent(user.uid),
         active: path.indexOf("/community/profile") === 0 },
-      { label: "Bookmarks",   href: "/bookmarks/",
+      { key: "bookmarks",   href: "/bookmarks/",
         active: path.indexOf("/bookmarks") === 0 },
-      { label: "My Progress", href: "/account/",
+      { key: "progress",    href: "/account/",
         active: path.indexOf("/account") === 0 },
-      { label: "Community",   href: "/community/",
+      { key: "community",   href: "/community/",
         active: path.indexOf("/community") === 0 && path.indexOf("/community/profile") !== 0 },
     ];
     var isLight = document.body.classList.contains("shoug-light-mode");
     var nav = document.createElement("nav");
     nav.id = "shoug-app-nav";
     nav.innerHTML = tabs.map(function(t) {
-      return '<a class="shoug-app-tab' + (t.active ? " active" : "") + '" href="' + t.href + '">' + t.label + "</a>";
+      return '<a class="shoug-app-tab' + (t.active ? " active" : "") + '" href="' + t.href + '">' + labels[t.key] + "</a>";
     }).join("")
       + '<div style="flex:1"></div>'
-      + '<button id="shoug-theme-toggle" type="button" aria-label="Toggle dark and light mode" style="margin-right:20px">'
+      + '<button id="shoug-theme-toggle" type="button" aria-label="' + labels.theme + '" style="margin-right:20px">'
       + (isLight ? MOON_SVG : SUN_SVG)
       + '</button>';
     // Insert as first child so it sits in document flow at the top of the page
@@ -2052,6 +2093,9 @@
 
   function boot() {
     injectStyles();
+
+    // Keep the app-nav tab labels in sync with the page language toggle
+    new MutationObserver(updateAppNavLang).observe(document.documentElement, { attributes: true, attributeFilter: ["lang"] });
 
     if (!firebase.apps.length) firebase.initializeApp(FB_CONFIG);
 

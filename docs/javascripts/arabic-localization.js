@@ -6,6 +6,7 @@
     "WORKSHOP_DIRECTORY": "دليل_الورش",
     "ACADEMICS/": "الدراسة/",
     "WORKSHOPS/": "الورش/",
+    "Workshops": "الورش",
     "ACADEMIC PLAN": "الخطة الدراسية",
     "COMPUTER SCIENCE/": "علوم الحاسب/",
     "COMPUTER SCIENCE": "علوم الحاسب",
@@ -33,8 +34,8 @@
     "SYS_TIME": "وقت_النظام",
     "AVAILABLE": "متاح",
     "COMPLETE": "مكتمل",
-    "COMING SOON": "قريبًا",
-    "Content for this section is being prepared and will be available soon.": "يتم تجهيز محتوى هذا القسم وسيكون متاحًا قريبًا.",
+    "COMING SOON": "قريبا",
+    "Content for this section is being prepared and will be available soon.": "يتم تجهيز محتوى هذا القسم وسيكون متاحا قريبا.",
     "PDF": "ملف",
     "Overview": "نظرة عامة",
     "Slide Breakdowns": "تفكيك الشرائح",
@@ -59,9 +60,9 @@
     "[ <- BACK TO WORKSHOP ]": "[ العودة إلى الورشة → ]",
     "<- PREVIOUS": "السابق →",
     "NEXT ->": "← التالي",
-    "No slide breakdowns uploaded yet": "لم تُرفع تفكيكات الشرائح بعد",
-    "No slides uploaded yet": "لم تُرفع الشرائح بعد",
-    "Quizzes coming soon": "الاختبارات قريبًا",
+    "No slide breakdowns uploaded yet": "لم ترفع تفكيكات الشرائح بعد",
+    "No slides uploaded yet": "لم ترفع الشرائح بعد",
+    "Quizzes coming soon": "الاختبارات قريبا",
     "Introduction": "المقدمة",
     "Quality": "الجودة",
     "Recursion": "الاستدعاء الذاتي",
@@ -77,8 +78,8 @@
     "Algorithm Analysis": "تحليل الخوارزميات",
     "AVL Trees": "أشجار AVL",
     "Circular Linked Lists": "القوائم المرتبطة الدائرية",
-    "Directed Graphs": "الرسوم البيانية الموجّهة",
-    "Undirected Graphs": "الرسوم البيانية غير الموجّهة",
+    "Directed Graphs": "الرسوم البيانية الموجهة",
+    "Undirected Graphs": "الرسوم البيانية غير الموجهة",
     "Elementary Sorting Algorithms": "خوارزميات الترتيب الأساسية",
     "Heaps and Priority Queues": "الأكوام وطوابير الأولوية",
     "Data Communications and Networking": "اتصالات البيانات والشبكات",
@@ -102,8 +103,8 @@
     "Symbols": "الرموز",
     "Formulas": "القوانين",
     "Computer Components": "مكونات الحاسب",
-    "Compiled MCQs": "أسئلة الاختيار من متعدد المجمّعة",
-    "Compiled Mcqs": "أسئلة الاختيار من متعدد المجمّعة",
+    "Compiled MCQs": "أسئلة الاختيار من متعدد المجمعة",
+    "Compiled Mcqs": "أسئلة الاختيار من متعدد المجمعة",
     "Midterm Exam": "الاختبار النصفي",
     "Final Exam 251 Practice": "تدريب الاختبار النهائي 251",
     "Business Ethics": "أخلاقيات الأعمال",
@@ -123,13 +124,13 @@
     "Grammar Cheat Sheet": "ورقة مراجعة القواعد",
     "Self Editing Checklist": "قائمة المراجعة الذاتية"
     ,"Chapter 1 Software Engineering Practices and Ethics": "الفصل الأول: ممارسات هندسة البرمجيات وأخلاقياتها"
-    ,"WORKSHOP // MY JOURNEY AS A STUDENT TUTOR": "ورشة // رحلتي كمدرّسة مساندة للطلاب"
+    ,"WORKSHOP // MY JOURNEY AS A STUDENT TUTOR": "ورشة // رحلتي كمدرسة مساندة للطلاب"
     ,"WORKSHOP // CYBERSECURITY CRASH COURSE": "ورشة // دورة مكثفة في الأمن السيبراني"
-    ,"My Journey As A Student Tutor": "رحلتي كمدرّسة مساندة للطلاب"
-    ,"My Journey as a Student Tutor": "رحلتي كمدرّسة مساندة للطلاب"
+    ,"My Journey As A Student Tutor": "رحلتي كمدرسة مساندة للطلاب"
+    ,"My Journey as a Student Tutor": "رحلتي كمدرسة مساندة للطلاب"
     ,"Cybersecurity Crash Course": "دورة مكثفة في الأمن السيبراني"
     ,"Schedule & Agenda": "الجدول والمحاور"
-    ,"Topics & Learning Outcomes": "الموضوعات ومخرجات التعلّم"
+    ,"Topics & Learning Outcomes": "الموضوعات ومخرجات التعلم"
     ,"Handouts": "المذكرات"
     ,"Labs & Bandit Notes": "المختبرات وملاحظات بانديت"
     ,"Reflection & Impact": "التأمل والأثر"
@@ -164,7 +165,7 @@
     "Test": "اختبار", "Quality": "جودة", "Metrics": "مقاييس", "Tools": "أدوات",
     "Techniques": "تقنيات", "Coverage": "تغطية", "Regression": "انحدار",
     "Unit": "وحدة", "Code": "شفرة", "Throughout": "خلال", "Development": "تطوير",
-    "Approach": "منهج", "Scheduling": "جدولة", "Tracking": "تتبّع",
+    "Approach": "منهج", "Scheduling": "جدولة", "Tracking": "تتبع",
     "Change": "تغيير", "Team": "فريق", "Risk": "مخاطر", "Estimation": "تقدير",
     "Stakeholders": "أصحاب المصلحة", "Performance": "أداء", "Domains": "مجالات",
     "Methods": "أساليب", "Artifacts": "مخرجات", "Tailoring": "تخصيص",
@@ -175,7 +176,7 @@
     "Database": "قواعد البيانات", "Databases": "قواعد البيانات", "Relational": "علائقي",
     "Normalization": "تطبيع", "Mapping": "تحويل", "Concepts": "مفاهيم",
     "Conceptual": "مفاهيمي", "Objects": "كائنات", "Object": "كائن",
-    "Oriented": "موجّه", "Basic": "أساسي", "Fundamentals": "أساسيات",
+    "Oriented": "موجه", "Basic": "أساسي", "Fundamentals": "أساسيات",
     "Cryptography": "تشفير", "Asymmetric": "غير متماثل", "Authentication": "مصادقة",
     "Access": "وصول", "Security": "أمن", "Cybersecurity": "أمن سيبراني",
     "Threat": "تهديد", "Threats": "تهديدات", "Vulnerabilities": "ثغرات",
@@ -184,27 +185,27 @@
     "Operating": "تشغيل", "Services": "خدمات", "Threads": "خيوط",
     "Scheduling": "جدولة", "Synchronization": "تزامن", "Memory": "ذاكرة",
     "Virtual": "افتراضية", "Mass": "ضخم", "Storage": "تخزين", "File": "ملفات",
-    "Interface": "واجهة", "Deadlocks": "تعطّل متبادل", "Textbook": "الكتاب",
+    "Interface": "واجهة", "Deadlocks": "تعطل متبادل", "Textbook": "الكتاب",
     "Logic": "منطق", "Proof": "برهان", "Proofs": "براهين", "Sets": "مجموعات",
     "Functions": "دوال", "Sequences": "متتاليات", "Sums": "مجاميع",
     "Number": "أعداد", "Theory": "نظرية", "Mathematical": "رياضي",
-    "Induction": "استقراء", "Counting": "عدّ", "Relations": "علاقات",
+    "Induction": "استقراء", "Counting": "عد", "Relations": "علاقات",
     "Classes": "فئات", "Comparable": "قابل للمقارنة", "Comparator": "مقارن",
     "Interfaces": "واجهات", "Files": "ملفات", "Generic": "عامة",
     "Inheritance": "وراثة", "Polymorphism": "تعدد الأشكال", "Collection": "تجميع",
     "Framework": "إطار عمل", "Linked": "مرتبطة", "Lists": "قوائم",
-    "Circular": "دائرية", "Directed": "موجّهة", "Undirected": "غير موجّهة",
+    "Circular": "دائرية", "Directed": "موجهة", "Undirected": "غير موجهة",
     "Graphs": "رسوم بيانية", "Elementary": "أساسية", "Sorting": "ترتيب",
     "Algorithms": "خوارزميات", "Priority": "أولوية", "Queues": "طوابير",
     "Stacks": "مكدسات", "Search": "بحث", "Trees": "أشجار", "Quick": "سريع",
     "Merge": "دمج", "Hash": "تجزئة", "Heaps": "أكوام", "Recursion": "استدعاء ذاتي",
     "Ethical": "أخلاقية", "Ethics": "أخلاقيات", "Moral": "أخلاقية",
-    "Practices": "ممارسات", "Practice": "تدريب", "Learning": "تعلّم",
+    "Practices": "ممارسات", "Practice": "تدريب", "Learning": "تعلم",
     "Outcomes": "مخرجات", "Schedule": "جدول", "Agenda": "محاور",
     "Labs": "مختبرات", "Notes": "ملاحظات", "Reflection": "تأمل",
     "Impact": "أثر", "Timeline": "خط زمني", "Skills": "مهارات",
     "Growth": "تطور", "Feedback": "تغذية راجعة", "Tips": "نصائح",
-    "Video": "فيديو", "Journey": "رحلة", "Student": "طالب", "Tutor": "مدرّس",
+    "Video": "فيديو", "Journey": "رحلة", "Student": "طالب", "Tutor": "مدرس",
     "Workshop": "ورشة", "Crash": "مكثفة", "Course": "دورة",
     "Privacy": "خصوصية", "Cloud": "سحابية", "Computing": "حوسبة",
     "Legal": "قانونية", "Laws": "أنظمة", "Saudi": "السعودية", "Arabia": "",
@@ -218,13 +219,14 @@
     "Electric": "كهربائية", "Charge": "شحنة", "Fields": "مجالات", "Potential": "جهد",
     "Capacitance": "سعة", "Current": "تيار", "Resistance": "مقاومة",
     "Circuits": "دوائر", "Magnetic": "مغناطيسية", "Induction": "حث",
-    "and": "و", "And": "و", "of": "لـ", "Of": "لـ", "to": "إلى", "To": "إلى",
-    "in": "في", "In": "في", "the": "", "The": "", "for": "لـ", "For": "لـ",
+    "and": "و", "And": "و", "of": "ل", "Of": "ل", "to": "إلى", "To": "إلى",
+    "in": "في", "In": "في", "the": "", "The": "", "for": "ل", "For": "ل",
     "Using": "باستخدام", "Throughout": "خلال", "with": "مع", "Without": "بدون"
   };
 
   var selectors = [
     ".sidebar .sidebar-title", ".sidebar .tree-course-link", ".sidebar .tree-file",
+    ".academic-sidebar .sidebar-title", ".academic-sidebar .tree-file",
     ".breadcrumb a", ".breadcrumb .current", ".type-label", ".tab", ".sub-nav-item",
     ".quick-link-btn", ".dir-header span", ".dir-title", ".status-tag", ".ch-label",
     ".ch-title", ".action-buttons .btn", ".nav-strip .nav-link", ".hero-label",
@@ -274,10 +276,24 @@
     return normalize(text);
   }
 
+  function findTrailingTextNode(node) {
+    for (var i = 0; i < node.childNodes.length; i++) {
+      var child = node.childNodes[i];
+      if (child.nodeType === 3 && child.textContent.trim()) return child;
+    }
+    return null;
+  }
+
   function applyArabic() {
     document.querySelectorAll(selectors).forEach(function (node) {
-      if (!node.dataset.arOriginal) node.dataset.arOriginal = node.textContent;
-      node.textContent = translate(node.dataset.arOriginal);
+      var textNode = node.children.length ? findTrailingTextNode(node) : null;
+      if (textNode) {
+        if (!node.dataset.arOriginal) node.dataset.arOriginal = textNode.textContent;
+        textNode.textContent = translate(node.dataset.arOriginal);
+      } else {
+        if (!node.dataset.arOriginal) node.dataset.arOriginal = node.textContent;
+        node.textContent = translate(node.dataset.arOriginal);
+      }
     });
     document.querySelectorAll('[data-ar-text]').forEach(function (node) {
       if (!node.dataset.arOriginal) node.dataset.arOriginal = node.textContent;
@@ -291,13 +307,52 @@
 
   function restoreEnglish() {
     document.querySelectorAll("[data-ar-original]").forEach(function (node) {
-      node.textContent = node.dataset.arOriginal;
+      var textNode = node.children.length ? findTrailingTextNode(node) : null;
+      if (textNode) {
+        textNode.textContent = node.dataset.arOriginal;
+      } else {
+        node.textContent = node.dataset.arOriginal;
+      }
     });
   }
 
+  function showAiWarning() {
+    if (!document.body) return;
+    var banner = document.getElementById("shoug-ar-ai-warning");
+    if (!banner) {
+      banner = document.createElement("div");
+      banner.id = "shoug-ar-ai-warning";
+      banner.setAttribute("dir", "rtl");
+      banner.setAttribute("lang", "ar");
+      banner.textContent = "إنذار : تم ترجمة هذه الصفحة باستخدام الذكاء الاصطناعي.";
+      banner.title = "إخفاء";
+      banner.style.cssText = [
+        "position:fixed", "bottom:16px", "right:16px", "z-index:99999",
+        "background:#ff2e2e", "color:#fff", "font-family:'JetBrains Mono',monospace",
+        "font-weight:700", "font-size:12px", "letter-spacing:0.01em", "line-height:1.6",
+        "padding:10px 16px", "border-radius:6px", "max-width:280px",
+        "box-shadow:0 8px 24px rgba(255,46,46,0.45)", "cursor:pointer",
+        "text-align:right"
+      ].join(";");
+      banner.addEventListener("click", function () { banner.style.display = "none"; });
+      document.body.appendChild(banner);
+    }
+    banner.style.display = "block";
+  }
+
+  function hideAiWarning() {
+    var banner = document.getElementById("shoug-ar-ai-warning");
+    if (banner) banner.style.display = "none";
+  }
+
   function sync() {
-    if (String(document.documentElement.lang || "").toLowerCase().indexOf("ar") === 0) applyArabic();
-    else restoreEnglish();
+    if (String(document.documentElement.lang || "").toLowerCase().indexOf("ar") === 0) {
+      applyArabic();
+      showAiWarning();
+    } else {
+      restoreEnglish();
+      hideAiWarning();
+    }
   }
 
   sync();

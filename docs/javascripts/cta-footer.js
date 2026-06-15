@@ -138,7 +138,7 @@
         subtitle: "مساحة شخصية أجمع فيها ملاحظات المواد والملخصات والروابط والمشاريع.",
         placeholder: "البريد الإلكتروني",
         subscribe: "اشتراك",
-        note: "بإدخال بريدك، أنتِ توافقين على التواصل معك عند نشر ملاحظات أو تحديثات جديدة.",
+        note: "بإدخال بريدك، أنت توافقين على التواصل معك عند نشر ملاحظات أو تحديثات جديدة.",
         explore: "استكشف",
         policies: "السياسات",
         contact: "التواصل",
@@ -262,7 +262,7 @@
       const subject = encodeURIComponent(isArabic() ? "اشتراك بالتحديثات" : "Subscribe to updates");
       const body = encodeURIComponent(
         isArabic()
-          ? `مرحبًا،\n\nأرغب بالاشتراك بالتحديثات.\n\nالبريد: ${value}\n`
+          ? `مرحبا،\n\nأرغب بالاشتراك بالتحديثات.\n\nالبريد: ${value}\n`
           : `Hi,\n\nI’d like to subscribe to updates.\n\nEmail: ${value}\n`
       );
 
@@ -1049,7 +1049,7 @@
     const map = {
       "Home": "الرئيسية",
       "Start Here": "ابدأ من هنا",
-      "Learn": "تعلّم",
+      "Learn": "تعلم",
       "Career": "المسار المهني",
       "Career Development": "المسار المهني",
       "Resources": "الموارد",

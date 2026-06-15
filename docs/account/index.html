@@ -10,7 +10,6 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/styles/light-mode.css">
-  <script src="/javascripts/translation-launch-guard.js"></script>
   <script src="/javascripts/course-manifest.js"></script>
   <style>
     :root {
@@ -201,6 +200,10 @@
       .stats-row{grid-template-columns:1fr 1fr;gap:10px;}
       .course-list{grid-template-columns:1fr;}
     }
+
+    .shoug-lang-btn{position:fixed;top:16px;inset-inline-end:16px;z-index:500;width:34px;height:34px;display:inline-flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,.12);background:rgba(5,5,8,.7);color:#f8f7fb;text-decoration:none;font-family:'JetBrains Mono',monospace;font-size:.64rem;font-weight:800;letter-spacing:.08em;cursor:pointer;transition:border-color 160ms ease,color 160ms ease,background 160ms ease;}
+    .shoug-lang-btn:hover{color:#b829ea;border-color:rgba(184,41,234,.55);}
+    body.shoug-light-mode .shoug-lang-btn{color:#16111f;background:rgba(255,255,255,.7);}
   </style>
 
     <meta name="description" content="A full breakdown of your learning progress across all courses and sections.">
@@ -223,45 +226,165 @@
 <body>
 <script>if(localStorage.getItem('shoug-theme')==='light')document.body.classList.add('shoug-light-mode');</script>
 <script src="/javascripts/mobile-navigation.js" defer></script>
+<script src="/javascripts/arabic-localization.js" defer></script>
+
+<button class="shoug-lang-btn" type="button" data-lang-toggle aria-label="Switch to Arabic">AR</button>
 
 <main class="page">
   <div class="breadcrumb">
-    <a href="/">Home</a><span class="breadcrumb-sep">/</span>
-    <span class="breadcrumb-cur">My Progress</span>
+    <a href="/" data-ar-text="الرئيسية">Home</a><span class="breadcrumb-sep">/</span>
+    <span class="breadcrumb-cur" data-ar-text="تقدمي">My Progress</span>
   </div>
-  <div class="page-eyebrow">// USER DASHBOARD</div>
-  <h1 class="page-title">My Progress</h1>
-  <p class="page-sub">A full breakdown of your learning progress across all courses and sections.</p>
+  <div class="page-eyebrow" data-ar-text="// لوحة المستخدم">// USER DASHBOARD</div>
+  <h1 class="page-title" data-ar-text="تقدمي">My Progress</h1>
+  <p class="page-sub" data-ar-text="تفصيل كامل لتقدمك الدراسي عبر جميع المواد والأقسام.">A full breakdown of your learning progress across all courses and sections.</p>
 
   <div id="loading-state" class="state-box">
-    <div class="state-tag">Authenticating…</div>
+    <div class="state-tag" data-ar-text="جار التحقق من الهوية…">Authenticating…</div>
   </div>
   <div id="signed-out-state" class="state-box" style="display:none">
-    <div class="state-tag">// ACCESS DENIED</div>
-    <div class="state-msg">Sign in to track your progress.</div>
-    <button class="state-btn" id="open-signin-btn">Sign In</button>
+    <div class="state-tag" data-ar-text="// الوصول مرفوض">// ACCESS DENIED</div>
+    <div class="state-msg" data-ar-text="سجل الدخول لتتبع تقدمك.">Sign in to track your progress.</div>
+    <button class="state-btn" id="open-signin-btn" data-ar-text="تسجيل الدخول">Sign In</button>
   </div>
   <div id="empty-state" class="state-box" style="display:none">
-    <div class="state-tag">// NO DATA YET</div>
-    <div class="state-msg">Mark pages as complete to see your progress here.</div>
-    <a class="state-btn" href="/academics/">Browse Academics</a>
+    <div class="state-tag" data-ar-text="// لا توجد بيانات بعد">// NO DATA YET</div>
+    <div class="state-msg" data-ar-text="أكمل صفحات لتظهر هنا.">Mark pages as complete to see your progress here.</div>
+    <a class="state-btn" href="/academics/" data-ar-text="استعرض الدراسة">Browse Academics</a>
   </div>
   <div id="dashboard" style="display:none">
     <div id="profile-setup-banner" style="display:none"></div>
     <div id="profile-card" style="display:none"></div>
     <div id="stats-row" class="stats-row"></div>
     <div id="overview-row" class="overview-row"></div>
-    <div class="chart-section-label" style="margin-top:48px">Analytics</div>
+    <div class="chart-section-label" style="margin-top:48px" data-ar-text="التحليلات">Analytics</div>
     <div class="charts-row-2" id="charts-row-2"></div>
     <div class="bar-chart-wrap" id="bar-chart-wrap"></div>
     <div class="line-chart-wrap" id="line-chart-wrap"></div>
-    <div class="chart-section-label">Academic Tracks</div>
+    <div class="chart-section-label" data-ar-text="المسارات الدراسية">Academic Tracks</div>
     <div class="track-grid" id="track-grid"></div>
   </div>
 </main>
 
 <script>
 (function(){
+  var STR = {
+    en: {
+      trackLabels: {"computer-science":"Computer Science","cybersecurity":"Cybersecurity","software-engineering":"Software Engineering","other-courses":"Other Courses"},
+      pagesCompleted: "Pages Completed",
+      totalPages: "Total Pages",
+      overallProgress: "Overall Progress",
+      activeTracks: "Active Tracks",
+      overall: "Overall",
+      overviewHeading: function(done,total){ return done+" of "+total+" pages complete"; },
+      overviewParagraph: "Your academic progress across all tracks on this site. Mark individual pages as complete as you study.",
+      trackBalanceTitle: "Track Balance",
+      trackBalanceSub: "Progress across each academic track",
+      studyActivityTitle: "Study Activity",
+      studyActivitySub: "Pages completed per day — last 6 months",
+      courseRankingsTitle: "Course Rankings",
+      courseRankingsSub: "All courses sorted by completion percentage",
+      progressOverTimeTitle: "Progress Over Time",
+      progressOverTimeSub: "Cumulative pages completed — last 90 days",
+      less: "Less",
+      more: "More",
+      days: ["Su","Mo","Tu","We","Th","Fr","Sa"],
+      months: ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],
+      pageWord: function(count){ return count===1?"page":"pages"; },
+      joinCommunity: "// Join the Community",
+      joinCommunitySub: "Set a username to appear in leaderboards, follow others, and join course discussions.",
+      browseCommunity: "Browse Community",
+      usernameLabel: "Username",
+      usernameHint: "(3–20 chars, a-z 0-9 _)",
+      displayNameLabel: "Display Name",
+      bioLabel: "Bio",
+      optional: "(optional)",
+      bioPlaceholder: "Tell the community about yourself…",
+      avatarLabel: "Avatar",
+      createProfile: "Create Profile",
+      usernamePlaceholder: "your_username",
+      namePlaceholder: "Your Name",
+      usernameTooShort: "Username must be at least 3 characters.",
+      displayNameRequired: "Display name is required.",
+      usernameTaken: "That username is taken.",
+      checking: "Checking…",
+      saving: "Saving…",
+      community: "Community"
+    },
+    ar: {
+      trackLabels: {"computer-science":"علوم الحاسب","cybersecurity":"الأمن السيبراني","software-engineering":"هندسة البرمجيات","other-courses":"مواد أخرى"},
+      pagesCompleted: "الصفحات المكتملة",
+      totalPages: "إجمالي الصفحات",
+      overallProgress: "التقدم الكلي",
+      activeTracks: "المسارات النشطة",
+      overall: "الإجمالي",
+      overviewHeading: function(done,total){ return done+" من "+total+" صفحة مكتملة"; },
+      overviewParagraph: "تقدمك الدراسي عبر جميع المسارات في هذا الموقع. أكمل الصفحات تباعا أثناء دراستك.",
+      trackBalanceTitle: "توازن المسارات",
+      trackBalanceSub: "التقدم في كل مسار دراسي",
+      studyActivityTitle: "نشاط الدراسة",
+      studyActivitySub: "الصفحات المكتملة يوميا — آخر 6 أشهر",
+      courseRankingsTitle: "تصنيف المواد",
+      courseRankingsSub: "جميع المواد مرتبة حسب نسبة الإنجاز",
+      progressOverTimeTitle: "التقدم بمرور الوقت",
+      progressOverTimeSub: "إجمالي الصفحات المكتملة — آخر 90 يوما",
+      less: "أقل",
+      more: "أكثر",
+      days: ["ح","ن","ث","ر","خ","ج","س"],
+      months: ["ينا","فبر","مار","أبر","ماي","يون","يول","أغس","سبت","أكت","نوف","ديس"],
+      pageWord: function(count){ return count===1?"صفحة":"صفحات"; },
+      joinCommunity: "// انضم إلى المجتمع",
+      joinCommunitySub: "حدد اسم مستخدم لتظهر في لوحات المتصدرين، وتتابع آخرين، وتشارك في نقاشات المواد.",
+      browseCommunity: "استعرض المجتمع",
+      usernameLabel: "اسم المستخدم",
+      usernameHint: "(3-20 حرفا، a-z 0-9 _)",
+      displayNameLabel: "الاسم المعروض",
+      bioLabel: "نبذة",
+      optional: "(اختياري)",
+      bioPlaceholder: "أخبر المجتمع عن نفسك…",
+      avatarLabel: "الصورة الرمزية",
+      createProfile: "إنشاء الملف الشخصي",
+      usernamePlaceholder: "اسم_المستخدم",
+      namePlaceholder: "اسمك",
+      usernameTooShort: "يجب أن يكون اسم المستخدم 3 أحرف على الأقل.",
+      displayNameRequired: "الاسم المعروض مطلوب.",
+      usernameTaken: "اسم المستخدم هذا غير متاح.",
+      checking: "جار التحقق…",
+      saving: "جار الحفظ…",
+      community: "المجتمع"
+    }
+  };
+  function curLang(){ return document.documentElement.lang.toLowerCase().indexOf("ar")===0 ? "ar" : "en"; }
+  function L(){ return STR[curLang()]; }
+  window.__shougL = L;
+  window.__shougRerender = null;
+
+  var langToggle = document.querySelector("[data-lang-toggle]");
+  function applyLangUI(lang){
+    if(!langToggle) return;
+    langToggle.textContent = lang==="ar" ? "EN" : "AR";
+    langToggle.setAttribute("aria-label", lang==="ar" ? "حول إلى الإنجليزية" : "Switch to Arabic");
+  }
+  function setLang(lang){
+    document.documentElement.lang = lang==="ar" ? "ar-SA" : "en";
+    document.documentElement.dir = lang==="ar" ? "rtl" : "ltr";
+    applyLangUI(lang);
+    localStorage.setItem("shoug-lang", lang);
+    if (window.__shougRerender) window.__shougRerender();
+  }
+  var initialLang = localStorage.getItem("shoug-lang")==="ar" ? "ar" : "en";
+  setLang(initialLang);
+  if(langToggle){
+    langToggle.addEventListener("click", function(){
+      setLang(curLang()==="ar" ? "en" : "ar");
+    });
+  }
+})();
+</script>
+
+<script>
+(function(){
+  var L = window.__shougL;
   var TRACK_META={
     "computer-science":    {label:"Computer Science",    color:"#3b82f6",abbr:"CS"},
     "cybersecurity":       {label:"Cybersecurity",       color:"#ff2a4b",abbr:"CYS"},
@@ -272,8 +395,8 @@
   function escHtml(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
 
   var AVATAR_PRESETS = [
-    'av-f1.png','av-f2.png','av-f3.png','av-f4.png','av-f5.png','av-f6.png','av-f7.png',
-    'av-m1.png','av-m2.png','av-m3.png','av-m4.png','av-m5.png','av-m6.png','av-m7.png'
+    'av-f1.webp','av-f2.webp','av-f3.webp','av-f4.webp','av-f5.webp','av-f6.webp','av-f7.webp',
+    'av-m1.webp','av-m2.webp','av-m3.webp','av-m4.webp','av-m5.webp','av-m6.webp','av-m7.webp'
   ];
   function avatarUrl(preset){
     var i = parseInt(preset, 10);
@@ -300,6 +423,9 @@
     return map;
   }
 
+  // ── i18n re-render cache ────────────────────────────────────────────
+  var _rrProgress=null, _rrGrandDone=0, _rrGrandTotal=0, _rrOverallPct=0, _rrCompletedDates=null, _rrUserProfile=null, _rrUid=null;
+
   function calcProgress(pageMap,completedSet){
     var result={};
     Object.keys(pageMap).forEach(function(track){
@@ -316,10 +442,10 @@
   // ── 1. Stats ─────────────────────────────────────────────────────────
   function renderStats(grandDone,grandTotal,overallPct){
     document.getElementById("stats-row").innerHTML=[
-      sCard(grandDone,"Pages Completed","#b829ea"),
-      sCard(grandTotal,"Total Pages","#3b82f6"),
-      sCard(overallPct+"%","Overall Progress","#22c55e"),
-      sCard(Object.keys(TRACK_META).length,"Active Tracks","#ff2a4b"),
+      sCard(grandDone,L().pagesCompleted,"#b829ea"),
+      sCard(grandTotal,L().totalPages,"#3b82f6"),
+      sCard(overallPct+"%",L().overallProgress,"#22c55e"),
+      sCard(Object.keys(TRACK_META).length,L().activeTracks,"#ff2a4b"),
     ].join("");
   }
   function sCard(val,label,color){
@@ -332,11 +458,11 @@
       var meta=TRACK_META[track],courses=progress[track]||{},tDone=0,tTotal=0;
       Object.keys(courses).forEach(function(c){tDone+=courses[c].done;tTotal+=courses[c].total;});
       var tPct=tTotal?Math.round(tDone/tTotal*100):0;
-      return '<div class="overview-bar-item"><div class="overview-bar-dot" style="background:'+meta.color+'"></div><span class="overview-bar-name">'+escHtml(meta.label)+'</span><div class="overview-bar-track"><div class="overview-bar-fill" style="width:'+tPct+'%;background:'+meta.color+'"></div></div><span class="overview-bar-stat">'+tDone+"/"+tTotal+'</span></div>';
+      return '<div class="overview-bar-item"><div class="overview-bar-dot" style="background:'+meta.color+'"></div><span class="overview-bar-name">'+escHtml(L().trackLabels[track])+'</span><div class="overview-bar-track"><div class="overview-bar-fill" style="width:'+tPct+'%;background:'+meta.color+'"></div></div><span class="overview-bar-stat">'+tDone+"/"+tTotal+'</span></div>';
     }).join("");
     document.getElementById("overview-row").innerHTML=
-      '<div class="ring-wrap">'+ring(60,overallPct,"#b829ea",140)+'<div class="ring-label">Overall</div><div class="ring-pct">'+overallPct+'%</div></div>'+
-      '<div class="overview-text"><h2>'+grandDone+' of '+grandTotal+' pages complete</h2><p>Your academic progress across all tracks on this site. Mark individual pages as complete as you study.</p><div class="overview-bar-row">'+bars+'</div></div>';
+      '<div class="ring-wrap">'+ring(60,overallPct,"#b829ea",140)+'<div class="ring-label">'+L().overall+'</div><div class="ring-pct">'+overallPct+'%</div></div>'+
+      '<div class="overview-text"><h2>'+L().overviewHeading(grandDone,grandTotal)+'</h2><p>'+L().overviewParagraph+'</p><div class="overview-bar-row">'+bars+'</div></div>';
   }
 
   // ── 3. Radar Chart ────────────────────────────────────────────────────
@@ -388,14 +514,14 @@
 
     var padX=45,padY=15;
     var svg='<svg width="'+(W+padX*2)+'" height="'+(H+padY*2)+'" viewBox="-'+padX+' -'+padY+' '+(W+padX*2)+' '+(H+padY*2)+'">'+gridLines+axes+polygon+dots+labels+gridLabels+'</svg>';
-    return '<div class="chart-card"><div class="chart-title">Track Balance</div><div class="chart-sub">Progress across each academic track</div><div class="radar-wrap">'+svg+'</div></div>';
+    return '<div class="chart-card"><div class="chart-title">'+L().trackBalanceTitle+'</div><div class="chart-sub">'+L().trackBalanceSub+'</div><div class="radar-wrap">'+svg+'</div></div>';
   }
 
   // ── 4. Heatmap ────────────────────────────────────────────────────────
   function renderHeatmap(completedDates){
     var CELL=13,GAP=3,STEP=CELL+GAP;
     var WEEKS=26,DAYS=7;
-    var MONTHS=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    var MONTHS=L().months;
     var today=new Date();today.setHours(0,0,0,0);
 
     // Start date: 26 weeks ago, aligned to Sunday
@@ -433,7 +559,7 @@
         var key=cur.getFullYear()+"-"+cur.getMonth()+"-"+cur.getDate();
         var count=dayCounts[key]||0;
         var x=LABEL_W+col*STEP,y=24+row*STEP;
-        cells+='<rect class="heatmap-cell" x="'+x+'" y="'+y+'" width="'+CELL+'" height="'+CELL+'" fill="'+cellColor(count)+'"><title>'+cur.toDateString()+(count?' — '+count+' page'+(count>1?'s':''):'')+'</title></rect>';
+        cells+='<rect class="heatmap-cell" x="'+x+'" y="'+y+'" width="'+CELL+'" height="'+CELL+'" fill="'+cellColor(count)+'"><title>'+cur.toDateString()+(count?' — '+count+' '+L().pageWord(count):'')+'</title></rect>';
         if(count>0)activeDays++;
         totalDays++;
         // Month label at first week of each month
@@ -446,13 +572,13 @@
     }
 
     // Day labels
-    var dayLabels=['Su','Mo','Tu','We','Th','Fr','Sa'].map(function(d,i){
+    var dayLabels=L().days.map(function(d,i){
       return i%2===1?'<text class="heatmap-day-labels" x="8" y="'+(24+i*STEP+CELL-2)+'">'+d+'</text>':"";
     }).join("");
 
     var svg='<svg width="'+svgW+'" height="'+svgH+'" viewBox="0 0 '+svgW+' '+svgH+'">'+monthLabels+dayLabels+cells+'</svg>';
-    var legend='<div class="heatmap-legend">Less <div class="heatmap-legend-cells"><div class="heatmap-legend-cell" style="background:rgba(255,255,255,.04)"></div><div class="heatmap-legend-cell" style="background:rgba(184,41,234,.25)"></div><div class="heatmap-legend-cell" style="background:rgba(184,41,234,.5)"></div><div class="heatmap-legend-cell" style="background:rgba(184,41,234,.75)"></div><div class="heatmap-legend-cell" style="background:#b829ea"></div></div> More</div>';
-    return '<div class="chart-card"><div class="chart-title">Study Activity</div><div class="chart-sub">Pages completed per day — last 6 months</div><div class="heatmap-wrap">'+svg+'</div>'+legend+'</div>';
+    var legend='<div class="heatmap-legend">'+L().less+' <div class="heatmap-legend-cells"><div class="heatmap-legend-cell" style="background:rgba(255,255,255,.04)"></div><div class="heatmap-legend-cell" style="background:rgba(184,41,234,.25)"></div><div class="heatmap-legend-cell" style="background:rgba(184,41,234,.5)"></div><div class="heatmap-legend-cell" style="background:rgba(184,41,234,.75)"></div><div class="heatmap-legend-cell" style="background:#b829ea"></div></div> '+L().more+'</div>';
+    return '<div class="chart-card"><div class="chart-title">'+L().studyActivityTitle+'</div><div class="chart-sub">'+L().studyActivitySub+'</div><div class="heatmap-wrap">'+svg+'</div>'+legend+'</div>';
   }
 
   // ── 5. Bar Chart ──────────────────────────────────────────────────────
@@ -475,7 +601,7 @@
     }
     var col1Html=col1.map(barRow).join("");
     var col2Html=col2.map(barRow).join("");
-    document.getElementById("bar-chart-wrap").innerHTML='<div class="bar-chart-card"><div class="chart-title">Course Rankings</div><div class="chart-sub">All courses sorted by completion percentage</div><div class="bar-chart-grid"><div>'+col1Html+'</div><div>'+col2Html+'</div></div></div>';
+    document.getElementById("bar-chart-wrap").innerHTML='<div class="bar-chart-card"><div class="chart-title">'+L().courseRankingsTitle+'</div><div class="chart-sub">'+L().courseRankingsSub+'</div><div class="bar-chart-grid"><div>'+col1Html+'</div><div>'+col2Html+'</div></div></div>';
   }
 
   // ── 6. Line Graph ─────────────────────────────────────────────────────
@@ -523,7 +649,7 @@
 
     // X labels every 2 weeks
     var xLabels="";
-    var MONTHS=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    var MONTHS=L().months;
     cumBuckets.forEach(function(b,i){
       if(i%14===0||i===DAYS-1){
         xLabels+='<text class="line-label" x="'+bx(i)+'" y="'+(H-6)+'" text-anchor="middle">'+MONTHS[b.date.getMonth()]+" "+b.date.getDate()+'</text>';
@@ -536,7 +662,7 @@
 
     var svg='<svg width="100%" viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none"><defs><linearGradient id="lineGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#b829ea" stop-opacity=".25"/><stop offset="100%" stop-color="#b829ea" stop-opacity="0"/></linearGradient></defs>'+yLines+xLabels+'<path class="line-area" d="'+area+'"/><path class="line-path" d="'+line+'"/>'+dot+'</svg>';
 
-    document.getElementById("line-chart-wrap").innerHTML='<div class="line-chart-card"><div class="chart-title">Progress Over Time</div><div class="chart-sub">Cumulative pages completed — last 90 days</div>'+svg+'</div>';
+    document.getElementById("line-chart-wrap").innerHTML='<div class="line-chart-card"><div class="chart-title">'+L().progressOverTimeTitle+'</div><div class="chart-sub">'+L().progressOverTimeSub+'</div>'+svg+'</div>';
   }
 
   // ── 7. Track Grid ─────────────────────────────────────────────────────
@@ -553,7 +679,7 @@
         var url="/account/course/?track="+encodeURIComponent(track)+"&course="+encodeURIComponent(courseKey);
         return '<a class="course-card" href="'+escHtml(url)+'"><div>'+ring(18,c.pct,meta.color,44)+'</div><div class="course-info"><div class="course-code" style="color:'+meta.color+'">'+escHtml(code)+'</div><div class="course-name">'+escHtml(name||code)+'</div><div class="course-stat">'+c.done+'/'+c.total+' &middot; '+c.pct+'%</div></div></a>';
       }).join("");
-      return '<div class="track-card" style="--track-color:'+meta.color+'" data-track="'+track+'"><div class="track-card-top"><div class="track-ring-wrap">'+ring(32,tPct,meta.color,76)+'</div><div class="track-info"><div class="track-name" style="color:'+meta.color+'">'+escHtml(meta.label)+'</div><div class="track-stat">'+tDone+'/'+tTotal+' pages</div><div class="track-pct-label" style="color:'+meta.color+'">'+tPct+'%</div></div></div><div class="track-chevron">&#9660;</div><div class="course-list">'+courseCards+'</div></div>';
+      return '<div class="track-card" style="--track-color:'+meta.color+'" data-track="'+track+'"><div class="track-card-top"><div class="track-ring-wrap">'+ring(32,tPct,meta.color,76)+'</div><div class="track-info"><div class="track-name" style="color:'+meta.color+'">'+escHtml(L().trackLabels[track])+'</div><div class="track-stat">'+tDone+'/'+tTotal+' '+L().pageWord(2)+'</div><div class="track-pct-label" style="color:'+meta.color+'">'+tPct+'%</div></div></div><div class="track-chevron">&#9660;</div><div class="course-list">'+courseCards+'</div></div>';
     }).join("");
     document.getElementById("track-grid").innerHTML=html;
     document.querySelectorAll(".track-card").forEach(function(card){
@@ -578,19 +704,19 @@
     el.innerHTML = [
       '<div class="setup-banner">',
       '  <div class="setup-banner-top">',
-      '    <div><div class="setup-banner-title">// Join the Community</div>',
-      '    <div class="setup-banner-sub">Set a username to appear in leaderboards, follow others, and join course discussions.</div></div>',
-      '    <a class="profile-link" href="/community/">Browse Community</a>',
+      '    <div><div class="setup-banner-title">'+L().joinCommunity+'</div>',
+      '    <div class="setup-banner-sub">'+L().joinCommunitySub+'</div></div>',
+      '    <a class="profile-link" href="/community/">'+L().browseCommunity+'</a>',
       '  </div>',
       '  <div class="setup-form-row">',
-      '    <div class="setup-field"><label class="setup-label">Username <span style="color:var(--muted);font-size:.52rem">(3–20 chars, a-z 0-9 _)</span></label>',
-      '      <input class="setup-input" id="su-username" placeholder="your_username" maxlength="20"></div>',
-      '    <div class="setup-field"><label class="setup-label">Display Name</label>',
-      '      <input class="setup-input" id="su-displayname" placeholder="Your Name" maxlength="40"></div>',
+      '    <div class="setup-field"><label class="setup-label">'+L().usernameLabel+' <span style="color:var(--muted);font-size:.52rem">'+L().usernameHint+'</span></label>',
+      '      <input class="setup-input" id="su-username" placeholder="'+L().usernamePlaceholder+'" maxlength="20"></div>',
+      '    <div class="setup-field"><label class="setup-label">'+L().displayNameLabel+'</label>',
+      '      <input class="setup-input" id="su-displayname" placeholder="'+L().namePlaceholder+'" maxlength="40"></div>',
       '  </div>',
-      '  <div class="setup-field" style="margin-bottom:12px"><label class="setup-label">Bio <span style="color:var(--muted)">(optional)</span></label>',
-      '    <input class="setup-input" id="su-bio" placeholder="Tell the community about yourself…" maxlength="160"></div>',
-      '  <div class="setup-field" style="margin-bottom:12px"><label class="setup-label">Avatar <span style="color:var(--muted)">(optional)</span></label>',
+      '  <div class="setup-field" style="margin-bottom:12px"><label class="setup-label">'+L().bioLabel+' <span style="color:var(--muted)">'+L().optional+'</span></label>',
+      '    <input class="setup-input" id="su-bio" placeholder="'+L().bioPlaceholder+'" maxlength="160"></div>',
+      '  <div class="setup-field" style="margin-bottom:12px"><label class="setup-label">'+L().avatarLabel+' <span style="color:var(--muted)">'+L().optional+'</span></label>',
       '    <input type="hidden" id="su-avatarid" value="">',
       '    <div class="setup-avatar-grid">',
       AVATAR_PRESETS.map(function(file, i){
@@ -598,7 +724,7 @@
       }).join(""),
       '    </div></div>',
       '  <div class="setup-error" id="su-error"></div>',
-      '  <button class="setup-submit" id="su-submit">Create Profile</button>',
+      '  <button class="setup-submit" id="su-submit">'+L().createProfile+'</button>',
       '</div>',
     ].join("");
 
@@ -620,16 +746,16 @@
       var avatarPreset = avatarPresetRaw !== "" ? parseInt(avatarPresetRaw, 10) : null;
       var errEl = document.getElementById("su-error");
       errEl.textContent = "";
-      if (!username || username.length < 3) { errEl.textContent = "Username must be at least 3 characters."; return; }
-      if (!displayName) { errEl.textContent = "Display name is required."; return; }
+      if (!username || username.length < 3) { errEl.textContent = L().usernameTooShort; return; }
+      if (!displayName) { errEl.textContent = L().displayNameRequired; return; }
       var btn = document.getElementById("su-submit");
-      btn.disabled = true; btn.textContent = "Checking…";
+      btn.disabled = true; btn.textContent = L().checking;
       var COLORS = ["#b829ea","#3b82f6","#22c55e","#f59e0b","#ff2a4b","#06b6d4","#ec4899"];
       var color = COLORS[Math.floor(Math.random()*COLORS.length)];
       var db = firebase.firestore();
       db.collection("usernames").doc(username).get().then(function(doc){
-        if (doc.exists) { errEl.textContent = "That username is taken."; btn.disabled=false; btn.textContent="Create Profile"; return; }
-        btn.textContent = "Saving…";
+        if (doc.exists) { errEl.textContent = L().usernameTaken; btn.disabled=false; btn.textContent=L().createProfile; return; }
+        btn.textContent = L().saving;
         var profile = { username:username, displayName:displayName, bio:bio, avatarColor:color, totalCompleted:0,
           createdAt:firebase.firestore.FieldValue.serverTimestamp(), updatedAt:firebase.firestore.FieldValue.serverTimestamp() };
         if (avatarPreset !== null) profile.avatarPreset = avatarPreset;
@@ -640,7 +766,7 @@
           renderProfileCard(profile);
           el.style.display = "none";
         });
-      }).catch(function(err){ errEl.textContent = err.message; btn.disabled=false; btn.textContent="Create Profile"; });
+      }).catch(function(err){ errEl.textContent = err.message; btn.disabled=false; btn.textContent=L().createProfile; });
     });
   }
 
@@ -662,7 +788,7 @@
       (profile.bio ? '    <div class="profile-bio">'+escHtml(profile.bio)+'</div>' : ""),
       '  </div>',
       '  <div class="profile-actions">',
-      '    <a class="profile-link" href="/community/">Community</a>',
+      '    <a class="profile-link" href="/community/">'+L().community+'</a>',
       '  </div>',
       '</div>',
     ].join("");
@@ -732,6 +858,22 @@
       renderLineGraph(completedDates);
       renderTrackGrid(progress);
       show("dashboard");
+
+      _rrProgress=progress; _rrGrandDone=grandDone; _rrGrandTotal=grandTotal;
+      _rrOverallPct=overallPct; _rrCompletedDates=completedDates; _rrUserProfile=userProfile; _rrUid=user.uid;
+      window.__shougRerender = function(){
+        renderStats(_rrGrandDone,_rrGrandTotal,_rrOverallPct);
+        renderOverview(_rrProgress,_rrGrandDone,_rrGrandTotal,_rrOverallPct);
+        document.getElementById("charts-row-2").innerHTML=renderRadar(_rrProgress)+renderHeatmap(_rrCompletedDates);
+        renderBarChart(_rrProgress);
+        renderLineGraph(_rrCompletedDates);
+        renderTrackGrid(_rrProgress);
+        if (_rrUserProfile && _rrUserProfile.username) {
+          renderProfileCard(_rrUserProfile);
+        } else {
+          renderProfileSetup(_rrUid);
+        }
+      };
     }).catch(function(){ show("empty-state"); });
   }
 

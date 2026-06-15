@@ -3161,6 +3161,159 @@ var COURSE_PAGES = [
     "courseTitle": "ISC113 // Islamic Economy"
   },
   {
+    "url": "/academics/other-courses/phy105/extra-resources/final-experiments-summary/",
+    "title": "PHY105 Final Experiments Summary",
+    "track": "other-courses",
+    "course": "phy105",
+    "section": "extra-resources",
+    "courseUrl": "/academics/other-courses/phy105/",
+    "courseTitle": "PHY105 // Physics I"
+  },
+  {
+    "url": "/academics/other-courses/phy105/extra-resources/formula-sheet/",
+    "title": "PHY105 Formula Sheet",
+    "track": "other-courses",
+    "course": "phy105",
+    "section": "extra-resources",
+    "courseUrl": "/academics/other-courses/phy105/",
+    "courseTitle": "PHY105 // Physics I"
+  },
+  {
+    "url": "/academics/other-courses/phy105/extra-resources/formulas/",
+    "title": "PHY105 Formulas",
+    "track": "other-courses",
+    "course": "phy105",
+    "section": "extra-resources",
+    "courseUrl": "/academics/other-courses/phy105/",
+    "courseTitle": "PHY105 // Physics I"
+  },
+  {
+    "url": "/academics/other-courses/phy105/extra-resources/pasco-setting/",
+    "title": "PHY105 Pasco Setting",
+    "track": "other-courses",
+    "course": "phy105",
+    "section": "extra-resources",
+    "courseUrl": "/academics/other-courses/phy105/",
+    "courseTitle": "PHY105 // Physics I"
+  },
+  {
+    "url": "/academics/other-courses/phy105/extra-resources/phy105-all-experiments/",
+    "title": "PHY105 PHY105 All Experiments",
+    "track": "other-courses",
+    "course": "phy105",
+    "section": "extra-resources",
+    "courseUrl": "/academics/other-courses/phy105/",
+    "courseTitle": "PHY105 // Physics I"
+  },
+  {
+    "url": "/academics/other-courses/phy105/slides/chapter-1-introduction/",
+    "title": "PHY105 Chapter 1 Introduction",
+    "track": "other-courses",
+    "course": "phy105",
+    "section": "slides",
+    "courseUrl": "/academics/other-courses/phy105/",
+    "courseTitle": "PHY105 // Physics I"
+  },
+  {
+    "url": "/academics/other-courses/phy105/slides/chapter-16-temperature/",
+    "title": "PHY105 Chapter 16 Temperature",
+    "track": "other-courses",
+    "course": "phy105",
+    "section": "slides",
+    "courseUrl": "/academics/other-courses/phy105/",
+    "courseTitle": "PHY105 // Physics I"
+  },
+  {
+    "url": "/academics/other-courses/phy105/slides/chapter-2-vectors/",
+    "title": "PHY105 Chapter 2 Vectors",
+    "track": "other-courses",
+    "course": "phy105",
+    "section": "slides",
+    "courseUrl": "/academics/other-courses/phy105/",
+    "courseTitle": "PHY105 // Physics I"
+  },
+  {
+    "url": "/academics/other-courses/phy105/slides/chapter-3-motion-in-two-and-three-dimensions/",
+    "title": "PHY105 Chapter 3 Motion in Two and Three Dimensions",
+    "track": "other-courses",
+    "course": "phy105",
+    "section": "slides",
+    "courseUrl": "/academics/other-courses/phy105/",
+    "courseTitle": "PHY105 // Physics I"
+  },
+  {
+    "url": "/academics/other-courses/phy105/slides/chapter-4-projectile-motion/",
+    "title": "PHY105 Chapter 4 Projectile Motion",
+    "track": "other-courses",
+    "course": "phy105",
+    "section": "slides",
+    "courseUrl": "/academics/other-courses/phy105/",
+    "courseTitle": "PHY105 // Physics I"
+  },
+  {
+    "url": "/academics/other-courses/phy105/slides/chapter-5-forces-and-motion/",
+    "title": "PHY105 Chapter 5 Forces and Motion",
+    "track": "other-courses",
+    "course": "phy105",
+    "section": "slides",
+    "courseUrl": "/academics/other-courses/phy105/",
+    "courseTitle": "PHY105 // Physics I"
+  },
+  {
+    "url": "/academics/other-courses/phy105/slides/chapter-6-force-and-motion-ii/",
+    "title": "PHY105 Chapter 6 Force and Motion II",
+    "track": "other-courses",
+    "course": "phy105",
+    "section": "slides",
+    "courseUrl": "/academics/other-courses/phy105/",
+    "courseTitle": "PHY105 // Physics I"
+  },
+  {
+    "url": "/academics/other-courses/phy105/slides/chapter-7-work-and-kinetic-energy/",
+    "title": "PHY105 Chapter 7 Work and Kinetic Energy",
+    "track": "other-courses",
+    "course": "phy105",
+    "section": "slides",
+    "courseUrl": "/academics/other-courses/phy105/",
+    "courseTitle": "PHY105 // Physics I"
+  },
+  {
+    "url": "/academics/other-courses/phy105/slides/chapter-8-potential-energy/",
+    "title": "PHY105 Chapter 8 Potential Energy",
+    "track": "other-courses",
+    "course": "phy105",
+    "section": "slides",
+    "courseUrl": "/academics/other-courses/phy105/",
+    "courseTitle": "PHY105 // Physics I"
+  },
+  {
+    "url": "/academics/other-courses/phy105/slides/chapter-9-momentum/",
+    "title": "PHY105 Chapter 9 Momentum",
+    "track": "other-courses",
+    "course": "phy105",
+    "section": "slides",
+    "courseUrl": "/academics/other-courses/phy105/",
+    "courseTitle": "PHY105 // Physics I"
+  },
+  {
+    "url": "/academics/other-courses/phy105/syllabus/lab-syllabus/",
+    "title": "PHY105 Lab Syllabus",
+    "track": "other-courses",
+    "course": "phy105",
+    "section": "syllabus",
+    "courseUrl": "/academics/other-courses/phy105/",
+    "courseTitle": "PHY105 // Physics I"
+  },
+  {
+    "url": "/academics/other-courses/phy105/syllabus/lecture-syllabus/",
+    "title": "PHY105 Lecture Syllabus",
+    "track": "other-courses",
+    "course": "phy105",
+    "section": "syllabus",
+    "courseUrl": "/academics/other-courses/phy105/",
+    "courseTitle": "PHY105 // Physics I"
+  },
+  {
     "url": "/academics/other-courses/phy205/slides/phy205-chapter-21-electric-charge-halliday/",
     "title": "PHY205 | Chapter 21 Electric Charge Halliday",
     "track": "other-courses",
@@ -4236,6 +4389,7 @@ var COURSE_MANIFEST = {
   "eng103": 7,
   "ethcs303": 72,
   "isc113": 23,
+  "phy105": 17,
   "phy205": 8,
   "se201": 32,
   "se311": 33,
@@ -4256,6 +4410,7 @@ var COURSE_MANIFEST_BY_TRACK = {
   "other-courses/eng103": 7,
   "other-courses/ethcs303": 72,
   "other-courses/isc113": 23,
+  "other-courses/phy105": 17,
   "other-courses/phy205": 8,
   "software-engineering/se201": 32,
   "software-engineering/se311": 33,
