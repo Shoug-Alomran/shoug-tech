@@ -1028,8 +1028,9 @@ COMMON_HEADER_CSS = r"""
 
         .academic-sidebar .item-children {
             display: block;
-            margin-left: 72px;
+            margin-left: 44px;
             margin-bottom: 12px;
+            padding-left: 10px;
             max-height: 360px;
             overflow-y: auto;
             border-left-color: rgba(184, 41, 234, 0.42);
@@ -1041,9 +1042,15 @@ COMMON_HEADER_CSS = r"""
         }
 
         .academic-sidebar .tree-viewer {
-            font-size: 0.62rem;
-            letter-spacing: 0.04em;
+            font-size: 0.58rem;
+            line-height: 1.42;
+            letter-spacing: 0.035em;
             text-transform: none;
+        }
+
+        .academic-sidebar .tree-viewer .tree-file {
+            display: block;
+            white-space: normal;
         }
 
         .academic-sidebar .file-active {

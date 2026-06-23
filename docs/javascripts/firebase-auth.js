@@ -1041,7 +1041,7 @@
 
   // ── Onboarding ────────────────────────────────────────────────────────────
 
-  function showOnboarding() {
+  function showOnboarding(triggerEl) {
     // Detect page context so each section type gets its own contextual walkthrough
     var path = window.location.pathname;
     var parts = path.replace(/\/$/, "").split("/").filter(Boolean);
@@ -1051,35 +1051,35 @@
     var context, storageKey;
     if (parts.length === 0) {
       context = "home";
-      storageKey = "shoug-onboarded";
+      storageKey = "shoug-ob-home-v2";
     } else if (parts[0] === "academics") {
-      if (parts.length === 1) { context = "academics-index"; storageKey = "shoug-ob-academics"; }
-      else if (parts.length === 2) { context = "academics-subject"; storageKey = "shoug-ob-subject"; }
-      else { context = "academics-course"; storageKey = "shoug-ob-course"; }
+      if (parts.length === 1) { context = "academics-index"; storageKey = "shoug-ob-academics-v2"; }
+      else if (parts.length === 2) { context = "academics-subject"; storageKey = "shoug-ob-subject-v2"; }
+      else { context = "academics-course"; storageKey = "shoug-ob-course-v2"; }
     } else if (parts[0] === "resources") {
-      context = "resources"; storageKey = "shoug-ob-resources";
+      context = "resources"; storageKey = "shoug-ob-resources-v2";
     } else if (parts[0] === "workshops") {
-      if (parts.length === 1) { context = "workshops"; storageKey = "shoug-ob-workshops"; }
-      else { context = "workshop-detail"; storageKey = "shoug-ob-workshop-detail"; }
+      if (parts.length === 1) { context = "workshops"; storageKey = "shoug-ob-workshops-v2"; }
+      else { context = "workshop-detail"; storageKey = "shoug-ob-workshop-detail-v2"; }
     } else if (parts[0] === "about") {
-      context = "about"; storageKey = "shoug-ob-about";
+      context = "about"; storageKey = "shoug-ob-about-v2";
     } else if (parts[0] === "work") {
-      if (parts.length === 1) { context = "work"; storageKey = "shoug-ob-work"; }
-      else { context = "work-detail"; storageKey = "shoug-ob-work-detail"; }
+      if (parts.length === 1) { context = "work"; storageKey = "shoug-ob-work-v2"; }
+      else { context = "work-detail"; storageKey = "shoug-ob-work-detail-v2"; }
     } else if (parts[0] === "community") {
-      if (parts.length === 1) { context = "community"; storageKey = "shoug-ob-community"; }
-      else { context = "community-profile"; storageKey = "shoug-ob-profile"; }
+      if (parts.length === 1) { context = "community"; storageKey = "shoug-ob-community-v2"; }
+      else { context = "community-profile"; storageKey = "shoug-ob-profile-v2"; }
     } else if (parts[0] === "account") {
-      context = "account"; storageKey = "shoug-ob-account";
+      context = "account"; storageKey = "shoug-ob-account-v2";
     } else if (parts[0] === "bookmarks") {
-      context = "bookmarks"; storageKey = "shoug-ob-bookmarks";
+      context = "bookmarks"; storageKey = "shoug-ob-bookmarks-v2";
     } else if (parts[0] === "academic-plan-themes") {
-      context = "academic-plan-themes"; storageKey = "shoug-ob-apt";
+      context = "academic-plan-themes"; storageKey = "shoug-ob-apt-v2";
     } else {
-      return; // No walkthrough for unrecognised pages (policy, career-development, etc.)
+      return false; // No walkthrough for unrecognised pages (policy, career-development, etc.)
     }
 
-    if (localStorage.getItem(storageKey)) return;
+    if (localStorage.getItem(storageKey)) return false;
 
     // Header is z-index:10000 (fixed). Overlay below header = 9999 lets header show through.
     // Overlay above header = 10001 covers everything (used for center/no-target steps).
@@ -1101,42 +1101,42 @@
           position: "center",
           tag: "Academics Hub",
           title: "Browse by Subject Track",
-          body: "This is the <strong>Academics hub</strong> — the starting point for all course content on SHOUG.TECH. Four subject tracks are organised below, each covering a set of PSU courses. Click any card to open that track and pick a course.",
+          body: "Start here for course content. Pick a track, then choose a course.",
         },
         {
           target: function(){ return document.querySelector(".hub-grid") || document.querySelector(".track-card"); },
           position: "bottom",
           tag: "Step 1 of 5 · Track Cards",
           title: "Four Subject Tracks",
-          body: "Each card represents a <strong>subject track</strong>. The number badge in the top-right corner shows how many courses are inside. The tags below the title give you a quick preview of what topics you'll find.",
+          body: "Each card is a subject track. The badge shows how many courses are inside.",
         },
         {
           target: function(){ return document.querySelector('a.track-card[href="/academics/computer-science/"]'); },
           position: "bottom",
           tag: "Step 2 of 5 · Computer Science",
           title: "Computer Science Track",
-          body: "<strong>CS</strong> covers data structures, operating systems, databases, discrete math, computer networks, and more. The largest track on the site — most CS and SE students spend the majority of their study time here.",
+          body: "<strong>CS</strong> has the core computing courses: data, systems, databases, networks, and more.",
         },
         {
           target: function(){ return document.querySelector('a.track-card[href="/academics/software-engineering/"]'); },
           position: "bottom",
           tag: "Step 3 of 5 · Software Engineering",
           title: "Software Engineering Track",
-          body: "<strong>SE</strong> covers requirements engineering, software architecture, system design, software testing, and professional practice. All notes and slide breakdowns are included for each SE course.",
+          body: "<strong>SE</strong> covers requirements, architecture, design, testing, and practice.",
         },
         {
           target: function(){ return document.querySelector('a.track-card[href="/academics/cybersecurity/"]') || document.querySelector('a.track-card.cyber'); },
           position: "top",
           tag: "Step 4 of 5 · Cybersecurity",
           title: "Cybersecurity Track",
-          body: "<strong>CYS</strong> focuses on penetration testing, security labs, and CTF-style content. More practical and tool-focused than the CS/SE tracks — great for hands-on security work.",
+          body: "<strong>CYS</strong> is the hands-on security track: labs, tools, and CTF-style work.",
         },
         {
           target: function(){ return document.querySelector('a.track-card[href="/academics/other-courses/"]'); },
           position: "top",
           tag: "Step 5 of 5 · Other Courses",
           title: "Other Courses",
-          body: "<strong>Other Courses</strong> covers ethics, physics, English writing, and general PSU requirements that don't belong to a specific major track. Required across most programs. <em>Click any card to dive in.</em>",
+          body: "<strong>Other Courses</strong> holds writing, ethics, physics, science, and shared requirements.",
         },
       ];
 
@@ -1144,11 +1144,11 @@
       // Subject listing page like /academics/computer-science/
       steps = [
         {
-          target: null,
-          position: "center",
+          target: function(){ return document.querySelector(".course-grid") || document.querySelector(".course-card") || document.querySelector(".course-row"); },
+          position: "bottom",
           tag: "Subject Track",
           title: "Pick a Course",
-          body: "You're on a subject track page. Each card below is a <strong>course</strong> within this track. Click any course to open its full page — overview, slide breakdowns, study material, and quizzes all included.",
+          body: "Each card is a course. Open one for notes, slides, resources, and exams.",
         },
       ];
 
@@ -1160,14 +1160,14 @@
           position: "center",
           tag: "Course Page",
           title: "What's on This Page",
-          body: "You've opened a <strong>course page</strong>. Every course on SHOUG.TECH has multiple sections — slide breakdowns by chapter, raw lecture slides, extra study material, and quizzes. Use the sidebar and the tab bar to navigate between them.",
+          body: "Course pages are split into sections. Use the sidebar or tabs to move around.",
         },
         {
           target: function(){ return document.querySelector(".academic-sidebar"); },
           position: "right",
           tag: "Step 1 of 6 · Sidebar",
           title: "Course Directory Sidebar",
-          body: "This sidebar is your full site-wide directory. Subjects are shown as collapsible trees — the <strong>[+]</strong> and <strong>[-]</strong> labels expand and collapse each subject. The <strong>highlighted entry</strong> (with the dot) is the page you're currently on. Click any course or section to jump there directly.",
+          body: "This is the course directory. Expand subjects and jump straight to any course or section.",
         },
         {
           target: function(){
@@ -1177,7 +1177,7 @@
           position: "right",
           tag: "Step 2 of 6 · Expand / Collapse",
           title: "Collapsible Subject Groups",
-          body: "Click a subject label like <strong>[+] COMPUTER SCIENCE/</strong> to expand it and reveal every course inside. Click <strong>[-]</strong> to collapse it. The active course's subject is always auto-expanded when the page loads.",
+          body: "Use <strong>[+]</strong> and <strong>[-]</strong> to expand or collapse course groups.",
         },
         {
           target: function(){
@@ -1186,7 +1186,7 @@
           position: "bottom",
           tag: "Step 3 of 6 · Section Tabs",
           title: "Course Sections",
-          body: "The tab bar above the content switches between sections of this course:<br><br><strong>Overview</strong> — course summary, syllabus, and grade breakdown.<br><strong>Slide Breakdowns</strong> — chapter-by-chapter detailed notes.<br><strong>Slides</strong> — the raw lecture slide decks.<br><strong>Study Material</strong> — extra resources and references.<br><strong>Exams</strong> — practice questions with answers.",
+          body: "Use these tabs for overview, notes, slides, study material, and exams.",
         },
         {
           target: function(){
@@ -1195,7 +1195,7 @@
           position: "left",
           tag: "Step 4 of 6 · Metadata Panel",
           title: "Course Info Panel",
-          body: "The panel on the right shows all course metadata at a glance: <strong>status</strong> (complete or in-progress), <strong>credit hours</strong>, <strong>prerequisites</strong>, and quick-jump links to each section. The barcode at the top is a unique file ID for this course.",
+          body: "Quick course facts live here: status, credits, prerequisites, and section links.",
         },
         {
           target: function(){
@@ -1206,14 +1206,14 @@
           position: "bottom",
           tag: "Step 5 of 6 · Completion",
           title: "Track What You've Studied",
-          body: "The <strong>COMPLETE</strong> tag marks a course as fully studied. On each individual section page (slide breakdowns, quizzes, etc.), a <strong>Mark as Complete</strong> button appears in the bottom-right — clicking it records that page in your progress dashboard.",
+          body: "Use completion buttons to record what you've studied in your dashboard.",
         },
         {
           target: null,
           position: "center",
           tag: "Step 6 of 6 · Page Tools",
           title: "Three Tools on Every Study Page",
-          body: "On any page inside a course, three buttons appear fixed in the bottom-right corner:<br><br><strong>✓ Complete</strong> — marks that specific page as studied.<br><strong>🔖 Bookmark</strong> — saves the page to your personal Bookmarks database.<br><strong>📝 Notes</strong> — a private notepad that auto-saves as you type, tied to this exact page.",
+          body: "Bottom-right tools let you mark complete, bookmark, and save private notes.",
         },
       ];
 
@@ -1224,35 +1224,35 @@
           position: "center",
           tag: "Resources",
           title: "A Curated Shelf of Tools & Links",
-          body: "The Resources page is a hand-picked collection of tools, documentation sites, platforms, and references that are genuinely useful for PSU students. Everything here is something used regularly — not just a link dump.",
+          body: "A curated shelf of tools, docs, guides, and references.",
         },
         {
           target: function(){ return document.querySelector(".jump-nav") || document.querySelector(".jump-nav-inner"); },
           position: "bottom",
           tag: "Step 1 of 4 · Section Nav",
           title: "Jump to Any Category",
-          body: "The <strong>sticky nav bar</strong> lets you jump directly to any category. Sections include Learning, Dev Tools, Containers, Visualization, Cybersecurity, and more. Items highlighted in <span style='color:#ff2a4b;'>red</span> flag sections with security-focused tools.",
+          body: "Use this bar to jump straight to a resource category.",
         },
         {
           target: function(){ return document.querySelector(".section-title-wrap") || document.querySelector(".section-num"); },
           position: "bottom",
           tag: "Step 2 of 4 · Sections",
           title: "Organised by Category",
-          body: "Each numbered section groups related tools and links. The category label tells you what domain the tools cover — scroll through or use the jump nav to navigate quickly.",
+          body: "Numbered sections group related tools and links.",
         },
         {
           target: function(){ return document.querySelector("a.card") || document.querySelector(".card"); },
           position: "bottom",
           tag: "Step 3 of 4 · Resource Cards",
           title: "Resource Cards",
-          body: "Each card links to a specific tool or reference. The small ID in the top-left is a unique entry code. Tags below the title show the topics or languages it covers. Click any card to open it directly.",
+          body: "Each card opens a tool, guide, or reference. Tags show what it covers.",
         },
         {
           target: function(){ return document.querySelector(".nav-alert"); },
           position: "bottom",
           tag: "Step 4 of 4 · Security Sections",
           title: "Security-Flagged Content",
-          body: "Sections marked in <span style='color:#ff2a4b;'>red</span> contain cybersecurity and offensive security tools for the CYS track — penetration testing labs, CTF tools, and frameworks. Use only in authorised environments.",
+          body: "<span style='color:#ff2a4b;'>Red</span> sections are security-focused. Use tools responsibly.",
         },
       ];
 
@@ -1263,32 +1263,41 @@
           position: "center",
           tag: "Workshops",
           title: "Hands-On Sessions",
-          body: "Workshops are structured, practical sessions — more guided than a project, more applied than a lecture. Each one is fully documented with all the materials, tools, and steps you need to follow along.",
+          body: "Workshops are guided practical sessions with materials and notes.",
         },
         {
           target: function(){ return document.querySelector(".hero") || document.querySelector(".hero-title"); },
           position: "bottom",
           tag: "Step 1 of 3 · Overview",
           title: "What's Here",
-          body: "The hero section gives you a quick summary of the workshops available — how many there are, what domains they cover, and who they were delivered for.",
-        },
-        {
-          target: function(){ return document.querySelector(".workshops-hub") || document.querySelector(".dossier-card"); },
-          position: "bottom",
-          tag: "Step 2 of 3 · Workshop Cards",
-          title: "Workshop Dossiers",
-          body: "Each card is a <strong>workshop dossier</strong>. Click any card to open the full documentation for that workshop — context, tools, session structure, and all lab files or exercises included.",
+          body: "This gives the quick workshop overview.",
         },
         {
           target: function(){
-            return document.querySelector('.dossier-card[data-accent="red"]') || document.querySelector(".dossier-card");
+            return (triggerEl && triggerEl.closest && triggerEl.closest(".dossier-card")) ||
+              document.querySelector(".dossier-card") ||
+              document.querySelector(".workshops-hub");
+          },
+          position: "bottom",
+          tag: "Step 2 of 3 · Workshop Cards",
+          title: "Workshop Dossiers",
+          body: "Each card opens one workshop's materials, notes, and session details.",
+        },
+        {
+          target: function(){
+            return document.querySelector('.dossier-card[data-accent="red"]');
           },
           position: "bottom",
           tag: "Step 3 of 3 · Cybersecurity Workshop",
           title: "Cybersecurity Crash Course",
-          body: "The <strong>Cybersecurity Crash Course</strong> is a practical offensive-security workshop covering CTF labs, common attack techniques, and hands-on tools. Delivered at PSU — all materials are inside the card.",
+          body: "A hands-on offensive-security workshop with CTF labs and tools.",
         },
       ];
+
+      var triggeredWorkshopCard = triggerEl && triggerEl.closest ? triggerEl.closest(".dossier-card") : null;
+      if (triggeredWorkshopCard && triggeredWorkshopCard.getAttribute("data-accent") !== "red") {
+        steps = steps.filter(function(step) { return step.title !== "Cybersecurity Crash Course"; });
+      }
 
     } else if (context === "about") {
       steps = [
@@ -1297,28 +1306,28 @@
           position: "center",
           tag: "About",
           title: "The Person Behind SHOUG.TECH",
-          body: "This page is the profile of the site's author. It covers academic background, roles, skills, and contact details — styled as a terminal-style CV.",
+          body: "A quick profile: background, roles, skills, and contact.",
         },
         {
           target: function(){ return document.querySelector(".identity-col") || document.querySelector(".display-name"); },
           position: "right",
           tag: "Step 1 of 3 · Identity",
           title: "Who Built This",
-          body: "This column shows the <strong>name, roles, and personal statement</strong> of the site's author — a PSU Software Engineering student, course instructor, and peer tutor at PSU WTC.",
+          body: "Name, roles, and a short personal intro live here.",
         },
         {
           target: function(){ return document.querySelector(".terminal-col") || document.querySelector(".terminal-block"); },
           position: "left",
           tag: "Step 2 of 3 · Terminal Block",
           title: "Skills & Stats",
-          body: "The terminal block on the right is a styled readout of technical skills, tools, and stats written to look like a system log. Scroll down for more — projects, experience, and contact details are all further down the page.",
+          body: "A quick system-log view of skills, tools, and stats.",
         },
         {
           target: function(){ return document.querySelector(".shoug-contact-btn") || document.querySelector('a[href^="mailto"]'); },
           position: "bottom",
           tag: "Step 3 of 3 · Contact",
           title: "Get in Touch",
-          body: "The <strong>Contact</strong> button in the header opens a direct email. If you spot an error in the course notes, want to suggest a resource, or just want to reach out — that's the fastest way.",
+          body: "Use Contact to report errors, suggest resources, or reach out.",
         },
       ];
 
@@ -1329,28 +1338,28 @@
           position: "center",
           tag: "Work",
           title: "Projects & Portfolio",
-          body: "This is the <strong>Work</strong> section — a portfolio of real projects, case studies, and applied work. Browse to see how concepts from courses translate into actual software and research.",
+          body: "Browse projects, case studies, and applied work.",
         },
         {
           target: function(){ return document.querySelector(".hero") || document.querySelector(".hero-title"); },
           position: "bottom",
           tag: "Step 1 of 3 · Hero",
           title: "Work Overview",
-          body: "The hero section summarises what kind of work is featured here — software engineering, cybersecurity research, and studio projects. Scroll down to browse the full collection.",
+          body: "This summarizes the kinds of work featured here.",
         },
         {
           target: function(){ return document.querySelector(".panels-grid") || document.querySelector(".panel"); },
           position: "bottom",
           tag: "Step 2 of 3 · Panels",
           title: "Work Categories",
-          body: "The panels break the work into categories — by role, context, or type of output. Each panel describes a domain of work and links to the relevant projects inside it.",
+          body: "Panels group projects by theme, role, or output.",
         },
         {
           target: function(){ return document.querySelector(".work-grid") || document.querySelector(".work-card"); },
           position: "top",
           tag: "Step 3 of 3 · Project Cards",
           title: "Project Cards",
-          body: "Each card is a <strong>specific project</strong>. Click any card to open the full case study — what the project was, what technologies were used, and what was built or shipped.",
+          body: "Each card opens a project case study.",
         },
       ];
 
@@ -1362,21 +1371,21 @@
           position: "center",
           tag: "Workshop Dossier",
           title: "Inside the Workshop",
-          body: "You're inside a <strong>workshop dossier</strong> — the full documentation for a single workshop. Everything delivered in the session is archived here: context, objectives, schedule, labs, handouts, and reflections.",
+          body: "This is the full archive for one workshop.",
         },
         {
           target: function(){ return document.querySelector(".hero") || document.querySelector(".hero-content"); },
           position: "bottom",
           tag: "Step 1 of 2 · Overview",
           title: "Workshop Brief",
-          body: "The hero section gives you the workshop's mission at a glance — what it covered, who it was delivered to, and where. Scroll down for the full breakdown.",
+          body: "A quick brief: topic, audience, and session context.",
         },
         {
           target: function(){ return document.querySelector(".cards-grid") || document.querySelector(".workshop-card"); },
           position: "bottom",
           tag: "Step 2 of 2 · Sections",
           title: "Navigate the Dossier",
-          body: "Each card links to a specific section of this workshop: <strong>Schedule</strong>, <strong>Topics & Learning Outcomes</strong>, <strong>Handouts</strong>, <strong>Labs</strong>, and <strong>Reflection</strong>. Click any card to open that section.",
+          body: "Open a card for schedule, topics, handouts, labs, or reflection.",
         },
       ];
 
@@ -1388,21 +1397,21 @@
           position: "center",
           tag: "Project Archive",
           title: "Full Case Studies",
-          body: "This is the <strong>project archive</strong> — detailed records of every project built as part of coursework or independent work. Each record covers the scope, tech stack, role, and outputs.",
+          body: "A project archive with scope, stack, role, and outputs.",
         },
         {
           target: function(){ return document.querySelector(".filters") || document.querySelector(".filter-btn"); },
           position: "bottom",
           tag: "Step 1 of 2 · Filters",
           title: "Filter by Category",
-          body: "Use the filter buttons to narrow projects by domain — <strong>Software Engineering</strong>, <strong>Computer Science</strong>, <strong>Mathematics</strong>, or view all at once. Active filter is highlighted.",
+          body: "Filter projects by domain or view everything.",
         },
         {
           target: function(){ return document.querySelector(".project-record") || document.querySelector(".project-list"); },
           position: "top",
           tag: "Step 2 of 2 · Project Records",
           title: "Project Records",
-          body: "Each record shows the project title, category, summary, tech stack, role, and direct links to the <strong>documentation site</strong> and <strong>GitHub repository</strong>. Click any link to open it.",
+          body: "Records include summary, stack, role, docs, and GitHub links.",
         },
       ];
 
@@ -1413,28 +1422,28 @@
           position: "center",
           tag: "Community",
           title: "Student Community Hub",
-          body: "The Community section connects PSU students — follow classmates, track study progress together, discuss course material, and see who's at the top of the leaderboard. You need a community profile to participate.",
+          body: "Follow classmates, discuss courses, and compare progress.",
         },
         {
           target: function(){ return document.querySelector(".comm-tabs") || document.querySelector(".comm-tab"); },
           position: "bottom",
           tag: "Step 1 of 3 · Tabs",
           title: "Four Sections",
-          body: "The tab bar switches between four views:<br><br><strong>Browse</strong> — find and follow other students.<br><strong>Activity</strong> — a feed of your followed students' recent completions.<br><strong>Leaderboards</strong> — ranked list by pages completed, with a visual podium for the top 3.<br><strong>Discussions</strong> — threaded course discussions.",
+          body: "Tabs switch between Browse, Activity, Leaderboards, and Discussions.",
         },
         {
           target: function(){ return document.querySelector('button.comm-tab[data-tab="discuss"]') || document.querySelector('button.comm-tab'); },
           position: "bottom",
           tag: "Step 2 of 3 · Discussions",
           title: "Course Discussions",
-          body: "Pick a course from the dropdown and join the conversation — ask questions, share notes, reply to classmates. Replies send a notification to the original poster so no message goes unanswered.",
+          body: "Pick a course, then ask questions or reply to classmates.",
         },
         {
           target: function(){ return document.querySelector('button.comm-tab[data-tab="leaderboard"]'); },
           position: "bottom",
           tag: "Step 3 of 3 · Leaderboards",
           title: "Leaderboard & Podium",
-          body: "The <strong>Leaderboard</strong> tab ranks all users by total pages completed. The top 3 get a visual podium — 2nd, 1st (tallest), 3rd. Below that, every student gets a progress bar showing their percentage of the leader's score.",
+          body: "Leaderboards rank students by completed pages.",
         },
       ];
 
@@ -1445,28 +1454,28 @@
           position: "center",
           tag: "Student Profile",
           title: "Public Profile Card",
-          body: "Every community member has a public profile — showing their study stats, course progress, subject breakdown, and upcoming exam countdowns. You're looking at someone's profile right now.",
+          body: "Profiles show study stats, course progress, and exams.",
         },
         {
           target: function(){ return document.querySelector(".profile-stats"); },
           position: "bottom",
           tag: "Step 1 of 3 · Stats",
           title: "Study Stats",
-          body: "These four numbers show <strong>pages completed</strong>, active courses, followers, and who they're following. If the profile is private, page and course counts are hidden — only follow counts show.",
+          body: "Quick stats: completed pages, active courses, followers, and following.",
         },
         {
           target: function(){ return document.getElementById("exam-section"); },
           position: "top",
           tag: "Step 2 of 3 · Exams",
           title: "Exam Countdowns",
-          body: "Students can add upcoming exams here — midterms, finals, quizzes. The countdown turns <span style='color:#ff2a4b'>red</span> as the date gets close. If you're the profile owner, click <strong>+ Add Exam</strong> and enable notifications to get reminders 7, 3, and 1 day before.",
+          body: "Exam countdowns help track quizzes, midterms, and finals.",
         },
         {
           target: function(){ return document.getElementById("follow-btn") || document.getElementById("edit-btn"); },
           position: "bottom",
           tag: "Step 3 of 3 · Follow",
           title: "Follow or Edit",
-          body: "If this is someone else's profile, click <strong>Follow</strong> to add them to your activity feed — their completed pages show up in the <strong>Activity</strong> tab on the Community page. If it's your own profile, the button becomes <strong>Edit Profile</strong> to update your name, bio, major, and account settings.",
+          body: "Follow classmates, or edit your own profile details.",
         },
       ];
 
@@ -1477,28 +1486,28 @@
           position: "center",
           tag: "My Progress",
           title: "Your Personal Dashboard",
-          body: "This dashboard shows your full study history on SHOUG.TECH. Every time you click <strong>Mark as Complete</strong> on a page, it's recorded here — broken down by course, track, and time. Sign in to see your data.",
+          body: "Your study progress lives here, grouped by course and track.",
         },
         {
           target: function(){ return document.getElementById("stats-row") || document.querySelector(".stats-row"); },
           position: "bottom",
           tag: "Step 1 of 3 · Stats Strip",
           title: "Key Numbers at a Glance",
-          body: "The stats strip shows your high-level numbers: total pages completed, active study streak, courses with full completion, and total study days. These update automatically as you mark pages complete.",
+          body: "Top stats summarize completions, streaks, courses, and study days.",
         },
         {
           target: function(){ return document.getElementById("overview-row") || document.querySelector(".overview-row"); },
           position: "bottom",
           tag: "Step 2 of 3 · Progress Overview",
           title: "Progress Ring & Charts",
-          body: "The overview section shows your overall completion percentage as a <strong>ring chart</strong>, plus a track balance radar and an activity heatmap. Hover any cell in the heatmap to see how many pages you completed on that day.",
+          body: "Charts summarize completion, balance, and recent activity.",
         },
         {
           target: function(){ return document.getElementById("track-grid") || document.querySelector(".track-grid"); },
           position: "top",
           tag: "Step 3 of 3 · Track Breakdown",
           title: "Progress by Track",
-          body: "The bottom section breaks your progress down <strong>by academic track</strong> (CS, SE, CYS, Other). Each card shows how many pages you've completed in that track and which specific courses you've touched.",
+          body: "Track cards show progress by academic area.",
         },
       ];
 
@@ -1509,28 +1518,28 @@
           position: "center",
           tag: "Bookmarks",
           title: "Your Personal Database",
-          body: "The Bookmarks page is a <strong>terminal-style database view</strong> of every page you've saved while studying. Organised into folders, filterable, with an inspector panel and a real command-line interface at the bottom.",
+          body: "Saved pages live here, organized like a small database.",
         },
         {
           target: function(){ return document.querySelector(".folder-col") || document.querySelector(".folder-list"); },
           position: "right",
           tag: "Step 1 of 3 · Directories",
           title: "Folder Sidebar",
-          body: "The left panel is your <strong>directory tree</strong>. Click any folder to filter the table to that folder's bookmarks. Use <strong>+ INITIALIZE_NEW_DIR</strong> to create a new folder. You can also move bookmarks between folders.",
+          body: "Folders filter your saved pages. Add folders when needed.",
         },
         {
           target: function(){ return document.querySelector(".table-col") || document.querySelector(".table-body"); },
           position: "left",
           tag: "Step 2 of 3 · Records Table",
           title: "Bookmark Records",
-          body: "The center panel lists all your bookmarks as database records — each row shows the page title, URL, and save date. Click any row to open the <strong>Inspector</strong> on the right with full details and a direct link.",
+          body: "Rows are saved pages. Click one to inspect or reopen it.",
         },
         {
           target: function(){ return document.querySelector(".term-input-row") || document.querySelector(".term-input"); },
           position: "top",
           tag: "Step 3 of 3 · Terminal",
           title: "Command Interface",
-          body: "The terminal at the bottom accepts commands to query and manage your bookmarks. Type <strong>help</strong> and press Enter to see all available commands — including search, move, delete, and export.",
+          body: "Type <strong>help</strong> to see bookmark commands.",
         },
       ];
 
@@ -1541,21 +1550,21 @@
           position: "center",
           tag: "Academic Plan",
           title: "Visualised Degree Plans",
-          body: "These pages display your full PSU degree plan in different visual styles — roadmap, stacked blocks, classic table, and more. Each theme shows the same curriculum data in a different format so you can find the layout that clicks for you.",
+          body: "Your degree plan, shown in different visual layouts.",
         },
         {
           target: function(){ return document.querySelector(".hero") || document.querySelector("h1"); },
           position: "bottom",
           tag: "Step 1 of 2 · Your Plan",
           title: "Degree Plan Overview",
-          body: "The plan shows all courses organised by semester, grouped by track. Completed courses are typically highlighted differently from upcoming ones. Scroll to see the full timeline from Year 1 through graduation.",
+          body: "Scroll through semesters from Year 1 to graduation.",
         },
         {
           target: function(){ return document.querySelector("nav") || document.querySelector(".shoug-header-nav"); },
           position: "bottom",
           tag: "Step 2 of 2 · Switch Themes",
           title: "Try Other Layouts",
-          body: "There are multiple plan themes available — <strong>Stacks</strong>, <strong>Roadmap</strong>, <strong>Classic</strong>, and more, including Arabic versions. Use the <strong>Academic Plan</strong> section in the site to find and switch between them.",
+          body: "Try another plan theme if this layout does not click.",
         },
       ];
 
@@ -1567,60 +1576,120 @@
           position: "center",
           tag: "Welcome",
           title: "Welcome to SHOUG.TECH",
-          body: "A personal digital garden built by a PSU Software Engineering student — a living study space for CS, SE, CYS, AI&DS, and DX courses. Here's a quick tour so you know where everything lives.",
+          body: "A quick tour of where everything lives.",
         },
         {
           target: function(){ return document.querySelector('.shoug-header-nav a[href="/academics/"]'); },
           position: "bottom",
           tag: "Step 1 of 7 · Academics",
           title: "Course Content",
-          body: "<strong>Academics</strong> is the main section. Find slide breakdowns, chapter summaries, and quizzes for every PSU course — organised by subject track and then by course. Start here when studying.",
+          body: "<strong>Academics</strong> is where course notes, slides, and quizzes live.",
         },
         {
           target: function(){ return document.querySelector('.shoug-header-nav a[href="/work/"]'); },
           position: "bottom",
           tag: "Step 2 of 7 · Work",
           title: "Projects & Portfolio",
-          body: "<strong>Work</strong> is a portfolio of real projects and case studies — useful for seeing how course concepts translate into actual software.",
+          body: "<strong>Work</strong> shows projects and case studies.",
         },
         {
           target: function(){ return document.querySelector('.shoug-header-nav a[href="/workshops/"]'); },
           position: "bottom",
           tag: "Step 3 of 7 · Workshops",
           title: "Workshops",
-          body: "<strong>Workshops</strong> are guided, hands-on sessions. Deeper than a lecture, more structured than a project — think step-by-step walkthroughs where you build or solve something.",
+          body: "<strong>Workshops</strong> are guided hands-on sessions.",
         },
         {
           target: function(){ return document.querySelector('.shoug-header-nav a[href="/resources/"]'); },
           position: "bottom",
           tag: "Step 4 of 7 · Resources",
           title: "Study Resources",
-          body: "<strong>Resources</strong> is a curated list of tools, references, and links — from cheat sheets and study guides to software and documentation useful for PSU students.",
+          body: "<strong>Resources</strong> has tools, references, guides, and links.",
         },
         {
           target: function(){ return document.querySelector('.shoug-header-nav a[href="/about/"]'); },
           position: "bottom",
           tag: "Step 5 of 7 · About",
           title: "About This Site",
-          body: "<strong>About</strong> explains who built SHOUG.TECH and why. If you spot an error in the notes or want to suggest a resource, that's the place to go.",
+          body: "<strong>About</strong> explains who built the site and how to reach out.",
         },
         {
           target: function(){ return document.getElementById("shoug-fb-user") || document.querySelector(".shoug-auth-btn") || document.querySelector(".shoug-header-actions"); },
           position: "bottom",
           tag: "Step 6 of 7 · Account",
           title: "Sign In to Track Progress",
-          body: "Create a free account here. Once signed in, every page you study is automatically tracked. Your completion stats, bookmarks, and notes are all saved to your account and accessible from any device.",
+          body: "Sign in to save progress, bookmarks, and notes.",
         },
         {
           target: null,
           position: "center",
           tag: "Step 7 of 7 · Dashboard",
           title: "Your Dashboard",
-          body: "Once signed in, clicking your avatar opens a personal dashboard. From there you can reach <strong>My Profile</strong>, <strong>Bookmarks</strong>, <strong>My Progress</strong>, and the <strong>Community</strong> hub — each section has its own walkthrough when you visit it for the first time.",
+          body: "Your avatar opens Profile, Bookmarks, Progress, and Community.",
         },
       ];
     }
 
+    // Keep the original contextual walkthrough content, but only for steps that
+    // can attach to a real UI element. No free-floating intro boxes.
+    function targetForStep(step) {
+      if (!step || !step.target) return null;
+      try { return step.target(); } catch (e) { return null; }
+    }
+
+    function stepCanRender(step) {
+      var el = targetForStep(step);
+      if (!el) return false;
+      var rect = el.getBoundingClientRect();
+      return !!(rect && rect.width > 0 && rect.height > 0);
+    }
+
+    steps = steps.filter(stepCanRender);
+    if (!steps.length) return false;
+
+    function stepTriggerScore(step) {
+      if (!triggerEl || !triggerEl.closest) return -1;
+      var target = targetForStep(step);
+      if (!target) return -1;
+      if (target === triggerEl) return 100;
+      if (target.contains(triggerEl)) return 80 - Math.min(target.querySelectorAll("*").length, 60);
+      if (triggerEl.contains(target)) return 60;
+      return -1;
+    }
+
+    function stepIsInView(step) {
+      var el = targetForStep(step);
+      if (!el) return false;
+      var rect = el.getBoundingClientRect();
+      return rect.right > 0 && rect.bottom > 0 &&
+        rect.left < window.innerWidth && rect.top < window.innerHeight;
+    }
+
+    if (triggerEl) {
+      var matchedIndex = -1;
+      var matchedScore = -1;
+      steps.forEach(function(step, idx) {
+        var score = stepTriggerScore(step);
+        if (score > matchedScore) {
+          matchedScore = score;
+          matchedIndex = idx;
+        }
+      });
+      if (matchedIndex > 0) {
+        steps = steps.slice(matchedIndex).concat(steps.slice(0, matchedIndex));
+      }
+    } else {
+      var visibleIndex = steps.findIndex(stepIsInView);
+      if (visibleIndex > 0) {
+        steps = steps.slice(visibleIndex).concat(steps.slice(0, visibleIndex));
+      }
+    }
+
+    steps.forEach(function(step, idx) {
+      var label = step.tag || "";
+      var detail = label.indexOf("·") !== -1 ? " · " + label.split("·").slice(1).join("·").trim() : "";
+      step.tag = "Step " + (idx + 1) + " of " + steps.length + detail;
+    });
     var current = 0;
 
     // Dim backdrop — z-index swaps per step (below header for targeted, above for center)
@@ -1643,6 +1712,11 @@
     function clearHighlight() {
       document.querySelectorAll(".ob-hl").forEach(function(el){
         el.classList.remove("ob-hl");
+        if (el.dataset.obPositioned === "1") {
+          el.style.removeProperty("position");
+          delete el.dataset.obPositioned;
+        }
+        el.style.removeProperty("z-index");
         el.style.removeProperty("box-shadow");
         el.style.removeProperty("outline");
         el.style.removeProperty("border-radius");
@@ -1653,6 +1727,11 @@
       clearHighlight();
       if (!el) return;
       el.classList.add("ob-hl");
+      if (getComputedStyle(el).position === "static") {
+        el.style.position = "relative";
+        el.dataset.obPositioned = "1";
+      }
+      el.style.zIndex = (CARD_Z + 1) + "";
       el.style.boxShadow = "0 0 0 2px #b829ea, 0 0 0 5px rgba(184,41,234,.22), 0 0 28px rgba(184,41,234,.4)";
       el.style.outline = "none";
       el.style.borderRadius = "3px";
@@ -1668,26 +1747,37 @@
 
       arrowEl.style.display = "none";
 
-      if (!rect || position === "center") {
-        top  = (vh - ch) / 2;
-        left = (vw - cw) / 2;
-      } else {
-        var midX = rect.left + rect.width / 2;
-        var midY = rect.top + rect.height / 2;
-        if (position === "bottom") {
+      var midX = rect.left + rect.width / 2;
+      var midY = rect.top + rect.height / 2;
+
+      if (position === "bottom") {
+          var canFitBelow = rect.bottom + GAP + ch <= vh - 12;
+          var canFitAbove = rect.top - GAP - ch >= 8;
+          var placeBelow = canFitBelow || !canFitAbove;
           top  = rect.bottom + GAP;
           left = Math.min(Math.max(midX - cw / 2, 12), vw - cw - 12);
-          arrowEl.style.cssText = [
-            "position:fixed",
-            "left:" + (midX - 7) + "px",
-            "top:" + rect.bottom + "px",
-            "border-left:7px solid transparent",
-            "border-right:7px solid transparent",
-            "border-bottom:12px solid #b829ea",
-            "z-index:" + (CARD_Z),
-            "pointer-events:none",
-            "display:block"
-          ].join(";");
+          if (!placeBelow) top = rect.top - GAP - ch;
+          arrowEl.style.cssText = placeBelow ? [
+              "position:fixed",
+              "left:" + (midX - 7) + "px",
+              "top:" + rect.bottom + "px",
+              "border-left:7px solid transparent",
+              "border-right:7px solid transparent",
+              "border-bottom:12px solid #b829ea",
+              "z-index:" + (CARD_Z + 2),
+              "pointer-events:none",
+              "display:block"
+            ].join(";") : [
+              "position:fixed",
+              "left:" + (midX - 7) + "px",
+              "top:" + (rect.top - GAP) + "px",
+              "border-left:7px solid transparent",
+              "border-right:7px solid transparent",
+              "border-top:12px solid #b829ea",
+              "z-index:" + (CARD_Z + 2),
+              "pointer-events:none",
+              "display:block"
+            ].join(";");
         } else if (position === "right") {
           top  = Math.min(Math.max(midY - ch / 2, 12), vh - ch - 12);
           left = rect.right + GAP;
@@ -1701,7 +1791,7 @@
             "border-top:7px solid transparent",
             "border-bottom:7px solid transparent",
             flippedLeft ? "border-right:12px solid #b829ea" : "border-left:12px solid #b829ea",
-            "z-index:" + (CARD_Z),
+            "z-index:" + (CARD_Z + 2),
             "pointer-events:none",
             "display:block"
           ].join(";");
@@ -1718,35 +1808,42 @@
             "border-top:7px solid transparent",
             "border-bottom:7px solid transparent",
             flippedRight ? "border-left:12px solid #b829ea" : "border-right:12px solid #b829ea",
-            "z-index:" + (CARD_Z),
+            "z-index:" + (CARD_Z + 2),
             "pointer-events:none",
             "display:block"
           ].join(";");
         } else {
+          var canFitAbove2 = rect.top - GAP - ch >= 8;
+          var canFitBelow2 = rect.bottom + GAP + ch <= vh - 12;
+          var placeAbove = canFitAbove2 || !canFitBelow2;
           top  = rect.top - GAP - ch;
           left = Math.min(Math.max(midX - cw / 2, 12), vw - cw - 12);
-          arrowEl.style.cssText = [
-            "position:fixed",
-            "left:" + (midX - 7) + "px",
-            "top:" + (rect.top - GAP) + "px",
-            "border-left:7px solid transparent",
-            "border-right:7px solid transparent",
-            "border-top:12px solid #b829ea",
-            "z-index:" + (CARD_Z),
-            "pointer-events:none",
-            "display:block"
-          ].join(";");
+          if (!placeAbove) top = rect.bottom + GAP;
+          arrowEl.style.cssText = placeAbove ? [
+              "position:fixed",
+              "left:" + (midX - 7) + "px",
+              "top:" + (rect.top - GAP) + "px",
+              "border-left:7px solid transparent",
+              "border-right:7px solid transparent",
+              "border-top:12px solid #b829ea",
+              "z-index:" + (CARD_Z + 2),
+              "pointer-events:none",
+              "display:block"
+            ].join(";") : [
+              "position:fixed",
+              "left:" + (midX - 7) + "px",
+              "top:" + rect.bottom + "px",
+              "border-left:7px solid transparent",
+              "border-right:7px solid transparent",
+              "border-bottom:12px solid #b829ea",
+              "z-index:" + (CARD_Z + 2),
+              "pointer-events:none",
+              "display:block"
+            ].join(";");
         }
-        if (position !== "right" && position !== "left") {
-          if (top + ch > vh - 12) top = rect.top - GAP - ch;
-          if (top < 8) top = rect.bottom + GAP;
-          // Hard clamp — always keep card inside the viewport
-          top = Math.max(8, Math.min(top, vh - ch - 12));
-        }
-        // Hard clamp for right/left too
-        top = Math.max(8, Math.min(top, vh - ch - 12));
-        left = Math.max(8, Math.min(left, vw - cw - 8));
-      }
+
+      top = Math.max(8, Math.min(top, vh - ch - 12));
+      left = Math.max(8, Math.min(left, vw - cw - 8));
 
       card.style.top  = top + "px";
       card.style.left = left + "px";
@@ -1767,6 +1864,9 @@
     function render() {
       var s = steps[current];
       var targetEl = s.target ? s.target() : null;
+      var isLastStep = current >= steps.length - 1;
+      var progressLabel = steps.length > 1 ? ((current + 1) + " / " + steps.length) : "1 / 1";
+      var primaryLabel = isLastStep ? "Done ✓" : "Next →";
 
       // If this step targets a link inside the mobile nav drawer, open the drawer on
       // small screens so the link is actually visible — otherwise close it again.
@@ -1779,6 +1879,15 @@
         navMenuOpenedByOnboarding = false;
       }
 
+      if (targetEl) {
+        var preRect = targetEl.getBoundingClientRect();
+        var targetInView = preRect.right > 0 && preRect.bottom > 0 &&
+          preRect.left < window.innerWidth && preRect.top < window.innerHeight;
+        if (!targetInView && targetEl.scrollIntoView) {
+          targetEl.scrollIntoView({ block: "center", inline: "nearest" });
+        }
+      }
+
       var rect = targetEl ? targetEl.getBoundingClientRect() : null;
       // Treat as no target if: zero-sized, fully outside viewport (e.g. mobile nav drawer), or display:none
       if (rect && (
@@ -1787,15 +1896,20 @@
         rect.left >= window.innerWidth || rect.top >= window.innerHeight
       )) { rect = null; targetEl = null; }
 
+      if (!rect || !targetEl) {
+        if (current < steps.length - 1) {
+          current++;
+          render();
+        } else {
+          finish();
+        }
+        return;
+      }
+
       // Below header (9999) → header stays visible so target element is lit up naturally.
-      // Above header (10001) → center steps cover everything including header.
-      dimEl.style.zIndex = rect ? (HDR_Z - 1) + "" : (HDR_Z + 1) + "";
+      dimEl.style.zIndex = (HDR_Z - 1) + "";
 
       highlight(targetEl);
-
-      var dots = steps.map(function(_, i){
-        return '<div style="flex-shrink:0;width:'+(i===current?'20px':'6px')+';height:6px;border-radius:3px;background:'+(i===current?'#b829ea':'rgba(255,255,255,.15)')+';transition:width 200ms;"></div>';
-      }).join("");
 
       card.innerHTML = [
         '<div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,#b829ea,rgba(184,41,234,.08));"></div>',
@@ -1805,12 +1919,10 @@
         '  <div style="font-size:.76rem;color:#8f8b9a;line-height:1.75;font-family:\'Inter\',sans-serif;">'+s.body+'</div>',
         '</div>',
         '<div style="padding:12px 28px 20px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid rgba(255,255,255,.05);">',
-        '  <div style="display:flex;gap:6px;align-items:center;">'+dots+'</div>',
+        '  <div style="font-size:.52rem;color:#4a4258;letter-spacing:.12em;text-transform:uppercase;">Walkthrough '+progressLabel+'</div>',
         '  <div style="display:flex;gap:8px;align-items:center;">',
-        (current === 0
-          ? '<button id="ob-skip" style="height:32px;padding:0 14px;background:transparent;border:none;color:#4a4258;font-family:\'JetBrains Mono\',monospace;font-size:.6rem;cursor:pointer;">Skip</button>'
-          : '<button id="ob-prev" style="height:32px;padding:0 14px;background:transparent;border:1px solid rgba(255,255,255,.1);color:#8f8b9a;font-family:\'JetBrains Mono\',monospace;font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;">Back</button>'),
-        '  <button id="ob-next" style="height:32px;padding:0 18px;background:#b829ea;border:none;color:#0a0514;font-family:\'JetBrains Mono\',monospace;font-size:.62rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;">'+(current===steps.length-1?(context==='home'?'Get Started ✓':'Done ✓'):'Next →')+'</button>',
+        '  <button id="ob-skip" style="height:32px;padding:0 14px;background:transparent;border:none;color:#6f667c;font-family:\'JetBrains Mono\',monospace;font-size:.6rem;cursor:pointer;">Skip</button>',
+        '  <button id="ob-next" style="height:32px;padding:0 18px;background:#b829ea;border:none;color:#0a0514;font-family:\'JetBrains Mono\',monospace;font-size:.62rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;">'+primaryLabel+'</button>',
         '  </div>',
         '</div>',
       ].join("");
@@ -1820,13 +1932,11 @@
       document.getElementById("ob-next").addEventListener("click", function(){
         if (current < steps.length - 1) { current++; render(); } else { finish(); }
       });
-      var prev = document.getElementById("ob-prev");
       var skip = document.getElementById("ob-skip");
-      if (prev) prev.addEventListener("click", function(){ current--; render(); });
-      if (skip) skip.addEventListener("click", finish);
+      if (skip) skip.addEventListener("click", dismissForNow);
     }
 
-    function finish() {
+    function closeTip() {
       localStorage.setItem(storageKey, "1");
       clearHighlight();
       if (navMenuOpenedByOnboarding) {
@@ -1840,6 +1950,14 @@
       });
     }
 
+    function finish() {
+      closeTip();
+    }
+
+    function dismissForNow() {
+      closeTip();
+    }
+
     dimEl.style.opacity = "0";
     card.style.opacity  = "0";
     dimEl.style.transition = card.style.transition = "opacity 300ms";
@@ -1851,9 +1969,9 @@
 
     // Escape hatches — the walkthrough must never be able to fully block the
     // site. Clicking the dim backdrop or pressing Escape always closes it.
-    dimEl.addEventListener("click", finish);
+    dimEl.addEventListener("click", dismissForNow);
     var escHandler = function(e){
-      if (e.key === "Escape") { finish(); document.removeEventListener("keydown", escHandler); }
+      if (e.key === "Escape") { dismissForNow(); document.removeEventListener("keydown", escHandler); }
     };
     document.addEventListener("keydown", escHandler);
 
@@ -1883,6 +2001,8 @@
       )) { rect = null; }
       positionCard(rect, s.position);
     });
+
+    return true;
   }
 
   // ── Page Icons (Bookmark + Notes) ────────────────────────────────────────
@@ -2108,8 +2228,121 @@
     injectThemeToggle();
     injectBlueprintCredit();
 
-    // First-time visitor onboarding
-    setTimeout(showOnboarding, 800);
+    // Show contextual guidance when the visitor pauses over something clickable,
+    // or after 2.5 seconds without interacting with the page. Completion is
+    // tracked per section/context inside showOnboarding().
+    (function scheduleContextualGuidance() {
+      var started = false;
+      var idleTimer = null;
+      var hoverTimer = null;
+      var hoverTarget = null;
+      var interactiveSelector = [
+        "a[href]",
+        "button",
+        ".academic-sidebar",
+        ".sub-nav",
+        ".meta-panel",
+        ".meta-panel-container",
+        ".tag-complete",
+        ".track-card",
+        ".course-card",
+        ".course-row",
+        ".work-card",
+        ".dossier-card",
+        ".resource-card",
+        ".card",
+        ".jump-nav",
+        ".section-title-wrap",
+        ".profile-stats",
+        "#exam-section",
+        "#follow-btn",
+        "#edit-btn",
+        ".comm-tabs",
+        ".comm-tab",
+        ".stats-row",
+        "#stats-row",
+        ".overview-row",
+        "#overview-row",
+        ".track-grid",
+        "#track-grid",
+        ".folder-col",
+        ".folder-list",
+        ".table-col",
+        ".table-body",
+        ".term-input-row",
+        ".term-input"
+      ].join(",");
+
+      function cleanup() {
+        clearTimeout(idleTimer);
+        clearTimeout(hoverTimer);
+        document.removeEventListener("pointerover", onPointerOver);
+        document.removeEventListener("pointerout", onPointerOut);
+        document.removeEventListener("click", onContextClick, true);
+        document.removeEventListener("pointermove", resetIdle);
+        document.removeEventListener("pointerdown", resetIdle);
+        document.removeEventListener("keydown", resetIdle);
+        window.removeEventListener("scroll", resetIdle);
+      }
+
+      function start(trigger) {
+        if (started) return false;
+        var opened = showOnboarding(trigger || null);
+        started = true;
+        cleanup();
+        return opened;
+      }
+
+      function scheduleIdle() {
+        clearTimeout(idleTimer);
+        idleTimer = setTimeout(function(){ start(null); }, 2500);
+      }
+
+      function resetIdle() {
+        if (!started) scheduleIdle();
+      }
+
+      function onPointerOver(event) {
+        var target = event.target && event.target.closest
+          ? event.target.closest(interactiveSelector)
+          : null;
+        if (!target || target === hoverTarget) return;
+        hoverTarget = target;
+        clearTimeout(hoverTimer);
+        hoverTimer = setTimeout(function(){ start(target); }, 450);
+      }
+
+      function onPointerOut(event) {
+        if (!hoverTarget) return;
+        var next = event.relatedTarget;
+        if (next && hoverTarget.contains(next)) return;
+        hoverTarget = null;
+        clearTimeout(hoverTimer);
+        resetIdle();
+      }
+
+      function onContextClick(event) {
+        var target = event.target && event.target.closest
+          ? event.target.closest(interactiveSelector)
+          : null;
+        if (!target || started) return;
+        var link = target.closest && target.closest("a[href]");
+        var opened = start(target);
+        if (opened && link && !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+      }
+
+      document.addEventListener("pointerover", onPointerOver, { passive: true });
+      document.addEventListener("pointerout", onPointerOut, { passive: true });
+      document.addEventListener("click", onContextClick, true);
+      document.addEventListener("pointermove", resetIdle, { passive: true });
+      document.addEventListener("pointerdown", resetIdle, { passive: true });
+      document.addEventListener("keydown", resetIdle);
+      window.addEventListener("scroll", resetIdle, { passive: true });
+      scheduleIdle();
+    })();
 
     // Pick up the result of a signInWithRedirect (GitHub fallback on iOS/Safari)
     firebase.auth().getRedirectResult().catch(function (err) {
