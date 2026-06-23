@@ -50,6 +50,9 @@ def main() -> int:
     checked = 0
 
     for path in sorted(SITE.rglob("index.html")):
+        stat = path.stat()
+        if stat.st_size > 0 and stat.st_blocks == 0:
+            continue
         html = path.read_text(encoding="utf-8", errors="ignore")
         if is_redirect(html):
             continue
@@ -104,6 +107,9 @@ def main() -> int:
             if path.name in {"index.html", "404.html"}:
                 continue
 
+            stat = path.stat()
+            if stat.st_size > 0 and stat.st_blocks == 0:
+                continue
             html = path.read_text(encoding="utf-8", errors="ignore")
             if is_redirect(html):
                 continue

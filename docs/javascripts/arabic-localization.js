@@ -245,7 +245,11 @@
   }
 
   function transliterate(word) {
-    if (/^(?:CS|SE|CYS|ETHCS|ISLM|PHY|ENGL|ENG)\d+$/i.test(word)) return word.toUpperCase();
+    // Course identifiers are proper codes, not words. Keep their canonical
+    // Latin spelling in Arabic mode instead of transliterating the letters.
+    if (/^(?:CS|SE|CYS|ETHCS|ISLM|ISC|SCI|PHY|ENGL|ENG)\d+$/i.test(word)) {
+      return word.toUpperCase();
+    }
     var pairs = {
       "sh": "ش", "ch": "تش", "th": "ث", "ph": "ف", "kh": "خ", "gh": "غ",
       "ck": "ك", "qu": "كو", "tion": "شن", "ing": "ينغ"

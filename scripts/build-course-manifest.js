@@ -101,7 +101,7 @@ function safeDecodeUriPart(value) {
 
 function localPdfTargets(html, htmlFile) {
   const targets = [];
-  const pattern = /["']([^"']+\.pdf(?:[#?][^"']*)?)["']/ig;
+  const pattern = /(?:href|src|data|value)\s*=\s*["']([^"']+\.pdf(?:[#?][^"']*)?)["']/ig;
   let match;
   while ((match = pattern.exec(html))) {
     let href = match[1].split("#")[0].split("?")[0];
@@ -146,10 +146,17 @@ function courseInfo(parts) {
 function build() {
   const files = walk(ACADEMICS);
   const urls = files.map(fileToUrl);
-  const urlSet = new Set(urls);
+  const parentUrls = new Set();
+  for (const url of urls) {
+    const parts = url.split("/").filter(Boolean);
+    for (let i = 1; i < parts.length; i++) {
+      parentUrls.add("/" + parts.slice(0, i).join("/") + "/");
+    }
+  }
   const courseTitles = {};
   const pages = [];
   const skippedMissingPdf = [];
+  const skippedOfflineFiles = [];
 
   for (let i = 0; i < files.length; i++) {
     const file = files[i];
@@ -159,8 +166,15 @@ function build() {
     if (!info) continue;
 
     let html = "";
+    let offlinePlaceholder = false;
     try {
-      html = fs.readFileSync(file, "utf8");
+      const stat = fs.statSync(file);
+      if (stat.size > 0 && stat.blocks === 0) {
+        skippedOfflineFiles.push(file);
+        offlinePlaceholder = true;
+      } else {
+        html = fs.readFileSync(file, "utf8");
+      }
     } catch (_) {}
 
     if (url === info.courseUrl) {
@@ -170,17 +184,11 @@ function build() {
 
     if (parts.length < info.minContentParts) continue;
 
-    let hasChildren = false;
-    for (const other of urlSet) {
-      if (other !== url && other.startsWith(url)) {
-        hasChildren = true;
-        break;
-      }
-    }
-    if (hasChildren) continue;
+    if (parentUrls.has(url)) continue;
 
-    const missingPdfTargets = localPdfTargets(html, file)
-      .filter(target => !fs.existsSync(target.file));
+    const missingPdfTargets = offlinePlaceholder
+      ? []
+      : localPdfTargets(html, file).filter(target => !fs.existsSync(target.file));
     if (missingPdfTargets.length) {
       skippedMissingPdf.push({
         url,
@@ -241,6 +249,12 @@ function build() {
     console.log(`[warn] skipped ${skippedMissingPdf.length} pages with missing local PDFs`);
     for (const item of skippedMissingPdf.slice(0, 20)) {
       console.log(`  - ${item.url} -> ${item.pdfs.join(", ")}`);
+    }
+  }
+  if (skippedOfflineFiles.length) {
+    console.log(`[warn] skipped ${skippedOfflineFiles.length} offline filesystem placeholders`);
+    for (const file of skippedOfflineFiles.slice(0, 20)) {
+      console.log(`  - ${path.relative(ROOT, file)}`);
     }
   }
 }

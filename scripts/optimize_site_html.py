@@ -348,7 +348,10 @@ def write_urlset(filename: str, paths: list[Path]) -> None:
         + "\n".join(urls)
         + "\n</urlset>\n"
     )
-    (SITE / filename).write_text(sitemap, encoding="utf-8")
+    target = SITE / filename
+    temporary = target.with_name(target.name + ".tmp")
+    temporary.write_text(sitemap, encoding="utf-8")
+    temporary.replace(target)
 
 
 def write_standalone_sitemap(paths: list[Path]) -> None:
@@ -363,7 +366,12 @@ def main() -> int:
     changed = 0
     standalone_pages: list[Path] = []
     all_pages: list[Path] = []
+    offline_placeholders = 0
     for path in SITE.rglob("*.html"):
+        stat = path.stat()
+        if stat.st_size > 0 and stat.st_blocks == 0:
+            offline_placeholders += 1
+            continue
         original = path.read_text(encoding="utf-8")
         html = patch_accessibility(original)
         html = optimize_images(html)
@@ -380,6 +388,8 @@ def main() -> int:
             all_pages.append(path)
 
     print(f"[ok] optimized generated HTML: {changed} files")
+    if offline_placeholders:
+        print(f"[warn] optimizer skipped {offline_placeholders} offline filesystem placeholders")
     write_standalone_sitemap(standalone_pages)
     print(f"[ok] wrote {STANDALONE_SITEMAP}: {len(standalone_pages)} URLs")
     write_urlset(SITEMAP, all_pages)

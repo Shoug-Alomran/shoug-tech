@@ -135,6 +135,7 @@ function build() {
   // Exclude the search-index.json itself (not HTML, but just in case)
   // and build entries
   const entries = [];
+  const offlinePlaceholders = [];
 
   for (const filePath of htmlFiles) {
     // Skip if path contains node_modules (belt-and-suspenders)
@@ -146,6 +147,11 @@ function build() {
 
     let raw;
     try {
+      const stat = fs.statSync(filePath);
+      if (stat.size > 0 && stat.blocks === 0) {
+        offlinePlaceholders.push(filePath);
+        continue;
+      }
       raw = fs.readFileSync(filePath, "utf8");
     } catch (_) {
       continue;
@@ -165,13 +171,16 @@ function build() {
   // Sort by URL for stable output
   entries.sort((a, b) => a.url < b.url ? -1 : a.url > b.url ? 1 : 0);
 
-  return entries;
+  return { entries, offlinePlaceholders };
 }
 
 function main() {
-  const entries = build();
+  const { entries, offlinePlaceholders } = build();
   fs.writeFileSync(OUT, JSON.stringify(entries, null, 2), "utf8");
   console.log(`[ok] search-index.json → ${entries.length} pages`);
+  if (offlinePlaceholders.length) {
+    console.log(`[warn] search index skipped ${offlinePlaceholders.length} offline filesystem placeholders`);
+  }
 }
 
 main();

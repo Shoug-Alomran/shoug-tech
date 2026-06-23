@@ -213,6 +213,21 @@ COURSES: dict[str, dict[str, Any]] = {
         "credits": "4",
         "prereq": "TBD",
     },
+    "SCI101": {
+        "track": "Other Courses",
+        "path": "docs/academics/other-courses/sci101/",
+        "url": "/academics/other-courses/sci101/",
+        "sections": {
+            "Overview": "/academics/other-courses/sci101/",
+            "Syllabus": "/academics/other-courses/sci101/syllabus/",
+            "Slides": "/academics/other-courses/sci101/slides/",
+            "Study Material": "/academics/other-courses/sci101/extra-resources/",
+            "Quizzes": "/academics/other-courses/sci101/quizzes/",
+        },
+        "title_override": "Introduction to Physical Science",
+        "credits": "3",
+        "prereq": "None",
+    },
     "ENG101": {
         "track": "Other Courses",
         "path": "docs/Academics/other/english/ENG101/overview.md",
@@ -281,9 +296,9 @@ TRACKS: dict[str, dict[str, Any]] = {
     },
     "other-courses": {
         "label": "OTHER COURSES",
-        "title": "6 courses.<br>One English hub,<br>and shared resources.",
-        "meta": ["General Track", "6 Courses", "Writing", "Ethics", "Science"],
-        "courses": ["ETHCS303", "PHY105", "PHY205", "ENG101", "ENG103", "ISC113"],
+        "title": "5 courses.<br>One English hub,<br>and shared resources.",
+        "meta": ["General Track", "5 Courses + English Hub", "Writing", "Ethics", "Science"],
+        "courses": ["ETHCS303", "PHY105", "PHY205", "SCI101", "ISC113"],
         "url": "/track-other-courses.html",
     },
 }
@@ -582,6 +597,31 @@ COMMON_HEADER_CSS = r"""
             top: 68px;
             height: calc(100vh - 68px) !important;
             align-self: flex-start;
+        }
+
+        @media (min-width: 761px) {
+            body:has(.app-layout),
+            body:has(.layout-wrapper) {
+                overflow-y: visible !important;
+            }
+
+            body:has(.app-layout) .app-layout,
+            body:has(.layout-wrapper) .layout-wrapper {
+                margin-top: -68px !important;
+            }
+
+            body:has(.app-layout) .app-layout > .academic-sidebar,
+            body:has(.layout-wrapper) .layout-wrapper > .academic-sidebar {
+                top: 68px !important;
+            }
+
+            body:has(.app-layout) .app-layout > .main-wrapper,
+            body:has(.app-layout) .app-layout > .sys-main,
+            body:has(.layout-wrapper) .layout-wrapper > .main-wrapper,
+            body:has(.layout-wrapper) .layout-wrapper > .sys-main,
+            body:has(.layout-wrapper) .layout-wrapper > .content-area {
+                padding-top: 68px !important;
+            }
         }
 
         body:has(.app-layout) .shoug-site-footer,
@@ -1655,13 +1695,13 @@ COMMON_SCRIPT = """
                         'computer science': '7 courses.<br>Structured, documented,<br>and ready to use.',
                         'software engineering': '2 courses.<br>Requirements, design,<br>and engineering practice.',
                         cybersecurity: '1 course.<br>Security foundations,<br>threats, and defense.',
-                        'other courses': '4 courses.<br>Writing, ethics,<br>physics, and foundations.'
+                        'other courses': '5 courses.<br>One English hub,<br>and shared resources.'
                     },
                     trackMeta: {
                         'computer science': ['CS Track', '7 Courses', 'Programming', 'Networks', 'Databases'],
                         'software engineering': ['SE Track', '2 Courses', 'Process', 'Requirements', 'Design'],
                         cybersecurity: ['Cyber Track', '1 Course', 'Security', 'Risk', 'Defense'],
-                        'other courses': ['General Track', '4 Courses', 'Writing', 'Ethics', 'Science']
+                        'other courses': ['General Track', '5 Courses + English Hub', 'Writing', 'Ethics', 'Science']
                     }
                 },
                 ar: {
@@ -1733,13 +1773,13 @@ COMMON_SCRIPT = """
                         'computer science': '7 مواد.<br>مرتبة، موثقة،<br>وجاهزة للاستخدام.',
                         'software engineering': 'مادتين.<br>المتطلبات، التصميم،<br>وممارسة الهندسة.',
                         cybersecurity: 'مادة وحدة.<br>أساسيات الأمن،<br>والتهديدات، والدفاع.',
-                        'other courses': '4 مواد.<br>الكتابة، والأخلاقيات،<br>والفيزياء، والأساسيات.'
+                        'other courses': '5 مواد.<br>مركز لغة إنجليزية واحد،<br>وموارد مشتركة.'
                     },
                     trackMeta: {
                         'computer science': ['مسار علوم الحاسب', '7 مواد', 'برمجة', 'شبكات', 'قواعد بيانات'],
                         'software engineering': ['مسار هندسة البرمجيات', 'مادتين', 'العمليات', 'المتطلبات', 'التصميم'],
                         cybersecurity: ['مسار الأمن السيبراني', 'مادة وحدة', 'الأمن', 'المخاطر', 'الدفاع'],
-                        'other courses': ['مسار عام', '4 مواد', 'الكتابة', 'الأخلاقيات', 'العلوم']
+                        'other courses': ['مسار عام', '5 مواد + مركز اللغة الإنجليزية', 'الكتابة', 'الأخلاقيات', 'العلوم']
                     }
                 }
             };
@@ -2239,6 +2279,11 @@ def academic_sidebar(active_code: str | None = None, active_section: str | None 
             track_modifier += " cyber-track"
         children: list[str] = []
         child_id = f"tree-{slug}"
+        if slug == "other-courses":
+            children.append(
+                '<li class="tree-item"><a class="tree-file" '
+                'href="/academics/other-courses/english/">ENGLISH HUB</a></li>'
+            )
         for code in track["courses"]:
             config = COURSES[code]
             display = html.escape(str(config.get("code_override") or code))
@@ -3355,6 +3400,14 @@ def track_page(slug: str) -> str:
     meta_html += "".join(f'<span>{html.escape(m)}</span><span class="meta-sep">·</span>' for m in meta[2:]).removesuffix('<span class="meta-sep">·</span>')
     text = replace_first(r'<div class="hero-metadata-strip"[^>]*>.*?</div>', f'<div class="hero-metadata-strip">{meta_html}</div>', text)
     rows = []
+    if slug == "other-courses":
+        rows.append(
+            '<a class="course-row" href="/academics/other-courses/english/">'
+            '<div class="course-code">ENGLISH</div>'
+            '<div class="course-name"><span data-ar-text="مركز تعلم اللغة الإنجليزية">English Learning Hub</span></div>'
+            '<div class="course-status-area"><div class="status-tag status-complete">HUB</div>'
+            '<div class="row-arrow">-&gt;</div></div></a>'
+        )
     for code in track["courses"]:
         c = parse_course(code)
         rows.append(

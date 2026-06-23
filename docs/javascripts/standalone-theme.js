@@ -233,3 +233,128 @@
     } catch (e) { }
   }
 })();
+
+(function () {
+  function initCriticalPath() {
+    var courses = window.__ACADEMIC_PLAN_COURSES__;
+    if (!Array.isArray(courses) || !courses.length) return;
+
+    var byId = new Map(courses.map(function (course) { return [course.id, course]; }));
+    var nextLevelDependents = new Map(courses.map(function (course) { return [course.id, []]; }));
+
+    courses.forEach(function (course) {
+      (course.prereqs || []).forEach(function (prereqId) {
+        var prereq = byId.get(prereqId);
+        if (!prereq || course.level !== prereq.level + 1) return;
+        nextLevelDependents.get(prereqId).push(course);
+      });
+    });
+
+    var critical = new Map();
+    courses.forEach(function (course) {
+      var unlocks = nextLevelDependents.get(course.id) || [];
+      if (course.level === 8 || unlocks.length) {
+        critical.set(course.id, {
+          course: course,
+          unlocks: unlocks
+        });
+      }
+    });
+    if (!critical.size) return;
+
+    var style = document.createElement("style");
+    style.id = "academic-critical-path-styles";
+    style.textContent = [
+      ".critical-path-notice{--cp:#f59e0b;--cp-bg:rgba(245,158,11,.10);display:flex;align-items:center;gap:12px;margin:16px 0;padding:12px 14px;border:1px solid rgba(245,158,11,.62);border-left:4px solid var(--cp);border-radius:10px;background:var(--cp-bg);color:inherit;box-shadow:none}",
+      ".critical-path-notice__icon{display:grid;place-items:center;flex:0 0 34px;width:34px;height:34px;border-radius:9px;background:var(--cp);color:#211400;font-size:18px;font-weight:900}",
+      ".critical-path-notice__copy{min-width:0;flex:1}",
+      ".critical-path-notice__title{font:900 12px/1.2 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:1.2px;text-transform:uppercase;color:var(--cp)}",
+      ".critical-path-notice__text{margin-top:4px;font-size:12px;line-height:1.5;opacity:.88}",
+      ".critical-path-notice__count{flex:0 0 auto;padding:4px 8px;border-radius:999px;background:var(--cp);color:#211400;font:900 10px/1.2 ui-monospace,SFMono-Regular,Menlo,monospace;white-space:nowrap}",
+      "[data-id].is-critical-path{position:relative!important;border-color:var(--critical-path-color,#f59e0b)!important;box-shadow:inset 3px 0 0 var(--critical-path-color,#f59e0b)!important}",
+      "[data-id].is-critical-path:not(.completed):not(.is-done):not(.st-done){background-image:linear-gradient(90deg,rgba(245,158,11,.08),transparent 34%)!important}",
+      "[data-id].is-critical-path.completed,[data-id].is-critical-path.is-done,[data-id].is-critical-path.st-done{--critical-path-color:#22c55e}",
+      ".critical-path-badge{display:inline-flex!important;align-items:center;gap:4px;width:max-content!important;max-width:100%;margin:4px 0 0!important;padding:2px 7px!important;border:1px solid rgba(245,158,11,.75)!important;border-radius:4px!important;background:rgba(245,158,11,.14)!important;color:#f59e0b!important;font:800 9px/1.3 ui-monospace,SFMono-Regular,Menlo,monospace!important;letter-spacing:.35px!important;text-transform:uppercase;white-space:nowrap!important;vertical-align:middle}",
+      ".critical-path-badge::before{content:'⚠';font-size:9px}",
+      ".controls.no-course-search{justify-content:flex-end!important}",
+      ".controls.no-course-search .filter-group,.controls.no-course-search .level-filter{margin-left:auto}",
+      ".nav-center.no-course-search,.search-box.no-course-search,.search-wrap.no-course-search{display:none!important}",
+      "@media(max-width:640px){.critical-path-notice{padding:10px;gap:9px}.critical-path-notice__count{display:none}.critical-path-badge{font-size:8px!important;white-space:normal!important}}"
+    ].join("\n");
+    document.head.appendChild(style);
+
+    function placeNotice() {
+      if (document.querySelector(".critical-path-notice")) return;
+      var anchor = document.querySelector(".filter-strip, .controls, .choice-section, .choice-row, .board, #courseList, #roadmap");
+      if (!anchor || !anchor.parentNode) return;
+
+      var notice = document.createElement("aside");
+      notice.className = "critical-path-notice";
+      notice.setAttribute("role", "note");
+      notice.innerHTML =
+        '<div class="critical-path-notice__icon">⚠</div>' +
+        '<div class="critical-path-notice__copy">' +
+          '<div class="critical-path-notice__title" data-ar-text="المسار الحرج · لا تؤجل">Critical path · do not delay</div>' +
+          '<div class="critical-path-notice__text" data-ar-text="المقررات المحددة مطلوبة في المستوى الموضح للحفاظ على تسلسل الخطة. تأجيلها قد يمنع مقررات المستوى التالي ويؤخر التخرج.">Highlighted courses must be taken in the level shown to stay on sequence. Delaying one can block next-level courses and delay graduation.</div>' +
+        '</div>' +
+        '<div class="critical-path-notice__count">' + critical.size + ' COURSES</div>';
+      anchor.parentNode.insertBefore(notice, anchor);
+    }
+
+    function enhanceCards() {
+      placeNotice();
+      document.querySelectorAll("[data-id]").forEach(function (card) {
+        var item = critical.get(card.dataset.id);
+        if (!item) return;
+
+        card.classList.add("is-critical-path");
+        var unlockedIds = item.unlocks.map(function (course) { return course.id; });
+        var message = item.course.level === 8
+          ? "Graduation-critical: complete in Level 8."
+          : "Take in Level " + item.course.level + ". Delaying blocks " + unlockedIds.join(", ") + " in Level " + (item.course.level + 1) + ".";
+
+        if (card.querySelector(".critical-path-badge")) return;
+        card.setAttribute("aria-label", item.course.id + ". " + message);
+        var badge = document.createElement("span");
+        badge.className = "critical-path-badge";
+        badge.textContent = item.course.level === 8
+          ? "Critical · Graduate L8"
+          : "Critical · Take L" + item.course.level;
+
+        var target = card.querySelector(".cc-name, .c-name, .cr-name-cell, .course-name, .course-info, .course-code");
+        if (target) target.appendChild(badge);
+        else card.appendChild(badge);
+      });
+    }
+
+    function removeCourseSearch() {
+      document.querySelectorAll("#searchInput").forEach(function (input) {
+        var wrapper = input.closest(".nav-center, .search-box, .search-wrap");
+        var controls = input.closest(".controls");
+        if (controls) controls.classList.add("no-course-search");
+        if (wrapper) wrapper.remove();
+        else input.remove();
+      });
+    }
+
+    var queued = false;
+    function queueEnhance() {
+      if (queued) return;
+      queued = true;
+      requestAnimationFrame(function () {
+        queued = false;
+        enhanceCards();
+      });
+    }
+
+    removeCourseSearch();
+    enhanceCards();
+    new MutationObserver(queueEnhance).observe(document.body, { childList: true, subtree: true });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initCriticalPath);
+  } else {
+    initCriticalPath();
+  }
+})();

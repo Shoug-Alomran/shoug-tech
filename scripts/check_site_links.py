@@ -38,7 +38,13 @@ class LinkParser(HTMLParser):
 
 
 def html_files() -> list[Path]:
-    return sorted(SITE.rglob("*.html"))
+    files = []
+    for path in SITE.rglob("*.html"):
+        stat = path.stat()
+        if stat.st_size > 0 and stat.st_blocks == 0:
+            continue
+        files.append(path)
+    return sorted(files)
 
 
 def parse_html(path: Path) -> LinkParser:

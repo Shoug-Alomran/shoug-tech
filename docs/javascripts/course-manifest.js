@@ -1245,7 +1245,7 @@ var COURSE_PAGES = [
   },
   {
     "url": "/academics/computer-science/cs331/slides/chapter-1-data-communications-and-networking-part-1/",
-    "title": "CS331 | Chapter 1 Data Communications And Networking Part 1",
+    "title": "Chapter 1 Data Communications And Networking Part 1",
     "track": "computer-science",
     "course": "cs331",
     "section": "slides",
@@ -1281,7 +1281,7 @@ var COURSE_PAGES = [
   },
   {
     "url": "/academics/computer-science/cs331/slides/ethernet/",
-    "title": "CS331 | Ethernet",
+    "title": "Ethernet",
     "track": "computer-science",
     "course": "cs331",
     "section": "slides",
@@ -1290,7 +1290,7 @@ var COURSE_PAGES = [
   },
   {
     "url": "/academics/computer-science/cs331/slides/interconnecting-devices/",
-    "title": "CS331 | Interconnecting Devices",
+    "title": "Interconnecting Devices",
     "track": "computer-science",
     "course": "cs331",
     "section": "slides",
@@ -1308,7 +1308,7 @@ var COURSE_PAGES = [
   },
   {
     "url": "/academics/computer-science/cs331/slides/network-layer-part-2/",
-    "title": "CS331 | Network Layer Part 2",
+    "title": "Network Layer Part 2",
     "track": "computer-science",
     "course": "cs331",
     "section": "slides",
@@ -1317,7 +1317,7 @@ var COURSE_PAGES = [
   },
   {
     "url": "/academics/computer-science/cs331/slides/transport-layer/",
-    "title": "CS331 | Transport Layer",
+    "title": "Transport Layer",
     "track": "computer-science",
     "course": "cs331",
     "section": "slides",
@@ -1331,7 +1331,7 @@ var COURSE_PAGES = [
     "course": "cs340",
     "section": "extra-resources",
     "courseUrl": "/academics/computer-science/cs340/",
-    "courseTitle": "CS340 // Introduction to Database Systems"
+    "courseTitle": "CS340"
   },
   {
     "url": "/academics/computer-science/cs340/extra-resources/02-symbols/",
@@ -1340,7 +1340,7 @@ var COURSE_PAGES = [
     "course": "cs340",
     "section": "extra-resources",
     "courseUrl": "/academics/computer-science/cs340/",
-    "courseTitle": "CS340 // Introduction to Database Systems"
+    "courseTitle": "CS340"
   },
   {
     "url": "/academics/computer-science/cs340/extra-resources/03-chapter-5-cheat-sheet/",
@@ -1349,7 +1349,7 @@ var COURSE_PAGES = [
     "course": "cs340",
     "section": "extra-resources",
     "courseUrl": "/academics/computer-science/cs340/",
-    "courseTitle": "CS340 // Introduction to Database Systems"
+    "courseTitle": "CS340"
   },
   {
     "url": "/academics/computer-science/cs340/extra-resources/04-summary/",
@@ -1358,7 +1358,7 @@ var COURSE_PAGES = [
     "course": "cs340",
     "section": "extra-resources",
     "courseUrl": "/academics/computer-science/cs340/",
-    "courseTitle": "CS340 // Introduction to Database Systems"
+    "courseTitle": "CS340"
   },
   {
     "url": "/academics/computer-science/cs340/extra-resources/mindmap/01-chapter-1-mind-map/",
@@ -1367,16 +1367,16 @@ var COURSE_PAGES = [
     "course": "cs340",
     "section": "extra-resources",
     "courseUrl": "/academics/computer-science/cs340/",
-    "courseTitle": "CS340 // Introduction to Database Systems"
+    "courseTitle": "CS340"
   },
   {
     "url": "/academics/computer-science/cs340/extra-resources/mindmap/02-chapter-2-mind-map/",
-    "title": "CS340 | Chapter 2 Mindmap",
+    "title": "Chapter 2 Mind Map",
     "track": "computer-science",
     "course": "cs340",
     "section": "extra-resources",
     "courseUrl": "/academics/computer-science/cs340/",
-    "courseTitle": "CS340 // Introduction to Database Systems"
+    "courseTitle": "CS340"
   },
   {
     "url": "/academics/computer-science/cs340/extra-resources/mindmap/03-chapter-3-mind-map/",
@@ -1385,16 +1385,16 @@ var COURSE_PAGES = [
     "course": "cs340",
     "section": "extra-resources",
     "courseUrl": "/academics/computer-science/cs340/",
-    "courseTitle": "CS340 // Introduction to Database Systems"
+    "courseTitle": "CS340"
   },
   {
     "url": "/academics/computer-science/cs340/extra-resources/mindmap/04-chapter-4-mind-map/",
-    "title": "CS340 | Chapter 4 Mindmap",
+    "title": "Chapter 4 Mind Map",
     "track": "computer-science",
     "course": "cs340",
     "section": "extra-resources",
     "courseUrl": "/academics/computer-science/cs340/",
-    "courseTitle": "CS340 // Introduction to Database Systems"
+    "courseTitle": "CS340"
   },
   {
     "url": "/academics/computer-science/cs340/quizzes/01-chapter-1-quiz/",
@@ -1403,7 +1403,7 @@ var COURSE_PAGES = [
     "course": "cs340",
     "section": "quizzes",
     "courseUrl": "/academics/computer-science/cs340/",
-    "courseTitle": "CS340 // Introduction to Database Systems"
+    "courseTitle": "CS340"
   },
   {
     "url": "/academics/computer-science/cs340/quizzes/02-chapter-2-quiz/",
@@ -1412,16 +1412,16 @@ var COURSE_PAGES = [
     "course": "cs340",
     "section": "quizzes",
     "courseUrl": "/academics/computer-science/cs340/",
-    "courseTitle": "CS340 // Introduction to Database Systems"
+    "courseTitle": "CS340"
   },
   {
     "url": "/academics/computer-science/cs340/quizzes/03-chapter-3-quiz/",
-    "title": "CS340 | Chapter 3 Quiz",
+    "title": "Chapter 3 Quiz",
     "track": "computer-science",
     "course": "cs340",
     "section": "quizzes",
     "courseUrl": "/academics/computer-science/cs340/",
-    "courseTitle": "CS340 // Introduction to Database Systems"
+    "courseTitle": "CS340"
   },
   {
     "url": "/academics/computer-science/cs340/quizzes/04-chapter-4-quiz/",
@@ -1430,7 +1430,7 @@ var COURSE_PAGES = [
     "course": "cs340",
     "section": "quizzes",
     "courseUrl": "/academics/computer-science/cs340/",
-    "courseTitle": "CS340 // Introduction to Database Systems"
+    "courseTitle": "CS340"
   },
   {
     "url": "/academics/computer-science/cs340/quizzes/05-chapter-5-quiz/",
@@ -1439,7 +1439,7 @@ var COURSE_PAGES = [
     "course": "cs340",
     "section": "quizzes",
     "courseUrl": "/academics/computer-science/cs340/",
-    "courseTitle": "CS340 // Introduction to Database Systems"
+    "courseTitle": "CS340"
   },
   {
     "url": "/academics/computer-science/cs340/quizzes/06-chapter-7-quiz/",
@@ -1448,7 +1448,7 @@ var COURSE_PAGES = [
     "course": "cs340",
     "section": "quizzes",
     "courseUrl": "/academics/computer-science/cs340/",
-    "courseTitle": "CS340 // Introduction to Database Systems"
+    "courseTitle": "CS340"
   },
   {
     "url": "/academics/computer-science/cs340/quizzes/07-chapter-9-quiz/",
@@ -1457,7 +1457,7 @@ var COURSE_PAGES = [
     "course": "cs340",
     "section": "quizzes",
     "courseUrl": "/academics/computer-science/cs340/",
-    "courseTitle": "CS340 // Introduction to Database Systems"
+    "courseTitle": "CS340"
   },
   {
     "url": "/academics/computer-science/cs340/quizzes/08-final-exam-251-practice/",
@@ -1466,34 +1466,34 @@ var COURSE_PAGES = [
     "course": "cs340",
     "section": "quizzes",
     "courseUrl": "/academics/computer-science/cs340/",
-    "courseTitle": "CS340 // Introduction to Database Systems"
+    "courseTitle": "CS340"
   },
   {
     "url": "/academics/computer-science/cs340/quizzes/09-midterm-exam/",
-    "title": "CS340 | Midterm Exam",
+    "title": "Midterm Exam",
     "track": "computer-science",
     "course": "cs340",
     "section": "quizzes",
     "courseUrl": "/academics/computer-science/cs340/",
-    "courseTitle": "CS340 // Introduction to Database Systems"
+    "courseTitle": "CS340"
   },
   {
     "url": "/academics/computer-science/cs340/slide-breakdowns/01-chapter-1-handouts/",
-    "title": "CS340 | Breakdown: Chapter 1 Handouts",
+    "title": "Chapter 1 Handouts",
     "track": "computer-science",
     "course": "cs340",
     "section": "slide-breakdowns",
     "courseUrl": "/academics/computer-science/cs340/",
-    "courseTitle": "CS340 // Introduction to Database Systems"
+    "courseTitle": "CS340"
   },
   {
     "url": "/academics/computer-science/cs340/slide-breakdowns/02-chapter-1-introduction-to-databases/",
-    "title": "CS340 | Breakdown: Chapter 1 Introduction to Databases",
+    "title": "Chapter 1 Introduction To Databases",
     "track": "computer-science",
     "course": "cs340",
     "section": "slide-breakdowns",
     "courseUrl": "/academics/computer-science/cs340/",
-    "courseTitle": "CS340 // Introduction to Database Systems"
+    "courseTitle": "CS340"
   },
   {
     "url": "/academics/computer-science/cs340/slide-breakdowns/03-chapter-2/",
@@ -1502,25 +1502,25 @@ var COURSE_PAGES = [
     "course": "cs340",
     "section": "slide-breakdowns",
     "courseUrl": "/academics/computer-science/cs340/",
-    "courseTitle": "CS340 // Introduction to Database Systems"
+    "courseTitle": "CS340"
   },
   {
     "url": "/academics/computer-science/cs340/slide-breakdowns/04-chapter-3-data-modeling-using-er-and-eer/",
-    "title": "CS340 | Breakdown: Chapter 3 Data Modeling Using ER and EER",
+    "title": "Chapter 3 Data Modeling Using Er And Eer",
     "track": "computer-science",
     "course": "cs340",
     "section": "slide-breakdowns",
     "courseUrl": "/academics/computer-science/cs340/",
-    "courseTitle": "CS340 // Introduction to Database Systems"
+    "courseTitle": "CS340"
   },
   {
     "url": "/academics/computer-science/cs340/slide-breakdowns/05-chapter-4-the-relational-model/",
-    "title": "CS340 | Breakdown: Chapter 4 The Relational Model",
+    "title": "Chapter 4 The Relational Model",
     "track": "computer-science",
     "course": "cs340",
     "section": "slide-breakdowns",
     "courseUrl": "/academics/computer-science/cs340/",
-    "courseTitle": "CS340 // Introduction to Database Systems"
+    "courseTitle": "CS340"
   },
   {
     "url": "/academics/computer-science/cs340/slide-breakdowns/06-chapter-5-sql-fundamentals/",
@@ -1529,25 +1529,25 @@ var COURSE_PAGES = [
     "course": "cs340",
     "section": "slide-breakdowns",
     "courseUrl": "/academics/computer-science/cs340/",
-    "courseTitle": "CS340 // Introduction to Database Systems"
+    "courseTitle": "CS340"
   },
   {
     "url": "/academics/computer-science/cs340/slide-breakdowns/07-chapter-5-sql-fundamentals/",
-    "title": "CS340 | Breakdown: Chapter 5 SQL Fundamentals",
+    "title": "Chapter 5 Sql Fundamentals",
     "track": "computer-science",
     "course": "cs340",
     "section": "slide-breakdowns",
     "courseUrl": "/academics/computer-science/cs340/",
-    "courseTitle": "CS340 // Introduction to Database Systems"
+    "courseTitle": "CS340"
   },
   {
     "url": "/academics/computer-science/cs340/slide-breakdowns/08-chapter-6-advanced-sql/",
-    "title": "CS340 | Breakdown: Chapter 6 Advanced SQL",
+    "title": "Chapter 6 Advanced Sql",
     "track": "computer-science",
     "course": "cs340",
     "section": "slide-breakdowns",
     "courseUrl": "/academics/computer-science/cs340/",
-    "courseTitle": "CS340 // Introduction to Database Systems"
+    "courseTitle": "CS340"
   },
   {
     "url": "/academics/computer-science/cs340/slide-breakdowns/09-chapter-7-database-design-and-normalization/",
@@ -1556,34 +1556,34 @@ var COURSE_PAGES = [
     "course": "cs340",
     "section": "slide-breakdowns",
     "courseUrl": "/academics/computer-science/cs340/",
-    "courseTitle": "CS340 // Introduction to Database Systems"
+    "courseTitle": "CS340"
   },
   {
     "url": "/academics/computer-science/cs340/slide-breakdowns/10-chapter-9-er-to-relational-mapping/",
-    "title": "CS340 | Breakdown: Chapter 9 ER to Relational Mapping",
+    "title": "Chapter 9 Er To Relational Mapping",
     "track": "computer-science",
     "course": "cs340",
     "section": "slide-breakdowns",
     "courseUrl": "/academics/computer-science/cs340/",
-    "courseTitle": "CS340 // Introduction to Database Systems"
+    "courseTitle": "CS340"
   },
   {
     "url": "/academics/computer-science/cs340/slides/chapter-1-introduction-to-databases/",
-    "title": "CS340 | Chapter 1 Introduction To Databases",
+    "title": "Chapter 1 Introduction To Databases",
     "track": "computer-science",
     "course": "cs340",
     "section": "slides",
     "courseUrl": "/academics/computer-science/cs340/",
-    "courseTitle": "CS340 // Introduction to Database Systems"
+    "courseTitle": "CS340"
   },
   {
     "url": "/academics/computer-science/cs340/slides/chapter-10-nosql-and-object-oriented-databases/",
-    "title": "CS340 | Chapter 10 Nosql And Object Oriented Databases",
+    "title": "Chapter 10 Nosql And Object Oriented Databases",
     "track": "computer-science",
     "course": "cs340",
     "section": "slides",
     "courseUrl": "/academics/computer-science/cs340/",
-    "courseTitle": "CS340 // Introduction to Database Systems"
+    "courseTitle": "CS340"
   },
   {
     "url": "/academics/computer-science/cs340/slides/chapter-2-database-system-concepts-and-architecture/",
@@ -1592,7 +1592,7 @@ var COURSE_PAGES = [
     "course": "cs340",
     "section": "slides",
     "courseUrl": "/academics/computer-science/cs340/",
-    "courseTitle": "CS340 // Introduction to Database Systems"
+    "courseTitle": "CS340"
   },
   {
     "url": "/academics/computer-science/cs340/slides/chapter-3-data-modeling-using-er-and-eer/",
@@ -1601,16 +1601,16 @@ var COURSE_PAGES = [
     "course": "cs340",
     "section": "slides",
     "courseUrl": "/academics/computer-science/cs340/",
-    "courseTitle": "CS340 // Introduction to Database Systems"
+    "courseTitle": "CS340"
   },
   {
     "url": "/academics/computer-science/cs340/slides/chapter-4-relational-model/",
-    "title": "CS340 | Chapter 4 Relational Model",
+    "title": "Chapter 4 Relational Model",
     "track": "computer-science",
     "course": "cs340",
     "section": "slides",
     "courseUrl": "/academics/computer-science/cs340/",
-    "courseTitle": "CS340 // Introduction to Database Systems"
+    "courseTitle": "CS340"
   },
   {
     "url": "/academics/computer-science/cs340/slides/chapter-5-er-to-relational-mapping-and-ddl/",
@@ -1619,16 +1619,16 @@ var COURSE_PAGES = [
     "course": "cs340",
     "section": "slides",
     "courseUrl": "/academics/computer-science/cs340/",
-    "courseTitle": "CS340 // Introduction to Database Systems"
+    "courseTitle": "CS340"
   },
   {
     "url": "/academics/computer-science/cs340/slides/chapter-6-basic-sql/",
-    "title": "CS340 | Chapter 6 Basic Sql",
+    "title": "Chapter 6 Basic Sql",
     "track": "computer-science",
     "course": "cs340",
     "section": "slides",
     "courseUrl": "/academics/computer-science/cs340/",
-    "courseTitle": "CS340 // Introduction to Database Systems"
+    "courseTitle": "CS340"
   },
   {
     "url": "/academics/computer-science/cs340/slides/chapter-7-advanced-sql/",
@@ -1637,16 +1637,16 @@ var COURSE_PAGES = [
     "course": "cs340",
     "section": "slides",
     "courseUrl": "/academics/computer-science/cs340/",
-    "courseTitle": "CS340 // Introduction to Database Systems"
+    "courseTitle": "CS340"
   },
   {
     "url": "/academics/computer-science/cs340/slides/chapter-9-normalization/",
-    "title": "CS340 | Chapter 9 Normalization",
+    "title": "Chapter 9 Normalization",
     "track": "computer-science",
     "course": "cs340",
     "section": "slides",
     "courseUrl": "/academics/computer-science/cs340/",
-    "courseTitle": "CS340 // Introduction to Database Systems"
+    "courseTitle": "CS340"
   },
   {
     "url": "/academics/cybersecurity/cys401/extra-resources/summary/",
@@ -1655,7 +1655,7 @@ var COURSE_PAGES = [
     "course": "cys401",
     "section": "extra-resources",
     "courseUrl": "/academics/cybersecurity/cys401/",
-    "courseTitle": "CYS401 // Fundamentals of Cybersecurity"
+    "courseTitle": "CYS401"
   },
   {
     "url": "/academics/cybersecurity/cys401/quizzes/01-chapter-1-quiz/",
@@ -1664,7 +1664,7 @@ var COURSE_PAGES = [
     "course": "cys401",
     "section": "quizzes",
     "courseUrl": "/academics/cybersecurity/cys401/",
-    "courseTitle": "CYS401 // Fundamentals of Cybersecurity"
+    "courseTitle": "CYS401"
   },
   {
     "url": "/academics/cybersecurity/cys401/quizzes/02-chapter-2-quiz/",
@@ -1673,7 +1673,7 @@ var COURSE_PAGES = [
     "course": "cys401",
     "section": "quizzes",
     "courseUrl": "/academics/cybersecurity/cys401/",
-    "courseTitle": "CYS401 // Fundamentals of Cybersecurity"
+    "courseTitle": "CYS401"
   },
   {
     "url": "/academics/cybersecurity/cys401/quizzes/03-chapter-3-quiz/",
@@ -1682,7 +1682,7 @@ var COURSE_PAGES = [
     "course": "cys401",
     "section": "quizzes",
     "courseUrl": "/academics/cybersecurity/cys401/",
-    "courseTitle": "CYS401 // Fundamentals of Cybersecurity"
+    "courseTitle": "CYS401"
   },
   {
     "url": "/academics/cybersecurity/cys401/quizzes/04-chapter-4-quiz/",
@@ -1691,7 +1691,7 @@ var COURSE_PAGES = [
     "course": "cys401",
     "section": "quizzes",
     "courseUrl": "/academics/cybersecurity/cys401/",
-    "courseTitle": "CYS401 // Fundamentals of Cybersecurity"
+    "courseTitle": "CYS401"
   },
   {
     "url": "/academics/cybersecurity/cys401/quizzes/05-chapter-5-quiz/",
@@ -1700,7 +1700,7 @@ var COURSE_PAGES = [
     "course": "cys401",
     "section": "quizzes",
     "courseUrl": "/academics/cybersecurity/cys401/",
-    "courseTitle": "CYS401 // Fundamentals of Cybersecurity"
+    "courseTitle": "CYS401"
   },
   {
     "url": "/academics/cybersecurity/cys401/quizzes/06-chapter-6-quiz/",
@@ -1709,7 +1709,7 @@ var COURSE_PAGES = [
     "course": "cys401",
     "section": "quizzes",
     "courseUrl": "/academics/cybersecurity/cys401/",
-    "courseTitle": "CYS401 // Fundamentals of Cybersecurity"
+    "courseTitle": "CYS401"
   },
   {
     "url": "/academics/cybersecurity/cys401/quizzes/07-chapter-7-quiz/",
@@ -1718,7 +1718,7 @@ var COURSE_PAGES = [
     "course": "cys401",
     "section": "quizzes",
     "courseUrl": "/academics/cybersecurity/cys401/",
-    "courseTitle": "CYS401 // Fundamentals of Cybersecurity"
+    "courseTitle": "CYS401"
   },
   {
     "url": "/academics/cybersecurity/cys401/slide-breakdowns/01-chapter-1-introduction-to-cybersecurity/",
@@ -1727,7 +1727,7 @@ var COURSE_PAGES = [
     "course": "cys401",
     "section": "slide-breakdowns",
     "courseUrl": "/academics/cybersecurity/cys401/",
-    "courseTitle": "CYS401 // Fundamentals of Cybersecurity"
+    "courseTitle": "CYS401"
   },
   {
     "url": "/academics/cybersecurity/cys401/slide-breakdowns/02-chapter-2-security-foundations-and-principles/",
@@ -1736,7 +1736,7 @@ var COURSE_PAGES = [
     "course": "cys401",
     "section": "slide-breakdowns",
     "courseUrl": "/academics/cybersecurity/cys401/",
-    "courseTitle": "CYS401 // Fundamentals of Cybersecurity"
+    "courseTitle": "CYS401"
   },
   {
     "url": "/academics/cybersecurity/cys401/slide-breakdowns/03-chapter-3-threat-modeling/",
@@ -1745,7 +1745,7 @@ var COURSE_PAGES = [
     "course": "cys401",
     "section": "slide-breakdowns",
     "courseUrl": "/academics/cybersecurity/cys401/",
-    "courseTitle": "CYS401 // Fundamentals of Cybersecurity"
+    "courseTitle": "CYS401"
   },
   {
     "url": "/academics/cybersecurity/cys401/slide-breakdowns/04-chapter-4-protection-of-information-assets/",
@@ -1754,25 +1754,25 @@ var COURSE_PAGES = [
     "course": "cys401",
     "section": "slide-breakdowns",
     "courseUrl": "/academics/cybersecurity/cys401/",
-    "courseTitle": "CYS401 // Fundamentals of Cybersecurity"
+    "courseTitle": "CYS401"
   },
   {
     "url": "/academics/cybersecurity/cys401/slide-breakdowns/05-chapter-5-cryptography/",
-    "title": "CYS401 | Breakdown: Chapter 5 Cryptography",
+    "title": "Chapter 5 Cryptography",
     "track": "cybersecurity",
     "course": "cys401",
     "section": "slide-breakdowns",
     "courseUrl": "/academics/cybersecurity/cys401/",
-    "courseTitle": "CYS401 // Fundamentals of Cybersecurity"
+    "courseTitle": "CYS401"
   },
   {
     "url": "/academics/cybersecurity/cys401/slide-breakdowns/06-chapter-6-asymmetric-cryptography-and-pki/",
-    "title": "CYS401 | Breakdown: Chapter 6 Asymmetric Cryptography & PKI",
+    "title": "Chapter 6 Asymmetric Cryptography And Pki",
     "track": "cybersecurity",
     "course": "cys401",
     "section": "slide-breakdowns",
     "courseUrl": "/academics/cybersecurity/cys401/",
-    "courseTitle": "CYS401 // Fundamentals of Cybersecurity"
+    "courseTitle": "CYS401"
   },
   {
     "url": "/academics/cybersecurity/cys401/slide-breakdowns/07-chapter-7-principles-of-security-design-models-and-capabilities/",
@@ -1781,7 +1781,7 @@ var COURSE_PAGES = [
     "course": "cys401",
     "section": "slide-breakdowns",
     "courseUrl": "/academics/cybersecurity/cys401/",
-    "courseTitle": "CYS401 // Fundamentals of Cybersecurity"
+    "courseTitle": "CYS401"
   },
   {
     "url": "/academics/cybersecurity/cys401/slide-breakdowns/08-chapter-8-security-vulnerabilities-threats-and-countermeasures/",
@@ -1790,7 +1790,7 @@ var COURSE_PAGES = [
     "course": "cys401",
     "section": "slide-breakdowns",
     "courseUrl": "/academics/cybersecurity/cys401/",
-    "courseTitle": "CYS401 // Fundamentals of Cybersecurity"
+    "courseTitle": "CYS401"
   },
   {
     "url": "/academics/cybersecurity/cys401/slide-breakdowns/09-chapter-9-ics-scada-system-security/",
@@ -1799,7 +1799,7 @@ var COURSE_PAGES = [
     "course": "cys401",
     "section": "slide-breakdowns",
     "courseUrl": "/academics/cybersecurity/cys401/",
-    "courseTitle": "CYS401 // Fundamentals of Cybersecurity"
+    "courseTitle": "CYS401"
   },
   {
     "url": "/academics/cybersecurity/cys401/slide-breakdowns/10-chapter-10-authentication-and-access-control/",
@@ -1808,7 +1808,7 @@ var COURSE_PAGES = [
     "course": "cys401",
     "section": "slide-breakdowns",
     "courseUrl": "/academics/cybersecurity/cys401/",
-    "courseTitle": "CYS401 // Fundamentals of Cybersecurity"
+    "courseTitle": "CYS401"
   },
   {
     "url": "/academics/cybersecurity/cys401/slides/chapter-1-introduction-to-cybersecurity/",
@@ -1817,43 +1817,43 @@ var COURSE_PAGES = [
     "course": "cys401",
     "section": "slides",
     "courseUrl": "/academics/cybersecurity/cys401/",
-    "courseTitle": "CYS401 // Fundamentals of Cybersecurity"
+    "courseTitle": "CYS401"
   },
   {
     "url": "/academics/cybersecurity/cys401/slides/chapter-10-ics-and-scada-system-security/",
-    "title": "CYS401 | Chapter 10 Ics And Scada System Security",
+    "title": "Chapter 10 Ics And Scada System Security",
     "track": "cybersecurity",
     "course": "cys401",
     "section": "slides",
     "courseUrl": "/academics/cybersecurity/cys401/",
-    "courseTitle": "CYS401 // Fundamentals of Cybersecurity"
+    "courseTitle": "CYS401"
   },
   {
     "url": "/academics/cybersecurity/cys401/slides/chapter-2-security-foundations-and-principles/",
-    "title": "CYS401 | Chapter 2 Security Foundations And Principles",
+    "title": "Chapter 2 Security Foundations And Principles",
     "track": "cybersecurity",
     "course": "cys401",
     "section": "slides",
     "courseUrl": "/academics/cybersecurity/cys401/",
-    "courseTitle": "CYS401 // Fundamentals of Cybersecurity"
+    "courseTitle": "CYS401"
   },
   {
     "url": "/academics/cybersecurity/cys401/slides/chapter-3-threat-modeling/",
-    "title": "CYS401 | Chapter 3 Threat Modeling",
+    "title": "Chapter 3 Threat Modeling",
     "track": "cybersecurity",
     "course": "cys401",
     "section": "slides",
     "courseUrl": "/academics/cybersecurity/cys401/",
-    "courseTitle": "CYS401 // Fundamentals of Cybersecurity"
+    "courseTitle": "CYS401"
   },
   {
     "url": "/academics/cybersecurity/cys401/slides/chapter-4-protection-of-information-assets/",
-    "title": "CYS401 | Chapter 4 Protection Of Information Assets",
+    "title": "Chapter 4 Protection Of Information Assets",
     "track": "cybersecurity",
     "course": "cys401",
     "section": "slides",
     "courseUrl": "/academics/cybersecurity/cys401/",
-    "courseTitle": "CYS401 // Fundamentals of Cybersecurity"
+    "courseTitle": "CYS401"
   },
   {
     "url": "/academics/cybersecurity/cys401/slides/chapter-5-cryptography/",
@@ -1862,52 +1862,52 @@ var COURSE_PAGES = [
     "course": "cys401",
     "section": "slides",
     "courseUrl": "/academics/cybersecurity/cys401/",
-    "courseTitle": "CYS401 // Fundamentals of Cybersecurity"
+    "courseTitle": "CYS401"
   },
   {
     "url": "/academics/cybersecurity/cys401/slides/chapter-6-1-asymmetric-cryptography-and-pki/",
-    "title": "CYS401 | Chapter 6.1 Asymmetric Cryptography And Pki",
+    "title": "Chapter 6 1 Asymmetric Cryptography And Pki",
     "track": "cybersecurity",
     "course": "cys401",
     "section": "slides",
     "courseUrl": "/academics/cybersecurity/cys401/",
-    "courseTitle": "CYS401 // Fundamentals of Cybersecurity"
+    "courseTitle": "CYS401"
   },
   {
     "url": "/academics/cybersecurity/cys401/slides/chapter-6-2-asymmetric-cryptography-and-pki/",
-    "title": "CYS401 | Chapter 6.2 Asymmetric Cryptography And Pki",
+    "title": "Chapter 6 2 Asymmetric Cryptography And Pki",
     "track": "cybersecurity",
     "course": "cys401",
     "section": "slides",
     "courseUrl": "/academics/cybersecurity/cys401/",
-    "courseTitle": "CYS401 // Fundamentals of Cybersecurity"
+    "courseTitle": "CYS401"
   },
   {
     "url": "/academics/cybersecurity/cys401/slides/chapter-7-security-design-models-and-capabilities/",
-    "title": "CYS401 | Chapter 7 Security Design Models And Capabilities",
+    "title": "Chapter 7 Security Design Models And Capabilities",
     "track": "cybersecurity",
     "course": "cys401",
     "section": "slides",
     "courseUrl": "/academics/cybersecurity/cys401/",
-    "courseTitle": "CYS401 // Fundamentals of Cybersecurity"
+    "courseTitle": "CYS401"
   },
   {
     "url": "/academics/cybersecurity/cys401/slides/chapter-8-computer-architecture-security/",
-    "title": "CYS401 | Chapter 8 Computer Architecture Security",
+    "title": "Chapter 8 Computer Architecture Security",
     "track": "cybersecurity",
     "course": "cys401",
     "section": "slides",
     "courseUrl": "/academics/cybersecurity/cys401/",
-    "courseTitle": "CYS401 // Fundamentals of Cybersecurity"
+    "courseTitle": "CYS401"
   },
   {
     "url": "/academics/cybersecurity/cys401/slides/chapter-9-systems-architecture-security/",
-    "title": "CYS401 | Chapter 9 Systems Architecture Security",
+    "title": "Chapter 9 Systems Architecture Security",
     "track": "cybersecurity",
     "course": "cys401",
     "section": "slides",
     "courseUrl": "/academics/cybersecurity/cys401/",
-    "courseTitle": "CYS401 // Fundamentals of Cybersecurity"
+    "courseTitle": "CYS401"
   },
   {
     "url": "/academics/other-courses/english/eng101/extra-resources/apa-referencing-cheat-sheet/",
@@ -1916,7 +1916,7 @@ var COURSE_PAGES = [
     "course": "eng101",
     "section": "extra-resources",
     "courseUrl": "/academics/other-courses/english/eng101/",
-    "courseTitle": "ENG101 // Intensive Writing"
+    "courseTitle": "ENG101"
   },
   {
     "url": "/academics/other-courses/english/eng101/extra-resources/grammar-cheat-sheet/",
@@ -1925,7 +1925,7 @@ var COURSE_PAGES = [
     "course": "eng101",
     "section": "extra-resources",
     "courseUrl": "/academics/other-courses/english/eng101/",
-    "courseTitle": "ENG101 // Intensive Writing"
+    "courseTitle": "ENG101"
   },
   {
     "url": "/academics/other-courses/english/eng101/extra-resources/self-editing-checklist/",
@@ -1934,7 +1934,7 @@ var COURSE_PAGES = [
     "course": "eng101",
     "section": "extra-resources",
     "courseUrl": "/academics/other-courses/english/eng101/",
-    "courseTitle": "ENG101 // Intensive Writing"
+    "courseTitle": "ENG101"
   },
   {
     "url": "/academics/other-courses/english/eng101/extra-resources/writing-resources/01-argumentative-essay/",
@@ -1943,7 +1943,7 @@ var COURSE_PAGES = [
     "course": "eng101",
     "section": "extra-resources",
     "courseUrl": "/academics/other-courses/english/eng101/",
-    "courseTitle": "ENG101 // Intensive Writing"
+    "courseTitle": "ENG101"
   },
   {
     "url": "/academics/other-courses/english/eng101/extra-resources/writing-resources/01-writing-resources/",
@@ -1952,7 +1952,7 @@ var COURSE_PAGES = [
     "course": "eng101",
     "section": "extra-resources",
     "courseUrl": "/academics/other-courses/english/eng101/",
-    "courseTitle": "ENG101 // Intensive Writing"
+    "courseTitle": "ENG101"
   },
   {
     "url": "/academics/other-courses/english/eng101/extra-resources/writing-resources/02-cause-effect-essay-notes/",
@@ -1961,7 +1961,7 @@ var COURSE_PAGES = [
     "course": "eng101",
     "section": "extra-resources",
     "courseUrl": "/academics/other-courses/english/eng101/",
-    "courseTitle": "ENG101 // Intensive Writing"
+    "courseTitle": "ENG101"
   },
   {
     "url": "/academics/other-courses/english/eng101/extra-resources/writing-resources/03-cause-effect-essay/",
@@ -1970,7 +1970,7 @@ var COURSE_PAGES = [
     "course": "eng101",
     "section": "extra-resources",
     "courseUrl": "/academics/other-courses/english/eng101/",
-    "courseTitle": "ENG101 // Intensive Writing"
+    "courseTitle": "ENG101"
   },
   {
     "url": "/academics/other-courses/english/eng101/extra-resources/writing-resources/04-classification-essay/",
@@ -1979,7 +1979,7 @@ var COURSE_PAGES = [
     "course": "eng101",
     "section": "extra-resources",
     "courseUrl": "/academics/other-courses/english/eng101/",
-    "courseTitle": "ENG101 // Intensive Writing"
+    "courseTitle": "ENG101"
   },
   {
     "url": "/academics/other-courses/english/eng101/extra-resources/writing-resources/05-commas-guide/",
@@ -1988,7 +1988,7 @@ var COURSE_PAGES = [
     "course": "eng101",
     "section": "extra-resources",
     "courseUrl": "/academics/other-courses/english/eng101/",
-    "courseTitle": "ENG101 // Intensive Writing"
+    "courseTitle": "ENG101"
   },
   {
     "url": "/academics/other-courses/english/eng101/extra-resources/writing-resources/06-compare-contrast-essay-assignment/",
@@ -1997,7 +1997,7 @@ var COURSE_PAGES = [
     "course": "eng101",
     "section": "extra-resources",
     "courseUrl": "/academics/other-courses/english/eng101/",
-    "courseTitle": "ENG101 // Intensive Writing"
+    "courseTitle": "ENG101"
   },
   {
     "url": "/academics/other-courses/english/eng101/extra-resources/writing-resources/07-compare-contrast-essay/",
@@ -2006,7 +2006,7 @@ var COURSE_PAGES = [
     "course": "eng101",
     "section": "extra-resources",
     "courseUrl": "/academics/other-courses/english/eng101/",
-    "courseTitle": "ENG101 // Intensive Writing"
+    "courseTitle": "ENG101"
   },
   {
     "url": "/academics/other-courses/english/eng101/extra-resources/writing-resources/08-compare-contrast-keywords/",
@@ -2015,7 +2015,7 @@ var COURSE_PAGES = [
     "course": "eng101",
     "section": "extra-resources",
     "courseUrl": "/academics/other-courses/english/eng101/",
-    "courseTitle": "ENG101 // Intensive Writing"
+    "courseTitle": "ENG101"
   },
   {
     "url": "/academics/other-courses/english/eng101/extra-resources/writing-resources/09-comparison-contrast-essay-type-1/",
@@ -2024,7 +2024,7 @@ var COURSE_PAGES = [
     "course": "eng101",
     "section": "extra-resources",
     "courseUrl": "/academics/other-courses/english/eng101/",
-    "courseTitle": "ENG101 // Intensive Writing"
+    "courseTitle": "ENG101"
   },
   {
     "url": "/academics/other-courses/english/eng101/extra-resources/writing-resources/10-process-analysis-essay-chapter-10/",
@@ -2033,7 +2033,7 @@ var COURSE_PAGES = [
     "course": "eng101",
     "section": "extra-resources",
     "courseUrl": "/academics/other-courses/english/eng101/",
-    "courseTitle": "ENG101 // Intensive Writing"
+    "courseTitle": "ENG101"
   },
   {
     "url": "/academics/other-courses/english/eng101/extra-resources/writing-resources/11-process-analysis-essay/",
@@ -2042,7 +2042,7 @@ var COURSE_PAGES = [
     "course": "eng101",
     "section": "extra-resources",
     "courseUrl": "/academics/other-courses/english/eng101/",
-    "courseTitle": "ENG101 // Intensive Writing"
+    "courseTitle": "ENG101"
   },
   {
     "url": "/academics/other-courses/english/eng101/extra-resources/writing-resources/12-process-analysis/",
@@ -2051,7 +2051,7 @@ var COURSE_PAGES = [
     "course": "eng101",
     "section": "extra-resources",
     "courseUrl": "/academics/other-courses/english/eng101/",
-    "courseTitle": "ENG101 // Intensive Writing"
+    "courseTitle": "ENG101"
   },
   {
     "url": "/academics/other-courses/english/eng101/extra-resources/writing-resources/13-punctuation-for-connecting-words/",
@@ -2060,7 +2060,7 @@ var COURSE_PAGES = [
     "course": "eng101",
     "section": "extra-resources",
     "courseUrl": "/academics/other-courses/english/eng101/",
-    "courseTitle": "ENG101 // Intensive Writing"
+    "courseTitle": "ENG101"
   },
   {
     "url": "/academics/other-courses/english/eng101/extra-resources/writing-resources/14-thesis-statement-guide/",
@@ -2069,7 +2069,7 @@ var COURSE_PAGES = [
     "course": "eng101",
     "section": "extra-resources",
     "courseUrl": "/academics/other-courses/english/eng101/",
-    "courseTitle": "ENG101 // Intensive Writing"
+    "courseTitle": "ENG101"
   },
   {
     "url": "/academics/other-courses/english/eng101/extra-resources/writing-resources/15-thesis-statement-practice/",
@@ -2078,7 +2078,7 @@ var COURSE_PAGES = [
     "course": "eng101",
     "section": "extra-resources",
     "courseUrl": "/academics/other-courses/english/eng101/",
-    "courseTitle": "ENG101 // Intensive Writing"
+    "courseTitle": "ENG101"
   },
   {
     "url": "/academics/other-courses/english/eng101/extra-resources/writing-resources/16-thesis-statement-worksheet/",
@@ -2087,7 +2087,7 @@ var COURSE_PAGES = [
     "course": "eng101",
     "section": "extra-resources",
     "courseUrl": "/academics/other-courses/english/eng101/",
-    "courseTitle": "ENG101 // Intensive Writing"
+    "courseTitle": "ENG101"
   },
   {
     "url": "/academics/other-courses/english/eng101/extra-resources/writing-resources/17-transition-signals/",
@@ -2096,7 +2096,7 @@ var COURSE_PAGES = [
     "course": "eng101",
     "section": "extra-resources",
     "courseUrl": "/academics/other-courses/english/eng101/",
-    "courseTitle": "ENG101 // Intensive Writing"
+    "courseTitle": "ENG101"
   },
   {
     "url": "/academics/other-courses/english/eng101/extra-resources/writing-resources/18-transitions-punctuation/",
@@ -2105,7 +2105,7 @@ var COURSE_PAGES = [
     "course": "eng101",
     "section": "extra-resources",
     "courseUrl": "/academics/other-courses/english/eng101/",
-    "courseTitle": "ENG101 // Intensive Writing"
+    "courseTitle": "ENG101"
   },
   {
     "url": "/academics/other-courses/english/eng101/slides/argumentative-essay/",
@@ -2114,25 +2114,25 @@ var COURSE_PAGES = [
     "course": "eng101",
     "section": "slides",
     "courseUrl": "/academics/other-courses/english/eng101/",
-    "courseTitle": "ENG101 // Intensive Writing"
+    "courseTitle": "ENG101"
   },
   {
     "url": "/academics/other-courses/english/eng101/slides/cause-effect-essay-notes/",
-    "title": "ENG101 | Cause Effect Essay Notes",
+    "title": "Cause Effect Essay Notes",
     "track": "other-courses",
     "course": "eng101",
     "section": "slides",
     "courseUrl": "/academics/other-courses/english/eng101/",
-    "courseTitle": "ENG101 // Intensive Writing"
+    "courseTitle": "ENG101"
   },
   {
     "url": "/academics/other-courses/english/eng101/slides/classification-essay/",
-    "title": "ENG101 | Classification Essay",
+    "title": "Classification Essay",
     "track": "other-courses",
     "course": "eng101",
     "section": "slides",
     "courseUrl": "/academics/other-courses/english/eng101/",
-    "courseTitle": "ENG101 // Intensive Writing"
+    "courseTitle": "ENG101"
   },
   {
     "url": "/academics/other-courses/english/eng101/slides/commas-guide/",
@@ -2141,7 +2141,7 @@ var COURSE_PAGES = [
     "course": "eng101",
     "section": "slides",
     "courseUrl": "/academics/other-courses/english/eng101/",
-    "courseTitle": "ENG101 // Intensive Writing"
+    "courseTitle": "ENG101"
   },
   {
     "url": "/academics/other-courses/english/eng101/slides/compare-contrast-essay-assignment/",
@@ -2150,16 +2150,16 @@ var COURSE_PAGES = [
     "course": "eng101",
     "section": "slides",
     "courseUrl": "/academics/other-courses/english/eng101/",
-    "courseTitle": "ENG101 // Intensive Writing"
+    "courseTitle": "ENG101"
   },
   {
     "url": "/academics/other-courses/english/eng101/slides/compare-contrast-essay/",
-    "title": "ENG101 | Compare Contrast Essay",
+    "title": "Compare Contrast Essay",
     "track": "other-courses",
     "course": "eng101",
     "section": "slides",
     "courseUrl": "/academics/other-courses/english/eng101/",
-    "courseTitle": "ENG101 // Intensive Writing"
+    "courseTitle": "ENG101"
   },
   {
     "url": "/academics/other-courses/english/eng101/slides/compare-contrast-keywords/",
@@ -2168,7 +2168,7 @@ var COURSE_PAGES = [
     "course": "eng101",
     "section": "slides",
     "courseUrl": "/academics/other-courses/english/eng101/",
-    "courseTitle": "ENG101 // Intensive Writing"
+    "courseTitle": "ENG101"
   },
   {
     "url": "/academics/other-courses/english/eng101/slides/compare-contrast-overview/",
@@ -2177,7 +2177,7 @@ var COURSE_PAGES = [
     "course": "eng101",
     "section": "slides",
     "courseUrl": "/academics/other-courses/english/eng101/",
-    "courseTitle": "ENG101 // Intensive Writing"
+    "courseTitle": "ENG101"
   },
   {
     "url": "/academics/other-courses/english/eng101/slides/process-analysis-essay/",
@@ -2186,16 +2186,16 @@ var COURSE_PAGES = [
     "course": "eng101",
     "section": "slides",
     "courseUrl": "/academics/other-courses/english/eng101/",
-    "courseTitle": "ENG101 // Intensive Writing"
+    "courseTitle": "ENG101"
   },
   {
     "url": "/academics/other-courses/english/eng101/slides/punctuation-for-connecting-words/",
-    "title": "ENG101 | Punctuation For Connecting Words",
+    "title": "Punctuation For Connecting Words",
     "track": "other-courses",
     "course": "eng101",
     "section": "slides",
     "courseUrl": "/academics/other-courses/english/eng101/",
-    "courseTitle": "ENG101 // Intensive Writing"
+    "courseTitle": "ENG101"
   },
   {
     "url": "/academics/other-courses/english/eng101/slides/thesis-statement-guide/",
@@ -2204,7 +2204,7 @@ var COURSE_PAGES = [
     "course": "eng101",
     "section": "slides",
     "courseUrl": "/academics/other-courses/english/eng101/",
-    "courseTitle": "ENG101 // Intensive Writing"
+    "courseTitle": "ENG101"
   },
   {
     "url": "/academics/other-courses/english/eng101/slides/thesis-statement-practice/",
@@ -2213,7 +2213,7 @@ var COURSE_PAGES = [
     "course": "eng101",
     "section": "slides",
     "courseUrl": "/academics/other-courses/english/eng101/",
-    "courseTitle": "ENG101 // Intensive Writing"
+    "courseTitle": "ENG101"
   },
   {
     "url": "/academics/other-courses/english/eng101/slides/thesis-statement-worksheet/",
@@ -2222,7 +2222,7 @@ var COURSE_PAGES = [
     "course": "eng101",
     "section": "slides",
     "courseUrl": "/academics/other-courses/english/eng101/",
-    "courseTitle": "ENG101 // Intensive Writing"
+    "courseTitle": "ENG101"
   },
   {
     "url": "/academics/other-courses/english/eng101/slides/transition-signals/",
@@ -2231,7 +2231,7 @@ var COURSE_PAGES = [
     "course": "eng101",
     "section": "slides",
     "courseUrl": "/academics/other-courses/english/eng101/",
-    "courseTitle": "ENG101 // Intensive Writing"
+    "courseTitle": "ENG101"
   },
   {
     "url": "/academics/other-courses/english/eng101/slides/transitions-punctuation/",
@@ -2240,7 +2240,7 @@ var COURSE_PAGES = [
     "course": "eng101",
     "section": "slides",
     "courseUrl": "/academics/other-courses/english/eng101/",
-    "courseTitle": "ENG101 // Intensive Writing"
+    "courseTitle": "ENG101"
   },
   {
     "url": "/academics/other-courses/english/eng103/extra-resources/assignment-1-annotated-bibliography/annotated-bibliography-example-1/",
@@ -2335,6 +2335,15 @@ var COURSE_PAGES = [
   {
     "url": "/academics/other-courses/ethcs303/extra-resources/case-scenario-on-whistle-blowing/",
     "title": "ETHCS303 | Case Scenario: Whistle Blowing",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "extra-resources",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
+    "url": "/academics/other-courses/ethcs303/extra-resources/class-discussion-on-privacy-policies-in-social-media/",
+    "title": "ETHCS303 | Class Discussion on Privacy Policies in Social Media",
     "track": "other-courses",
     "course": "ethcs303",
     "section": "extra-resources",
@@ -2594,7 +2603,16 @@ var COURSE_PAGES = [
     "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
   },
   {
-    "url": "/academics/other-courses/ethcs303/quizzes/06-quiz-1-practice/",
+    "url": "/academics/other-courses/ethcs303/quizzes/06-quiz-1-question-bank/",
+    "title": "ETHCS303 | Quiz 1 Question Bank",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "quizzes",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
+    "url": "/academics/other-courses/ethcs303/quizzes/07-quiz-1-practice/",
     "title": "ETHCS303 | Quiz 1 Practice",
     "track": "other-courses",
     "course": "ethcs303",
@@ -2603,7 +2621,7 @@ var COURSE_PAGES = [
     "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
   },
   {
-    "url": "/academics/other-courses/ethcs303/quizzes/07-ethical-issues-in-systems-analysis-and-software-engineering-quiz/",
+    "url": "/academics/other-courses/ethcs303/quizzes/08-ethical-issues-in-systems-analysis-and-software-engineering-quiz/",
     "title": "ETHCS303 | Ethical Issues in Systems Analysis and Software Engineering Quiz",
     "track": "other-courses",
     "course": "ethcs303",
@@ -2612,7 +2630,7 @@ var COURSE_PAGES = [
     "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
   },
   {
-    "url": "/academics/other-courses/ethcs303/quizzes/08-network-security-and-privacy-quiz/",
+    "url": "/academics/other-courses/ethcs303/quizzes/09-network-security-and-privacy-quiz/",
     "title": "ETHCS303 | Network Security and Privacy Quiz",
     "track": "other-courses",
     "course": "ethcs303",
@@ -2621,7 +2639,16 @@ var COURSE_PAGES = [
     "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
   },
   {
-    "url": "/academics/other-courses/ethcs303/quizzes/09-cloud-computing-and-privacy-issues-quiz/",
+    "url": "/academics/other-courses/ethcs303/quizzes/10-major-1-question-bank/",
+    "title": "ETHCS303 | Major 1 Question Bank",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "quizzes",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
+    "url": "/academics/other-courses/ethcs303/quizzes/11-cloud-computing-and-privacy-issues-quiz/",
     "title": "ETHCS303 | Cloud Computing and Privacy Issues Quiz",
     "track": "other-courses",
     "course": "ethcs303",
@@ -2630,7 +2657,7 @@ var COURSE_PAGES = [
     "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
   },
   {
-    "url": "/academics/other-courses/ethcs303/quizzes/10-privacy-issues-in-cyberspace-quiz/",
+    "url": "/academics/other-courses/ethcs303/quizzes/12-privacy-issues-in-cyberspace-quiz/",
     "title": "ETHCS303 | Privacy Issues in Cyberspace Quiz",
     "track": "other-courses",
     "course": "ethcs303",
@@ -2639,7 +2666,7 @@ var COURSE_PAGES = [
     "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
   },
   {
-    "url": "/academics/other-courses/ethcs303/quizzes/11-social-media-ethical-legal-and-security-issues-quiz/",
+    "url": "/academics/other-courses/ethcs303/quizzes/13-social-media-ethical-legal-and-security-issues-quiz/",
     "title": "ETHCS303 | Social Media Ethical, Legal, and Security Issues Quiz",
     "track": "other-courses",
     "course": "ethcs303",
@@ -2648,7 +2675,7 @@ var COURSE_PAGES = [
     "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
   },
   {
-    "url": "/academics/other-courses/ethcs303/quizzes/12-social-engineering-quiz/",
+    "url": "/academics/other-courses/ethcs303/quizzes/14-social-engineering-quiz/",
     "title": "ETHCS303 | Social Engineering Quiz",
     "track": "other-courses",
     "course": "ethcs303",
@@ -2657,7 +2684,7 @@ var COURSE_PAGES = [
     "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
   },
   {
-    "url": "/academics/other-courses/ethcs303/quizzes/13-introduction-to-ethical-hacking-quiz/",
+    "url": "/academics/other-courses/ethcs303/quizzes/15-introduction-to-ethical-hacking-quiz/",
     "title": "ETHCS303 | Introduction to Ethical Hacking Quiz",
     "track": "other-courses",
     "course": "ethcs303",
@@ -2666,7 +2693,7 @@ var COURSE_PAGES = [
     "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
   },
   {
-    "url": "/academics/other-courses/ethcs303/quizzes/14-business-ethics-quiz/",
+    "url": "/academics/other-courses/ethcs303/quizzes/16-business-ethics-quiz/",
     "title": "ETHCS303 | Business Ethics Quiz",
     "track": "other-courses",
     "course": "ethcs303",
@@ -2675,7 +2702,7 @@ var COURSE_PAGES = [
     "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
   },
   {
-    "url": "/academics/other-courses/ethcs303/quizzes/15-cyber-laws-in-saudi-arabia-quiz/",
+    "url": "/academics/other-courses/ethcs303/quizzes/17-cyber-laws-in-saudi-arabia-quiz/",
     "title": "ETHCS303 | Cyber Laws in Saudi Arabia Quiz",
     "track": "other-courses",
     "course": "ethcs303",
@@ -3320,7 +3347,7 @@ var COURSE_PAGES = [
     "course": "phy205",
     "section": "slides",
     "courseUrl": "/academics/other-courses/phy205/",
-    "courseTitle": "PHY205 // Physics II"
+    "courseTitle": "PHY205"
   },
   {
     "url": "/academics/other-courses/phy205/slides/phy205-chapter-22-electric-fields-halliday/",
@@ -3329,7 +3356,7 @@ var COURSE_PAGES = [
     "course": "phy205",
     "section": "slides",
     "courseUrl": "/academics/other-courses/phy205/",
-    "courseTitle": "PHY205 // Physics II"
+    "courseTitle": "PHY205"
   },
   {
     "url": "/academics/other-courses/phy205/slides/phy205-chapter-23-gauss-law-halliday/",
@@ -3338,7 +3365,7 @@ var COURSE_PAGES = [
     "course": "phy205",
     "section": "slides",
     "courseUrl": "/academics/other-courses/phy205/",
-    "courseTitle": "PHY205 // Physics II"
+    "courseTitle": "PHY205"
   },
   {
     "url": "/academics/other-courses/phy205/slides/phy205-chapter-24-electric-potential-halliday/",
@@ -3347,7 +3374,7 @@ var COURSE_PAGES = [
     "course": "phy205",
     "section": "slides",
     "courseUrl": "/academics/other-courses/phy205/",
-    "courseTitle": "PHY205 // Physics II"
+    "courseTitle": "PHY205"
   },
   {
     "url": "/academics/other-courses/phy205/slides/phy205-chapter-25-capacitance-halliday/",
@@ -3356,7 +3383,7 @@ var COURSE_PAGES = [
     "course": "phy205",
     "section": "slides",
     "courseUrl": "/academics/other-courses/phy205/",
-    "courseTitle": "PHY205 // Physics II"
+    "courseTitle": "PHY205"
   },
   {
     "url": "/academics/other-courses/phy205/slides/phy205-chapter-26-current-and-resistance-halliday/",
@@ -3365,7 +3392,7 @@ var COURSE_PAGES = [
     "course": "phy205",
     "section": "slides",
     "courseUrl": "/academics/other-courses/phy205/",
-    "courseTitle": "PHY205 // Physics II"
+    "courseTitle": "PHY205"
   },
   {
     "url": "/academics/other-courses/phy205/slides/phy205-chapter-27-circuits-halliday/",
@@ -3374,7 +3401,7 @@ var COURSE_PAGES = [
     "course": "phy205",
     "section": "slides",
     "courseUrl": "/academics/other-courses/phy205/",
-    "courseTitle": "PHY205 // Physics II"
+    "courseTitle": "PHY205"
   },
   {
     "url": "/academics/other-courses/phy205/slides/phy205-chapters-28-29-30-magnetic-fields-and-induction-halliday/",
@@ -3383,7 +3410,88 @@ var COURSE_PAGES = [
     "course": "phy205",
     "section": "slides",
     "courseUrl": "/academics/other-courses/phy205/",
-    "courseTitle": "PHY205 // Physics II"
+    "courseTitle": "PHY205"
+  },
+  {
+    "url": "/academics/other-courses/sci101/slides/sci101-chapter-1-patterns-of-motion-and-equilibrium/",
+    "title": "SCI101 | Chapter 1 Patterns of Motion and Equilibrium",
+    "track": "other-courses",
+    "course": "sci101",
+    "section": "slides",
+    "courseUrl": "/academics/other-courses/sci101/",
+    "courseTitle": "SCI101 Overview"
+  },
+  {
+    "url": "/academics/other-courses/sci101/slides/sci101-chapter-10/",
+    "title": "SCI101 | Chapter 10",
+    "track": "other-courses",
+    "course": "sci101",
+    "section": "slides",
+    "courseUrl": "/academics/other-courses/sci101/",
+    "courseTitle": "SCI101 Overview"
+  },
+  {
+    "url": "/academics/other-courses/sci101/slides/sci101-chapter-2-newtons-laws-of-motion/",
+    "title": "SCI101 | Chapter 2 Newton's Laws of Motion",
+    "track": "other-courses",
+    "course": "sci101",
+    "section": "slides",
+    "courseUrl": "/academics/other-courses/sci101/",
+    "courseTitle": "SCI101 Overview"
+  },
+  {
+    "url": "/academics/other-courses/sci101/slides/sci101-chapter-3-momentum-and-energy/",
+    "title": "SCI101 | Chapter 3 Momentum and Energy",
+    "track": "other-courses",
+    "course": "sci101",
+    "section": "slides",
+    "courseUrl": "/academics/other-courses/sci101/",
+    "courseTitle": "SCI101 Overview"
+  },
+  {
+    "url": "/academics/other-courses/sci101/slides/sci101-chapter-4-gravity/",
+    "title": "SCI101 | Chapter 4 Gravity",
+    "track": "other-courses",
+    "course": "sci101",
+    "section": "slides",
+    "courseUrl": "/academics/other-courses/sci101/",
+    "courseTitle": "SCI101 Overview"
+  },
+  {
+    "url": "/academics/other-courses/sci101/slides/sci101-chapter-5-fluid-mechanics/",
+    "title": "SCI101 | Chapter 5 Fluid Mechanics",
+    "track": "other-courses",
+    "course": "sci101",
+    "section": "slides",
+    "courseUrl": "/academics/other-courses/sci101/",
+    "courseTitle": "SCI101 Overview"
+  },
+  {
+    "url": "/academics/other-courses/sci101/slides/sci101-chapter-6-thermal-energy-and-thermodynamics/",
+    "title": "SCI101 | Chapter 6 Thermal Energy and Thermodynamics",
+    "track": "other-courses",
+    "course": "sci101",
+    "section": "slides",
+    "courseUrl": "/academics/other-courses/sci101/",
+    "courseTitle": "SCI101 Overview"
+  },
+  {
+    "url": "/academics/other-courses/sci101/slides/sci101-chapter-7/",
+    "title": "SCI101 | Chapter 7",
+    "track": "other-courses",
+    "course": "sci101",
+    "section": "slides",
+    "courseUrl": "/academics/other-courses/sci101/",
+    "courseTitle": "SCI101 Overview"
+  },
+  {
+    "url": "/academics/other-courses/sci101/slides/sci101-chapters-12-and-15/",
+    "title": "SCI101 | Chapters 12 and 15",
+    "track": "other-courses",
+    "course": "sci101",
+    "section": "slides",
+    "courseUrl": "/academics/other-courses/sci101/",
+    "courseTitle": "SCI101 Overview"
   },
   {
     "url": "/academics/software-engineering/se201/extra-resources/01-uml-and-diagrams-guide/",
@@ -3675,7 +3783,7 @@ var COURSE_PAGES = [
   },
   {
     "url": "/academics/software-engineering/se311/extra-resources/01-midterm-cheat-sheet/",
-    "title": "SE311 | Midterm Cheat Sheet",
+    "title": "Midterm Cheat Sheet",
     "track": "software-engineering",
     "course": "se311",
     "section": "extra-resources",
@@ -3693,7 +3801,7 @@ var COURSE_PAGES = [
   },
   {
     "url": "/academics/software-engineering/se311/extra-resources/03-uml-diagrams-cheat-sheet/",
-    "title": "SE311 | UML Diagrams Cheat Sheet",
+    "title": "Uml Diagrams Cheat Sheet",
     "track": "software-engineering",
     "course": "se311",
     "section": "extra-resources",
@@ -3945,7 +4053,7 @@ var COURSE_PAGES = [
   },
   {
     "url": "/academics/software-engineering/se311/slides/chapter-5-6-requirements-analysis/",
-    "title": "SE311 | Chapter 5 6 Requirements Analysis",
+    "title": "Chapter 5 6 Requirements Analysis",
     "track": "software-engineering",
     "course": "se311",
     "section": "slides",
@@ -3954,7 +4062,7 @@ var COURSE_PAGES = [
   },
   {
     "url": "/academics/software-engineering/se311/slides/chapter-6-writing-excellent-requirements/",
-    "title": "SE311 | Chapter 6 Writing Excellent Requirements",
+    "title": "Chapter 6 Writing Excellent Requirements",
     "track": "software-engineering",
     "course": "se311",
     "section": "slides",
@@ -4008,7 +4116,7 @@ var COURSE_PAGES = [
   },
   {
     "url": "/academics/software-engineering/se322/slides/chapter-3-quality-attributes-lecture-1-extra/",
-    "title": "SE322 | Chapter 3 Quality Attributes (Lecture 1)",
+    "title": "Chapter 3 Quality Attributes Lecture 1 Extra",
     "track": "software-engineering",
     "course": "se322",
     "section": "slides",
@@ -4107,7 +4215,7 @@ var COURSE_PAGES = [
   },
   {
     "url": "/academics/software-engineering/se322/slides/chapter-7-structural-design-patterns-lecture-1/",
-    "title": "SE322 | Chapter 7 Structural Design Patterns (Lecture 1)",
+    "title": "Chapter 7 Structural Design Patterns Lecture 1",
     "track": "software-engineering",
     "course": "se322",
     "section": "slides",
@@ -4125,7 +4233,7 @@ var COURSE_PAGES = [
   },
   {
     "url": "/academics/software-engineering/se322/slides/chapter-9-documentation/",
-    "title": "SE322 | Chapter 9 Documentation",
+    "title": "Chapter 9 Documentation",
     "track": "software-engineering",
     "course": "se322",
     "section": "slides",
@@ -4170,7 +4278,7 @@ var COURSE_PAGES = [
   },
   {
     "url": "/academics/software-engineering/se401/slides/introduction/",
-    "title": "SE401 | Introduction",
+    "title": "Introduction",
     "track": "software-engineering",
     "course": "se401",
     "section": "slides",
@@ -4224,7 +4332,7 @@ var COURSE_PAGES = [
   },
   {
     "url": "/academics/software-engineering/se401/slides/testing-metrics-and-tools/",
-    "title": "SE401 | Testing Metrics and Tools",
+    "title": "Testing Metrics And Tools",
     "track": "software-engineering",
     "course": "se401",
     "section": "slides",
@@ -4233,7 +4341,7 @@ var COURSE_PAGES = [
   },
   {
     "url": "/academics/software-engineering/se401/slides/testing-throughout-the-sdlc/",
-    "title": "SE401 | Testing throughout the SDLC",
+    "title": "Testing Throughout The Sdlc",
     "track": "software-engineering",
     "course": "se401",
     "section": "slides",
@@ -4305,7 +4413,7 @@ var COURSE_PAGES = [
   },
   {
     "url": "/academics/software-engineering/se423/slides/project-performance-domains/",
-    "title": "SE423 | Project Performance Domains",
+    "title": "Project Performance Domains",
     "track": "software-engineering",
     "course": "se423",
     "section": "slides",
@@ -4332,7 +4440,7 @@ var COURSE_PAGES = [
   },
   {
     "url": "/academics/software-engineering/se423/slides/scheduling-and-tracking/",
-    "title": "SE423 | Scheduling and Tracking",
+    "title": "Scheduling And Tracking",
     "track": "software-engineering",
     "course": "se423",
     "section": "slides",
@@ -4359,7 +4467,7 @@ var COURSE_PAGES = [
   },
   {
     "url": "/academics/software-engineering/se423/slides/tailoring-models-methods-and-artifacts/",
-    "title": "SE423 | Tailoring, Models, Methods, and Artifacts",
+    "title": "Tailoring Models Methods And Artifacts",
     "track": "software-engineering",
     "course": "se423",
     "section": "slides",
@@ -4387,10 +4495,11 @@ var COURSE_MANIFEST = {
   "cys401": 29,
   "eng101": 37,
   "eng103": 7,
-  "ethcs303": 72,
+  "ethcs303": 75,
   "isc113": 23,
   "phy105": 17,
   "phy205": 8,
+  "sci101": 9,
   "se201": 32,
   "se311": 33,
   "se322": 18,
@@ -4408,10 +4517,11 @@ var COURSE_MANIFEST_BY_TRACK = {
   "cybersecurity/cys401": 29,
   "other-courses/eng101": 37,
   "other-courses/eng103": 7,
-  "other-courses/ethcs303": 72,
+  "other-courses/ethcs303": 75,
   "other-courses/isc113": 23,
   "other-courses/phy105": 17,
   "other-courses/phy205": 8,
+  "other-courses/sci101": 9,
   "software-engineering/se201": 32,
   "software-engineering/se311": 33,
   "software-engineering/se322": 18,
