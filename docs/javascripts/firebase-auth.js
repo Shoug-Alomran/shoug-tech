@@ -1,6 +1,9 @@
 (function () {
   "use strict";
 
+  if (window.__shougFirebaseAuthBooted) return;
+  window.__shougFirebaseAuthBooted = true;
+
   var FB_VERSION = "10.12.0";
   var FB_BASE = "https://www.gstatic.com/firebasejs/" + FB_VERSION + "/firebase-";
   var FB_CONFIG = {
@@ -151,8 +154,34 @@
       "#shoug-complete-btn.done .complete-check{border-color:rgba(34,197,94,.6);background:rgba(34,197,94,.12)}",
       ".complete-label{font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:#8f8b9a}",
       "#shoug-complete-btn.done .complete-label{color:rgba(34,197,94,.85)}",
+      /* exam reminder toast */
+      "#shoug-exam-toast{position:fixed;top:82px;left:50%;transform:translate(-50%,-16px);z-index:99997;width:min(760px,calc(100vw - 28px));display:none;align-items:stretch;background:#070b15;border:1px solid rgba(59,130,246,.28);box-shadow:0 18px 60px rgba(0,0,0,.48);opacity:0;transition:opacity 180ms ease,transform 180ms ease;font-family:'JetBrains Mono',monospace;overflow:hidden;}",
+      "#shoug-exam-toast.open{display:flex;opacity:1;transform:translate(-50%,0);}",
+      "#shoug-exam-toast::before{content:'';width:4px;background:#3b82f6;flex:0 0 4px;box-shadow:0 0 18px rgba(59,130,246,.75);}",
+      ".shoug-exam-toast-main{display:flex;align-items:center;gap:14px;min-width:0;flex:1;padding:18px 22px;}",
+      ".shoug-exam-toast-icon{width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.08);color:#f8f7fb;font-size:.58rem;font-weight:800;letter-spacing:.08em;flex:0 0 auto;}",
+      ".shoug-exam-toast-text{min-width:0;display:flex;flex-direction:column;gap:4px;}",
+      ".shoug-exam-toast-title{color:#f8f7fb;font-size:.78rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}",
+      ".shoug-exam-toast-meta{color:#8f8b9a;font-size:.58rem;letter-spacing:.06em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}",
+      ".shoug-exam-toast-when{margin-left:auto;align-self:stretch;display:flex;align-items:center;padding:0 24px;color:#60a5fa;font-size:.72rem;font-weight:900;letter-spacing:.12em;text-transform:uppercase;white-space:nowrap;}",
+      ".shoug-exam-toast-close{width:42px;border:0;border-left:1px solid rgba(255,255,255,.06);background:transparent;color:#4a4258;font-family:'JetBrains Mono',monospace;font-size:1rem;cursor:pointer;}",
+      ".shoug-exam-toast-close:hover{color:#f8f7fb;background:rgba(255,255,255,.04);}",
+      "#shoug-exam-toast.urgent{border-color:rgba(255,42,75,.32);}",
+      "#shoug-exam-toast.urgent::before{background:#ff2a4b;box-shadow:0 0 18px rgba(255,42,75,.75);}",
+      "#shoug-exam-toast.urgent .shoug-exam-toast-when{color:#ff2a4b;}",
+      "#shoug-exam-toast.warn{border-color:rgba(245,158,11,.32);}",
+      "#shoug-exam-toast.warn::before{background:#f59e0b;box-shadow:0 0 18px rgba(245,158,11,.75);}",
+      "#shoug-exam-toast.warn .shoug-exam-toast-when{color:#f59e0b;}",
+      "html[dir='rtl'] #shoug-exam-toast,body.shoug-arabic-mode #shoug-exam-toast{direction:rtl;text-align:right;}",
+      "html[dir='rtl'] .shoug-exam-toast-when,body.shoug-arabic-mode .shoug-exam-toast-when{margin-left:0;margin-right:auto;}",
+      "@media(max-width:640px){#shoug-exam-toast{top:auto;bottom:86px;width:calc(100vw - 24px);} .shoug-exam-toast-main{padding:14px;gap:10px;} .shoug-exam-toast-when{padding:0 12px;font-size:.62rem;} .shoug-exam-toast-title{font-size:.68rem;} .shoug-exam-toast-meta{font-size:.52rem;white-space:normal;}}",
       /* light mode */
       "body.shoug-light-mode #shoug-auth-box,body.shoug-light-mode .shoug-user-dropdown,body.shoug-light-mode #shoug-complete-btn{background:#fff}",
+      "body.shoug-light-mode #shoug-exam-toast{background:#fff;border-color:rgba(59,130,246,.22);box-shadow:0 18px 50px rgba(22,17,31,.16);}",
+      "body.shoug-light-mode .shoug-exam-toast-title{color:#16111f}",
+      "body.shoug-light-mode .shoug-exam-toast-meta{color:#534a61}",
+      "body.shoug-light-mode .shoug-exam-toast-icon{background:rgba(59,130,246,.08);color:#16111f;border-color:rgba(59,130,246,.14);}",
+      "body.shoug-light-mode .shoug-exam-toast-close{border-left-color:rgba(22,17,31,.08);color:#9a8fb0;}",
       "body.shoug-light-mode .auth-input{color:#16111f;background:rgba(0,0,0,.03)}",
       "body.shoug-light-mode .auth-title{color:#16111f}",
       "body.shoug-light-mode .shoug-drop-link{color:#16111f}",
@@ -617,6 +646,137 @@
         snap.forEach(function(d) { batch.update(d.ref, { read: true }); });
         return batch.commit();
       }).catch(function() {});
+  }
+
+  // ── Exam reminders ────────────────────────────────────────────────────────
+
+  var _examReminderUid = null;
+  var EXAM_TYPE_LABELS = {
+    quiz: "QUIZ",
+    midterm: "MIDTERM",
+    final: "FINAL",
+    assignment: "ASSIGNMENT",
+    project: "PROJECT"
+  };
+
+  function daysUntilExam(dateStr) {
+    var now = new Date();
+    now.setHours(0, 0, 0, 0);
+    var then = new Date(dateStr);
+    if (isNaN(then.getTime())) return null;
+    then.setHours(0, 0, 0, 0);
+    return Math.round((then - now) / 86400000);
+  }
+
+  function examTypeLabel(type) {
+    type = String(type || "exam").toLowerCase();
+    return EXAM_TYPE_LABELS[type] || type.toUpperCase();
+  }
+
+  function examDateLabel(dateStr) {
+    var date = new Date(dateStr);
+    if (isNaN(date.getTime())) return "";
+    return date.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
+  }
+
+  function examWhenLabel(days) {
+    if (days === 0) return "TODAY";
+    if (days === 1) return "TOMORROW";
+    return "IN " + days + " DAYS";
+  }
+
+  function removeExamToast() {
+    var toast = document.getElementById("shoug-exam-toast");
+    if (!toast) return;
+    toast.classList.remove("open");
+    setTimeout(function () {
+      if (toast && toast.parentNode) toast.parentNode.removeChild(toast);
+    }, 180);
+  }
+
+  function showExamToast(user, exam) {
+    if (!user || !exam) return;
+    var days = daysUntilExam(exam.date);
+    if (days === null || days < 0 || days > 7) return;
+
+    var storageKey = "shoug-exam-toast:" + user.uid + ":" + exam.id + ":d" + days;
+    try {
+      if (localStorage.getItem(storageKey) === "dismissed") return;
+    } catch (e) {}
+
+    removeExamToast();
+
+    var toast = document.createElement("div");
+    toast.id = "shoug-exam-toast";
+    toast.className = days <= 1 ? "urgent" : (days <= 3 ? "warn" : "notice");
+    toast.setAttribute("role", "status");
+    toast.setAttribute("aria-live", "polite");
+    toast.innerHTML = [
+      '<div class="shoug-exam-toast-main">',
+      '  <span class="shoug-exam-toast-icon">EXAM</span>',
+      '  <div class="shoug-exam-toast-text">',
+      '    <div class="shoug-exam-toast-title">' + escHtml((exam.course || "Exam") + " " + examTypeLabel(exam.type)) + '</div>',
+      '    <div class="shoug-exam-toast-meta">' + escHtml(examDateLabel(exam.date)) + '</div>',
+      '  </div>',
+      '</div>',
+      '<div class="shoug-exam-toast-when">' + escHtml(examWhenLabel(days)) + '</div>',
+      '<button type="button" class="shoug-exam-toast-close" aria-label="Dismiss exam reminder">&times;</button>'
+    ].join("");
+
+    document.body.appendChild(toast);
+    var close = toast.querySelector(".shoug-exam-toast-close");
+    if (close) {
+      close.addEventListener("click", function () {
+        try { localStorage.setItem(storageKey, "dismissed"); } catch (e) {}
+        removeExamToast();
+      });
+    }
+    requestAnimationFrame(function () { toast.classList.add("open"); });
+  }
+
+  function maybeFireBrowserExamNotification(user, exam) {
+    if (!user || !exam || !("Notification" in window) || Notification.permission !== "granted") return;
+    var days = daysUntilExam(exam.date);
+    if (days !== 7 && days !== 3 && days !== 1 && days !== 0) return;
+    var key = "exam-notif-" + user.uid + "-" + exam.id + "-d" + days;
+    try {
+      if (localStorage.getItem(key)) return;
+      localStorage.setItem(key, "1");
+    } catch (e) {}
+    new Notification("Exam Reminder - " + (exam.course || "Exam"), {
+      body: (exam.course || "Exam") + " " + examTypeLabel(exam.type) + " is " + examWhenLabel(days).toLowerCase() + " (" + examDateLabel(exam.date) + ")",
+      icon: "/assets/favicon.png?v=2",
+      badge: "/assets/favicon.png?v=2",
+      tag: key
+    });
+  }
+
+  function startExamReminder(user) {
+    if (!user || _examReminderUid === user.uid) return;
+    _examReminderUid = user.uid;
+
+    firebase.firestore().collection("users").doc(user.uid).get().then(function (doc) {
+      if (!doc.exists || _examReminderUid !== user.uid) return;
+      var examsMap = doc.data().exams || {};
+      var upcoming = Object.keys(examsMap).map(function (id) {
+        var e = examsMap[id] || {};
+        var days = daysUntilExam(e.date);
+        return { id: id, course: e.course, type: e.type, date: e.date, days: days };
+      }).filter(function (e) {
+        return e.days !== null && e.days >= 0 && e.days <= 7;
+      }).sort(function (a, b) {
+        return a.days - b.days;
+      });
+
+      if (!upcoming.length) return;
+      showExamToast(user, upcoming[0]);
+      maybeFireBrowserExamNotification(user, upcoming[0]);
+    }).catch(function () {});
+  }
+
+  function stopExamReminder() {
+    _examReminderUid = null;
+    removeExamToast();
   }
 
   // ── Header button ─────────────────────────────────────────────────────────
@@ -2353,6 +2513,7 @@
 
     firebase.auth().onAuthStateChanged(function (user) {
       if (!user && _notifUnsub) { _notifUnsub(); _notifUnsub = null; }
+      if (!user) stopExamReminder();
       setHeaderButton(user);
       removeCompleteBtn();
       removePageIcons();
@@ -2363,6 +2524,7 @@
         injectPageIcons(user);
         injectAppNav(user);
         injectCommentSection(user);
+        startExamReminder(user);
       }
       injectThemeToggle();
       // Let page-level scripts hook into auth state (used by account dashboard)
