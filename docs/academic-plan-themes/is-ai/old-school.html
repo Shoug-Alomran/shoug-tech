@@ -2035,6 +2035,7 @@
         let choices = JSON.parse(JSON.stringify(DEFAULT_CHOICES));
         const GROUP_META = { A: 'Physical Education - choose 2', B: 'AI/DS Electives - choose 2', C: 'Free Elective - choose 1' };
         const GROUP_LIMITS = { A: 2, B: 2, C: 1 };
+        choices = Object.keys(GROUP_LIMITS).reduce((empty, group) => { empty[group] = GROUP_LIMITS[group] > 1 ? [] : null; return empty; }, {});
 
         function selectedIds(group) {
             const choice = choices[group];
@@ -2046,13 +2047,16 @@
         function switchChoice(group, value) {
             const limit = GROUP_LIMITS[group] || 1;
             const current = selectedIds(group);
-            if (current.includes(value)) return [];
+            if (current.includes(value)) {
+            choices[group] = limit > 1 ? current.filter(id => id !== value) : null;
+            return [value];
+          }
             if (limit === 1) {
                 const removed = current;
                 choices[group] = value;
                 return removed;
             }
-            const removed = current.length >= limit ? [current[current.length - 1]] : [];
+            const removed = current.length >= limit ? [current[0]] : [];
             choices[group] = current.filter(id => !removed.includes(id)).concat(value);
             return removed;
         }
@@ -2063,7 +2067,7 @@
                 const limit = GROUP_LIMITS[group] || 1;
                 const fallback = Array.isArray(DEFAULT_CHOICES[group]) ? DEFAULT_CHOICES[group] : [DEFAULT_CHOICES[group]];
                 const selected = selectedIds(group).filter(id => valid.has(id)).slice(0, limit);
-                const next = (selected.length ? selected : fallback.filter(id => valid.has(id))).slice(0, limit);
+                const next = selected;
                 choices[group] = limit > 1 ? next : next[0];
             });
         }
@@ -2078,13 +2082,16 @@
         function switchChoice(group, value) {
             const limit = GROUP_LIMITS[group] || 1;
             const current = selectedIds(group);
-            if (current.includes(value)) return [];
+            if (current.includes(value)) {
+            choices[group] = limit > 1 ? current.filter(id => id !== value) : null;
+            return [value];
+          }
             if (limit === 1) {
                 const removed = current;
                 choices[group] = value;
                 return removed;
             }
-            const removed = current.length >= limit ? [current[current.length - 1]] : [];
+            const removed = current.length >= limit ? [current[0]] : [];
             choices[group] = current.filter(id => !removed.includes(id)).concat(value);
             return removed;
         }
@@ -2095,7 +2102,7 @@
                 const limit = GROUP_LIMITS[group] || 1;
                 const fallback = Array.isArray(DEFAULT_CHOICES[group]) ? DEFAULT_CHOICES[group] : [DEFAULT_CHOICES[group]];
                 const selected = selectedIds(group).filter(id => valid.has(id)).slice(0, limit);
-                const next = (selected.length ? selected : fallback.filter(id => valid.has(id))).slice(0, limit);
+                const next = selected;
                 choices[group] = limit > 1 ? next : next[0];
             });
         }
@@ -2389,16 +2396,16 @@
             const btn = e.target.closest('.choice-btn');
             if (!btn) return;
             const g = btn.dataset.group, val = btn.dataset.val;
-            if (isChoiceSelected(g, val)) return;
+            const alreadySelected = isChoiceSelected(g, val);
             const limit = GROUP_LIMITS[g] || 1;
             const current = selectedIds(g);
-            const removed = limit > 1 && current.length < limit ? [] : current.slice(-(limit > 1 ? 1 : current.length));
+            const removed = alreadySelected ? [val] : (limit > 1 && current.length < limit ? [] : current.slice(0, limit > 1 ? 1 : current.length));
             const aff = removed.flatMap(old => completed.has(old) ? [old, ...allDependents(old).filter(d => completed.has(d))] : []);
             const doSwitch = () => {
                 aff.forEach(d => completed.delete(d));
                 switchChoice(g, val);
                 persist(); render();
-                toast(`Group ${g}: switched to ${val}`, 'ok');
+                toast(`Group ${g}: ${val} ${alreadySelected ? "removed" : "selected"}`, 'ok');
             };
             if (aff.length) showModal(`Change Group ${g}`, `Switching will remove completed courses:`, aff, doSwitch);
             else doSwitch();

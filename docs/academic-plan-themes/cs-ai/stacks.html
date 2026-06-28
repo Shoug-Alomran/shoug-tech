@@ -1994,6 +1994,7 @@
         let choices = { A: ['HPE101', 'PE101'], B: 'CS381', C: 'BUS101', D: ['CULT101', 'ACT101'], E: ['CS469', 'CS471'] };
         const GROUP_META = { A: 'Physical Education - choose 2', B: 'CS Elective - choose 1', C: 'Business Elective - choose 1', D: 'General Elective - choose 2', E: 'AI & DS Elective - choose 2' };
         const GROUP_LIMITS = { A: 2, B: 1, C: 1, D: 2, E: 2 };
+        choices = Object.keys(GROUP_LIMITS).reduce((empty, group) => { empty[group] = GROUP_LIMITS[group] > 1 ? [] : null; return empty; }, {});
 
         function selectedIds(group) {
             const choice = choices[group];
@@ -2005,13 +2006,16 @@
         function switchChoice(group, value) {
             const limit = GROUP_LIMITS[group] || 1;
             const current = selectedIds(group);
-            if (current.includes(value)) return [];
+            if (current.includes(value)) {
+            choices[group] = limit > 1 ? current.filter(id => id !== value) : null;
+            return [value];
+          }
             if (limit === 1) {
                 const removed = current;
                 choices[group] = value;
                 return removed;
             }
-            const removed = current.length >= limit ? [current[current.length - 1]] : [];
+            const removed = current.length >= limit ? [current[0]] : [];
             choices[group] = current.filter(id => !removed.includes(id)).concat(value);
             return removed;
         }
@@ -2022,7 +2026,7 @@
                 const limit = GROUP_LIMITS[group] || 1;
                 const current = selectedIds(group).filter(id => valid.has(id)).slice(0, limit);
                 const fallback = group === 'E' ? ['CULT101', 'ACT101'] : [source.find(c => c.group === group)?.id].filter(Boolean);
-                const next = (current.length ? current : fallback.filter(id => valid.has(id))).slice(0, limit);
+                const next = current;
                 choices[group] = limit > 1 ? next : next[0];
             });
         }
@@ -2294,16 +2298,16 @@
             const btn = e.target.closest('.choice-opt');
             if (!btn) return;
             const g = btn.dataset.group, val = btn.dataset.val;
-            if (isChoiceSelected(g, val)) return;
+            const alreadySelected = isChoiceSelected(g, val);
             const limit = GROUP_LIMITS[g] || 1;
             const current = selectedIds(g);
-            const removed = limit > 1 && current.length < limit ? [] : current.slice(-(limit > 1 ? 1 : current.length));
+            const removed = alreadySelected ? [val] : (limit > 1 && current.length < limit ? [] : current.slice(0, limit > 1 ? 1 : current.length));
             const aff = removed.flatMap(old => completed.has(old) ? [old, ...allDeps(old).filter(d => completed.has(d))] : []);
             const doSwitch = () => {
                 aff.forEach(d => completed.delete(d));
                 switchChoice(g, val);
                 persist(); render();
-                toast(`Group ${g}: switched to ${val} ✓`, 'ok');
+                toast(`Group ${g}: ${val} ${alreadySelected ? "removed" : "selected"} ✓`, 'ok');
             };
             if (aff.length) showModal(`Switch Group ${g}?`, `This will remove these completed courses:`, aff, doSwitch);
             else doSwitch();
