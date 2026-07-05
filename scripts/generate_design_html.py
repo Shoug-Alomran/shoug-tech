@@ -196,6 +196,7 @@ COURSES: dict[str, dict[str, Any]] = {
         "path": "docs/Academics/other/phy205/overview.md",
         "url": "/course-phy205.html",
         "sections": {"Overview": "/Academics/other/phy205/overview/", "Slides": "/Academics/other/phy205/slides/overview/"},
+        "status": "available",
     },
     "PHY105": {
         "track": "Other Courses",
@@ -212,6 +213,7 @@ COURSES: dict[str, dict[str, Any]] = {
         "title_override": "Physics I",
         "credits": "4",
         "prereq": "TBD",
+        "status": "available",
     },
     "SCI101": {
         "track": "Other Courses",
@@ -227,6 +229,7 @@ COURSES: dict[str, dict[str, Any]] = {
         "title_override": "Introduction to Physical Science",
         "credits": "3",
         "prereq": "None",
+        "status": "available",
     },
     "ENG101": {
         "track": "Other Courses",
@@ -3417,8 +3420,10 @@ def track_page(slug: str) -> str:
         )
     for code in track["courses"]:
         c = parse_course(code)
+        status = str(COURSES.get(code, {}).get("status", "complete"))
+        status_label = "AVAILABLE" if status == "available" else "COMPLETE"
         rows.append(
-            f'<a class="course-row" href="{html.escape(str(c["url"]))}"><div class="course-code">{c["code"]}</div><div class="course-name"><span>{html.escape(str(c["title"]))}</span></div><div class="course-status-area"><div class="status-tag status-complete">COMPLETE</div><div class="row-arrow">-&gt;</div></div></a>'
+            f'<a class="course-row" href="{html.escape(str(c["url"]))}"><div class="course-code">{c["code"]}</div><div class="course-name"><span>{html.escape(str(c["title"]))}</span></div><div class="course-status-area"><div class="status-tag status-{status}">{status_label}</div><div class="row-arrow">-&gt;</div></div></a>'
         )
     text = replace_between(
         text,
