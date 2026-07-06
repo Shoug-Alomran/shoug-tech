@@ -140,9 +140,9 @@
       ".auth-submit{background:#b829ea;color:#0a0514;border:none;font-family:'JetBrains Mono',monospace;font-size:.7rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;padding:12px;cursor:pointer;transition:background 150ms;width:100%}",
       ".auth-submit:hover{background:#c940f5}",
       ".auth-submit:disabled{opacity:.5;cursor:not-allowed}",
-      ".auth-github{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:11px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);color:#f8f7fb;font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:700;letter-spacing:.08em;cursor:pointer;transition:background 150ms,border-color 150ms}",
-      ".auth-github:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.25)}",
-      ".auth-github:disabled{opacity:.5;cursor:not-allowed}",
+      ".auth-oauth{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:11px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);color:#f8f7fb;font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:700;letter-spacing:.08em;cursor:pointer;transition:background 150ms,border-color 150ms}",
+      ".auth-oauth:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.25)}",
+      ".auth-oauth:disabled{opacity:.5;cursor:not-allowed}",
       ".auth-divider{display:flex;align-items:center;gap:12px;color:#4a4258;font-family:'JetBrains Mono',monospace;font-size:.58rem;letter-spacing:.1em}",
       ".auth-divider::before,.auth-divider::after{content:'';flex:1;height:1px;background:rgba(255,255,255,.06)}",
       /* mark complete pill */
@@ -344,7 +344,8 @@
       '    <button class="auth-tab" data-tab="signup">Create Account</button>',
       '  </div>',
       '  <div class="auth-body">',
-      '    <button class="auth-github" id="auth-github"><svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg> Continue with GitHub</button>',
+      '    <button class="auth-oauth" id="auth-google"><svg width="16" height="16" viewBox="0 0 18 18" aria-hidden="true"><path fill="#4285F4" d="M17.64 9.205c0-.638-.057-1.252-.164-1.841H9v3.482h4.844a4.14 4.14 0 0 1-1.797 2.715v2.258h2.909c1.702-1.567 2.684-3.874 2.684-6.614Z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.181l-2.909-2.258c-.806.54-1.835.859-3.047.859-2.344 0-4.328-1.585-5.037-3.714H.956v2.332A9 9 0 0 0 9 18Z"/><path fill="#FBBC05" d="M3.963 10.706A5.42 5.42 0 0 1 3.681 9c0-.592.102-1.167.282-1.706V4.962H.956A9 9 0 0 0 0 9c0 1.452.347 2.827.956 4.038l3.007-2.332Z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.507.454 3.441 1.346l2.581-2.581C13.463.892 11.426 0 9 0A9 9 0 0 0 .956 4.962l3.007 2.332C4.672 5.165 6.656 3.58 9 3.58Z"/></svg> Continue with Google</button>',
+      '    <button class="auth-oauth" id="auth-github"><svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg> Continue with GitHub</button>',
       '    <div class="auth-divider"><span>or</span></div>',
       '    <div class="auth-field"><label class="auth-label">Email</label><input class="auth-input" id="auth-email" type="email" placeholder="your@email.com" autocomplete="email"></div>',
       '    <div class="auth-field"><label class="auth-label">Password</label><input class="auth-input" id="auth-pass" type="password" placeholder="••••••••" autocomplete="current-password"></div>',
@@ -372,6 +373,7 @@
     modal.addEventListener("click", function (e) { if (e.target === modal) closeModal(); });
     passInput.addEventListener("keydown", function (e) { if (e.key === "Enter") doSubmit(); });
     submitEl.addEventListener("click", doSubmit);
+    document.getElementById("auth-google").addEventListener("click", doGoogle);
     document.getElementById("auth-github").addEventListener("click", doGithub);
     document.getElementById("auth-forgot").addEventListener("click", showResetView);
     document.getElementById("auth-reset-back").addEventListener("click", hideResetView);
@@ -467,6 +469,23 @@
   }
 
   var GITHUB_BTN_HTML = '<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg> Continue with GitHub';
+  var GOOGLE_BTN_HTML = '<svg width="16" height="16" viewBox="0 0 18 18" aria-hidden="true"><path fill="#4285F4" d="M17.64 9.205c0-.638-.057-1.252-.164-1.841H9v3.482h4.844a4.14 4.14 0 0 1-1.797 2.715v2.258h2.909c1.702-1.567 2.684-3.874 2.684-6.614Z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.181l-2.909-2.258c-.806.54-1.835.859-3.047.859-2.344 0-4.328-1.585-5.037-3.714H.956v2.332A9 9 0 0 0 9 18Z"/><path fill="#FBBC05" d="M3.963 10.706A5.42 5.42 0 0 1 3.681 9c0-.592.102-1.167.282-1.706V4.962H.956A9 9 0 0 0 0 9c0 1.452.347 2.827.956 4.038l3.007-2.332Z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.507.454 3.441 1.346l2.581-2.581C13.463.892 11.426 0 9 0A9 9 0 0 0 .956 4.962l3.007 2.332C4.672 5.165 6.656 3.58 9 3.58Z"/></svg> Continue with Google';
+
+  function doGoogle() {
+    var btn = document.getElementById("auth-google");
+    if (btn) { btn.disabled = true; btn.textContent = "Redirecting…"; }
+    var provider = new firebase.auth.GoogleAuthProvider();
+    firebase.auth().signInWithPopup(provider)
+      .then(closeModal)
+      .catch(function (err) {
+        if (err.code === "auth/popup-blocked" || err.code === "auth/operation-not-supported-in-this-environment" || err.code === "auth/cancelled-popup-request") {
+          firebase.auth().signInWithRedirect(provider);
+          return;
+        }
+        if (errorEl) errorEl.textContent = err.code === "auth/popup-closed-by-user" ? "" : (err.message || "Google sign-in failed.");
+        if (btn) { btn.disabled = false; btn.innerHTML = GOOGLE_BTN_HTML; }
+      });
+  }
 
   function doGithub() {
     var btn = document.getElementById("auth-github");
