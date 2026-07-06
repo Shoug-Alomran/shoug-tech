@@ -11,6 +11,8 @@ from typing import Any
 import markdown
 import yaml
 
+from sort_academic_folder_rows import sort_folder_rows
+
 
 ROOT = Path(__file__).resolve().parents[1]
 DOWNLOADS = Path("/Users/shougalomran/Downloads")
@@ -4050,6 +4052,9 @@ def route_to_output_path(url_or_path: str) -> str:
 
 
 def write_url(url: str, text: str) -> None:
+    # Collection folders (mindmaps, assignment sets, question banks, and so on)
+    # must remain above individual documents on every generated course page.
+    text, _ = sort_folder_rows(text)
     write(route_to_output_path(url), text)
 
 
