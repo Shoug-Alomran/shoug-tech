@@ -2342,6 +2342,33 @@ var COURSE_PAGES = [
     "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
   },
   {
+    "url": "/academics/other-courses/ethcs303/extra-resources/cheat-sheets/midterm-1-cheat-sheet/",
+    "title": "ETHCS303 | Midterm 1 Cheat Sheet",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "extra-resources",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
+    "url": "/academics/other-courses/ethcs303/extra-resources/cheat-sheets/quiz-1-cheat-sheet/",
+    "title": "ETHCS303 | Quiz 1 Cheat Sheet",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "extra-resources",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
+    "url": "/academics/other-courses/ethcs303/extra-resources/cheat-sheets/quiz-2-cheat-sheet/",
+    "title": "ETHCS303 | Quiz 2 Cheat Sheet",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "extra-resources",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
     "url": "/academics/other-courses/ethcs303/extra-resources/class-discussion-on-privacy-policies-in-social-media/",
     "title": "ETHCS303 | Class Discussion on Privacy Policies in Social Media",
     "track": "other-courses",
@@ -2353,6 +2380,15 @@ var COURSE_PAGES = [
   {
     "url": "/academics/other-courses/ethcs303/extra-resources/ethical-theories-comparison-table/",
     "title": "ETHCS303 | Ethical Theories Comparison Table",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "extra-resources",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
+    "url": "/academics/other-courses/ethcs303/extra-resources/ethics-glossary/",
+    "title": "ETHCS303 | Comprehensive Ethics Glossary",
     "track": "other-courses",
     "course": "ethcs303",
     "section": "extra-resources",
@@ -3419,7 +3455,7 @@ var COURSE_PAGES = [
     "course": "sci101",
     "section": "slides",
     "courseUrl": "/academics/other-courses/sci101/",
-    "courseTitle": "SCI101 Overview"
+    "courseTitle": "SCI101 // Introduction to Physical Science"
   },
   {
     "url": "/academics/other-courses/sci101/slides/sci101-chapter-10/",
@@ -3428,7 +3464,7 @@ var COURSE_PAGES = [
     "course": "sci101",
     "section": "slides",
     "courseUrl": "/academics/other-courses/sci101/",
-    "courseTitle": "SCI101 Overview"
+    "courseTitle": "SCI101 // Introduction to Physical Science"
   },
   {
     "url": "/academics/other-courses/sci101/slides/sci101-chapter-2-newtons-laws-of-motion/",
@@ -3437,7 +3473,7 @@ var COURSE_PAGES = [
     "course": "sci101",
     "section": "slides",
     "courseUrl": "/academics/other-courses/sci101/",
-    "courseTitle": "SCI101 Overview"
+    "courseTitle": "SCI101 // Introduction to Physical Science"
   },
   {
     "url": "/academics/other-courses/sci101/slides/sci101-chapter-3-momentum-and-energy/",
@@ -3446,7 +3482,7 @@ var COURSE_PAGES = [
     "course": "sci101",
     "section": "slides",
     "courseUrl": "/academics/other-courses/sci101/",
-    "courseTitle": "SCI101 Overview"
+    "courseTitle": "SCI101 // Introduction to Physical Science"
   },
   {
     "url": "/academics/other-courses/sci101/slides/sci101-chapter-4-gravity/",
@@ -3455,7 +3491,7 @@ var COURSE_PAGES = [
     "course": "sci101",
     "section": "slides",
     "courseUrl": "/academics/other-courses/sci101/",
-    "courseTitle": "SCI101 Overview"
+    "courseTitle": "SCI101 // Introduction to Physical Science"
   },
   {
     "url": "/academics/other-courses/sci101/slides/sci101-chapter-5-fluid-mechanics/",
@@ -3464,7 +3500,7 @@ var COURSE_PAGES = [
     "course": "sci101",
     "section": "slides",
     "courseUrl": "/academics/other-courses/sci101/",
-    "courseTitle": "SCI101 Overview"
+    "courseTitle": "SCI101 // Introduction to Physical Science"
   },
   {
     "url": "/academics/other-courses/sci101/slides/sci101-chapter-6-thermal-energy-and-thermodynamics/",
@@ -3473,7 +3509,7 @@ var COURSE_PAGES = [
     "course": "sci101",
     "section": "slides",
     "courseUrl": "/academics/other-courses/sci101/",
-    "courseTitle": "SCI101 Overview"
+    "courseTitle": "SCI101 // Introduction to Physical Science"
   },
   {
     "url": "/academics/other-courses/sci101/slides/sci101-chapter-7/",
@@ -3482,7 +3518,7 @@ var COURSE_PAGES = [
     "course": "sci101",
     "section": "slides",
     "courseUrl": "/academics/other-courses/sci101/",
-    "courseTitle": "SCI101 Overview"
+    "courseTitle": "SCI101 // Introduction to Physical Science"
   },
   {
     "url": "/academics/other-courses/sci101/slides/sci101-chapters-12-and-15/",
@@ -3491,7 +3527,214 @@ var COURSE_PAGES = [
     "course": "sci101",
     "section": "slides",
     "courseUrl": "/academics/other-courses/sci101/",
-    "courseTitle": "SCI101 Overview"
+    "courseTitle": "SCI101 // Introduction to Physical Science"
+  },
+  {
+    "url": "/academics/other-courses/stat101/viewer/?src=%2Facademics%2Fother-courses%2Fstat101%2Fextra-resources%2Fglossary-all-chapters.pdf&title=STAT101+Glossary&section=STUDY+MATERIAL&back=%2Facademics%2Fother-courses%2Fstat101%2Fextra-resources%2F",
+    "title": "STAT101 Glossary",
+    "track": "other-courses",
+    "course": "stat101",
+    "section": "study-material",
+    "courseUrl": "/academics/other-courses/stat101/",
+    "courseTitle": "STAT101 // Introduction to Probability Theory and Statistics"
+  },
+  {
+    "url": "/academics/other-courses/stat101/viewer/?src=%2Facademics%2Fother-courses%2Fstat101%2Fextra-resources%2Fnotebooklm-chapters-1-3.pdf&title=NotebookLM+Study+Guide&section=STUDY+MATERIAL&back=%2Facademics%2Fother-courses%2Fstat101%2Fextra-resources%2F",
+    "title": "NotebookLM Study Guide",
+    "track": "other-courses",
+    "course": "stat101",
+    "section": "study-material",
+    "courseUrl": "/academics/other-courses/stat101/",
+    "courseTitle": "STAT101 // Introduction to Probability Theory and Statistics"
+  },
+  {
+    "url": "/academics/other-courses/stat101/viewer/?src=%2Facademics%2Fother-courses%2Fstat101%2Fextra-resources%2Fstat-101-formula-sheet.pdf&title=STAT101+Formula+Sheet&section=STUDY+MATERIAL&back=%2Facademics%2Fother-courses%2Fstat101%2Fextra-resources%2F",
+    "title": "STAT101 Formula Sheet",
+    "track": "other-courses",
+    "course": "stat101",
+    "section": "study-material",
+    "courseUrl": "/academics/other-courses/stat101/",
+    "courseTitle": "STAT101 // Introduction to Probability Theory and Statistics"
+  },
+  {
+    "url": "/academics/other-courses/stat101/viewer/?src=%2Facademics%2Fother-courses%2Fstat101%2Fextra-resources%2Fstatistical-tables.pdf&title=Statistical+Tables&section=STUDY+MATERIAL&back=%2Facademics%2Fother-courses%2Fstat101%2Fextra-resources%2F",
+    "title": "Statistical Tables",
+    "track": "other-courses",
+    "course": "stat101",
+    "section": "study-material",
+    "courseUrl": "/academics/other-courses/stat101/",
+    "courseTitle": "STAT101 // Introduction to Probability Theory and Statistics"
+  },
+  {
+    "url": "/academics/other-courses/stat101/viewer/?src=%2Facademics%2Fother-courses%2Fstat101%2Fextra-resources%2Fworksheets%2Fchapter-1-sections-1-3-and-1-4-solutions.pdf&title=STAT101+Worksheet&section=WORKSHEETS&back=%2Facademics%2Fother-courses%2Fstat101%2Fextra-resources%2F",
+    "title": "STAT101 Worksheet",
+    "track": "other-courses",
+    "course": "stat101",
+    "section": "worksheets",
+    "courseUrl": "/academics/other-courses/stat101/",
+    "courseTitle": "STAT101 // Introduction to Probability Theory and Statistics"
+  },
+  {
+    "url": "/academics/other-courses/stat101/viewer/?src=%2Facademics%2Fother-courses%2Fstat101%2Fextra-resources%2Fworksheets%2Fchapter-1-sections-1-3-and-1-4.pdf&title=STAT101+Worksheet&section=WORKSHEETS&back=%2Facademics%2Fother-courses%2Fstat101%2Fextra-resources%2F",
+    "title": "STAT101 Worksheet",
+    "track": "other-courses",
+    "course": "stat101",
+    "section": "worksheets",
+    "courseUrl": "/academics/other-courses/stat101/",
+    "courseTitle": "STAT101 // Introduction to Probability Theory and Statistics"
+  },
+  {
+    "url": "/academics/other-courses/stat101/viewer/?src=%2Facademics%2Fother-courses%2Fstat101%2Fextra-resources%2Fworksheets%2Fchapter-2-sections-2-1-to-2-3.pdf&title=STAT101+Worksheet&section=WORKSHEETS&back=%2Facademics%2Fother-courses%2Fstat101%2Fextra-resources%2F",
+    "title": "STAT101 Worksheet",
+    "track": "other-courses",
+    "course": "stat101",
+    "section": "worksheets",
+    "courseUrl": "/academics/other-courses/stat101/",
+    "courseTitle": "STAT101 // Introduction to Probability Theory and Statistics"
+  },
+  {
+    "url": "/academics/other-courses/stat101/viewer/?src=%2Facademics%2Fother-courses%2Fstat101%2Fextra-resources%2Fworksheets%2Fchapter-3-sections-3-1-to-3-3.pdf&title=STAT101+Worksheet&section=WORKSHEETS&back=%2Facademics%2Fother-courses%2Fstat101%2Fextra-resources%2F",
+    "title": "STAT101 Worksheet",
+    "track": "other-courses",
+    "course": "stat101",
+    "section": "worksheets",
+    "courseUrl": "/academics/other-courses/stat101/",
+    "courseTitle": "STAT101 // Introduction to Probability Theory and Statistics"
+  },
+  {
+    "url": "/academics/other-courses/stat101/viewer/?src=%2Facademics%2Fother-courses%2Fstat101%2Fextra-resources%2Fworksheets%2Fchapter-4-sections-4-1-and-4-2.pdf&title=STAT101+Worksheet&section=WORKSHEETS&back=%2Facademics%2Fother-courses%2Fstat101%2Fextra-resources%2F",
+    "title": "STAT101 Worksheet",
+    "track": "other-courses",
+    "course": "stat101",
+    "section": "worksheets",
+    "courseUrl": "/academics/other-courses/stat101/",
+    "courseTitle": "STAT101 // Introduction to Probability Theory and Statistics"
+  },
+  {
+    "url": "/academics/other-courses/stat101/viewer/?src=%2Facademics%2Fother-courses%2Fstat101%2Fextra-resources%2Fworksheets%2Fchapter-5-sections-5-1-to-5-3.pdf&title=STAT101+Worksheet&section=WORKSHEETS&back=%2Facademics%2Fother-courses%2Fstat101%2Fextra-resources%2F",
+    "title": "STAT101 Worksheet",
+    "track": "other-courses",
+    "course": "stat101",
+    "section": "worksheets",
+    "courseUrl": "/academics/other-courses/stat101/",
+    "courseTitle": "STAT101 // Introduction to Probability Theory and Statistics"
+  },
+  {
+    "url": "/academics/other-courses/stat101/viewer/?src=%2Facademics%2Fother-courses%2Fstat101%2Fextra-resources%2Fworksheets%2Fchapter-6-section-6-1.pdf&title=STAT101+Worksheet&section=WORKSHEETS&back=%2Facademics%2Fother-courses%2Fstat101%2Fextra-resources%2F",
+    "title": "STAT101 Worksheet",
+    "track": "other-courses",
+    "course": "stat101",
+    "section": "worksheets",
+    "courseUrl": "/academics/other-courses/stat101/",
+    "courseTitle": "STAT101 // Introduction to Probability Theory and Statistics"
+  },
+  {
+    "url": "/academics/other-courses/stat101/viewer/?src=%2Facademics%2Fother-courses%2Fstat101%2Fextra-resources%2Fworksheets%2Fchapter-7-sections-7-1-to-7-3.pdf&title=STAT101+Worksheet&section=WORKSHEETS&back=%2Facademics%2Fother-courses%2Fstat101%2Fextra-resources%2F",
+    "title": "STAT101 Worksheet",
+    "track": "other-courses",
+    "course": "stat101",
+    "section": "worksheets",
+    "courseUrl": "/academics/other-courses/stat101/",
+    "courseTitle": "STAT101 // Introduction to Probability Theory and Statistics"
+  },
+  {
+    "url": "/academics/other-courses/stat101/viewer/?src=%2Facademics%2Fother-courses%2Fstat101%2Fextra-resources%2Fworksheets%2Fchapter-8-sections-8-1-to-8-3.pdf&title=STAT101+Worksheet&section=WORKSHEETS&back=%2Facademics%2Fother-courses%2Fstat101%2Fextra-resources%2F",
+    "title": "STAT101 Worksheet",
+    "track": "other-courses",
+    "course": "stat101",
+    "section": "worksheets",
+    "courseUrl": "/academics/other-courses/stat101/",
+    "courseTitle": "STAT101 // Introduction to Probability Theory and Statistics"
+  },
+  {
+    "url": "/academics/other-courses/stat101/viewer/?src=%2Facademics%2Fother-courses%2Fstat101%2Fslides%2Fchapter-1.pdf&title=Chapter+1&section=SLIDES&back=%2Facademics%2Fother-courses%2Fstat101%2Fslides%2F",
+    "title": "Chapter 1",
+    "track": "other-courses",
+    "course": "stat101",
+    "section": "slides",
+    "courseUrl": "/academics/other-courses/stat101/",
+    "courseTitle": "STAT101 // Introduction to Probability Theory and Statistics"
+  },
+  {
+    "url": "/academics/other-courses/stat101/viewer/?src=%2Facademics%2Fother-courses%2Fstat101%2Fslides%2Fchapter-14.pdf&title=Chapter+14&section=SLIDES&back=%2Facademics%2Fother-courses%2Fstat101%2Fslides%2F",
+    "title": "Chapter 14",
+    "track": "other-courses",
+    "course": "stat101",
+    "section": "slides",
+    "courseUrl": "/academics/other-courses/stat101/",
+    "courseTitle": "STAT101 // Introduction to Probability Theory and Statistics"
+  },
+  {
+    "url": "/academics/other-courses/stat101/viewer/?src=%2Facademics%2Fother-courses%2Fstat101%2Fslides%2Fchapter-2.pdf&title=Chapter+2&section=SLIDES&back=%2Facademics%2Fother-courses%2Fstat101%2Fslides%2F",
+    "title": "Chapter 2",
+    "track": "other-courses",
+    "course": "stat101",
+    "section": "slides",
+    "courseUrl": "/academics/other-courses/stat101/",
+    "courseTitle": "STAT101 // Introduction to Probability Theory and Statistics"
+  },
+  {
+    "url": "/academics/other-courses/stat101/viewer/?src=%2Facademics%2Fother-courses%2Fstat101%2Fslides%2Fchapter-3.pdf&title=Chapter+3&section=SLIDES&back=%2Facademics%2Fother-courses%2Fstat101%2Fslides%2F",
+    "title": "Chapter 3",
+    "track": "other-courses",
+    "course": "stat101",
+    "section": "slides",
+    "courseUrl": "/academics/other-courses/stat101/",
+    "courseTitle": "STAT101 // Introduction to Probability Theory and Statistics"
+  },
+  {
+    "url": "/academics/other-courses/stat101/viewer/?src=%2Facademics%2Fother-courses%2Fstat101%2Fslides%2Fchapter-4.pdf&title=Chapter+4&section=SLIDES&back=%2Facademics%2Fother-courses%2Fstat101%2Fslides%2F",
+    "title": "Chapter 4",
+    "track": "other-courses",
+    "course": "stat101",
+    "section": "slides",
+    "courseUrl": "/academics/other-courses/stat101/",
+    "courseTitle": "STAT101 // Introduction to Probability Theory and Statistics"
+  },
+  {
+    "url": "/academics/other-courses/stat101/viewer/?src=%2Facademics%2Fother-courses%2Fstat101%2Fslides%2Fchapter-5.pdf&title=Chapter+5&section=SLIDES&back=%2Facademics%2Fother-courses%2Fstat101%2Fslides%2F",
+    "title": "Chapter 5",
+    "track": "other-courses",
+    "course": "stat101",
+    "section": "slides",
+    "courseUrl": "/academics/other-courses/stat101/",
+    "courseTitle": "STAT101 // Introduction to Probability Theory and Statistics"
+  },
+  {
+    "url": "/academics/other-courses/stat101/viewer/?src=%2Facademics%2Fother-courses%2Fstat101%2Fslides%2Fchapter-6.pdf&title=Chapter+6&section=SLIDES&back=%2Facademics%2Fother-courses%2Fstat101%2Fslides%2F",
+    "title": "Chapter 6",
+    "track": "other-courses",
+    "course": "stat101",
+    "section": "slides",
+    "courseUrl": "/academics/other-courses/stat101/",
+    "courseTitle": "STAT101 // Introduction to Probability Theory and Statistics"
+  },
+  {
+    "url": "/academics/other-courses/stat101/viewer/?src=%2Facademics%2Fother-courses%2Fstat101%2Fslides%2Fchapter-7.pdf&title=Chapter+7&section=SLIDES&back=%2Facademics%2Fother-courses%2Fstat101%2Fslides%2F",
+    "title": "Chapter 7",
+    "track": "other-courses",
+    "course": "stat101",
+    "section": "slides",
+    "courseUrl": "/academics/other-courses/stat101/",
+    "courseTitle": "STAT101 // Introduction to Probability Theory and Statistics"
+  },
+  {
+    "url": "/academics/other-courses/stat101/viewer/?src=%2Facademics%2Fother-courses%2Fstat101%2Fslides%2Fchapter-8.pdf&title=Chapter+8&section=SLIDES&back=%2Facademics%2Fother-courses%2Fstat101%2Fslides%2F",
+    "title": "Chapter 8",
+    "track": "other-courses",
+    "course": "stat101",
+    "section": "slides",
+    "courseUrl": "/academics/other-courses/stat101/",
+    "courseTitle": "STAT101 // Introduction to Probability Theory and Statistics"
+  },
+  {
+    "url": "/academics/other-courses/stat101/viewer/?src=%2Facademics%2Fother-courses%2Fstat101%2Fsyllabus%2Fstat-101-syllabus.pdf&title=STAT101+Syllabus&section=SYLLABUS&back=%2Facademics%2Fother-courses%2Fstat101%2Fsyllabus%2F",
+    "title": "STAT101 Syllabus",
+    "track": "other-courses",
+    "course": "stat101",
+    "section": "syllabus",
+    "courseUrl": "/academics/other-courses/stat101/",
+    "courseTitle": "STAT101 // Introduction to Probability Theory and Statistics"
   },
   {
     "url": "/academics/software-engineering/se201/extra-resources/01-uml-and-diagrams-guide/",
@@ -4495,11 +4738,12 @@ var COURSE_MANIFEST = {
   "cys401": 29,
   "eng101": 37,
   "eng103": 7,
-  "ethcs303": 75,
+  "ethcs303": 79,
   "isc113": 23,
   "phy105": 17,
   "phy205": 8,
   "sci101": 9,
+  "stat101": 23,
   "se201": 32,
   "se311": 33,
   "se322": 18,
@@ -4517,11 +4761,12 @@ var COURSE_MANIFEST_BY_TRACK = {
   "cybersecurity/cys401": 29,
   "other-courses/eng101": 37,
   "other-courses/eng103": 7,
-  "other-courses/ethcs303": 75,
+  "other-courses/ethcs303": 79,
   "other-courses/isc113": 23,
   "other-courses/phy105": 17,
   "other-courses/phy205": 8,
   "other-courses/sci101": 9,
+  "other-courses/stat101": 23,
   "software-engineering/se201": 32,
   "software-engineering/se311": 33,
   "software-engineering/se322": 18,

@@ -17,8 +17,16 @@
 
   // ── Helpers ──────────────────────────────────────────────────────────────
 
+  function progressUrl() {
+    var path = window.location.pathname;
+    if (path === "/academics/other-courses/stat101/viewer/" && window.location.search) {
+      return path + "?" + new URLSearchParams(window.location.search).toString();
+    }
+    return path;
+  }
+
   function pageSlug() {
-    return window.location.pathname.replace(/\//g, "|").replace(/^\||\ |$/g, "") || "home";
+    return progressUrl().replace(/\//g, "|").replace(/^\||\ |$/g, "") || "home";
   }
 
   function pageTitle() {
@@ -47,6 +55,7 @@
     // For academics pages only show on actual leaf content pages, not listing/overview pages.
     // Content pages have 5+ segments: /academics/track/course/section/page/
     if (path.indexOf("/academics/") === 0) {
+      if (path === "/academics/other-courses/stat101/viewer/") return true;
       return path.split("/").filter(Boolean).length >= 5;
     }
     return true;
@@ -912,7 +921,7 @@
       var isDone = completeBtn.classList.contains("done");
       var next = !isDone;
       setDone(next);
-      var path = window.location.pathname;
+      var path = progressUrl();
       var data = {
         url: path,
         title: pageTitle(),

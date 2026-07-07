@@ -207,6 +207,40 @@ function build() {
     });
   }
 
+  // STAT101 uses one query-driven embedded viewer. Each source file still needs
+  // a distinct manifest URL so progress can track resources independently.
+  const stat101Root = path.join(ACADEMICS, "other-courses", "stat101");
+  const stat101ViewerUrls = new Map();
+  for (const htmlFile of walk(stat101Root)) {
+    let html = "";
+    try { html = fs.readFileSync(htmlFile, "utf8"); } catch (_) { continue; }
+    const pattern = /href=["'](\/academics\/other-courses\/stat101\/viewer\/\?[^"']+)["']/ig;
+    let match;
+    while ((match = pattern.exec(html))) {
+      const url = decodeEntities(match[1]);
+      const query = new URLSearchParams(url.split("?")[1] || "");
+      const normalizedUrl = url.split("?")[0] + "?" + query.toString();
+      const source = query.get("src") || "";
+      if (!source.endsWith(".pdf")) continue;
+      stat101ViewerUrls.set(source, {
+        url: normalizedUrl,
+        title: query.get("title") || titleFromSlug(path.basename(source, ".pdf")),
+        track: "other-courses",
+        course: "stat101",
+        section: (query.get("section") || "study-material").toLowerCase().replace(/\s+/g, "-"),
+        courseUrl: "/academics/other-courses/stat101/",
+        courseTitle: "STAT101 // Introduction to Probability Theory and Statistics",
+      });
+    }
+  }
+  pages.push(...stat101ViewerUrls.values());
+  if (courseTitles["other-courses/sci101"]) {
+    courseTitles["other-courses/sci101"] = "SCI101 // Introduction to Physical Science";
+  }
+  if (stat101ViewerUrls.size) {
+    courseTitles["other-courses/stat101"] = "STAT101 // Introduction to Probability Theory and Statistics";
+  }
+
   pages.sort((a, b) => {
     const scopeA = a.track + "/" + a.course + "/" + a.section;
     const scopeB = b.track + "/" + b.course + "/" + b.section;
