@@ -246,7 +246,7 @@ COURSES: dict[str, dict[str, Any]] = {
         },
         "title_override": "Introduction to Probability Theory and Statistics",
         "description": "An introductory course in descriptive statistics, probability, probability distributions, sampling, and estimation, with spreadsheet-based analysis of real-world data.",
-        "credits": "3+1",
+        "credits": "3",
         "prereq": "MATH002",
         "status": "available",
     },
