@@ -3728,15 +3728,6 @@ var COURSE_PAGES = [
     "courseTitle": "STAT101 // Introduction to Probability Theory and Statistics"
   },
   {
-    "url": "/academics/other-courses/stat101/viewer/?src=%2Facademics%2Fother-courses%2Fstat101%2Fsyllabus%2Fstat-101-syllabus.pdf&title=STAT101+Syllabus&section=SYLLABUS&back=%2Facademics%2Fother-courses%2Fstat101%2Fsyllabus%2F",
-    "title": "STAT101 Syllabus",
-    "track": "other-courses",
-    "course": "stat101",
-    "section": "syllabus",
-    "courseUrl": "/academics/other-courses/stat101/",
-    "courseTitle": "STAT101 // Introduction to Probability Theory and Statistics"
-  },
-  {
     "url": "/academics/software-engineering/se201/extra-resources/01-uml-and-diagrams-guide/",
     "title": "SE201 | UML & Diagrams Guide",
     "track": "software-engineering",
@@ -4743,7 +4734,7 @@ var COURSE_MANIFEST = {
   "phy105": 17,
   "phy205": 8,
   "sci101": 9,
-  "stat101": 23,
+  "stat101": 22,
   "se201": 32,
   "se311": 33,
   "se322": 18,
@@ -4766,7 +4757,7 @@ var COURSE_MANIFEST_BY_TRACK = {
   "other-courses/phy105": 17,
   "other-courses/phy205": 8,
   "other-courses/sci101": 9,
-  "other-courses/stat101": 23,
+  "other-courses/stat101": 22,
   "software-engineering/se201": 32,
   "software-engineering/se311": 33,
   "software-engineering/se322": 18,

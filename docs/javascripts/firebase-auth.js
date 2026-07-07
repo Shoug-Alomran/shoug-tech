@@ -55,7 +55,12 @@
     // For academics pages only show on actual leaf content pages, not listing/overview pages.
     // Content pages have 5+ segments: /academics/track/course/section/page/
     if (path.indexOf("/academics/") === 0) {
-      if (path === "/academics/other-courses/stat101/viewer/") return true;
+      if (path === "/academics/other-courses/stat101/viewer/") {
+        var viewerParams = new URLSearchParams(window.location.search);
+        var viewerSection = (viewerParams.get("section") || "").toUpperCase();
+        var viewerSource = viewerParams.get("src") || "";
+        return viewerSection !== "SYLLABUS" && viewerSource.indexOf("/syllabus/") === -1;
+      }
       return path.split("/").filter(Boolean).length >= 5;
     }
     return true;

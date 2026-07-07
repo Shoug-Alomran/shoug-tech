@@ -222,6 +222,7 @@ function build() {
       const normalizedUrl = url.split("?")[0] + "?" + query.toString();
       const source = query.get("src") || "";
       if (!source.endsWith(".pdf")) continue;
+      if ((query.get("section") || "").toUpperCase() === "SYLLABUS" || source.includes("/syllabus/")) continue;
       let resourceTitle = query.get("title") || titleFromSlug(path.basename(source, ".pdf"));
       if (resourceTitle === "STAT101 Worksheet") {
         resourceTitle = titleFromSlug(path.basename(source, ".pdf"));
