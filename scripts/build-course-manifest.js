@@ -222,9 +222,13 @@ function build() {
       const normalizedUrl = url.split("?")[0] + "?" + query.toString();
       const source = query.get("src") || "";
       if (!source.endsWith(".pdf")) continue;
+      let resourceTitle = query.get("title") || titleFromSlug(path.basename(source, ".pdf"));
+      if (resourceTitle === "STAT101 Worksheet") {
+        resourceTitle = titleFromSlug(path.basename(source, ".pdf"));
+      }
       stat101ViewerUrls.set(source, {
         url: normalizedUrl,
-        title: query.get("title") || titleFromSlug(path.basename(source, ".pdf")),
+        title: resourceTitle,
         track: "other-courses",
         course: "stat101",
         section: (query.get("section") || "study-material").toLowerCase().replace(/\s+/g, "-"),

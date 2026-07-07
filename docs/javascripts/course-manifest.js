@@ -3567,7 +3567,7 @@ var COURSE_PAGES = [
   },
   {
     "url": "/academics/other-courses/stat101/viewer/?src=%2Facademics%2Fother-courses%2Fstat101%2Fextra-resources%2Fworksheets%2Fchapter-1-sections-1-3-and-1-4-solutions.pdf&title=STAT101+Worksheet&section=WORKSHEETS&back=%2Facademics%2Fother-courses%2Fstat101%2Fextra-resources%2F",
-    "title": "STAT101 Worksheet",
+    "title": "Chapter 1 Sections 1 3 And 1 4 Solutions",
     "track": "other-courses",
     "course": "stat101",
     "section": "worksheets",
@@ -3576,7 +3576,7 @@ var COURSE_PAGES = [
   },
   {
     "url": "/academics/other-courses/stat101/viewer/?src=%2Facademics%2Fother-courses%2Fstat101%2Fextra-resources%2Fworksheets%2Fchapter-1-sections-1-3-and-1-4.pdf&title=STAT101+Worksheet&section=WORKSHEETS&back=%2Facademics%2Fother-courses%2Fstat101%2Fextra-resources%2F",
-    "title": "STAT101 Worksheet",
+    "title": "Chapter 1 Sections 1 3 And 1 4",
     "track": "other-courses",
     "course": "stat101",
     "section": "worksheets",
@@ -3585,7 +3585,7 @@ var COURSE_PAGES = [
   },
   {
     "url": "/academics/other-courses/stat101/viewer/?src=%2Facademics%2Fother-courses%2Fstat101%2Fextra-resources%2Fworksheets%2Fchapter-2-sections-2-1-to-2-3.pdf&title=STAT101+Worksheet&section=WORKSHEETS&back=%2Facademics%2Fother-courses%2Fstat101%2Fextra-resources%2F",
-    "title": "STAT101 Worksheet",
+    "title": "Chapter 2 Sections 2 1 To 2 3",
     "track": "other-courses",
     "course": "stat101",
     "section": "worksheets",
@@ -3594,7 +3594,7 @@ var COURSE_PAGES = [
   },
   {
     "url": "/academics/other-courses/stat101/viewer/?src=%2Facademics%2Fother-courses%2Fstat101%2Fextra-resources%2Fworksheets%2Fchapter-3-sections-3-1-to-3-3.pdf&title=STAT101+Worksheet&section=WORKSHEETS&back=%2Facademics%2Fother-courses%2Fstat101%2Fextra-resources%2F",
-    "title": "STAT101 Worksheet",
+    "title": "Chapter 3 Sections 3 1 To 3 3",
     "track": "other-courses",
     "course": "stat101",
     "section": "worksheets",
@@ -3603,7 +3603,7 @@ var COURSE_PAGES = [
   },
   {
     "url": "/academics/other-courses/stat101/viewer/?src=%2Facademics%2Fother-courses%2Fstat101%2Fextra-resources%2Fworksheets%2Fchapter-4-sections-4-1-and-4-2.pdf&title=STAT101+Worksheet&section=WORKSHEETS&back=%2Facademics%2Fother-courses%2Fstat101%2Fextra-resources%2F",
-    "title": "STAT101 Worksheet",
+    "title": "Chapter 4 Sections 4 1 And 4 2",
     "track": "other-courses",
     "course": "stat101",
     "section": "worksheets",
@@ -3612,7 +3612,7 @@ var COURSE_PAGES = [
   },
   {
     "url": "/academics/other-courses/stat101/viewer/?src=%2Facademics%2Fother-courses%2Fstat101%2Fextra-resources%2Fworksheets%2Fchapter-5-sections-5-1-to-5-3.pdf&title=STAT101+Worksheet&section=WORKSHEETS&back=%2Facademics%2Fother-courses%2Fstat101%2Fextra-resources%2F",
-    "title": "STAT101 Worksheet",
+    "title": "Chapter 5 Sections 5 1 To 5 3",
     "track": "other-courses",
     "course": "stat101",
     "section": "worksheets",
@@ -3621,7 +3621,7 @@ var COURSE_PAGES = [
   },
   {
     "url": "/academics/other-courses/stat101/viewer/?src=%2Facademics%2Fother-courses%2Fstat101%2Fextra-resources%2Fworksheets%2Fchapter-6-section-6-1.pdf&title=STAT101+Worksheet&section=WORKSHEETS&back=%2Facademics%2Fother-courses%2Fstat101%2Fextra-resources%2F",
-    "title": "STAT101 Worksheet",
+    "title": "Chapter 6 Section 6 1",
     "track": "other-courses",
     "course": "stat101",
     "section": "worksheets",
@@ -3630,7 +3630,7 @@ var COURSE_PAGES = [
   },
   {
     "url": "/academics/other-courses/stat101/viewer/?src=%2Facademics%2Fother-courses%2Fstat101%2Fextra-resources%2Fworksheets%2Fchapter-7-sections-7-1-to-7-3.pdf&title=STAT101+Worksheet&section=WORKSHEETS&back=%2Facademics%2Fother-courses%2Fstat101%2Fextra-resources%2F",
-    "title": "STAT101 Worksheet",
+    "title": "Chapter 7 Sections 7 1 To 7 3",
     "track": "other-courses",
     "course": "stat101",
     "section": "worksheets",
@@ -3639,7 +3639,7 @@ var COURSE_PAGES = [
   },
   {
     "url": "/academics/other-courses/stat101/viewer/?src=%2Facademics%2Fother-courses%2Fstat101%2Fextra-resources%2Fworksheets%2Fchapter-8-sections-8-1-to-8-3.pdf&title=STAT101+Worksheet&section=WORKSHEETS&back=%2Facademics%2Fother-courses%2Fstat101%2Fextra-resources%2F",
-    "title": "STAT101 Worksheet",
+    "title": "Chapter 8 Sections 8 1 To 8 3",
     "track": "other-courses",
     "course": "stat101",
     "section": "worksheets",
