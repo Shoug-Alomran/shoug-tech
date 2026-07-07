@@ -233,6 +233,23 @@ COURSES: dict[str, dict[str, Any]] = {
         "prereq": "None",
         "status": "available",
     },
+    "STAT101": {
+        "track": "Other Courses",
+        "path": "docs/academics/other-courses/stat101/",
+        "url": "/academics/other-courses/stat101/",
+        "sections": {
+            "Overview": "/academics/other-courses/stat101/",
+            "Slide Breakdowns": "/academics/other-courses/stat101/slide-breakdowns/",
+            "Slides": "/academics/other-courses/stat101/slides/",
+            "Study Material": "/academics/other-courses/stat101/extra-resources/",
+            "Quizzes": "/academics/other-courses/stat101/quizzes/",
+        },
+        "title_override": "Introduction to Probability Theory and Statistics",
+        "description": "An introductory course in descriptive statistics, probability, probability distributions, sampling, and estimation, with spreadsheet-based analysis of real-world data.",
+        "credits": "3+1",
+        "prereq": "MATH002",
+        "status": "available",
+    },
     "ENG101": {
         "track": "Other Courses",
         "path": "docs/Academics/other/english/ENG101/overview.md",
@@ -301,9 +318,9 @@ TRACKS: dict[str, dict[str, Any]] = {
     },
     "other-courses": {
         "label": "OTHER COURSES",
-        "title": "5 courses.<br>One English hub,<br>and shared resources.",
-        "meta": ["General Track", "5 Courses + English Hub", "Writing", "Ethics", "Science"],
-        "courses": ["ETHCS303", "PHY105", "PHY205", "SCI101", "ISC113"],
+        "title": "6 courses.<br>One English hub,<br>and shared resources.",
+        "meta": ["General Track", "6 Courses + English Hub", "Writing", "Ethics", "Science"],
+        "courses": ["ETHCS303", "PHY105", "PHY205", "SCI101", "STAT101", "ISC113"],
         "url": "/track-other-courses.html",
     },
 }
