@@ -8,7 +8,7 @@ var COURSE_PAGES = [
     "course": "cs101",
     "section": "slides",
     "courseUrl": "/academics/computer-science/cs101/",
-    "courseTitle": "CS101 // Computer Programming 1"
+    "courseTitle": "CS101"
   },
   {
     "url": "/academics/computer-science/cs101/slides/chapter-12/",
@@ -17,16 +17,16 @@ var COURSE_PAGES = [
     "course": "cs101",
     "section": "slides",
     "courseUrl": "/academics/computer-science/cs101/",
-    "courseTitle": "CS101 // Computer Programming 1"
+    "courseTitle": "CS101"
   },
   {
     "url": "/academics/computer-science/cs101/slides/chapter-2/",
-    "title": "CS101 | Chapter 2",
+    "title": "Chapter 2",
     "track": "computer-science",
     "course": "cs101",
     "section": "slides",
     "courseUrl": "/academics/computer-science/cs101/",
-    "courseTitle": "CS101 // Computer Programming 1"
+    "courseTitle": "CS101"
   },
   {
     "url": "/academics/computer-science/cs101/slides/chapter-3/",
@@ -35,7 +35,7 @@ var COURSE_PAGES = [
     "course": "cs101",
     "section": "slides",
     "courseUrl": "/academics/computer-science/cs101/",
-    "courseTitle": "CS101 // Computer Programming 1"
+    "courseTitle": "CS101"
   },
   {
     "url": "/academics/computer-science/cs101/slides/chapter-4/",
@@ -44,7 +44,7 @@ var COURSE_PAGES = [
     "course": "cs101",
     "section": "slides",
     "courseUrl": "/academics/computer-science/cs101/",
-    "courseTitle": "CS101 // Computer Programming 1"
+    "courseTitle": "CS101"
   },
   {
     "url": "/academics/computer-science/cs101/slides/chapter-5/",
@@ -53,7 +53,7 @@ var COURSE_PAGES = [
     "course": "cs101",
     "section": "slides",
     "courseUrl": "/academics/computer-science/cs101/",
-    "courseTitle": "CS101 // Computer Programming 1"
+    "courseTitle": "CS101"
   },
   {
     "url": "/academics/computer-science/cs101/slides/chapter-6/",
@@ -62,7 +62,7 @@ var COURSE_PAGES = [
     "course": "cs101",
     "section": "slides",
     "courseUrl": "/academics/computer-science/cs101/",
-    "courseTitle": "CS101 // Computer Programming 1"
+    "courseTitle": "CS101"
   },
   {
     "url": "/academics/computer-science/cs101/slides/chapter-7/",
@@ -71,7 +71,7 @@ var COURSE_PAGES = [
     "course": "cs101",
     "section": "slides",
     "courseUrl": "/academics/computer-science/cs101/",
-    "courseTitle": "CS101 // Computer Programming 1"
+    "courseTitle": "CS101"
   },
   {
     "url": "/academics/computer-science/cs102/slides/chapter-8/",
@@ -80,16 +80,16 @@ var COURSE_PAGES = [
     "course": "cs102",
     "section": "slides",
     "courseUrl": "/academics/computer-science/cs102/",
-    "courseTitle": "CS102 // Computer Programming II"
+    "courseTitle": "CS102"
   },
   {
     "url": "/academics/computer-science/cs102/slides/classes/",
-    "title": "CS102 | Classes",
+    "title": "Classes",
     "track": "computer-science",
     "course": "cs102",
     "section": "slides",
     "courseUrl": "/academics/computer-science/cs102/",
-    "courseTitle": "CS102 // Computer Programming II"
+    "courseTitle": "CS102"
   },
   {
     "url": "/academics/computer-science/cs102/slides/comparable-comparator-and-interfaces/",
@@ -98,16 +98,16 @@ var COURSE_PAGES = [
     "course": "cs102",
     "section": "slides",
     "courseUrl": "/academics/computer-science/cs102/",
-    "courseTitle": "CS102 // Computer Programming II"
+    "courseTitle": "CS102"
   },
   {
     "url": "/academics/computer-science/cs102/slides/files/",
-    "title": "CS102 | Files",
+    "title": "Files",
     "track": "computer-science",
     "course": "cs102",
     "section": "slides",
     "courseUrl": "/academics/computer-science/cs102/",
-    "courseTitle": "CS102 // Computer Programming II"
+    "courseTitle": "CS102"
   },
   {
     "url": "/academics/computer-science/cs102/slides/generic-classes/",
@@ -116,7 +116,7 @@ var COURSE_PAGES = [
     "course": "cs102",
     "section": "slides",
     "courseUrl": "/academics/computer-science/cs102/",
-    "courseTitle": "CS102 // Computer Programming II"
+    "courseTitle": "CS102"
   },
   {
     "url": "/academics/computer-science/cs102/slides/inheritance/",
@@ -125,16 +125,16 @@ var COURSE_PAGES = [
     "course": "cs102",
     "section": "slides",
     "courseUrl": "/academics/computer-science/cs102/",
-    "courseTitle": "CS102 // Computer Programming II"
+    "courseTitle": "CS102"
   },
   {
     "url": "/academics/computer-science/cs102/slides/java-collection-framework-part-2/",
-    "title": "CS102 | Java Collection Framework Part 2",
+    "title": "Java Collection Framework Part 2",
     "track": "computer-science",
     "course": "cs102",
     "section": "slides",
     "courseUrl": "/academics/computer-science/cs102/",
-    "courseTitle": "CS102 // Computer Programming II"
+    "courseTitle": "CS102"
   },
   {
     "url": "/academics/computer-science/cs102/slides/java-collection-framework/",
@@ -143,79 +143,79 @@ var COURSE_PAGES = [
     "course": "cs102",
     "section": "slides",
     "courseUrl": "/academics/computer-science/cs102/",
-    "courseTitle": "CS102 // Computer Programming II"
+    "courseTitle": "CS102"
   },
   {
     "url": "/academics/computer-science/cs102/slides/linked-lists/",
-    "title": "CS102 | Linked Lists",
+    "title": "Linked Lists",
     "track": "computer-science",
     "course": "cs102",
     "section": "slides",
     "courseUrl": "/academics/computer-science/cs102/",
-    "courseTitle": "CS102 // Computer Programming II"
+    "courseTitle": "CS102"
   },
   {
     "url": "/academics/computer-science/cs102/slides/polymorphism/",
-    "title": "CS102 | Polymorphism",
+    "title": "Polymorphism",
     "track": "computer-science",
     "course": "cs102",
     "section": "slides",
     "courseUrl": "/academics/computer-science/cs102/",
-    "courseTitle": "CS102 // Computer Programming II"
+    "courseTitle": "CS102"
   },
   {
     "url": "/academics/computer-science/cs102/slides/recursion/",
-    "title": "CS102 | Recursion",
+    "title": "Recursion",
     "track": "computer-science",
     "course": "cs102",
     "section": "slides",
     "courseUrl": "/academics/computer-science/cs102/",
-    "courseTitle": "CS102 // Computer Programming II"
+    "courseTitle": "CS102"
   },
   {
     "url": "/academics/computer-science/cs210/exams/01-midterm-1/",
-    "title": "CS210 | Midterm 1",
+    "title": "Midterm 1",
     "track": "computer-science",
     "course": "cs210",
     "section": "exams",
     "courseUrl": "/academics/computer-science/cs210/",
-    "courseTitle": "CS210 // Data Structures and Algorithms"
+    "courseTitle": "CS210"
   },
   {
     "url": "/academics/computer-science/cs210/exams/02-quiz-1/",
-    "title": "CS210 | Quiz 1",
+    "title": "Quiz 1",
     "track": "computer-science",
     "course": "cs210",
     "section": "exams",
     "courseUrl": "/academics/computer-science/cs210/",
-    "courseTitle": "CS210 // Data Structures and Algorithms"
+    "courseTitle": "CS210"
   },
   {
     "url": "/academics/computer-science/cs210/exams/03-quiz-2/",
-    "title": "CS210 | Quiz 2",
+    "title": "Quiz 2",
     "track": "computer-science",
     "course": "cs210",
     "section": "exams",
     "courseUrl": "/academics/computer-science/cs210/",
-    "courseTitle": "CS210 // Data Structures and Algorithms"
+    "courseTitle": "CS210"
   },
   {
     "url": "/academics/computer-science/cs210/extra-resources/01-cheat-sheet/",
-    "title": "CS210 | Cheat Sheet",
+    "title": "Cheat Sheet",
     "track": "computer-science",
     "course": "cs210",
     "section": "extra-resources",
     "courseUrl": "/academics/computer-science/cs210/",
-    "courseTitle": "CS210 // Data Structures and Algorithms"
+    "courseTitle": "CS210"
   },
   {
     "url": "/academics/computer-science/cs210/extra-resources/02-cheat-sheet-2/",
-    "title": "CS210 | Cheat Sheet (2)",
+    "title": "Cheat Sheet 2",
     "track": "computer-science",
     "course": "cs210",
     "section": "extra-resources",
     "courseUrl": "/academics/computer-science/cs210/",
-    "courseTitle": "CS210 // Data Structures and Algorithms"
+    "courseTitle": "CS210"
   },
   {
     "url": "/academics/computer-science/cs210/slide-breakdowns/01-lists/",
@@ -224,7 +224,7 @@ var COURSE_PAGES = [
     "course": "cs210",
     "section": "slide-breakdowns",
     "courseUrl": "/academics/computer-science/cs210/",
-    "courseTitle": "CS210 // Data Structures and Algorithms"
+    "courseTitle": "CS210"
   },
   {
     "url": "/academics/computer-science/cs210/slide-breakdowns/02-trees/",
@@ -233,16 +233,16 @@ var COURSE_PAGES = [
     "course": "cs210",
     "section": "slide-breakdowns",
     "courseUrl": "/academics/computer-science/cs210/",
-    "courseTitle": "CS210 // Data Structures and Algorithms"
+    "courseTitle": "CS210"
   },
   {
     "url": "/academics/computer-science/cs210/slide-breakdowns/03-avl-trees/",
-    "title": "CS210 | Breakdown: AVL Trees",
+    "title": "Avl Trees",
     "track": "computer-science",
     "course": "cs210",
     "section": "slide-breakdowns",
     "courseUrl": "/academics/computer-science/cs210/",
-    "courseTitle": "CS210 // Data Structures and Algorithms"
+    "courseTitle": "CS210"
   },
   {
     "url": "/academics/computer-science/cs210/slide-breakdowns/04-heaps/",
@@ -251,25 +251,25 @@ var COURSE_PAGES = [
     "course": "cs210",
     "section": "slide-breakdowns",
     "courseUrl": "/academics/computer-science/cs210/",
-    "courseTitle": "CS210 // Data Structures and Algorithms"
+    "courseTitle": "CS210"
   },
   {
     "url": "/academics/computer-science/cs210/slide-breakdowns/05-hash-tables/",
-    "title": "CS210 | Breakdown: Hash Tables",
+    "title": "Hash Tables",
     "track": "computer-science",
     "course": "cs210",
     "section": "slide-breakdowns",
     "courseUrl": "/academics/computer-science/cs210/",
-    "courseTitle": "CS210 // Data Structures and Algorithms"
+    "courseTitle": "CS210"
   },
   {
     "url": "/academics/computer-science/cs210/slide-breakdowns/06-binary-search-trees-bst/",
-    "title": "CS210 | Breakdown: Binary Search Trees (BST)",
+    "title": "Binary Search Trees Bst",
     "track": "computer-science",
     "course": "cs210",
     "section": "slide-breakdowns",
     "courseUrl": "/academics/computer-science/cs210/",
-    "courseTitle": "CS210 // Data Structures and Algorithms"
+    "courseTitle": "CS210"
   },
   {
     "url": "/academics/computer-science/cs210/slide-breakdowns/07-recursion/",
@@ -278,7 +278,7 @@ var COURSE_PAGES = [
     "course": "cs210",
     "section": "slide-breakdowns",
     "courseUrl": "/academics/computer-science/cs210/",
-    "courseTitle": "CS210 // Data Structures and Algorithms"
+    "courseTitle": "CS210"
   },
   {
     "url": "/academics/computer-science/cs210/slide-breakdowns/08-quick-sort/",
@@ -287,7 +287,7 @@ var COURSE_PAGES = [
     "course": "cs210",
     "section": "slide-breakdowns",
     "courseUrl": "/academics/computer-science/cs210/",
-    "courseTitle": "CS210 // Data Structures and Algorithms"
+    "courseTitle": "CS210"
   },
   {
     "url": "/academics/computer-science/cs210/slide-breakdowns/09-merge-sort/",
@@ -296,7 +296,7 @@ var COURSE_PAGES = [
     "course": "cs210",
     "section": "slide-breakdowns",
     "courseUrl": "/academics/computer-science/cs210/",
-    "courseTitle": "CS210 // Data Structures and Algorithms"
+    "courseTitle": "CS210"
   },
   {
     "url": "/academics/computer-science/cs210/slide-breakdowns/10-stacks-and-queues/",
@@ -305,223 +305,223 @@ var COURSE_PAGES = [
     "course": "cs210",
     "section": "slide-breakdowns",
     "courseUrl": "/academics/computer-science/cs210/",
-    "courseTitle": "CS210 // Data Structures and Algorithms"
+    "courseTitle": "CS210"
   },
   {
     "url": "/academics/computer-science/cs210/slides/algorithm-analysis/",
-    "title": "CS210 | Algorithm Analysis",
+    "title": "Algorithm Analysis",
     "track": "computer-science",
     "course": "cs210",
     "section": "slides",
     "courseUrl": "/academics/computer-science/cs210/",
-    "courseTitle": "CS210 // Data Structures and Algorithms"
+    "courseTitle": "CS210"
   },
   {
     "url": "/academics/computer-science/cs210/slides/avl-trees/",
-    "title": "CS210 | Avl Trees",
+    "title": "Avl Trees",
     "track": "computer-science",
     "course": "cs210",
     "section": "slides",
     "courseUrl": "/academics/computer-science/cs210/",
-    "courseTitle": "CS210 // Data Structures and Algorithms"
+    "courseTitle": "CS210"
   },
   {
     "url": "/academics/computer-science/cs210/slides/binary-search-trees/",
-    "title": "CS210 | Binary Search Trees",
+    "title": "Binary Search Trees",
     "track": "computer-science",
     "course": "cs210",
     "section": "slides",
     "courseUrl": "/academics/computer-science/cs210/",
-    "courseTitle": "CS210 // Data Structures and Algorithms"
+    "courseTitle": "CS210"
   },
   {
     "url": "/academics/computer-science/cs210/slides/circular-linked-lists/",
-    "title": "CS210 | Circular Linked Lists",
+    "title": "Circular Linked Lists",
     "track": "computer-science",
     "course": "cs210",
     "section": "slides",
     "courseUrl": "/academics/computer-science/cs210/",
-    "courseTitle": "CS210 // Data Structures and Algorithms"
+    "courseTitle": "CS210"
   },
   {
     "url": "/academics/computer-science/cs210/slides/directed-graphs/",
-    "title": "CS210 | Directed Graphs",
+    "title": "Directed Graphs",
     "track": "computer-science",
     "course": "cs210",
     "section": "slides",
     "courseUrl": "/academics/computer-science/cs210/",
-    "courseTitle": "CS210 // Data Structures and Algorithms"
+    "courseTitle": "CS210"
   },
   {
     "url": "/academics/computer-science/cs210/slides/elementary-sorting-algorithms/",
-    "title": "CS210 | Elementary Sorting Algorithms",
+    "title": "Elementary Sorting Algorithms",
     "track": "computer-science",
     "course": "cs210",
     "section": "slides",
     "courseUrl": "/academics/computer-science/cs210/",
-    "courseTitle": "CS210 // Data Structures and Algorithms"
+    "courseTitle": "CS210"
   },
   {
     "url": "/academics/computer-science/cs210/slides/hash-tables/",
-    "title": "CS210 | Hash Tables",
+    "title": "Hash Tables",
     "track": "computer-science",
     "course": "cs210",
     "section": "slides",
     "courseUrl": "/academics/computer-science/cs210/",
-    "courseTitle": "CS210 // Data Structures and Algorithms"
+    "courseTitle": "CS210"
   },
   {
     "url": "/academics/computer-science/cs210/slides/heaps-and-priority-queues/",
-    "title": "CS210 | Heaps And Priority Queues",
+    "title": "Heaps And Priority Queues",
     "track": "computer-science",
     "course": "cs210",
     "section": "slides",
     "courseUrl": "/academics/computer-science/cs210/",
-    "courseTitle": "CS210 // Data Structures and Algorithms"
+    "courseTitle": "CS210"
   },
   {
     "url": "/academics/computer-science/cs210/slides/heaps/",
-    "title": "CS210 | Heaps",
+    "title": "Heaps",
     "track": "computer-science",
     "course": "cs210",
     "section": "slides",
     "courseUrl": "/academics/computer-science/cs210/",
-    "courseTitle": "CS210 // Data Structures and Algorithms"
+    "courseTitle": "CS210"
   },
   {
     "url": "/academics/computer-science/cs210/slides/lists/",
-    "title": "CS210 | Lists",
+    "title": "Lists",
     "track": "computer-science",
     "course": "cs210",
     "section": "slides",
     "courseUrl": "/academics/computer-science/cs210/",
-    "courseTitle": "CS210 // Data Structures and Algorithms"
+    "courseTitle": "CS210"
   },
   {
     "url": "/academics/computer-science/cs210/slides/merge-sort/",
-    "title": "CS210 | Merge Sort",
+    "title": "Merge Sort",
     "track": "computer-science",
     "course": "cs210",
     "section": "slides",
     "courseUrl": "/academics/computer-science/cs210/",
-    "courseTitle": "CS210 // Data Structures and Algorithms"
+    "courseTitle": "CS210"
   },
   {
     "url": "/academics/computer-science/cs210/slides/quick-sort/",
-    "title": "CS210 | Quick Sort",
+    "title": "Quick Sort",
     "track": "computer-science",
     "course": "cs210",
     "section": "slides",
     "courseUrl": "/academics/computer-science/cs210/",
-    "courseTitle": "CS210 // Data Structures and Algorithms"
+    "courseTitle": "CS210"
   },
   {
     "url": "/academics/computer-science/cs210/slides/recursion/",
-    "title": "CS210 | Recursion",
+    "title": "Recursion",
     "track": "computer-science",
     "course": "cs210",
     "section": "slides",
     "courseUrl": "/academics/computer-science/cs210/",
-    "courseTitle": "CS210 // Data Structures and Algorithms"
+    "courseTitle": "CS210"
   },
   {
     "url": "/academics/computer-science/cs210/slides/stacks-and-queues/",
-    "title": "CS210 | Stacks And Queues",
+    "title": "Stacks And Queues",
     "track": "computer-science",
     "course": "cs210",
     "section": "slides",
     "courseUrl": "/academics/computer-science/cs210/",
-    "courseTitle": "CS210 // Data Structures and Algorithms"
+    "courseTitle": "CS210"
   },
   {
     "url": "/academics/computer-science/cs210/slides/trees/",
-    "title": "CS210 | Trees",
+    "title": "Trees",
     "track": "computer-science",
     "course": "cs210",
     "section": "slides",
     "courseUrl": "/academics/computer-science/cs210/",
-    "courseTitle": "CS210 // Data Structures and Algorithms"
+    "courseTitle": "CS210"
   },
   {
     "url": "/academics/computer-science/cs210/slides/undirected-graphs/",
-    "title": "CS210 | Undirected Graphs",
+    "title": "Undirected Graphs",
     "track": "computer-science",
     "course": "cs210",
     "section": "slides",
     "courseUrl": "/academics/computer-science/cs210/",
-    "courseTitle": "CS210 // Data Structures and Algorithms"
+    "courseTitle": "CS210"
   },
   {
     "url": "/academics/computer-science/cs285/extra-resources/01-cheat-sheet/",
-    "title": "CS285 | Cheat Sheet",
+    "title": "Cheat Sheet",
     "track": "computer-science",
     "course": "cs285",
     "section": "extra-resources",
     "courseUrl": "/academics/computer-science/cs285/",
-    "courseTitle": "CS285 // Discrete Math for Computing"
+    "courseTitle": "CS285"
   },
   {
     "url": "/academics/computer-science/cs285/slide-breakdowns/01-chapter-1-the-foundations-logic-sets-and-functions/",
-    "title": "CS285 | Breakdown: Chapter 1 The Foundations: Logic, Sets, and Functions",
+    "title": "Chapter 1 The Foundations Logic Sets And Functions",
     "track": "computer-science",
     "course": "cs285",
     "section": "slide-breakdowns",
     "courseUrl": "/academics/computer-science/cs285/",
-    "courseTitle": "CS285 // Discrete Math for Computing"
+    "courseTitle": "CS285"
   },
   {
     "url": "/academics/computer-science/cs285/slide-breakdowns/02-chapter-2-basic-structures-sets-functions-sequences-and-sums/",
-    "title": "CS285 | Breakdown: Chapter 2 Basic Structures: Sets, Functions, Sequences, and Sums",
+    "title": "Chapter 2 Basic Structures Sets Functions Sequences And Sums",
     "track": "computer-science",
     "course": "cs285",
     "section": "slide-breakdowns",
     "courseUrl": "/academics/computer-science/cs285/",
-    "courseTitle": "CS285 // Discrete Math for Computing"
+    "courseTitle": "CS285"
   },
   {
     "url": "/academics/computer-science/cs285/slide-breakdowns/03-chapter-4-number-theory-and-cryptography/",
-    "title": "CS285 | Breakdown: Chapter 4 Number Theory and Cryptography",
+    "title": "Chapter 4 Number Theory And Cryptography",
     "track": "computer-science",
     "course": "cs285",
     "section": "slide-breakdowns",
     "courseUrl": "/academics/computer-science/cs285/",
-    "courseTitle": "CS285 // Discrete Math for Computing"
+    "courseTitle": "CS285"
   },
   {
     "url": "/academics/computer-science/cs285/slide-breakdowns/04-chapter-5-mathematical-induction-and-recursion/",
-    "title": "CS285 | Breakdown: Chapter 5 Mathematical Induction and Recursion",
+    "title": "Chapter 5 Mathematical Induction And Recursion",
     "track": "computer-science",
     "course": "cs285",
     "section": "slide-breakdowns",
     "courseUrl": "/academics/computer-science/cs285/",
-    "courseTitle": "CS285 // Discrete Math for Computing"
+    "courseTitle": "CS285"
   },
   {
     "url": "/academics/computer-science/cs285/slide-breakdowns/05-chapter-6-counting/",
-    "title": "CS285 | Breakdown: Chapter 6 Counting",
+    "title": "Chapter 6 Counting",
     "track": "computer-science",
     "course": "cs285",
     "section": "slide-breakdowns",
     "courseUrl": "/academics/computer-science/cs285/",
-    "courseTitle": "CS285 // Discrete Math for Computing"
+    "courseTitle": "CS285"
   },
   {
     "url": "/academics/computer-science/cs285/slide-breakdowns/06-chapter-8-advanced-counting-techniques/",
-    "title": "CS285 | Breakdown: Chapter 8 Advanced Counting Techniques",
+    "title": "Chapter 8 Advanced Counting Techniques",
     "track": "computer-science",
     "course": "cs285",
     "section": "slide-breakdowns",
     "courseUrl": "/academics/computer-science/cs285/",
-    "courseTitle": "CS285 // Discrete Math for Computing"
+    "courseTitle": "CS285"
   },
   {
     "url": "/academics/computer-science/cs285/slide-breakdowns/07-chapter-9-relations/",
-    "title": "CS285 | Breakdown: Chapter 9 Relations",
+    "title": "Chapter 9 Relations",
     "track": "computer-science",
     "course": "cs285",
     "section": "slide-breakdowns",
     "courseUrl": "/academics/computer-science/cs285/",
-    "courseTitle": "CS285 // Discrete Math for Computing"
+    "courseTitle": "CS285"
   },
   {
     "url": "/academics/computer-science/cs285/slides/chapter-1-logic-and-proofs/",
@@ -530,7 +530,7 @@ var COURSE_PAGES = [
     "course": "cs285",
     "section": "slides",
     "courseUrl": "/academics/computer-science/cs285/",
-    "courseTitle": "CS285 // Discrete Math for Computing"
+    "courseTitle": "CS285"
   },
   {
     "url": "/academics/computer-science/cs285/slides/chapter-2-basic-structures/",
@@ -539,7 +539,7 @@ var COURSE_PAGES = [
     "course": "cs285",
     "section": "slides",
     "courseUrl": "/academics/computer-science/cs285/",
-    "courseTitle": "CS285 // Discrete Math for Computing"
+    "courseTitle": "CS285"
   },
   {
     "url": "/academics/computer-science/cs285/slides/chapter-4-number-theory-and-cryptography/",
@@ -548,7 +548,7 @@ var COURSE_PAGES = [
     "course": "cs285",
     "section": "slides",
     "courseUrl": "/academics/computer-science/cs285/",
-    "courseTitle": "CS285 // Discrete Math for Computing"
+    "courseTitle": "CS285"
   },
   {
     "url": "/academics/computer-science/cs285/slides/chapter-5-induction-and-recursion-handout/",
@@ -557,7 +557,7 @@ var COURSE_PAGES = [
     "course": "cs285",
     "section": "slides",
     "courseUrl": "/academics/computer-science/cs285/",
-    "courseTitle": "CS285 // Discrete Math for Computing"
+    "courseTitle": "CS285"
   },
   {
     "url": "/academics/computer-science/cs285/slides/chapter-5-mathematical-induction-and-recursion/",
@@ -566,25 +566,25 @@ var COURSE_PAGES = [
     "course": "cs285",
     "section": "slides",
     "courseUrl": "/academics/computer-science/cs285/",
-    "courseTitle": "CS285 // Discrete Math for Computing"
+    "courseTitle": "CS285"
   },
   {
     "url": "/academics/computer-science/cs285/slides/chapter-6-counting/",
-    "title": "CS285 | Chapter 6 Counting",
+    "title": "Chapter 6 Counting",
     "track": "computer-science",
     "course": "cs285",
     "section": "slides",
     "courseUrl": "/academics/computer-science/cs285/",
-    "courseTitle": "CS285 // Discrete Math for Computing"
+    "courseTitle": "CS285"
   },
   {
     "url": "/academics/computer-science/cs285/slides/chapter-8-advanced-counting-techniques/",
-    "title": "CS285 | Chapter 8 Advanced Counting Techniques",
+    "title": "Chapter 8 Advanced Counting Techniques",
     "track": "computer-science",
     "course": "cs285",
     "section": "slides",
     "courseUrl": "/academics/computer-science/cs285/",
-    "courseTitle": "CS285 // Discrete Math for Computing"
+    "courseTitle": "CS285"
   },
   {
     "url": "/academics/computer-science/cs285/slides/chapter-9-relations/",
@@ -593,25 +593,25 @@ var COURSE_PAGES = [
     "course": "cs285",
     "section": "slides",
     "courseUrl": "/academics/computer-science/cs285/",
-    "courseTitle": "CS285 // Discrete Math for Computing"
+    "courseTitle": "CS285"
   },
   {
     "url": "/academics/computer-science/cs330/extra-resources/01-cheat-sheet/",
-    "title": "CS330 | Cheat Sheet",
+    "title": "Cheat Sheet",
     "track": "computer-science",
     "course": "cs330",
     "section": "extra-resources",
     "courseUrl": "/academics/computer-science/cs330/",
-    "courseTitle": "CS330 // Introduction to Operating Systems"
+    "courseTitle": "CS330"
   },
   {
     "url": "/academics/computer-science/cs330/extra-resources/02-full-cheat-sheet/",
-    "title": "CS330 | Full Cheat Sheet",
+    "title": "Full Cheat Sheet",
     "track": "computer-science",
     "course": "cs330",
     "section": "extra-resources",
     "courseUrl": "/academics/computer-science/cs330/",
-    "courseTitle": "CS330 // Introduction to Operating Systems"
+    "courseTitle": "CS330"
   },
   {
     "url": "/academics/computer-science/cs330/extra-resources/03-summary/",
@@ -620,7 +620,7 @@ var COURSE_PAGES = [
     "course": "cs330",
     "section": "extra-resources",
     "courseUrl": "/academics/computer-science/cs330/",
-    "courseTitle": "CS330 // Introduction to Operating Systems"
+    "courseTitle": "CS330"
   },
   {
     "url": "/academics/computer-science/cs330/extra-resources/04-computer-components/",
@@ -629,7 +629,7 @@ var COURSE_PAGES = [
     "course": "cs330",
     "section": "extra-resources",
     "courseUrl": "/academics/computer-science/cs330/",
-    "courseTitle": "CS330 // Introduction to Operating Systems"
+    "courseTitle": "CS330"
   },
   {
     "url": "/academics/computer-science/cs330/extra-resources/05-formulas/",
@@ -638,16 +638,16 @@ var COURSE_PAGES = [
     "course": "cs330",
     "section": "extra-resources",
     "courseUrl": "/academics/computer-science/cs330/",
-    "courseTitle": "CS330 // Introduction to Operating Systems"
+    "courseTitle": "CS330"
   },
   {
     "url": "/academics/computer-science/cs330/quizzes/01-chapter-1-quiz/",
-    "title": "CS330 | Chapter 1 Quiz",
+    "title": "Chapter 1 Quiz",
     "track": "computer-science",
     "course": "cs330",
     "section": "quizzes",
     "courseUrl": "/academics/computer-science/cs330/",
-    "courseTitle": "CS330 // Introduction to Operating Systems"
+    "courseTitle": "CS330"
   },
   {
     "url": "/academics/computer-science/cs330/quizzes/02-chapter-2-quiz/",
@@ -656,7 +656,7 @@ var COURSE_PAGES = [
     "course": "cs330",
     "section": "quizzes",
     "courseUrl": "/academics/computer-science/cs330/",
-    "courseTitle": "CS330 // Introduction to Operating Systems"
+    "courseTitle": "CS330"
   },
   {
     "url": "/academics/computer-science/cs330/quizzes/03-chapter-3-quiz/",
@@ -665,7 +665,7 @@ var COURSE_PAGES = [
     "course": "cs330",
     "section": "quizzes",
     "courseUrl": "/academics/computer-science/cs330/",
-    "courseTitle": "CS330 // Introduction to Operating Systems"
+    "courseTitle": "CS330"
   },
   {
     "url": "/academics/computer-science/cs330/quizzes/04-chapter-4-quiz/",
@@ -674,7 +674,7 @@ var COURSE_PAGES = [
     "course": "cs330",
     "section": "quizzes",
     "courseUrl": "/academics/computer-science/cs330/",
-    "courseTitle": "CS330 // Introduction to Operating Systems"
+    "courseTitle": "CS330"
   },
   {
     "url": "/academics/computer-science/cs330/quizzes/05-chapter-5-quiz/",
@@ -683,16 +683,16 @@ var COURSE_PAGES = [
     "course": "cs330",
     "section": "quizzes",
     "courseUrl": "/academics/computer-science/cs330/",
-    "courseTitle": "CS330 // Introduction to Operating Systems"
+    "courseTitle": "CS330"
   },
   {
     "url": "/academics/computer-science/cs330/quizzes/06-chapter-6-quiz/",
-    "title": "CS330 | Chapter 6 Quiz",
+    "title": "Chapter 6 Quiz",
     "track": "computer-science",
     "course": "cs330",
     "section": "quizzes",
     "courseUrl": "/academics/computer-science/cs330/",
-    "courseTitle": "CS330 // Introduction to Operating Systems"
+    "courseTitle": "CS330"
   },
   {
     "url": "/academics/computer-science/cs330/quizzes/07-chapter-8-quiz/",
@@ -701,7 +701,7 @@ var COURSE_PAGES = [
     "course": "cs330",
     "section": "quizzes",
     "courseUrl": "/academics/computer-science/cs330/",
-    "courseTitle": "CS330 // Introduction to Operating Systems"
+    "courseTitle": "CS330"
   },
   {
     "url": "/academics/computer-science/cs330/quizzes/08-quiz-1-ch-1-and-2/",
@@ -710,52 +710,52 @@ var COURSE_PAGES = [
     "course": "cs330",
     "section": "quizzes",
     "courseUrl": "/academics/computer-science/cs330/",
-    "courseTitle": "CS330 // Introduction to Operating Systems"
+    "courseTitle": "CS330"
   },
   {
     "url": "/academics/computer-science/cs330/slide-breakdowns/01-chapter-1-introduction-to-operating-systems/",
-    "title": "CS330 | Breakdown: Chapter 1 Introduction to Operating Systems",
+    "title": "Chapter 1 Introduction To Operating Systems",
     "track": "computer-science",
     "course": "cs330",
     "section": "slide-breakdowns",
     "courseUrl": "/academics/computer-science/cs330/",
-    "courseTitle": "CS330 // Introduction to Operating Systems"
+    "courseTitle": "CS330"
   },
   {
     "url": "/academics/computer-science/cs330/slide-breakdowns/02-chapter-2-operating-system-services/",
-    "title": "CS330 | Breakdown: Chapter 2 Operating System Services",
+    "title": "Chapter 2 Operating System Services",
     "track": "computer-science",
     "course": "cs330",
     "section": "slide-breakdowns",
     "courseUrl": "/academics/computer-science/cs330/",
-    "courseTitle": "CS330 // Introduction to Operating Systems"
+    "courseTitle": "CS330"
   },
   {
     "url": "/academics/computer-science/cs330/slide-breakdowns/03-chapter-3-process-management/",
-    "title": "CS330 | Breakdown: Chapter 3 Process Management",
+    "title": "Chapter 3 Process Management",
     "track": "computer-science",
     "course": "cs330",
     "section": "slide-breakdowns",
     "courseUrl": "/academics/computer-science/cs330/",
-    "courseTitle": "CS330 // Introduction to Operating Systems"
+    "courseTitle": "CS330"
   },
   {
     "url": "/academics/computer-science/cs330/slide-breakdowns/04-chapter-4-threads/",
-    "title": "CS330 | Breakdown: Chapter 4 Threads",
+    "title": "Chapter 4 Threads",
     "track": "computer-science",
     "course": "cs330",
     "section": "slide-breakdowns",
     "courseUrl": "/academics/computer-science/cs330/",
-    "courseTitle": "CS330 // Introduction to Operating Systems"
+    "courseTitle": "CS330"
   },
   {
     "url": "/academics/computer-science/cs330/slide-breakdowns/05-chapter-5-cpu-scheduling/",
-    "title": "CS330 | Breakdown: Chapter 5 CPU Scheduling",
+    "title": "Chapter 5 Cpu Scheduling",
     "track": "computer-science",
     "course": "cs330",
     "section": "slide-breakdowns",
     "courseUrl": "/academics/computer-science/cs330/",
-    "courseTitle": "CS330 // Introduction to Operating Systems"
+    "courseTitle": "CS330"
   },
   {
     "url": "/academics/computer-science/cs330/slide-breakdowns/06-chapter-6-synchronization/",
@@ -764,43 +764,43 @@ var COURSE_PAGES = [
     "course": "cs330",
     "section": "slide-breakdowns",
     "courseUrl": "/academics/computer-science/cs330/",
-    "courseTitle": "CS330 // Introduction to Operating Systems"
+    "courseTitle": "CS330"
   },
   {
     "url": "/academics/computer-science/cs330/slide-breakdowns/07-supplement-deadlocks-textbook-chapter-7/",
-    "title": "CS330 | Breakdown: Supplement Deadlocks (Textbook Chapter 7)",
+    "title": "Supplement Deadlocks Textbook Chapter 7",
     "track": "computer-science",
     "course": "cs330",
     "section": "slide-breakdowns",
     "courseUrl": "/academics/computer-science/cs330/",
-    "courseTitle": "CS330 // Introduction to Operating Systems"
+    "courseTitle": "CS330"
   },
   {
     "url": "/academics/computer-science/cs330/slide-breakdowns/08-chapter-8-memory-management/",
-    "title": "CS330 | Breakdown: Chapter 8 Memory Management",
+    "title": "Chapter 8 Memory Management",
     "track": "computer-science",
     "course": "cs330",
     "section": "slide-breakdowns",
     "courseUrl": "/academics/computer-science/cs330/",
-    "courseTitle": "CS330 // Introduction to Operating Systems"
+    "courseTitle": "CS330"
   },
   {
     "url": "/academics/computer-science/cs330/slide-breakdowns/09-chapter-9-virtual-memory/",
-    "title": "CS330 | Breakdown: Chapter 9 Virtual Memory",
+    "title": "Chapter 9 Virtual Memory",
     "track": "computer-science",
     "course": "cs330",
     "section": "slide-breakdowns",
     "courseUrl": "/academics/computer-science/cs330/",
-    "courseTitle": "CS330 // Introduction to Operating Systems"
+    "courseTitle": "CS330"
   },
   {
     "url": "/academics/computer-science/cs330/slide-breakdowns/10-chapter-10-mass-storage-structure/",
-    "title": "CS330 | Breakdown: Chapter 10 Mass Storage Structure",
+    "title": "Chapter 10 Mass Storage Structure",
     "track": "computer-science",
     "course": "cs330",
     "section": "slide-breakdowns",
     "courseUrl": "/academics/computer-science/cs330/",
-    "courseTitle": "CS330 // Introduction to Operating Systems"
+    "courseTitle": "CS330"
   },
   {
     "url": "/academics/computer-science/cs330/slide-breakdowns/11-chapter-11-file-system-interface/",
@@ -809,34 +809,34 @@ var COURSE_PAGES = [
     "course": "cs330",
     "section": "slide-breakdowns",
     "courseUrl": "/academics/computer-science/cs330/",
-    "courseTitle": "CS330 // Introduction to Operating Systems"
+    "courseTitle": "CS330"
   },
   {
     "url": "/academics/computer-science/cs330/slide-breakdowns/12-chapter-12-file-system-implementation/",
-    "title": "CS330 | Breakdown: Chapter 12 File-System Implementation",
+    "title": "Chapter 12 File System Implementation",
     "track": "computer-science",
     "course": "cs330",
     "section": "slide-breakdowns",
     "courseUrl": "/academics/computer-science/cs330/",
-    "courseTitle": "CS330 // Introduction to Operating Systems"
+    "courseTitle": "CS330"
   },
   {
     "url": "/academics/computer-science/cs330/slides/chapter-1-introduction-to-operating-systems/",
-    "title": "CS330 | Chapter 1 Introduction To Operating Systems",
+    "title": "Chapter 1 Introduction To Operating Systems",
     "track": "computer-science",
     "course": "cs330",
     "section": "slides",
     "courseUrl": "/academics/computer-science/cs330/",
-    "courseTitle": "CS330 // Introduction to Operating Systems"
+    "courseTitle": "CS330"
   },
   {
     "url": "/academics/computer-science/cs330/slides/chapter-11-file-system-interface/",
-    "title": "CS330 | Chapter 11 File System Interface",
+    "title": "Chapter 11 File System Interface",
     "track": "computer-science",
     "course": "cs330",
     "section": "slides",
     "courseUrl": "/academics/computer-science/cs330/",
-    "courseTitle": "CS330 // Introduction to Operating Systems"
+    "courseTitle": "CS330"
   },
   {
     "url": "/academics/computer-science/cs330/slides/chapter-12-file-system-implementation/",
@@ -845,16 +845,16 @@ var COURSE_PAGES = [
     "course": "cs330",
     "section": "slides",
     "courseUrl": "/academics/computer-science/cs330/",
-    "courseTitle": "CS330 // Introduction to Operating Systems"
+    "courseTitle": "CS330"
   },
   {
     "url": "/academics/computer-science/cs330/slides/chapter-2-operating-system-services/",
-    "title": "CS330 | Chapter 2 Operating System Services",
+    "title": "Chapter 2 Operating System Services",
     "track": "computer-science",
     "course": "cs330",
     "section": "slides",
     "courseUrl": "/academics/computer-science/cs330/",
-    "courseTitle": "CS330 // Introduction to Operating Systems"
+    "courseTitle": "CS330"
   },
   {
     "url": "/academics/computer-science/cs330/slides/chapter-3-process-management/",
@@ -863,52 +863,52 @@ var COURSE_PAGES = [
     "course": "cs330",
     "section": "slides",
     "courseUrl": "/academics/computer-science/cs330/",
-    "courseTitle": "CS330 // Introduction to Operating Systems"
+    "courseTitle": "CS330"
   },
   {
     "url": "/academics/computer-science/cs330/slides/chapter-4-threads/",
-    "title": "CS330 | Chapter 4 Threads",
+    "title": "Chapter 4 Threads",
     "track": "computer-science",
     "course": "cs330",
     "section": "slides",
     "courseUrl": "/academics/computer-science/cs330/",
-    "courseTitle": "CS330 // Introduction to Operating Systems"
+    "courseTitle": "CS330"
   },
   {
     "url": "/academics/computer-science/cs330/slides/chapter-5-cpu-scheduling/",
-    "title": "CS330 | Chapter 5 Cpu Scheduling",
+    "title": "Chapter 5 Cpu Scheduling",
     "track": "computer-science",
     "course": "cs330",
     "section": "slides",
     "courseUrl": "/academics/computer-science/cs330/",
-    "courseTitle": "CS330 // Introduction to Operating Systems"
+    "courseTitle": "CS330"
   },
   {
     "url": "/academics/computer-science/cs330/slides/chapter-6-synchronization/",
-    "title": "CS330 | Chapter 6 Synchronization",
+    "title": "Chapter 6 Synchronization",
     "track": "computer-science",
     "course": "cs330",
     "section": "slides",
     "courseUrl": "/academics/computer-science/cs330/",
-    "courseTitle": "CS330 // Introduction to Operating Systems"
+    "courseTitle": "CS330"
   },
   {
     "url": "/academics/computer-science/cs330/slides/chapter-8-memory-management/",
-    "title": "CS330 | Chapter 8 Memory Management",
+    "title": "Chapter 8 Memory Management",
     "track": "computer-science",
     "course": "cs330",
     "section": "slides",
     "courseUrl": "/academics/computer-science/cs330/",
-    "courseTitle": "CS330 // Introduction to Operating Systems"
+    "courseTitle": "CS330"
   },
   {
     "url": "/academics/computer-science/cs330/slides/chapter-9-virtual-memory/",
-    "title": "CS330 | Chapter 9 Virtual Memory",
+    "title": "Chapter 9 Virtual Memory",
     "track": "computer-science",
     "course": "cs330",
     "section": "slides",
     "courseUrl": "/academics/computer-science/cs330/",
-    "courseTitle": "CS330 // Introduction to Operating Systems"
+    "courseTitle": "CS330"
   },
   {
     "url": "/academics/computer-science/cs331/extra-resources/mindmap/01-cs331-complete-course-mind-map/",
@@ -957,7 +957,7 @@ var COURSE_PAGES = [
   },
   {
     "url": "/academics/computer-science/cs331/extra-resources/mindmap/05-dns-and-application-layer-mind-map/",
-    "title": "CS331 | DNS and Application Layer Mindmap",
+    "title": "Dns And Application Layer Mind Map",
     "track": "computer-science",
     "course": "cs331",
     "section": "extra-resources",
@@ -966,7 +966,7 @@ var COURSE_PAGES = [
   },
   {
     "url": "/academics/computer-science/cs331/extra-resources/mindmap/06-ethernet-and-lans-mind-map/",
-    "title": "CS331 | Ethernet and LANs Mindmap",
+    "title": "Ethernet And Lans Mind Map",
     "track": "computer-science",
     "course": "cs331",
     "section": "extra-resources",
@@ -975,7 +975,7 @@ var COURSE_PAGES = [
   },
   {
     "url": "/academics/computer-science/cs331/extra-resources/mindmap/07-interconnecting-devices-and-vlans-mind-map/",
-    "title": "CS331 | Interconnecting Devices and VLANs Mindmap",
+    "title": "Interconnecting Devices And Vlans Mind Map",
     "track": "computer-science",
     "course": "cs331",
     "section": "extra-resources",
@@ -984,7 +984,7 @@ var COURSE_PAGES = [
   },
   {
     "url": "/academics/computer-science/cs331/extra-resources/mindmap/08-network-layer-data-transfer-mind-map/",
-    "title": "CS331 | Network Layer Data Transfer Mindmap",
+    "title": "Network Layer Data Transfer Mind Map",
     "track": "computer-science",
     "course": "cs331",
     "section": "extra-resources",
@@ -993,7 +993,7 @@ var COURSE_PAGES = [
   },
   {
     "url": "/academics/computer-science/cs331/extra-resources/mindmap/09-network-layer-routing-mind-map/",
-    "title": "CS331 | Network Layer Routing Mindmap",
+    "title": "Network Layer Routing Mind Map",
     "track": "computer-science",
     "course": "cs331",
     "section": "extra-resources",
@@ -1002,7 +1002,7 @@ var COURSE_PAGES = [
   },
   {
     "url": "/academics/computer-science/cs331/extra-resources/mindmap/10-protocol-layering-and-network-models-mind-map/",
-    "title": "CS331 | Protocol Layering and Network Models Mindmap",
+    "title": "Protocol Layering And Network Models Mind Map",
     "track": "computer-science",
     "course": "cs331",
     "section": "extra-resources",
@@ -1011,7 +1011,7 @@ var COURSE_PAGES = [
   },
   {
     "url": "/academics/computer-science/cs331/extra-resources/mindmap/11-transport-layer-mind-map/",
-    "title": "CS331 | Transport Layer Mindmap",
+    "title": "Transport Layer Mind Map",
     "track": "computer-science",
     "course": "cs331",
     "section": "extra-resources",
@@ -1047,7 +1047,7 @@ var COURSE_PAGES = [
   },
   {
     "url": "/academics/computer-science/cs331/slide-breakdowns/02-data-link-layer-control/",
-    "title": "CS331 | Breakdown: Data Link Layer Control",
+    "title": "Data Link Layer Control",
     "track": "computer-science",
     "course": "cs331",
     "section": "slide-breakdowns",
@@ -1065,7 +1065,7 @@ var COURSE_PAGES = [
   },
   {
     "url": "/academics/computer-science/cs331/slide-breakdowns/04-dns-and-application-layer/",
-    "title": "CS331 | Breakdown: DNS and Application Layer",
+    "title": "Dns And Application Layer",
     "track": "computer-science",
     "course": "cs331",
     "section": "slide-breakdowns",
@@ -1083,7 +1083,7 @@ var COURSE_PAGES = [
   },
   {
     "url": "/academics/computer-science/cs331/slide-breakdowns/06-interconnecting-devices-and-vlans/",
-    "title": "CS331 | Breakdown: Interconnecting Devices and VLANs",
+    "title": "Interconnecting Devices And Vlans",
     "track": "computer-science",
     "course": "cs331",
     "section": "slide-breakdowns",
@@ -1101,7 +1101,7 @@ var COURSE_PAGES = [
   },
   {
     "url": "/academics/computer-science/cs331/slide-breakdowns/08-network-layer-routing/",
-    "title": "CS331 | Breakdown: Network Layer Routing",
+    "title": "Network Layer Routing",
     "track": "computer-science",
     "course": "cs331",
     "section": "slide-breakdowns",
@@ -1245,7 +1245,7 @@ var COURSE_PAGES = [
   },
   {
     "url": "/academics/computer-science/cs331/slides/chapter-1-data-communications-and-networking-part-1/",
-    "title": "CS331 | Chapter 1 Data Communications And Networking Part 1",
+    "title": "Chapter 1 Data Communications And Networking Part 1",
     "track": "computer-science",
     "course": "cs331",
     "section": "slides",
@@ -1263,7 +1263,7 @@ var COURSE_PAGES = [
   },
   {
     "url": "/academics/computer-science/cs331/slides/data-link-layer-part-1/",
-    "title": "CS331 | Data Link Layer Part 1",
+    "title": "Data Link Layer Part 1",
     "track": "computer-science",
     "course": "cs331",
     "section": "slides",
@@ -1272,7 +1272,7 @@ var COURSE_PAGES = [
   },
   {
     "url": "/academics/computer-science/cs331/slides/data-link-layer-part-2/",
-    "title": "CS331 | Data Link Layer Part 2",
+    "title": "Data Link Layer Part 2",
     "track": "computer-science",
     "course": "cs331",
     "section": "slides",
@@ -1281,7 +1281,7 @@ var COURSE_PAGES = [
   },
   {
     "url": "/academics/computer-science/cs331/slides/ethernet/",
-    "title": "CS331 | Ethernet",
+    "title": "Ethernet",
     "track": "computer-science",
     "course": "cs331",
     "section": "slides",
@@ -1290,7 +1290,7 @@ var COURSE_PAGES = [
   },
   {
     "url": "/academics/computer-science/cs331/slides/interconnecting-devices/",
-    "title": "CS331 | Interconnecting Devices",
+    "title": "Interconnecting Devices",
     "track": "computer-science",
     "course": "cs331",
     "section": "slides",
@@ -1299,7 +1299,7 @@ var COURSE_PAGES = [
   },
   {
     "url": "/academics/computer-science/cs331/slides/network-layer-part-1/",
-    "title": "CS331 | Network Layer Part 1",
+    "title": "Network Layer Part 1",
     "track": "computer-science",
     "course": "cs331",
     "section": "slides",
@@ -1308,7 +1308,7 @@ var COURSE_PAGES = [
   },
   {
     "url": "/academics/computer-science/cs331/slides/network-layer-part-2/",
-    "title": "CS331 | Network Layer Part 2",
+    "title": "Network Layer Part 2",
     "track": "computer-science",
     "course": "cs331",
     "section": "slides",
@@ -1317,7 +1317,7 @@ var COURSE_PAGES = [
   },
   {
     "url": "/academics/computer-science/cs331/slides/transport-layer/",
-    "title": "CS331 | Transport Layer",
+    "title": "Transport Layer",
     "track": "computer-science",
     "course": "cs331",
     "section": "slides",
@@ -1326,75 +1326,75 @@ var COURSE_PAGES = [
   },
   {
     "url": "/academics/computer-science/cs340/extra-resources/01-cheat-sheet/",
-    "title": "CS340 | Cheat Sheet",
+    "title": "Cheat Sheet",
     "track": "computer-science",
     "course": "cs340",
     "section": "extra-resources",
     "courseUrl": "/academics/computer-science/cs340/",
-    "courseTitle": "CS340 // Introduction to Database Systems"
+    "courseTitle": "CS340"
   },
   {
     "url": "/academics/computer-science/cs340/extra-resources/02-symbols/",
-    "title": "CS340 | Symbols",
+    "title": "Symbols",
     "track": "computer-science",
     "course": "cs340",
     "section": "extra-resources",
     "courseUrl": "/academics/computer-science/cs340/",
-    "courseTitle": "CS340 // Introduction to Database Systems"
+    "courseTitle": "CS340"
   },
   {
     "url": "/academics/computer-science/cs340/extra-resources/03-chapter-5-cheat-sheet/",
-    "title": "CS340 | Chapter 5 Cheat Sheet",
+    "title": "Chapter 5 Cheat Sheet",
     "track": "computer-science",
     "course": "cs340",
     "section": "extra-resources",
     "courseUrl": "/academics/computer-science/cs340/",
-    "courseTitle": "CS340 // Introduction to Database Systems"
+    "courseTitle": "CS340"
   },
   {
     "url": "/academics/computer-science/cs340/extra-resources/04-summary/",
-    "title": "CS340 | Summary",
+    "title": "Summary",
     "track": "computer-science",
     "course": "cs340",
     "section": "extra-resources",
     "courseUrl": "/academics/computer-science/cs340/",
-    "courseTitle": "CS340 // Introduction to Database Systems"
+    "courseTitle": "CS340"
   },
   {
     "url": "/academics/computer-science/cs340/extra-resources/mindmap/01-chapter-1-mind-map/",
-    "title": "CS340 | Chapter 1 Mindmap",
+    "title": "Chapter 1 Mind Map",
     "track": "computer-science",
     "course": "cs340",
     "section": "extra-resources",
     "courseUrl": "/academics/computer-science/cs340/",
-    "courseTitle": "CS340 // Introduction to Database Systems"
+    "courseTitle": "CS340"
   },
   {
     "url": "/academics/computer-science/cs340/extra-resources/mindmap/02-chapter-2-mind-map/",
-    "title": "CS340 | Chapter 2 Mindmap",
+    "title": "Chapter 2 Mind Map",
     "track": "computer-science",
     "course": "cs340",
     "section": "extra-resources",
     "courseUrl": "/academics/computer-science/cs340/",
-    "courseTitle": "CS340 // Introduction to Database Systems"
+    "courseTitle": "CS340"
   },
   {
     "url": "/academics/computer-science/cs340/extra-resources/mindmap/03-chapter-3-mind-map/",
-    "title": "CS340 | Chapter 3 Mindmap",
+    "title": "Chapter 3 Mind Map",
     "track": "computer-science",
     "course": "cs340",
     "section": "extra-resources",
     "courseUrl": "/academics/computer-science/cs340/",
-    "courseTitle": "CS340 // Introduction to Database Systems"
+    "courseTitle": "CS340"
   },
   {
     "url": "/academics/computer-science/cs340/extra-resources/mindmap/04-chapter-4-mind-map/",
-    "title": "CS340 | Chapter 4 Mindmap",
+    "title": "Chapter 4 Mind Map",
     "track": "computer-science",
     "course": "cs340",
     "section": "extra-resources",
     "courseUrl": "/academics/computer-science/cs340/",
-    "courseTitle": "CS340 // Introduction to Database Systems"
+    "courseTitle": "CS340"
   },
   {
     "url": "/academics/computer-science/cs340/quizzes/01-chapter-1-quiz/",
@@ -1403,7 +1403,7 @@ var COURSE_PAGES = [
     "course": "cs340",
     "section": "quizzes",
     "courseUrl": "/academics/computer-science/cs340/",
-    "courseTitle": "CS340 // Introduction to Database Systems"
+    "courseTitle": "CS340"
   },
   {
     "url": "/academics/computer-science/cs340/quizzes/02-chapter-2-quiz/",
@@ -1412,16 +1412,16 @@ var COURSE_PAGES = [
     "course": "cs340",
     "section": "quizzes",
     "courseUrl": "/academics/computer-science/cs340/",
-    "courseTitle": "CS340 // Introduction to Database Systems"
+    "courseTitle": "CS340"
   },
   {
     "url": "/academics/computer-science/cs340/quizzes/03-chapter-3-quiz/",
-    "title": "CS340 | Chapter 3 Quiz",
+    "title": "Chapter 3 Quiz",
     "track": "computer-science",
     "course": "cs340",
     "section": "quizzes",
     "courseUrl": "/academics/computer-science/cs340/",
-    "courseTitle": "CS340 // Introduction to Database Systems"
+    "courseTitle": "CS340"
   },
   {
     "url": "/academics/computer-science/cs340/quizzes/04-chapter-4-quiz/",
@@ -1430,16 +1430,16 @@ var COURSE_PAGES = [
     "course": "cs340",
     "section": "quizzes",
     "courseUrl": "/academics/computer-science/cs340/",
-    "courseTitle": "CS340 // Introduction to Database Systems"
+    "courseTitle": "CS340"
   },
   {
     "url": "/academics/computer-science/cs340/quizzes/05-chapter-5-quiz/",
-    "title": "CS340 | Chapter 5 Quiz",
+    "title": "Chapter 5 Quiz",
     "track": "computer-science",
     "course": "cs340",
     "section": "quizzes",
     "courseUrl": "/academics/computer-science/cs340/",
-    "courseTitle": "CS340 // Introduction to Database Systems"
+    "courseTitle": "CS340"
   },
   {
     "url": "/academics/computer-science/cs340/quizzes/06-chapter-7-quiz/",
@@ -1448,16 +1448,16 @@ var COURSE_PAGES = [
     "course": "cs340",
     "section": "quizzes",
     "courseUrl": "/academics/computer-science/cs340/",
-    "courseTitle": "CS340 // Introduction to Database Systems"
+    "courseTitle": "CS340"
   },
   {
     "url": "/academics/computer-science/cs340/quizzes/07-chapter-9-quiz/",
-    "title": "CS340 | Chapter 9 Quiz",
+    "title": "Chapter 9 Quiz",
     "track": "computer-science",
     "course": "cs340",
     "section": "quizzes",
     "courseUrl": "/academics/computer-science/cs340/",
-    "courseTitle": "CS340 // Introduction to Database Systems"
+    "courseTitle": "CS340"
   },
   {
     "url": "/academics/computer-science/cs340/quizzes/08-final-exam-251-practice/",
@@ -1466,16 +1466,16 @@ var COURSE_PAGES = [
     "course": "cs340",
     "section": "quizzes",
     "courseUrl": "/academics/computer-science/cs340/",
-    "courseTitle": "CS340 // Introduction to Database Systems"
+    "courseTitle": "CS340"
   },
   {
     "url": "/academics/computer-science/cs340/quizzes/09-midterm-exam/",
-    "title": "CS340 | Midterm Exam",
+    "title": "Midterm Exam",
     "track": "computer-science",
     "course": "cs340",
     "section": "quizzes",
     "courseUrl": "/academics/computer-science/cs340/",
-    "courseTitle": "CS340 // Introduction to Database Systems"
+    "courseTitle": "CS340"
   },
   {
     "url": "/academics/computer-science/cs340/slide-breakdowns/01-chapter-1-handouts/",
@@ -1484,16 +1484,16 @@ var COURSE_PAGES = [
     "course": "cs340",
     "section": "slide-breakdowns",
     "courseUrl": "/academics/computer-science/cs340/",
-    "courseTitle": "CS340 // Introduction to Database Systems"
+    "courseTitle": "CS340"
   },
   {
     "url": "/academics/computer-science/cs340/slide-breakdowns/02-chapter-1-introduction-to-databases/",
-    "title": "CS340 | Breakdown: Chapter 1 Introduction to Databases",
+    "title": "Chapter 1 Introduction To Databases",
     "track": "computer-science",
     "course": "cs340",
     "section": "slide-breakdowns",
     "courseUrl": "/academics/computer-science/cs340/",
-    "courseTitle": "CS340 // Introduction to Database Systems"
+    "courseTitle": "CS340"
   },
   {
     "url": "/academics/computer-science/cs340/slide-breakdowns/03-chapter-2/",
@@ -1502,7 +1502,7 @@ var COURSE_PAGES = [
     "course": "cs340",
     "section": "slide-breakdowns",
     "courseUrl": "/academics/computer-science/cs340/",
-    "courseTitle": "CS340 // Introduction to Database Systems"
+    "courseTitle": "CS340"
   },
   {
     "url": "/academics/computer-science/cs340/slide-breakdowns/04-chapter-3-data-modeling-using-er-and-eer/",
@@ -1511,16 +1511,16 @@ var COURSE_PAGES = [
     "course": "cs340",
     "section": "slide-breakdowns",
     "courseUrl": "/academics/computer-science/cs340/",
-    "courseTitle": "CS340 // Introduction to Database Systems"
+    "courseTitle": "CS340"
   },
   {
     "url": "/academics/computer-science/cs340/slide-breakdowns/05-chapter-4-the-relational-model/",
-    "title": "CS340 | Breakdown: Chapter 4 The Relational Model",
+    "title": "Chapter 4 The Relational Model",
     "track": "computer-science",
     "course": "cs340",
     "section": "slide-breakdowns",
     "courseUrl": "/academics/computer-science/cs340/",
-    "courseTitle": "CS340 // Introduction to Database Systems"
+    "courseTitle": "CS340"
   },
   {
     "url": "/academics/computer-science/cs340/slide-breakdowns/06-chapter-5-sql-fundamentals/",
@@ -1529,7 +1529,7 @@ var COURSE_PAGES = [
     "course": "cs340",
     "section": "slide-breakdowns",
     "courseUrl": "/academics/computer-science/cs340/",
-    "courseTitle": "CS340 // Introduction to Database Systems"
+    "courseTitle": "CS340"
   },
   {
     "url": "/academics/computer-science/cs340/slide-breakdowns/07-chapter-5-sql-fundamentals/",
@@ -1538,403 +1538,619 @@ var COURSE_PAGES = [
     "course": "cs340",
     "section": "slide-breakdowns",
     "courseUrl": "/academics/computer-science/cs340/",
-    "courseTitle": "CS340 // Introduction to Database Systems"
+    "courseTitle": "CS340"
   },
   {
     "url": "/academics/computer-science/cs340/slide-breakdowns/08-chapter-6-advanced-sql/",
-    "title": "CS340 | Breakdown: Chapter 6 Advanced SQL",
+    "title": "Chapter 6 Advanced Sql",
     "track": "computer-science",
     "course": "cs340",
     "section": "slide-breakdowns",
     "courseUrl": "/academics/computer-science/cs340/",
-    "courseTitle": "CS340 // Introduction to Database Systems"
+    "courseTitle": "CS340"
   },
   {
     "url": "/academics/computer-science/cs340/slide-breakdowns/09-chapter-7-database-design-and-normalization/",
-    "title": "CS340 | Breakdown: Chapter 7 Database Design and Normalization",
+    "title": "Chapter 7 Database Design And Normalization",
     "track": "computer-science",
     "course": "cs340",
     "section": "slide-breakdowns",
     "courseUrl": "/academics/computer-science/cs340/",
-    "courseTitle": "CS340 // Introduction to Database Systems"
+    "courseTitle": "CS340"
   },
   {
     "url": "/academics/computer-science/cs340/slide-breakdowns/10-chapter-9-er-to-relational-mapping/",
-    "title": "CS340 | Breakdown: Chapter 9 ER to Relational Mapping",
+    "title": "Chapter 9 Er To Relational Mapping",
     "track": "computer-science",
     "course": "cs340",
     "section": "slide-breakdowns",
     "courseUrl": "/academics/computer-science/cs340/",
-    "courseTitle": "CS340 // Introduction to Database Systems"
+    "courseTitle": "CS340"
   },
   {
     "url": "/academics/computer-science/cs340/slides/chapter-1-introduction-to-databases/",
-    "title": "CS340 | Chapter 1 Introduction To Databases",
+    "title": "Chapter 1 Introduction To Databases",
     "track": "computer-science",
     "course": "cs340",
     "section": "slides",
     "courseUrl": "/academics/computer-science/cs340/",
-    "courseTitle": "CS340 // Introduction to Database Systems"
+    "courseTitle": "CS340"
   },
   {
     "url": "/academics/computer-science/cs340/slides/chapter-10-nosql-and-object-oriented-databases/",
-    "title": "CS340 | Chapter 10 Nosql And Object Oriented Databases",
+    "title": "Chapter 10 Nosql And Object Oriented Databases",
     "track": "computer-science",
     "course": "cs340",
     "section": "slides",
     "courseUrl": "/academics/computer-science/cs340/",
-    "courseTitle": "CS340 // Introduction to Database Systems"
+    "courseTitle": "CS340"
   },
   {
     "url": "/academics/computer-science/cs340/slides/chapter-2-database-system-concepts-and-architecture/",
-    "title": "CS340 | Chapter 2 Database System Concepts And Architecture",
+    "title": "Chapter 2 Database System Concepts And Architecture",
     "track": "computer-science",
     "course": "cs340",
     "section": "slides",
     "courseUrl": "/academics/computer-science/cs340/",
-    "courseTitle": "CS340 // Introduction to Database Systems"
+    "courseTitle": "CS340"
   },
   {
     "url": "/academics/computer-science/cs340/slides/chapter-3-data-modeling-using-er-and-eer/",
-    "title": "CS340 | Chapter 3 Data Modeling Using Er And Eer",
+    "title": "Chapter 3 Data Modeling Using Er And Eer",
     "track": "computer-science",
     "course": "cs340",
     "section": "slides",
     "courseUrl": "/academics/computer-science/cs340/",
-    "courseTitle": "CS340 // Introduction to Database Systems"
+    "courseTitle": "CS340"
   },
   {
     "url": "/academics/computer-science/cs340/slides/chapter-4-relational-model/",
-    "title": "CS340 | Chapter 4 Relational Model",
+    "title": "Chapter 4 Relational Model",
     "track": "computer-science",
     "course": "cs340",
     "section": "slides",
     "courseUrl": "/academics/computer-science/cs340/",
-    "courseTitle": "CS340 // Introduction to Database Systems"
+    "courseTitle": "CS340"
   },
   {
     "url": "/academics/computer-science/cs340/slides/chapter-5-er-to-relational-mapping-and-ddl/",
-    "title": "CS340 | Chapter 5 Er To Relational Mapping And Ddl",
+    "title": "Chapter 5 Er To Relational Mapping And Ddl",
     "track": "computer-science",
     "course": "cs340",
     "section": "slides",
     "courseUrl": "/academics/computer-science/cs340/",
-    "courseTitle": "CS340 // Introduction to Database Systems"
+    "courseTitle": "CS340"
   },
   {
     "url": "/academics/computer-science/cs340/slides/chapter-6-basic-sql/",
-    "title": "CS340 | Chapter 6 Basic Sql",
+    "title": "Chapter 6 Basic Sql",
     "track": "computer-science",
     "course": "cs340",
     "section": "slides",
     "courseUrl": "/academics/computer-science/cs340/",
-    "courseTitle": "CS340 // Introduction to Database Systems"
+    "courseTitle": "CS340"
   },
   {
     "url": "/academics/computer-science/cs340/slides/chapter-7-advanced-sql/",
-    "title": "CS340 | Chapter 7 Advanced Sql",
+    "title": "Chapter 7 Advanced Sql",
     "track": "computer-science",
     "course": "cs340",
     "section": "slides",
     "courseUrl": "/academics/computer-science/cs340/",
-    "courseTitle": "CS340 // Introduction to Database Systems"
+    "courseTitle": "CS340"
   },
   {
     "url": "/academics/computer-science/cs340/slides/chapter-9-normalization/",
-    "title": "CS340 | Chapter 9 Normalization",
+    "title": "Chapter 9 Normalization",
     "track": "computer-science",
     "course": "cs340",
     "section": "slides",
     "courseUrl": "/academics/computer-science/cs340/",
-    "courseTitle": "CS340 // Introduction to Database Systems"
+    "courseTitle": "CS340"
   },
   {
     "url": "/academics/cybersecurity/cys401/extra-resources/summary/",
-    "title": "CYS401 Summary",
+    "title": "Summary",
     "track": "cybersecurity",
     "course": "cys401",
     "section": "extra-resources",
     "courseUrl": "/academics/cybersecurity/cys401/",
-    "courseTitle": "CYS401 // Fundamentals of Cybersecurity"
+    "courseTitle": "CYS401"
   },
   {
     "url": "/academics/cybersecurity/cys401/quizzes/01-chapter-1-quiz/",
-    "title": "CYS401 | Chapter 1 Quiz",
+    "title": "Chapter 1 Quiz",
     "track": "cybersecurity",
     "course": "cys401",
     "section": "quizzes",
     "courseUrl": "/academics/cybersecurity/cys401/",
-    "courseTitle": "CYS401 // Fundamentals of Cybersecurity"
+    "courseTitle": "CYS401"
   },
   {
     "url": "/academics/cybersecurity/cys401/quizzes/02-chapter-2-quiz/",
-    "title": "CYS401 | Chapter 2 Quiz",
+    "title": "Chapter 2 Quiz",
     "track": "cybersecurity",
     "course": "cys401",
     "section": "quizzes",
     "courseUrl": "/academics/cybersecurity/cys401/",
-    "courseTitle": "CYS401 // Fundamentals of Cybersecurity"
+    "courseTitle": "CYS401"
   },
   {
     "url": "/academics/cybersecurity/cys401/quizzes/03-chapter-3-quiz/",
-    "title": "CYS401 | Chapter 3 Quiz",
+    "title": "Chapter 3 Quiz",
     "track": "cybersecurity",
     "course": "cys401",
     "section": "quizzes",
     "courseUrl": "/academics/cybersecurity/cys401/",
-    "courseTitle": "CYS401 // Fundamentals of Cybersecurity"
+    "courseTitle": "CYS401"
   },
   {
     "url": "/academics/cybersecurity/cys401/quizzes/04-chapter-4-quiz/",
-    "title": "CYS401 | Chapter 4 Quiz",
+    "title": "Chapter 4 Quiz",
     "track": "cybersecurity",
     "course": "cys401",
     "section": "quizzes",
     "courseUrl": "/academics/cybersecurity/cys401/",
-    "courseTitle": "CYS401 // Fundamentals of Cybersecurity"
+    "courseTitle": "CYS401"
   },
   {
     "url": "/academics/cybersecurity/cys401/quizzes/05-chapter-5-quiz/",
-    "title": "CYS401 | Chapter 5 Quiz",
+    "title": "Chapter 5 Quiz",
     "track": "cybersecurity",
     "course": "cys401",
     "section": "quizzes",
     "courseUrl": "/academics/cybersecurity/cys401/",
-    "courseTitle": "CYS401 // Fundamentals of Cybersecurity"
+    "courseTitle": "CYS401"
   },
   {
     "url": "/academics/cybersecurity/cys401/quizzes/06-chapter-6-quiz/",
-    "title": "CYS401 | Chapter 6 Quiz",
+    "title": "Chapter 6 Quiz",
     "track": "cybersecurity",
     "course": "cys401",
     "section": "quizzes",
     "courseUrl": "/academics/cybersecurity/cys401/",
-    "courseTitle": "CYS401 // Fundamentals of Cybersecurity"
+    "courseTitle": "CYS401"
   },
   {
     "url": "/academics/cybersecurity/cys401/quizzes/07-chapter-7-quiz/",
-    "title": "CYS401 | Chapter 7 Quiz",
+    "title": "Chapter 7 Quiz",
     "track": "cybersecurity",
     "course": "cys401",
     "section": "quizzes",
     "courseUrl": "/academics/cybersecurity/cys401/",
-    "courseTitle": "CYS401 // Fundamentals of Cybersecurity"
+    "courseTitle": "CYS401"
   },
   {
     "url": "/academics/cybersecurity/cys401/slide-breakdowns/01-chapter-1-introduction-to-cybersecurity/",
-    "title": "CYS401 | Breakdown: Chapter 1 Introduction to Cybersecurity",
+    "title": "Chapter 1 Introduction To Cybersecurity",
     "track": "cybersecurity",
     "course": "cys401",
     "section": "slide-breakdowns",
     "courseUrl": "/academics/cybersecurity/cys401/",
-    "courseTitle": "CYS401 // Fundamentals of Cybersecurity"
+    "courseTitle": "CYS401"
   },
   {
     "url": "/academics/cybersecurity/cys401/slide-breakdowns/02-chapter-2-security-foundations-and-principles/",
-    "title": "CYS401 | Breakdown: Chapter 2 Security Foundations and Principles",
+    "title": "Chapter 2 Security Foundations And Principles",
     "track": "cybersecurity",
     "course": "cys401",
     "section": "slide-breakdowns",
     "courseUrl": "/academics/cybersecurity/cys401/",
-    "courseTitle": "CYS401 // Fundamentals of Cybersecurity"
+    "courseTitle": "CYS401"
   },
   {
     "url": "/academics/cybersecurity/cys401/slide-breakdowns/03-chapter-3-threat-modeling/",
-    "title": "CYS401 | Breakdown: Chapter 3 Threat Modeling",
+    "title": "Chapter 3 Threat Modeling",
     "track": "cybersecurity",
     "course": "cys401",
     "section": "slide-breakdowns",
     "courseUrl": "/academics/cybersecurity/cys401/",
-    "courseTitle": "CYS401 // Fundamentals of Cybersecurity"
+    "courseTitle": "CYS401"
   },
   {
     "url": "/academics/cybersecurity/cys401/slide-breakdowns/04-chapter-4-protection-of-information-assets/",
-    "title": "CYS401 | Breakdown: Chapter 4 Protection of Information Assets",
+    "title": "Chapter 4 Protection Of Information Assets",
     "track": "cybersecurity",
     "course": "cys401",
     "section": "slide-breakdowns",
     "courseUrl": "/academics/cybersecurity/cys401/",
-    "courseTitle": "CYS401 // Fundamentals of Cybersecurity"
+    "courseTitle": "CYS401"
   },
   {
     "url": "/academics/cybersecurity/cys401/slide-breakdowns/05-chapter-5-cryptography/",
-    "title": "CYS401 | Breakdown: Chapter 5 Cryptography",
+    "title": "Chapter 5 Cryptography",
     "track": "cybersecurity",
     "course": "cys401",
     "section": "slide-breakdowns",
     "courseUrl": "/academics/cybersecurity/cys401/",
-    "courseTitle": "CYS401 // Fundamentals of Cybersecurity"
+    "courseTitle": "CYS401"
   },
   {
     "url": "/academics/cybersecurity/cys401/slide-breakdowns/06-chapter-6-asymmetric-cryptography-and-pki/",
-    "title": "CYS401 | Breakdown: Chapter 6 Asymmetric Cryptography & PKI",
+    "title": "Chapter 6 Asymmetric Cryptography And Pki",
     "track": "cybersecurity",
     "course": "cys401",
     "section": "slide-breakdowns",
     "courseUrl": "/academics/cybersecurity/cys401/",
-    "courseTitle": "CYS401 // Fundamentals of Cybersecurity"
+    "courseTitle": "CYS401"
   },
   {
     "url": "/academics/cybersecurity/cys401/slide-breakdowns/07-chapter-7-principles-of-security-design-models-and-capabilities/",
-    "title": "CYS401 | Breakdown: Chapter 7 Principles of Security Design, Models, and Capabilities",
+    "title": "Chapter 7 Principles Of Security Design Models And Capabilities",
     "track": "cybersecurity",
     "course": "cys401",
     "section": "slide-breakdowns",
     "courseUrl": "/academics/cybersecurity/cys401/",
-    "courseTitle": "CYS401 // Fundamentals of Cybersecurity"
+    "courseTitle": "CYS401"
   },
   {
     "url": "/academics/cybersecurity/cys401/slide-breakdowns/08-chapter-8-security-vulnerabilities-threats-and-countermeasures/",
-    "title": "CYS401 | Breakdown: Chapter 8 Security Vulnerabilities, Threats, and Countermeasures",
+    "title": "Chapter 8 Security Vulnerabilities Threats And Countermeasures",
     "track": "cybersecurity",
     "course": "cys401",
     "section": "slide-breakdowns",
     "courseUrl": "/academics/cybersecurity/cys401/",
-    "courseTitle": "CYS401 // Fundamentals of Cybersecurity"
+    "courseTitle": "CYS401"
   },
   {
     "url": "/academics/cybersecurity/cys401/slide-breakdowns/09-chapter-9-ics-scada-system-security/",
-    "title": "CYS401 | Breakdown: Chapter 9 ICS/SCADA System Security",
+    "title": "Chapter 9 Ics Scada System Security",
     "track": "cybersecurity",
     "course": "cys401",
     "section": "slide-breakdowns",
     "courseUrl": "/academics/cybersecurity/cys401/",
-    "courseTitle": "CYS401 // Fundamentals of Cybersecurity"
+    "courseTitle": "CYS401"
   },
   {
     "url": "/academics/cybersecurity/cys401/slide-breakdowns/10-chapter-10-authentication-and-access-control/",
-    "title": "CYS401 | Breakdown: Chapter 10 Authentication and Access Control",
+    "title": "Chapter 10 Authentication And Access Control",
     "track": "cybersecurity",
     "course": "cys401",
     "section": "slide-breakdowns",
     "courseUrl": "/academics/cybersecurity/cys401/",
-    "courseTitle": "CYS401 // Fundamentals of Cybersecurity"
+    "courseTitle": "CYS401"
   },
   {
     "url": "/academics/cybersecurity/cys401/slides/chapter-1-introduction-to-cybersecurity/",
-    "title": "CYS401 | Chapter 1 Introduction To Cybersecurity",
+    "title": "Chapter 1 Introduction To Cybersecurity",
     "track": "cybersecurity",
     "course": "cys401",
     "section": "slides",
     "courseUrl": "/academics/cybersecurity/cys401/",
-    "courseTitle": "CYS401 // Fundamentals of Cybersecurity"
+    "courseTitle": "CYS401"
   },
   {
     "url": "/academics/cybersecurity/cys401/slides/chapter-10-ics-and-scada-system-security/",
-    "title": "CYS401 | Chapter 10 Ics And Scada System Security",
+    "title": "Chapter 10 Ics And Scada System Security",
     "track": "cybersecurity",
     "course": "cys401",
     "section": "slides",
     "courseUrl": "/academics/cybersecurity/cys401/",
-    "courseTitle": "CYS401 // Fundamentals of Cybersecurity"
+    "courseTitle": "CYS401"
   },
   {
     "url": "/academics/cybersecurity/cys401/slides/chapter-2-security-foundations-and-principles/",
-    "title": "CYS401 | Chapter 2 Security Foundations And Principles",
+    "title": "Chapter 2 Security Foundations And Principles",
     "track": "cybersecurity",
     "course": "cys401",
     "section": "slides",
     "courseUrl": "/academics/cybersecurity/cys401/",
-    "courseTitle": "CYS401 // Fundamentals of Cybersecurity"
+    "courseTitle": "CYS401"
   },
   {
     "url": "/academics/cybersecurity/cys401/slides/chapter-3-threat-modeling/",
-    "title": "CYS401 | Chapter 3 Threat Modeling",
+    "title": "Chapter 3 Threat Modeling",
     "track": "cybersecurity",
     "course": "cys401",
     "section": "slides",
     "courseUrl": "/academics/cybersecurity/cys401/",
-    "courseTitle": "CYS401 // Fundamentals of Cybersecurity"
+    "courseTitle": "CYS401"
   },
   {
     "url": "/academics/cybersecurity/cys401/slides/chapter-4-protection-of-information-assets/",
-    "title": "CYS401 | Chapter 4 Protection Of Information Assets",
+    "title": "Chapter 4 Protection Of Information Assets",
     "track": "cybersecurity",
     "course": "cys401",
     "section": "slides",
     "courseUrl": "/academics/cybersecurity/cys401/",
-    "courseTitle": "CYS401 // Fundamentals of Cybersecurity"
+    "courseTitle": "CYS401"
   },
   {
     "url": "/academics/cybersecurity/cys401/slides/chapter-5-cryptography/",
-    "title": "CYS401 | Chapter 5 Cryptography",
+    "title": "Chapter 5 Cryptography",
     "track": "cybersecurity",
     "course": "cys401",
     "section": "slides",
     "courseUrl": "/academics/cybersecurity/cys401/",
-    "courseTitle": "CYS401 // Fundamentals of Cybersecurity"
+    "courseTitle": "CYS401"
   },
   {
     "url": "/academics/cybersecurity/cys401/slides/chapter-6-1-asymmetric-cryptography-and-pki/",
-    "title": "CYS401 | Chapter 6.1 Asymmetric Cryptography And Pki",
+    "title": "Chapter 6 1 Asymmetric Cryptography And Pki",
     "track": "cybersecurity",
     "course": "cys401",
     "section": "slides",
     "courseUrl": "/academics/cybersecurity/cys401/",
-    "courseTitle": "CYS401 // Fundamentals of Cybersecurity"
+    "courseTitle": "CYS401"
   },
   {
     "url": "/academics/cybersecurity/cys401/slides/chapter-6-2-asymmetric-cryptography-and-pki/",
-    "title": "CYS401 | Chapter 6.2 Asymmetric Cryptography And Pki",
+    "title": "Chapter 6 2 Asymmetric Cryptography And Pki",
     "track": "cybersecurity",
     "course": "cys401",
     "section": "slides",
     "courseUrl": "/academics/cybersecurity/cys401/",
-    "courseTitle": "CYS401 // Fundamentals of Cybersecurity"
+    "courseTitle": "CYS401"
   },
   {
     "url": "/academics/cybersecurity/cys401/slides/chapter-7-security-design-models-and-capabilities/",
-    "title": "CYS401 | Chapter 7 Security Design Models And Capabilities",
+    "title": "Chapter 7 Security Design Models And Capabilities",
     "track": "cybersecurity",
     "course": "cys401",
     "section": "slides",
     "courseUrl": "/academics/cybersecurity/cys401/",
-    "courseTitle": "CYS401 // Fundamentals of Cybersecurity"
+    "courseTitle": "CYS401"
   },
   {
     "url": "/academics/cybersecurity/cys401/slides/chapter-8-computer-architecture-security/",
-    "title": "CYS401 | Chapter 8 Computer Architecture Security",
+    "title": "Chapter 8 Computer Architecture Security",
     "track": "cybersecurity",
     "course": "cys401",
     "section": "slides",
     "courseUrl": "/academics/cybersecurity/cys401/",
-    "courseTitle": "CYS401 // Fundamentals of Cybersecurity"
+    "courseTitle": "CYS401"
   },
   {
     "url": "/academics/cybersecurity/cys401/slides/chapter-9-systems-architecture-security/",
-    "title": "CYS401 | Chapter 9 Systems Architecture Security",
+    "title": "Chapter 9 Systems Architecture Security",
     "track": "cybersecurity",
     "course": "cys401",
     "section": "slides",
     "courseUrl": "/academics/cybersecurity/cys401/",
-    "courseTitle": "CYS401 // Fundamentals of Cybersecurity"
+    "courseTitle": "CYS401"
+  },
+  {
+    "url": "/academics/other-courses/com201/exams/01-examplify/",
+    "title": "COM201 | Examplify",
+    "track": "other-courses",
+    "course": "com201",
+    "section": "exams",
+    "courseUrl": "/academics/other-courses/com201/",
+    "courseTitle": "COM201 // Introduction to Communication Skills"
+  },
+  {
+    "url": "/academics/other-courses/com201/exams/02-chat-gpt-major-1/",
+    "title": "COM201 | Chat Gpt Major 1",
+    "track": "other-courses",
+    "course": "com201",
+    "section": "exams",
+    "courseUrl": "/academics/other-courses/com201/",
+    "courseTitle": "COM201 // Introduction to Communication Skills"
+  },
+  {
+    "url": "/academics/other-courses/com201/exams/03-com201-extensive-final-9-very-important-shoug-alomran-223410392/",
+    "title": "COM201 | (Extensive) Final ... Very Important!",
+    "track": "other-courses",
+    "course": "com201",
+    "section": "exams",
+    "courseUrl": "/academics/other-courses/com201/",
+    "courseTitle": "COM201 // Introduction to Communication Skills"
+  },
+  {
+    "url": "/academics/other-courses/com201/exams/04-examplify-com201-extensive-final-very-importantiii-shoug-aloman-223410392/",
+    "title": "COM201 | Examplify Com201 (Extensive) Final... Very Importantiii Shoug Aloman 223410392)",
+    "track": "other-courses",
+    "course": "com201",
+    "section": "exams",
+    "courseUrl": "/academics/other-courses/com201/",
+    "courseTitle": "COM201 // Introduction to Communication Skills"
+  },
+  {
+    "url": "/academics/other-courses/com201/exams/05-exemplify-6-9/",
+    "title": "COM201 | Exemplify 6 9",
+    "track": "other-courses",
+    "course": "com201",
+    "section": "exams",
+    "courseUrl": "/academics/other-courses/com201/",
+    "courseTitle": "COM201 // Introduction to Communication Skills"
+  },
+  {
+    "url": "/academics/other-courses/com201/exams/06-exlamplfiy-6-9-starting-from-50/",
+    "title": "COM201 | Exlamplfiy 6 9 Starting From 50",
+    "track": "other-courses",
+    "course": "com201",
+    "section": "exams",
+    "courseUrl": "/academics/other-courses/com201/",
+    "courseTitle": "COM201 // Introduction to Communication Skills"
+  },
+  {
+    "url": "/academics/other-courses/com201/exams/07-long-answer-questions/",
+    "title": "COM201 | Long Answer Questions",
+    "track": "other-courses",
+    "course": "com201",
+    "section": "exams",
+    "courseUrl": "/academics/other-courses/com201/",
+    "courseTitle": "COM201 // Introduction to Communication Skills"
+  },
+  {
+    "url": "/academics/other-courses/com201/exams/08-practice-questions-123-130/",
+    "title": "COM201 | Practice Questions 123 130",
+    "track": "other-courses",
+    "course": "com201",
+    "section": "exams",
+    "courseUrl": "/academics/other-courses/com201/",
+    "courseTitle": "COM201 // Introduction to Communication Skills"
+  },
+  {
+    "url": "/academics/other-courses/com201/extra-resources/01-com-201-final-prep/",
+    "title": "COM201 | Com 201 Final Prep",
+    "track": "other-courses",
+    "course": "com201",
+    "section": "extra-resources",
+    "courseUrl": "/academics/other-courses/com201/",
+    "courseTitle": "COM201 // Introduction to Communication Skills"
+  },
+  {
+    "url": "/academics/other-courses/com201/extra-resources/02-glossary-chapter-1-5/",
+    "title": "COM201 | Glossary Chapter 1 5",
+    "track": "other-courses",
+    "course": "com201",
+    "section": "extra-resources",
+    "courseUrl": "/academics/other-courses/com201/",
+    "courseTitle": "COM201 // Introduction to Communication Skills"
+  },
+  {
+    "url": "/academics/other-courses/com201/extra-resources/03-summary/",
+    "title": "COM201 | Summary",
+    "track": "other-courses",
+    "course": "com201",
+    "section": "extra-resources",
+    "courseUrl": "/academics/other-courses/com201/",
+    "courseTitle": "COM201 // Introduction to Communication Skills"
+  },
+  {
+    "url": "/academics/other-courses/com201/extra-resources/worksheets/04-2-sc-chapter-2-perception-self-and-communication/",
+    "title": "COM201 | 2. Sc Chapter 2 Perception, Self And Communication",
+    "track": "other-courses",
+    "course": "com201",
+    "section": "extra-resources",
+    "courseUrl": "/academics/other-courses/com201/",
+    "courseTitle": "COM201 // Introduction to Communication Skills"
+  },
+  {
+    "url": "/academics/other-courses/com201/extra-resources/worksheets/05-3-sc-chapter3-language-and-meaning/",
+    "title": "COM201 | 3. Sc Chapter3 Language And Meaning",
+    "track": "other-courses",
+    "course": "com201",
+    "section": "extra-resources",
+    "courseUrl": "/academics/other-courses/com201/",
+    "courseTitle": "COM201 // Introduction to Communication Skills"
+  },
+  {
+    "url": "/academics/other-courses/com201/extra-resources/worksheets/06-4-sc-chapter-4-nonverbal-communication/",
+    "title": "COM201 | 4. Sc Chapter 4 Nonverbal Communication",
+    "track": "other-courses",
+    "course": "com201",
+    "section": "extra-resources",
+    "courseUrl": "/academics/other-courses/com201/",
+    "courseTitle": "COM201 // Introduction to Communication Skills"
+  },
+  {
+    "url": "/academics/other-courses/com201/extra-resources/worksheets/07-5-sc-chapter-5-listening-critical-thinking/",
+    "title": "COM201 | 5. Sc Chapter 5 Listening Critical Thinking",
+    "track": "other-courses",
+    "course": "com201",
+    "section": "extra-resources",
+    "courseUrl": "/academics/other-courses/com201/",
+    "courseTitle": "COM201 // Introduction to Communication Skills"
+  },
+  {
+    "url": "/academics/other-courses/com201/extra-resources/worksheets/08-midterm-exam-full-slides/",
+    "title": "COM201 | Midterm Exam Full Slides",
+    "track": "other-courses",
+    "course": "com201",
+    "section": "extra-resources",
+    "courseUrl": "/academics/other-courses/com201/",
+    "courseTitle": "COM201 // Introduction to Communication Skills"
+  },
+  {
+    "url": "/academics/other-courses/com201/slides/01-chapter-1/",
+    "title": "COM201 | Chapter 1",
+    "track": "other-courses",
+    "course": "com201",
+    "section": "slides",
+    "courseUrl": "/academics/other-courses/com201/",
+    "courseTitle": "COM201 // Introduction to Communication Skills"
+  },
+  {
+    "url": "/academics/other-courses/com201/slides/02-chapter-2/",
+    "title": "COM201 | Chapter 2",
+    "track": "other-courses",
+    "course": "com201",
+    "section": "slides",
+    "courseUrl": "/academics/other-courses/com201/",
+    "courseTitle": "COM201 // Introduction to Communication Skills"
+  },
+  {
+    "url": "/academics/other-courses/com201/slides/03-chapter-3/",
+    "title": "COM201 | Chapter 3",
+    "track": "other-courses",
+    "course": "com201",
+    "section": "slides",
+    "courseUrl": "/academics/other-courses/com201/",
+    "courseTitle": "COM201 // Introduction to Communication Skills"
+  },
+  {
+    "url": "/academics/other-courses/com201/slides/04-chapter-4/",
+    "title": "COM201 | Chapter 4",
+    "track": "other-courses",
+    "course": "com201",
+    "section": "slides",
+    "courseUrl": "/academics/other-courses/com201/",
+    "courseTitle": "COM201 // Introduction to Communication Skills"
+  },
+  {
+    "url": "/academics/other-courses/com201/slides/05-chapter-5/",
+    "title": "COM201 | Chapter 5",
+    "track": "other-courses",
+    "course": "com201",
+    "section": "slides",
+    "courseUrl": "/academics/other-courses/com201/",
+    "courseTitle": "COM201 // Introduction to Communication Skills"
+  },
+  {
+    "url": "/academics/other-courses/com201/slides/06-chapter-6/",
+    "title": "COM201 | Chapter 6",
+    "track": "other-courses",
+    "course": "com201",
+    "section": "slides",
+    "courseUrl": "/academics/other-courses/com201/",
+    "courseTitle": "COM201 // Introduction to Communication Skills"
+  },
+  {
+    "url": "/academics/other-courses/com201/slides/07-chapter-7/",
+    "title": "COM201 | Chapter 7",
+    "track": "other-courses",
+    "course": "com201",
+    "section": "slides",
+    "courseUrl": "/academics/other-courses/com201/",
+    "courseTitle": "COM201 // Introduction to Communication Skills"
+  },
+  {
+    "url": "/academics/other-courses/com201/slides/08-chapter-8/",
+    "title": "COM201 | Chapter 8",
+    "track": "other-courses",
+    "course": "com201",
+    "section": "slides",
+    "courseUrl": "/academics/other-courses/com201/",
+    "courseTitle": "COM201 // Introduction to Communication Skills"
   },
   {
     "url": "/academics/other-courses/english/eng101/extra-resources/apa-referencing-cheat-sheet/",
-    "title": "ENG101 // APA Referencing Cheat Sheet",
+    "title": "Apa Referencing Cheat Sheet",
     "track": "other-courses",
     "course": "eng101",
     "section": "extra-resources",
     "courseUrl": "/academics/other-courses/english/eng101/",
-    "courseTitle": "ENG101 // Intensive Writing"
+    "courseTitle": "ENG101"
   },
   {
     "url": "/academics/other-courses/english/eng101/extra-resources/grammar-cheat-sheet/",
-    "title": "ENG101 // Grammar Cheat Sheet",
+    "title": "Grammar Cheat Sheet",
     "track": "other-courses",
     "course": "eng101",
     "section": "extra-resources",
     "courseUrl": "/academics/other-courses/english/eng101/",
-    "courseTitle": "ENG101 // Intensive Writing"
+    "courseTitle": "ENG101"
   },
   {
     "url": "/academics/other-courses/english/eng101/extra-resources/self-editing-checklist/",
-    "title": "ENG101 // Self-Editing Checklist",
+    "title": "Self Editing Checklist",
     "track": "other-courses",
     "course": "eng101",
     "section": "extra-resources",
     "courseUrl": "/academics/other-courses/english/eng101/",
-    "courseTitle": "ENG101 // Intensive Writing"
+    "courseTitle": "ENG101"
   },
   {
     "url": "/academics/other-courses/english/eng101/extra-resources/writing-resources/01-argumentative-essay/",
@@ -1943,16 +2159,16 @@ var COURSE_PAGES = [
     "course": "eng101",
     "section": "extra-resources",
     "courseUrl": "/academics/other-courses/english/eng101/",
-    "courseTitle": "ENG101 // Intensive Writing"
+    "courseTitle": "ENG101"
   },
   {
     "url": "/academics/other-courses/english/eng101/extra-resources/writing-resources/01-writing-resources/",
-    "title": "ENG101 | Writing Resources",
+    "title": "Writing Resources",
     "track": "other-courses",
     "course": "eng101",
     "section": "extra-resources",
     "courseUrl": "/academics/other-courses/english/eng101/",
-    "courseTitle": "ENG101 // Intensive Writing"
+    "courseTitle": "ENG101"
   },
   {
     "url": "/academics/other-courses/english/eng101/extra-resources/writing-resources/02-cause-effect-essay-notes/",
@@ -1961,16 +2177,16 @@ var COURSE_PAGES = [
     "course": "eng101",
     "section": "extra-resources",
     "courseUrl": "/academics/other-courses/english/eng101/",
-    "courseTitle": "ENG101 // Intensive Writing"
+    "courseTitle": "ENG101"
   },
   {
     "url": "/academics/other-courses/english/eng101/extra-resources/writing-resources/03-cause-effect-essay/",
-    "title": "ENG101 | Cause Effect Essay",
+    "title": "Cause Effect Essay",
     "track": "other-courses",
     "course": "eng101",
     "section": "extra-resources",
     "courseUrl": "/academics/other-courses/english/eng101/",
-    "courseTitle": "ENG101 // Intensive Writing"
+    "courseTitle": "ENG101"
   },
   {
     "url": "/academics/other-courses/english/eng101/extra-resources/writing-resources/04-classification-essay/",
@@ -1979,7 +2195,7 @@ var COURSE_PAGES = [
     "course": "eng101",
     "section": "extra-resources",
     "courseUrl": "/academics/other-courses/english/eng101/",
-    "courseTitle": "ENG101 // Intensive Writing"
+    "courseTitle": "ENG101"
   },
   {
     "url": "/academics/other-courses/english/eng101/extra-resources/writing-resources/05-commas-guide/",
@@ -1988,7 +2204,7 @@ var COURSE_PAGES = [
     "course": "eng101",
     "section": "extra-resources",
     "courseUrl": "/academics/other-courses/english/eng101/",
-    "courseTitle": "ENG101 // Intensive Writing"
+    "courseTitle": "ENG101"
   },
   {
     "url": "/academics/other-courses/english/eng101/extra-resources/writing-resources/06-compare-contrast-essay-assignment/",
@@ -1997,34 +2213,34 @@ var COURSE_PAGES = [
     "course": "eng101",
     "section": "extra-resources",
     "courseUrl": "/academics/other-courses/english/eng101/",
-    "courseTitle": "ENG101 // Intensive Writing"
+    "courseTitle": "ENG101"
   },
   {
     "url": "/academics/other-courses/english/eng101/extra-resources/writing-resources/07-compare-contrast-essay/",
-    "title": "ENG101 | Compare Contrast Essay",
+    "title": "Compare Contrast Essay",
     "track": "other-courses",
     "course": "eng101",
     "section": "extra-resources",
     "courseUrl": "/academics/other-courses/english/eng101/",
-    "courseTitle": "ENG101 // Intensive Writing"
+    "courseTitle": "ENG101"
   },
   {
     "url": "/academics/other-courses/english/eng101/extra-resources/writing-resources/08-compare-contrast-keywords/",
-    "title": "ENG101 | Compare Contrast Keywords",
+    "title": "Compare Contrast Keywords",
     "track": "other-courses",
     "course": "eng101",
     "section": "extra-resources",
     "courseUrl": "/academics/other-courses/english/eng101/",
-    "courseTitle": "ENG101 // Intensive Writing"
+    "courseTitle": "ENG101"
   },
   {
     "url": "/academics/other-courses/english/eng101/extra-resources/writing-resources/09-comparison-contrast-essay-type-1/",
-    "title": "ENG101 | Comparison Contrast Essay Type 1",
+    "title": "Comparison Contrast Essay Type 1",
     "track": "other-courses",
     "course": "eng101",
     "section": "extra-resources",
     "courseUrl": "/academics/other-courses/english/eng101/",
-    "courseTitle": "ENG101 // Intensive Writing"
+    "courseTitle": "ENG101"
   },
   {
     "url": "/academics/other-courses/english/eng101/extra-resources/writing-resources/10-process-analysis-essay-chapter-10/",
@@ -2033,16 +2249,16 @@ var COURSE_PAGES = [
     "course": "eng101",
     "section": "extra-resources",
     "courseUrl": "/academics/other-courses/english/eng101/",
-    "courseTitle": "ENG101 // Intensive Writing"
+    "courseTitle": "ENG101"
   },
   {
     "url": "/academics/other-courses/english/eng101/extra-resources/writing-resources/11-process-analysis-essay/",
-    "title": "ENG101 | Process Analysis Essay",
+    "title": "Process Analysis Essay",
     "track": "other-courses",
     "course": "eng101",
     "section": "extra-resources",
     "courseUrl": "/academics/other-courses/english/eng101/",
-    "courseTitle": "ENG101 // Intensive Writing"
+    "courseTitle": "ENG101"
   },
   {
     "url": "/academics/other-courses/english/eng101/extra-resources/writing-resources/12-process-analysis/",
@@ -2051,7 +2267,7 @@ var COURSE_PAGES = [
     "course": "eng101",
     "section": "extra-resources",
     "courseUrl": "/academics/other-courses/english/eng101/",
-    "courseTitle": "ENG101 // Intensive Writing"
+    "courseTitle": "ENG101"
   },
   {
     "url": "/academics/other-courses/english/eng101/extra-resources/writing-resources/13-punctuation-for-connecting-words/",
@@ -2060,7 +2276,7 @@ var COURSE_PAGES = [
     "course": "eng101",
     "section": "extra-resources",
     "courseUrl": "/academics/other-courses/english/eng101/",
-    "courseTitle": "ENG101 // Intensive Writing"
+    "courseTitle": "ENG101"
   },
   {
     "url": "/academics/other-courses/english/eng101/extra-resources/writing-resources/14-thesis-statement-guide/",
@@ -2069,7 +2285,7 @@ var COURSE_PAGES = [
     "course": "eng101",
     "section": "extra-resources",
     "courseUrl": "/academics/other-courses/english/eng101/",
-    "courseTitle": "ENG101 // Intensive Writing"
+    "courseTitle": "ENG101"
   },
   {
     "url": "/academics/other-courses/english/eng101/extra-resources/writing-resources/15-thesis-statement-practice/",
@@ -2078,7 +2294,7 @@ var COURSE_PAGES = [
     "course": "eng101",
     "section": "extra-resources",
     "courseUrl": "/academics/other-courses/english/eng101/",
-    "courseTitle": "ENG101 // Intensive Writing"
+    "courseTitle": "ENG101"
   },
   {
     "url": "/academics/other-courses/english/eng101/extra-resources/writing-resources/16-thesis-statement-worksheet/",
@@ -2087,7 +2303,7 @@ var COURSE_PAGES = [
     "course": "eng101",
     "section": "extra-resources",
     "courseUrl": "/academics/other-courses/english/eng101/",
-    "courseTitle": "ENG101 // Intensive Writing"
+    "courseTitle": "ENG101"
   },
   {
     "url": "/academics/other-courses/english/eng101/extra-resources/writing-resources/17-transition-signals/",
@@ -2096,25 +2312,25 @@ var COURSE_PAGES = [
     "course": "eng101",
     "section": "extra-resources",
     "courseUrl": "/academics/other-courses/english/eng101/",
-    "courseTitle": "ENG101 // Intensive Writing"
+    "courseTitle": "ENG101"
   },
   {
     "url": "/academics/other-courses/english/eng101/extra-resources/writing-resources/18-transitions-punctuation/",
-    "title": "ENG101 | Transitions Punctuation",
+    "title": "Transitions Punctuation",
     "track": "other-courses",
     "course": "eng101",
     "section": "extra-resources",
     "courseUrl": "/academics/other-courses/english/eng101/",
-    "courseTitle": "ENG101 // Intensive Writing"
+    "courseTitle": "ENG101"
   },
   {
     "url": "/academics/other-courses/english/eng101/slides/argumentative-essay/",
-    "title": "ENG101 | Argumentative Essay",
+    "title": "Argumentative Essay",
     "track": "other-courses",
     "course": "eng101",
     "section": "slides",
     "courseUrl": "/academics/other-courses/english/eng101/",
-    "courseTitle": "ENG101 // Intensive Writing"
+    "courseTitle": "ENG101"
   },
   {
     "url": "/academics/other-courses/english/eng101/slides/cause-effect-essay-notes/",
@@ -2123,16 +2339,16 @@ var COURSE_PAGES = [
     "course": "eng101",
     "section": "slides",
     "courseUrl": "/academics/other-courses/english/eng101/",
-    "courseTitle": "ENG101 // Intensive Writing"
+    "courseTitle": "ENG101"
   },
   {
     "url": "/academics/other-courses/english/eng101/slides/classification-essay/",
-    "title": "ENG101 | Classification Essay",
+    "title": "Classification Essay",
     "track": "other-courses",
     "course": "eng101",
     "section": "slides",
     "courseUrl": "/academics/other-courses/english/eng101/",
-    "courseTitle": "ENG101 // Intensive Writing"
+    "courseTitle": "ENG101"
   },
   {
     "url": "/academics/other-courses/english/eng101/slides/commas-guide/",
@@ -2141,7 +2357,7 @@ var COURSE_PAGES = [
     "course": "eng101",
     "section": "slides",
     "courseUrl": "/academics/other-courses/english/eng101/",
-    "courseTitle": "ENG101 // Intensive Writing"
+    "courseTitle": "ENG101"
   },
   {
     "url": "/academics/other-courses/english/eng101/slides/compare-contrast-essay-assignment/",
@@ -2150,25 +2366,25 @@ var COURSE_PAGES = [
     "course": "eng101",
     "section": "slides",
     "courseUrl": "/academics/other-courses/english/eng101/",
-    "courseTitle": "ENG101 // Intensive Writing"
+    "courseTitle": "ENG101"
   },
   {
     "url": "/academics/other-courses/english/eng101/slides/compare-contrast-essay/",
-    "title": "ENG101 | Compare Contrast Essay",
+    "title": "Compare Contrast Essay",
     "track": "other-courses",
     "course": "eng101",
     "section": "slides",
     "courseUrl": "/academics/other-courses/english/eng101/",
-    "courseTitle": "ENG101 // Intensive Writing"
+    "courseTitle": "ENG101"
   },
   {
     "url": "/academics/other-courses/english/eng101/slides/compare-contrast-keywords/",
-    "title": "ENG101 | Compare Contrast Keywords",
+    "title": "Compare Contrast Keywords",
     "track": "other-courses",
     "course": "eng101",
     "section": "slides",
     "courseUrl": "/academics/other-courses/english/eng101/",
-    "courseTitle": "ENG101 // Intensive Writing"
+    "courseTitle": "ENG101"
   },
   {
     "url": "/academics/other-courses/english/eng101/slides/compare-contrast-overview/",
@@ -2177,16 +2393,16 @@ var COURSE_PAGES = [
     "course": "eng101",
     "section": "slides",
     "courseUrl": "/academics/other-courses/english/eng101/",
-    "courseTitle": "ENG101 // Intensive Writing"
+    "courseTitle": "ENG101"
   },
   {
     "url": "/academics/other-courses/english/eng101/slides/process-analysis-essay/",
-    "title": "ENG101 | Process Analysis Essay",
+    "title": "Process Analysis Essay",
     "track": "other-courses",
     "course": "eng101",
     "section": "slides",
     "courseUrl": "/academics/other-courses/english/eng101/",
-    "courseTitle": "ENG101 // Intensive Writing"
+    "courseTitle": "ENG101"
   },
   {
     "url": "/academics/other-courses/english/eng101/slides/punctuation-for-connecting-words/",
@@ -2195,16 +2411,16 @@ var COURSE_PAGES = [
     "course": "eng101",
     "section": "slides",
     "courseUrl": "/academics/other-courses/english/eng101/",
-    "courseTitle": "ENG101 // Intensive Writing"
+    "courseTitle": "ENG101"
   },
   {
     "url": "/academics/other-courses/english/eng101/slides/thesis-statement-guide/",
-    "title": "ENG101 | Thesis Statement Guide",
+    "title": "Thesis Statement Guide",
     "track": "other-courses",
     "course": "eng101",
     "section": "slides",
     "courseUrl": "/academics/other-courses/english/eng101/",
-    "courseTitle": "ENG101 // Intensive Writing"
+    "courseTitle": "ENG101"
   },
   {
     "url": "/academics/other-courses/english/eng101/slides/thesis-statement-practice/",
@@ -2213,16 +2429,16 @@ var COURSE_PAGES = [
     "course": "eng101",
     "section": "slides",
     "courseUrl": "/academics/other-courses/english/eng101/",
-    "courseTitle": "ENG101 // Intensive Writing"
+    "courseTitle": "ENG101"
   },
   {
     "url": "/academics/other-courses/english/eng101/slides/thesis-statement-worksheet/",
-    "title": "ENG101 | Thesis Statement Worksheet",
+    "title": "Thesis Statement Worksheet",
     "track": "other-courses",
     "course": "eng101",
     "section": "slides",
     "courseUrl": "/academics/other-courses/english/eng101/",
-    "courseTitle": "ENG101 // Intensive Writing"
+    "courseTitle": "ENG101"
   },
   {
     "url": "/academics/other-courses/english/eng101/slides/transition-signals/",
@@ -2231,88 +2447,88 @@ var COURSE_PAGES = [
     "course": "eng101",
     "section": "slides",
     "courseUrl": "/academics/other-courses/english/eng101/",
-    "courseTitle": "ENG101 // Intensive Writing"
+    "courseTitle": "ENG101"
   },
   {
     "url": "/academics/other-courses/english/eng101/slides/transitions-punctuation/",
-    "title": "ENG101 | Transitions Punctuation",
+    "title": "Transitions Punctuation",
     "track": "other-courses",
     "course": "eng101",
     "section": "slides",
     "courseUrl": "/academics/other-courses/english/eng101/",
-    "courseTitle": "ENG101 // Intensive Writing"
+    "courseTitle": "ENG101"
   },
   {
     "url": "/academics/other-courses/english/eng103/extra-resources/assignment-1-annotated-bibliography/annotated-bibliography-example-1/",
-    "title": "ENG103 // Annotated Bibliography Example 1",
+    "title": "Annotated Bibliography Example 1",
     "track": "other-courses",
     "course": "eng103",
     "section": "extra-resources",
     "courseUrl": "/academics/other-courses/english/eng103/",
-    "courseTitle": "ENG103 // Research Writing Techniques"
+    "courseTitle": "ENG103"
   },
   {
     "url": "/academics/other-courses/english/eng103/extra-resources/assignment-1-annotated-bibliography/annotated-bibliography-example-2/",
-    "title": "ENG103 // Annotated Bibliography Example 2",
+    "title": "Annotated Bibliography Example 2",
     "track": "other-courses",
     "course": "eng103",
     "section": "extra-resources",
     "courseUrl": "/academics/other-courses/english/eng103/",
-    "courseTitle": "ENG103 // Research Writing Techniques"
+    "courseTitle": "ENG103"
   },
   {
     "url": "/academics/other-courses/english/eng103/extra-resources/assignment-1-annotated-bibliography/annotated-bibliography-rubric/",
-    "title": "ENG103 // Annotated Bibliography Rubric",
+    "title": "Annotated Bibliography Rubric",
     "track": "other-courses",
     "course": "eng103",
     "section": "extra-resources",
     "courseUrl": "/academics/other-courses/english/eng103/",
-    "courseTitle": "ENG103 // Research Writing Techniques"
+    "courseTitle": "ENG103"
   },
   {
     "url": "/academics/other-courses/english/eng103/extra-resources/assignment-1-annotated-bibliography/group-work-log/",
-    "title": "ENG103 // Group Work Log & Deadlines",
+    "title": "Group Work Log",
     "track": "other-courses",
     "course": "eng103",
     "section": "extra-resources",
     "courseUrl": "/academics/other-courses/english/eng103/",
-    "courseTitle": "ENG103 // Research Writing Techniques"
+    "courseTitle": "ENG103"
   },
   {
     "url": "/academics/other-courses/english/eng103/extra-resources/assignment-2-methodology-and-results/designing-survey-preparation/",
-    "title": "ENG103 // Designing the Survey Preparation",
+    "title": "Designing Survey Preparation",
     "track": "other-courses",
     "course": "eng103",
     "section": "extra-resources",
     "courseUrl": "/academics/other-courses/english/eng103/",
-    "courseTitle": "ENG103 // Research Writing Techniques"
+    "courseTitle": "ENG103"
   },
   {
     "url": "/academics/other-courses/english/eng103/slides/final-exam-study-guide/",
-    "title": "ENG103 | Final Exam Study Guide",
+    "title": "Final Exam Study Guide",
     "track": "other-courses",
     "course": "eng103",
     "section": "slides",
     "courseUrl": "/academics/other-courses/english/eng103/",
-    "courseTitle": "ENG103 // Research Writing Techniques"
+    "courseTitle": "ENG103"
   },
   {
     "url": "/academics/other-courses/english/eng103/slides/midterm-exam-study-guide/",
-    "title": "ENG103 | Midterm Exam Study Guide",
+    "title": "Midterm Exam Study Guide",
     "track": "other-courses",
     "course": "eng103",
     "section": "slides",
     "courseUrl": "/academics/other-courses/english/eng103/",
-    "courseTitle": "ENG103 // Research Writing Techniques"
+    "courseTitle": "ENG103"
   },
   {
     "url": "/academics/other-courses/ethcs303/extra-resources/01-ethcs-303-summary/",
-    "title": "ETHCS303 | ETHCS 303 Summary",
+    "title": "Ethcs 303 Summary",
     "track": "other-courses",
     "course": "ethcs303",
     "section": "extra-resources",
     "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+    "courseTitle": "ETHCS303"
   },
   {
     "url": "/academics/other-courses/ethcs303/extra-resources/01-summary/",
@@ -2321,16 +2537,16 @@ var COURSE_PAGES = [
     "course": "ethcs303",
     "section": "extra-resources",
     "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+    "courseTitle": "ETHCS303"
   },
   {
     "url": "/academics/other-courses/ethcs303/extra-resources/acm-code-of-ethics-and-professional-conduct/",
-    "title": "ETHCS303 | ACM Code of Ethics and Professional Conduct",
+    "title": "Acm Code Of Ethics And Professional Conduct",
     "track": "other-courses",
     "course": "ethcs303",
     "section": "extra-resources",
     "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+    "courseTitle": "ETHCS303"
   },
   {
     "url": "/academics/other-courses/ethcs303/extra-resources/case-scenario-on-whistle-blowing/",
@@ -2339,7 +2555,7 @@ var COURSE_PAGES = [
     "course": "ethcs303",
     "section": "extra-resources",
     "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+    "courseTitle": "ETHCS303"
   },
   {
     "url": "/academics/other-courses/ethcs303/extra-resources/cheat-sheets/midterm-1-cheat-sheet/",
@@ -2348,7 +2564,7 @@ var COURSE_PAGES = [
     "course": "ethcs303",
     "section": "extra-resources",
     "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+    "courseTitle": "ETHCS303"
   },
   {
     "url": "/academics/other-courses/ethcs303/extra-resources/cheat-sheets/quiz-1-cheat-sheet/",
@@ -2357,7 +2573,7 @@ var COURSE_PAGES = [
     "course": "ethcs303",
     "section": "extra-resources",
     "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+    "courseTitle": "ETHCS303"
   },
   {
     "url": "/academics/other-courses/ethcs303/extra-resources/cheat-sheets/quiz-2-cheat-sheet/",
@@ -2366,16 +2582,16 @@ var COURSE_PAGES = [
     "course": "ethcs303",
     "section": "extra-resources",
     "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+    "courseTitle": "ETHCS303"
   },
   {
     "url": "/academics/other-courses/ethcs303/extra-resources/class-discussion-on-privacy-policies-in-social-media/",
-    "title": "ETHCS303 | Class Discussion on Privacy Policies in Social Media",
+    "title": "Class Discussion On Privacy Policies In Social Media",
     "track": "other-courses",
     "course": "ethcs303",
     "section": "extra-resources",
     "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+    "courseTitle": "ETHCS303"
   },
   {
     "url": "/academics/other-courses/ethcs303/extra-resources/ethical-theories-comparison-table/",
@@ -2384,7 +2600,7 @@ var COURSE_PAGES = [
     "course": "ethcs303",
     "section": "extra-resources",
     "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+    "courseTitle": "ETHCS303"
   },
   {
     "url": "/academics/other-courses/ethcs303/extra-resources/ethics-glossary/",
@@ -2393,7 +2609,7 @@ var COURSE_PAGES = [
     "course": "ethcs303",
     "section": "extra-resources",
     "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+    "courseTitle": "ETHCS303"
   },
   {
     "url": "/academics/other-courses/ethcs303/extra-resources/ieee-code-of-conduct/",
@@ -2402,7 +2618,7 @@ var COURSE_PAGES = [
     "course": "ethcs303",
     "section": "extra-resources",
     "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+    "courseTitle": "ETHCS303"
   },
   {
     "url": "/academics/other-courses/ethcs303/extra-resources/important-people/",
@@ -2411,7 +2627,7 @@ var COURSE_PAGES = [
     "course": "ethcs303",
     "section": "extra-resources",
     "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+    "courseTitle": "ETHCS303"
   },
   {
     "url": "/academics/other-courses/ethcs303/extra-resources/mindmap/01-moral-systems-ethical-concepts-and-theories/",
@@ -2420,7 +2636,7 @@ var COURSE_PAGES = [
     "course": "ethcs303",
     "section": "extra-resources",
     "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+    "courseTitle": "ETHCS303"
   },
   {
     "url": "/academics/other-courses/ethcs303/extra-resources/mindmap/02-kantianism/",
@@ -2429,7 +2645,7 @@ var COURSE_PAGES = [
     "course": "ethcs303",
     "section": "extra-resources",
     "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+    "courseTitle": "ETHCS303"
   },
   {
     "url": "/academics/other-courses/ethcs303/extra-resources/mindmap/03-utilitarianism/",
@@ -2438,7 +2654,7 @@ var COURSE_PAGES = [
     "course": "ethcs303",
     "section": "extra-resources",
     "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+    "courseTitle": "ETHCS303"
   },
   {
     "url": "/academics/other-courses/ethcs303/extra-resources/mindmap/04-social-contract-theory/",
@@ -2447,7 +2663,7 @@ var COURSE_PAGES = [
     "course": "ethcs303",
     "section": "extra-resources",
     "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+    "courseTitle": "ETHCS303"
   },
   {
     "url": "/academics/other-courses/ethcs303/extra-resources/mindmap/05-ethical-issues-in-systems-analysis-and-software-engineering/",
@@ -2456,7 +2672,7 @@ var COURSE_PAGES = [
     "course": "ethcs303",
     "section": "extra-resources",
     "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+    "courseTitle": "ETHCS303"
   },
   {
     "url": "/academics/other-courses/ethcs303/extra-resources/mindmap/06-network-security-and-privacy/",
@@ -2465,7 +2681,7 @@ var COURSE_PAGES = [
     "course": "ethcs303",
     "section": "extra-resources",
     "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+    "courseTitle": "ETHCS303"
   },
   {
     "url": "/academics/other-courses/ethcs303/extra-resources/mindmap/07-cloud-computing-privacy-and-security/",
@@ -2474,7 +2690,7 @@ var COURSE_PAGES = [
     "course": "ethcs303",
     "section": "extra-resources",
     "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+    "courseTitle": "ETHCS303"
   },
   {
     "url": "/academics/other-courses/ethcs303/extra-resources/mindmap/08-privacy-in-cyberspace/",
@@ -2483,7 +2699,7 @@ var COURSE_PAGES = [
     "course": "ethcs303",
     "section": "extra-resources",
     "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+    "courseTitle": "ETHCS303"
   },
   {
     "url": "/academics/other-courses/ethcs303/extra-resources/mindmap/09-social-media-ethical-legal-and-security-issues/",
@@ -2492,7 +2708,7 @@ var COURSE_PAGES = [
     "course": "ethcs303",
     "section": "extra-resources",
     "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+    "courseTitle": "ETHCS303"
   },
   {
     "url": "/academics/other-courses/ethcs303/extra-resources/mindmap/10-social-engineering/",
@@ -2501,7 +2717,7 @@ var COURSE_PAGES = [
     "course": "ethcs303",
     "section": "extra-resources",
     "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+    "courseTitle": "ETHCS303"
   },
   {
     "url": "/academics/other-courses/ethcs303/extra-resources/mindmap/11-introduction-to-ethical-hacking-and-security/",
@@ -2510,7 +2726,7 @@ var COURSE_PAGES = [
     "course": "ethcs303",
     "section": "extra-resources",
     "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+    "courseTitle": "ETHCS303"
   },
   {
     "url": "/academics/other-courses/ethcs303/extra-resources/mindmap/12-business-ethics/",
@@ -2519,7 +2735,7 @@ var COURSE_PAGES = [
     "course": "ethcs303",
     "section": "extra-resources",
     "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+    "courseTitle": "ETHCS303"
   },
   {
     "url": "/academics/other-courses/ethcs303/extra-resources/mindmap/13-intellectual-property-laws/",
@@ -2528,7 +2744,7 @@ var COURSE_PAGES = [
     "course": "ethcs303",
     "section": "extra-resources",
     "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+    "courseTitle": "ETHCS303"
   },
   {
     "url": "/academics/other-courses/ethcs303/extra-resources/mindmap/14-cyber-laws/",
@@ -2537,7 +2753,7 @@ var COURSE_PAGES = [
     "course": "ethcs303",
     "section": "extra-resources",
     "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+    "courseTitle": "ETHCS303"
   },
   {
     "url": "/academics/other-courses/ethcs303/extra-resources/moral-theories-guide/",
@@ -2546,52 +2762,52 @@ var COURSE_PAGES = [
     "course": "ethcs303",
     "section": "extra-resources",
     "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+    "courseTitle": "ETHCS303"
   },
   {
     "url": "/academics/other-courses/ethcs303/extra-resources/practice-questions/case-scenarios/",
-    "title": "ETHCS303 | Case Scenarios",
+    "title": "Case Scenarios",
     "track": "other-courses",
     "course": "ethcs303",
     "section": "extra-resources",
     "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+    "courseTitle": "ETHCS303"
   },
   {
     "url": "/academics/other-courses/ethcs303/extra-resources/practice-questions/scenario-1/",
-    "title": "ETHCS303 | Resolving Dilemmas: Scenario 1",
+    "title": "Scenario 1",
     "track": "other-courses",
     "course": "ethcs303",
     "section": "extra-resources",
     "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+    "courseTitle": "ETHCS303"
   },
   {
     "url": "/academics/other-courses/ethcs303/extra-resources/practice-questions/scenario-2/",
-    "title": "ETHCS303 | Resolving Dilemmas: Scenario 2",
+    "title": "Scenario 2",
     "track": "other-courses",
     "course": "ethcs303",
     "section": "extra-resources",
     "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+    "courseTitle": "ETHCS303"
   },
   {
     "url": "/academics/other-courses/ethcs303/extra-resources/practice-questions/scenario-3/",
-    "title": "ETHCS303 | Resolving Dilemmas: Scenario 3",
+    "title": "Scenario 3",
     "track": "other-courses",
     "course": "ethcs303",
     "section": "extra-resources",
     "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+    "courseTitle": "ETHCS303"
   },
   {
     "url": "/academics/other-courses/ethcs303/extra-resources/software-engineering-code-of-ethics-and-professional-practice/",
-    "title": "ETHCS303 | Software Engineering Code of Ethics and Professional Practice",
+    "title": "Software Engineering Code Of Ethics And Professional Practice",
     "track": "other-courses",
     "course": "ethcs303",
     "section": "extra-resources",
     "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+    "courseTitle": "ETHCS303"
   },
   {
     "url": "/academics/other-courses/ethcs303/quizzes/01-moral-systems-ethical-concepts-and-theories-quiz/",
@@ -2600,7 +2816,7 @@ var COURSE_PAGES = [
     "course": "ethcs303",
     "section": "quizzes",
     "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+    "courseTitle": "ETHCS303"
   },
   {
     "url": "/academics/other-courses/ethcs303/quizzes/02-kantianism-quiz/",
@@ -2609,7 +2825,7 @@ var COURSE_PAGES = [
     "course": "ethcs303",
     "section": "quizzes",
     "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+    "courseTitle": "ETHCS303"
   },
   {
     "url": "/academics/other-courses/ethcs303/quizzes/03-utilitarianism-quiz/",
@@ -2618,7 +2834,7 @@ var COURSE_PAGES = [
     "course": "ethcs303",
     "section": "quizzes",
     "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+    "courseTitle": "ETHCS303"
   },
   {
     "url": "/academics/other-courses/ethcs303/quizzes/04-social-contract-theory-quiz/",
@@ -2627,7 +2843,7 @@ var COURSE_PAGES = [
     "course": "ethcs303",
     "section": "quizzes",
     "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+    "courseTitle": "ETHCS303"
   },
   {
     "url": "/academics/other-courses/ethcs303/quizzes/05-professional-ethics-quiz/",
@@ -2636,7 +2852,7 @@ var COURSE_PAGES = [
     "course": "ethcs303",
     "section": "quizzes",
     "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+    "courseTitle": "ETHCS303"
   },
   {
     "url": "/academics/other-courses/ethcs303/quizzes/06-quiz-1-question-bank/",
@@ -2645,7 +2861,7 @@ var COURSE_PAGES = [
     "course": "ethcs303",
     "section": "quizzes",
     "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+    "courseTitle": "ETHCS303"
   },
   {
     "url": "/academics/other-courses/ethcs303/quizzes/07-quiz-1-practice/",
@@ -2654,7 +2870,7 @@ var COURSE_PAGES = [
     "course": "ethcs303",
     "section": "quizzes",
     "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+    "courseTitle": "ETHCS303"
   },
   {
     "url": "/academics/other-courses/ethcs303/quizzes/08-ethical-issues-in-systems-analysis-and-software-engineering-quiz/",
@@ -2663,7 +2879,7 @@ var COURSE_PAGES = [
     "course": "ethcs303",
     "section": "quizzes",
     "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+    "courseTitle": "ETHCS303"
   },
   {
     "url": "/academics/other-courses/ethcs303/quizzes/09-network-security-and-privacy-quiz/",
@@ -2672,7 +2888,7 @@ var COURSE_PAGES = [
     "course": "ethcs303",
     "section": "quizzes",
     "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+    "courseTitle": "ETHCS303"
   },
   {
     "url": "/academics/other-courses/ethcs303/quizzes/10-major-1-question-bank/",
@@ -2681,7 +2897,7 @@ var COURSE_PAGES = [
     "course": "ethcs303",
     "section": "quizzes",
     "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+    "courseTitle": "ETHCS303"
   },
   {
     "url": "/academics/other-courses/ethcs303/quizzes/11-cloud-computing-and-privacy-issues-quiz/",
@@ -2690,7 +2906,7 @@ var COURSE_PAGES = [
     "course": "ethcs303",
     "section": "quizzes",
     "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+    "courseTitle": "ETHCS303"
   },
   {
     "url": "/academics/other-courses/ethcs303/quizzes/12-privacy-issues-in-cyberspace-quiz/",
@@ -2699,7 +2915,7 @@ var COURSE_PAGES = [
     "course": "ethcs303",
     "section": "quizzes",
     "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+    "courseTitle": "ETHCS303"
   },
   {
     "url": "/academics/other-courses/ethcs303/quizzes/13-social-media-ethical-legal-and-security-issues-quiz/",
@@ -2708,7 +2924,7 @@ var COURSE_PAGES = [
     "course": "ethcs303",
     "section": "quizzes",
     "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+    "courseTitle": "ETHCS303"
   },
   {
     "url": "/academics/other-courses/ethcs303/quizzes/14-social-engineering-quiz/",
@@ -2717,7 +2933,7 @@ var COURSE_PAGES = [
     "course": "ethcs303",
     "section": "quizzes",
     "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+    "courseTitle": "ETHCS303"
   },
   {
     "url": "/academics/other-courses/ethcs303/quizzes/15-introduction-to-ethical-hacking-quiz/",
@@ -2726,7 +2942,7 @@ var COURSE_PAGES = [
     "course": "ethcs303",
     "section": "quizzes",
     "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+    "courseTitle": "ETHCS303"
   },
   {
     "url": "/academics/other-courses/ethcs303/quizzes/16-business-ethics-quiz/",
@@ -2735,7 +2951,7 @@ var COURSE_PAGES = [
     "course": "ethcs303",
     "section": "quizzes",
     "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+    "courseTitle": "ETHCS303"
   },
   {
     "url": "/academics/other-courses/ethcs303/quizzes/17-cyber-laws-in-saudi-arabia-quiz/",
@@ -2744,169 +2960,169 @@ var COURSE_PAGES = [
     "course": "ethcs303",
     "section": "quizzes",
     "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+    "courseTitle": "ETHCS303"
   },
   {
     "url": "/academics/other-courses/ethcs303/slide-breakdowns/01-moral-systems-ethical-concepts-and-theories/",
-    "title": "ETHCS303 | Breakdown: Moral Systems, Ethical Concepts, and Theories",
+    "title": "Moral Systems Ethical Concepts And Theories",
     "track": "other-courses",
     "course": "ethcs303",
     "section": "slide-breakdowns",
     "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+    "courseTitle": "ETHCS303"
   },
   {
     "url": "/academics/other-courses/ethcs303/slide-breakdowns/02-kantianism/",
-    "title": "ETHCS303 | Breakdown: Kantianism",
+    "title": "Kantianism",
     "track": "other-courses",
     "course": "ethcs303",
     "section": "slide-breakdowns",
     "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+    "courseTitle": "ETHCS303"
   },
   {
     "url": "/academics/other-courses/ethcs303/slide-breakdowns/03-utilitarianism/",
-    "title": "ETHCS303 | Breakdown: Utilitarianism",
+    "title": "Utilitarianism",
     "track": "other-courses",
     "course": "ethcs303",
     "section": "slide-breakdowns",
     "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+    "courseTitle": "ETHCS303"
   },
   {
     "url": "/academics/other-courses/ethcs303/slide-breakdowns/04-social-contract-theory/",
-    "title": "ETHCS303 | Breakdown: Social Contract Theory",
+    "title": "Social Contract Theory",
     "track": "other-courses",
     "course": "ethcs303",
     "section": "slide-breakdowns",
     "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+    "courseTitle": "ETHCS303"
   },
   {
     "url": "/academics/other-courses/ethcs303/slide-breakdowns/05-professional-ethics/",
-    "title": "ETHCS303 | Breakdown: Professional Ethics",
+    "title": "Professional Ethics",
     "track": "other-courses",
     "course": "ethcs303",
     "section": "slide-breakdowns",
     "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+    "courseTitle": "ETHCS303"
   },
   {
     "url": "/academics/other-courses/ethcs303/slide-breakdowns/06-ethical-issues-in-systems-analysis-and-software-engineering/",
-    "title": "ETHCS303 | Breakdown: Ethical Issues in Systems Analysis and Software Engineering",
+    "title": "Ethical Issues In Systems Analysis And Software Engineering",
     "track": "other-courses",
     "course": "ethcs303",
     "section": "slide-breakdowns",
     "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+    "courseTitle": "ETHCS303"
   },
   {
     "url": "/academics/other-courses/ethcs303/slide-breakdowns/07-network-security-and-privacy/",
-    "title": "ETHCS303 | Breakdown: Network Security and Privacy",
+    "title": "Network Security And Privacy",
     "track": "other-courses",
     "course": "ethcs303",
     "section": "slide-breakdowns",
     "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+    "courseTitle": "ETHCS303"
   },
   {
     "url": "/academics/other-courses/ethcs303/slide-breakdowns/08-network-security-and-privacy-in-the-cloud/",
-    "title": "ETHCS303 | Breakdown: Network Security and Privacy in the Cloud",
+    "title": "Network Security And Privacy In The Cloud",
     "track": "other-courses",
     "course": "ethcs303",
     "section": "slide-breakdowns",
     "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+    "courseTitle": "ETHCS303"
   },
   {
     "url": "/academics/other-courses/ethcs303/slide-breakdowns/09-privacy-issues-in-cyberspace/",
-    "title": "ETHCS303 | Breakdown: Privacy Issues in Cyberspace",
+    "title": "Privacy Issues In Cyberspace",
     "track": "other-courses",
     "course": "ethcs303",
     "section": "slide-breakdowns",
     "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+    "courseTitle": "ETHCS303"
   },
   {
     "url": "/academics/other-courses/ethcs303/slide-breakdowns/10-social-media-ethical-legal-and-security-issues/",
-    "title": "ETHCS303 | Breakdown: Social Media Ethical, Legal, and Security Issues",
+    "title": "Social Media Ethical Legal And Security Issues",
     "track": "other-courses",
     "course": "ethcs303",
     "section": "slide-breakdowns",
     "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+    "courseTitle": "ETHCS303"
   },
   {
     "url": "/academics/other-courses/ethcs303/slide-breakdowns/11-social-engineering/",
-    "title": "ETHCS303 | Breakdown: Social Engineering",
+    "title": "Social Engineering",
     "track": "other-courses",
     "course": "ethcs303",
     "section": "slide-breakdowns",
     "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+    "courseTitle": "ETHCS303"
   },
   {
     "url": "/academics/other-courses/ethcs303/slide-breakdowns/12-introduction-to-ethical-hacking/",
-    "title": "ETHCS303 | Breakdown: Introduction to Ethical Hacking",
+    "title": "Introduction To Ethical Hacking",
     "track": "other-courses",
     "course": "ethcs303",
     "section": "slide-breakdowns",
     "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+    "courseTitle": "ETHCS303"
   },
   {
     "url": "/academics/other-courses/ethcs303/slide-breakdowns/13-business-ethics/",
-    "title": "ETHCS303 | Breakdown: Business Ethics",
+    "title": "Business Ethics",
     "track": "other-courses",
     "course": "ethcs303",
     "section": "slide-breakdowns",
     "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+    "courseTitle": "ETHCS303"
   },
   {
     "url": "/academics/other-courses/ethcs303/slide-breakdowns/14-intellectual-property-laws/",
-    "title": "ETHCS303 | Breakdown: Intellectual Property Laws",
+    "title": "Intellectual Property Laws",
     "track": "other-courses",
     "course": "ethcs303",
     "section": "slide-breakdowns",
     "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+    "courseTitle": "ETHCS303"
   },
   {
     "url": "/academics/other-courses/ethcs303/slide-breakdowns/15-cyber-laws-in-saudi-arabia/",
-    "title": "ETHCS303 | Breakdown: Cyber Laws in Saudi Arabia",
+    "title": "Cyber Laws In Saudi Arabia",
     "track": "other-courses",
     "course": "ethcs303",
     "section": "slide-breakdowns",
     "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+    "courseTitle": "ETHCS303"
   },
   {
     "url": "/academics/other-courses/ethcs303/slides/moral-systems-ethical-concepts-and-theories/",
-    "title": "ETHCS303 | Moral Systems Ethical Concepts And Theories",
+    "title": "Moral Systems Ethical Concepts And Theories",
     "track": "other-courses",
     "course": "ethcs303",
     "section": "slides",
     "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+    "courseTitle": "ETHCS303"
   },
   {
     "url": "/academics/other-courses/ethcs303/slides/kantianism/",
-    "title": "ETHCS303 | Kantianism",
+    "title": "Kantianism",
     "track": "other-courses",
     "course": "ethcs303",
     "section": "slides",
     "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+    "courseTitle": "ETHCS303"
   },
   {
     "url": "/academics/other-courses/ethcs303/slides/utilitarianism/",
-    "title": "ETHCS303 | Utilitarianism",
+    "title": "Utilitarianism",
     "track": "other-courses",
     "course": "ethcs303",
     "section": "slides",
     "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+    "courseTitle": "ETHCS303"
   },
   {
     "url": "/academics/other-courses/ethcs303/slides/social-contract-theory/",
@@ -2915,7 +3131,7 @@ var COURSE_PAGES = [
     "course": "ethcs303",
     "section": "slides",
     "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+    "courseTitle": "ETHCS303"
   },
   {
     "url": "/academics/other-courses/ethcs303/slides/ethical-issues-in-systems-analysis-and-software-engineering/",
@@ -2924,7 +3140,7 @@ var COURSE_PAGES = [
     "course": "ethcs303",
     "section": "slides",
     "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+    "courseTitle": "ETHCS303"
   },
   {
     "url": "/academics/other-courses/ethcs303/slides/network-security-and-privacy/",
@@ -2933,7 +3149,7 @@ var COURSE_PAGES = [
     "course": "ethcs303",
     "section": "slides",
     "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+    "courseTitle": "ETHCS303"
   },
   {
     "url": "/academics/other-courses/ethcs303/slides/network-security-and-privacy-in-the-cloud/",
@@ -2942,7 +3158,7 @@ var COURSE_PAGES = [
     "course": "ethcs303",
     "section": "slides",
     "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+    "courseTitle": "ETHCS303"
   },
   {
     "url": "/academics/other-courses/ethcs303/slides/privacy-issues-in-cyberspace/",
@@ -2951,7 +3167,7 @@ var COURSE_PAGES = [
     "course": "ethcs303",
     "section": "slides",
     "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+    "courseTitle": "ETHCS303"
   },
   {
     "url": "/academics/other-courses/ethcs303/slides/social-media-ethical-legal-security-issues/",
@@ -2960,16 +3176,16 @@ var COURSE_PAGES = [
     "course": "ethcs303",
     "section": "slides",
     "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+    "courseTitle": "ETHCS303"
   },
   {
     "url": "/academics/other-courses/ethcs303/slides/social-engineering/",
-    "title": "ETHCS303 | Social Engineering",
+    "title": "Social Engineering",
     "track": "other-courses",
     "course": "ethcs303",
     "section": "slides",
     "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+    "courseTitle": "ETHCS303"
   },
   {
     "url": "/academics/other-courses/ethcs303/slides/introduction-to-ethical-hacking/",
@@ -2978,7 +3194,7 @@ var COURSE_PAGES = [
     "course": "ethcs303",
     "section": "slides",
     "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+    "courseTitle": "ETHCS303"
   },
   {
     "url": "/academics/other-courses/ethcs303/slides/business-ethics/",
@@ -2987,16 +3203,16 @@ var COURSE_PAGES = [
     "course": "ethcs303",
     "section": "slides",
     "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+    "courseTitle": "ETHCS303"
   },
   {
     "url": "/academics/other-courses/ethcs303/slides/intellectual-property-laws/",
-    "title": "ETHCS303 | Intellectual Property Laws",
+    "title": "Intellectual Property Laws",
     "track": "other-courses",
     "course": "ethcs303",
     "section": "slides",
     "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+    "courseTitle": "ETHCS303"
   },
   {
     "url": "/academics/other-courses/ethcs303/slides/cyber-laws-in-saudi-arabia/",
@@ -3005,7 +3221,7 @@ var COURSE_PAGES = [
     "course": "ethcs303",
     "section": "slides",
     "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+    "courseTitle": "ETHCS303"
   },
   {
     "url": "/academics/other-courses/ethcs303/slides/professional-ethics/",
@@ -3014,7 +3230,7 @@ var COURSE_PAGES = [
     "course": "ethcs303",
     "section": "slides",
     "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+    "courseTitle": "ETHCS303"
   },
   {
     "url": "/academics/other-courses/isc113/exams/01-exam-1/",
@@ -3222,6 +3438,357 @@ var COURSE_PAGES = [
     "section": "slides",
     "courseUrl": "/academics/other-courses/isc113/",
     "courseTitle": "ISC113 // Islamic Economy"
+  },
+  {
+    "url": "/academics/other-courses/math221/extra-resources/worksheets/1-3/",
+    "title": "MATH221 | 1.3",
+    "track": "other-courses",
+    "course": "math221",
+    "section": "extra-resources",
+    "courseUrl": "/academics/other-courses/math221/",
+    "courseTitle": "MATH221 // Linear Algebra"
+  },
+  {
+    "url": "/academics/other-courses/math221/extra-resources/worksheets/2-1/",
+    "title": "MATH221 | 2.1",
+    "track": "other-courses",
+    "course": "math221",
+    "section": "extra-resources",
+    "courseUrl": "/academics/other-courses/math221/",
+    "courseTitle": "MATH221 // Linear Algebra"
+  },
+  {
+    "url": "/academics/other-courses/math221/extra-resources/worksheets/2-2/",
+    "title": "MATH221 | 2.2",
+    "track": "other-courses",
+    "course": "math221",
+    "section": "extra-resources",
+    "courseUrl": "/academics/other-courses/math221/",
+    "courseTitle": "MATH221 // Linear Algebra"
+  },
+  {
+    "url": "/academics/other-courses/math221/extra-resources/worksheets/2-3/",
+    "title": "MATH221 | 2.3",
+    "track": "other-courses",
+    "course": "math221",
+    "section": "extra-resources",
+    "courseUrl": "/academics/other-courses/math221/",
+    "courseTitle": "MATH221 // Linear Algebra"
+  },
+  {
+    "url": "/academics/other-courses/math221/extra-resources/worksheets/2-4/",
+    "title": "MATH221 | 2.4",
+    "track": "other-courses",
+    "course": "math221",
+    "section": "extra-resources",
+    "courseUrl": "/academics/other-courses/math221/",
+    "courseTitle": "MATH221 // Linear Algebra"
+  },
+  {
+    "url": "/academics/other-courses/math221/extra-resources/worksheets/2-5/",
+    "title": "MATH221 | 2.5",
+    "track": "other-courses",
+    "course": "math221",
+    "section": "extra-resources",
+    "courseUrl": "/academics/other-courses/math221/",
+    "courseTitle": "MATH221 // Linear Algebra"
+  },
+  {
+    "url": "/academics/other-courses/math221/extra-resources/worksheets/2-6/",
+    "title": "MATH221 | 2.6",
+    "track": "other-courses",
+    "course": "math221",
+    "section": "extra-resources",
+    "courseUrl": "/academics/other-courses/math221/",
+    "courseTitle": "MATH221 // Linear Algebra"
+  },
+  {
+    "url": "/academics/other-courses/math221/extra-resources/worksheets/3-1/",
+    "title": "MATH221 | 3.1",
+    "track": "other-courses",
+    "course": "math221",
+    "section": "extra-resources",
+    "courseUrl": "/academics/other-courses/math221/",
+    "courseTitle": "MATH221 // Linear Algebra"
+  },
+  {
+    "url": "/academics/other-courses/math221/extra-resources/worksheets/3-2/",
+    "title": "MATH221 | 3.2",
+    "track": "other-courses",
+    "course": "math221",
+    "section": "extra-resources",
+    "courseUrl": "/academics/other-courses/math221/",
+    "courseTitle": "MATH221 // Linear Algebra"
+  },
+  {
+    "url": "/academics/other-courses/math221/extra-resources/worksheets/3-3/",
+    "title": "MATH221 | 3.3",
+    "track": "other-courses",
+    "course": "math221",
+    "section": "extra-resources",
+    "courseUrl": "/academics/other-courses/math221/",
+    "courseTitle": "MATH221 // Linear Algebra"
+  },
+  {
+    "url": "/academics/other-courses/math221/extra-resources/worksheets/3-4/",
+    "title": "MATH221 | 3.4",
+    "track": "other-courses",
+    "course": "math221",
+    "section": "extra-resources",
+    "courseUrl": "/academics/other-courses/math221/",
+    "courseTitle": "MATH221 // Linear Algebra"
+  },
+  {
+    "url": "/academics/other-courses/math221/extra-resources/worksheets/3-5/",
+    "title": "MATH221 | 3.5",
+    "track": "other-courses",
+    "course": "math221",
+    "section": "extra-resources",
+    "courseUrl": "/academics/other-courses/math221/",
+    "courseTitle": "MATH221 // Linear Algebra"
+  },
+  {
+    "url": "/academics/other-courses/math221/extra-resources/worksheets/4-1/",
+    "title": "MATH221 | 4.1",
+    "track": "other-courses",
+    "course": "math221",
+    "section": "extra-resources",
+    "courseUrl": "/academics/other-courses/math221/",
+    "courseTitle": "MATH221 // Linear Algebra"
+  },
+  {
+    "url": "/academics/other-courses/math221/extra-resources/worksheets/4-3/",
+    "title": "MATH221 | 4.3",
+    "track": "other-courses",
+    "course": "math221",
+    "section": "extra-resources",
+    "courseUrl": "/academics/other-courses/math221/",
+    "courseTitle": "MATH221 // Linear Algebra"
+  },
+  {
+    "url": "/academics/other-courses/math221/extra-resources/worksheets/4-4/",
+    "title": "MATH221 | 4.4",
+    "track": "other-courses",
+    "course": "math221",
+    "section": "extra-resources",
+    "courseUrl": "/academics/other-courses/math221/",
+    "courseTitle": "MATH221 // Linear Algebra"
+  },
+  {
+    "url": "/academics/other-courses/math221/extra-resources/rules/",
+    "title": "MATH221 | Rules",
+    "track": "other-courses",
+    "course": "math221",
+    "section": "extra-resources",
+    "courseUrl": "/academics/other-courses/math221/",
+    "courseTitle": "MATH221 // Linear Algebra"
+  },
+  {
+    "url": "/academics/other-courses/math221/slides/1-1/",
+    "title": "MATH221 | 1.1",
+    "track": "other-courses",
+    "course": "math221",
+    "section": "slides",
+    "courseUrl": "/academics/other-courses/math221/",
+    "courseTitle": "MATH221 // Linear Algebra"
+  },
+  {
+    "url": "/academics/other-courses/math221/slides/1-2-1-3/",
+    "title": "MATH221 | 1.2, 1.3",
+    "track": "other-courses",
+    "course": "math221",
+    "section": "slides",
+    "courseUrl": "/academics/other-courses/math221/",
+    "courseTitle": "MATH221 // Linear Algebra"
+  },
+  {
+    "url": "/academics/other-courses/math221/slides/2-1/",
+    "title": "MATH221 | 2.1",
+    "track": "other-courses",
+    "course": "math221",
+    "section": "slides",
+    "courseUrl": "/academics/other-courses/math221/",
+    "courseTitle": "MATH221 // Linear Algebra"
+  },
+  {
+    "url": "/academics/other-courses/math221/slides/2-3/",
+    "title": "MATH221 | 2.3",
+    "track": "other-courses",
+    "course": "math221",
+    "section": "slides",
+    "courseUrl": "/academics/other-courses/math221/",
+    "courseTitle": "MATH221 // Linear Algebra"
+  },
+  {
+    "url": "/academics/other-courses/math221/slides/2-4/",
+    "title": "MATH221 | 2.4",
+    "track": "other-courses",
+    "course": "math221",
+    "section": "slides",
+    "courseUrl": "/academics/other-courses/math221/",
+    "courseTitle": "MATH221 // Linear Algebra"
+  },
+  {
+    "url": "/academics/other-courses/math221/slides/2-5/",
+    "title": "MATH221 | 2.5",
+    "track": "other-courses",
+    "course": "math221",
+    "section": "slides",
+    "courseUrl": "/academics/other-courses/math221/",
+    "courseTitle": "MATH221 // Linear Algebra"
+  },
+  {
+    "url": "/academics/other-courses/math221/slides/3-1/",
+    "title": "MATH221 | 3.1",
+    "track": "other-courses",
+    "course": "math221",
+    "section": "slides",
+    "courseUrl": "/academics/other-courses/math221/",
+    "courseTitle": "MATH221 // Linear Algebra"
+  },
+  {
+    "url": "/academics/other-courses/math221/slides/3-2/",
+    "title": "MATH221 | 3.2",
+    "track": "other-courses",
+    "course": "math221",
+    "section": "slides",
+    "courseUrl": "/academics/other-courses/math221/",
+    "courseTitle": "MATH221 // Linear Algebra"
+  },
+  {
+    "url": "/academics/other-courses/math221/slides/3-3/",
+    "title": "MATH221 | 3.3",
+    "track": "other-courses",
+    "course": "math221",
+    "section": "slides",
+    "courseUrl": "/academics/other-courses/math221/",
+    "courseTitle": "MATH221 // Linear Algebra"
+  },
+  {
+    "url": "/academics/other-courses/math221/slides/3-4/",
+    "title": "MATH221 | 3.4",
+    "track": "other-courses",
+    "course": "math221",
+    "section": "slides",
+    "courseUrl": "/academics/other-courses/math221/",
+    "courseTitle": "MATH221 // Linear Algebra"
+  },
+  {
+    "url": "/academics/other-courses/math221/slides/3-5/",
+    "title": "MATH221 | 3.5",
+    "track": "other-courses",
+    "course": "math221",
+    "section": "slides",
+    "courseUrl": "/academics/other-courses/math221/",
+    "courseTitle": "MATH221 // Linear Algebra"
+  },
+  {
+    "url": "/academics/other-courses/math221/slides/4-1/",
+    "title": "MATH221 | 4.1",
+    "track": "other-courses",
+    "course": "math221",
+    "section": "slides",
+    "courseUrl": "/academics/other-courses/math221/",
+    "courseTitle": "MATH221 // Linear Algebra"
+  },
+  {
+    "url": "/academics/other-courses/math221/slides/4-3/",
+    "title": "MATH221 | 4.3",
+    "track": "other-courses",
+    "course": "math221",
+    "section": "slides",
+    "courseUrl": "/academics/other-courses/math221/",
+    "courseTitle": "MATH221 // Linear Algebra"
+  },
+  {
+    "url": "/academics/other-courses/math221/slides/4-4/",
+    "title": "MATH221 | 4.4",
+    "track": "other-courses",
+    "course": "math221",
+    "section": "slides",
+    "courseUrl": "/academics/other-courses/math221/",
+    "courseTitle": "MATH221 // Linear Algebra"
+  },
+  {
+    "url": "/academics/other-courses/math221/slides/5-1/",
+    "title": "MATH221 | 5.1",
+    "track": "other-courses",
+    "course": "math221",
+    "section": "slides",
+    "courseUrl": "/academics/other-courses/math221/",
+    "courseTitle": "MATH221 // Linear Algebra"
+  },
+  {
+    "url": "/academics/other-courses/math221/slides/5-2/",
+    "title": "MATH221 | 5.2",
+    "track": "other-courses",
+    "course": "math221",
+    "section": "slides",
+    "courseUrl": "/academics/other-courses/math221/",
+    "courseTitle": "MATH221 // Linear Algebra"
+  },
+  {
+    "url": "/academics/other-courses/math221/slides/5-3/",
+    "title": "MATH221 | 5.3",
+    "track": "other-courses",
+    "course": "math221",
+    "section": "slides",
+    "courseUrl": "/academics/other-courses/math221/",
+    "courseTitle": "MATH221 // Linear Algebra"
+  },
+  {
+    "url": "/academics/other-courses/math221/slides/6-1/",
+    "title": "MATH221 | 6.1",
+    "track": "other-courses",
+    "course": "math221",
+    "section": "slides",
+    "courseUrl": "/academics/other-courses/math221/",
+    "courseTitle": "MATH221 // Linear Algebra"
+  },
+  {
+    "url": "/academics/other-courses/math221/slides/6-2/",
+    "title": "MATH221 | 6.2",
+    "track": "other-courses",
+    "course": "math221",
+    "section": "slides",
+    "courseUrl": "/academics/other-courses/math221/",
+    "courseTitle": "MATH221 // Linear Algebra"
+  },
+  {
+    "url": "/academics/other-courses/math221/slides/6-3/",
+    "title": "MATH221 | 6.3",
+    "track": "other-courses",
+    "course": "math221",
+    "section": "slides",
+    "courseUrl": "/academics/other-courses/math221/",
+    "courseTitle": "MATH221 // Linear Algebra"
+  },
+  {
+    "url": "/academics/other-courses/math221/slides/7-1/",
+    "title": "MATH221 | 7.1",
+    "track": "other-courses",
+    "course": "math221",
+    "section": "slides",
+    "courseUrl": "/academics/other-courses/math221/",
+    "courseTitle": "MATH221 // Linear Algebra"
+  },
+  {
+    "url": "/academics/other-courses/math221/slides/7-2/",
+    "title": "MATH221 | 7.2",
+    "track": "other-courses",
+    "course": "math221",
+    "section": "slides",
+    "courseUrl": "/academics/other-courses/math221/",
+    "courseTitle": "MATH221 // Linear Algebra"
+  },
+  {
+    "url": "/academics/other-courses/math221/slides/7-3/",
+    "title": "MATH221 | 7.3",
+    "track": "other-courses",
+    "course": "math221",
+    "section": "slides",
+    "courseUrl": "/academics/other-courses/math221/",
+    "courseTitle": "MATH221 // Linear Algebra"
   },
   {
     "url": "/academics/other-courses/phy105/extra-resources/final-experiments-summary/",
@@ -4727,10 +5294,12 @@ var COURSE_MANIFEST = {
   "cs331": 46,
   "cs340": 36,
   "cys401": 29,
+  "com201": 24,
   "eng101": 37,
   "eng103": 7,
   "ethcs303": 79,
   "isc113": 23,
+  "math221": 39,
   "phy105": 17,
   "phy205": 8,
   "sci101": 9,
@@ -4750,10 +5319,12 @@ var COURSE_MANIFEST_BY_TRACK = {
   "computer-science/cs331": 46,
   "computer-science/cs340": 36,
   "cybersecurity/cys401": 29,
+  "other-courses/com201": 24,
   "other-courses/eng101": 37,
   "other-courses/eng103": 7,
   "other-courses/ethcs303": 79,
   "other-courses/isc113": 23,
+  "other-courses/math221": 39,
   "other-courses/phy105": 17,
   "other-courses/phy205": 8,
   "other-courses/sci101": 9,

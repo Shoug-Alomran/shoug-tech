@@ -250,6 +250,40 @@ COURSES: dict[str, dict[str, Any]] = {
         "prereq": "MATH002",
         "status": "available",
     },
+    "MATH221": {
+        "track": "Other Courses",
+        "path": "docs/academics/other-courses/math221/",
+        "url": "/academics/other-courses/math221/",
+        "sections": {
+            "Overview": "/academics/other-courses/math221/",
+            "Slide Breakdowns": "/academics/other-courses/math221/slide-breakdowns/",
+            "Slides": "/academics/other-courses/math221/slides/",
+            "Study Material": "/academics/other-courses/math221/extra-resources/",
+            "Quizzes": "/academics/other-courses/math221/quizzes/",
+        },
+        "title_override": "Linear Algebra",
+        "description": "A linear algebra course supported by chapter summaries, worked material, matrix methods, pivoting strategies, and matrix inversion resources.",
+        "credits": "3",
+        "prereq": "TBD",
+        "status": "available",
+    },
+    "COM201": {
+        "track": "Other Courses",
+        "path": "docs/academics/other-courses/com201/",
+        "url": "/academics/other-courses/com201/",
+        "sections": {
+            "Overview": "/academics/other-courses/com201/",
+            "Slide Breakdowns": "/academics/other-courses/com201/slide-breakdowns/",
+            "Slides": "/academics/other-courses/com201/slides/",
+            "Study Material": "/academics/other-courses/com201/extra-resources/",
+            "Exams": "/academics/other-courses/com201/exams/",
+        },
+        "title_override": "Introduction to Communication Skills",
+        "description": "An introduction to communication in interpersonal, organizational, mass, and intercultural contexts, including verbal, nonverbal, technological, and cultural communication.",
+        "credits": "3",
+        "prereq": "None",
+        "status": "available",
+    },
     "ENG101": {
         "track": "Other Courses",
         "path": "docs/Academics/other/english/ENG101/overview.md",
@@ -318,9 +352,9 @@ TRACKS: dict[str, dict[str, Any]] = {
     },
     "other-courses": {
         "label": "OTHER COURSES",
-        "title": "6 courses.<br>One English hub,<br>and shared resources.",
-        "meta": ["General Track", "6 Courses + English Hub", "Writing", "Ethics", "Science"],
-        "courses": ["ETHCS303", "PHY105", "PHY205", "SCI101", "STAT101", "ISC113"],
+        "title": "8 courses.<br>One English hub,<br>and shared resources.",
+        "meta": ["General Track", "8 Courses + English Hub", "Writing", "Ethics", "Science"],
+        "courses": ["ETHCS303", "PHY105", "PHY205", "SCI101", "STAT101", "MATH221", "COM201", "ISC113"],
         "url": "/track-other-courses.html",
     },
 }
@@ -1932,7 +1966,18 @@ LIGHT_MODE_STYLESHEET = '    <link rel="stylesheet" href="/styles/light-mode.css
 
 
 def read_template(name: str) -> str:
-    return TEMPLATES[name].read_text()
+    template = TEMPLATES[name]
+    if template.exists():
+        return template.read_text()
+    fallbacks = {
+        "course": ROOT / "docs/academics/other-courses/stat101/index.html",
+        "chapter_index": ROOT / "docs/academics/other-courses/stat101/slides/index.html",
+        "content_viewer": ROOT / "docs/academics/other-courses/phy105/slides/chapter-9-momentum/index.html",
+    }
+    fallback = fallbacks.get(name)
+    if fallback and fallback.exists():
+        return fallback.read_text()
+    return template.read_text()
 
 
 def write(name: str, text: str) -> None:
@@ -2459,7 +2504,11 @@ _MKDOCS_NAV: list[object] | None = None
 def mkdocs_nav() -> list[object]:
     global _MKDOCS_NAV
     if _MKDOCS_NAV is None:
-        data = yaml.load((ROOT / "mkdocs.yml").read_text(), Loader=yaml.Loader)
+        config_path = ROOT / "mkdocs.yml"
+        if not config_path.exists():
+            _MKDOCS_NAV = []
+            return _MKDOCS_NAV
+        data = yaml.load(config_path.read_text(), Loader=yaml.Loader)
         _MKDOCS_NAV = list(data.get("nav", []))
     return _MKDOCS_NAV
 
@@ -2557,7 +2606,8 @@ def section_candidate_dirs(code: str, label: str) -> list[Path]:
             candidates.append(section_path)
         elif section_path.stem.lower() in {"overview", "intro", "index"}:
             candidates.append(section_path.parent)
-    course_root = (ROOT / str(COURSES[code].get("path", ""))).parent
+    configured_path = ROOT / str(COURSES[code].get("path", ""))
+    course_root = configured_path if configured_path.is_dir() else configured_path.parent
     lower = clean_text(label).lower()
     aliases = {
         "slide breakdowns": ["slide-breakdowns", "chapters", "Chapter-*", "chapter-*"],
@@ -2566,7 +2616,7 @@ def section_candidate_dirs(code: str, label: str) -> list[Path]:
         "mindmap": ["Mindmap", "mindmap"],
         "mindmaps": ["Mindmap", "mindmap"],
         "summary": ["summary"],
-        "study material": ["study-material"],
+        "study material": ["study-material", "extra-resources"],
         "topics": ["topics"],
         "exams": ["Exams", "exams"],
         "extra resources": ["extra-resources"],
@@ -3505,7 +3555,15 @@ def section_page(code: str, label: str) -> str:
                 </div>
                 {"".join(rows)}
             </div>'''
-    text = re.sub(r'<div class="directory-container"[^>]*>.*?</script>\s*</div>', replacement, text, count=1, flags=re.S)
+    # The fallback chapter-index template places the university-rights notice
+    # immediately after the directory. Replace up to that stable boundary so
+    # inherited rows from the template can never leak into another course.
+    directory_start = text.find('<div class="directory-container"')
+    rights_start = text.find('\n\n            <div style="margin: 32px', directory_start)
+    if directory_start != -1 and rights_start != -1:
+        text = text[:directory_start] + replacement.strip() + text[rights_start:]
+    else:
+        text = re.sub(r'<div class="directory-container"[^>]*>.*?</script>\s*</div>', replacement, text, count=1, flags=re.S)
     text = re.sub(r'>SE311<', f'>{data["code"]}<', text)
     text = re.sub(r'>SOFTWARE_ENGINEERING<', f'>{html.escape(str(data["track"]).upper().replace(" ", "_"))}<', text)
     text = replace_academic_sidebar(text, str(data["code"]), label)
@@ -4079,6 +4137,23 @@ def main() -> None:
     if OUT.exists():
         shutil.rmtree(OUT)
     OUT.mkdir(exist_ok=True)
+    requested_codes = [code.strip().upper() for code in os.environ.get("SHOUG_GENERATE_COURSES_ONLY", "").split(",") if code.strip()]
+    if requested_codes:
+        for code in requested_codes:
+            if code not in COURSES:
+                raise KeyError(f"Unknown course code: {code}")
+            write_url(str(COURSES[code]["url"]), course_page(code))
+            for label in generated_sections(code):
+                if label == "Overview":
+                    continue
+                write_url(section_url(code, label), section_page(code, label))
+                items = section_items(code, label)
+                for index, (item_label, source_url) in enumerate(items, start=1):
+                    write_url(viewer_url(code, label, item_label, index), viewer_page(code, label, item_label, source_url, index, len(items)))
+        html_files = sorted(p.relative_to(OUT).as_posix() for p in OUT.rglob("*.html"))
+        (OUT / "MANIFEST.txt").write_text("\n".join(html_files) + "\n")
+        print(f"Generated {len(html_files)} course HTML files in {OUT}")
+        return
     for template, filename in STATIC_OUTPUTS.items():
         if template == "academics":
             write(filename, update_academics_hub())
