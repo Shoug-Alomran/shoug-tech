@@ -202,6 +202,7 @@
       "body.shoug-light-mode .shoug-drop-email,body.shoug-light-mode .shoug-notif-section{border-bottom-color:rgba(0,0,0,.08)}",
       "body.shoug-light-mode .shoug-notif-text{color:#3a3448}",
       "body.shoug-light-mode .shoug-notif-text strong{color:#16111f}",
+      "@media(max-width:760px){body.mobile-nav-open .shoug-site-header,body.sidebar-open .shoug-site-header,body.profile-open .shoug-site-header{overflow:visible!important}.shoug-user-dropdown{position:fixed!important;top:74px!important;left:14px!important;right:14px!important;width:auto!important;min-width:0!important;max-width:none!important;max-height:calc(100vh - 96px)!important;max-height:calc(100dvh - 96px)!important;overflow:auto!important;z-index:10020!important}}",
       /* page comment section */
       "#shoug-page-comments{width:100%;max-width:var(--container-w,1400px);margin:56px auto 0;padding:0 max(4vw,20px) 48px;font-family:'JetBrains Mono',monospace;border-top:1px solid rgba(184,41,234,.14);box-sizing:border-box;}",
       /* header strip with brand accent */
