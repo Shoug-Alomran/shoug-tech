@@ -2523,7 +2523,7 @@ var COURSE_PAGES = [
   },
   {
     "url": "/academics/other-courses/ethcs303/extra-resources/01-ethcs-303-summary/",
-    "title": "Ethcs 303 Summary",
+    "title": "Summary",
     "track": "other-courses",
     "course": "ethcs303",
     "section": "extra-resources",
