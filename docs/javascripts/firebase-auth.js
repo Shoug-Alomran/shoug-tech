@@ -113,7 +113,7 @@
       /* dropdown */
       ".shoug-user-dropdown{position:absolute;top:calc(100% + 8px);right:0;background:#0a0514;border:1px solid rgba(184,41,234,.3);width:min(280px,calc(100vw - 28px));min-width:220px;max-width:calc(100vw - 28px);max-height:calc(100vh - 96px);overflow:auto;z-index:99998;display:none;flex-direction:column;box-shadow:0 8px 32px rgba(0,0,0,.5);box-sizing:border-box}",
       "html[dir='rtl'] .shoug-user-dropdown,body.shoug-arabic-mode .shoug-user-dropdown{left:0;right:auto;direction:rtl;text-align:right}",
-      ".shoug-user-btn.open .shoug-user-dropdown{display:flex}",
+      "body.profile-open .shoug-user-dropdown{display:flex}",
       ".shoug-drop-email{padding:10px 14px;font-family:'JetBrains Mono',monospace;font-size:.6rem;color:#4a4258;border-bottom:1px solid rgba(255,255,255,.06);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}",
       ".shoug-drop-link{display:block;padding:10px 14px;font-family:'JetBrains Mono',monospace;font-size:.68rem;color:#f8f7fb;text-decoration:none;letter-spacing:.06em;cursor:pointer;border:none;background:transparent;text-align:left;width:100%;transition:background 120ms,color 120ms;box-sizing:border-box}",
       "html[dir='rtl'] .shoug-drop-link,body.shoug-arabic-mode .shoug-drop-link{text-align:right}",
@@ -661,8 +661,7 @@
         }
         // Don't wipe the visible list while the dropdown is open (happens right after
         // markNotifsRead fires). The list will clear naturally the next time it opens.
-        var btn = document.getElementById("shoug-fb-user");
-        var dropdownOpen = btn && btn.classList.contains("open");
+        var dropdownOpen = document.body.classList.contains("profile-open");
         if (!dropdownOpen || count > 0) {
           renderNotifDropdown(snap.docs);
         }
@@ -815,7 +814,7 @@
   // ── Header button ─────────────────────────────────────────────────────────
 
   function keepUserDropdownInViewport(btn) {
-    if (!btn || !btn.classList.contains("open")) return;
+    if (!btn || !document.body.classList.contains("profile-open")) return;
     var dropdown = btn.querySelector(".shoug-user-dropdown");
     if (!dropdown) return;
     dropdown.style.transform = "";
@@ -861,32 +860,19 @@
       ].join("");
       actions.insertBefore(el, actions.firstChild);
 
-      el.addEventListener("click", function (e) {
-        var wasOpen = el.classList.contains("open");
-        el.classList.toggle("open");
-        if (!wasOpen) {
-          document.body.classList.remove("mobile-nav-open", "sidebar-open");
-          var menuBtn = document.querySelector(".shoug-header-menu-btn");
-          var dirBtn = document.querySelector(".shoug-directory-btn");
-          if (menuBtn) {
-            menuBtn.setAttribute("aria-expanded", "false");
-            menuBtn.setAttribute("aria-label", "Open site menu");
-          }
-          if (dirBtn) {
-            dirBtn.setAttribute("aria-expanded", "false");
-            dirBtn.setAttribute("aria-label", "Open academic directory");
-          }
+      // Open/close itself is handled by mobile-navigation.js — same
+      // body-class mechanism as the MENU and Dir toggles, so all three
+      // overlays stay mutually exclusive and behave consistently. We just
+      // react to the resulting event for viewport clamping and marking
+      // notifications read on close.
+      document.addEventListener("shoug:profile-toggle", function (e) {
+        if (e.detail.open) {
+          keepUserDropdownInViewport(el);
+        } else {
+          markNotifsRead(user);
         }
-        keepUserDropdownInViewport(el);
-        e.stopPropagation();
-        // Mark read when closing (so user can see notifications while dropdown is open)
-        if (wasOpen) markNotifsRead(user);
       });
       window.addEventListener("resize", function () { keepUserDropdownInViewport(el); });
-      document.addEventListener("click", function () {
-        if (el.classList.contains("open")) markNotifsRead(user);
-        el.classList.remove("open");
-      });
       el.querySelector("#shoug-signout").addEventListener("click", function (e) {
         e.stopPropagation();
         firebase.auth().signOut();

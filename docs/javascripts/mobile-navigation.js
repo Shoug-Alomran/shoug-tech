@@ -8,14 +8,19 @@
     primaryNav.id = "shoug-mobile-nav";
   }
 
-  function closeUserDropdown() {
-    var userBtn = document.querySelector(".shoug-user-btn.open");
-    if (userBtn) userBtn.classList.remove("open");
+  // The profile avatar button is injected later by firebase-auth.js (async,
+  // after auth state resolves), so it's driven the same way the menu/
+  // directory toggles are — a body class flipped from here — rather than a
+  // class on the button itself. That keeps all three overlays on one shared,
+  // mutually-exclusive open/close mechanism instead of each having its own.
+  function setProfile(open) {
+    document.body.classList.toggle("profile-open", open);
+    document.dispatchEvent(new CustomEvent("shoug:profile-toggle", { detail: { open: open } }));
   }
 
   function setMobileMenu(open) {
     document.body.classList.toggle("mobile-nav-open", open);
-    if (open) closeUserDropdown();
+    if (open) setProfile(false);
     if (mobileMenuButton) {
       mobileMenuButton.setAttribute("aria-expanded", open ? "true" : "false");
       mobileMenuButton.setAttribute("aria-label", open ? "Close site menu" : "Open site menu");
@@ -24,12 +29,28 @@
 
   function setDirectory(open) {
     document.body.classList.toggle("sidebar-open", open);
-    if (open) closeUserDropdown();
+    if (open) setProfile(false);
     if (directoryButton) {
       directoryButton.setAttribute("aria-expanded", open ? "true" : "false");
       directoryButton.setAttribute("aria-label", open ? "Close academic directory" : "Open academic directory");
     }
   }
+
+  document.addEventListener("click", function (event) {
+    var target = event.target;
+    var profileBtn = target.closest && target.closest("#shoug-fb-user");
+    var insideDropdown = target.closest && target.closest(".shoug-user-dropdown");
+    if (profileBtn && !insideDropdown) {
+      var next = !document.body.classList.contains("profile-open");
+      setMobileMenu(false);
+      setDirectory(false);
+      setProfile(next);
+      return;
+    }
+    if (!insideDropdown && document.body.classList.contains("profile-open")) {
+      setProfile(false);
+    }
+  });
 
   if (mobileMenuButton) {
     mobileMenuButton.addEventListener("click", function () {
@@ -62,6 +83,7 @@
     if (event.key === "Escape") {
       setMobileMenu(false);
       setDirectory(false);
+      setProfile(false);
     }
   });
 
