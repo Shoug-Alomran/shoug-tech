@@ -2434,12 +2434,19 @@
     injectThemeToggle();
     injectBlueprintCredit();
 
-    // Show contextual guidance when the visitor pauses over something clickable,
-    // or after 2.5 seconds without interacting with the page. Completion is
-    // tracked per section/context inside showOnboarding().
+    // Show contextual guidance when the visitor pauses over something clickable.
+    // Completion is tracked per section/context inside showOnboarding().
+    //
+    // There used to also be a blind idle-timeout trigger (pop the tour after
+    // 2.5s of no interaction, regardless of what the visitor was about to do).
+    // That overlay sits at a very high z-index and swallows the next tap no
+    // matter what it lands on, so a visitor who paused a couple seconds before
+    // tapping MENU/their avatar/anything would have that tap eaten by a tour
+    // popup instead — looking exactly like "the menu is hidden/unclickable."
+    // Removed in favor of only the deliberate hover-and-wait / click-into-
+    // content triggers below, which can't ambush an in-flight tap.
     (function scheduleContextualGuidance() {
       var started = false;
-      var idleTimer = null;
       var hoverTimer = null;
       var hoverTarget = null;
       var interactiveSelector = [
@@ -2480,15 +2487,10 @@
       ].join(",");
 
       function cleanup() {
-        clearTimeout(idleTimer);
         clearTimeout(hoverTimer);
         document.removeEventListener("pointerover", onPointerOver);
         document.removeEventListener("pointerout", onPointerOut);
         document.removeEventListener("click", onContextClick, true);
-        document.removeEventListener("pointermove", resetIdle);
-        document.removeEventListener("pointerdown", resetIdle);
-        document.removeEventListener("keydown", resetIdle);
-        window.removeEventListener("scroll", resetIdle);
       }
 
       function start(trigger) {
@@ -2503,25 +2505,9 @@
       // (account menu, mobile nav/directory toggles) must never be hijacked
       // by the tour — a click here should just do its normal job.
       var tourExcludedSelector = "#shoug-fb-user, .shoug-user-dropdown, .shoug-auth-btn, .shoug-header-menu-btn, .shoug-directory-btn";
-      var pointerOverExcluded = false;
-
-      function scheduleIdle() {
-        clearTimeout(idleTimer);
-        idleTimer = setTimeout(function(){
-          if (pointerOverExcluded) { scheduleIdle(); return; }
-          start(null);
-        }, 2500);
-      }
-
-      function resetIdle() {
-        if (!started) scheduleIdle();
-      }
 
       function onPointerOver(event) {
-        if (event.target && event.target.closest && event.target.closest(tourExcludedSelector)) {
-          pointerOverExcluded = true;
-          return;
-        }
+        if (event.target && event.target.closest && event.target.closest(tourExcludedSelector)) return;
         var target = event.target && event.target.closest
           ? event.target.closest(interactiveSelector)
           : null;
@@ -2532,18 +2518,11 @@
       }
 
       function onPointerOut(event) {
-        if (pointerOverExcluded) {
-          var stillInside = event.relatedTarget && event.relatedTarget.closest
-            ? event.relatedTarget.closest(tourExcludedSelector)
-            : null;
-          if (!stillInside) pointerOverExcluded = false;
-        }
         if (!hoverTarget) return;
         var next = event.relatedTarget;
         if (next && hoverTarget.contains(next)) return;
         hoverTarget = null;
         clearTimeout(hoverTimer);
-        resetIdle();
       }
 
       function onContextClick(event) {
@@ -2563,11 +2542,6 @@
       document.addEventListener("pointerover", onPointerOver, { passive: true });
       document.addEventListener("pointerout", onPointerOut, { passive: true });
       document.addEventListener("click", onContextClick, true);
-      document.addEventListener("pointermove", resetIdle, { passive: true });
-      document.addEventListener("pointerdown", resetIdle, { passive: true });
-      document.addEventListener("keydown", resetIdle);
-      window.addEventListener("scroll", resetIdle, { passive: true });
-      scheduleIdle();
     })();
 
     // Pick up the result of a signInWithRedirect (GitHub fallback on iOS/Safari)
