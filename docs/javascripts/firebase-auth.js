@@ -2499,9 +2499,18 @@
         return opened;
       }
 
+      // Elements with their own dedicated, always-available interaction
+      // (account menu, mobile nav/directory toggles) must never be hijacked
+      // by the tour — a click here should just do its normal job.
+      var tourExcludedSelector = "#shoug-fb-user, .shoug-user-dropdown, .shoug-auth-btn, .shoug-header-menu-btn, .shoug-directory-btn";
+      var pointerOverExcluded = false;
+
       function scheduleIdle() {
         clearTimeout(idleTimer);
-        idleTimer = setTimeout(function(){ start(null); }, 2500);
+        idleTimer = setTimeout(function(){
+          if (pointerOverExcluded) { scheduleIdle(); return; }
+          start(null);
+        }, 2500);
       }
 
       function resetIdle() {
@@ -2509,6 +2518,10 @@
       }
 
       function onPointerOver(event) {
+        if (event.target && event.target.closest && event.target.closest(tourExcludedSelector)) {
+          pointerOverExcluded = true;
+          return;
+        }
         var target = event.target && event.target.closest
           ? event.target.closest(interactiveSelector)
           : null;
@@ -2519,6 +2532,12 @@
       }
 
       function onPointerOut(event) {
+        if (pointerOverExcluded) {
+          var stillInside = event.relatedTarget && event.relatedTarget.closest
+            ? event.relatedTarget.closest(tourExcludedSelector)
+            : null;
+          if (!stillInside) pointerOverExcluded = false;
+        }
         if (!hoverTarget) return;
         var next = event.relatedTarget;
         if (next && hoverTarget.contains(next)) return;
@@ -2528,6 +2547,7 @@
       }
 
       function onContextClick(event) {
+        if (event.target && event.target.closest && event.target.closest(tourExcludedSelector)) return;
         var target = event.target && event.target.closest
           ? event.target.closest(interactiveSelector)
           : null;
