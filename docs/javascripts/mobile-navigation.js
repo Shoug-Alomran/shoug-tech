@@ -8,8 +8,14 @@
     primaryNav.id = "shoug-mobile-nav";
   }
 
+  function closeUserDropdown() {
+    var userBtn = document.querySelector(".shoug-user-btn.open");
+    if (userBtn) userBtn.classList.remove("open");
+  }
+
   function setMobileMenu(open) {
     document.body.classList.toggle("mobile-nav-open", open);
+    if (open) closeUserDropdown();
     if (mobileMenuButton) {
       mobileMenuButton.setAttribute("aria-expanded", open ? "true" : "false");
       mobileMenuButton.setAttribute("aria-label", open ? "Close site menu" : "Open site menu");
@@ -18,6 +24,7 @@
 
   function setDirectory(open) {
     document.body.classList.toggle("sidebar-open", open);
+    if (open) closeUserDropdown();
     if (directoryButton) {
       directoryButton.setAttribute("aria-expanded", open ? "true" : "false");
       directoryButton.setAttribute("aria-label", open ? "Close academic directory" : "Open academic directory");

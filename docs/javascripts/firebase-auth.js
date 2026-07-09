@@ -864,6 +864,19 @@
       el.addEventListener("click", function (e) {
         var wasOpen = el.classList.contains("open");
         el.classList.toggle("open");
+        if (!wasOpen) {
+          document.body.classList.remove("mobile-nav-open", "sidebar-open");
+          var menuBtn = document.querySelector(".shoug-header-menu-btn");
+          var dirBtn = document.querySelector(".shoug-directory-btn");
+          if (menuBtn) {
+            menuBtn.setAttribute("aria-expanded", "false");
+            menuBtn.setAttribute("aria-label", "Open site menu");
+          }
+          if (dirBtn) {
+            dirBtn.setAttribute("aria-expanded", "false");
+            dirBtn.setAttribute("aria-label", "Open academic directory");
+          }
+        }
         keepUserDropdownInViewport(el);
         e.stopPropagation();
         // Mark read when closing (so user can see notifications while dropdown is open)
