@@ -1902,6 +1902,9 @@
     document.body.appendChild(arrowEl);
     document.body.appendChild(card);
 
+    var activeTargetEl = null;
+    var activePosition = "bottom";
+
     function clearHighlight() {
       document.querySelectorAll(".ob-hl").forEach(function(el){
         el.classList.remove("ob-hl");
@@ -1940,10 +1943,47 @@
 
       arrowEl.style.display = "none";
 
+      if (!rect) {
+        top = Math.max(8, Math.round((vh - ch) / 2));
+        left = Math.max(8, Math.round((vw - cw) / 2));
+        card.style.top = top + "px";
+        card.style.left = left + "px";
+        return;
+      }
+
       var midX = rect.left + rect.width / 2;
       var midY = rect.top + rect.height / 2;
+      var targetAbove = rect.bottom < 0;
+      var targetBelow = rect.top > vh;
+      var targetOffscreenY = targetAbove || targetBelow;
+      var anchoredMidX = Math.min(Math.max(midX, 24), vw - 24);
 
-      if (position === "bottom") {
+      if (targetOffscreenY) {
+        top = targetAbove ? 12 : vh - ch - 12;
+        left = Math.min(Math.max(anchoredMidX - cw / 2, 12), vw - cw - 12);
+        arrowEl.style.cssText = targetAbove ? [
+          "position:fixed",
+          "left:" + (anchoredMidX - 7) + "px",
+          "top:0",
+          "border-left:7px solid transparent",
+          "border-right:7px solid transparent",
+          "border-bottom:12px solid #b829ea",
+          "z-index:" + (CARD_Z + 2),
+          "pointer-events:none",
+          "display:block"
+        ].join(";") : [
+          "position:fixed",
+          "left:" + (anchoredMidX - 7) + "px",
+          "top:" + (vh - 12) + "px",
+          "border-left:7px solid transparent",
+          "border-right:7px solid transparent",
+          "border-top:12px solid #b829ea",
+          "z-index:" + (CARD_Z + 2),
+          "pointer-events:none",
+          "display:block"
+        ].join(";");
+      } else if (position === "bottom") {
+
           var canFitBelow = rect.bottom + GAP + ch <= vh - 12;
           var canFitAbove = rect.top - GAP - ch >= 8;
           var placeBelow = canFitBelow || !canFitAbove;
@@ -2054,6 +2094,17 @@
       });
     }
 
+    function repositionActiveCard() {
+      if (!activeTargetEl || !document.body.contains(activeTargetEl)) return;
+      var rect = activeTargetEl.getBoundingClientRect();
+      if (rect.width === 0 && rect.height === 0) return;
+      positionCard(rect, activePosition);
+    }
+
+    function onViewportChange() {
+      repositionActiveCard();
+    }
+
     function render() {
       var s = steps[current];
       var targetEl = s.target ? s.target() : null;
@@ -2103,6 +2154,8 @@
       dimEl.style.zIndex = (HDR_Z - 1) + "";
 
       highlight(targetEl);
+      activeTargetEl = targetEl;
+      activePosition = s.position || "bottom";
 
       card.innerHTML = [
         '<div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,#b829ea,rgba(184,41,234,.08));"></div>',
@@ -2120,7 +2173,7 @@
         '</div>',
       ].join("");
 
-      requestAnimationFrame(function(){ positionCard(rect, s.position); });
+      requestAnimationFrame(function(){ positionCard(rect, activePosition); });
 
       document.getElementById("ob-next").addEventListener("click", function(){
         if (current < steps.length - 1) { current++; render(); } else { finish(); }
@@ -2132,6 +2185,8 @@
     function closeTip() {
       localStorage.setItem(storageKey, "1");
       clearHighlight();
+      window.removeEventListener("resize", onViewportChange);
+      window.removeEventListener("scroll", onViewportChange);
       if (navMenuOpenedByOnboarding) {
         document.body.classList.remove("mobile-nav-open");
         navMenuOpenedByOnboarding = false;
@@ -2183,17 +2238,8 @@
     // Re-position on viewport changes (orientation flip, mobile browser
     // address-bar collapse/expand, on-screen keyboard) so the card never
     // ends up stuck off-screen from a stale top/left.
-    window.addEventListener("resize", function(){
-      var s = steps[current];
-      var targetEl = s.target ? s.target() : null;
-      var rect = targetEl ? targetEl.getBoundingClientRect() : null;
-      if (rect && (
-        (rect.width === 0 && rect.height === 0) ||
-        rect.right <= 0 || rect.bottom <= 0 ||
-        rect.left >= window.innerWidth || rect.top >= window.innerHeight
-      )) { rect = null; }
-      positionCard(rect, s.position);
-    });
+    window.addEventListener("resize", onViewportChange);
+    window.addEventListener("scroll", onViewportChange, { passive: true });
 
     return true;
   }

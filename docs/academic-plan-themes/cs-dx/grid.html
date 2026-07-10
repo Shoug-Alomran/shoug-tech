@@ -1,0 +1,3023 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="/assets/favicon.png?v=2">
+  <title>Computer Science · Digital Transformation Grid // SHOUG.TECH</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=JetBrains+Mono:wght@400;600&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f4f5f7;
+      --panel: #ffffff;
+      --border: #c9ccd3;
+      --text: #222;
+      --muted: #6b7280;
+      --term-badge: #2f5fa8;
+      --term-badge-text: #fff;
+      --summer-badge: #c07a1f;
+      --elective-badge: #3a3f4a;
+
+      --not-taken-bg: #8a2b2b;
+      --not-taken-text: #fff;
+      --not-taken-border: #6e1f1f;
+
+      --current-bg: #ffffff;
+      --current-text: #222;
+      --current-border: #2f5fa8;
+
+      --completed-bg: #3f7d3f;
+      --completed-text: #fff;
+      --completed-border: #2c5c2c;
+
+      --locked-bg: #4a4a52;
+      --locked-text: #fff;
+      --locked-border: #2e2e33;
+    }
+
+    :root[data-theme="dark"] {
+      --bg: #0e0f12;
+      --panel: #17181c;
+      --border: #33353c;
+      --text: #e7e7ea;
+      --muted: #9a9ca3;
+      --term-badge: #3f6fc0;
+      --not-taken-bg: #5c2323;
+      --not-taken-border: #3f1717;
+      --current-bg: #1f2126;
+      --current-text: #f0f0f0;
+      --completed-bg: #2f5c30;
+      --completed-border: #1f3f20;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        --bg: #0e0f12;
+        --panel: #17181c;
+        --border: #33353c;
+        --text: #e7e7ea;
+        --muted: #9a9ca3;
+        --term-badge: #3f6fc0;
+        --not-taken-bg: #5c2323;
+        --not-taken-border: #3f1717;
+        --current-bg: #1f2126;
+        --current-text: #f0f0f0;
+        --completed-bg: #2f5c30;
+        --completed-border: #1f3f20;
+      }
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Tajawal', sans-serif;
+      padding: 28px 16px 80px;
+      min-height: 100vh;
+    }
+
+    .wrap {
+      max-width: 1180px;
+      margin: 0 auto;
+    }
+
+    header.page-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 20px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    header.page-head h1 {
+      font-size: 18px;
+      font-weight: 800;
+    }
+
+    .sub {
+      font-size: 12px;
+      color: var(--muted);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .actions button {
+      font-family: 'Tajawal', sans-serif;
+      font-size: 12.5px;
+      font-weight: 700;
+      border: 1px solid var(--border);
+      background: var(--panel);
+      color: var(--text);
+      padding: 8px 14px;
+      border-radius: 7px;
+      cursor: pointer;
+      transition: .15s;
+    }
+
+    .actions button:hover {
+      border-color: var(--term-badge);
+      color: var(--term-badge);
+    }
+
+    .actions button.add-summer:hover {
+      border-color: var(--summer-badge);
+      color: var(--summer-badge);
+    }
+
+    .progress-bar {
+      height: 8px;
+      border-radius: 5px;
+      background: var(--border);
+      overflow: hidden;
+      margin-top: 2px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--completed-bg);
+      width: 0%;
+      transition: width .25s;
+    }
+
+    .progress-row {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      min-width: 200px;
+    }
+
+    .plan {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 24px;
+    }
+
+    .term-row {
+      display: flex;
+      align-items: stretch;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .term-row:last-child {
+      border-bottom: none;
+    }
+
+    .term-row.summer .term-label {
+      background: var(--summer-badge);
+    }
+
+    .term-row.elective-row .term-label {
+      background: var(--elective-badge);
+      font-size: 12.5px;
+    }
+
+    .term-label {
+      flex: 0 0 108px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: var(--term-badge);
+      color: var(--term-badge-text);
+      font-weight: 800;
+      font-size: 14px;
+      text-align: center;
+      padding: 8px;
+      gap: 4px;
+      position: relative;
+    }
+
+    .term-remove {
+      position: absolute;
+      top: 4px;
+      left: 4px;
+      width: 18px;
+      height: 18px;
+      border-radius: 4px;
+      background: rgba(0, 0, 0, .25);
+      color: #fff;
+      border: none;
+      font-size: 12px;
+      line-height: 1;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .term-remove:hover {
+      background: rgba(0, 0, 0, .45);
+    }
+
+    .term-courses {
+      flex: 1;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1px;
+      background: var(--border);
+      min-height: 60px;
+      transition: background .12s;
+    }
+
+    .term-courses.drag-over {
+      background: var(--term-badge);
+    }
+
+    .term-courses.drag-invalid {
+      background: var(--not-taken-bg);
+    }
+
+    .course {
+      background: var(--not-taken-bg);
+      color: var(--not-taken-text);
+      border-inline-start: 4px solid var(--not-taken-border);
+      padding: 9px 10px;
+      cursor: pointer;
+      user-select: none;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 3px;
+      min-height: 58px;
+      flex: 1 1 150px;
+      max-width: 220px;
+      transition: filter .12s, transform .08s, opacity .12s;
+    }
+
+    .course:hover {
+      filter: brightness(1.08);
+    }
+
+    .course:active {
+      transform: scale(.98);
+    }
+
+    .course.dragging {
+      opacity: .35;
+    }
+
+    .course[draggable="true"] {
+      cursor: grab;
+    }
+
+    .course.state-current {
+      background: var(--current-bg);
+      color: var(--current-text);
+      border-inline-start-color: var(--current-border);
+    }
+
+    .course.state-completed {
+      background: var(--completed-bg);
+      color: var(--completed-text);
+      border-inline-start-color: var(--completed-border);
+    }
+
+    .course.locked {
+      background: var(--locked-bg);
+      color: var(--locked-text);
+      border-inline-start-color: var(--locked-border);
+      cursor: grab;
+    }
+
+    .course.locked.state-completed {
+      background: var(--completed-bg);
+      border-inline-start-color: var(--completed-border);
+    }
+
+    .course.locked.state-current {
+      background: var(--current-bg);
+      color: var(--current-text);
+      border-inline-start-color: var(--current-border);
+    }
+
+    .course .code-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+    }
+
+    .course .code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      opacity: .9;
+    }
+
+    .course .lock-icon {
+      font-size: 11px;
+      opacity: .85;
+    }
+
+    .course .icon-row {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .exam-tick {
+      width: 16px;
+      height: 16px;
+      flex: 0 0 16px;
+      border-radius: 3px;
+      border: 1.5px solid rgba(255, 255, 255, .55);
+      background: transparent;
+      color: transparent;
+      font-size: 11px;
+      line-height: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      padding: 0;
+    }
+
+    .exam-tick:hover {
+      border-color: #fff;
+    }
+
+    .exam-tick.checked {
+      background: #2f5fa8;
+      border-color: #2f5fa8;
+      color: #fff;
+    }
+
+    .course.locked .exam-tick {
+      border-color: rgba(255, 255, 255, .4);
+    }
+
+    .course.exempted .name {
+      text-decoration: line-through;
+      text-decoration-color: currentColor;
+      text-decoration-thickness: 1.5px;
+    }
+
+    .course .name {
+      font-size: 12.5px;
+      font-weight: 500;
+      line-height: 1.35;
+    }
+
+    .add-course-tile {
+      flex: 0 0 44px;
+      width: 44px;
+      min-height: 58px;
+      background: transparent;
+      border: 2px dashed var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted);
+      font-size: 20px;
+      cursor: pointer;
+      transition: .12s;
+    }
+
+    .add-course-tile:hover {
+      border-color: var(--term-badge);
+      color: var(--term-badge);
+    }
+
+    .lang-toggle {
+      font-family: 'JetBrains Mono', monospace !important;
+      font-weight: 700;
+      min-width: 42px;
+    }
+
+    .lang-toggle:hover {
+      border-color: var(--summer-badge) !important;
+      color: var(--summer-badge) !important;
+    }
+
+    .lang-toggle.active {
+      background: var(--term-badge) !important;
+      border-color: var(--term-badge) !important;
+      color: #fff !important;
+    }
+
+    .course.view-only {
+      cursor: default;
+    }
+
+    .compare-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .55);
+      display: none;
+      z-index: 60;
+    }
+
+    .compare-overlay.open {
+      display: block;
+    }
+
+    .compare-panel {
+      position: fixed;
+      top: 4%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: min(1180px, 94vw);
+      max-height: 90vh;
+      overflow-y: auto;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      display: none;
+      z-index: 61;
+      box-shadow: 0 24px 70px rgba(0, 0, 0, .45);
+    }
+
+    .compare-panel.open {
+      display: block;
+    }
+
+    .walk-panel {
+      position: fixed;
+      top: 12%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: min(520px, 92vw);
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      display: none;
+      z-index: 61;
+      box-shadow: 0 24px 70px rgba(0, 0, 0, .45);
+    }
+
+    .walk-panel.open {
+      display: block;
+    }
+
+    .walk-step-count {
+      font-size: 11px;
+      color: var(--muted);
+      font-family: 'JetBrains Mono', monospace;
+      text-transform: uppercase;
+      margin: 12px 0 8px;
+    }
+
+    .walk-step-title {
+      font-size: 18px;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    .walk-step-body {
+      color: var(--muted);
+      font-size: 13.5px;
+      line-height: 1.55;
+      min-height: 44px;
+    }
+
+    .walk-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 18px;
+    }
+
+    .walk-actions button {
+      font-family: 'Tajawal', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      border: 1px solid var(--border);
+      background: var(--panel);
+      color: var(--text);
+      padding: 8px 14px;
+      border-radius: 7px;
+      cursor: pointer;
+    }
+
+    .walk-actions button:last-child {
+      border-color: var(--term-badge);
+      background: var(--term-badge);
+      color: #fff;
+    }
+
+    .compare-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+
+    .compare-header h2 {
+      font-size: 16px;
+      font-weight: 800;
+    }
+
+    .compare-close {
+      width: 32px;
+      height: 32px;
+      flex: 0 0 32px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--panel);
+      color: var(--text);
+      cursor: pointer;
+      font-size: 18px;
+      line-height: 1;
+    }
+
+    .compare-close:hover {
+      border-color: var(--term-badge);
+      color: var(--term-badge);
+    }
+
+    .grad-form {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: flex-end;
+      margin: 10px 0 18px;
+    }
+
+    .grad-field {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .grad-field label {
+      font-size: 11.5px;
+      color: var(--muted);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .grad-field select,
+    .grad-field input {
+      font-family: 'Tajawal', sans-serif;
+      font-size: 13.5px;
+      padding: 8px 10px;
+      border-radius: 7px;
+      border: 1px solid var(--border);
+      background: var(--panel);
+      color: var(--text);
+      min-width: 140px;
+    }
+
+    .grad-calc-btn {
+      font-family: 'Tajawal', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      padding: 9px 18px;
+      border-radius: 7px;
+      border: 1px solid var(--term-badge);
+      background: var(--term-badge);
+      color: #fff;
+      cursor: pointer;
+    }
+
+    .grad-calc-btn:hover {
+      filter: brightness(1.1);
+    }
+
+    .grad-results {
+      display: none;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+
+    .grad-results.show {
+      display: flex;
+    }
+
+    .grad-card {
+      flex: 1 1 220px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 16px;
+    }
+
+    .grad-card-label {
+      font-size: 11px;
+      color: var(--muted);
+      font-family: 'JetBrains Mono', monospace;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+      margin-bottom: 6px;
+    }
+
+    .grad-card-value {
+      font-size: 18px;
+      font-weight: 800;
+    }
+
+    .grad-status-ahead .grad-card-value {
+      color: var(--completed-bg);
+    }
+
+    .grad-status-behind .grad-card-value {
+      color: var(--not-taken-bg);
+    }
+
+    .grad-status-ontrack .grad-card-value {
+      color: var(--term-badge);
+    }
+
+    .grad-note {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 10px;
+    }
+
+    .legend {
+      display: flex;
+      gap: 22px;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 20px;
+      font-size: 13px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .swatch {
+      width: 20px;
+      height: 16px;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+    }
+
+    .swatch.red {
+      background: var(--not-taken-bg);
+    }
+
+    .swatch.white {
+      background: var(--current-bg);
+      border-color: var(--current-border);
+    }
+
+    .swatch.green {
+      background: var(--completed-bg);
+    }
+
+    .swatch.locked {
+      background: var(--locked-bg);
+    }
+
+    footer.hint {
+      text-align: center;
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 16px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    #toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: #1a1a1a;
+      color: #fff;
+      padding: 12px 18px;
+      border-radius: 8px;
+      font-size: 13px;
+      opacity: 0;
+      pointer-events: none;
+      transition: .2s;
+      z-index: 999;
+      max-width: 90vw;
+      text-align: center;
+    }
+
+    #toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    @media (max-width: 720px) {
+      .term-row {
+        flex-direction: column;
+      }
+
+      .term-label {
+        flex: none;
+        padding: 6px;
+      }
+
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+
+    <header class="page-head">
+      <div>
+        <h1 id="pageTitle">الخطة الدراسية — التسجيل</h1>
+        <div class="sub" id="pageSub">اضغط على مقرر لتبديل حالته &middot; اسحب المقررات (غير المقفلة) بين الفصول</div>
+      </div>
+      <div class="progress-row">
+        <div class="sub" id="progressText">0 / 0 مقرر مكتمل</div>
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="lang-toggle" id="walkBtn" type="button">?</button>
+        <button class="lang-toggle" id="themeBtn" type="button">🌙</button>
+        <button class="lang-toggle" id="viewModeBtn" type="button">✏️</button>
+        <button class="lang-toggle" id="eyeBtn" type="button">👁</button>
+        <button class="lang-toggle" id="gradBtn" type="button">🎓</button>
+        <button class="lang-toggle" id="langBtn" type="button">EN</button>
+        <button class="add-summer" id="addSummerBtn"></button>
+        <button id="resetBtn"></button>
+      </div>
+    </header>
+
+    <div class="plan" id="plan-prep"></div>
+    <div class="plan" id="plan"></div>
+    <div class="plan" id="plan-electives"></div>
+
+    <div class="legend">
+      <div class="legend-item"><span class="swatch red"></span><span id="legendRed"></span></div>
+      <div class="legend-item"><span class="swatch white"></span><span id="legendWhite"></span></div>
+      <div class="legend-item"><span class="swatch green"></span><span id="legendGreen"></span></div>
+      <div class="legend-item"><span class="swatch locked"></span><span id="legendLocked"></span></div>
+    </div>
+
+    <footer class="hint" id="pageFooter"></footer>
+  </div>
+
+  <div class="compare-overlay" id="compareOverlay"></div>
+  <div class="compare-panel" id="comparePanel">
+    <div class="compare-header">
+      <h2 id="compareTitle"></h2>
+      <button class="compare-close" id="compareCloseBtn" type="button">×</button>
+    </div>
+    <div class="sub" id="compareSub" style="margin-bottom:14px;"></div>
+    <div class="plan" id="compare-prep"></div>
+    <div class="plan" id="compare-main"></div>
+    <div class="plan" id="compare-electives"></div>
+  </div>
+
+  <div class="compare-overlay" id="walkOverlay"></div>
+  <div class="walk-panel" id="walkPanel">
+    <div class="compare-header">
+      <h2 id="walkTitle"></h2>
+      <button class="compare-close" id="walkCloseBtn" type="button">×</button>
+    </div>
+    <div class="walk-step-count" id="walkStepCount"></div>
+    <div class="walk-step-title" id="walkStepTitle"></div>
+    <div class="walk-step-body" id="walkStepBody"></div>
+    <div class="walk-actions">
+      <button id="walkPrevBtn" type="button"></button>
+      <button id="walkNextBtn" type="button"></button>
+    </div>
+  </div>
+
+  <div class="compare-overlay" id="gradOverlay"></div>
+  <div class="compare-panel" id="gradPanel">
+    <div class="compare-header">
+      <h2 id="gradTitle"></h2>
+      <button class="compare-close" id="gradCloseBtn" type="button">×</button>
+    </div>
+    <div class="sub" id="gradSub" style="margin-bottom:14px;"></div>
+    <div class="grad-form">
+      <div class="grad-field">
+        <label id="gradTermLabel" for="gradStartTerm"></label>
+        <select id="gradStartTerm"></select>
+      </div>
+      <div class="grad-field">
+        <label id="gradYearLabel" for="gradStartYear"></label>
+        <input id="gradStartYear" type="number" min="2000" max="2100" placeholder="2024">
+      </div>
+      <button class="grad-calc-btn" id="gradCalcBtn" type="button"></button>
+    </div>
+    <div class="grad-results" id="gradResults">
+      <div class="grad-card">
+        <div class="grad-card-label" id="gradExpectedLabel"></div>
+        <div class="grad-card-value" id="gradExpectedValue"></div>
+      </div>
+      <div class="grad-card">
+        <div class="grad-card-label" id="gradCoopTermLabel"></div>
+        <div class="grad-card-value" id="gradCoopTermValue"></div>
+      </div>
+      <div class="grad-card">
+        <div class="grad-card-label" id="gradDegreeTermLabel"></div>
+        <div class="grad-card-value" id="gradDegreeTermValue"></div>
+      </div>
+      <div class="grad-card" id="gradStatusCard">
+        <div class="grad-card-label" id="gradStatusLabel"></div>
+        <div class="grad-card-value" id="gradStatusValue"></div>
+      </div>
+      <div class="grad-card" id="gradCoursesCard">
+        <div class="grad-card-label" id="gradCoursesLabel"></div>
+        <div class="grad-card-value" id="gradCoursesValue"></div>
+      </div>
+      <div class="grad-card" id="gradHoursCard">
+        <div class="grad-card-label" id="gradHoursLabel"></div>
+        <div class="grad-card-value" id="gradHoursValue"></div>
+      </div>
+      <div class="grad-card">
+        <div class="grad-card-label" id="gradRemainingLabel"></div>
+        <div class="grad-card-value" id="gradRemainingValue"></div>
+        <div class="grad-note" id="gradCoopNote" style="margin-top:6px;"></div>
+      </div>
+    </div>
+    <div class="grad-note" id="gradNote"></div>
+  </div>
+
+  <div id="toast"></div>
+
+  <script>
+    /* ---------- i18n ---------- */
+    const LANG_KEY = 'shoug_academic_plan_grid_lang';
+    const STRINGS = {
+      ar: {
+        pageTitle: 'Computer Science · Digital Transformation — Registration Grid',
+        pageSub: 'اضغط لتغيير الحالة · اسحب لإعادة ترتيب الخطة',
+        pageSubView: 'عرض فقط · اضغط ✏️ للتعديل',
+        addSummer: '+ إضافة فصل صيفي',
+        reset: 'تصفير الكل',
+        legendRed: 'لم يؤخذ',
+        legendWhite: 'حالي',
+        legendGreen: 'مكتمل',
+        legendLocked: 'لا يؤخر',
+        footer: 'يتم الحفظ تلقائياً في هذا المتصفح.',
+        elective: 'اختياري',
+        progress: (done, total, pct) => `${done} / ${total} مقرر مكتمل (${pct}%)`,
+        addCoursePromptCode: 'رمز المقرر (مثال: CYS410):',
+        addCoursePromptName: 'اسم المقرر (اختياري):',
+        addCourseDup: 'هذا الرمز موجود بالفعل.',
+        addCourseTileTitle: 'إضافة مقرر لهذا الفصل',
+        termRemoveTitle: 'حذف هذا الفصل',
+        removeSummerBlocked: 'انقل المقررات خارج هذا الفصل قبل حذفه.',
+        addSummerPrompt: listText => `أضف الفصل الصيفي بعد أي فصل؟ اكتب الرقم:\n${listText}`,
+        summerLabel: n => `صيفي ${n}`,
+        resetConfirm: 'تصفير الخطة؟ سيُحذف التقدم والفصول الصيفية والمقررات المضافة.',
+        moveBlockedPrereq: (code, pre) => `${code} يحتاج ${pre} قبله.`,
+        moveBlockedDependent: (code, dep) => `${dep} يحتاج ${code} قبله.`,
+        moveBlockedCritical: code => `${code} يمكن تقديمه فقط، لا تأخيره.`,
+        moveBlockedNoPrepSummer: code => `${code} يجب أن يبقى في فصل عادي.`,
+        criticalTitle: 'يمكن تقديمه فقط',
+        examTickTitle: 'إعفاء باختبار',
+        editModeTitle: '✏️ إخفاء أدوات التعديل وعرض الخطة فقط',
+        viewModeTitle: '✏️ إظهار أدوات التعديل',
+        themeToLight: 'فاتح',
+        themeToDark: 'داكن',
+        eyeBtnTitle: '👁 عرض تقدمك على خطة الجامعة الأصلية',
+        compareTitle: 'الخطة الأصلية للجامعة',
+        compareSub: 'نفس ألوانك، لكن بترتيب الجامعة الأصلي.',
+        gradBtnTitle: 'التخرج',
+        gradTitle: 'الجدول الزمني للتخرج',
+        gradSub: 'الخطة: سنة تحضيرية + ٤ سنوات تخصص. اختر فصل البداية وسنته.',
+        gradTermLabelText: 'الفصل الذي بدأت فيه',
+        gradYearLabelText: 'السنة (ميلادي)',
+        gradCalc: 'احسب',
+        gradExpectedLabel: 'موعد التخرج المتوقع',
+        gradCoopTermLabel: 'فصل التدريب',
+        gradDegreeTermLabel: 'فصل استلام الشهادة',
+        gradStatusLabel: 'حالتك',
+        gradCoursesLabel: 'المقررات',
+        gradHoursLabel: 'الساعات المعتمدة',
+        gradFall: 'خريف',
+        gradSpring: 'ربيع',
+        termFirst: 'الفصل الأول',
+        termSecond: 'الفصل الثاني',
+        termSummer: 'الفصل الصيفي',
+        gradOnTrack: 'على المسار الصحيح',
+        gradAhead: n => `متقدم بمقدار ${n} فصل`,
+        gradBehind: n => `متأخر بمقدار ${n} فصل`,
+        gradAheadCourses: n => `متقدم بـ ${n} مقرر`,
+        gradBehindCourses: n => `متأخر بـ ${n} مقرر`,
+        gradAheadHours: n => `متقدم بـ ${n} ساعة`,
+        gradBehindHours: n => `متأخر بـ ${n} ساعة`,
+        gradRemainingLabel: 'المتبقي للتخرج',
+        gradRemainingValue: (hours, courses, total) => `${hours} ساعة (${courses} مقرر) من أصل ${total} ساعة`,
+        gradCoopPending: (coopHours, code) => `يشمل ${coopHours} ساعات تدريب تعاوني${code ? ` (${code})` : ''}.`,
+        gradCoopDone: code => code ? `التدريب التعاوني مكتمل (${code}).` : 'التدريب التعاوني مكتمل.',
+        gradNoProgress: 'ابدأ بتحديد مقرر مكتمل أو حالي.',
+        gradPartRegular: n => `${n} فصل${n === 1 ? '' : 'اً'} دراسي${n === 1 ? '' : 'اً'} عادي${n === 1 ? '' : 'اً'}`,
+        gradPartSummer: n => `${n} فصل${n === 1 ? '' : 'اً'} صيفي${n === 1 ? '' : 'اً'}`,
+        gradPartCoop: code => code ? `التدريب التعاوني (${code})` : 'التدريب التعاوني',
+        gradPartJoin: ' + ',
+        gradBasisTotal: (parts, total) => `المتبقي في خطتك الحالية: ${parts} = ${total} فصل/جزء.`,
+        gradBasisDone: 'كل الفصول في خطتك الحالية مكتملة.',
+        gradInvalid: 'الرجاء إدخال سنة صحيحة.',
+        walkBtnTitle: 'شرح سريع',
+        walkTitle: 'شرح سريع',
+        walkPrev: 'السابق',
+        walkNext: 'التالي',
+        walkDone: 'تم',
+        walkStepCount: (n, total) => `خطوة ${n} / ${total}`,
+        walkBlankSteps: [
+          ['حدّث الحالة', 'اضغط على أي مقرر لتغييره: لم يؤخذ، حالي، مكتمل.'],
+          ['رتّب خطتك', 'اسحب المقررات بين الفصول إذا غيرت ترتيبك.'],
+          ['أضف الصيفي', 'استخدم زر الصيفي إذا أخذت مقرر خارج الفصل العادي.'],
+          ['الأزرار المهمة', '✏️ يبدّل بين التعديل والعرض. 👁 يعرض تقدمك على خطة الجامعة الأصلية.'],
+          ['احسب التخرج', 'اضغط 🎓 واختر فصل وسنة البداية.'],
+        ],
+        walkProgressSteps: (done, current) => [
+          ['راجع الألوان', `${done} مكتمل · ${current} حالي. تأكد أن الألوان تطابق سجلك.`],
+          ['رتّب الباقي', 'اسحب المقررات القادمة حسب خطتك الحقيقية.'],
+          ['قارن مع الجامعة', 'اضغط 👁 لرؤية تقدمك الحالي على ترتيب خطة الجامعة الأصلية.'],
+          ['افتح التخرج', 'زر 🎓 يعطيك موعد التخرج وفصل التدريب وفصل استلام الشهادة.'],
+        ],
+        walkCustomSteps: (summers, moved) => [
+          ['خطة مخصصة', `${summers} صيفي · ${moved} مقرر منقول.`],
+          ['راجع المسار', 'تأكد أن المقررات المؤجلة أو المقدمة في مكانها الصحيح.'],
+          ['قارن مع الأصل', '👁 يعرض نفس تقدمك لكن على ترتيب الجامعة الأصلي.'],
+          ['احسب النتيجة', 'افتح 🎓 بعد كل تعديل كبير.'],
+        ],
+        toggleTo: 'EN',
+      },
+      en: {
+        pageTitle: 'Computer Science · Digital Transformation — Registration Grid',
+        pageSub: 'Click to change status · drag to rearrange',
+        pageSubView: 'View only · click ✏️ to edit',
+        addSummer: '+ Add Summer Semester',
+        reset: 'Reset All',
+        legendRed: 'Not taken',
+        legendWhite: 'Current',
+        legendGreen: 'Done',
+        legendLocked: 'Do not delay',
+        footer: 'Saved automatically in this browser.',
+        elective: 'Elective',
+        progress: (done, total, pct) => `${done} / ${total} courses completed (${pct}%)`,
+        addCoursePromptCode: 'Course code (e.g. CYS410):',
+        addCoursePromptName: 'Course name (optional):',
+        addCourseDup: 'That code already exists.',
+        addCourseTileTitle: 'Add a course to this semester',
+        termRemoveTitle: 'Delete this semester',
+        removeSummerBlocked: 'Move the courses out of this semester before deleting it.',
+        addSummerPrompt: listText => `Add the summer semester after which term? Enter the number:\n${listText}`,
+        summerLabel: n => `Summer ${n}`,
+        resetConfirm: "Reset the plan? This clears progress, summers, and added courses.",
+        moveBlockedPrereq: (code, pre) => `${code} needs ${pre} first.`,
+        moveBlockedDependent: (code, dep) => `${dep} needs ${code} first.`,
+        moveBlockedCritical: code => `${code} can move earlier, not later.`,
+        moveBlockedNoPrepSummer: code => `${code} must stay in a regular term.`,
+        criticalTitle: 'Can move earlier only',
+        examTickTitle: 'Waived by exam',
+        editModeTitle: '✏️ Hide editing tools and view the plan',
+        viewModeTitle: '✏️ Show editing tools',
+        themeToLight: 'Light mode',
+        themeToDark: 'Dark mode',
+        eyeBtnTitle: '👁 View your progress on the university original plan',
+        compareTitle: "Original University Plan",
+        compareSub: "Your same colors, shown in the university's original order.",
+        gradBtnTitle: 'Graduation',
+        gradTitle: 'Graduation Timeline',
+        gradSub: "Plan length: 1 prep year + 4 major years. Pick your start term and year.",
+        gradTermLabelText: 'Term you started in',
+        gradYearLabelText: 'Year (Gregorian)',
+        gradCalc: 'Calculate',
+        gradExpectedLabel: 'Expected graduation',
+        gradCoopTermLabel: 'Co-op term',
+        gradDegreeTermLabel: 'Degree term',
+        gradStatusLabel: 'Your status',
+        gradCoursesLabel: 'Courses',
+        gradHoursLabel: 'Credit hours',
+        gradFall: 'Fall',
+        gradSpring: 'Spring',
+        termFirst: 'First Semester',
+        termSecond: 'Second Semester',
+        termSummer: 'Summer Semester',
+        gradOnTrack: 'On track',
+        gradAhead: n => `Ahead by ${n} semester${n === 1 ? '' : 's'}`,
+        gradBehind: n => `Behind by ${n} semester${n === 1 ? '' : 's'}`,
+        gradAheadCourses: n => `Ahead by ${n} course${n === 1 ? '' : 's'}`,
+        gradBehindCourses: n => `Behind by ${n} course${n === 1 ? '' : 's'}`,
+        gradAheadHours: n => `Ahead by ${n} hour${n === 1 ? '' : 's'}`,
+        gradBehindHours: n => `Behind by ${n} hour${n === 1 ? '' : 's'}`,
+        gradRemainingLabel: 'Remaining to graduate',
+        gradRemainingValue: (hours, courses, total) => `${hours} hrs (${courses} course${courses === 1 ? '' : 's'}) of ${total} total`,
+        gradCoopPending: (coopHours, code) => `Includes ${coopHours} co-op hours${code ? ` (${code})` : ''}.`,
+        gradCoopDone: code => code ? `Co-op is complete (${code}).` : 'Co-op is complete.',
+        gradNoProgress: 'Mark one course as current or done first.',
+        gradPartRegular: n => `${n} regular semester${n === 1 ? '' : 's'}`,
+        gradPartSummer: n => `${n} summer semester${n === 1 ? '' : 's'}`,
+        gradPartCoop: code => code ? `Co-op Training (${code})` : 'Co-op Training',
+        gradPartJoin: ' + ',
+        gradBasisTotal: (parts, total) => `Still left in your layout: ${parts} = ${total} term part${total === 1 ? '' : 's'}.`,
+        gradBasisDone: 'Your current layout is complete.',
+        gradInvalid: 'Please enter a valid year.',
+        walkBtnTitle: 'Quick walkthrough',
+        walkTitle: 'Quick Walkthrough',
+        walkPrev: 'Back',
+        walkNext: 'Next',
+        walkDone: 'Done',
+        walkStepCount: (n, total) => `Step ${n} / ${total}`,
+        walkBlankSteps: [
+          ['Update status', 'Click any course to change it: not taken, current, done.'],
+          ['Arrange your plan', 'Drag courses between terms if your order is different.'],
+          ['Add summers', 'Use the summer button for courses taken outside regular terms.'],
+          ['Use the toolbar', '✏️ switches edit/view mode. 👁 shows your current progress on the university original plan.'],
+          ['Check graduation', 'Open 🎓 and choose your start term and year.'],
+        ],
+        walkProgressSteps: (done, current) => [
+          ['Check colors', `${done} done · ${current} current. Make sure this matches your record.`],
+          ['Plan what is left', 'Drag upcoming courses into the terms you expect.'],
+          ['Compare with PSU', 'Click 👁 to see your current progress in the university original order.'],
+          ['Open graduation', 'The 🎓 panel shows graduation, co-op term, and degree term.'],
+        ],
+        walkCustomSteps: (summers, moved) => [
+          ['Custom plan', `${summers} summer · ${moved} moved.`],
+          ['Review sequence', 'Make sure delayed or early courses are in the right places.'],
+          ['Compare with original', '👁 keeps your progress colors, but shows them on the university original plan.'],
+          ['Recalculate', 'Open 🎓 after any big plan change.'],
+        ],
+        toggleTo: 'AR',
+      },
+    };
+    let lang = localStorage.getItem(LANG_KEY) || 'ar';
+    function t() { return STRINGS[lang]; }
+
+    const VIEW_MODE_KEY = 'shoug_academic_plan_grid_viewmode';
+    let viewMode = localStorage.getItem(VIEW_MODE_KEY) === '1';
+    let walkStep = 0;
+
+    // Shared with the rest of the site: 'shoug-theme' is 'light' or 'dark'; unset falls back to the
+    // visitor's system preference via the prefers-color-scheme CSS below.
+    const THEME_KEY = 'shoug-theme';
+    function applyTheme(theme) {
+      if (theme === 'light' || theme === 'dark') {
+        document.documentElement.setAttribute('data-theme', theme);
+      } else {
+        document.documentElement.removeAttribute('data-theme');
+      }
+    }
+    function currentTheme() {
+      const saved = localStorage.getItem(THEME_KEY);
+      if (saved === 'light' || saved === 'dark') return saved;
+      return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+    applyTheme(localStorage.getItem(THEME_KEY));
+
+    /* ---------- Base data ---------- */
+    // order: sequencing used to validate prereqs when dragging. A course is locked (non-draggable) automatically
+    // whenever it appears in another course's prereqs — see computeGatewaySet() below.
+    const BASE_TERMS = [
+      { id: 'prep1', labelAr: 'تحضيري اول', labelEn: 'Prep 1st', order: -1, isPrep: true },
+      { id: 'prep2', labelAr: 'تحضيري ثاني', labelEn: 'Prep 2nd', order: 0, isPrep: true },
+      { id: 't1', labelAr: 'الأول', labelEn: '1st', order: 1 },
+      { id: 't2', labelAr: 'الثاني', labelEn: '2nd', order: 2 },
+      { id: 't3', labelAr: 'الثالث', labelEn: '3rd', order: 3 },
+      { id: 't4', labelAr: 'الرابع', labelEn: '4th', order: 4 },
+      { id: 't5', labelAr: 'الخامس', labelEn: '5th', order: 5 },
+      { id: 't6', labelAr: 'السادس', labelEn: '6th', order: 6 },
+      { id: 't7', labelAr: 'السابع', labelEn: '7th', order: 7 },
+      { id: 't8', labelAr: 'الثامن', labelEn: '8th', order: 8 },
+    ];
+
+    // Transcribed from the official PSU registrar plan: academic-plan-themes/university-offical-plans/se-cys-plan.pdf
+    const COURSES = [
+      {
+            code: 'PE001',
+            name: 'Preparatory Physical Education I',
+            nameEn: 'Preparatory Physical Education I',
+            term: 'prep1',
+            prereqs: []
+      },
+      {
+            code: 'PDS001',
+            name: 'Preparatory Development Skills I',
+            nameEn: 'Preparatory Development Skills I',
+            term: 'prep1',
+            prereqs: []
+      },
+      {
+            code: 'MATH001',
+            name: 'Preparatory Math I',
+            nameEn: 'Preparatory Math I',
+            term: 'prep1',
+            prereqs: [],
+            examEligible: true
+      },
+      {
+            code: 'ENG020',
+            name: 'Preparatory English I (L&S)',
+            nameEn: 'Preparatory English I (L&S)',
+            term: 'prep1',
+            prereqs: [],
+            examEligible: true
+      },
+      {
+            code: 'ENG010',
+            name: 'Preparatory English I (R&W)',
+            nameEn: 'Preparatory English I (R&W)',
+            term: 'prep1',
+            prereqs: [],
+            examEligible: true
+      },
+      {
+            code: 'CMP011',
+            name: 'Computer Fundamentals I',
+            nameEn: 'Computer Fundamentals I',
+            term: 'prep1',
+            prereqs: [],
+            examEligible: true
+      },
+      {
+            code: 'PE002',
+            name: 'Preparatory Physical Education II',
+            nameEn: 'Preparatory Physical Education II',
+            term: 'prep2',
+            prereqs: [
+                  'PE001'
+            ]
+      },
+      {
+            code: 'PDS002',
+            name: 'Preparatory Development Skills II',
+            nameEn: 'Preparatory Development Skills II',
+            term: 'prep2',
+            prereqs: [
+                  'PDS001'
+            ]
+      },
+      {
+            code: 'MATH002',
+            name: 'Preparatory Math II',
+            nameEn: 'Preparatory Math II',
+            term: 'prep2',
+            prereqs: [
+                  'MATH001'
+            ],
+            examEligible: true
+      },
+      {
+            code: 'ENG040',
+            name: 'Preparatory English II (L&S)',
+            nameEn: 'Preparatory English II (L&S)',
+            term: 'prep2',
+            prereqs: [
+                  'ENG020'
+            ],
+            examEligible: true
+      },
+      {
+            code: 'ENG030',
+            name: 'Preparatory English II (R&W)',
+            nameEn: 'Preparatory English II (R&W)',
+            term: 'prep2',
+            prereqs: [
+                  'ENG010'
+            ],
+            examEligible: true
+      },
+      {
+            code: 'CMP012',
+            name: 'Computer Fundamentals II',
+            nameEn: 'Computer Fundamentals II',
+            term: 'prep2',
+            prereqs: [
+                  'CMP011'
+            ],
+            examEligible: true
+      },
+      {
+            code: 'ARAB101',
+            name: 'Arabic Writing',
+            nameEn: 'Arabic Writing',
+            prereqs: [],
+            hours: 2,
+            term: 't1'
+      },
+      {
+            code: 'ENG101',
+            name: 'Intensive Writing',
+            nameEn: 'Intensive Writing',
+            prereqs: [],
+            hours: 3,
+            term: 't1'
+      },
+      {
+            code: 'ISC101',
+            name: 'Islamic Ethics',
+            nameEn: 'Islamic Ethics',
+            prereqs: [],
+            hours: 2,
+            term: 't1'
+      },
+      {
+            code: 'CS101',
+            name: 'Computer Programming I',
+            nameEn: 'Computer Programming I',
+            prereqs: [],
+            hours: 4,
+            term: 't1'
+      },
+      {
+            code: 'MATH111',
+            name: 'Calculus I',
+            nameEn: 'Calculus I',
+            prereqs: [],
+            hours: 3,
+            term: 't1'
+      },
+      {
+            code: 'SCI101',
+            name: 'Introduction to Physical Science',
+            nameEn: 'Introduction to Physical Science',
+            prereqs: [],
+            hours: 3,
+            term: 't1'
+      },
+      {
+            code: 'HPE101',
+            name: 'Health & Physical Education I',
+            nameEn: 'Health & Physical Education I',
+            prereqs: [],
+            hours: 1,
+            group: 'grp-a'
+      },
+      {
+            code: 'HPE102',
+            name: 'Health & Physical Education II',
+            nameEn: 'Health & Physical Education II',
+            prereqs: [],
+            hours: 1,
+            group: 'grp-a'
+      },
+      {
+            code: 'PE101',
+            name: 'Beginner Badminton',
+            nameEn: 'Beginner Badminton',
+            prereqs: [],
+            hours: 1,
+            group: 'grp-a'
+      },
+      {
+            code: 'PE103',
+            name: 'Beginner Basketball',
+            nameEn: 'Beginner Basketball',
+            prereqs: [],
+            hours: 1,
+            group: 'grp-a'
+      },
+      {
+            code: 'PE105',
+            name: 'Beginner Gymnastics',
+            nameEn: 'Beginner Gymnastics',
+            prereqs: [],
+            hours: 1,
+            group: 'grp-a'
+      },
+      {
+            code: 'PE107',
+            name: 'Beginner Handball',
+            nameEn: 'Beginner Handball',
+            prereqs: [],
+            hours: 1,
+            group: 'grp-a'
+      },
+      {
+            code: 'PE109',
+            name: 'Beginner Soccer',
+            nameEn: 'Beginner Soccer',
+            prereqs: [],
+            hours: 1,
+            group: 'grp-a'
+      },
+      {
+            code: 'PE111',
+            name: 'Beginner Squash',
+            nameEn: 'Beginner Squash',
+            prereqs: [],
+            hours: 1,
+            group: 'grp-a'
+      },
+      {
+            code: 'PE113',
+            name: 'Beginner Swimming',
+            nameEn: 'Beginner Swimming',
+            prereqs: [],
+            hours: 1,
+            group: 'grp-a'
+      },
+      {
+            code: 'PE115',
+            name: 'Beginner Table Tennis',
+            nameEn: 'Beginner Table Tennis',
+            prereqs: [],
+            hours: 1,
+            group: 'grp-a'
+      },
+      {
+            code: 'PE117',
+            name: 'Beginner Tennis',
+            nameEn: 'Beginner Tennis',
+            prereqs: [],
+            hours: 1,
+            group: 'grp-a'
+      },
+      {
+            code: 'PE119',
+            name: 'Beginner Volleyball',
+            nameEn: 'Beginner Volleyball',
+            prereqs: [],
+            hours: 1,
+            group: 'grp-a'
+      },
+      {
+            code: 'PE121',
+            name: 'Beginner Weight Training',
+            nameEn: 'Beginner Weight Training',
+            prereqs: [],
+            hours: 1,
+            group: 'grp-a'
+      },
+      {
+            code: 'PE201',
+            name: 'Intermediate Badminton',
+            nameEn: 'Intermediate Badminton',
+            prereqs: [],
+            hours: 1,
+            group: 'grp-a'
+      },
+      {
+            code: 'PE203',
+            name: 'Intermediate Basketball',
+            nameEn: 'Intermediate Basketball',
+            prereqs: [],
+            hours: 1,
+            group: 'grp-a'
+      },
+      {
+            code: 'PE205',
+            name: 'Intermediate Gymnastics',
+            nameEn: 'Intermediate Gymnastics',
+            prereqs: [],
+            hours: 1,
+            group: 'grp-a'
+      },
+      {
+            code: 'PE207',
+            name: 'Intermediate Handball',
+            nameEn: 'Intermediate Handball',
+            prereqs: [],
+            hours: 1,
+            group: 'grp-a'
+      },
+      {
+            code: 'PE209',
+            name: 'Intermediate Soccer',
+            nameEn: 'Intermediate Soccer',
+            prereqs: [],
+            hours: 1,
+            group: 'grp-a'
+      },
+      {
+            code: 'PE211',
+            name: 'Intermediate Squash',
+            nameEn: 'Intermediate Squash',
+            prereqs: [],
+            hours: 1,
+            group: 'grp-a'
+      },
+      {
+            code: 'PE213',
+            name: 'Intermediate Swimming',
+            nameEn: 'Intermediate Swimming',
+            prereqs: [],
+            hours: 1,
+            group: 'grp-a'
+      },
+      {
+            code: 'PE215',
+            name: 'Intermediate Table Tennis',
+            nameEn: 'Intermediate Table Tennis',
+            prereqs: [],
+            hours: 1,
+            group: 'grp-a'
+      },
+      {
+            code: 'PE217',
+            name: 'Intermediate Tennis',
+            nameEn: 'Intermediate Tennis',
+            prereqs: [],
+            hours: 1,
+            group: 'grp-a'
+      },
+      {
+            code: 'PE219',
+            name: 'Intermediate Volleyball',
+            nameEn: 'Intermediate Volleyball',
+            prereqs: [],
+            hours: 1,
+            group: 'grp-a'
+      },
+      {
+            code: 'PE221',
+            name: 'Intermediate Weight Training',
+            nameEn: 'Intermediate Weight Training',
+            prereqs: [],
+            hours: 1,
+            group: 'grp-a'
+      },
+      {
+            code: 'ISC103',
+            name: 'Islamic Economic System',
+            nameEn: 'Islamic Economic System',
+            prereqs: [],
+            hours: 2,
+            term: 't2'
+      },
+      {
+            code: 'CS102',
+            name: 'Computer Programming II',
+            nameEn: 'Computer Programming II',
+            prereqs: [
+                  'CS101'
+            ],
+            hours: 3,
+            term: 't2'
+      },
+      {
+            code: 'CS175',
+            name: 'Digital Logic and Computer Organization',
+            nameEn: 'Digital Logic and Computer Organization',
+            prereqs: [],
+            hours: 3,
+            term: 't2'
+      },
+      {
+            code: 'ENG103',
+            name: 'Research Writing Techniques',
+            nameEn: 'Research Writing Techniques',
+            prereqs: [
+                  'ENG101'
+            ],
+            hours: 3,
+            term: 't2'
+      },
+      {
+            code: 'STAT101',
+            name: 'Introduction to Statistics and Probability Theory',
+            nameEn: 'Introduction to Statistics and Probability Theory',
+            prereqs: [
+                  'MATH111'
+            ],
+            hours: 3,
+            term: 't2'
+      },
+      {
+            code: 'MATH113',
+            name: 'Calculus II',
+            nameEn: 'Calculus II',
+            prereqs: [
+                  'MATH111'
+            ],
+            hours: 3,
+            term: 't2'
+      },
+      {
+            code: 'COM201',
+            name: 'Communication Skills',
+            nameEn: 'Communication Skills',
+            prereqs: [],
+            hours: 3,
+            term: 't3'
+      },
+      {
+            code: 'ISC105',
+            name: 'Studies of the Holy Qu\'ran',
+            nameEn: 'Studies of the Holy Qu\'ran',
+            prereqs: [],
+            hours: 2,
+            term: 't3'
+      },
+      {
+            code: 'CS210',
+            name: 'Data Structures and Algorithms',
+            nameEn: 'Data Structures and Algorithms',
+            prereqs: [
+                  'CS102'
+            ],
+            hours: 3,
+            term: 't3'
+      },
+      {
+            code: 'CS285',
+            name: 'Discrete Mathematics for Computing',
+            nameEn: 'Discrete Mathematics for Computing',
+            prereqs: [
+                  'CS101'
+            ],
+            hours: 3,
+            term: 't3'
+      },
+      {
+            code: 'CS223',
+            name: 'Computational Linear Algebra',
+            nameEn: 'Computational Linear Algebra',
+            prereqs: [
+                  'MATH113'
+            ],
+            hours: 3,
+            term: 't3'
+      },
+      {
+            code: 'PHY105',
+            name: 'Physics I',
+            nameEn: 'Physics I',
+            prereqs: [],
+            hours: 4,
+            term: 't3'
+      },
+      {
+            code: 'ARAB103',
+            name: 'Professional and Literary Writing',
+            nameEn: 'Professional and Literary Writing',
+            prereqs: [],
+            hours: 2,
+            term: 't4'
+      },
+      {
+            code: 'PSY101',
+            name: 'Introduction to Psychology',
+            nameEn: 'Introduction to Psychology',
+            prereqs: [],
+            hours: 3,
+            term: 't4'
+      },
+      {
+            code: 'CS330',
+            name: 'Introduction to Operating Systems',
+            nameEn: 'Introduction to Operating Systems',
+            prereqs: [
+                  'CS175',
+                  'CS210'
+            ],
+            hours: 3,
+            term: 't4'
+      },
+      {
+            code: 'CS320',
+            name: 'Programming Languages: Concepts and Paradigms',
+            nameEn: 'Programming Languages: Concepts and Paradigms',
+            prereqs: [
+                  'CS210'
+            ],
+            hours: 3,
+            term: 't4'
+      },
+      {
+            code: 'PHY205',
+            name: 'Physics II',
+            nameEn: 'Physics II',
+            prereqs: [
+                  'PHY105'
+            ],
+            hours: 4,
+            term: 't4'
+      },
+      {
+            code: 'SE201',
+            name: 'Introduction to Software Engineering',
+            nameEn: 'Introduction to Software Engineering',
+            prereqs: [
+                  'CS102',
+                  'ENG103'
+            ],
+            hours: 3,
+            term: 't4'
+      },
+      {
+            code: 'CS331',
+            name: 'Data Communications and Computer Networks',
+            nameEn: 'Data Communications and Computer Networks',
+            prereqs: [
+                  'CS175',
+                  'CS210'
+            ],
+            hours: 3,
+            term: 't5'
+      },
+      {
+            code: 'ETHC303',
+            name: 'Ethical and Social Aspects of Computing',
+            nameEn: 'Ethical and Social Aspects of Computing',
+            prereqs: [],
+            hours: 3,
+            term: 't5'
+      },
+      {
+            code: 'CS311',
+            name: 'Design and Analysis of Algorithms',
+            nameEn: 'Design and Analysis of Algorithms',
+            prereqs: [
+                  'CS210',
+                  'CS285'
+            ],
+            hours: 3,
+            term: 't5'
+      },
+      {
+            code: 'CS340',
+            name: 'Introduction to Database Systems',
+            nameEn: 'Introduction to Database Systems',
+            prereqs: [
+                  'CS210'
+            ],
+            hours: 3,
+            term: 't5'
+      },
+      {
+            code: 'IS450',
+            name: 'Digital Transformation Fundamentals',
+            nameEn: 'Digital Transformation Fundamentals',
+            prereqs: [],
+            hours: 3,
+            term: 't5'
+      },
+      {
+            code: 'ISC203',
+            name: 'Contemporary Financial Transactions',
+            nameEn: 'Contemporary Financial Transactions',
+            prereqs: [],
+            hours: 2,
+            term: 't6'
+      },
+      {
+            code: 'CS435',
+            name: 'Distributed Systems',
+            nameEn: 'Distributed Systems',
+            prereqs: [
+                  'CS330',
+                  'CS331'
+            ],
+            hours: 3,
+            term: 't6'
+      },
+      {
+            code: 'SE371',
+            name: 'Web Engineering',
+            nameEn: 'Web Engineering',
+            prereqs: [
+                  'CS210'
+            ],
+            hours: 3,
+            term: 't6'
+      },
+      {
+            code: 'IS452',
+            name: 'Change Management for Digital Transformation',
+            nameEn: 'Change Management for Digital Transformation',
+            prereqs: [
+                  'IS450'
+            ],
+            hours: 3,
+            term: 't6'
+      },
+      {
+            code: 'ACC111',
+            name: 'Foundations in Financial Accounting',
+            nameEn: 'Foundations in Financial Accounting',
+            prereqs: [],
+            hours: 3,
+            group: 'grp-c'
+      },
+      {
+            code: 'BUS101',
+            name: 'Introduction to Business',
+            nameEn: 'Introduction to Business',
+            prereqs: [],
+            hours: 3,
+            group: 'grp-c'
+      },
+      {
+            code: 'ECON101',
+            name: 'Principles of Microeconomics',
+            nameEn: 'Principles of Microeconomics',
+            prereqs: [],
+            hours: 3,
+            group: 'grp-c'
+      },
+      {
+            code: 'ECON102',
+            name: 'Principles of Macroeconomics',
+            nameEn: 'Principles of Macroeconomics',
+            prereqs: [],
+            hours: 3,
+            group: 'grp-c'
+      },
+      {
+            code: 'ARAB203',
+            name: 'Arabic Grammar',
+            nameEn: 'Arabic Grammar',
+            prereqs: [],
+            hours: 2,
+            term: 't7'
+      },
+      {
+            code: 'CS499',
+            name: 'Senior Project',
+            nameEn: 'Senior Project',
+            prereqs: [],
+            hours: 3,
+            term: 't7'
+      },
+      {
+            code: 'CYS401',
+            name: 'Fundamentals of Cybersecurity',
+            nameEn: 'Fundamentals of Cybersecurity',
+            prereqs: [],
+            hours: 3,
+            term: 't7'
+      },
+      {
+            code: 'SE423',
+            name: 'Software Engineering Project Management',
+            nameEn: 'Software Engineering Project Management',
+            prereqs: [],
+            hours: 3,
+            group: 'grp-b'
+      },
+      {
+            code: 'CS316',
+            name: 'Introduction to AI and Data Science',
+            nameEn: 'Introduction to AI and Data Science',
+            prereqs: [
+                  'CS210',
+                  'STAT101'
+            ],
+            hours: 3,
+            group: 'grp-b'
+      },
+      {
+            code: 'CS381',
+            name: 'System Programming',
+            nameEn: 'System Programming',
+            prereqs: [
+                  'CS330'
+            ],
+            hours: 3,
+            group: 'grp-b'
+      },
+      {
+            code: 'CS387',
+            name: 'Mobile Applications Development',
+            nameEn: 'Mobile Applications Development',
+            prereqs: [
+                  'SE371'
+            ],
+            hours: 3,
+            group: 'grp-b'
+      },
+      {
+            code: 'CS415',
+            name: 'Internet of Things (IoT)',
+            nameEn: 'Internet of Things (IoT)',
+            prereqs: [
+                  'CS331'
+            ],
+            hours: 3,
+            group: 'grp-b'
+      },
+      {
+            code: 'CS460',
+            name: 'Introduction to Robotics',
+            nameEn: 'Introduction to Robotics',
+            prereqs: [
+                  'CS210'
+            ],
+            hours: 3,
+            group: 'grp-b'
+      },
+      {
+            code: 'SE365',
+            name: 'Human Computer Interaction',
+            nameEn: 'Human Computer Interaction',
+            prereqs: [
+                  'CS210'
+            ],
+            hours: 3,
+            group: 'grp-b'
+      },
+      {
+            code: 'SE409',
+            name: 'Cloud Computing',
+            nameEn: 'Cloud Computing',
+            prereqs: [
+                  'CS331'
+            ],
+            hours: 3,
+            group: 'grp-b'
+      },
+      {
+            code: 'BCE483',
+            name: 'Business Intelligence and Analytics',
+            nameEn: 'Business Intelligence and Analytics',
+            prereqs: [
+                  'IS450'
+            ],
+            hours: 3,
+            group: 'grp-d'
+      },
+      {
+            code: 'IS453',
+            name: 'Technology Trends in Digital Transformation',
+            nameEn: 'Technology Trends in Digital Transformation',
+            prereqs: [
+                  'IS450'
+            ],
+            hours: 3,
+            group: 'grp-d'
+      },
+      {
+            code: 'IS454',
+            name: 'Product Lifecycle Management for Digital Transformation',
+            nameEn: 'Product Lifecycle Management for Digital Transformation',
+            prereqs: [
+                  'IS450'
+            ],
+            hours: 3,
+            group: 'grp-d'
+      },
+      {
+            code: 'CYS403',
+            name: 'Security Risk Management, Governance and Control',
+            nameEn: 'Security Risk Management, Governance and Control',
+            prereqs: [
+                  'CYS401'
+            ],
+            hours: 3,
+            group: 'grp-d'
+      },
+      {
+            code: 'IS446',
+            name: 'Knowledge Discovery and Data Mining',
+            nameEn: 'Knowledge Discovery and Data Mining',
+            prereqs: [
+                  'IS450'
+            ],
+            hours: 3,
+            group: 'grp-d'
+      },
+      {
+            code: 'IS463',
+            name: 'Applied Data Science',
+            nameEn: 'Applied Data Science',
+            prereqs: [
+                  'CS210',
+                  'STAT101'
+            ],
+            hours: 3,
+            group: 'grp-d'
+      },
+      {
+            code: 'ACT101',
+            name: 'The Basics of Stage Acting',
+            nameEn: 'The Basics of Stage Acting',
+            prereqs: [],
+            hours: 3,
+            group: 'grp-e'
+      },
+      {
+            code: 'ART100',
+            name: 'Drawing',
+            nameEn: 'Drawing',
+            prereqs: [],
+            hours: 2,
+            group: 'grp-e'
+      },
+      {
+            code: 'CULT101',
+            name: 'Saudi Folklore and Culture I',
+            nameEn: 'Saudi Folklore and Culture I',
+            prereqs: [],
+            hours: 3,
+            group: 'grp-e'
+      },
+      {
+            code: 'CULT102',
+            name: 'Saudi Folklore and Culture II',
+            nameEn: 'Saudi Folklore and Culture II',
+            prereqs: [],
+            hours: 3,
+            group: 'grp-e'
+      },
+      {
+            code: 'ASIA101',
+            name: 'Introduction to Japanese',
+            nameEn: 'Introduction to Japanese',
+            prereqs: [],
+            hours: 3,
+            group: 'grp-e'
+      },
+      {
+            code: 'CHM101',
+            name: 'General Chemistry',
+            nameEn: 'General Chemistry',
+            prereqs: [],
+            hours: 4,
+            group: 'grp-e'
+      },
+      {
+            code: 'ELE110',
+            name: 'Entrepreneurship',
+            nameEn: 'Entrepreneurship',
+            prereqs: [],
+            hours: 3,
+            group: 'grp-e'
+      },
+      {
+            code: 'ENG207',
+            name: 'Critical Thinking',
+            nameEn: 'Critical Thinking',
+            prereqs: [
+                  'ENG103'
+            ],
+            hours: 3,
+            group: 'grp-e'
+      },
+      {
+            code: 'ENG208',
+            name: 'Elementary Spanish',
+            nameEn: 'Elementary Spanish',
+            prereqs: [],
+            hours: 3,
+            group: 'grp-e'
+      },
+      {
+            code: 'LAW101',
+            name: 'Principles Of Law',
+            nameEn: 'Principles Of Law',
+            prereqs: [],
+            hours: 3,
+            group: 'grp-e'
+      },
+      {
+            code: 'MATH101',
+            name: 'Finite Mathematics',
+            nameEn: 'Finite Mathematics',
+            prereqs: [],
+            hours: 3,
+            group: 'grp-e'
+      },
+      {
+            code: 'IR101',
+            name: 'Information Resources',
+            nameEn: 'Information Resources',
+            prereqs: [],
+            hours: 3,
+            group: 'grp-e'
+      },
+      {
+            code: 'CS492',
+            name: 'Cooperative Training',
+            nameEn: 'Cooperative Training',
+            prereqs: [
+                  'CS331',
+                  'CS340'
+            ],
+            hours: 10,
+            term: 't8'
+      }
+];
+
+    // Mirrors the blue "اختياري X - Y" badges on the official plan: X = hours completed so far, Y = hours required from that block.
+    const ELECTIVE_GROUPS = [
+      {
+            id: 'grp-a',
+            label: 'Physical Education - choose 2',
+            required: 2
+      },
+      {
+            id: 'grp-b',
+            label: 'CS Elective - choose 1',
+            required: 3
+      },
+      {
+            id: 'grp-c',
+            label: 'Business Elective - choose 1',
+            required: 3
+      },
+      {
+            id: 'grp-d',
+            label: 'DX Elective - choose 2',
+            required: 6
+      },
+      {
+            id: 'grp-e',
+            label: 'General Electives - choose 2',
+            required: 6
+      }
+];
+
+    /* ---------- State ---------- */
+    const STORAGE_KEY = 'shoug_academic_plan_grid_cs_dx_v1';
+    const STATES = ['not-taken', 'current', 'completed'];
+    let statusMap = {};      // code -> status
+    let assignments = {};    // code -> location id (a term id or an elective group id)
+    let extraTerms = [];     // user-added summer terms {id,labelAr,labelEn,order,isSummer}
+    let customCourses = [];  // user-added courses (same shape as COURSES entries)
+    let examMap = {};        // code -> true if waived via a promotion/placement test (examEligible courses only)
+
+    function courseIndex() {
+      const all = COURSES.concat(customCourses);
+      const map = {};
+      all.forEach(c => map[c.code] = c);
+      return map;
+    }
+
+    function coopCourse(map = courseIndex()) {
+      return Object.values(map).find(c => {
+        const name = `${c.nameEn || c.name || ''}`.toLowerCase();
+        return c.term === 't8' && (name.includes('cooperative training') || /492$/.test(c.code));
+      }) || map.SE492 || map.CS492 || map.IS492 || null;
+    }
+
+    function defaultLocation(course) {
+      return course.term || course.group || (ELECTIVE_GROUPS[ELECTIVE_GROUPS.length - 1] || {}).id || 'grp-culture';
+    }
+
+    // A course is "critical" (locked, non-draggable) if it's a prerequisite for at least one other course —
+    // moving it could silently break that course's requirement chain.
+    // General-ed / Arabic / Islamic courses students can take alongside the preparatory year in practice —
+    // never lock these even if the plan lists them as a prerequisite for something later.
+    const NEVER_LOCK = new Set([
+      'ENG101', 'ENG103', 'MATH111', 'MATH113', 'PHY105', 'PHY205', 'PSY101',
+      'ARAB101', 'ARAB103', 'ARAB203', 'ISC101', 'ISC103', 'ISC105', 'ISC203',
+    ]);
+
+    // Still enforced as critical-path (move-earlier-only), just without the ⬆ badge cluttering the card.
+    const NO_CRITICAL_ICON = new Set(['PE001', 'PDS001', 'MATH001', 'ENG020', 'ENG010', 'CMP011', 'CS101', 'CS102']);
+
+    function computeGatewaySet(map) {
+      const gateways = new Set();
+      Object.values(map).forEach(c => (c.prereqs || []).forEach(p => gateways.add(p)));
+      NEVER_LOCK.forEach(code => gateways.delete(code));
+      return gateways;
+    }
+
+    function allTerms() {
+      return BASE_TERMS.concat(extraTerms).sort((a, b) => a.order - b.order);
+    }
+    function isGroupId(id) {
+      return ELECTIVE_GROUPS.some(g => g.id === id);
+    }
+    function termLabel(term) {
+      return lang === 'ar' ? term.labelAr : term.labelEn;
+    }
+
+    function loadState() {
+      let saved = {};
+      try { saved = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; } catch (e) { saved = {}; }
+      statusMap = saved.statusMap || {};
+      extraTerms = saved.extraTerms || [];
+      customCourses = saved.customCourses || [];
+      examMap = saved.examMap || {};
+      gradState = saved.gradState || gradState;
+      const map = courseIndex();
+      assignments = saved.assignments || {};
+      Object.keys(map).forEach(code => {
+        if (!(code in assignments)) assignments[code] = defaultLocation(map[code]);
+      });
+    }
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ statusMap, assignments, extraTerms, customCourses, examMap, gradState }));
+    }
+
+    function toggleExam(code) {
+      examMap[code] = !examMap[code];
+      saveState();
+      render();
+    }
+
+    /* ---------- Toast ---------- */
+    let toastTimer;
+    function toast(msg) {
+      const el = document.getElementById('toast');
+      el.textContent = msg;
+      el.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => el.classList.remove('show'), 2600);
+    }
+
+    /* ---------- Status cycling ---------- */
+    function cycleStatus(code) {
+      const cur = statusMap[code] || 'not-taken';
+      statusMap[code] = STATES[(STATES.indexOf(cur) + 1) % STATES.length];
+      saveState();
+      render();
+    }
+
+    /* ---------- Prereq-aware drag validation ---------- */
+    function dependentsOf(code, map) {
+      return Object.values(map).filter(c => (c.prereqs || []).includes(code));
+    }
+
+    function validateMove(code, targetId) {
+      if (targetId === 'pool' || isGroupId(targetId)) return { ok: true };
+      const map = courseIndex();
+      const course = map[code];
+      const terms = allTerms();
+      const targetTerm = terms.find(term => term.id === targetId);
+      const targetOrder = targetTerm.order;
+
+      if (course.noPrepSummer && (targetTerm.isPrep || targetTerm.isSummer)) {
+        return { ok: false, reason: t().moveBlockedNoPrepSummer(code) };
+      }
+
+      for (const preCode of (course.prereqs || [])) {
+        const preLoc = assignments[preCode];
+        if (!preLoc || preLoc === 'pool' || isGroupId(preLoc)) continue;
+        const preTerm = terms.find(term => term.id === preLoc);
+        if (preTerm && preTerm.order >= targetOrder) {
+          return { ok: false, reason: t().moveBlockedPrereq(code, preCode) };
+        }
+      }
+      for (const dep of dependentsOf(code, map)) {
+        const depLoc = assignments[dep.code];
+        if (!depLoc || depLoc === 'pool' || isGroupId(depLoc)) continue;
+        const depTerm = terms.find(term => term.id === depLoc);
+        if (depTerm && depTerm.order <= targetOrder) {
+          return { ok: false, reason: t().moveBlockedDependent(code, dep.code) };
+        }
+      }
+
+      // Critical-path courses (something else depends on them) can be pulled earlier — e.g. CS175 has no
+      // prereqs so it's fine to take it in the 1st term instead of its usual 2nd — but never pushed later
+      // than their listed term, since that would delay everything that depends on them.
+      const gateways = computeGatewaySet(map);
+      if (gateways.has(code) && !NEVER_LOCK.has(code) && course.term) {
+        const defaultTerm = BASE_TERMS.find(term => term.id === course.term);
+        if (defaultTerm && targetOrder > defaultTerm.order) {
+          return { ok: false, reason: t().moveBlockedCritical(code) };
+        }
+      }
+
+      return { ok: true };
+    }
+
+    /* ---------- Drag & drop wiring ---------- */
+    let draggingCode = null;
+    let suppressClick = false;
+
+    // Swallow the stray click a browser fires on the element left under the cursor
+    // right after a drop re-renders the DOM (was mis-firing the "add course" prompt).
+    document.addEventListener('click', e => {
+      if (suppressClick) {
+        e.stopPropagation();
+        e.preventDefault();
+        suppressClick = false;
+      }
+    }, true);
+
+    function courseEl(course, locked, readOnly) {
+      const div = document.createElement('div');
+      const st = statusMap[course.code] || 'not-taken';
+      const exempted = course.examEligible && !!examMap[course.code];
+      div.className = 'course'
+        + (exempted ? ' state-completed exempted' : st === 'current' ? ' state-current' : st === 'completed' ? ' state-completed' : '')
+        + (locked && !readOnly ? ' locked' : '')
+        + (readOnly ? ' view-only' : '');
+      const displayName = (lang === 'ar' ? course.name : (course.nameEn || course.name));
+
+      const codeRow = document.createElement('div');
+      codeRow.className = 'code-row';
+      const codeSpan = document.createElement('span');
+      codeSpan.className = 'code';
+      codeSpan.textContent = course.code;
+      codeRow.appendChild(codeSpan);
+
+      if (!readOnly) {
+        const icons = document.createElement('span');
+        icons.className = 'icon-row';
+        if (course.examEligible) {
+          const tick = document.createElement('button');
+          tick.type = 'button';
+          tick.className = 'exam-tick' + (exempted ? ' checked' : '');
+          tick.textContent = '✓';
+          tick.title = t().examTickTitle;
+          tick.addEventListener('click', e => {
+            e.stopPropagation();
+            toggleExam(course.code);
+          });
+          icons.appendChild(tick);
+        }
+        if (locked && !NO_CRITICAL_ICON.has(course.code)) {
+          const lockIcon = document.createElement('span');
+          lockIcon.className = 'lock-icon';
+          lockIcon.textContent = '⬆';
+          lockIcon.title = t().criticalTitle;
+          icons.appendChild(lockIcon);
+        }
+        codeRow.appendChild(icons);
+      }
+
+      const nameSpan = document.createElement('span');
+      nameSpan.className = 'name';
+      nameSpan.textContent = displayName;
+
+      div.appendChild(codeRow);
+      div.appendChild(nameSpan);
+
+      if (readOnly) return div;
+
+      div.addEventListener('click', () => cycleStatus(course.code));
+
+      div.draggable = true;
+      div.addEventListener('dragstart', e => {
+        draggingCode = course.code;
+        div.classList.add('dragging');
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', course.code);
+      });
+      div.addEventListener('dragend', () => {
+        div.classList.remove('dragging');
+        draggingCode = null;
+      });
+
+      return div;
+    }
+
+    function wireDropZone(el, locationId) {
+      el.dataset.termId = locationId;
+      el.addEventListener('dragover', e => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+      });
+      el.addEventListener('dragenter', e => {
+        e.preventDefault();
+        if (!draggingCode) return;
+        const v = validateMove(draggingCode, locationId);
+        el.classList.add(v.ok ? 'drag-over' : 'drag-invalid');
+      });
+      el.addEventListener('dragleave', () => {
+        el.classList.remove('drag-over', 'drag-invalid');
+      });
+      el.addEventListener('drop', e => {
+        e.preventDefault();
+        el.classList.remove('drag-over', 'drag-invalid');
+        const code = e.dataTransfer.getData('text/plain') || draggingCode;
+        if (!code) return;
+        const v = validateMove(code, locationId);
+        if (!v.ok) { toast(v.reason); return; }
+        assignments[code] = locationId;
+        saveState();
+        suppressClick = true;
+        setTimeout(() => { suppressClick = false; }, 400);
+        render();
+      });
+    }
+
+    /* ---------- Add course / add summer term ---------- */
+    function addCourseToTerm(locationId) {
+      if (suppressClick) { suppressClick = false; return; }
+      const code = prompt(t().addCoursePromptCode);
+      if (!code) return;
+      const cleanCode = code.trim().toUpperCase();
+      const map = courseIndex();
+      if (map[cleanCode]) { toast(t().addCourseDup); return; }
+      const nameInput = prompt(t().addCoursePromptName);
+      const name = (nameInput && nameInput.trim()) ? nameInput.trim() : cleanCode;
+      customCourses.push({ code: cleanCode, name, nameEn: name, term: isGroupId(locationId) ? null : locationId, group: isGroupId(locationId) ? locationId : null, prereqs: [] });
+      assignments[cleanCode] = locationId;
+      saveState();
+      render();
+    }
+
+    function addSummerTerm() {
+      const baseSorted = BASE_TERMS.slice().sort((a, b) => a.order - b.order);
+      const listText = baseSorted.map((term, i) => `${i + 1}. ${termLabel(term)}`).join('\n');
+      const afterRaw = prompt(t().addSummerPrompt(listText), String(baseSorted.length));
+      if (afterRaw === null) return;
+      const idx = parseInt(afterRaw, 10);
+      const afterTerm = baseSorted[idx - 1] || baseSorted[baseSorted.length - 1];
+      const countSoFar = extraTerms.filter(term => term.isSummer).length + 1;
+      const id = 'summer-' + Date.now();
+      extraTerms.push({
+        id,
+        labelAr: 'صيفي ' + countSoFar,
+        labelEn: 'Summer ' + countSoFar,
+        order: afterTerm.order + 0.5,
+        isSummer: true,
+      });
+      saveState();
+      render();
+    }
+
+    function removeSummerTerm(termId) {
+      const hasCourses = Object.values(assignments).includes(termId);
+      if (hasCourses) { toast(t().removeSummerBlocked); return; }
+      extraTerms = extraTerms.filter(term => term.id !== termId);
+      saveState();
+      render();
+    }
+
+    /* ---------- Render ---------- */
+    function renderStaticText() {
+      const s = t();
+      document.documentElement.lang = lang;
+      document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+      document.getElementById('pageTitle').textContent = s.pageTitle;
+      document.getElementById('pageSub').textContent = viewMode ? s.pageSubView : s.pageSub;
+      document.getElementById('addSummerBtn').textContent = s.addSummer;
+      document.getElementById('resetBtn').textContent = s.reset;
+      document.getElementById('addSummerBtn').style.display = viewMode ? 'none' : '';
+      document.getElementById('resetBtn').style.display = viewMode ? 'none' : '';
+      document.getElementById('legendRed').textContent = s.legendRed;
+      document.getElementById('legendWhite').textContent = s.legendWhite;
+      document.getElementById('legendGreen').textContent = s.legendGreen;
+      document.getElementById('legendLocked').textContent = s.legendLocked;
+      document.getElementById('pageFooter').textContent = s.footer;
+      document.getElementById('langBtn').textContent = s.toggleTo;
+      const themeBtn = document.getElementById('themeBtn');
+      const theme = currentTheme();
+      themeBtn.textContent = theme === 'dark' ? '☀️' : '🌙';
+      themeBtn.title = theme === 'dark' ? s.themeToLight : s.themeToDark;
+      const viewModeBtn = document.getElementById('viewModeBtn');
+      viewModeBtn.textContent = '✏️';
+      viewModeBtn.title = viewMode ? s.viewModeTitle : s.editModeTitle;
+      viewModeBtn.classList.toggle('active', viewMode);
+
+      document.getElementById('walkBtn').title = s.walkBtnTitle;
+      document.getElementById('walkTitle').textContent = s.walkTitle;
+      document.getElementById('walkPrevBtn').textContent = s.walkPrev;
+
+      document.getElementById('eyeBtn').title = s.eyeBtnTitle;
+      document.getElementById('compareTitle').textContent = s.compareTitle;
+      document.getElementById('compareSub').textContent = s.compareSub;
+
+      document.getElementById('gradBtn').title = s.gradBtnTitle;
+      document.getElementById('gradTitle').textContent = s.gradTitle;
+      document.getElementById('gradSub').textContent = s.gradSub;
+      document.getElementById('gradTermLabel').textContent = s.gradTermLabelText;
+      document.getElementById('gradYearLabel').textContent = s.gradYearLabelText;
+      document.getElementById('gradCalcBtn').textContent = s.gradCalc;
+      document.getElementById('gradExpectedLabel').textContent = s.gradExpectedLabel;
+      document.getElementById('gradCoopTermLabel').textContent = s.gradCoopTermLabel;
+      document.getElementById('gradDegreeTermLabel').textContent = s.gradDegreeTermLabel;
+      document.getElementById('gradStatusLabel').textContent = s.gradStatusLabel;
+      document.getElementById('gradCoursesLabel').textContent = s.gradCoursesLabel;
+      document.getElementById('gradHoursLabel').textContent = s.gradHoursLabel;
+      document.getElementById('gradRemainingLabel').textContent = s.gradRemainingLabel;
+
+      // Students can only ever ENTER the program at Prep 1st (full prep), Prep 2nd (placed out of Prep 1st),
+      // or 1st (fully exempted from prep) — never partway into the regular 1st-8th sequence.
+      const VALID_START_TERMS = ['prep1', 'prep2', 't1'];
+      const termSelect = document.getElementById('gradStartTerm');
+      const prevValue = termSelect.value;
+      termSelect.innerHTML = '';
+      BASE_TERMS.filter(term => VALID_START_TERMS.includes(term.id)).forEach(term => {
+        const opt = document.createElement('option');
+        opt.value = term.id;
+        opt.textContent = termLabel(term);
+        termSelect.appendChild(opt);
+      });
+      termSelect.value = prevValue && VALID_START_TERMS.includes(prevValue) ? prevValue : (gradState.startTerm || 'prep1');
+    }
+
+    function walkthroughSteps(map) {
+      const s = t();
+      const courses = Object.values(map);
+      const doneCount = courses.filter(c => isCourseDone(c)).length;
+      const currentCount = courses.filter(c => statusMap[c.code] === 'current' && !isCourseDone(c)).length;
+      const summerCount = extraTerms.filter(term => term.isSummer).length;
+      const movedCount = courses.filter(c => assignments[c.code] && assignments[c.code] !== defaultLocation(c)).length;
+      const hasCustomLayout = summerCount > 0 || movedCount > 0 || customCourses.length > 0;
+      return hasCustomLayout
+        ? s.walkCustomSteps(summerCount, movedCount)
+        : (doneCount > 0 || currentCount > 0 ? s.walkProgressSteps(doneCount, currentCount) : s.walkBlankSteps);
+    }
+
+    function renderWalkthrough() {
+      const steps = walkthroughSteps(courseIndex());
+      if (walkStep >= steps.length) walkStep = Math.max(0, steps.length - 1);
+      const [title, body] = steps[walkStep];
+      document.getElementById('walkStepCount').textContent = t().walkStepCount(walkStep + 1, steps.length);
+      document.getElementById('walkStepTitle').textContent = title;
+      document.getElementById('walkStepBody').textContent = body;
+      document.getElementById('walkPrevBtn').style.visibility = walkStep === 0 ? 'hidden' : '';
+      document.getElementById('walkNextBtn').textContent = walkStep === steps.length - 1 ? t().walkDone : t().walkNext;
+    }
+
+    function buildTermRow(term, map, gateways) {
+      const row = document.createElement('div');
+      row.className = 'term-row' + (term.isSummer ? ' summer' : '');
+
+      const label = document.createElement('div');
+      label.className = 'term-label';
+      label.innerHTML = `<span>${termLabel(term)}</span>`;
+      if (term.isSummer && !viewMode) {
+        const rm = document.createElement('button');
+        rm.className = 'term-remove';
+        rm.textContent = '×';
+        rm.title = t().termRemoveTitle;
+        rm.addEventListener('click', () => removeSummerTerm(term.id));
+        label.appendChild(rm);
+      }
+      row.appendChild(label);
+
+      const courses = document.createElement('div');
+      courses.className = 'term-courses';
+      Object.values(map)
+        .filter(c => assignments[c.code] === term.id)
+        .forEach(c => courses.appendChild(courseEl(c, gateways.has(c.code), viewMode)));
+
+      if (viewMode) {
+        row.appendChild(courses);
+        return row;
+      }
+
+      wireDropZone(courses, term.id);
+      row.appendChild(courses);
+
+      const addTile = document.createElement('div');
+      addTile.className = 'add-course-tile';
+      addTile.textContent = '+';
+      addTile.title = t().addCourseTileTitle;
+      addTile.addEventListener('click', () => addCourseToTerm(term.id));
+      row.appendChild(addTile);
+
+      return row;
+    }
+
+    function render() {
+      renderStaticText();
+      const map = courseIndex();
+      const gateways = computeGatewaySet(map);
+      if (document.getElementById('walkPanel').classList.contains('open')) renderWalkthrough();
+
+      const planPrep = document.getElementById('plan-prep');
+      const plan = document.getElementById('plan');
+      planPrep.innerHTML = '';
+      plan.innerHTML = '';
+
+      allTerms().forEach(term => {
+        const row = buildTermRow(term, map, gateways);
+        (term.isPrep ? planPrep : plan).appendChild(row);
+      });
+
+      const planElectives = document.getElementById('plan-electives');
+      planElectives.innerHTML = '';
+
+      ELECTIVE_GROUPS.forEach(group => {
+        const groupCourses = Object.values(map).filter(c => c.group === group.id);
+        const completedHours = groupCourses
+          .filter(c => statusMap[c.code] === 'completed')
+          .reduce((sum, c) => sum + (c.hours || 0), 0);
+
+        const row = document.createElement('div');
+        row.className = 'term-row elective-row';
+
+        const label = document.createElement('div');
+        label.className = 'term-label';
+        label.innerHTML = `<span>${t().elective} ${completedHours} - ${group.required}</span>`;
+        row.appendChild(label);
+
+        const courses = document.createElement('div');
+        courses.className = 'term-courses';
+        Object.values(map)
+          .filter(c => assignments[c.code] === group.id)
+          .forEach(c => courses.appendChild(courseEl(c, gateways.has(c.code), viewMode)));
+
+        if (viewMode) {
+          row.appendChild(courses);
+          planElectives.appendChild(row);
+          return;
+        }
+
+        wireDropZone(courses, group.id);
+        row.appendChild(courses);
+
+        const addTile = document.createElement('div');
+        addTile.className = 'add-course-tile';
+        addTile.textContent = '+';
+        addTile.title = t().addCourseTileTitle;
+        addTile.addEventListener('click', () => addCourseToTerm(group.id));
+        row.appendChild(addTile);
+
+        planElectives.appendChild(row);
+      });
+
+      updateProgress(map);
+
+      if (document.getElementById('comparePanel').classList.contains('open')) renderCompare();
+    }
+
+    // Counting every elective as its own slot (98 total) wildly overstates what's left — most electives are
+    // interchangeable options where only ONE satisfies the requirement (e.g. any single PE course covers the
+    // whole PE group). This counts against the real required course count instead: every core/prep course,
+    // plus one slot per elective group that actually carries required hours (satisfied once any course in
+    // that group is completed/waived) — matching the same total used by the "Remaining to graduate" card.
+    function updateProgress(map) {
+      const startTermId = (gradState && gradState.startTerm) || 'prep1';
+      const totals = totalPlanRequirements(startTermId);
+      let done = 0;
+      Object.values(map).forEach(c => {
+        if (!c.term || !termMeetsStartScope(c, startTermId)) return;
+        if (statusMap[c.code] === 'completed' || (c.examEligible && examMap[c.code])) done++;
+      });
+      ELECTIVE_GROUPS.forEach(g => {
+        if (g.required <= 0) return;
+        const completedHours = Object.values(map)
+          .filter(c => c.group === g.id && isCourseDone(c))
+          .reduce((sum, c) => sum + (c.hours || 0), 0);
+        if (completedHours >= g.required) done++;
+      });
+      const pct = totals.courses ? Math.round((done / totals.courses) * 100) : 0;
+      document.getElementById('progressText').textContent = t().progress(done, totals.courses, pct);
+      document.getElementById('progressFill').style.width = pct + '%';
+    }
+
+    // Read-only static course tile for the comparison panel: same status colors, no drag/lock affordances.
+    function staticCourseEl(course) {
+      const div = document.createElement('div');
+      const st = statusMap[course.code] || 'not-taken';
+      const exempted = course.examEligible && !!examMap[course.code];
+      div.className = 'course'
+        + (exempted ? ' state-completed exempted' : st === 'current' ? ' state-current' : st === 'completed' ? ' state-completed' : '');
+      const displayName = (lang === 'ar' ? course.name : (course.nameEn || course.name));
+      div.innerHTML = `<div class="code-row"><span class="code">${course.code}</span></div><span class="name">${displayName}</span>`;
+      return div;
+    }
+
+    // Renders the plan exactly as the official COURSES data lists it (term/group), ignoring drag moves,
+    // added summer terms, and custom courses — so it reflects only what the university originally planned.
+    function renderCompare() {
+      const comparePrep = document.getElementById('compare-prep');
+      const compareMain = document.getElementById('compare-main');
+      const compareElectives = document.getElementById('compare-electives');
+      comparePrep.innerHTML = '';
+      compareMain.innerHTML = '';
+      compareElectives.innerHTML = '';
+
+      BASE_TERMS.slice().sort((a, b) => a.order - b.order).forEach(term => {
+        const row = document.createElement('div');
+        row.className = 'term-row';
+        const label = document.createElement('div');
+        label.className = 'term-label';
+        label.innerHTML = `<span>${termLabel(term)}</span>`;
+        row.appendChild(label);
+
+        const courses = document.createElement('div');
+        courses.className = 'term-courses';
+        COURSES.filter(c => c.term === term.id).forEach(c => courses.appendChild(staticCourseEl(c)));
+        row.appendChild(courses);
+
+        (term.isPrep ? comparePrep : compareMain).appendChild(row);
+      });
+
+      ELECTIVE_GROUPS.forEach(group => {
+        const groupCourses = COURSES.filter(c => c.group === group.id);
+        const completedHours = groupCourses
+          .filter(c => statusMap[c.code] === 'completed' || (c.examEligible && examMap[c.code]))
+          .reduce((sum, c) => sum + (c.hours || 0), 0);
+
+        const row = document.createElement('div');
+        row.className = 'term-row elective-row';
+        const label = document.createElement('div');
+        label.className = 'term-label';
+        label.innerHTML = `<span>${t().elective} ${completedHours} - ${group.required}</span>`;
+        row.appendChild(label);
+
+        const courses = document.createElement('div');
+        courses.className = 'term-courses';
+        groupCourses.forEach(c => courses.appendChild(staticCourseEl(c)));
+        row.appendChild(courses);
+
+        compareElectives.appendChild(row);
+      });
+    }
+
+    function toggleCompare(open) {
+      const overlay = document.getElementById('compareOverlay');
+      const panel = document.getElementById('comparePanel');
+      const shouldOpen = open !== undefined ? open : !panel.classList.contains('open');
+      overlay.classList.toggle('open', shouldOpen);
+      panel.classList.toggle('open', shouldOpen);
+      if (shouldOpen) renderCompare();
+    }
+
+    function toggleWalkthrough(open) {
+      const overlay = document.getElementById('walkOverlay');
+      const panel = document.getElementById('walkPanel');
+      const shouldOpen = open !== undefined ? open : !panel.classList.contains('open');
+      overlay.classList.toggle('open', shouldOpen);
+      panel.classList.toggle('open', shouldOpen);
+      if (shouldOpen) {
+        walkStep = 0;
+        renderWalkthrough();
+      }
+    }
+
+    function stepWalkthrough(delta) {
+      const steps = walkthroughSteps(courseIndex());
+      const nextStep = walkStep + delta;
+      if (nextStep >= steps.length) {
+        toggleWalkthrough(false);
+        return;
+      }
+      walkStep = Math.max(0, nextStep);
+      renderWalkthrough();
+    }
+
+    /* ---------- Graduation timeline ---------- */
+    // PSU runs two regular terms a year: Fall (odd term order) and Spring (even term order) — prep1=-1(Fall),
+    // prep2=0(Spring), 1st=1(Fall), 2nd=2(Spring), ... 8th=8(Spring). Prep is counted as its own
+    // academic year when the student selects Prep 1st / Prep 2nd as the entry point.
+    let gradState = { startTerm: 'prep1', startYear: null };
+
+    function semesterTypeForOrder(order) {
+      return order % 2 === 0 ? 'spring' : 'fall';
+    }
+
+    // Keep the visible plan order and the calendar order identical. If a student selects Prep 1st, that means
+    // they started in the preparatory year, so Prep 1st/Prep 2nd must not be collapsed onto 1st/2nd semester.
+    function calendarOrder(order) {
+      return order;
+    }
+
+    // Display Spring by the Gregorian year it mostly belongs to: Fall 2023 -> Spring 2024 -> Fall 2024.
+    // That matches the user's "Year (Gregorian)" input and makes Prep 1st 2023 graduate in Spring 2028
+    // for a five-year path: one prep year plus four major years.
+    function advanceSemester(year, semester) {
+      return semester === 'fall' ? { year: year + 1, semester: 'spring' } : { year, semester: 'fall' };
+    }
+
+    function stepsBetween(fromYear, fromSemester, toYear, toSemester) {
+      let y = fromYear, s = fromSemester, steps = 0;
+      while ((y !== toYear || s !== toSemester) && steps < 60) {
+        const next = advanceSemester(y, s);
+        y = next.year; s = next.semester;
+        steps++;
+      }
+      return steps;
+    }
+
+    // Fall runs ~Aug-Nov. Spring runs ~Dec-Apr and is labeled by the following Gregorian year; May-Jul is
+    // the summer break/session, counted as having just finished that year's Spring.
+    function currentAcademicSemester() {
+      const now = new Date();
+      const m = now.getMonth() + 1;
+      const y = now.getFullYear();
+      if (m >= 8 && m <= 11) return { year: y, semester: 'fall' };
+      if (m === 12) return { year: y + 1, semester: 'spring' };
+      if (m <= 4) return { year: y, semester: 'spring' };
+      return { year: y, semester: 'spring' }; // May-Jul summer break
+    }
+
+    function psuTermCode(termRef) {
+      const academicYear = termRef.semester === 'fall' ? termRef.year : termRef.year - 1;
+      const yearCode = String(academicYear % 100).padStart(2, '0');
+      const semesterCode = termRef.semester === 'fall' ? '1' : termRef.semester === 'spring' ? '2' : '3';
+      return yearCode + semesterCode;
+    }
+
+    function psuTermLabel(termRef) {
+      const s = t();
+      const name = termRef.semester === 'fall'
+        ? s.termFirst
+        : termRef.semester === 'spring'
+          ? s.termSecond
+          : s.termSummer;
+      return `${name} ${psuTermCode(termRef)}`;
+    }
+
+    function nextDegreeTermAfter(coopTerm) {
+      if (coopTerm.semester === 'spring') return { year: coopTerm.year, semester: 'summer' };
+      if (coopTerm.semester === 'fall') return { year: coopTerm.year + 1, semester: 'spring' };
+      return { year: coopTerm.year + 1, semester: 'fall' };
+    }
+
+    // Your "current position" is the last term reached by walking CONSECUTIVELY from the start — not just
+    // the highest order that has any single course marked done. A stray/leftover mark in a much later term
+    // (e.g. from earlier testing) shouldn't make you look "ahead" while everything in between is untouched;
+    // that term only counts once every term before it is actually complete.
+    function furthestReachedOrder(startTermId) {
+      const map = courseIndex();
+      const startTerm = BASE_TERMS.find(bt => bt.id === startTermId);
+      const startOrder = startTerm ? startTerm.order : -Infinity;
+      const terms = allTerms().slice().sort((a, b) => a.order - b.order);
+      const isDone = code => {
+        const course = map[code];
+        if (!course) return false;
+        return isCourseDone(course);
+      };
+      const isTouched = code => isDone(code) || statusMap[code] === 'current';
+
+      let lastFullyDoneOrder = null;
+      for (const term of terms) {
+        if (term.order < startOrder) continue;
+        const termCourses = Object.keys(assignments).filter(code => assignments[code] === term.id && map[code]);
+        if (termCourses.length === 0) continue;
+        if (termCourses.every(isDone)) {
+          lastFullyDoneOrder = { raw: term.order, calendar: calendarOrder(term.order) };
+          continue;
+        }
+        if (termCourses.some(isTouched)) return { raw: term.order, calendar: calendarOrder(term.order) }; // currently in this term
+        break; // first untouched term — stop here, ignore anything further out
+      }
+      return lastFullyDoneOrder;
+    }
+
+
+    function isCourseDone(course) {
+      return statusMap[course.code] === 'completed' || (course.examEligible && examMap[course.code]);
+    }
+
+    function termMeetsStartScope(course, startTermId) {
+      if (!course.term) return false;
+      const courseTerm = BASE_TERMS.find(bt => bt.id === course.term);
+      const startTerm = BASE_TERMS.find(bt => bt.id === startTermId);
+      if (!courseTerm || !startTerm) return true;
+      return courseTerm.order >= startTerm.order;
+    }
+
+    function completedElectiveProgress(map) {
+      let courses = 0, hours = 0;
+      ELECTIVE_GROUPS.forEach(g => {
+        if (g.required <= 0) return;
+        const completedHours = Object.values(map)
+          .filter(c => c.group === g.id && isCourseDone(c))
+          .reduce((sum, c) => sum + (c.hours || 0), 0);
+        hours += Math.min(completedHours, g.required);
+        if (completedHours >= g.required) courses++;
+      });
+      return { courses, hours };
+    }
+
+    // How many courses/hours a student pacing normally would have finished by "expectedOrder", vs.
+    // how many the student has actually marked done (completed or exam-waived).
+    function courseAndHourProgress(expectedOrder, startTermId) {
+      const map = courseIndex();
+      let expectedCourses = 0, expectedHours = 0, actualCourses = 0, actualHours = 0;
+
+      Object.values(map).forEach(course => {
+        const hours = course.hours || 0;
+        if (course.term && termMeetsStartScope(course, startTermId)) {
+          const termDef = BASE_TERMS.find(bt => bt.id === course.term);
+          if (termDef && calendarOrder(termDef.order) <= expectedOrder) {
+            expectedCourses++;
+            expectedHours += hours;
+          }
+        }
+        // PSU's own registrar plan reports "hours passed" separately from "hours registered" (in-progress,
+        // ungraded) — e.g. a course you're currently taking shows up under "credit hours registered," not
+        // under "credit hours passed." Match that: only fully completed/waived courses count as earned here.
+        if (course.term && termMeetsStartScope(course, startTermId) && isCourseDone(course)) {
+          actualCourses++;
+          actualHours += hours;
+        }
+      });
+
+      if (expectedOrder >= BASE_TERMS.find(bt => bt.id === 't8').order) {
+        ELECTIVE_GROUPS.forEach(g => {
+          if (g.required <= 0) return;
+          expectedCourses++;
+          expectedHours += g.required;
+        });
+      }
+
+      const electiveProgress = completedElectiveProgress(map);
+      actualCourses += electiveProgress.courses;
+      actualHours += electiveProgress.hours;
+
+      return { expectedCourses, expectedHours, actualCourses, actualHours };
+    }
+
+    // The official plan totals 134 credit hours (per the registrar PDF), covering every core/prep course
+    // plus exactly one course from each elective group that actually carries required hours (the
+    // culture/language group is a free 0-hour elective and doesn't count toward the 134).
+    function totalPlanRequirements(startTermId) {
+      let hours = 0, courses = 0;
+      COURSES.forEach(c => {
+        if (c.term && (!startTermId || termMeetsStartScope(c, startTermId))) {
+          hours += c.hours || 0;
+          courses++;
+        }
+      });
+      ELECTIVE_GROUPS.forEach(g => {
+        if (g.required > 0) {
+          hours += g.required;
+          courses += 1;
+        }
+      });
+      return { hours, courses };
+    }
+
+    function calculateGraduation() {
+      const s = t();
+      const termId = document.getElementById('gradStartTerm').value;
+      const yearRaw = document.getElementById('gradStartYear').value;
+      const year = parseInt(yearRaw, 10);
+      const results = document.getElementById('gradResults');
+      const note = document.getElementById('gradNote');
+
+      if (!year || year < 2000 || year > 2100) {
+        results.classList.remove('show');
+        note.textContent = s.gradInvalid;
+        return;
+      }
+
+      gradState = { startTerm: termId, startYear: year };
+      saveState();
+
+      const startTerm = BASE_TERMS.find(bt => bt.id === termId);
+      const t8 = BASE_TERMS.find(bt => bt.id === 't8');
+      const startSemester = semesterTypeForOrder(startTerm.order);
+
+      const now = currentAcademicSemester();
+      const stepsElapsed = stepsBetween(year, startSemester, now.year, now.semester);
+      const expectedOrder = Math.min(calendarOrder(startTerm.order) + stepsElapsed, t8.order);
+      const actualPosition = furthestReachedOrder(termId);
+
+      const progress = courseAndHourProgress(expectedOrder, termId);
+      const courseDiff = progress.actualCourses - progress.expectedCourses;
+      const hourDiff = progress.actualHours - progress.expectedHours;
+
+      // Expected graduation is the FIXED date the original plan promises — your start term plus the plan's
+      // standard duration (t8 minus your start, in real calendar terms — see calendarOrder above), with no
+      // adjustment for actual progress. This is the catalog target, not a moving projection — the cards
+      // below are what tell you whether you're ahead/behind/on-track against it.
+      const stepsNatural = t8.order - calendarOrder(startTerm.order);
+      let grad = { year, semester: startSemester };
+      for (let i = 0; i < stepsNatural; i++) grad = advanceSemester(grad.year, grad.semester);
+      const degreeTerm = nextDegreeTermAfter(grad);
+
+      document.getElementById('gradExpectedValue').textContent =
+        `${grad.semester === 'fall' ? s.gradFall : s.gradSpring} ${grad.year}`;
+      document.getElementById('gradCoopTermValue').textContent = psuTermLabel(grad);
+      document.getElementById('gradDegreeTermValue').textContent = psuTermLabel(degreeTerm);
+
+      // The note below still surfaces what's actually left on your plan board (regular/summer/co-op terms
+      // with pending courses), since that's useful context even though it no longer drives the headline date.
+      const map = courseIndex();
+      updateProgress(map);
+      const planTerms = allTerms();
+      const currentPositionOrder = actualPosition !== null ? actualPosition.raw : (startTerm.order - 1);
+      const remainingTermsList = planTerms
+        .filter(term => term.order > currentPositionOrder)
+        .filter(term => Object.values(map).some(c => assignments[c.code] === term.id && !isCourseDone(c)));
+      const coopRemaining = remainingTermsList.some(term => term.id === 't8') ? 1 : 0;
+      const regularRemaining = remainingTermsList.filter(term => !term.isSummer && term.id !== 't8').length;
+      const summerCount = remainingTermsList.filter(term => term.isSummer).length;
+      const totalsForPace = totalPlanRequirements(termId);
+
+      const statusCard = document.getElementById('gradStatusCard');
+      const statusValue = document.getElementById('gradStatusValue');
+      statusCard.classList.remove('grad-status-ahead', 'grad-status-behind', 'grad-status-ontrack');
+
+      const coursesCard = document.getElementById('gradCoursesCard');
+      const coursesValue = document.getElementById('gradCoursesValue');
+      coursesCard.classList.remove('grad-status-ahead', 'grad-status-behind', 'grad-status-ontrack');
+      if (courseDiff === 0) {
+        coursesCard.classList.add('grad-status-ontrack');
+        coursesValue.textContent = s.gradOnTrack;
+      } else if (courseDiff > 0) {
+        coursesCard.classList.add('grad-status-ahead');
+        coursesValue.textContent = s.gradAheadCourses(courseDiff);
+      } else {
+        coursesCard.classList.add('grad-status-behind');
+        coursesValue.textContent = s.gradBehindCourses(Math.abs(courseDiff));
+      }
+
+      const hoursCard = document.getElementById('gradHoursCard');
+      const hoursValue = document.getElementById('gradHoursValue');
+      hoursCard.classList.remove('grad-status-ahead', 'grad-status-behind', 'grad-status-ontrack');
+      if (hourDiff === 0) {
+        hoursCard.classList.add('grad-status-ontrack');
+        hoursValue.textContent = s.gradOnTrack;
+      } else if (hourDiff > 0) {
+        hoursCard.classList.add('grad-status-ahead');
+        hoursValue.textContent = s.gradAheadHours(hourDiff);
+      } else {
+        hoursCard.classList.add('grad-status-behind');
+        hoursValue.textContent = s.gradBehindHours(Math.abs(hourDiff));
+      }
+
+      const remainingHours = Math.max(0, totalsForPace.hours - progress.actualHours);
+      const remainingCourses = Math.max(0, totalsForPace.courses - progress.actualCourses);
+      document.getElementById('gradRemainingValue').textContent =
+        s.gradRemainingValue(remainingHours, remainingCourses, totalsForPace.hours);
+
+      const coop = coopCourse(map);
+      const coopCode = coop ? coop.code : '';
+      const coopDone = coop ? isCourseDone(coop) : false;
+      const coopHours = (coop || {}).hours || 10;
+      document.getElementById('gradCoopNote').textContent =
+        coopDone ? s.gradCoopDone(coopCode) : s.gradCoopPending(coopHours, coopCode);
+
+      if (actualPosition === null) {
+        statusValue.textContent = '—';
+        note.textContent = s.gradNoProgress;
+      } else {
+        const diff = actualPosition.calendar - expectedOrder;
+        if (diff === 0) {
+          statusCard.classList.add('grad-status-ontrack');
+          statusValue.textContent = s.gradOnTrack;
+        } else if (diff > 0) {
+          statusCard.classList.add('grad-status-ahead');
+          statusValue.textContent = s.gradAhead(diff);
+        } else {
+          statusCard.classList.add('grad-status-behind');
+          statusValue.textContent = s.gradBehind(Math.abs(diff));
+        }
+        const breakdownParts = [];
+        if (regularRemaining > 0) breakdownParts.push(s.gradPartRegular(regularRemaining));
+        if (summerCount > 0) breakdownParts.push(s.gradPartSummer(summerCount));
+        if (coopRemaining > 0) breakdownParts.push(s.gradPartCoop(coopCode));
+        const totalTerms = regularRemaining + summerCount + coopRemaining;
+        note.textContent = breakdownParts.length
+          ? s.gradBasisTotal(breakdownParts.join(s.gradPartJoin), totalTerms)
+          : s.gradBasisDone;
+      }
+
+      results.classList.add('show');
+    }
+
+    function toggleGrad(open) {
+      const overlay = document.getElementById('gradOverlay');
+      const panel = document.getElementById('gradPanel');
+      const shouldOpen = open !== undefined ? open : !panel.classList.contains('open');
+      overlay.classList.toggle('open', shouldOpen);
+      panel.classList.toggle('open', shouldOpen);
+      if (shouldOpen) {
+        document.getElementById('gradStartTerm').value = gradState.startTerm || 'prep1';
+        document.getElementById('gradStartYear').value = gradState.startYear || '';
+        if (gradState.startYear) calculateGraduation();
+      }
+    }
+
+    document.getElementById('resetBtn').addEventListener('click', () => {
+      if (confirm(t().resetConfirm)) {
+        statusMap = {};
+        examMap = {};
+        extraTerms = [];
+        customCourses = [];
+        assignments = {};
+        const map = courseIndex();
+        Object.keys(map).forEach(code => { assignments[code] = defaultLocation(map[code]); });
+        saveState();
+        render();
+      }
+    });
+    document.getElementById('addSummerBtn').addEventListener('click', addSummerTerm);
+    document.getElementById('langBtn').addEventListener('click', () => {
+      lang = lang === 'ar' ? 'en' : 'ar';
+      localStorage.setItem(LANG_KEY, lang);
+      render();
+    });
+    document.getElementById('viewModeBtn').addEventListener('click', () => {
+      viewMode = !viewMode;
+      localStorage.setItem(VIEW_MODE_KEY, viewMode ? '1' : '0');
+      render();
+    });
+    document.getElementById('themeBtn').addEventListener('click', () => {
+      const next = currentTheme() === 'dark' ? 'light' : 'dark';
+      localStorage.setItem(THEME_KEY, next);
+      applyTheme(next);
+      renderStaticText();
+    });
+    document.getElementById('walkBtn').addEventListener('click', () => toggleWalkthrough());
+    document.getElementById('walkCloseBtn').addEventListener('click', () => toggleWalkthrough(false));
+    document.getElementById('walkOverlay').addEventListener('click', () => toggleWalkthrough(false));
+    document.getElementById('walkPrevBtn').addEventListener('click', () => stepWalkthrough(-1));
+    document.getElementById('walkNextBtn').addEventListener('click', () => stepWalkthrough(1));
+    document.getElementById('eyeBtn').addEventListener('click', () => toggleCompare());
+    document.getElementById('compareCloseBtn').addEventListener('click', () => toggleCompare(false));
+    document.getElementById('compareOverlay').addEventListener('click', () => toggleCompare(false));
+    document.getElementById('gradBtn').addEventListener('click', () => toggleGrad());
+    document.getElementById('gradCloseBtn').addEventListener('click', () => toggleGrad(false));
+    document.getElementById('gradOverlay').addEventListener('click', () => toggleGrad(false));
+    document.getElementById('gradCalcBtn').addEventListener('click', calculateGraduation);
+
+    loadState();
+    render();
+  </script>
+
+</body>
+
+</html>
