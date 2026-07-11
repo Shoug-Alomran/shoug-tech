@@ -27,6 +27,7 @@
       --term-badge: #2f5fa8;
       --term-badge-text: #fff;
       --summer-badge: #c07a1f;
+      --gap-badge: #5b6472;
       --elective-badge: #3a3f4a;
 
       --not-taken-bg: #8a2b2b;
@@ -53,6 +54,7 @@
       --text: #e7e7ea;
       --muted: #9a9ca3;
       --term-badge: #3f6fc0;
+      --gap-badge: #7a828f;
       --not-taken-bg: #5c2323;
       --not-taken-border: #3f1717;
       --current-bg: #1f2126;
@@ -69,6 +71,7 @@
         --text: #e7e7ea;
         --muted: #9a9ca3;
         --term-badge: #3f6fc0;
+        --gap-badge: #7a828f;
         --not-taken-bg: #5c2323;
         --not-taken-border: #3f1717;
         --current-bg: #1f2126;
@@ -150,6 +153,11 @@
       color: var(--summer-badge);
     }
 
+    .actions button.add-gap:hover {
+      border-color: var(--gap-badge);
+      color: var(--gap-badge);
+    }
+
     .progress-bar {
       height: 8px;
       border-radius: 5px;
@@ -192,6 +200,19 @@
 
     .term-row.summer .term-label {
       background: var(--summer-badge);
+    }
+
+    .term-row.gap .term-label {
+      background: var(--gap-badge);
+    }
+
+    .gap-note {
+      align-self: center;
+      margin: 0 auto;
+      padding: 10px 14px;
+      color: var(--muted);
+      font-size: 12px;
+      font-style: italic;
     }
 
     .term-row.elective-row .term-label {
@@ -552,6 +573,12 @@
       transform: translateY(-1px);
     }
 
+    .gap-panel .summer-option:hover {
+      border-color: var(--gap-badge);
+      background: rgba(91, 100, 114, .16);
+      transform: translateY(-1px);
+    }
+
     .summer-option-title {
       display: block;
       font-size: 13px;
@@ -851,7 +878,7 @@
         padding: 12px;
       }
 
-      header.page-head > div:first-child,
+      header.page-head>div:first-child,
       .progress-row,
       .actions {
         width: 100%;
@@ -868,8 +895,9 @@
       }
 
       .actions .add-summer,
+      .actions .add-gap,
       .actions #resetBtn {
-        grid-column: span 3;
+        grid-column: span 2;
       }
 
       .course {
@@ -958,6 +986,7 @@
       }
 
       .actions .add-summer,
+      .actions .add-gap,
       .actions #resetBtn {
         grid-column: span 3;
       }
@@ -1009,6 +1038,7 @@
         <button class="lang-toggle" id="gradBtn" type="button">🎓</button>
         <button class="lang-toggle" id="langBtn" type="button">EN</button>
         <button class="add-summer" id="addSummerBtn"></button>
+        <button class="add-gap" id="addGapBtn"></button>
         <button id="resetBtn"></button>
       </div>
     </header>
@@ -1067,6 +1097,19 @@
     </div>
   </div>
 
+  <div class="compare-overlay" id="gapOverlay"></div>
+  <div class="walk-panel summer-panel gap-panel" id="gapPanel">
+    <div class="compare-header">
+      <h2 id="gapTitle"></h2>
+      <button class="compare-close" id="gapCloseBtn" type="button">×</button>
+    </div>
+    <div class="sub" id="gapSub"></div>
+    <div class="summer-options" id="gapOptions"></div>
+    <div class="summer-actions">
+      <button id="gapCancelBtn" type="button"></button>
+    </div>
+  </div>
+
   <div class="compare-overlay" id="gradOverlay"></div>
   <div class="compare-panel" id="gradPanel">
     <div class="compare-header">
@@ -1089,6 +1132,7 @@
       <div class="grad-card">
         <div class="grad-card-label" id="gradExpectedLabel"></div>
         <div class="grad-card-value" id="gradExpectedValue"></div>
+        <div class="grad-note" id="gradExpectedNote" style="margin-top:6px;"></div>
       </div>
       <div class="grad-card">
         <div class="grad-card-label" id="gradCoopTermLabel"></div>
@@ -1151,7 +1195,17 @@
         addSummerCancel: 'إلغاء',
         addSummerAdded: label => `تمت إضافة ${label}.`,
         summerLabel: n => `صيفي ${n}`,
-        resetConfirm: 'تصفير الخطة؟ سيُحذف التقدم والفصول الصيفية والمقررات المضافة.',
+        addGap: '+ إضافة فصل فراغ',
+        addGapTitle: 'إضافة فصل فراغ',
+        addGapSub: 'اختر الفصل الذي يأتي فصل الفراغ بعده. مخصص لمن أخذ سنة أو فصل فراغ.',
+        addGapAfter: term => `بعد ${term}`,
+        addGapMeta: term => `سيظهر فصل الفراغ بعد ${term}.`,
+        addGapCancel: 'إلغاء',
+        addGapAdded: label => `تمت إضافة ${label}.`,
+        gapLabel: n => `فصل فراغ ${n}`,
+        gapNote: 'فصل فراغ — بدون مقررات.',
+        gapNoCourses: 'فصل الفراغ لا يستقبل مقررات؛ إنه يمثل فترة توقف.',
+        resetConfirm: 'تصفير الخطة؟ سيُحذف التقدم والفصول الصيفية وفصول الفراغ والمقررات المضافة.',
         moveBlockedPrereq: (code, pre) => `${code} يحتاج ${pre} قبله.`,
         moveBlockedDependent: (code, dep) => `${dep} يحتاج ${code} قبله.`,
         moveBlockedCritical: code => `${code} يمكن تقديمه فقط، لا تأخيره.`,
@@ -1176,6 +1230,8 @@
         gradYearLabelText: 'السنة (ميلادي)',
         gradCalc: 'احسب',
         gradExpectedLabel: 'موعد التخرج المتوقع',
+        gradExpectedDelayed: n => `تأجّل ${n} فصل${n === 1 ? '' : 'اً'} دراسي${n === 1 ? '' : 'اً'} بسبب التأخر عن الخطة الأصلية.`,
+        gradExpectedEarly: n => `أبكر بـ ${n} فصل${n === 1 ? '' : 'اً'} دراسي${n === 1 ? '' : 'اً'} من الخطة القياسية، بناءً على تقدمك الحالي.`,
         gradCoopTermLabel: 'فصل التدريب',
         gradDegreeTermLabel: 'فصل استلام الشهادة',
         gradStatusLabel: 'حالتك',
@@ -1258,7 +1314,17 @@
         addSummerCancel: 'Cancel',
         addSummerAdded: label => `${label} added.`,
         summerLabel: n => `Summer ${n}`,
-        resetConfirm: "Reset the plan? This clears progress, summers, and added courses.",
+        addGap: '+ Add Gap Semester',
+        addGapTitle: 'Add Gap Semester',
+        addGapSub: 'Choose where the gap semester should go. For a gap year or gap semester with no courses.',
+        addGapAfter: term => `After ${term}`,
+        addGapMeta: term => `The gap semester will appear after ${term}.`,
+        addGapCancel: 'Cancel',
+        addGapAdded: label => `${label} added.`,
+        gapLabel: n => `Gap Semester ${n}`,
+        gapNote: 'Gap semester — no courses.',
+        gapNoCourses: 'A gap semester can\'t hold courses; it represents time off.',
+        resetConfirm: "Reset the plan? This clears progress, summers, gap semesters, and added courses.",
         moveBlockedPrereq: (code, pre) => `${code} needs ${pre} first.`,
         moveBlockedDependent: (code, dep) => `${dep} needs ${code} first.`,
         moveBlockedCritical: code => `${code} can move earlier, not later.`,
@@ -1283,6 +1349,8 @@
         gradYearLabelText: 'Year (Gregorian)',
         gradCalc: 'Calculate',
         gradExpectedLabel: 'Expected graduation',
+        gradExpectedDelayed: n => `Pushed back ${n} semester${n === 1 ? '' : 's'} due to being behind the original plan.`,
+        gradExpectedEarly: n => `${n} semester${n === 1 ? '' : 's'} earlier than the standard plan, based on your current progress.`,
         gradCoopTermLabel: 'Co-op term',
         gradDegreeTermLabel: 'Degree term',
         gradStatusLabel: 'Your status',
@@ -1383,1053 +1451,1053 @@
     // Transcribed from the official PSU registrar plan: academic-plan-themes/university-offical-plans/se-cys-plan.pdf
     const COURSES = [
       {
-            code: 'PE001',
-            name: 'Preparatory Physical Education I',
-            nameEn: 'Preparatory Physical Education I',
-            term: 'prep1',
-            prereqs: []
-      },
-      {
-            code: 'PDS001',
-            name: 'Preparatory Development Skills I',
-            nameEn: 'Preparatory Development Skills I',
-            term: 'prep1',
-            prereqs: []
-      },
-      {
-            code: 'MATH001',
-            name: 'Preparatory Math I',
-            nameEn: 'Preparatory Math I',
-            term: 'prep1',
-            prereqs: [],
-            examEligible: true
-      },
-      {
-            code: 'ENG020',
-            name: 'Preparatory English I (L&S)',
-            nameEn: 'Preparatory English I (L&S)',
-            term: 'prep1',
-            prereqs: [],
-            examEligible: true
-      },
-      {
-            code: 'ENG010',
-            name: 'Preparatory English I (R&W)',
-            nameEn: 'Preparatory English I (R&W)',
-            term: 'prep1',
-            prereqs: [],
-            examEligible: true
-      },
-      {
-            code: 'CMP011',
-            name: 'Computer Fundamentals I',
-            nameEn: 'Computer Fundamentals I',
-            term: 'prep1',
-            prereqs: [],
-            examEligible: true
-      },
-      {
-            code: 'PE002',
-            name: 'Preparatory Physical Education II',
-            nameEn: 'Preparatory Physical Education II',
-            term: 'prep2',
-            prereqs: [
-                  'PE001'
-            ]
-      },
-      {
-            code: 'PDS002',
-            name: 'Preparatory Development Skills II',
-            nameEn: 'Preparatory Development Skills II',
-            term: 'prep2',
-            prereqs: [
-                  'PDS001'
-            ]
-      },
-      {
-            code: 'MATH002',
-            name: 'Preparatory Math II',
-            nameEn: 'Preparatory Math II',
-            term: 'prep2',
-            prereqs: [
-                  'MATH001'
-            ],
-            examEligible: true
-      },
-      {
-            code: 'ENG040',
-            name: 'Preparatory English II (L&S)',
-            nameEn: 'Preparatory English II (L&S)',
-            term: 'prep2',
-            prereqs: [
-                  'ENG020'
-            ],
-            examEligible: true
-      },
-      {
-            code: 'ENG030',
-            name: 'Preparatory English II (R&W)',
-            nameEn: 'Preparatory English II (R&W)',
-            term: 'prep2',
-            prereqs: [
-                  'ENG010'
-            ],
-            examEligible: true
-      },
-      {
-            code: 'CMP012',
-            name: 'Computer Fundamentals II',
-            nameEn: 'Computer Fundamentals II',
-            term: 'prep2',
-            prereqs: [
-                  'CMP011'
-            ],
-            examEligible: true
-      },
-      {
-            code: 'ARAB101',
-            name: 'Arabic Writing',
-            nameEn: 'Arabic Writing',
-            prereqs: [],
-            hours: 2,
-            term: 't1'
-      },
-      {
-            code: 'ENG101',
-            name: 'Intensive Writing',
-            nameEn: 'Intensive Writing',
-            prereqs: [],
-            hours: 3,
-            term: 't1'
-      },
-      {
-            code: 'ISC101',
-            name: 'Islamic Ethics',
-            nameEn: 'Islamic Ethics',
-            prereqs: [],
-            hours: 2,
-            term: 't1'
-      },
-      {
-            code: 'CS101',
-            name: 'Computer Programming I',
-            nameEn: 'Computer Programming I',
-            prereqs: [],
-            hours: 4,
-            term: 't1'
-      },
-      {
-            code: 'MATH111',
-            name: 'Calculus I',
-            nameEn: 'Calculus I',
-            prereqs: [],
-            hours: 3,
-            term: 't1'
-      },
-      {
-            code: 'SCI101',
-            name: 'Introduction to Physical Science',
-            nameEn: 'Introduction to Physical Science',
-            prereqs: [],
-            hours: 3,
-            term: 't1'
-      },
-      {
-            code: 'ISC103',
-            name: 'Islamic Economic System',
-            nameEn: 'Islamic Economic System',
-            prereqs: [],
-            hours: 2,
-            term: 't2'
-      },
-      {
-            code: 'CS102',
-            name: 'Computer Programming II',
-            nameEn: 'Computer Programming II',
-            prereqs: [
-                  'CS101'
-            ],
-            hours: 3,
-            term: 't2'
-      },
-      {
-            code: 'CS175',
-            name: 'Digital Logic and Computer Organization',
-            nameEn: 'Digital Logic and Computer Organization',
-            prereqs: [
-                  'CS101'
-            ],
-            hours: 3,
-            term: 't2'
-      },
-      {
-            code: 'ENG103',
-            name: 'Research Writing Techniques',
-            nameEn: 'Research Writing Techniques',
-            prereqs: [
-                  'ENG101'
-            ],
-            hours: 3,
-            term: 't2'
-      },
-      {
-            code: 'STAT101',
-            name: 'Introduction to Statistics and Probability Theory',
-            nameEn: 'Introduction to Statistics and Probability Theory',
-            prereqs: [
-                  'MATH111'
-            ],
-            hours: 3,
-            term: 't2'
-      },
-      {
-            code: 'IS201',
-            name: 'Introduction to Information Systems',
-            nameEn: 'Introduction to Information Systems',
-            prereqs: [],
-            hours: 3,
-            term: 't3'
-      },
-      {
-            code: 'CS210',
-            name: 'Data Structures and Algorithms',
-            nameEn: 'Data Structures and Algorithms',
-            prereqs: [
-                  'CS102'
-            ],
-            hours: 3,
-            term: 't3'
-      },
-      {
-            code: 'CS285',
-            name: 'Discrete Mathematics for Computing',
-            nameEn: 'Discrete Mathematics for Computing',
-            prereqs: [
-                  'CS101'
-            ],
-            hours: 3,
-            term: 't3'
-      },
-      {
-            code: 'COM201',
-            name: 'Communication Skills',
-            nameEn: 'Communication Skills',
-            prereqs: [],
-            hours: 3,
-            term: 't3'
-      },
-      {
-            code: 'ISC105',
-            name: 'Studies of the Holy Qur\'an',
-            nameEn: 'Studies of the Holy Qur\'an',
-            prereqs: [],
-            hours: 2,
-            term: 't3'
-      },
-      {
-            code: 'IS205',
-            name: 'Business Process Management',
-            nameEn: 'Business Process Management',
-            prereqs: [
-                  'IS201'
-            ],
-            hours: 3,
-            term: 't4'
-      },
-      {
-            code: 'IS231',
-            name: 'Systems Analysis and Design',
-            nameEn: 'Systems Analysis and Design',
-            prereqs: [
-                  'CS210'
-            ],
-            hours: 3,
-            term: 't4'
-      },
-      {
-            code: 'CS330',
-            name: 'Introduction to Operating Systems',
-            nameEn: 'Introduction to Operating Systems',
-            prereqs: [
-                  'CS175',
-                  'CS210'
-            ],
-            hours: 3,
-            term: 't4'
-      },
-      {
-            code: 'CS331',
-            name: 'Data Communications and Computer Networks',
-            nameEn: 'Data Communications and Computer Networks',
-            prereqs: [
-                  'CS175',
-                  'CS210'
-            ],
-            hours: 3,
-            term: 't4'
-      },
-      {
-            code: 'PSY101',
-            name: 'Introduction to Psychology',
-            nameEn: 'Introduction to Psychology',
-            prereqs: [],
-            hours: 3,
-            term: 't4'
-      },
-      {
-            code: 'IS241',
-            name: 'Database Management and Applications',
-            nameEn: 'Database Management and Applications',
-            prereqs: [
-                  'IS201'
-            ],
-            hours: 3,
-            term: 't5'
-      },
-      {
-            code: 'CYS401',
-            name: 'Fundamentals of Cybersecurity',
-            nameEn: 'Fundamentals of Cybersecurity',
-            prereqs: [
-                  'CS210'
-            ],
-            hours: 3,
-            term: 't5'
-      },
-      {
-            code: 'IS321',
-            name: 'Enterprise Architecture',
-            nameEn: 'Enterprise Architecture',
-            prereqs: [
-                  'IS201'
-            ],
-            hours: 3,
-            term: 't5'
-      },
-      {
-            code: 'IS311',
-            name: 'Web Development',
-            nameEn: 'Web Development',
-            prereqs: [
-                  'IS205'
-            ],
-            hours: 3,
-            term: 't5'
-      },
-      {
-            code: 'CS316',
-            name: 'Introduction to AI and Data Science',
-            nameEn: 'Introduction to AI and Data Science',
-            prereqs: [
-                  'CS210'
-            ],
-            hours: 3,
-            term: 't5'
-      },
-      {
-            code: 'ISC203',
-            name: 'Contemporary Financial Transactions',
-            nameEn: 'Contemporary Financial Transactions',
-            prereqs: [],
-            hours: 2,
-            term: 't5'
-      },
-      {
-            code: 'ARAB103',
-            name: 'Professional and Literary Writing',
-            nameEn: 'Professional and Literary Writing',
-            prereqs: [],
-            hours: 2,
-            term: 't5'
-      },
-      {
-            code: 'IS361',
-            name: 'Project Management',
-            nameEn: 'Project Management',
-            prereqs: [
-                  'IS241'
-            ],
-            hours: 3,
-            term: 't6'
-      },
-      {
-            code: 'IS371',
-            name: 'Quantitative Analysis',
-            nameEn: 'Quantitative Analysis',
-            prereqs: [
-                  'STAT101'
-            ],
-            hours: 3,
-            term: 't6'
-      },
-      {
-            code: 'BUS101',
-            name: 'Introduction to Business',
-            nameEn: 'Introduction to Business',
-            prereqs: [],
-            hours: 3,
-            term: 't6'
-      },
-      {
-            code: 'ACC111',
-            name: 'Foundations in Financial Accounting',
-            nameEn: 'Foundations in Financial Accounting',
-            prereqs: [],
-            hours: 3,
-            term: 't6'
-      },
-      {
-            code: 'ECON101',
-            name: 'Principles of Microeconomics',
-            nameEn: 'Principles of Microeconomics',
-            prereqs: [],
-            hours: 3,
-            term: 't6'
-      },
-      {
-            code: 'CS465',
-            name: 'Machine Learning',
-            nameEn: 'Machine Learning',
-            prereqs: [
-                  'STAT101'
-            ],
-            hours: 3,
-            term: 't6'
-      },
-      {
-            code: 'ETHC303',
-            name: 'Ethical and Social Aspects of Computing',
-            nameEn: 'Ethical and Social Aspects of Computing',
-            prereqs: [
-                  'CS210'
-            ],
-            hours: 3,
-            term: 't6'
-      },
-      {
-            code: 'ARAB203',
-            name: 'Arabic Grammar',
-            nameEn: 'Arabic Grammar',
-            prereqs: [],
-            hours: 2,
-            term: 't7'
-      },
-      {
-            code: 'MKT301',
-            name: 'Principles of Marketing',
-            nameEn: 'Principles of Marketing',
-            prereqs: [
-                  'BUS101'
-            ],
-            hours: 3,
-            term: 't7'
-      },
-      {
-            code: 'FIN210',
-            name: 'Principles of Finance',
-            nameEn: 'Principles of Finance',
-            prereqs: [
-                  'ACC111'
-            ],
-            hours: 3,
-            term: 't7'
-      },
-      {
-            code: 'COM301',
-            name: 'Professional and Technical Presentations',
-            nameEn: 'Professional and Technical Presentations',
-            prereqs: [
-                  'COM201'
-            ],
-            hours: 2,
-            term: 't7'
-      },
-      {
-            code: 'IS498',
-            name: 'Senior Project Preparation',
-            nameEn: 'Senior Project Preparation',
-            prereqs: [
-                  'IS371'
-            ],
-            hours: 0,
-            term: 't7'
-      },
-      {
-            code: 'IS499',
-            name: 'Senior Project',
-            nameEn: 'Senior Project',
-            prereqs: [
-                  'IS498'
-            ],
-            hours: 3,
-            term: 't7'
-      },
-      {
-            code: 'IS492',
-            name: 'Cooperative Training',
-            nameEn: 'Cooperative Training',
-            prereqs: [],
-            hours: 10,
-            term: 't8'
-      },
-      {
-            code: 'HPE101',
-            name: 'Health & Physical Education I',
-            nameEn: 'Health & Physical Education I',
-            prereqs: [],
-            hours: 1,
-            group: 'grp-a'
-      },
-      {
-            code: 'HPE102',
-            name: 'Health & Physical Education II',
-            nameEn: 'Health & Physical Education II',
-            prereqs: [],
-            hours: 1,
-            group: 'grp-a'
-      },
-      {
-            code: 'PE101',
-            name: 'Beginner Badminton',
-            nameEn: 'Beginner Badminton',
-            prereqs: [],
-            hours: 1,
-            group: 'grp-a'
-      },
-      {
-            code: 'PE103',
-            name: 'Beginner Basketball',
-            nameEn: 'Beginner Basketball',
-            prereqs: [],
-            hours: 1,
-            group: 'grp-a'
-      },
-      {
-            code: 'PE105',
-            name: 'Beginner Gymnastics',
-            nameEn: 'Beginner Gymnastics',
-            prereqs: [],
-            hours: 1,
-            group: 'grp-a'
-      },
-      {
-            code: 'PE107',
-            name: 'Beginner Handball',
-            nameEn: 'Beginner Handball',
-            prereqs: [],
-            hours: 1,
-            group: 'grp-a'
-      },
-      {
-            code: 'PE109',
-            name: 'Beginner Soccer',
-            nameEn: 'Beginner Soccer',
-            prereqs: [],
-            hours: 1,
-            group: 'grp-a'
-      },
-      {
-            code: 'PE111',
-            name: 'Beginner Squash',
-            nameEn: 'Beginner Squash',
-            prereqs: [],
-            hours: 1,
-            group: 'grp-a'
-      },
-      {
-            code: 'PE113',
-            name: 'Beginner Swimming',
-            nameEn: 'Beginner Swimming',
-            prereqs: [],
-            hours: 1,
-            group: 'grp-a'
-      },
-      {
-            code: 'PE115',
-            name: 'Beginner Table Tennis',
-            nameEn: 'Beginner Table Tennis',
-            prereqs: [],
-            hours: 1,
-            group: 'grp-a'
-      },
-      {
-            code: 'PE117',
-            name: 'Beginner Tennis',
-            nameEn: 'Beginner Tennis',
-            prereqs: [],
-            hours: 1,
-            group: 'grp-a'
-      },
-      {
-            code: 'PE119',
-            name: 'Beginner Volleyball',
-            nameEn: 'Beginner Volleyball',
-            prereqs: [],
-            hours: 1,
-            group: 'grp-a'
-      },
-      {
-            code: 'PE121',
-            name: 'Beginner Weight Training',
-            nameEn: 'Beginner Weight Training',
-            prereqs: [],
-            hours: 1,
-            group: 'grp-a'
-      },
-      {
-            code: 'PE201',
-            name: 'Intermediate Badminton',
-            nameEn: 'Intermediate Badminton',
-            prereqs: [],
-            hours: 1,
-            group: 'grp-a'
-      },
-      {
-            code: 'PE203',
-            name: 'Intermediate Basketball',
-            nameEn: 'Intermediate Basketball',
-            prereqs: [],
-            hours: 1,
-            group: 'grp-a'
-      },
-      {
-            code: 'PE205',
-            name: 'Intermediate Gymnastics',
-            nameEn: 'Intermediate Gymnastics',
-            prereqs: [],
-            hours: 1,
-            group: 'grp-a'
-      },
-      {
-            code: 'PE207',
-            name: 'Intermediate Handball',
-            nameEn: 'Intermediate Handball',
-            prereqs: [],
-            hours: 1,
-            group: 'grp-a'
-      },
-      {
-            code: 'PE209',
-            name: 'Intermediate Soccer',
-            nameEn: 'Intermediate Soccer',
-            prereqs: [],
-            hours: 1,
-            group: 'grp-a'
-      },
-      {
-            code: 'PE211',
-            name: 'Intermediate Squash',
-            nameEn: 'Intermediate Squash',
-            prereqs: [],
-            hours: 1,
-            group: 'grp-a'
-      },
-      {
-            code: 'PE213',
-            name: 'Intermediate Swimming',
-            nameEn: 'Intermediate Swimming',
-            prereqs: [],
-            hours: 1,
-            group: 'grp-a'
-      },
-      {
-            code: 'PE215',
-            name: 'Intermediate Table Tennis',
-            nameEn: 'Intermediate Table Tennis',
-            prereqs: [],
-            hours: 1,
-            group: 'grp-a'
-      },
-      {
-            code: 'PE217',
-            name: 'Intermediate Tennis',
-            nameEn: 'Intermediate Tennis',
-            prereqs: [],
-            hours: 1,
-            group: 'grp-a'
-      },
-      {
-            code: 'PE219',
-            name: 'Intermediate Volleyball',
-            nameEn: 'Intermediate Volleyball',
-            prereqs: [],
-            hours: 1,
-            group: 'grp-a'
-      },
-      {
-            code: 'PE221',
-            name: 'Intermediate Weight Training',
-            nameEn: 'Intermediate Weight Training',
-            prereqs: [],
-            hours: 1,
-            group: 'grp-a'
-      },
-      {
-            code: 'CS469',
-            name: 'Digital Image Processing',
-            nameEn: 'Digital Image Processing',
-            prereqs: [
-                  'CS316'
-            ],
-            hours: 3,
-            group: 'grp-b'
-      },
-      {
-            code: 'CS471',
-            name: 'Data Mining',
-            nameEn: 'Data Mining',
-            prereqs: [
-                  'CS316'
-            ],
-            hours: 3,
-            group: 'grp-b'
-      },
-      {
-            code: 'CS476',
-            name: 'Natural Language Processing',
-            nameEn: 'Natural Language Processing',
-            prereqs: [
-                  'CS316'
-            ],
-            hours: 3,
-            group: 'grp-b'
-      },
-      {
-            code: 'IS446',
-            name: 'Knowledge Discovery and Data Mining',
-            nameEn: 'Knowledge Discovery and Data Mining',
-            prereqs: [
-                  'CS316'
-            ],
-            hours: 3,
-            group: 'grp-b'
-      },
-      {
-            code: 'BCE483',
-            name: 'Business Intelligence and Analytics',
-            nameEn: 'Business Intelligence and Analytics',
-            prereqs: [
-                  'CS316'
-            ],
-            hours: 3,
-            group: 'grp-b'
-      },
-      {
-            code: 'CS481',
-            name: 'Big Data Analytics',
-            nameEn: 'Big Data Analytics',
-            prereqs: [
-                  'CS316'
-            ],
-            hours: 3,
-            group: 'grp-b'
-      },
-      {
-            code: 'CS496',
-            name: 'Emerging Topics in AI and DS',
-            nameEn: 'Emerging Topics in AI and DS',
-            prereqs: [
-                  'CS316'
-            ],
-            hours: 3,
-            group: 'grp-b'
-      },
-      {
-            code: 'IS463',
-            name: 'Applied Data Science',
-            nameEn: 'Applied Data Science',
-            prereqs: [
-                  'CS316'
-            ],
-            hours: 3,
-            group: 'grp-b'
-      },
-      {
-            code: 'IS472',
-            name: 'Decision-support and Intelligent Systems',
-            nameEn: 'Decision-support and Intelligent Systems',
-            prereqs: [
-                  'CS316'
-            ],
-            hours: 3,
-            group: 'grp-b'
-      },
-      {
-            code: 'ACT101',
-            name: 'The Basics of Stage Acting',
-            nameEn: 'The Basics of Stage Acting',
-            prereqs: [],
-            hours: 3,
-            group: 'grp-c'
-      },
-      {
-            code: 'CULT101',
-            name: 'Saudi Folklore and Culture I',
-            nameEn: 'Saudi Folklore and Culture I',
-            prereqs: [],
-            hours: 3,
-            group: 'grp-c'
-      },
-      {
-            code: 'CULT102',
-            name: 'Saudi Folklore and Culture II',
-            nameEn: 'Saudi Folklore and Culture II',
-            prereqs: [],
-            hours: 3,
-            group: 'grp-c'
-      },
-      {
-            code: 'ASIA101',
-            name: 'Introduction to Japanese',
-            nameEn: 'Introduction to Japanese',
-            prereqs: [],
-            hours: 3,
-            group: 'grp-c'
-      },
-      {
-            code: 'ASIA103',
-            name: 'Elementary Korean Language',
-            nameEn: 'Elementary Korean Language',
-            prereqs: [],
-            hours: 3,
-            group: 'grp-c'
-      },
-      {
-            code: 'ASIA104',
-            name: 'Elementary Chinese Language',
-            nameEn: 'Elementary Chinese Language',
-            prereqs: [],
-            hours: 3,
-            group: 'grp-c'
-      },
-      {
-            code: 'AVN291',
-            name: 'Air Transport Geography',
-            nameEn: 'Air Transport Geography',
-            prereqs: [],
-            hours: 3,
-            group: 'grp-c'
-      },
-      {
-            code: 'AVN292',
-            name: 'Aviation and Tourism',
-            nameEn: 'Aviation and Tourism',
-            prereqs: [],
-            hours: 3,
-            group: 'grp-c'
-      },
-      {
-            code: 'COM401',
-            name: 'Interpersonal Skills for Leaders & Managers',
-            nameEn: 'Interpersonal Skills for Leaders & Managers',
-            prereqs: [],
-            hours: 3,
-            group: 'grp-c'
-      },
-      {
-            code: 'ELE103',
-            name: 'Stress Management',
-            nameEn: 'Stress Management',
-            prereqs: [],
-            hours: 3,
-            group: 'grp-c'
-      },
-      {
-            code: 'ELE109',
-            name: 'Public Relations',
-            nameEn: 'Public Relations',
-            prereqs: [],
-            hours: 3,
-            group: 'grp-c'
-      },
-      {
-            code: 'ELE110',
-            name: 'Entrepreneurship',
-            nameEn: 'Entrepreneurship',
-            prereqs: [],
-            hours: 3,
-            group: 'grp-c'
-      },
-      {
-            code: 'ELP203',
-            name: 'The Language of Advertising',
-            nameEn: 'The Language of Advertising',
-            prereqs: [],
-            hours: 3,
-            group: 'grp-c'
-      },
-      {
-            code: 'ELP205',
-            name: 'Language and Digital Media',
-            nameEn: 'Language and Digital Media',
-            prereqs: [],
-            hours: 3,
-            group: 'grp-c'
-      },
-      {
-            code: 'ELP306',
-            name: 'English for Fashion Professionals',
-            nameEn: 'English for Fashion Professionals',
-            prereqs: [],
-            hours: 3,
-            group: 'grp-c'
-      },
-      {
-            code: 'ELP309',
-            name: 'Film Criticism',
-            nameEn: 'Film Criticism',
-            prereqs: [],
-            hours: 3,
-            group: 'grp-c'
-      },
-      {
-            code: 'ENG113',
-            name: 'Advanced Academic Reading',
-            nameEn: 'Advanced Academic Reading',
-            prereqs: [],
-            hours: 3,
-            group: 'grp-c'
-      },
-      {
-            code: 'ENG114',
-            name: 'Introduction to Journalism',
-            nameEn: 'Introduction to Journalism',
-            prereqs: [],
-            hours: 3,
-            group: 'grp-c'
-      },
-      {
-            code: 'ENG207',
-            name: 'Critical Thinking',
-            nameEn: 'Critical Thinking',
-            prereqs: [],
-            hours: 3,
-            group: 'grp-c'
-      },
-      {
-            code: 'ENG208',
-            name: 'Elementary Spanish',
-            nameEn: 'Elementary Spanish',
-            prereqs: [],
-            hours: 3,
-            group: 'grp-c'
-      },
-      {
-            code: 'ENG209',
-            name: 'Intermediate Spanish',
-            nameEn: 'Intermediate Spanish',
-            prereqs: [],
-            hours: 3,
-            group: 'grp-c'
-      },
-      {
-            code: 'ENG301',
-            name: 'Technical Writing and Translation',
-            nameEn: 'Technical Writing and Translation',
-            prereqs: [],
-            hours: 3,
-            group: 'grp-c'
-      },
-      {
-            code: 'ENG302',
-            name: 'English for Business Communication',
-            nameEn: 'English for Business Communication',
-            prereqs: [],
-            hours: 3,
-            group: 'grp-c'
-      },
-      {
-            code: 'EUR101',
-            name: 'European Language I',
-            nameEn: 'European Language I',
-            prereqs: [],
-            hours: 3,
-            group: 'grp-c'
-      },
-      {
-            code: 'FRN101',
-            name: 'Elementary French',
-            nameEn: 'Elementary French',
-            prereqs: [],
-            hours: 3,
-            group: 'grp-c'
-      },
-      {
-            code: 'GER101',
-            name: 'Elementary German 1',
-            nameEn: 'Elementary German 1',
-            prereqs: [],
-            hours: 3,
-            group: 'grp-c'
-      },
-      {
-            code: 'HIST151',
-            name: 'History of Law',
-            nameEn: 'History of Law',
-            prereqs: [],
-            hours: 3,
-            group: 'grp-c'
-      },
-      {
-            code: 'HIST153',
-            name: 'Comparative Political Systems',
-            nameEn: 'Comparative Political Systems',
-            prereqs: [],
-            hours: 3,
-            group: 'grp-c'
-      },
-      {
-            code: 'IR101',
-            name: 'Information Resources',
-            nameEn: 'Information Resources',
-            prereqs: [],
-            hours: 3,
-            group: 'grp-c'
-      },
-      {
-            code: 'LAW101',
-            name: 'Principles Of Law',
-            nameEn: 'Principles Of Law',
-            prereqs: [],
-            hours: 3,
-            group: 'grp-c'
-      },
-      {
-            code: 'LAW150',
-            name: 'Administrative Law I',
-            nameEn: 'Administrative Law I',
-            prereqs: [],
-            hours: 3,
-            group: 'grp-c'
-      },
-      {
-            code: 'LAW170',
-            name: 'Family Law',
-            nameEn: 'Family Law',
-            prereqs: [],
-            hours: 3,
-            group: 'grp-c'
+        code: 'PE001',
+        name: 'التربية البدنية التحضيرية 1',
+        nameEn: 'Preparatory Physical Education I',
+        term: 'prep1',
+        prereqs: []
+      },
+      {
+        code: 'PDS001',
+        name: 'تطوير المهارات الدراسية 1',
+        nameEn: 'Preparatory Development Skills I',
+        term: 'prep1',
+        prereqs: []
+      },
+      {
+        code: 'MATH001',
+        name: 'الرياضيات التحضيري 1',
+        nameEn: 'Preparatory Math I',
+        term: 'prep1',
+        prereqs: [],
+        examEligible: true
+      },
+      {
+        code: 'ENG020',
+        name: 'الإنجليزية التحضيرية 1 (استماع ومحادثة)',
+        nameEn: 'Preparatory English I (L&S)',
+        term: 'prep1',
+        prereqs: [],
+        examEligible: true
+      },
+      {
+        code: 'ENG010',
+        name: 'الإنجليزية التحضيرية 1 (قراءة وكتابة)',
+        nameEn: 'Preparatory English I (R&W)',
+        term: 'prep1',
+        prereqs: [],
+        examEligible: true
+      },
+      {
+        code: 'CMP011',
+        name: 'أساسيات الكمبيوتر 1',
+        nameEn: 'Computer Fundamentals I',
+        term: 'prep1',
+        prereqs: [],
+        examEligible: true
+      },
+      {
+        code: 'PE002',
+        name: 'التربية البدنية التحضيرية 2',
+        nameEn: 'Preparatory Physical Education II',
+        term: 'prep2',
+        prereqs: [
+          'PE001'
+        ]
+      },
+      {
+        code: 'PDS002',
+        name: 'تطوير المهارات الدراسية 2',
+        nameEn: 'Preparatory Development Skills II',
+        term: 'prep2',
+        prereqs: [
+          'PDS001'
+        ]
+      },
+      {
+        code: 'MATH002',
+        name: 'الرياضيات التحضيري 2',
+        nameEn: 'Preparatory Math II',
+        term: 'prep2',
+        prereqs: [
+          'MATH001'
+        ],
+        examEligible: true
+      },
+      {
+        code: 'ENG040',
+        name: 'الإنجليزية التحضيرية 2 (استماع ومحادثة)',
+        nameEn: 'Preparatory English II (L&S)',
+        term: 'prep2',
+        prereqs: [
+          'ENG020'
+        ],
+        examEligible: true
+      },
+      {
+        code: 'ENG030',
+        name: 'الإنجليزية التحضيرية 2 (قراءة وكتابة)',
+        nameEn: 'Preparatory English II (R&W)',
+        term: 'prep2',
+        prereqs: [
+          'ENG010'
+        ],
+        examEligible: true
+      },
+      {
+        code: 'CMP012',
+        name: 'أساسيات الكمبيوتر 2',
+        nameEn: 'Computer Fundamentals II',
+        term: 'prep2',
+        prereqs: [
+          'CMP011'
+        ],
+        examEligible: true
+      },
+      {
+        code: 'ARAB101',
+        name: 'الكتابة العربية',
+        nameEn: 'Arabic Writing',
+        prereqs: [],
+        hours: 2,
+        term: 't1'
+      },
+      {
+        code: 'ENG101',
+        name: 'الكتابة المكثفة',
+        nameEn: 'Intensive Writing',
+        prereqs: [],
+        hours: 3,
+        term: 't1'
+      },
+      {
+        code: 'ISC101',
+        name: 'الأخلاقيات الإسلامية',
+        nameEn: 'Islamic Ethics',
+        prereqs: [],
+        hours: 2,
+        term: 't1'
+      },
+      {
+        code: 'CS101',
+        name: 'برمجة الحاسب 1',
+        nameEn: 'Computer Programming I',
+        prereqs: [],
+        hours: 4,
+        term: 't1'
+      },
+      {
+        code: 'MATH111',
+        name: 'التفاضل والتكامل 1',
+        nameEn: 'Calculus I',
+        prereqs: [],
+        hours: 3,
+        term: 't1'
+      },
+      {
+        code: 'SCI101',
+        name: 'مقدمة في العلوم الفيزيائية',
+        nameEn: 'Introduction to Physical Science',
+        prereqs: [],
+        hours: 3,
+        term: 't1'
+      },
+      {
+        code: 'ISC103',
+        name: 'النظام الاقتصادي في الإسلام',
+        nameEn: 'Islamic Economic System',
+        prereqs: [],
+        hours: 2,
+        term: 't2'
+      },
+      {
+        code: 'CS102',
+        name: 'برمجة الحاسب 2',
+        nameEn: 'Computer Programming II',
+        prereqs: [
+          'CS101'
+        ],
+        hours: 3,
+        term: 't2'
+      },
+      {
+        code: 'CS175',
+        name: 'المنطق الرقمي وتراكيب الحاسب',
+        nameEn: 'Digital Logic and Computer Organization',
+        prereqs: [
+          'CS101'
+        ],
+        hours: 3,
+        term: 't2'
+      },
+      {
+        code: 'ENG103',
+        name: 'تقنيات الكتابة البحثية',
+        nameEn: 'Research Writing Techniques',
+        prereqs: [
+          'ENG101'
+        ],
+        hours: 3,
+        term: 't2'
+      },
+      {
+        code: 'STAT101',
+        name: 'مقدمة في الإحصاء ونظرية الاحتمالات',
+        nameEn: 'Introduction to Statistics and Probability Theory',
+        prereqs: [
+          'MATH111'
+        ],
+        hours: 3,
+        term: 't2'
+      },
+      {
+        code: 'IS201',
+        name: 'مقدمة في نظم المعلومات',
+        nameEn: 'Introduction to Information Systems',
+        prereqs: [],
+        hours: 3,
+        term: 't3'
+      },
+      {
+        code: 'CS210',
+        name: 'هياكل البيانات والخوارزميات',
+        nameEn: 'Data Structures and Algorithms',
+        prereqs: [
+          'CS102'
+        ],
+        hours: 3,
+        term: 't3'
+      },
+      {
+        code: 'CS285',
+        name: 'الرياضيات المتقطعة للحوسبة',
+        nameEn: 'Discrete Mathematics for Computing',
+        prereqs: [
+          'CS101'
+        ],
+        hours: 3,
+        term: 't3'
+      },
+      {
+        code: 'COM201',
+        name: 'مهارات الاتصال',
+        nameEn: 'Communication Skills',
+        prereqs: [],
+        hours: 3,
+        term: 't3'
+      },
+      {
+        code: 'ISC105',
+        name: 'دراسات في القرآن الكريم',
+        nameEn: 'Studies of the Holy Qur\'an',
+        prereqs: [],
+        hours: 2,
+        term: 't3'
+      },
+      {
+        code: 'IS205',
+        name: 'إدارة العمليات المؤسسية',
+        nameEn: 'Business Process Management',
+        prereqs: [
+          'IS201'
+        ],
+        hours: 3,
+        term: 't4'
+      },
+      {
+        code: 'IS231',
+        name: 'تحليل وتصميم النظم',
+        nameEn: 'Systems Analysis and Design',
+        prereqs: [
+          'CS210'
+        ],
+        hours: 3,
+        term: 't4'
+      },
+      {
+        code: 'CS330',
+        name: 'مقدمة في نظم التشغيل',
+        nameEn: 'Introduction to Operating Systems',
+        prereqs: [
+          'CS175',
+          'CS210'
+        ],
+        hours: 3,
+        term: 't4'
+      },
+      {
+        code: 'CS331',
+        name: 'اتصالات البيانات وشبكات الحاسب',
+        nameEn: 'Data Communications and Computer Networks',
+        prereqs: [
+          'CS175',
+          'CS210'
+        ],
+        hours: 3,
+        term: 't4'
+      },
+      {
+        code: 'PSY101',
+        name: 'مقدمة في علم النفس',
+        nameEn: 'Introduction to Psychology',
+        prereqs: [],
+        hours: 3,
+        term: 't4'
+      },
+      {
+        code: 'IS241',
+        name: 'إدارة قواعد البيانات وتطبيقاتها',
+        nameEn: 'Database Management and Applications',
+        prereqs: [
+          'IS201'
+        ],
+        hours: 3,
+        term: 't5'
+      },
+      {
+        code: 'CYS401',
+        name: 'أساسيات الأمن السيبراني',
+        nameEn: 'Fundamentals of Cybersecurity',
+        prereqs: [
+          'CS210'
+        ],
+        hours: 3,
+        term: 't5'
+      },
+      {
+        code: 'IS321',
+        name: 'معمارية المؤسسات',
+        nameEn: 'Enterprise Architecture',
+        prereqs: [
+          'IS201'
+        ],
+        hours: 3,
+        term: 't5'
+      },
+      {
+        code: 'IS311',
+        name: 'تطوير الويب',
+        nameEn: 'Web Development',
+        prereqs: [
+          'IS205'
+        ],
+        hours: 3,
+        term: 't5'
+      },
+      {
+        code: 'CS316',
+        name: 'مقدمة في الذكاء الاصطناعي وعلم البيانات',
+        nameEn: 'Introduction to AI and Data Science',
+        prereqs: [
+          'CS210'
+        ],
+        hours: 3,
+        term: 't5'
+      },
+      {
+        code: 'ISC203',
+        name: 'المعاملات المالية المعاصرة',
+        nameEn: 'Contemporary Financial Transactions',
+        prereqs: [],
+        hours: 2,
+        term: 't5'
+      },
+      {
+        code: 'ARAB103',
+        name: 'الكتابة المهنية والأدبية',
+        nameEn: 'Professional and Literary Writing',
+        prereqs: [],
+        hours: 2,
+        term: 't5'
+      },
+      {
+        code: 'IS361',
+        name: 'إدارة المشاريع',
+        nameEn: 'Project Management',
+        prereqs: [
+          'IS241'
+        ],
+        hours: 3,
+        term: 't6'
+      },
+      {
+        code: 'IS371',
+        name: 'التحليل الكمي',
+        nameEn: 'Quantitative Analysis',
+        prereqs: [
+          'STAT101'
+        ],
+        hours: 3,
+        term: 't6'
+      },
+      {
+        code: 'BUS101',
+        name: 'مقدمة في إدارة الأعمال',
+        nameEn: 'Introduction to Business',
+        prereqs: [],
+        hours: 3,
+        term: 't6'
+      },
+      {
+        code: 'ACC111',
+        name: 'أساسيات المحاسبة المالية',
+        nameEn: 'Foundations in Financial Accounting',
+        prereqs: [],
+        hours: 3,
+        term: 't6'
+      },
+      {
+        code: 'ECON101',
+        name: 'مبادئ الاقتصاد الجزئي',
+        nameEn: 'Principles of Microeconomics',
+        prereqs: [],
+        hours: 3,
+        term: 't6'
+      },
+      {
+        code: 'CS465',
+        name: 'تعلم الآلة',
+        nameEn: 'Machine Learning',
+        prereqs: [
+          'STAT101'
+        ],
+        hours: 3,
+        term: 't6'
+      },
+      {
+        code: 'ETHC303',
+        name: 'الجوانب الأخلاقية والاجتماعية للحوسبة',
+        nameEn: 'Ethical and Social Aspects of Computing',
+        prereqs: [
+          'CS210'
+        ],
+        hours: 3,
+        term: 't6'
+      },
+      {
+        code: 'ARAB203',
+        name: 'قواعد اللغة العربية',
+        nameEn: 'Arabic Grammar',
+        prereqs: [],
+        hours: 2,
+        term: 't7'
+      },
+      {
+        code: 'MKT301',
+        name: 'مبادئ التسويق',
+        nameEn: 'Principles of Marketing',
+        prereqs: [
+          'BUS101'
+        ],
+        hours: 3,
+        term: 't7'
+      },
+      {
+        code: 'FIN210',
+        name: 'مبادئ التمويل',
+        nameEn: 'Principles of Finance',
+        prereqs: [
+          'ACC111'
+        ],
+        hours: 3,
+        term: 't7'
+      },
+      {
+        code: 'COM301',
+        name: 'العروض التقديمية المهنية والتقنية',
+        nameEn: 'Professional and Technical Presentations',
+        prereqs: [
+          'COM201'
+        ],
+        hours: 2,
+        term: 't7'
+      },
+      {
+        code: 'IS498',
+        name: 'الإعداد لمشروع التخرج',
+        nameEn: 'Senior Project Preparation',
+        prereqs: [
+          'IS371'
+        ],
+        hours: 0,
+        term: 't7'
+      },
+      {
+        code: 'IS499',
+        name: 'مشروع التخرج',
+        nameEn: 'Senior Project',
+        prereqs: [
+          'IS498'
+        ],
+        hours: 3,
+        term: 't7'
+      },
+      {
+        code: 'IS492',
+        name: 'التدريب التعاوني',
+        nameEn: 'Cooperative Training',
+        prereqs: [],
+        hours: 10,
+        term: 't8'
+      },
+      {
+        code: 'HPE101',
+        name: 'التربية الصحية والبدنية 1',
+        nameEn: 'Health & Physical Education I',
+        prereqs: [],
+        hours: 1,
+        group: 'grp-a'
+      },
+      {
+        code: 'HPE102',
+        name: 'التربية الصحية والبدنية 2',
+        nameEn: 'Health & Physical Education II',
+        prereqs: [],
+        hours: 1,
+        group: 'grp-a'
+      },
+      {
+        code: 'PE101',
+        name: 'الريشة الطائرة - مبتدئ',
+        nameEn: 'Beginner Badminton',
+        prereqs: [],
+        hours: 1,
+        group: 'grp-a'
+      },
+      {
+        code: 'PE103',
+        name: 'كرة السلة - مبتدئ',
+        nameEn: 'Beginner Basketball',
+        prereqs: [],
+        hours: 1,
+        group: 'grp-a'
+      },
+      {
+        code: 'PE105',
+        name: 'الجمباز - مبتدئ',
+        nameEn: 'Beginner Gymnastics',
+        prereqs: [],
+        hours: 1,
+        group: 'grp-a'
+      },
+      {
+        code: 'PE107',
+        name: 'كرة اليد - مبتدئ',
+        nameEn: 'Beginner Handball',
+        prereqs: [],
+        hours: 1,
+        group: 'grp-a'
+      },
+      {
+        code: 'PE109',
+        name: 'كرة القدم - مبتدئ',
+        nameEn: 'Beginner Soccer',
+        prereqs: [],
+        hours: 1,
+        group: 'grp-a'
+      },
+      {
+        code: 'PE111',
+        name: 'الاسكواش - مبتدئ',
+        nameEn: 'Beginner Squash',
+        prereqs: [],
+        hours: 1,
+        group: 'grp-a'
+      },
+      {
+        code: 'PE113',
+        name: 'السباحة - مبتدئ',
+        nameEn: 'Beginner Swimming',
+        prereqs: [],
+        hours: 1,
+        group: 'grp-a'
+      },
+      {
+        code: 'PE115',
+        name: 'تنس الطاولة - مبتدئ',
+        nameEn: 'Beginner Table Tennis',
+        prereqs: [],
+        hours: 1,
+        group: 'grp-a'
+      },
+      {
+        code: 'PE117',
+        name: 'التنس - مبتدئ',
+        nameEn: 'Beginner Tennis',
+        prereqs: [],
+        hours: 1,
+        group: 'grp-a'
+      },
+      {
+        code: 'PE119',
+        name: 'الكرة الطائرة - مبتدئ',
+        nameEn: 'Beginner Volleyball',
+        prereqs: [],
+        hours: 1,
+        group: 'grp-a'
+      },
+      {
+        code: 'PE121',
+        name: 'تدريب الأثقال - مبتدئ',
+        nameEn: 'Beginner Weight Training',
+        prereqs: [],
+        hours: 1,
+        group: 'grp-a'
+      },
+      {
+        code: 'PE201',
+        name: 'الريشة الطائرة - متوسط',
+        nameEn: 'Intermediate Badminton',
+        prereqs: [],
+        hours: 1,
+        group: 'grp-a'
+      },
+      {
+        code: 'PE203',
+        name: 'كرة السلة - متوسط',
+        nameEn: 'Intermediate Basketball',
+        prereqs: [],
+        hours: 1,
+        group: 'grp-a'
+      },
+      {
+        code: 'PE205',
+        name: 'الجمباز - متوسط',
+        nameEn: 'Intermediate Gymnastics',
+        prereqs: [],
+        hours: 1,
+        group: 'grp-a'
+      },
+      {
+        code: 'PE207',
+        name: 'كرة اليد - متوسط',
+        nameEn: 'Intermediate Handball',
+        prereqs: [],
+        hours: 1,
+        group: 'grp-a'
+      },
+      {
+        code: 'PE209',
+        name: 'كرة القدم - متوسط',
+        nameEn: 'Intermediate Soccer',
+        prereqs: [],
+        hours: 1,
+        group: 'grp-a'
+      },
+      {
+        code: 'PE211',
+        name: 'الاسكواش - متوسط',
+        nameEn: 'Intermediate Squash',
+        prereqs: [],
+        hours: 1,
+        group: 'grp-a'
+      },
+      {
+        code: 'PE213',
+        name: 'السباحة - متوسط',
+        nameEn: 'Intermediate Swimming',
+        prereqs: [],
+        hours: 1,
+        group: 'grp-a'
+      },
+      {
+        code: 'PE215',
+        name: 'تنس الطاولة - متوسط',
+        nameEn: 'Intermediate Table Tennis',
+        prereqs: [],
+        hours: 1,
+        group: 'grp-a'
+      },
+      {
+        code: 'PE217',
+        name: 'التنس - متوسط',
+        nameEn: 'Intermediate Tennis',
+        prereqs: [],
+        hours: 1,
+        group: 'grp-a'
+      },
+      {
+        code: 'PE219',
+        name: 'الكرة الطائرة - متوسط',
+        nameEn: 'Intermediate Volleyball',
+        prereqs: [],
+        hours: 1,
+        group: 'grp-a'
+      },
+      {
+        code: 'PE221',
+        name: 'تدريب الأثقال - متوسط',
+        nameEn: 'Intermediate Weight Training',
+        prereqs: [],
+        hours: 1,
+        group: 'grp-a'
+      },
+      {
+        code: 'CS469',
+        name: 'معالجة الصور الرقمية',
+        nameEn: 'Digital Image Processing',
+        prereqs: [
+          'CS316'
+        ],
+        hours: 3,
+        group: 'grp-b'
+      },
+      {
+        code: 'CS471',
+        name: 'تنقيب البيانات',
+        nameEn: 'Data Mining',
+        prereqs: [
+          'CS316'
+        ],
+        hours: 3,
+        group: 'grp-b'
+      },
+      {
+        code: 'CS476',
+        name: 'معالجة اللغة الطبيعية',
+        nameEn: 'Natural Language Processing',
+        prereqs: [
+          'CS316'
+        ],
+        hours: 3,
+        group: 'grp-b'
+      },
+      {
+        code: 'IS446',
+        name: 'اكتشاف المعرفة وتنقيب البيانات',
+        nameEn: 'Knowledge Discovery and Data Mining',
+        prereqs: [
+          'CS316'
+        ],
+        hours: 3,
+        group: 'grp-b'
+      },
+      {
+        code: 'BCE483',
+        name: 'ذكاء الأعمال وتحليلاته',
+        nameEn: 'Business Intelligence and Analytics',
+        prereqs: [
+          'CS316'
+        ],
+        hours: 3,
+        group: 'grp-b'
+      },
+      {
+        code: 'CS481',
+        name: 'تحليلات البيانات الضخمة',
+        nameEn: 'Big Data Analytics',
+        prereqs: [
+          'CS316'
+        ],
+        hours: 3,
+        group: 'grp-b'
+      },
+      {
+        code: 'CS496',
+        name: 'موضوعات ناشئة في الذكاء الاصطناعي وعلم البيانات',
+        nameEn: 'Emerging Topics in AI and DS',
+        prereqs: [
+          'CS316'
+        ],
+        hours: 3,
+        group: 'grp-b'
+      },
+      {
+        code: 'IS463',
+        name: 'علم البيانات التطبيقي',
+        nameEn: 'Applied Data Science',
+        prereqs: [
+          'CS316'
+        ],
+        hours: 3,
+        group: 'grp-b'
+      },
+      {
+        code: 'IS472',
+        name: 'نظم دعم القرار والنظم الذكية',
+        nameEn: 'Decision-support and Intelligent Systems',
+        prereqs: [
+          'CS316'
+        ],
+        hours: 3,
+        group: 'grp-b'
+      },
+      {
+        code: 'ACT101',
+        name: 'أساسيات التمثيل المسرحي',
+        nameEn: 'The Basics of Stage Acting',
+        prereqs: [],
+        hours: 3,
+        group: 'grp-c'
+      },
+      {
+        code: 'CULT101',
+        name: 'الفولكلور والثقافة السعودية 1',
+        nameEn: 'Saudi Folklore and Culture I',
+        prereqs: [],
+        hours: 3,
+        group: 'grp-c'
+      },
+      {
+        code: 'CULT102',
+        name: 'الفولكلور والثقافة السعودية 2',
+        nameEn: 'Saudi Folklore and Culture II',
+        prereqs: [],
+        hours: 3,
+        group: 'grp-c'
+      },
+      {
+        code: 'ASIA101',
+        name: 'مقدمة في اليابانية',
+        nameEn: 'Introduction to Japanese',
+        prereqs: [],
+        hours: 3,
+        group: 'grp-c'
+      },
+      {
+        code: 'ASIA103',
+        name: 'الكورية الأساسية',
+        nameEn: 'Elementary Korean Language',
+        prereqs: [],
+        hours: 3,
+        group: 'grp-c'
+      },
+      {
+        code: 'ASIA104',
+        name: 'الصينية الأساسية',
+        nameEn: 'Elementary Chinese Language',
+        prereqs: [],
+        hours: 3,
+        group: 'grp-c'
+      },
+      {
+        code: 'AVN291',
+        name: 'جغرافيا النقل الجوي',
+        nameEn: 'Air Transport Geography',
+        prereqs: [],
+        hours: 3,
+        group: 'grp-c'
+      },
+      {
+        code: 'AVN292',
+        name: 'الطيران والسياحة',
+        nameEn: 'Aviation and Tourism',
+        prereqs: [],
+        hours: 3,
+        group: 'grp-c'
+      },
+      {
+        code: 'COM401',
+        name: 'المهارات الشخصية للقادة والمديرين',
+        nameEn: 'Interpersonal Skills for Leaders & Managers',
+        prereqs: [],
+        hours: 3,
+        group: 'grp-c'
+      },
+      {
+        code: 'ELE103',
+        name: 'إدارة الضغوط',
+        nameEn: 'Stress Management',
+        prereqs: [],
+        hours: 3,
+        group: 'grp-c'
+      },
+      {
+        code: 'ELE109',
+        name: 'العلاقات العامة',
+        nameEn: 'Public Relations',
+        prereqs: [],
+        hours: 3,
+        group: 'grp-c'
+      },
+      {
+        code: 'ELE110',
+        name: 'ريادة الأعمال',
+        nameEn: 'Entrepreneurship',
+        prereqs: [],
+        hours: 3,
+        group: 'grp-c'
+      },
+      {
+        code: 'ELP203',
+        name: 'لغة الإعلان',
+        nameEn: 'The Language of Advertising',
+        prereqs: [],
+        hours: 3,
+        group: 'grp-c'
+      },
+      {
+        code: 'ELP205',
+        name: 'اللغة والوسائط الرقمية',
+        nameEn: 'Language and Digital Media',
+        prereqs: [],
+        hours: 3,
+        group: 'grp-c'
+      },
+      {
+        code: 'ELP306',
+        name: 'الإنجليزية لمتخصصي الأزياء',
+        nameEn: 'English for Fashion Professionals',
+        prereqs: [],
+        hours: 3,
+        group: 'grp-c'
+      },
+      {
+        code: 'ELP309',
+        name: 'النقد السينمائي',
+        nameEn: 'Film Criticism',
+        prereqs: [],
+        hours: 3,
+        group: 'grp-c'
+      },
+      {
+        code: 'ENG113',
+        name: 'القراءة الأكاديمية المتقدمة',
+        nameEn: 'Advanced Academic Reading',
+        prereqs: [],
+        hours: 3,
+        group: 'grp-c'
+      },
+      {
+        code: 'ENG114',
+        name: 'مقدمة في الصحافة',
+        nameEn: 'Introduction to Journalism',
+        prereqs: [],
+        hours: 3,
+        group: 'grp-c'
+      },
+      {
+        code: 'ENG207',
+        name: 'التفكير الناقد',
+        nameEn: 'Critical Thinking',
+        prereqs: [],
+        hours: 3,
+        group: 'grp-c'
+      },
+      {
+        code: 'ENG208',
+        name: 'الإسبانية الأساسية',
+        nameEn: 'Elementary Spanish',
+        prereqs: [],
+        hours: 3,
+        group: 'grp-c'
+      },
+      {
+        code: 'ENG209',
+        name: 'الإسبانية المتوسطة',
+        nameEn: 'Intermediate Spanish',
+        prereqs: [],
+        hours: 3,
+        group: 'grp-c'
+      },
+      {
+        code: 'ENG301',
+        name: 'الكتابة التقنية والترجمة',
+        nameEn: 'Technical Writing and Translation',
+        prereqs: [],
+        hours: 3,
+        group: 'grp-c'
+      },
+      {
+        code: 'ENG302',
+        name: 'الإنجليزية للاتصال في بيئة الأعمال',
+        nameEn: 'English for Business Communication',
+        prereqs: [],
+        hours: 3,
+        group: 'grp-c'
+      },
+      {
+        code: 'EUR101',
+        name: 'لغة أوروبية 1',
+        nameEn: 'European Language I',
+        prereqs: [],
+        hours: 3,
+        group: 'grp-c'
+      },
+      {
+        code: 'FRN101',
+        name: 'الفرنسية الأساسية',
+        nameEn: 'Elementary French',
+        prereqs: [],
+        hours: 3,
+        group: 'grp-c'
+      },
+      {
+        code: 'GER101',
+        name: 'الألمانية الأساسية 1',
+        nameEn: 'Elementary German 1',
+        prereqs: [],
+        hours: 3,
+        group: 'grp-c'
+      },
+      {
+        code: 'HIST151',
+        name: 'تاريخ القانون',
+        nameEn: 'History of Law',
+        prereqs: [],
+        hours: 3,
+        group: 'grp-c'
+      },
+      {
+        code: 'HIST153',
+        name: 'الأنظمة السياسية المقارنة',
+        nameEn: 'Comparative Political Systems',
+        prereqs: [],
+        hours: 3,
+        group: 'grp-c'
+      },
+      {
+        code: 'IR101',
+        name: 'مصادر المعلومات',
+        nameEn: 'Information Resources',
+        prereqs: [],
+        hours: 3,
+        group: 'grp-c'
+      },
+      {
+        code: 'LAW101',
+        name: 'مبادئ القانون',
+        nameEn: 'Principles Of Law',
+        prereqs: [],
+        hours: 3,
+        group: 'grp-c'
+      },
+      {
+        code: 'LAW150',
+        name: 'القانون الإداري 1',
+        nameEn: 'Administrative Law I',
+        prereqs: [],
+        hours: 3,
+        group: 'grp-c'
+      },
+      {
+        code: 'LAW170',
+        name: 'قانون الأسرة',
+        nameEn: 'Family Law',
+        prereqs: [],
+        hours: 3,
+        group: 'grp-c'
       }
-];
+    ];
 
     // Mirrors the blue "اختياري X - Y" badges on the official plan: X = hours completed so far, Y = hours required from that block.
     const ELECTIVE_GROUPS = [
       {
-            id: 'grp-a',
-            label: 'Physical Education - choose 2',
-            required: 2
+        id: 'grp-a',
+        label: 'Physical Education - choose 2',
+        required: 2
       },
       {
-            id: 'grp-b',
-            label: 'AI/DS Electives - choose 2',
-            required: 6
+        id: 'grp-b',
+        label: 'AI/DS Electives - choose 2',
+        required: 6
       },
       {
-            id: 'grp-c',
-            label: 'Free Elective - choose 1',
-            required: 3
+        id: 'grp-c',
+        label: 'Free Elective - choose 1',
+        required: 3
       }
-];
+    ];
 
     /* ---------- State ---------- */
     const STORAGE_KEY = 'shoug_academic_plan_grid_is_ai_v1';
@@ -2542,6 +2610,10 @@
       const terms = allTerms();
       const targetTerm = terms.find(term => term.id === targetId);
       const targetOrder = targetTerm.order;
+
+      if (targetTerm.isGap) {
+        return { ok: false, reason: t().gapNoCourses };
+      }
 
       if (course.noPrepSummer && (targetTerm.isPrep || targetTerm.isSummer)) {
         return { ok: false, reason: t().moveBlockedNoPrepSummer(code) };
@@ -2738,6 +2810,8 @@
     /* ---------- Add course / add summer term ---------- */
     function addCourseToTerm(locationId) {
       if (suppressClick) { suppressClick = false; return; }
+      const targetTerm = allTerms().find(term => term.id === locationId);
+      if (targetTerm && targetTerm.isGap) { toast(t().gapNoCourses); return; }
       const code = prompt(t().addCoursePromptCode);
       if (!code) return;
       const cleanCode = code.trim().toUpperCase();
@@ -2804,12 +2878,65 @@
       toast(t().addSummerAdded(lang === 'ar' ? labelAr : labelEn));
     }
 
-    function removeSummerTerm(termId) {
+    function removeExtraTerm(termId) {
       const hasCourses = Object.values(assignments).includes(termId);
       if (hasCourses) { toast(t().removeSummerBlocked); return; }
       extraTerms = extraTerms.filter(term => term.id !== termId);
       saveState();
       render();
+    }
+
+    function addGapTerm() {
+      toggleGapPicker(true);
+    }
+
+    function toggleGapPicker(force) {
+      const overlay = document.getElementById('gapOverlay');
+      const panel = document.getElementById('gapPanel');
+      const shouldOpen = typeof force === 'boolean' ? force : !panel.classList.contains('open');
+      overlay.classList.toggle('open', shouldOpen);
+      panel.classList.toggle('open', shouldOpen);
+      if (shouldOpen) renderGapOptions();
+    }
+
+    function renderGapOptions() {
+      const s = t();
+      const options = document.getElementById('gapOptions');
+      const baseSorted = BASE_TERMS.slice().sort((a, b) => a.order - b.order);
+      options.innerHTML = '';
+      baseSorted.forEach(term => {
+        const label = termLabel(term);
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'summer-option';
+        const title = document.createElement('span');
+        title.className = 'summer-option-title';
+        title.textContent = s.addGapAfter(label);
+        const meta = document.createElement('span');
+        meta.className = 'summer-option-meta';
+        meta.textContent = s.addGapMeta(label);
+        btn.append(title, meta);
+        btn.addEventListener('click', () => confirmAddGapTerm(term));
+        options.appendChild(btn);
+      });
+    }
+
+    function confirmAddGapTerm(afterTerm) {
+      const countSoFar = extraTerms.filter(term => term.isGap).length + 1;
+      const id = 'gap-' + Date.now();
+      const labelAr = 'فصل فراغ ' + countSoFar;
+      const labelEn = 'Gap Semester ' + countSoFar;
+      extraTerms.push({
+        id,
+        labelAr,
+        labelEn,
+        order: afterTerm.order + 0.5,
+        isGap: true,
+      });
+      toggleGapPicker(false);
+      saveState();
+      render();
+      toast(t().addGapAdded(lang === 'ar' ? labelAr : labelEn));
     }
 
     /* ---------- Render ---------- */
@@ -2820,12 +2947,18 @@
       document.getElementById('pageTitle').textContent = s.pageTitle;
       document.getElementById('pageSub').textContent = viewMode ? s.pageSubView : s.pageSub;
       document.getElementById('addSummerBtn').textContent = s.addSummer;
+      document.getElementById('addGapBtn').textContent = s.addGap;
       document.getElementById('resetBtn').textContent = s.reset;
       document.getElementById('summerTitle').textContent = s.addSummerTitle;
       document.getElementById('summerSub').textContent = s.addSummerSub;
       document.getElementById('summerCancelBtn').textContent = s.addSummerCancel;
+      document.getElementById('gapTitle').textContent = s.addGapTitle;
+      document.getElementById('gapSub').textContent = s.addGapSub;
+      document.getElementById('gapCancelBtn').textContent = s.addGapCancel;
       if (document.getElementById('summerPanel').classList.contains('open')) renderSummerOptions();
+      if (document.getElementById('gapPanel').classList.contains('open')) renderGapOptions();
       document.getElementById('addSummerBtn').style.display = viewMode ? 'none' : '';
+      document.getElementById('addGapBtn').style.display = viewMode ? 'none' : '';
       document.getElementById('resetBtn').style.display = viewMode ? 'none' : '';
       document.getElementById('legendRed').textContent = s.legendRed;
       document.getElementById('legendWhite').textContent = s.legendWhite;
@@ -2885,8 +3018,9 @@
       const doneCount = courses.filter(c => isCourseDone(c)).length;
       const currentCount = courses.filter(c => statusMap[c.code] === 'current' && !isCourseDone(c)).length;
       const summerCount = extraTerms.filter(term => term.isSummer).length;
+      const gapCount = extraTerms.filter(term => term.isGap).length;
       const movedCount = courses.filter(c => assignments[c.code] && assignments[c.code] !== defaultLocation(c)).length;
-      const hasCustomLayout = summerCount > 0 || movedCount > 0 || customCourses.length > 0;
+      const hasCustomLayout = summerCount > 0 || gapCount > 0 || movedCount > 0 || customCourses.length > 0;
       return hasCustomLayout
         ? s.walkCustomSteps(summerCount, movedCount)
         : (doneCount > 0 || currentCount > 0 ? s.walkProgressSteps(doneCount, currentCount) : s.walkBlankSteps);
@@ -2905,7 +3039,7 @@
 
     function buildTermRow(term, map, gateways) {
       const row = document.createElement('div');
-      row.className = 'term-row' + (term.isSummer ? ' summer' : '');
+      row.className = 'term-row' + (term.isSummer ? ' summer' : '') + (term.isGap ? ' gap' : '');
 
       const label = document.createElement('div');
       label.className = 'term-label';
@@ -2918,14 +3052,14 @@
           moveSelectedCourse(term.id);
         });
       }
-      if (term.isSummer && !viewMode) {
+      if ((term.isSummer || term.isGap) && !viewMode) {
         const rm = document.createElement('button');
         rm.className = 'term-remove';
         rm.textContent = '×';
         rm.title = t().termRemoveTitle;
         rm.addEventListener('click', e => {
           e.stopPropagation();
-          removeSummerTerm(term.id);
+          removeExtraTerm(term.id);
         });
         label.appendChild(rm);
       }
@@ -2937,6 +3071,13 @@
         .filter(c => assignments[c.code] === term.id)
         .forEach(c => courses.appendChild(courseEl(c, gateways.has(c.code), viewMode)));
 
+      if (term.isGap && courses.children.length === 0) {
+        const note = document.createElement('div');
+        note.className = 'gap-note';
+        note.textContent = t().gapNote;
+        courses.appendChild(note);
+      }
+
       if (viewMode) {
         row.appendChild(courses);
         return row;
@@ -2945,16 +3086,18 @@
       wireDropZone(courses, term.id);
       row.appendChild(courses);
 
-      const addTile = document.createElement('div');
-      addTile.className = 'add-course-tile';
-      addTile.textContent = '+';
-      addTile.title = t().addCourseTileTitle;
-      if (selectedMoveCode) addTile.classList.add('move-target-label');
-      addTile.addEventListener('click', () => {
-        if (selectedMoveCode) moveSelectedCourse(term.id);
-        else addCourseToTerm(term.id);
-      });
-      row.appendChild(addTile);
+      if (!term.isGap) {
+        const addTile = document.createElement('div');
+        addTile.className = 'add-course-tile';
+        addTile.textContent = '+';
+        addTile.title = t().addCourseTileTitle;
+        if (selectedMoveCode) addTile.classList.add('move-target-label');
+        addTile.addEventListener('click', () => {
+          if (selectedMoveCode) moveSelectedCourse(term.id);
+          else addCourseToTerm(term.id);
+        });
+        row.appendChild(addTile);
+      }
 
       return row;
     }
@@ -3358,29 +3501,16 @@
 
       const now = currentAcademicSemester();
       const stepsElapsed = stepsBetween(year, startSemester, now.year, now.semester);
-      const expectedOrder = Math.min(calendarOrder(startTerm.order) + stepsElapsed, t8.order);
+      // Uncapped: how many order-steps have really elapsed since your start, with no ceiling at t8. Capping
+      // this at the plan length used to hide just how far behind a badly-delayed student actually is (it
+      // made "now" freeze at the plan's own end once you were even one term late).
+      const expectedOrder = calendarOrder(startTerm.order) + stepsElapsed;
       const actualPosition = furthestReachedOrder(termId);
 
       const progress = courseAndHourProgress(expectedOrder, termId);
       const courseDiff = progress.actualCourses - progress.expectedCourses;
       const hourDiff = progress.actualHours - progress.expectedHours;
 
-      // Expected graduation is the FIXED date the original plan promises — your start term plus the plan's
-      // standard duration (t8 minus your start, in real calendar terms — see calendarOrder above), with no
-      // adjustment for actual progress. This is the catalog target, not a moving projection — the cards
-      // below are what tell you whether you're ahead/behind/on-track against it.
-      const stepsNatural = t8.order - calendarOrder(startTerm.order);
-      let grad = { year, semester: startSemester };
-      for (let i = 0; i < stepsNatural; i++) grad = advanceSemester(grad.year, grad.semester);
-      const degreeTerm = nextDegreeTermAfter(grad);
-
-      document.getElementById('gradExpectedValue').textContent =
-        `${grad.semester === 'fall' ? s.gradFall : s.gradSpring} ${grad.year}`;
-      document.getElementById('gradCoopTermValue').textContent = psuTermLabel(grad);
-      document.getElementById('gradDegreeTermValue').textContent = psuTermLabel(degreeTerm);
-
-      // The note below still surfaces what's actually left on your plan board (regular/summer/co-op terms
-      // with pending courses), since that's useful context even though it no longer drives the headline date.
       const map = courseIndex();
       updateProgress(map);
       const planTerms = allTerms();
@@ -3392,6 +3522,38 @@
       const regularRemaining = remainingTermsList.filter(term => !term.isSummer && term.id !== 't8').length;
       const summerCount = remainingTermsList.filter(term => term.isSummer).length;
       const totalsForPace = totalPlanRequirements(termId);
+
+      // Expected graduation is anchored at "now" (expectedOrder) and walked forward by however many regular/
+      // co-op term-slots your current layout still has pending (summers don't count — they're squeezed into
+      // breaks, not an extra fall/spring slot). That reflects real progress in both directions: fewer slots
+      // left than the standard plan pulls the date earlier (e.g. only co-op remaining), more slots left pushes
+      // it later — instead of a catalog target that never moved and a "behind" push that could land in the past.
+      const stepsNatural = t8.order - calendarOrder(startTerm.order);
+      let grad = { year, semester: startSemester };
+      if (actualPosition === null) {
+        for (let i = 0; i < stepsNatural; i++) grad = advanceSemester(grad.year, grad.semester);
+      } else {
+        const remainingCount = regularRemaining + coopRemaining;
+        const projectedOrder = expectedOrder + remainingCount;
+        const orderSteps = Math.max(0, projectedOrder - startTerm.order);
+        for (let i = 0; i < orderSteps; i++) grad = advanceSemester(grad.year, grad.semester);
+      }
+      const degreeTerm = nextDegreeTermAfter(grad);
+
+      document.getElementById('gradExpectedValue').textContent =
+        `${grad.semester === 'fall' ? s.gradFall : s.gradSpring} ${grad.year}`;
+      if (actualPosition === null) {
+        document.getElementById('gradExpectedNote').textContent = '';
+      } else {
+        const projectedOrder = expectedOrder + regularRemaining + coopRemaining;
+        const deltaFromStandard = Math.round(projectedOrder - t8.order);
+        document.getElementById('gradExpectedNote').textContent =
+          deltaFromStandard > 0 ? s.gradExpectedDelayed(deltaFromStandard)
+          : deltaFromStandard < 0 ? s.gradExpectedEarly(Math.abs(deltaFromStandard))
+          : '';
+      }
+      document.getElementById('gradCoopTermValue').textContent = psuTermLabel(grad);
+      document.getElementById('gradDegreeTermValue').textContent = psuTermLabel(degreeTerm);
 
       const statusCard = document.getElementById('gradStatusCard');
       const statusValue = document.getElementById('gradStatusValue');
@@ -3495,6 +3657,10 @@
     document.getElementById('summerCloseBtn').addEventListener('click', () => toggleSummerPicker(false));
     document.getElementById('summerCancelBtn').addEventListener('click', () => toggleSummerPicker(false));
     document.getElementById('summerOverlay').addEventListener('click', () => toggleSummerPicker(false));
+    document.getElementById('addGapBtn').addEventListener('click', addGapTerm);
+    document.getElementById('gapCloseBtn').addEventListener('click', () => toggleGapPicker(false));
+    document.getElementById('gapCancelBtn').addEventListener('click', () => toggleGapPicker(false));
+    document.getElementById('gapOverlay').addEventListener('click', () => toggleGapPicker(false));
     document.getElementById('langBtn').addEventListener('click', () => {
       lang = lang === 'ar' ? 'en' : 'ar';
       localStorage.setItem(LANG_KEY, lang);
