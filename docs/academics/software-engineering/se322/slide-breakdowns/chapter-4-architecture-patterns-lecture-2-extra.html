@@ -1,0 +1,1393 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blackboard, Pipes-Filters, Client-Server &amp; Broker — Field Guide | SE322 Ch.4 L02</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --radius-sm: 8px;
+            --radius-md: 14px;
+            --radius-lg: 22px;
+            --font-head: 'Space Grotesk', sans-serif;
+            --font-body: 'Inter', sans-serif;
+            --font-mono: 'IBM Plex Mono', monospace;
+            --maxw: 1180px;
+        }
+
+        html[data-theme="dark"] {
+            --bg: #0e1520;
+            --surface: #151f2c;
+            --surface-2: #1b2735;
+            --ink: #e8edf1;
+            --ink-dim: #93a3b4;
+            --line: #253243;
+            --accent: #9083e0;
+            --accent-2: #3ea89c;
+            --accent-3: #d98a5a;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+        }
+
+        html[data-theme="light"] {
+            --bg: #eef0ef;
+            --surface: #ffffff;
+            --surface-2: #f4f5f2;
+            --ink: #15202b;
+            --ink-dim: #56636d;
+            --line: #d8dad6;
+            --accent: #6a57c8;
+            --accent-2: #23796f;
+            --accent-3: #b5622f;
+            --shadow: 0 10px 26px rgba(20, 30, 25, 0.10);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            background:
+                radial-gradient(circle at 1px 1px, var(--line) 1px, transparent 1px) 0 0/26px 26px,
+                var(--bg);
+            color: var(--ink);
+            font-family: var(--font-body);
+            font-size: clamp(15px, 0.4vw + 14px, 17px);
+            line-height: 1.6;
+            transition: background-color .35s ease, color .35s ease;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4 {
+            font-family: var(--font-head);
+            margin: 0;
+            letter-spacing: -0.01em;
+        }
+
+        a {
+            color: inherit;
+        }
+
+        code {
+            font-family: var(--font-mono);
+            background: var(--surface-2);
+            padding: 1px 6px;
+            border-radius: 4px;
+            font-size: 0.86em;
+        }
+
+        .wrap {
+            max-width: var(--maxw);
+            margin: 0 auto;
+            padding: 0 clamp(16px, 4vw, 40px);
+        }
+
+        header.top {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            backdrop-filter: blur(10px);
+            background: color-mix(in srgb, var(--bg) 78%, transparent);
+            border-bottom: 1px solid var(--line);
+        }
+
+        .top-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px clamp(16px, 4vw, 40px);
+            max-width: var(--maxw);
+            margin: 0 auto;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .brand .logo-mini {
+            width: 30px;
+            height: 30px;
+            flex: none;
+        }
+
+        .brand-text {
+            font-family: var(--font-head);
+            font-weight: 700;
+            font-size: 1.05rem;
+        }
+
+        .brand-text span {
+            color: var(--accent);
+        }
+
+        nav.pillnav {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        nav.pillnav a {
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            text-decoration: none;
+            color: var(--ink-dim);
+            padding: 6px 10px;
+            border-radius: 999px;
+            border: 1px solid transparent;
+            white-space: nowrap;
+            transition: all .2s ease;
+        }
+
+        nav.pillnav a:hover {
+            color: var(--ink);
+            border-color: var(--line);
+            background: var(--surface);
+        }
+
+        .theme-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            color: var(--ink-dim);
+        }
+
+        .switch {
+            width: 46px;
+            height: 26px;
+            border-radius: 999px;
+            background: var(--surface-2);
+            border: 1px solid var(--line);
+            position: relative;
+            cursor: pointer;
+            flex: none;
+        }
+
+        .switch .knob {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--accent);
+            transition: left .25s ease, background .25s ease;
+        }
+
+        html[data-theme="light"] .switch .knob {
+            left: 22px;
+        }
+
+        .hero {
+            padding: clamp(40px, 7vw, 80px) 0 clamp(20px, 4vw, 40px);
+        }
+
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: clamp(20px, 4vw, 50px);
+            align-items: center;
+        }
+
+        @media (max-width:820px) {
+            .hero-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .eyebrow {
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--accent-2);
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .eyebrow::before {
+            content: '';
+            width: 26px;
+            height: 1px;
+            background: var(--accent-2);
+        }
+
+        h1.hero-title {
+            font-size: clamp(2rem, 4.6vw, 3.3rem);
+            line-height: 1.06;
+            font-weight: 700;
+        }
+
+        h1.hero-title em {
+            font-style: normal;
+            color: var(--accent);
+        }
+
+        .hero-sub {
+            margin-top: 18px;
+            color: var(--ink-dim);
+            max-width: 56ch;
+            font-size: 1.02rem;
+        }
+
+        .hero-badges {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 22px;
+        }
+
+        .badge {
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            padding: 6px 12px;
+            border-radius: 8px;
+            background: var(--surface);
+            border: 1px solid var(--line);
+            color: var(--ink-dim);
+        }
+
+        .blueprint-wrap {
+            display: flex;
+            justify-content: center;
+        }
+
+        .blueprint-wrap svg {
+            width: min(340px, 90%);
+            height: auto;
+        }
+
+        section {
+            padding: clamp(30px, 5vw, 60px) 0;
+            border-top: 1px solid var(--line);
+        }
+
+        section:first-of-type {
+            border-top: none;
+        }
+
+        .sec-head {
+            margin-bottom: clamp(20px, 3vw, 34px);
+            max-width: 74ch;
+        }
+
+        .sec-num {
+            font-family: var(--font-mono);
+            color: var(--accent);
+            font-size: 0.78rem;
+            letter-spacing: 0.1em;
+        }
+
+        .sec-title {
+            font-size: clamp(1.4rem, 2.8vw, 2rem);
+            margin-top: 6px;
+        }
+
+        .sec-desc {
+            color: var(--ink-dim);
+            margin-top: 10px;
+            font-size: 0.98rem;
+        }
+
+        .mnemonic {
+            background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 14%, transparent), transparent);
+            border: 1px dashed color-mix(in srgb, var(--accent) 55%, var(--line));
+            border-radius: var(--radius-md);
+            padding: 16px 20px;
+            display: flex;
+            gap: 14px;
+            align-items: flex-start;
+            margin: 18px 0;
+        }
+
+        .mnemonic .icon {
+            font-size: 1.4rem;
+            flex: none;
+            line-height: 1;
+        }
+
+        .mnemonic .label {
+            font-family: var(--font-mono);
+            font-size: 0.68rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--accent);
+        }
+
+        .mnemonic .phrase {
+            font-family: var(--font-head);
+            font-weight: 600;
+            font-size: 1.05rem;
+            margin-top: 3px;
+        }
+
+        .mnemonic .decode {
+            color: var(--ink-dim);
+            font-size: 0.86rem;
+            margin-top: 4px;
+        }
+
+        .qa-deep {
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: var(--radius-lg);
+            padding: clamp(18px, 3vw, 30px);
+            margin-bottom: 26px;
+            position: relative;
+            border-left: 5px solid var(--accent);
+        }
+
+        .qa-deep-head {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+
+        .qa-deep h3 {
+            font-size: clamp(1.25rem, 2.2vw, 1.6rem);
+        }
+
+        .qa-tag {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            padding: 5px 11px;
+            border-radius: 999px;
+            background: var(--surface-2);
+            border: 1px solid var(--line);
+            color: var(--ink-dim);
+        }
+
+        .qa-def {
+            margin-top: 10px;
+            color: var(--ink);
+            font-size: 0.98rem;
+            max-width: 80ch;
+        }
+
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 22px;
+            margin-top: 20px;
+        }
+
+        @media (max-width:760px) {
+            .two-col {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .subhead {
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--accent-2);
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .flow-diagram {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0;
+            margin: 16px 0;
+            font-family: var(--font-mono);
+            font-size: 0.78rem;
+        }
+
+        .flow-node {
+            background: var(--surface-2);
+            border: 1px solid var(--line);
+            border-radius: var(--radius-sm);
+            padding: 9px 13px;
+            white-space: nowrap;
+        }
+
+        .flow-node.accent {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .flow-arrow {
+            padding: 0 8px;
+            color: var(--ink-dim);
+        }
+
+        table.info-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+            margin-top: 6px;
+        }
+
+        table.info-table td,
+        table.info-table th {
+            border-top: 1px solid var(--line);
+            padding: 9px 8px;
+            vertical-align: top;
+            text-align: left;
+        }
+
+        table.info-table tr:first-child td,
+        table.info-table tr:first-child th {
+            border-top: none;
+        }
+
+        table.info-table td.key {
+            color: var(--accent);
+            font-family: var(--font-mono);
+            font-size: 0.74rem;
+            white-space: nowrap;
+            width: 30%;
+        }
+
+        table.info-table th {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--accent-2);
+            background: var(--surface-2);
+        }
+
+        .quality-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .quality-table th,
+        .quality-table td {
+            border: 1px solid var(--line);
+            padding: 10px 12px;
+            text-align: left;
+            font-size: 0.84rem;
+        }
+
+        .quality-table th {
+            background: var(--surface-2);
+            font-family: var(--font-mono);
+            font-size: 0.68rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--accent-2);
+        }
+
+        .quality-table tr:nth-child(even) td {
+            background: color-mix(in srgb, var(--surface-2) 55%, transparent);
+        }
+
+        .example-strip {
+            margin-top: 16px;
+            background: color-mix(in srgb, var(--accent-2) 10%, transparent);
+            border: 1px solid color-mix(in srgb, var(--accent-2) 35%, var(--line));
+            border-radius: var(--radius-sm);
+            padding: 12px 14px;
+            font-size: 0.86rem;
+        }
+
+        .example-strip b {
+            color: var(--accent-2);
+        }
+
+        .rule-box {
+            margin-top: 14px;
+            background: var(--surface-2);
+            border: 1px solid var(--line);
+            border-radius: var(--radius-sm);
+            padding: 12px 14px;
+            font-size: 0.84rem;
+            color: var(--ink-dim);
+        }
+
+        .rule-box b {
+            color: var(--ink);
+        }
+
+        .steps-list {
+            counter-reset: step;
+            list-style: none;
+            padding: 0;
+            margin: 14px 0 0;
+        }
+
+        .steps-list li {
+            counter-increment: step;
+            position: relative;
+            padding: 8px 0 8px 34px;
+            font-size: 0.86rem;
+            color: var(--ink-dim);
+            border-top: 1px solid var(--line);
+        }
+
+        .steps-list li:first-child {
+            border-top: none;
+        }
+
+        .steps-list li::before {
+            content: counter(step);
+            position: absolute;
+            left: 0;
+            top: 8px;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: color-mix(in srgb, var(--accent) 18%, var(--surface-2));
+            color: var(--accent);
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .steps-list li b {
+            color: var(--ink);
+        }
+
+        .cheat-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .cheat-table th,
+        .cheat-table td {
+            border: 1px solid var(--line);
+            padding: 12px 14px;
+            text-align: left;
+            font-size: 0.85rem;
+        }
+
+        .cheat-table th {
+            background: var(--surface-2);
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--accent-2);
+        }
+
+        .cheat-table tr:nth-child(even) td {
+            background: color-mix(in srgb, var(--surface-2) 55%, transparent);
+        }
+
+        .vs-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        @media (max-width:700px) {
+            .vs-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .vs-card {
+            background: var(--surface-2);
+            border: 1px solid var(--line);
+            border-radius: var(--radius-sm);
+            padding: 14px 16px;
+        }
+
+        .vs-card h5 {
+            font-family: var(--font-head);
+            font-size: 1rem;
+            color: var(--accent);
+            margin-bottom: 8px;
+        }
+
+        .vs-card ul {
+            margin: 0;
+            padding-left: 18px;
+            font-size: 0.85rem;
+            color: var(--ink-dim);
+        }
+
+        .vs-card ul li {
+            margin-bottom: 4px;
+        }
+
+        footer {
+            padding: 40px clamp(16px, 4vw, 40px) 60px;
+            text-align: center;
+            color: var(--ink-dim);
+            font-family: var(--font-mono);
+            font-size: 0.78rem;
+        }
+
+        footer .made {
+            color: var(--ink);
+            font-weight: 600;
+            margin-top: 6px;
+        }
+
+        footer .made span {
+            color: var(--accent);
+        }
+
+        .toc-hint {
+            margin-top: 26px;
+            color: var(--ink-dim);
+            font-size: 0.82rem;
+        }
+
+        ::selection {
+            background: var(--accent);
+            color: #fff;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="top">
+        <div class="top-inner">
+            <div class="brand">
+                <svg class="logo-mini" viewBox="0 0 40 40">
+                    <rect x="6" y="8" width="10" height="10" rx="2" fill="var(--accent)" />
+                    <rect x="24" y="8" width="10" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="2"
+                        opacity="0.4" />
+                    <rect x="15" y="24" width="10" height="10" rx="2" fill="var(--accent-2)" />
+                    <line x1="16" y1="13" x2="20" y2="24" stroke="currentColor" stroke-width="1.4" opacity="0.4" />
+                    <line x1="24" y1="13" x2="20" y2="24" stroke="currentColor" stroke-width="1.4" opacity="0.4" />
+                </svg>
+                <div class="brand-text">Patterns<span>·</span>Deep Dive</div>
+            </div>
+            <nav class="pillnav">
+                <a href="#data-centered">Data-Centered</a>
+                <a href="#blackboard">Blackboard</a>
+                <a href="#data-flow">Data Flow</a>
+                <a href="#pipes-filters">Pipes-and-Filters</a>
+                <a href="#distributed">Distributed</a>
+                <a href="#client-server">Client-Server</a>
+                <a href="#broker">Broker</a>
+                <a href="#cheat">Cheat Sheet</a>
+            </nav>
+            <div class="theme-toggle">
+                <span id="theme-label">DARK</span>
+                <div class="switch" id="switch" role="button" aria-label="Toggle theme">
+                    <div class="knob"></div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+
+        <!-- HERO -->
+        <section class="hero">
+            <div class="wrap hero-grid">
+                <div>
+                    <div class="eyebrow">SE322 · Software Design &amp; Architecture · Chapter 04, Lecture 02</div>
+                    <h1 class="hero-title">Four patterns,<br><em>four ways components talk.</em></h1>
+                    <p class="hero-sub">Same question every time: <b>who is allowed to talk to whom?</b> Blackboard says
+                        "only through me." Pipes-and-Filters says "only to your neighbor." Client-Server says "only to
+                        the one server you know." Broker says "to anyone, through me, and you'll never know the
+                        difference."</p>
+                    <div class="hero-badges">
+                        <div class="badge">Blackboard</div>
+                        <div class="badge">Pipes-and-Filters</div>
+                        <div class="badge">Client-Server</div>
+                        <div class="badge">Broker</div>
+                    </div>
+                </div>
+                <div class="blueprint-wrap">
+                    <svg viewBox="0 0 320 320">
+                        <!-- four quadrant icons -->
+                        <circle cx="160" cy="160" r="150" fill="none" stroke="var(--line)" stroke-width="2" />
+                        <line x1="160" y1="12" x2="160" y2="308" stroke="var(--line)" stroke-width="1"
+                            stroke-dasharray="4 6" />
+                        <line x1="12" y1="160" x2="308" y2="160" stroke="var(--line)" stroke-width="1"
+                            stroke-dasharray="4 6" />
+                        <!-- blackboard quadrant: hub -->
+                        <circle cx="90" cy="90" r="8" fill="var(--accent)" />
+                        <circle cx="65" cy="60" r="4" fill="var(--accent-2)" />
+                        <circle cx="115" cy="60" r="4" fill="var(--accent-2)" />
+                        <circle cx="65" cy="120" r="4" fill="var(--accent-2)" />
+                        <line x1="90" y1="90" x2="65" y2="60" stroke="var(--ink-dim)" stroke-width="1.2" />
+                        <line x1="90" y1="90" x2="115" y2="60" stroke="var(--ink-dim)" stroke-width="1.2" />
+                        <line x1="90" y1="90" x2="65" y2="120" stroke="var(--ink-dim)" stroke-width="1.2" />
+                        <!-- pipes quadrant: chain -->
+                        <circle cx="220" cy="60" r="6" fill="var(--accent-3)" />
+                        <circle cx="250" cy="80" r="6" fill="var(--accent-3)" />
+                        <circle cx="280" cy="60" r="6" fill="var(--accent-3)" />
+                        <line x1="220" y1="60" x2="250" y2="80" stroke="var(--ink-dim)" stroke-width="1.2" />
+                        <line x1="250" y1="80" x2="280" y2="60" stroke="var(--ink-dim)" stroke-width="1.2" />
+                        <!-- client server quadrant: 1-1 -->
+                        <rect x="70" y="230" width="30" height="18" rx="3" fill="none" stroke="var(--accent-2)"
+                            stroke-width="1.6" />
+                        <rect x="140" y="230" width="30" height="18" rx="3" fill="var(--accent-2)" />
+                        <line x1="100" y1="239" x2="140" y2="239" stroke="var(--ink-dim)" stroke-width="1.2" />
+                        <!-- broker quadrant: mediator -->
+                        <rect x="230" y="230" width="26" height="16" rx="3" fill="var(--accent)" />
+                        <rect x="195" y="260" width="20" height="14" rx="3" fill="none" stroke="var(--ink-dim)"
+                            stroke-width="1.2" />
+                        <rect x="270" y="260" width="20" height="14" rx="3" fill="none" stroke="var(--ink-dim)"
+                            stroke-width="1.2" />
+                        <line x1="243" y1="246" x2="205" y2="260" stroke="var(--ink-dim)" stroke-width="1.2" />
+                        <line x1="243" y1="246" x2="280" y2="260" stroke="var(--ink-dim)" stroke-width="1.2" />
+                        <text x="160" y="164" text-anchor="middle" class="mono" font-family="IBM Plex Mono"
+                            font-size="9" fill="var(--ink-dim)">4 PATTERNS</text>
+                    </svg>
+                </div>
+            </div>
+        </section>
+
+        <!-- DATA-CENTERED OVERVIEW -->
+        <section id="data-centered">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 01 — DATA-CENTERED SYSTEMS, ZOOMED IN</div>
+                    <h2 class="sec-title">Two roles: one manager, many workers</h2>
+                </div>
+                <div class="qa-deep">
+                    <p class="qa-def">Data-centered systems decompose around one main central repository. Every system
+                        in this family has exactly two kinds of roles:</p>
+                    <div class="two-col">
+                        <div>
+                            <span class="subhead">Data Management Component</span>
+                            <p style="color:var(--ink-dim); font-size:0.9rem;">Controls, provides, and manages access to
+                                the system's data — the gatekeeper.</p>
+                        </div>
+                        <div>
+                            <span class="subhead">Worker Components</span>
+                            <p style="color:var(--ink-dim); font-size:0.9rem;">Execute operations and perform work based
+                                on that data.</p>
+                        </div>
+                    </div>
+
+                    <div class="mnemonic">
+                        <div class="icon">🚫</div>
+                        <div>
+                            <div class="label">The one rule that matters most</div>
+                            <div class="phrase">"Workers never gossip — everything goes through the manager."</div>
+                            <div class="decode">Communication is one-to-one, bidirectional, between a worker and the
+                                data management component. Workers <b>never</b> talk directly to each other.</div>
+                        </div>
+                    </div>
+
+                    <div class="flow-diagram">
+                        <div class="flow-node">Worker 1</div>
+                        <div class="flow-arrow">⇄</div>
+                        <div class="flow-node accent">Data Manager</div>
+                        <div class="flow-arrow">⇄</div>
+                        <div class="flow-node">Worker 2</div>
+                    </div>
+                    <div class="example-strip"><b>Issues to watch for because of this shape:</b> data integrity
+                        (complete, accurate, consistent data across transfers/storage/retrieval), and communication
+                        protocols between worker and data manager.</div>
+                    <div class="rule-box"><b>DBMS has two valid views:</b> as a <b>Repository</b> (Data-Centered) → all
+                        apps share one central database. As part of a <b>Client-Server</b> system (Distributed) →
+                        clients send SQL queries, server processes them, database stores data.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- BLACKBOARD -->
+        <section id="blackboard">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 02 — BLACKBOARD PATTERN</div>
+                    <h2 class="sec-title">Opportunistic problem-solving around a shared space</h2>
+                </div>
+
+                <div class="qa-deep">
+                    <div class="qa-deep-head">
+                        <h3>Blackboard</h3><span class="qa-tag">central data, independent agents</span>
+                    </div>
+                    <p class="qa-def">Components work around a central data component to provide solutions to complex
+                        problems — independently, with no predetermined or "correct" sequence of operations. Famous for
+                        depicting the logical architecture of <b>expert systems</b> (AI that mimics human
+                        decision-making using knowledge + inference rules).</p>
+
+                    <div class="mnemonic">
+                        <div class="icon">🗣️</div>
+                        <div>
+                            <div class="label">Three roles, one hook</div>
+                            <div class="phrase">"Board, Agents, Boss"</div>
+                            <div class="decode"><b>Blackboard</b> = shared data store. <b>Agents</b> = independent
+                                specialists who read/write to it. <b>Controller</b> = decides who gets access, when.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flow-diagram">
+                        <div class="flow-node">Agent 1</div>
+                        <div class="flow-node">Agent 2</div>
+                        <div class="flow-node">Agent n</div>
+                        <div class="flow-arrow">↓ ↓ ↓</div>
+                    </div>
+                    <div class="flow-diagram">
+                        <div class="flow-node accent">Controller</div>
+                        <div class="flow-arrow">→ manages access →</div>
+                        <div class="flow-node accent">Blackboard</div>
+                    </div>
+
+                    <div class="two-col">
+                        <div>
+                            <span class="subhead">Real-world lens: the ER room</span>
+                            <table class="info-table">
+                                <tr>
+                                    <td class="key">Blackboard</td>
+                                    <td>The patient's chart — visible &amp; updated by everyone</td>
+                                </tr>
+                                <tr>
+                                    <td class="key">Agents</td>
+                                    <td>Doctors, nurses, specialists — each updates based on their expertise</td>
+                                </tr>
+                                <tr>
+                                    <td class="key">Controller</td>
+                                    <td>Manages who gets access when, based on the patient's changing condition</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div>
+                            <span class="subhead">Why the interfaces point where they point</span>
+                            <table class="info-table">
+                                <tr>
+                                    <td class="key">Blackboard →</td>
+                                    <td>Provides read/write/update interfaces — it's the central hub everyone needs.
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="key">Controller →</td>
+                                    <td>Does <i>not</i> provide data interfaces to Agents; its job is to orchestrate,
+                                        not store. It just says "go check the Blackboard."</td>
+                                </tr>
+                                <tr>
+                                    <td class="key">Agents →</td>
+                                    <td>Provide a service interface (e.g. <code>run()</code>) so the Controller can
+                                        invoke them on demand.</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="example-strip"><b>Worked example — student scheduling system:</b>
+                        <code>StudentHistory</code>, <code>CourseOfferings</code>, and <code>WorkSchedule</code> are
+                        Agents; <code>ScheduleManager</code> is the Controller; <code>ScheduleBlackboard</code> holds
+                        the draft schedule via <code>getSchedule()</code>/<code>setSchedule()</code>.
+                        <ol class="steps-list">
+                            <li><b>Client</b> calls <code>generateSchedule()</code> on the ScheduleManager.</li>
+                            <li>ScheduleManager picks the <b>next Agent</b> via <code>nextScheduler()</code> and calls
+                                <code>workOnSchedule()</code>.</li>
+                            <li>That Agent reads the draft from the Blackboard (<code>getSchedule()</code>), improves
+                                it, and writes it back (<code>setSchedule()</code>).</li>
+                            <li>Control returns to the Manager, which repeats for the next Agent — until the schedule is
+                                finalized and delivered to the Client.</li>
+                        </ol>
+                    </div>
+                    <div class="rule-box"><b>General guideline:</b> control flow is Controller → Agents (invocation).
+                        Data flow is Agents ↔ Blackboard (read/write). Agents never talk to each other directly — only
+                        indirectly, via the Blackboard, and only when the Controller schedules them.</div>
+
+                    <span class="subhead" style="margin-top:20px;">Quality properties</span>
+                    <table class="quality-table">
+                        <tr>
+                            <th>Quality</th>
+                            <th>Why</th>
+                        </tr>
+                        <tr>
+                            <td>Modifiability</td>
+                            <td>Agents are compartmentalized/independent — easy to add or remove an agent (e.g. a new
+                                <code>SportsSchedule</code> agent) without touching the others.</td>
+                        </tr>
+                        <tr>
+                            <td>Reusability</td>
+                            <td>Specialized agents can be reused elsewhere — e.g. <code>StudentHistory</code> reused in
+                                a graduation checker.</td>
+                        </tr>
+                        <tr>
+                            <td>Maintainability</td>
+                            <td>Separation of concerns means a bug in one agent (e.g. <code>CourseOfferings</code>) can
+                                be fixed without touching <code>WorkSchedule</code>.</td>
+                        </tr>
+                    </table>
+                    <div class="example-strip" style="margin-top:14px;"><b>Used in:</b> speech recognition, image
+                        recognition, security systems, business resource management.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- DATA FLOW OVERVIEW -->
+        <section id="data-flow">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 03 — DATA FLOW SYSTEMS, ZOOMED IN</div>
+                    <h2 class="sec-title">Two roles again — but this time in a chain</h2>
+                </div>
+                <div class="qa-deep">
+                    <p class="qa-def">Decomposed around transporting and transforming data along the way to meet
+                        application-specific needs.</p>
+                    <div class="two-col">
+                        <div>
+                            <span class="subhead">Worker components</span>
+                            <p style="color:var(--ink-dim); font-size:0.9rem;">Abstract the transformations/processing
+                                before forwarding a data stream: encryption/decryption, compression/decompression,
+                                changing format (binary → XML), enhancing/modifying/storing data.</p>
+                        </div>
+                        <div>
+                            <span class="subhead">Transport components</span>
+                            <p style="color:var(--ink-dim); font-size:0.9rem;">Abstract the management and control of
+                                the data transport mechanisms — how the data physically moves between workers.</p>
+                        </div>
+                    </div>
+                    <div class="example-strip"><b>The canonical pattern for this family:</b> Pipes-and-Filters — covered
+                        next.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PIPES AND FILTERS -->
+        <section id="pipes-filters">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 04 — PIPES-AND-FILTERS PATTERN</div>
+                    <h2 class="sec-title">A chain where each link transforms the data</h2>
+                </div>
+
+                <div class="qa-deep">
+                    <div class="qa-deep-head">
+                        <h3>Pipes-and-Filters</h3><span class="qa-tag">sequential transformation</span>
+                    </div>
+
+                    <div class="mnemonic">
+                        <div class="icon">🚰</div>
+                        <div>
+                            <div class="label">Four components</div>
+                            <div class="phrase">"Source Feeds Pipes to a Sink"</div>
+                            <div class="decode"><b>Data Source</b> produces input → <b>Filters</b> process/transform it
+                                → <b>Pipes</b> carry data between filters → <b>Data Sink</b> is the final destination.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flow-diagram">
+                        <div class="flow-node accent">Data Source</div>
+                        <div class="flow-arrow">→</div>
+                        <div class="flow-node">Filter 1</div>
+                        <div class="flow-arrow">→</div>
+                        <div class="flow-node">Filter 2</div>
+                        <div class="flow-arrow">→</div>
+                        <div class="flow-node">Filter 3</div>
+                        <div class="flow-arrow">→</div>
+                        <div class="flow-node accent">Data Sink</div>
+                    </div>
+                    <div class="rule-box"><b>Careful:</b> the box-and-line diagram is only an abstraction — real pipes
+                        and filters are more complex mechanisms than plain boxes and arrows suggest.</div>
+
+                    <span class="subhead" style="margin-top:20px;">Worked example 1 — a language processor
+                        (compiler)</span>
+                    <table class="info-table">
+                        <tr>
+                            <td class="key">Lexical Analyzer</td>
+                            <td>Breaks source code into tokens. E.g. <code>int x = 5;</code> → tokens <code>int</code>,
+                                <code>x</code>, <code>=</code>, <code>5</code>, <code>;</code></td>
+                        </tr>
+                        <tr>
+                            <td class="key">Parser</td>
+                            <td>Builds a parse tree from the tokens representing grammatical structure.</td>
+                        </tr>
+                        <tr>
+                            <td class="key">Code Generator</td>
+                            <td>Translates the parse tree into machine code / an intermediate representation.</td>
+                        </tr>
+                        <tr>
+                            <td class="key">Optimizer</td>
+                            <td>Makes the code faster / leaner — e.g. merges two memory operations into one instruction.
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="key">Interpreter</td>
+                            <td>(Alternative to compiling) executes the code directly from its high-level or
+                                intermediate form, without producing machine code.</td>
+                        </tr>
+                    </table>
+                    <div class="example-strip"><b>Nice detail:</b> filters are reusable components — the same Lexical
+                        Analyzer, Parser, and Optimizer can be reused whether you're building a compiler or an
+                        interpreter; just swap the last filter.</div>
+
+                    <span class="subhead" style="margin-top:20px;">Worked example 2 — face recognition from video</span>
+                    <div class="flow-diagram">
+                        <div class="flow-node">YouTube Manager</div>
+                        <div class="flow-arrow">→</div>
+                        <div class="flow-node">Face Detection</div>
+                        <div class="flow-arrow">→</div>
+                        <div class="flow-node">Face Recognition</div>
+                        <div class="flow-arrow">→</div>
+                        <div class="flow-node accent">Identity Manager</div>
+                    </div>
+                    <p style="color:var(--ink-dim); font-size:0.88rem;">Each stage transforms the data into something
+                        more specific: raw video → detected faces → recognized identities → an identity report. In one
+                        real implementation, the "pipe" between filters is literally <b>.NET's
+                            <code>FileSystemWatcher</code></b> — when a filter writes a file, the next filter is
+                        notified and picks it up.</p>
+
+                    <span class="subhead" style="margin-top:20px;">Quality properties</span>
+                    <table class="quality-table">
+                        <tr>
+                            <th>Quality</th>
+                            <th>Why</th>
+                        </tr>
+                        <tr>
+                            <td>Extensibility</td>
+                            <td>New filters (e.g. a spam filter) drop in easily.</td>
+                        </tr>
+                        <tr>
+                            <td>Efficiency</td>
+                            <td>Filters connected in parallel can run concurrently, reducing latency.</td>
+                        </tr>
+                        <tr>
+                            <td>Reusability</td>
+                            <td>Compartmentalized pipes and filters can be reused as-is in other systems.</td>
+                        </tr>
+                        <tr>
+                            <td>Modifiability</td>
+                            <td>Filters are independent — easy to add, remove, or swap.</td>
+                        </tr>
+                        <tr>
+                            <td>Security</td>
+                            <td>Security filters can be injected at any point in the data flow.</td>
+                        </tr>
+                        <tr>
+                            <td>Maintainability</td>
+                            <td>Independent filters mean maintaining one doesn't disturb the others.</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- DISTRIBUTED OVERVIEW -->
+        <section id="distributed">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 05 — DISTRIBUTED SYSTEMS, ZOOMED IN</div>
+                    <h2 class="sec-title">Two shapes: hub-and-spoke, or all-equal peers</h2>
+                </div>
+                <div class="qa-deep">
+                    <p class="qa-def">Decomposed into multiple processes that (typically) collaborate through a network.
+                    </p>
+                    <div class="vs-grid">
+                        <div class="vs-card">
+                            <h5>Client-Server</h5>
+                            <ul>
+                                <li>One or more processes work on behalf of client users</li>
+                                <li>They bridge to a remote server that performs delegated work</li>
+                                <li>Example: a web browser talking to a web server</li>
+                            </ul>
+                        </div>
+                        <div class="vs-card">
+                            <h5>Peer-to-Peer</h5>
+                            <ul>
+                                <li>Peer nodes with similar capabilities</li>
+                                <li>Collaborate together, no central server</li>
+                                <li>Example: music/file-sharing apps like BitTorrent</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="rule-box"><b>Don't just look for multiple machines:</b> with multi-core processors, a
+                        distributed architecture can also apply <i>within a single physical node</i> that has
+                        multiprocessor capability — distribution can be across many computers, or across many cores in
+                        one computer.</div>
+                    <div class="example-strip"><b>Common architectural patterns for distributed systems:</b>
+                        Client-Server and Broker (both covered below). Real-world examples: internet systems, web
+                        services, file/music-sharing systems, high-performance systems.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CLIENT SERVER -->
+        <section id="client-server">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 06 — CLIENT-SERVER PATTERN</div>
+                    <h2 class="sec-title">Many independent clients, one server</h2>
+                </div>
+                <div class="qa-deep">
+                    <div class="qa-deep-head">
+                        <h3>Client-Server</h3><span class="qa-tag">direct, tightly coupled</span>
+                    </div>
+                    <p class="qa-def"><b>Server:</b> a program or device providing functionality to clients.
+                        <b>Client:</b> hardware/software that accesses a service made available by a server. Multiple
+                        clients talk to the server, but clients are independent — they never talk to each other.</p>
+
+                    <div class="flow-diagram">
+                        <div class="flow-node">Client</div>
+                        <div class="flow-arrow">— Request →</div>
+                        <div class="flow-node accent">Server</div>
+                        <div class="flow-arrow">← Response —</div>
+                        <div class="flow-node">Client</div>
+                    </div>
+
+                    <div class="example-strip"><b>Deployment view:</b> a PC Node runs <code>pc_browser.exe</code>, a
+                        Mobile Node runs <code>mp_browser.exe</code>, both send <code>HTTP</code> requests to a Server
+                        Node running <code>web_server.exe</code>, which responds with processed data. A deployment
+                        diagram maps these <i>artifacts</i> (programs) onto <i>nodes</i> (hardware) — different from a
+                        component diagram, which maps software components and their dependencies, not hardware.</div>
+
+                    <span class="subhead" style="margin-top:20px;">Quality properties</span>
+                    <table class="quality-table">
+                        <tr>
+                            <th>Quality</th>
+                            <th>Why</th>
+                        </tr>
+                        <tr>
+                            <td>Interoperability</td>
+                            <td>Clients on different platforms can interoperate with servers on different platforms.
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Modifiability</td>
+                            <td>Server changes are centralized and quickly distributed to many clients.</td>
+                        </tr>
+                        <tr>
+                            <td>Availability</td>
+                            <td>Multiple backup server nodes can be connected to increase availability.</td>
+                        </tr>
+                        <tr>
+                            <td>Reusability</td>
+                            <td>Separating server from clients lets services/data be reused across applications.</td>
+                        </tr>
+                    </table>
+
+                    <div class="rule-box"><b>The catch:</b> clients are <b>tightly coupled</b> with servers — they must
+                        know the server's exact address/protocol, and server changes force client updates. This gets
+                        messy fast when services live on multiple servers at different locations. That's exactly the
+                        problem the <b>Broker</b> pattern was invented to solve.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- BROKER -->
+        <section id="broker">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 07 — BROKER PATTERN</div>
+                    <h2 class="sec-title">A mediator so clients never need to know the server</h2>
+                </div>
+                <div class="qa-deep">
+                    <div class="qa-deep-head">
+                        <h3>Broker</h3><span class="qa-tag">indirect, loosely coupled</span>
+                    </div>
+                    <p class="qa-def">The broker (a mediator/middleware) coordinates communication between clients and
+                        servers — forwarding requests, transmitting results and exceptions — so one client can
+                        transparently access the services of <b>multiple</b> servers.</p>
+
+                    <div class="mnemonic">
+                        <div class="icon">🧩</div>
+                        <div>
+                            <div class="label">Six roles, one hook</div>
+                            <div class="phrase">"Careful Clients Book Special Server Bridges"</div>
+                            <div class="decode"><b>C</b>lient → <b>C</b>lientProxy → <b>B</b>roker → <b>S</b>erverProxy
+                                → <b>S</b>erver, plus an optional <b>B</b>ridge for cross-broker interoperation.</div>
+                        </div>
+                    </div>
+
+                    <div class="flow-diagram">
+                        <div class="flow-node">Client</div>
+                        <div class="flow-arrow">→</div>
+                        <div class="flow-node">ClientProxy</div>
+                        <div class="flow-arrow">→</div>
+                        <div class="flow-node accent">Broker</div>
+                        <div class="flow-arrow">→</div>
+                        <div class="flow-node">ServerProxy</div>
+                        <div class="flow-arrow">→</div>
+                        <div class="flow-node">Server</div>
+                    </div>
+
+                    <table class="info-table">
+                        <tr>
+                            <th>Component</th>
+                            <th>Job</th>
+                        </tr>
+                        <tr>
+                            <td class="key">Client</td>
+                            <td>Application that uses services from one or more servers.</td>
+                        </tr>
+                        <tr>
+                            <td class="key">ClientProxy</td>
+                            <td>Makes remote components look local to the Client; decides whether a request can be
+                                resolved locally or must go to the Broker.</td>
+                        </tr>
+                        <tr>
+                            <td class="key">Broker</td>
+                            <td>Mediates between client and server components — the mediator everyone routes through.
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="key">ServerProxy</td>
+                            <td>Makes remote components look local to the Server.</td>
+                        </tr>
+                        <tr>
+                            <td class="key">Server</td>
+                            <td>Provides services to clients; may itself act as a client to another Broker.</td>
+                        </tr>
+                        <tr>
+                            <td class="key">Bridge</td>
+                            <td>Optional — encapsulates interoperation between different Brokers.</td>
+                        </tr>
+                    </table>
+
+                    <span class="subhead" style="margin-top:20px;">Client-Server vs. Broker, head to head</span>
+                    <div class="vs-grid">
+                        <div class="vs-card">
+                            <h5>Client-Server</h5>
+                            <ul>
+                                <li>Direct communication, client ↔ server</li>
+                                <li>Client must know the server's exact address/protocol</li>
+                                <li>Tightly coupled — server changes force client updates</li>
+                                <li>Simpler, but doesn't scale well to multiple servers</li>
+                            </ul>
+                        </div>
+                        <div class="vs-card">
+                            <h5>Broker</h5>
+                            <ul>
+                                <li>Indirect communication, through a middleware broker</li>
+                                <li>Clients only need to know the broker, not the server</li>
+                                <li>Loosely coupled — server changes don't touch clients</li>
+                                <li>Scales to multiple servers/services transparently</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="rule-box"><b>In short:</b> Client-Server = direct &amp; tightly coupled. Broker =
+                        indirect &amp; loosely coupled via a broker.</div>
+
+                    <span class="subhead" style="margin-top:20px;">Quality properties</span>
+                    <table class="quality-table">
+                        <tr>
+                            <th>Quality</th>
+                            <th>Why</th>
+                        </tr>
+                        <tr>
+                            <td>Interoperability</td>
+                            <td>Clients on different platforms interoperate with servers on different platforms — and
+                                transparently with <i>multiple</i> servers.</td>
+                        </tr>
+                        <tr>
+                            <td>Modifiability</td>
+                            <td>Centralized server changes distribute quickly to many clients.</td>
+                        </tr>
+                        <tr>
+                            <td>Portability</td>
+                            <td>Porting the broker to new platforms makes services easily reachable by new clients.</td>
+                        </tr>
+                        <tr>
+                            <td>Reusability</td>
+                            <td>Brokers abstract away communication calls, so complex services can be reused across
+                                applications.</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- CHEAT SHEET -->
+        <section id="cheat">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 08 — CHEAT SHEET</div>
+                    <h2 class="sec-title">All four patterns, side by side</h2>
+                </div>
+                <table class="cheat-table">
+                    <tr>
+                        <th>Pattern</th>
+                        <th>Family</th>
+                        <th>Core roles</th>
+                        <th>Coupling</th>
+                        <th>Signature quality win</th>
+                    </tr>
+                    <tr>
+                        <td>Blackboard</td>
+                        <td>Data-Centered</td>
+                        <td>Blackboard, Agents, Controller</td>
+                        <td>Loose — agents never talk directly</td>
+                        <td>Modifiability (swap agents freely)</td>
+                    </tr>
+                    <tr>
+                        <td>Pipes-and-Filters</td>
+                        <td>Data Flow</td>
+                        <td>Source, Filter, Pipe, Sink</td>
+                        <td>Loose — each filter only knows its pipe</td>
+                        <td>Extensibility &amp; parallel efficiency</td>
+                    </tr>
+                    <tr>
+                        <td>Client-Server</td>
+                        <td>Distributed</td>
+                        <td>Client, Server</td>
+                        <td>Tight — client must know the server</td>
+                        <td>Availability (backup server nodes)</td>
+                    </tr>
+                    <tr>
+                        <td>Broker</td>
+                        <td>Distributed</td>
+                        <td>Client, ClientProxy, Broker, ServerProxy, Server, Bridge</td>
+                        <td>Loose — client only knows the broker</td>
+                        <td>Interoperability across multiple servers</td>
+                    </tr>
+                </table>
+                <div class="example-strip" style="margin-top:16px;"><b>Fastest way to pick the right answer on an
+                        exam:</b> ask "does this system revolve around one shared data store (Blackboard), a sequence of
+                    transformations (Pipes-and-Filters), one client talking to one known server (Client-Server), or one
+                    client transparently reaching many servers (Broker)?"</div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <div>SE322 · Software Design and Architecture · Chapter 04, Lecture 02 — Blackboard, Pipes-and-Filters,
+            Client-Server &amp; Broker</div>
+        <div class="toc-hint">Built as a study aid from lecture slides — always verify against your instructor's exact
+            wording before an exam.</div>
+        <div class="made">Made by <span>Shoug Alomran</span></div>
+    </footer>
+
+    <script>
+        const root = document.documentElement;
+        const sw = document.getElementById('switch');
+        const label = document.getElementById('theme-label');
+
+        function applyTheme(t) {
+            root.setAttribute('data-theme', t);
+            label.textContent = t.toUpperCase();
+        }
+
+        const prefersLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
+        applyTheme(prefersLight ? 'light' : 'dark');
+
+        sw.addEventListener('click', () => {
+            const current = root.getAttribute('data-theme');
+            applyTheme(current === 'dark' ? 'light' : 'dark');
+        });
+    </script>
+
+</body>
+
+</html>

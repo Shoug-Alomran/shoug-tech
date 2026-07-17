@@ -1,0 +1,1328 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ch.5 — Principles of Detailed Design | Study Blueprint</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg: #081a2e;
+            --bg-elev: #0e2440;
+            --bg-elev-2: #122b4c;
+            --grid: rgba(125, 211, 252, 0.075);
+            --grid-strong: rgba(125, 211, 252, 0.16);
+            --ink: #e9f2ff;
+            --ink-dim: #93a9c7;
+            --ink-faint: #5f7896;
+            --cyan: #7dd3fc;
+            --cyan-strong: #38bdf8;
+            --amber: #fbbf24;
+            --amber-dim: #a8791c;
+            --rose: #fb7185;
+            --border: rgba(125, 211, 252, 0.28);
+            --border-soft: rgba(125, 211, 252, 0.14);
+            --shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
+            --radius: 14px;
+            --font-display: 'Space Grotesk', sans-serif;
+            --font-body: 'IBM Plex Sans', sans-serif;
+            --font-mono: 'IBM Plex Mono', monospace;
+        }
+
+        html[data-theme="light"] {
+            --bg: #eef2f7;
+            --bg-elev: #ffffff;
+            --bg-elev-2: #e4ecf5;
+            --grid: rgba(3, 105, 161, 0.07);
+            --grid-strong: rgba(3, 105, 161, 0.14);
+            --ink: #0a1929;
+            --ink-dim: #3d5674;
+            --ink-faint: #7488a3;
+            --cyan: #0369a1;
+            --cyan-strong: #075985;
+            --amber: #b45309;
+            --amber-dim: #92400e;
+            --rose: #be123c;
+            --border: rgba(3, 105, 161, 0.3);
+            --border-soft: rgba(3, 105, 161, 0.15);
+            --shadow: 0 20px 40px rgba(10, 25, 41, 0.12);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            background:
+                radial-gradient(circle at 1px 1px, var(--grid-strong) 1px, transparent 1px) 0 0/48px 48px,
+                linear-gradient(var(--bg), var(--bg));
+            color: var(--ink);
+            font-family: var(--font-body);
+            font-size: clamp(15px, 0.92vw + 10px, 18px);
+            line-height: 1.6;
+            transition: background-color .35s ease, color .35s ease;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        ::selection {
+            background: var(--amber);
+            color: #0a1929;
+        }
+
+        .wrap {
+            max-width: 1180px;
+            margin: 0 auto;
+            padding: 0 clamp(16px, 4vw, 56px);
+        }
+
+        /* ---------- TOPBAR ---------- */
+        .topbar {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            backdrop-filter: blur(10px);
+            background: color-mix(in srgb, var(--bg) 82%, transparent);
+            border-bottom: 1px solid var(--border-soft);
+        }
+
+        .topbar-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px clamp(16px, 4vw, 56px);
+            max-width: 1180px;
+            margin: 0 auto;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: var(--font-mono);
+            font-size: .8rem;
+            letter-spacing: .08em;
+            color: var(--ink-dim);
+            text-transform: uppercase;
+        }
+
+        .brand .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--amber);
+            box-shadow: 0 0 10px var(--amber);
+        }
+
+        .toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            padding: 4px;
+            background: var(--bg-elev);
+            cursor: pointer;
+            font-family: var(--font-mono);
+            font-size: .72rem;
+        }
+
+        .toggle button {
+            border: none;
+            background: transparent;
+            color: var(--ink-dim);
+            padding: 6px 12px;
+            border-radius: 999px;
+            cursor: pointer;
+            font-family: var(--font-mono);
+            font-size: .72rem;
+            letter-spacing: .05em;
+            transition: all .25s ease;
+        }
+
+        .toggle button.active {
+            background: var(--cyan);
+            color: var(--bg);
+            font-weight: 600;
+        }
+
+        html[data-theme="light"] .toggle button.active {
+            color: #fff;
+        }
+
+        .progress-track {
+            height: 2px;
+            background: var(--border-soft);
+        }
+
+        .progress-bar {
+            height: 2px;
+            width: 0%;
+            background: linear-gradient(90deg, var(--cyan), var(--amber));
+            transition: width .1s linear;
+        }
+
+        /* ---------- HERO ---------- */
+        .hero {
+            padding: clamp(48px, 8vw, 96px) 0 clamp(32px, 6vw, 64px);
+            position: relative;
+        }
+
+        .eyebrow {
+            font-family: var(--font-mono);
+            font-size: .78rem;
+            letter-spacing: .16em;
+            color: var(--amber);
+            text-transform: uppercase;
+            margin: 0 0 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .eyebrow::before {
+            content: "§";
+            font-size: 1rem;
+        }
+
+        h1.title {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: clamp(2.1rem, 5vw, 3.6rem);
+            line-height: 1.08;
+            margin: 0 0 14px;
+            letter-spacing: -0.01em;
+        }
+
+        h1.title span {
+            color: var(--cyan);
+        }
+
+        .subtitle {
+            color: var(--ink-dim);
+            font-size: clamp(1rem, 1.3vw, 1.2rem);
+            max-width: 640px;
+            margin: 0 0 28px;
+        }
+
+        .hero-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px 28px;
+            font-family: var(--font-mono);
+            font-size: .78rem;
+            color: var(--ink-faint);
+            border-top: 1px dashed var(--border);
+            padding-top: 18px;
+        }
+
+        .hero-meta b {
+            color: var(--ink-dim);
+            font-weight: 600;
+        }
+
+        /* ---------- SECTION SHELL ---------- */
+        section {
+            padding: clamp(40px, 6vw, 72px) 0;
+            border-top: 1px solid var(--border-soft);
+        }
+
+        .sec-head {
+            display: flex;
+            align-items: baseline;
+            gap: 16px;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+        }
+
+        .sec-num {
+            font-family: var(--font-mono);
+            color: var(--amber);
+            font-size: .85rem;
+            border: 1px solid var(--amber-dim);
+            padding: 2px 8px;
+            border-radius: 6px;
+        }
+
+        h2 {
+            font-family: var(--font-display);
+            font-weight: 600;
+            font-size: clamp(1.5rem, 2.6vw, 2.1rem);
+            margin: 0;
+        }
+
+        .sec-sub {
+            color: var(--ink-dim);
+            max-width: 760px;
+            margin: 14px 0 34px;
+        }
+
+        .mnemonic {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-family: var(--font-mono);
+            font-size: .85rem;
+            background: var(--bg-elev);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 10px 16px;
+            margin: 10px 0 30px;
+            color: var(--ink-dim);
+        }
+
+        .mnemonic b {
+            color: var(--amber);
+            font-weight: 600;
+        }
+
+        /* ---------- FUNNEL DIAGRAM ---------- */
+        .funnel-wrap {
+            display: grid;
+            grid-template-columns: 1.1fr 1fr;
+            gap: 36px;
+            align-items: center;
+        }
+
+        @media (max-width:820px) {
+            .funnel-wrap {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .funnel-card {
+            background: var(--bg-elev);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 22px;
+            box-shadow: var(--shadow);
+        }
+
+        .stage-row {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 12px;
+            border-radius: 10px;
+            cursor: default;
+            transition: background .25s ease;
+        }
+
+        .stage-row:hover {
+            background: var(--bg-elev-2);
+        }
+
+        .stage-badge {
+            font-family: var(--font-mono);
+            font-weight: 600;
+            font-size: .95rem;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1.5px solid var(--cyan);
+            color: var(--cyan);
+            flex-shrink: 0;
+        }
+
+        .stage-row.here .stage-badge {
+            background: var(--amber);
+            border-color: var(--amber);
+            color: var(--bg);
+        }
+
+        .stage-text b {
+            display: block;
+            font-family: var(--font-display);
+            font-size: 1.02rem;
+        }
+
+        .stage-text span {
+            color: var(--ink-dim);
+            font-size: .9rem;
+        }
+
+        .stage-arrow {
+            text-align: center;
+            color: var(--ink-faint);
+            font-family: var(--font-mono);
+        }
+
+        .we-are-tag {
+            display: inline-block;
+            margin-top: 2px;
+            font-family: var(--font-mono);
+            font-size: .68rem;
+            background: var(--amber);
+            color: var(--bg);
+            padding: 2px 8px;
+            border-radius: 5px;
+            letter-spacing: .06em;
+        }
+
+        /* ---------- DEFINITION / ANALOGY CARDS ---------- */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 22px;
+        }
+
+        @media (max-width:760px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: var(--bg-elev);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 24px;
+            box-shadow: var(--shadow);
+        }
+
+        .card h3 {
+            font-family: var(--font-display);
+            margin: 0 0 10px;
+            font-size: 1.15rem;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .card p {
+            color: var(--ink-dim);
+            margin: 0 0 10px;
+            font-size: .95rem;
+        }
+
+        .card .tag {
+            display: inline-block;
+            font-family: var(--font-mono);
+            font-size: .7rem;
+            letter-spacing: .05em;
+            color: var(--cyan);
+            border: 1px solid var(--border);
+            padding: 2px 8px;
+            border-radius: 6px;
+            margin-bottom: 12px;
+        }
+
+        .blueprint-line {
+            border: none;
+            border-top: 1px dashed var(--border);
+            margin: 14px 0;
+        }
+
+        /* ---------- BIDIRECTIONAL DIAGRAM ---------- */
+        .bidir {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            font-family: var(--font-mono);
+            font-size: .82rem;
+            margin-top: 14px;
+            flex-wrap: wrap;
+        }
+
+        .bidir .node {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 10px 14px;
+            text-align: center;
+            background: var(--bg-elev-2);
+            min-width: 110px;
+        }
+
+        .bidir .arrows {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            color: var(--ink-faint);
+            font-size: .75rem;
+            text-align: center;
+        }
+
+        /* ---------- TASK ACCORDION (UCEDM) ---------- */
+        .task-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .task {
+            background: var(--bg-elev);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+        }
+
+        .task-head {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 18px 20px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .task-letter {
+            font-family: var(--font-mono);
+            font-weight: 700;
+            font-size: 1.15rem;
+            color: var(--bg);
+            background: var(--cyan);
+            width: 40px;
+            height: 40px;
+            border-radius: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .task-head b {
+            font-family: var(--font-display);
+            font-size: 1.05rem;
+        }
+
+        .task-head span.sub {
+            display: block;
+            color: var(--ink-dim);
+            font-size: .85rem;
+            font-weight: 400;
+        }
+
+        .task-chevron {
+            margin-left: auto;
+            color: var(--ink-faint);
+            transition: transform .3s ease;
+            font-family: var(--font-mono);
+        }
+
+        .task.open .task-chevron {
+            transform: rotate(45deg);
+            color: var(--amber);
+        }
+
+        .task-body {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height .35s ease;
+            padding: 0 20px;
+            color: var(--ink-dim);
+            font-size: .92rem;
+        }
+
+        .task.open .task-body {
+            padding: 0 20px 22px;
+        }
+
+        .task-body ul {
+            margin: 6px 0 0;
+            padding-left: 20px;
+        }
+
+        .task-body li {
+            margin-bottom: 6px;
+        }
+
+        .example-box {
+            margin-top: 12px;
+            background: var(--bg-elev-2);
+            border-left: 3px solid var(--amber);
+            padding: 10px 14px;
+            border-radius: 0 8px 8px 0;
+            font-size: .88rem;
+        }
+
+        .example-box b {
+            color: var(--amber);
+            font-family: var(--font-mono);
+            font-size: .75rem;
+            letter-spacing: .04em;
+        }
+
+        /* ---------- SDD TOC ---------- */
+        .sdd-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width:760px) {
+            .sdd-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .sdd-list {
+            font-family: var(--font-mono);
+            font-size: .85rem;
+            color: var(--ink-dim);
+            line-height: 2;
+        }
+
+        .sdd-list .lvl1 {
+            color: var(--ink);
+            font-weight: 600;
+        }
+
+        .sdd-list .lvl2 {
+            padding-left: 18px;
+        }
+
+        .sdd-list .lvl3 {
+            padding-left: 36px;
+            color: var(--ink-faint);
+        }
+
+        /* ---------- FLASHCARDS ---------- */
+        .flash-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 18px;
+        }
+
+        .flash {
+            perspective: 1200px;
+            height: 150px;
+            cursor: pointer;
+        }
+
+        .flash-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform .5s;
+            transform-style: preserve-3d;
+        }
+
+        .flash.flipped .flash-inner {
+            transform: rotateY(180deg);
+        }
+
+        .flash-face {
+            position: absolute;
+            inset: 0;
+            backface-visibility: hidden;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-size: .92rem;
+        }
+
+        .flash-front {
+            background: var(--bg-elev);
+            font-family: var(--font-display);
+            font-weight: 600;
+            color: var(--cyan);
+        }
+
+        .flash-back {
+            background: var(--bg-elev-2);
+            transform: rotateY(180deg);
+            color: var(--ink-dim);
+            font-size: .85rem;
+            padding: 14px;
+        }
+
+        .flash-hint {
+            position: absolute;
+            bottom: 8px;
+            right: 12px;
+            font-family: var(--font-mono);
+            font-size: .62rem;
+            color: var(--ink-faint);
+        }
+
+        /* ---------- SYNC CALLOUT ---------- */
+        .callout {
+            display: flex;
+            gap: 18px;
+            background: var(--bg-elev);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 24px;
+            align-items: flex-start;
+            box-shadow: var(--shadow);
+        }
+
+        .callout .icon {
+            font-family: var(--font-mono);
+            font-size: 1.4rem;
+            color: var(--rose);
+            border: 1.5px solid var(--rose);
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        /* ---------- QUIZ ---------- */
+        .quiz-item {
+            background: var(--bg-elev);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 20px 22px;
+            margin-bottom: 16px;
+        }
+
+        .quiz-q {
+            font-family: var(--font-display);
+            font-weight: 600;
+            margin-bottom: 12px;
+            font-size: 1.02rem;
+        }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .quiz-option {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 10px 14px;
+            cursor: pointer;
+            font-size: .9rem;
+            transition: all .2s ease;
+        }
+
+        .quiz-option:hover {
+            border-color: var(--cyan);
+        }
+
+        .quiz-option.correct {
+            border-color: #22c55e;
+            background: color-mix(in srgb, #22c55e 12%, var(--bg-elev));
+        }
+
+        .quiz-option.wrong {
+            border-color: var(--rose);
+            background: color-mix(in srgb, var(--rose) 12%, var(--bg-elev));
+        }
+
+        .reveal-btn {
+            font-family: var(--font-mono);
+            font-size: .78rem;
+            background: transparent;
+            color: var(--cyan);
+            border: 1px solid var(--border);
+            padding: 8px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .short-answer {
+            display: none;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px dashed var(--border);
+            color: var(--ink-dim);
+            font-size: .9rem;
+        }
+
+        .short-answer.show {
+            display: block;
+        }
+
+        .short-answer b {
+            color: var(--amber);
+        }
+
+        /* ---------- SUMMARY / RECAP ---------- */
+        .recap-list {
+            columns: 2;
+            column-gap: 32px;
+        }
+
+        @media (max-width:700px) {
+            .recap-list {
+                columns: 1;
+            }
+        }
+
+        .recap-list li {
+            break-inside: avoid;
+            margin-bottom: 12px;
+            color: var(--ink-dim);
+            font-size: .92rem;
+        }
+
+        .recap-list li b {
+            color: var(--ink);
+        }
+
+        footer {
+            text-align: center;
+            padding: 48px 0 60px;
+            font-family: var(--font-mono);
+            font-size: .8rem;
+            color: var(--ink-faint);
+            border-top: 1px solid var(--border-soft);
+        }
+
+        footer .made {
+            margin-top: 10px;
+            letter-spacing: .08em;
+            color: var(--cyan);
+            font-size: .75rem;
+        }
+
+        a.jump {
+            color: var(--cyan);
+            text-decoration: none;
+            border-bottom: 1px dotted var(--border);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="topbar">
+        <div class="topbar-inner">
+            <div class="brand"><span class="dot"></span> CH.05 · DETAILED DESIGN</div>
+            <div class="toggle" id="themeToggle">
+                <button data-theme="dark" class="active">DARK</button>
+                <button data-theme="light">LIGHT</button>
+            </div>
+        </div>
+        <div class="progress-track">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+    </div>
+
+    <div class="wrap">
+
+        <section class="hero" style="border-top:none;">
+            <p class="eyebrow">Software Design &amp; Architecture</p>
+            <h1 class="title">Principles of <span>Detailed Design</span></h1>
+            <p class="subtitle">The bridge between architecture and code — where components stop being boxes on a
+                diagram and become blueprints precise enough to build from.</p>
+            <div class="hero-meta">
+                <span><b>Chapter</b> 05 · Lecture 01</span>
+                <span><b>Comes after</b> Requirements + Architecture</span>
+                <span><b>Leads to</b> Software Construction</span>
+                <span><b>Next chapter</b> Design Patterns</span>
+            </div>
+        </section>
+
+        <!-- 1. BIG PICTURE -->
+        <section id="s1">
+            <div class="sec-head"><span class="sec-num">01</span>
+                <h2>The Big Picture — Where Detailed Design Fits</h2>
+            </div>
+            <p class="sec-sub">Software design isn't one step, it's a pipeline that gets more concrete at every stage.
+                Detailed Design is the third stop.</p>
+
+            <div class="mnemonic">🧠 Mnemonic — <b>R.A.D.C.</b> → "<b>R</b>eal <b>A</b>rchitects <b>D</b>raft
+                <b>C</b>arefully" — Requirements → Architecture → Detailed Design → Construction.</div>
+
+            <div class="funnel-wrap">
+                <div class="funnel-card">
+                    <div class="stage-row">
+                        <div class="stage-badge">R</div>
+                        <div class="stage-text"><b>Requirements</b><span>What the system must do. Gathered &amp;
+                                documented.</span></div>
+                    </div>
+                    <div class="stage-arrow">↓</div>
+                    <div class="stage-row">
+                        <div class="stage-badge">A</div>
+                        <div class="stage-text"><b>Architecture</b><span>Macro-design — overall structure &amp;
+                                component interactions.</span></div>
+                    </div>
+                    <div class="stage-arrow">↓</div>
+                    <div class="stage-row here">
+                        <div class="stage-badge">D</div>
+                        <div class="stage-text"><b>Detailed Design</b><span>Micro-design — refine each component's
+                                internals &amp; interfaces.<br><span class="we-are-tag">WE ARE HERE</span></span></div>
+                    </div>
+                    <div class="stage-arrow">↓</div>
+                    <div class="stage-row">
+                        <div class="stage-badge">C</div>
+                        <div class="stage-text"><b>Construction</b><span>Actual coding. The goal we're eventually
+                                building toward.</span></div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>🏗️ Why the shift matters</h3>
+                    <p>Architecture asks <i>"what are the big pieces and how do they talk?"</i> Detailed Design asks
+                        <i>"exactly how does each piece work inside?"</i></p>
+                    <hr class="blueprint-line">
+                    <p><b style="color:var(--ink)">Worked example — banking app:</b></p>
+                    <ul style="color:var(--ink-dim); font-size:.9rem; padding-left:20px; margin:0;">
+                        <li><b>Requirements:</b> users must check balances / transfer money</li>
+                        <li><b>Architecture:</b> client–server model, database, app, security layer</li>
+                        <li><b>Detailed Design:</b> for login → specify password validation, authentication, session
+                            management</li>
+                        <li><b>Construction:</b> implement login, account management, transfer features</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. WHAT IS DETAILED DESIGN -->
+        <section id="s2">
+            <div class="sec-head"><span class="sec-num">02</span>
+                <h2>What Is Detailed Design?</h2>
+            </div>
+            <p class="sec-sub">One sentence to memorize: <b style="color:var(--ink)">Detailed design refines
+                    architecture until it's complete enough to implement</b> — it defines each component's <b
+                    style="color:var(--ink)">internal structure</b> and <b style="color:var(--ink)">behavior</b>.</p>
+
+            <div class="grid-2">
+                <div class="card">
+                    <span class="tag">BLUEPRINT ANALOGY</span>
+                    <h3>📐 Detailed Design = Blueprints</h3>
+                    <p>You don't write code yet — you specify <i>exactly how</i> every part will work: algorithms,
+                        database schemas, interfaces, class diagrams.</p>
+                    <div class="example-box"><b>EX —</b> Login needs: password rules (min length, special chars) ·
+                        hashing + salting for auth · session timeout &amp; refresh tokens.</div>
+                </div>
+                <div class="card">
+                    <span class="tag">CONSTRUCTION ANALOGY</span>
+                    <h3>🔨 Construction = Building the House</h3>
+                    <p>Developers translate the blueprint into actual, executable code — source files and builds.</p>
+                    <div class="example-box"><b>EX —</b> Writing the real <code>validatePassword()</code> function ·
+                        implementing the auth API · coding the session module.</div>
+                </div>
+            </div>
+
+            <div class="card" style="margin-top:22px;">
+                <h3>↔️ The Designer's Mental Model — Think Both Directions</h3>
+                <p>Detailed design sits between <b style="color:var(--ink)">Requirements/Architecture</b> and <b
+                        style="color:var(--ink)">Code</b>. A good detailed designer can move either way:</p>
+                <div class="bidir">
+                    <div class="node">Requirements<br>+ Architecture</div>
+                    <div class="arrows">forward: design details until code →<br>↑<br>← backward: reverse-engineer code
+                        into design</div>
+                    <div class="node">Detailed Design</div>
+                    <div class="arrows">→<br>↓</div>
+                    <div class="node">Code</div>
+                </div>
+                <hr class="blueprint-line">
+                <p style="margin-bottom:0;"><b
+                        style="color:var(--amber); font-family:var(--font-mono); font-size:.8rem;">REVERSE
+                        ENGINEERING</b> = analyzing existing code to figure out what the system does, how it's
+                    structured, and how it maps back to the design/requirements. Needs industry-grade tools: UML
+                    modeling, code generators, compilers, version control.</p>
+            </div>
+        </section>
+
+        <!-- 3. FIVE KEY TASKS -->
+        <section id="s3">
+            <div class="sec-head"><span class="sec-num">03</span>
+                <h2>The 5 Key Tasks — U.C.E.D.M.</h2>
+            </div>
+            <p class="sec-sub">Everything a detailed designer does falls into five tasks, always roughly in this order.
+            </p>
+            <div class="mnemonic">🧠 Mnemonic — <b>U.C.E.D.M.</b> → "<b>U</b>ncle <b>C</b>hris <b>E</b>ats <b>D</b>inner
+                <b>M</b>onthly" — Understand → Create → Evaluate → Document → Manage.</div>
+
+            <div class="task-list" id="taskList">
+
+                <div class="task open">
+                    <div class="task-head" onclick="toggleTask(this)">
+                        <div class="task-letter">U</div>
+                        <div><b>Understand Architecture &amp; Requirements</b><span class="sub">Focus only on what's
+                                allocated to YOUR component</span></div>
+                        <div class="task-chevron">+</div>
+                    </div>
+                    <div class="task-body">
+                        <p>Unlike architecture (where the <i>complete</i> requirement set is evaluated), detailed design
+                            focuses on <b>requirements allocated to specific components</b>.</p>
+                        <div class="example-box"><b>EX —</b> Big components like <i>SensorManager</i>,
+                            <i>VideoManager</i>, <i>ClientManager</i> get assigned to different teams. Each team refines
+                            its own piece, adds detailed requirements (validation, performance), and preps it for
+                            coding.</div>
+                    </div>
+                </div>
+
+                <div class="task">
+                    <div class="task-head" onclick="toggleTask(this)">
+                        <div class="task-letter">C</div>
+                        <div><b>Create Detailed Designs</b><span class="sub">Structural + Behavioral design of each
+                                component</span></div>
+                        <div class="task-chevron">+</div>
+                    </div>
+                    <div class="task-body">
+                        <p>Four things get designed (mnemonic: <b style="color:var(--amber)">I.G.I.D.</b> → "Igloos Grow
+                            In Denver"):</p>
+                        <ul>
+                            <li><b>I</b>nterface Design — internal &amp; external</li>
+                            <li><b>G</b>UI Design — the graphical user interface</li>
+                            <li><b>I</b>nternal Component Design — structural &amp; behavioral</li>
+                            <li><b>D</b>ata Design — database, data dictionary</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="task">
+                    <div class="task-head" onclick="toggleTask(this)">
+                        <div class="task-letter">E</div>
+                        <div><b>Evaluate Detailed Designs</b><span class="sub">Mainly via Technical Reviews</span></div>
+                        <div class="task-chevron">+</div>
+                    </div>
+                    <div class="task-body">
+                        <p>Five rules for a good technical review:</p>
+                        <ul>
+                            <li>Send the review notice <b>early</b> — give people real time to prepare</li>
+                            <li>Include a <b>technical expert</b> + stakeholders</li>
+                            <li>Include someone from <b>QA / testing</b></li>
+                            <li>Focus on how the design meets <b>functional &amp; non-functional</b> requirements</li>
+                            <li><b>Document</b> the review — capture &amp; assign action items</li>
+                        </ul>
+                        <div class="example-box"><b>EX —</b> Reviewing an e-commerce checkout: check that it ensures
+                            secure payments (non-functional) and smooth order processing (functional).</div>
+                    </div>
+                </div>
+
+                <div class="task">
+                    <div class="task-head" onclick="toggleTask(this)">
+                        <div class="task-letter">D</div>
+                        <div><b>Document the Design</b><span class="sub">The Software Design Document (SDD) +
+                                friends</span></div>
+                        <div class="task-chevron">+</div>
+                    </div>
+                    <div class="task-body">
+                        <p>Three key documents:</p>
+                        <ul>
+                            <li><b>SDD (Software Design Document)</b> — the main design record, used by programmers,
+                                testers, maintainers, integrators</li>
+                            <li><b>Interface Control Document</b> — describes interfaces &amp; how components
+                                communicate</li>
+                            <li><b>Version Control Document</b> — what's in each release: files, scripts, executables
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="task">
+                    <div class="task-head" onclick="toggleTask(this)">
+                        <div class="task-letter">M</div>
+                        <div><b>Manage / Monitor Implementation</b><span class="sub">Keep design and code in sync</span>
+                        </div>
+                        <div class="task-chevron">+</div>
+                    </div>
+                    <div class="task-body">
+                        <p>This is about <b>synchronicity</b> — how well detailed design follows architecture, and how
+                            well code follows detailed design. See the callout below — it's a favorite exam topic.</p>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- 4. SDD STRUCTURE -->
+        <section id="s4">
+            <div class="sec-head"><span class="sec-num">04</span>
+                <h2>Inside the SDD — Sample Table of Contents</h2>
+            </div>
+            <p class="sec-sub">You don't need to memorize every line — know the <b style="color:var(--ink)">shape</b>:
+                Intro → Architecture → Detailed Design (per component) → Glossary → References.</p>
+            <div class="sdd-grid">
+                <div class="card">
+                    <div class="sdd-list">
+                        <div class="lvl1">1. Introduction</div>
+                        <div class="lvl2">1.1 Date of Issue · 1.2 Context · 1.3 Scope</div>
+                        <div class="lvl2">1.4 Authorship · 1.5 Change History · 1.6 Summary</div>
+                        <div class="lvl1">2. Software Architecture</div>
+                        <div class="lvl2">2.1 Overview · 2.2 Stakeholders · 2.3 Design Concerns</div>
+                        <div class="lvl2">2.4–2.6 Architectural Viewpoints → Design Views</div>
+                        <div class="lvl1">3. Detailed Design</div>
+                        <div class="lvl2">3.1 Overview</div>
+                        <div class="lvl3">3.2 Component 1 → Viewpoint → View</div>
+                        <div class="lvl3">3.3 Component 2 → Viewpoint → View</div>
+                        <div class="lvl3">3.4 Component n → Viewpoint → View</div>
+                        <div class="lvl1">4. Glossary &nbsp; 5. References</div>
+                    </div>
+                </div>
+                <div class="card">
+                    <h3>📖 What each part means</h3>
+                    <p><b style="color:var(--ink)">Scope:</b> high-level overview + limits of what the SDD covers.</p>
+                    <p><b style="color:var(--ink)">References:</b> all documents referenced — helps stakeholders spot
+                        inconsistencies in how a technology is used.</p>
+                    <p><b style="color:var(--ink)">Body:</b> the main section — where stakeholders understand how the
+                        software is to be constructed.</p>
+                    <p style="margin-bottom:0;"><b style="color:var(--ink)">Change history:</b> log of what was added,
+                        deleted, or changed in the SDD over time.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. SYNCHRONICITY -->
+        <section id="s5">
+            <div class="sec-head"><span class="sec-num">05</span>
+                <h2>Detailed Design Synchronicity</h2>
+            </div>
+            <div class="callout">
+                <div class="icon">⚠</div>
+                <div>
+                    <p style="margin:0 0 10px;"><b style="color:var(--ink)">Synchronicity</b> = how well detailed design
+                        adheres to architecture, and how well code adheres to detailed design.</p>
+                    <p style="margin:0 0 10px; color:var(--ink-dim);">Low synchronicity → a flaw in the process → risk
+                        of <b style="color:var(--rose)">project failure</b>. It matters most during <b
+                            style="color:var(--ink)">maintenance</b> or when <b style="color:var(--ink)">new
+                            engineers</b> join.</p>
+                    <div class="example-box" style="margin-top:8px;"><b>EX —</b> Architecture requires encrypted login,
+                        but detailed design forgets encryption and the code just stores plain passwords → synchronicity
+                        is broken.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. FLASHCARDS -->
+        <section id="s6">
+            <div class="sec-head"><span class="sec-num">06</span>
+                <h2>Quick-Fire Flashcards</h2>
+            </div>
+            <p class="sec-sub">Tap a card to flip it. Good for a 5-minute recap right before an exam.</p>
+            <div class="flash-grid" id="flashGrid"></div>
+        </section>
+
+        <!-- 7. QUIZ -->
+        <section id="s7">
+            <div class="sec-head"><span class="sec-num">07</span>
+                <h2>Practice Questions</h2>
+            </div>
+            <p class="sec-sub">Written from this chapter's content (no separate question file was uploaded, so treat
+                these as self-check practice, not official past-paper questions).</p>
+            <div id="quizContainer"></div>
+        </section>
+
+        <!-- 8. RECAP -->
+        <section id="s8">
+            <div class="sec-head"><span class="sec-num">08</span>
+                <h2>One-Screen Recap</h2>
+            </div>
+            <ul class="recap-list">
+                <li><b>Detailed design</b> = bridge between design and code, like architecture is the bridge between
+                    requirements and design.</li>
+                <li>Pipeline: <b>R.A.D.C.</b> — Requirements → Architecture → Detailed Design → Construction.</li>
+                <li>Focus during detailed design: requirements <b>allocated to your specific component</b>, not the
+                    whole system.</li>
+                <li>Designers think <b>both directions</b>: forward (design→code) and backward (reverse-engineer
+                    code→design).</li>
+                <li>5 tasks — <b>U.C.E.D.M.</b>: Understand, Create, Evaluate, Document, Manage.</li>
+                <li>Creating a design covers <b>I.G.I.D.</b>: Interface, GUI, Internal component, Data.</li>
+                <li>Evaluation is mainly via <b>Technical Reviews</b> — early notice, experts + QA, focus on
+                    requirements, document it.</li>
+                <li>Main documentation artifact: the <b>SDD</b>, plus Interface Control &amp; Version Control documents.
+                </li>
+                <li><b>Synchronicity</b> = design matches architecture, code matches design. Low synchronicity risks
+                    project failure.</li>
+            </ul>
+        </section>
+
+        <footer>
+            <div>Software Design &amp; Architecture — Chapter 05, Lecture 01 · Prince Sultan University</div>
+            <div class="made">Made by Shoug Alomran</div>
+        </footer>
+
+    </div>
+
+    <script>
+        // ---- Theme toggle ----
+        const themeButtons = document.querySelectorAll('.toggle button');
+        themeButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const theme = btn.dataset.theme;
+                document.documentElement.setAttribute('data-theme', theme);
+                themeButtons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            });
+        });
+        // respect system preference on load
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+            document.documentElement.setAttribute('data-theme', 'light');
+            themeButtons.forEach(b => b.classList.toggle('active', b.dataset.theme === 'light'));
+        }
+
+        // ---- Scroll progress ----
+        const bar = document.getElementById('progressBar');
+        window.addEventListener('scroll', () => {
+            const h = document.documentElement;
+            const scrolled = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
+            bar.style.width = scrolled + '%';
+        });
+
+        // ---- Task accordion ----
+        function toggleTask(headEl) {
+            const task = headEl.parentElement;
+            const wasOpen = task.classList.contains('open');
+            document.querySelectorAll('.task').forEach(t => {
+                t.classList.remove('open');
+                t.querySelector('.task-body').style.maxHeight = null;
+            });
+            if (!wasOpen) {
+                task.classList.add('open');
+                const body = task.querySelector('.task-body');
+                body.style.maxHeight = body.scrollHeight + 60 + 'px';
+            }
+        }
+        // open first task body height on load
+        window.addEventListener('load', () => {
+            document.querySelectorAll('.task.open .task-body').forEach(b => {
+                b.style.maxHeight = b.scrollHeight + 60 + 'px';
+            });
+        });
+
+        // ---- Flashcards ----
+        const flashData = [
+            ["Detailed Design (1-liner)", "Refining & expanding architecture until it's complete enough to implement."],
+            ["What bridges design & code?", "Detailed design — just like architecture bridges requirements & design."],
+            ["R.A.D.C.", "Requirements → Architecture → Detailed Design → Construction."],
+            ["U.C.E.D.M.", "Understand → Create → Evaluate → Document → Manage."],
+            ["I.G.I.D.", "Interface, GUI, Internal component, Data design."],
+            ["Reverse Engineering", "Analyzing existing code to recover what it does, how it's structured, and how it maps to design/requirements."],
+            ["Technical Review — who's in it?", "A technical expert, stakeholders, and someone from QA/testing."],
+            ["SDD stands for", "Software Design Document (aka Software Design Description)."],
+            ["Synchronicity", "How well detailed design matches architecture, and code matches detailed design."],
+            ["Low synchronicity risk", "Process flaws → possible project failure — worst during maintenance or when new engineers join."],
+        ];
+        const flashGrid = document.getElementById('flashGrid');
+        flashData.forEach(([front, back]) => {
+            const card = document.createElement('div');
+            card.className = 'flash';
+            card.innerHTML = `
+      <div class="flash-inner">
+        <div class="flash-face flash-front">${front}</div>
+        <div class="flash-face flash-back">${back}<span class="flash-hint">tap to flip back</span></div>
+      </div>`;
+            card.addEventListener('click', () => card.classList.toggle('flipped'));
+            flashGrid.appendChild(card);
+        });
+
+        // ---- Quiz ----
+        const quizData = [
+            {
+                type: 'mcq',
+                q: "1. What does detailed design focus on, unlike architecture which evaluates the complete requirement set?",
+                options: [
+                    "Requirements allocated to the specific component being designed",
+                    "Only non-functional requirements",
+                    "The entire system's requirements at once",
+                    "Only requirements written by the client"
+                ],
+                correct: 0
+            },
+            {
+                type: 'mcq',
+                q: "2. In the designer's mental model, what must a designer do if given only code (no design docs)?",
+                options: [
+                    "Discard the code and start over",
+                    "Reverse-engineer the code to recreate the detailed design and architecture",
+                    "Only fix bugs, design is not needed",
+                    "Wait for the architecture team to provide documents"
+                ],
+                correct: 1
+            },
+            {
+                type: 'mcq',
+                q: "3. Which of these is NOT one of the 5 key tasks in detailed design?",
+                options: [
+                    "Understanding architecture and requirements",
+                    "Creating detailed designs",
+                    "Marketing the software to stakeholders",
+                    "Monitoring and controlling implementation"
+                ],
+                correct: 2
+            },
+            {
+                type: 'mcq',
+                q: "4. During a technical review, who should be included on the review team?",
+                options: [
+                    "Only the original designer",
+                    "A technical expert, stakeholders, and a QA/testing team member",
+                    "Only company executives",
+                    "Only the end users"
+                ],
+                correct: 1
+            },
+            {
+                type: 'mcq',
+                q: "5. What best describes 'synchronicity' in detailed design?",
+                options: [
+                    "How fast the team writes code",
+                    "How well detailed design adheres to architecture, and code adheres to detailed design",
+                    "How many meetings the team holds",
+                    "The number of components in the architecture"
+                ],
+                correct: 1
+            },
+            {
+                type: 'short',
+                q: "6. Short answer: Explain, in your own words, why detailed design is described as the 'bridge between design and code' — and give one original example (not from the slides).",
+                answer: "Key idea to include: architecture defines <b>what</b> the big pieces are and how they connect; detailed design defines <b>exactly how</b> each piece works internally (algorithms, data, interfaces) so that a developer can code it without having to make further design decisions. A strong answer states this bridging role clearly and supports it with a plausible original example (e.g., a food-delivery app's 'OrderTracker' component — architecture says it exists and talks to a database; detailed design specifies its state machine, update frequency, and API contract)."
+            },
+            {
+                type: 'short',
+                q: "7. Short answer: A team skips technical reviews to save time and goes straight from detailed design to coding. Predict two likely consequences, using concepts from this chapter.",
+                answer: "Look for: (1) <b>Lower quality / undetected design flaws</b> — because no technical expert or QA reviewer caught issues before implementation. (2) <b>Synchronicity risk</b> — code may drift from the intended design/architecture since nothing verified the design against functional/non-functional requirements, increasing the risk of project failure, especially later during maintenance."
+            }
+        ];
+
+        const quizContainer = document.getElementById('quizContainer');
+        quizData.forEach((item, idx) => {
+            const wrap = document.createElement('div');
+            wrap.className = 'quiz-item';
+            if (item.type === 'mcq') {
+                wrap.innerHTML = `
+        <div class="quiz-q">${item.q}</div>
+        <div class="quiz-options" data-idx="${idx}">
+          ${item.options.map((opt, i) => `<div class="quiz-option" data-i="${i}">${String.fromCharCode(65 + i)}. ${opt}</div>`).join('')}
+        </div>`;
+                quizContainer.appendChild(wrap);
+                const optsEl = wrap.querySelectorAll('.quiz-option');
+                optsEl.forEach(optEl => {
+                    optEl.addEventListener('click', () => {
+                        if (wrap.dataset.answered) return;
+                        wrap.dataset.answered = 'true';
+                        const chosen = parseInt(optEl.dataset.i);
+                        optsEl.forEach((o, i) => {
+                            if (i === item.correct) o.classList.add('correct');
+                            else if (i === chosen) o.classList.add('wrong');
+                        });
+                    });
+                });
+            } else {
+                wrap.innerHTML = `
+        <div class="quiz-q">${item.q}</div>
+        <button class="reveal-btn">Show model answer</button>
+        <div class="short-answer">${item.answer}</div>`;
+                quizContainer.appendChild(wrap);
+                const btn = wrap.querySelector('.reveal-btn');
+                const ans = wrap.querySelector('.short-answer');
+                btn.addEventListener('click', () => {
+                    ans.classList.toggle('show');
+                    btn.textContent = ans.classList.contains('show') ? 'Hide model answer' : 'Show model answer';
+                });
+            }
+        });
+    </script>
+
+</body>
+
+</html>

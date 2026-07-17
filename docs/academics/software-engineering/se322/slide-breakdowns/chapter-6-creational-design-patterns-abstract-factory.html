@@ -1,0 +1,1082 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Abstract Factory — Assembly Line Study Guide</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --paper: #EAF2FB;
+            --paper2: #DCE9F7;
+            --ink: #0B2545;
+            --ink-soft: #3C5B7C;
+            --line: #B7CCE3;
+            --accent: #FF6B35;
+            --accent-ink: #7A2E00;
+            --teal: #2EC4B6;
+            --teal-ink: #0A5C54;
+            --card: #FFFFFF;
+            --shadow: 0 10px 30px -12px rgba(11, 37, 69, 0.25);
+            --radius: 14px;
+            --mono: 'IBM Plex Mono', monospace;
+            --sans: 'IBM Plex Sans', sans-serif;
+            --disp: 'Space Grotesk', sans-serif;
+        }
+
+        html[data-theme="dark"] {
+            --paper: #0B1622;
+            --paper2: #0F1E30;
+            --ink: #DCEFFB;
+            --ink-soft: #93B2CE;
+            --line: #1E3A56;
+            --accent: #FF8552;
+            --accent-ink: #FFD9C4;
+            --teal: #3FDDC9;
+            --teal-ink: #BFF5EC;
+            --card: #0F2136;
+            --shadow: 0 10px 30px -12px rgba(0, 0, 0, 0.6);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            font-family: var(--sans);
+            background:
+                linear-gradient(var(--paper2) 1px, transparent 1px) 0 0/100% 42px,
+                linear-gradient(90deg, var(--paper2) 1px, transparent 1px) 0 0/42px 100%,
+                var(--paper);
+            color: var(--ink);
+            transition: background .35s ease, color .35s ease;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .wrap {
+            max-width: 1040px;
+            margin: 0 auto;
+            padding: clamp(16px, 4vw, 40px);
+        }
+
+        h1,
+        h2,
+        h3 {
+            font-family: var(--disp);
+            letter-spacing: -0.01em;
+            margin: 0 0 .4em;
+        }
+
+        h1 {
+            font-size: clamp(1.9rem, 5vw, 3.1rem);
+            line-height: 1.05;
+        }
+
+        h2 {
+            font-size: clamp(1.3rem, 3vw, 1.9rem);
+        }
+
+        h3 {
+            font-size: clamp(1.05rem, 2vw, 1.3rem);
+        }
+
+        p,
+        li {
+            font-size: clamp(0.92rem, 1.6vw, 1.05rem);
+            line-height: 1.65;
+            color: var(--ink);
+        }
+
+        a {
+            color: var(--accent);
+        }
+
+        code,
+        .mono {
+            font-family: var(--mono);
+            font-size: 0.88em;
+        }
+
+        /* ---------- Top bar ---------- */
+        .topbar {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 10px clamp(16px, 4vw, 40px);
+            background: color-mix(in srgb, var(--paper) 88%, transparent);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid var(--line);
+        }
+
+        .brandmark {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: var(--disp);
+            font-weight: 700;
+            font-size: clamp(0.85rem, 1.6vw, 1rem);
+        }
+
+        .gear {
+            width: 22px;
+            height: 22px;
+            flex: none;
+            animation: spin 12s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .theme-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--card);
+            border: 1px solid var(--line);
+            color: var(--ink);
+            padding: 7px 12px;
+            border-radius: 999px;
+            cursor: pointer;
+            font-family: var(--mono);
+            font-size: 0.78rem;
+            box-shadow: var(--shadow);
+        }
+
+        .theme-toggle:hover {
+            border-color: var(--accent);
+        }
+
+        /* ---------- Hero ---------- */
+        .hero {
+            padding: clamp(28px, 6vw, 64px) 0 clamp(20px, 4vw, 36px);
+            display: grid;
+            gap: 14px;
+        }
+
+        .kicker {
+            font-family: var(--mono);
+            text-transform: uppercase;
+            letter-spacing: .14em;
+            font-size: clamp(0.68rem, 1.4vw, 0.78rem);
+            color: var(--teal-ink);
+            background: color-mix(in srgb, var(--teal) 16%, transparent);
+            border: 1px solid var(--teal);
+            width: fit-content;
+            padding: 4px 10px;
+            border-radius: 999px;
+        }
+
+        .hero p.lead {
+            max-width: 62ch;
+            color: var(--ink-soft);
+            font-size: clamp(0.98rem, 1.8vw, 1.15rem);
+        }
+
+        .belt {
+            height: 14px;
+            margin: 6px 0 0;
+            background-image: repeating-linear-gradient(90deg, var(--line) 0 18px, transparent 18px 30px);
+            border-top: 1px solid var(--line);
+            border-bottom: 1px solid var(--line);
+            opacity: .8;
+        }
+
+        /* ---------- Station (section) ---------- */
+        .station {
+            margin: clamp(28px, 5vw, 52px) 0;
+            display: grid;
+            gap: 16px;
+        }
+
+        .station-head {
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .station-num {
+            font-family: var(--mono);
+            color: var(--accent-ink);
+            background: color-mix(in srgb, var(--accent) 18%, transparent);
+            border: 1px solid var(--accent);
+            padding: 2px 10px;
+            border-radius: 6px;
+            font-size: clamp(0.72rem, 1.4vw, 0.85rem);
+        }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            padding: clamp(16px, 3vw, 28px);
+            box-shadow: var(--shadow);
+        }
+
+        .grid2 {
+            display: grid;
+            gap: 16px;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        }
+
+        .grid3 {
+            display: grid;
+            gap: 16px;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        }
+
+        .tag {
+            display: inline-block;
+            font-family: var(--mono);
+            font-size: 0.72rem;
+            padding: 2px 8px;
+            border-radius: 6px;
+            margin: 0 6px 6px 0;
+            background: color-mix(in srgb, var(--ink) 8%, transparent);
+            border: 1px solid var(--line);
+            color: var(--ink-soft);
+        }
+
+        /* ---------- Mnemonic capsule ---------- */
+        .mnemonic {
+            border: 1.5px dashed var(--accent);
+            background: color-mix(in srgb, var(--accent) 8%, transparent);
+            border-radius: var(--radius);
+            padding: clamp(14px, 2.6vw, 22px);
+            display: grid;
+            gap: 10px;
+        }
+
+        .mnemonic .label {
+            font-family: var(--mono);
+            text-transform: uppercase;
+            letter-spacing: .12em;
+            font-size: 0.72rem;
+            color: var(--accent-ink);
+        }
+
+        .mnemonic .phrase {
+            font-family: var(--disp);
+            font-weight: 700;
+            font-size: clamp(1.05rem, 2.4vw, 1.4rem);
+            color: var(--ink);
+        }
+
+        /* ---------- Table ---------- */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: clamp(0.85rem, 1.5vw, 0.98rem);
+        }
+
+        th,
+        td {
+            border: 1px solid var(--line);
+            padding: 8px 10px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        th {
+            background: color-mix(in srgb, var(--teal) 14%, transparent);
+            font-family: var(--disp);
+        }
+
+        tr:nth-child(even) td {
+            background: color-mix(in srgb, var(--ink) 4%, transparent);
+        }
+
+        /* ---------- Steps (assembly line) ---------- */
+        .steps {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            counter-reset: step;
+            display: grid;
+            gap: 10px;
+        }
+
+        .steps li {
+            counter-increment: step;
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 12px;
+            align-items: start;
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            padding: 12px 14px;
+        }
+
+        .steps li::before {
+            content: counter(step);
+            font-family: var(--disp);
+            font-weight: 700;
+            color: #fff;
+            background: var(--accent);
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            flex: none;
+        }
+
+        /* ---------- Code ---------- */
+        details.code {
+            background: color-mix(in srgb, var(--ink) 92%, var(--paper) 8%);
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid var(--line);
+        }
+
+        html[data-theme="dark"] details.code {
+            background: #060D16;
+        }
+
+        details.code summary {
+            cursor: pointer;
+            padding: 10px 14px;
+            font-family: var(--mono);
+            font-size: 0.82rem;
+            color: var(--teal);
+            list-style: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: color-mix(in srgb, var(--ink) 96%, var(--paper) 4%);
+        }
+
+        html[data-theme="dark"] details.code summary {
+            background: #0A1826;
+        }
+
+        details.code summary::-webkit-details-marker {
+            display: none;
+        }
+
+        details.code summary::before {
+            content: "▸";
+            transition: transform .2s;
+        }
+
+        details.code[open] summary::before {
+            transform: rotate(90deg);
+        }
+
+        details.code pre {
+            margin: 0;
+            padding: 14px;
+            overflow-x: auto;
+            color: #CFE8FF;
+            font-family: var(--mono);
+            font-size: 0.8rem;
+            line-height: 1.55;
+        }
+
+        details.code .kw {
+            color: #FF8552;
+        }
+
+        .cm {
+            color: #7C93AC;
+        }
+
+        .cl {
+            color: #3FDDC9;
+        }
+
+        .st {
+            color: #FFD98E;
+        }
+
+        /* ---------- Diagram ---------- */
+        .diagram {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .diagram text {
+            font-family: var(--mono);
+            fill: var(--ink);
+        }
+
+        .diagram .box {
+            fill: var(--card);
+            stroke: var(--line);
+            stroke-width: 1.5;
+        }
+
+        .diagram .factory {
+            stroke: var(--accent);
+        }
+
+        .diagram .product {
+            stroke: var(--teal);
+        }
+
+        .diagram .arrow {
+            stroke: var(--ink-soft);
+            fill: none;
+            stroke-width: 1.4;
+        }
+
+        /* ---------- Flashcards ---------- */
+        .flashgrid {
+            display: grid;
+            gap: 14px;
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+        }
+
+        .flash {
+            perspective: 1200px;
+            height: 150px;
+            cursor: pointer;
+        }
+
+        .flash-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform .5s;
+            transform-style: preserve-3d;
+        }
+
+        .flash.flipped .flash-inner {
+            transform: rotateY(180deg);
+        }
+
+        .flash-face {
+            position: absolute;
+            inset: 0;
+            backface-visibility: hidden;
+            border-radius: 12px;
+            border: 1px solid var(--line);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 14px;
+            font-family: var(--sans);
+            font-size: 0.92rem;
+        }
+
+        .flash-front {
+            background: var(--card);
+            box-shadow: var(--shadow);
+            font-family: var(--disp);
+            font-weight: 600;
+        }
+
+        .flash-back {
+            background: color-mix(in srgb, var(--teal) 18%, var(--card));
+            transform: rotateY(180deg);
+            color: var(--ink);
+        }
+
+        .flash-hint {
+            font-family: var(--mono);
+            font-size: 0.65rem;
+            color: var(--ink-soft);
+            position: absolute;
+            bottom: 8px;
+            right: 10px;
+        }
+
+        /* ---------- Pros/Cons ---------- */
+        .pc {
+            display: grid;
+            gap: 16px;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        }
+
+        .pc .pcard {
+            border-radius: 12px;
+            padding: 16px;
+            border: 1px solid var(--line);
+        }
+
+        .pc .good {
+            background: color-mix(in srgb, var(--teal) 12%, var(--card));
+        }
+
+        .pc .bad {
+            background: color-mix(in srgb, var(--accent) 10%, var(--card));
+        }
+
+        .pc ul {
+            margin: 6px 0 0;
+            padding-left: 1.2em;
+        }
+
+        footer {
+            margin-top: 60px;
+            padding: 28px clamp(16px, 4vw, 40px) 40px;
+            border-top: 1px solid var(--line);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        footer .credit {
+            font-family: var(--mono);
+            font-size: 0.82rem;
+            color: var(--ink-soft);
+        }
+
+        footer .credit b {
+            color: var(--accent-ink);
+        }
+
+        ::selection {
+            background: var(--accent);
+            color: #fff;
+        }
+
+        @media (max-width:560px) {
+
+            .grid2,
+            .grid3,
+            .pc {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="topbar">
+        <div class="brandmark">
+            <svg class="gear" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.8">
+                <circle cx="12" cy="12" r="3.2" />
+                <path
+                    d="M12 2v3M12 19v3M22 12h-3M5 12H2M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1M18.4 18.4l-2.1-2.1M7.7 7.7 5.6 5.6" />
+            </svg>
+            ABSTRACT FACTORY — ASSEMBLY LINE GUIDE
+        </div>
+        <button class="theme-toggle" id="themeBtn" onclick="toggleTheme()">
+            <span id="themeIcon">🌙</span> <span id="themeLabel">Dark mode</span>
+        </button>
+    </div>
+
+    <div class="wrap">
+
+        <section class="hero">
+            <span class="kicker">Software Design &amp; Architecture · Chapter 06, L01 · Creational Patterns</span>
+            <h1>The Abstract Factory<br>builds whole <em>families</em> of things —<br>without the client ever picking
+                parts.</h1>
+            <p class="lead">A rebuilt, condensed version of your lecture deck: one story, one running metaphor (a
+                literal factory floor), and memory hooks at every stop so the ideas stick before the exam does.</p>
+            <div class="belt"></div>
+        </section>
+
+        <!-- STATION 01 -->
+        <section class="station" id="s1">
+            <div class="station-head"><span class="station-num">STATION 01</span>
+                <h2>What is a Design Pattern?</h2>
+            </div>
+            <div class="card">
+                <p>A <b>design pattern</b> is a reusable solution to a recurring object‑oriented design problem in a
+                    given context — a template, not finished code. It is <b>not</b> the same as an <b>architectural
+                        pattern/style</b>: architecture is about the shape of the whole system; a design pattern solves
+                    one recurring problem inside the detailed design.</p>
+                <div class="mnemonic">
+                    <span class="label">Memory hook</span>
+                    <span class="phrase">"Pattern = Proven Plan, not Product."</span>
+                    <p style="margin:0">You reuse the <i>plan</i> (structure/roles), you still write the actual classes
+                        yourself.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- STATION 02 -->
+        <section class="station" id="s2">
+            <div class="station-head"><span class="station-num">STATION 02</span>
+                <h2>Classifying Patterns — Purpose × Scope</h2>
+            </div>
+            <div class="grid2">
+                <div class="card">
+                    <h3>By Purpose — what it does</h3>
+                    <table>
+                        <tr>
+                            <th>Type</th>
+                            <th>Deals with…</th>
+                        </tr>
+                        <tr>
+                            <td><b>Creational</b></td>
+                            <td>How objects get <i>created</i></td>
+                        </tr>
+                        <tr>
+                            <td><b>Structural</b></td>
+                            <td>How objects/classes are <i>composed</i> into bigger structures</td>
+                        </tr>
+                        <tr>
+                            <td><b>Behavioral</b></td>
+                            <td>How objects <i>interact</i> and share responsibility</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="card">
+                    <h3>By Scope — when it applies</h3>
+                    <table>
+                        <tr>
+                            <th>Scope</th>
+                            <th>Applies to…</th>
+                        </tr>
+                        <tr>
+                            <td><b>Class‑level</b></td>
+                            <td>Classes, fixed at <i>design/compile time</i> (e.g., Factory Method)</td>
+                        </tr>
+                        <tr>
+                            <td><b>Object‑level</b></td>
+                            <td>Objects, flexible at <i>run time</i> (e.g., Abstract Factory)</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <div class="mnemonic">
+                <span class="label">Memory hook</span>
+                <span class="phrase">"CSB": Creational / Structural / Behavioral = <u>C</u>reate it, <u>S</u>tack it,
+                    <u>B</u>ehave with it.</span>
+                <p style="margin:0">And: <b>Class</b> = <b>C</b>ompile‑time · <b>Object</b> = happens while
+                    <b>O</b>perating (runtime).</p>
+            </div>
+        </section>
+
+        <!-- STATION 03 -->
+        <section class="station" id="s3">
+            <div class="station-head"><span class="station-num">STATION 03</span>
+                <h2>Documenting a Pattern (just know the idea)</h2>
+            </div>
+            <div class="card">
+                <p>Full pattern docs list categories like <span class="tag">Intent</span><span
+                        class="tag">Motivation</span><span class="tag">Applicability</span><span
+                        class="tag">Structure</span><span class="tag">Participants</span><span
+                        class="tag">Collaborations</span><span class="tag">Consequences</span><span
+                        class="tag">Implementation</span><span class="tag">Sample Code</span><span class="tag">Known
+                        Uses</span><span class="tag">Related Patterns</span>. For this course, you only need the gist:
+                    <i>what problem it solves, who the players are, and how they collaborate</i> — not the full formal
+                    write‑up.</p>
+            </div>
+        </section>
+
+        <!-- STATION 04 -->
+        <section class="station" id="s4">
+            <div class="station-head"><span class="station-num">STATION 04</span>
+                <h2>The 5 Creational Patterns</h2>
+            </div>
+            <div class="card">
+                <p>Creational patterns abstract and control <i>how</i> objects are created, hiding the concrete classes
+                    behind a common creational interface.</p>
+                <div class="grid3">
+                    <div class="pcard" style="border:1px solid var(--line); border-radius:10px; padding:12px;">
+                        <b>Abstract Factory</b><br><span style="color:var(--ink-soft); font-size:0.85em;">families of
+                            related objects</span></div>
+                    <div class="pcard" style="border:1px solid var(--line); border-radius:10px; padding:12px;">
+                        <b>Factory Method</b><br><span style="color:var(--ink-soft); font-size:0.85em;">one product,
+                            subclass decides</span></div>
+                    <div class="pcard" style="border:1px solid var(--line); border-radius:10px; padding:12px;">
+                        <b>Builder</b><br><span style="color:var(--ink-soft); font-size:0.85em;">build complex object
+                            step‑by‑step</span></div>
+                    <div class="pcard" style="border:1px solid var(--line); border-radius:10px; padding:12px;">
+                        <b>Prototype</b><br><span style="color:var(--ink-soft); font-size:0.85em;">clone an existing
+                            object</span></div>
+                    <div class="pcard" style="border:1px solid var(--line); border-radius:10px; padding:12px;">
+                        <b>Singleton</b><br><span style="color:var(--ink-soft); font-size:0.85em;">exactly one instance,
+                            ever</span></div>
+                </div>
+                <div class="mnemonic" style="margin-top:14px;">
+                    <span class="label">Memory hook</span>
+                    <span class="phrase">"Some People Find Amazing Builders" → S‑P‑F‑A‑B</span>
+                    <p style="margin:0"><b>S</b>ingleton, <b>P</b>rototype, <b>F</b>actory Method, <b>A</b>bstract
+                        Factory, <b>B</b>uilder.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- STATION 05 -->
+        <section class="station" id="s5">
+            <div class="station-head"><span class="station-num">STATION 05</span>
+                <h2>Abstract Factory — the Core Idea</h2>
+            </div>
+            <div class="card">
+                <p><b>Intent:</b> provide an interface for creating <b>families of related objects</b> — without the
+                    client ever naming their concrete classes.</p>
+                <p>It's an <b>object‑level, creational</b> pattern, made of two class hierarchies working as a pair:</p>
+                <div class="grid2">
+                    <div class="pcard" style="border:1px solid var(--accent); border-radius:10px; padding:14px;">
+                        <b>Creator classes</b><br><span style="color:var(--ink-soft); font-size:0.9em;">the Abstract
+                            Factory + its Concrete Factories — one factory per family</span></div>
+                    <div class="pcard" style="border:1px solid var(--teal); border-radius:10px; padding:14px;">
+                        <b>Product classes</b><br><span style="color:var(--ink-soft); font-size:0.9em;">the Abstract
+                            Products + their Concrete Products — the parts a family produces</span></div>
+                </div>
+                <div class="mnemonic" style="margin-top:14px;">
+                    <span class="label">The 7‑letter memory hook</span>
+                    <span class="phrase">F·A·C·T·O·R·Y</span>
+                    <p style="margin:0">
+                        <b>F</b>amilies of related products &nbsp;·&nbsp;
+                        <b>A</b>bstract interfaces define what's buildable &nbsp;·&nbsp;
+                        <b>C</b>lient never sees the concrete class &nbsp;·&nbsp;
+                        <b>T</b>hemes/groups stay internally consistent &nbsp;·&nbsp;
+                        <b>O</b>pen for new families, closed for edits (OCP) &nbsp;·&nbsp;
+                        <b>R</b>euse of concrete products across the app &nbsp;·&nbsp;
+                        <b>Y</b>ou never write <code>new DarkButton()</code> in client code.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- STATION 06 -->
+        <section class="station" id="s6">
+            <div class="station-head"><span class="station-num">STATION 06</span>
+                <h2>Worked Example — Dark / Light UI Theme</h2>
+            </div>
+            <div class="card">
+                <p><b>Problem:</b> a UI must support a Dark theme and a Light theme, each with its own
+                    <code>Button</code> and <code>TextField</code>, without scattering <code>if (dark) … else …</code>
+                    everywhere.</p>
+                <ul>
+                    <li><b>Products</b> = <code>Button</code>, <code>TextField</code></li>
+                    <li><b>Factories</b> = <code>DarkThemeFactory</code>, <code>LightThemeFactory</code></li>
+                    <li>The client asks the factory for a <code>Button</code>/<code>TextField</code> and never checks
+                        which concrete class comes back.</li>
+                    <li>Add a <b>BlueTheme</b> tomorrow → add <code>BlueThemeFactory</code> + <code>BlueButton</code> +
+                        <code>BlueTextField</code>. <b>Zero</b> client‑code changes.</li>
+                </ul>
+
+                <svg class="diagram" viewBox="0 0 760 300" xmlns="http://www.w3.org/2000/svg">
+                    <rect class="box factory" x="20" y="20" width="150" height="60" rx="8" />
+                    <text x="95" y="45" text-anchor="middle" font-size="12">«interface»</text>
+                    <text x="95" y="62" text-anchor="middle" font-size="13" font-weight="600">GUIFactory</text>
+
+                    <rect class="box factory" x="20" y="110" width="150" height="60" rx="8" />
+                    <text x="95" y="135" text-anchor="middle" font-size="12">DarkThemeFactory</text>
+                    <text x="95" y="152" text-anchor="middle" font-size="10">createButton / createTextField</text>
+
+                    <rect class="box factory" x="20" y="200" width="150" height="60" rx="8" />
+                    <text x="95" y="225" text-anchor="middle" font-size="12">LightThemeFactory</text>
+                    <text x="95" y="242" text-anchor="middle" font-size="10">createButton / createTextField</text>
+
+                    <rect class="box product" x="290" y="20" width="150" height="50" rx="8" />
+                    <text x="365" y="40" text-anchor="middle" font-size="12">«interface»</text>
+                    <text x="365" y="56" text-anchor="middle" font-size="13" font-weight="600">Button</text>
+                    <rect class="box product" x="290" y="110" width="150" height="40" rx="8" />
+                    <text x="365" y="134" text-anchor="middle" font-size="12">DarkButton</text>
+                    <rect class="box product" x="290" y="200" width="150" height="40" rx="8" />
+                    <text x="365" y="224" text-anchor="middle" font-size="12">LightButton</text>
+
+                    <rect class="box product" x="570" y="20" width="150" height="50" rx="8" />
+                    <text x="645" y="40" text-anchor="middle" font-size="12">«interface»</text>
+                    <text x="645" y="56" text-anchor="middle" font-size="13" font-weight="600">TextField</text>
+                    <rect class="box product" x="570" y="110" width="150" height="40" rx="8" />
+                    <text x="645" y="134" text-anchor="middle" font-size="12">DarkTextField</text>
+                    <rect class="box product" x="570" y="200" width="150" height="40" rx="8" />
+                    <text x="645" y="224" text-anchor="middle" font-size="12">LightTextField</text>
+
+                    <path class="arrow" d="M170 50 H290" marker-end="url(#ah)" />
+                    <path class="arrow" d="M170 45 H550 V45" style="display:none" />
+                    <path class="arrow" d="M440 45 H570" marker-end="url(#ah)" />
+                    <path class="arrow" d="M170 130 H290" marker-end="url(#ah)" />
+                    <path class="arrow" d="M170 220 H290" marker-end="url(#ah)" />
+                    <path class="arrow" d="M170 140 C 480 140 480 130 570 130" marker-end="url(#ah)" />
+                    <path class="arrow" d="M170 230 C 480 230 480 220 570 220" marker-end="url(#ah)" />
+                    <path class="arrow" d="M365 70 V110" marker-end="url(#ah)" />
+                    <path class="arrow" d="M365 70 V200" marker-end="url(#ah)" />
+                    <path class="arrow" d="M645 70 V110" marker-end="url(#ah)" />
+                    <path class="arrow" d="M645 70 V200" marker-end="url(#ah)" />
+                    <path class="arrow" d="M95 80 V110" marker-end="url(#ah)" />
+                    <path class="arrow" d="M95 80 C 40 130 40 180 95 200" marker-end="url(#ah)" />
+                    <defs>
+                        <marker id="ah" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                            <path d="M0,0 L6,3 L0,6 z" fill="var(--ink-soft)" />
+                        </marker>
+                    </defs>
+                </svg>
+
+                <details class="code">
+                    <summary>View the code — GUIFactory family</summary>
+                    <pre><span class="cm">// Step 1 — Abstract Factory interface</span>
+<span class="kw">interface</span> <span class="cl">GUIFactory</span> {
+    Button createButton();
+    TextField createTextField();
+}
+
+<span class="cm">// Step 2 — Concrete Factories, one per theme</span>
+<span class="kw">class</span> <span class="cl">DarkThemeFactory</span> <span class="kw">implements</span> GUIFactory {
+    Button createButton() { <span class="kw">return</span> <span class="kw">new</span> DarkButton(); }
+    TextField createTextField() { <span class="kw">return</span> <span class="kw">new</span> DarkTextField(); }
+}
+
+<span class="kw">class</span> <span class="cl">LightThemeFactory</span> <span class="kw">implements</span> GUIFactory {
+    Button createButton() { <span class="kw">return</span> <span class="kw">new</span> LightButton(); }
+    TextField createTextField() { <span class="kw">return</span> <span class="kw">new</span> LightTextField(); }
+}
+
+<span class="cm">// Step 5 — Client only ever talks to the interfaces</span>
+GUIFactory factory = <span class="kw">new</span> DarkThemeFactory(); <span class="cm">// swap this line only</span>
+Button   btn = factory.createButton();
+TextField tf = factory.createTextField();</pre>
+                </details>
+            </div>
+        </section>
+
+        <!-- STATION 07 -->
+        <section class="station" id="s7">
+            <div class="station-head"><span class="station-num">STATION 07</span>
+                <h2>The Textbook Example — Computer Store</h2>
+            </div>
+            <div class="card">
+                <p>A computer store sells two <b>families</b> of computers: <b>Advanced</b> and <b>Standard</b>. Each
+                    family bundles a <code>Cpu</code>, <code>Monitor</code>, and <code>Keyboard</code> that must stay
+                    consistent with each other and pull their info from different data sources.</p>
+                <div class="grid2">
+                    <div class="pcard" style="border:1px solid var(--line); border-radius:10px; padding:14px;">
+                        <b>AdvancedComputerPartsFactory</b>
+                        <p style="margin:6px 0 0; font-size:0.9em;">→ <code>AdvancedCpu</code>,
+                            <code>AdvancedMonitor</code>, <code>AdvancedKeyboard</code> — all read from <b>Source A</b>
+                        </p>
+                    </div>
+                    <div class="pcard" style="border:1px solid var(--line); border-radius:10px; padding:14px;">
+                        <b>StandardComputerPartsFactory</b>
+                        <p style="margin:6px 0 0; font-size:0.9em;">→ <code>StandardCpu</code>,
+                            <code>StandardMonitor</code>, <code>StandardKeyboard</code> — all read from <b>Source B</b>
+                        </p>
+                    </div>
+                </div>
+
+                <details class="code" style="margin-top:14px;">
+                    <summary>View the code — Client (ComputerStore)</summary>
+                    <pre><span class="kw">class</span> <span class="cl">ComputerStore</span> {
+    Monitor  monitor;
+    Cpu      cpu;
+    Keyboard keyboard;
+
+    ComputerStore(ComputerPartsFactory factory) {
+        <span class="cm">// the store never knows if "factory" is Advanced or Standard</span>
+        monitor  = factory.createMonitor();
+        cpu      = factory.createCpu();
+        keyboard = factory.createKeyboard();
+    }
+}
+
+<span class="cm">// main()</span>
+ComputerPartsFactory f = (option == 1)
+    ? <span class="kw">new</span> AdvancedComputerPartsFactory()
+    : <span class="kw">new</span> StandardComputerPartsFactory();
+
+ComputerStore store = <span class="kw">new</span> ComputerStore(f);</pre>
+                </details>
+
+                <h3 style="margin-top:20px;">Build‑order checklist (memorize this order!)</h3>
+                <ol class="steps">
+                    <li><b>Design the product interfaces</b> — <code>Cpu</code>, <code>Monitor</code>,
+                        <code>Keyboard</code>.</li>
+                    <li><b>Identify the families/groups</b> — e.g. Standard vs. Advanced.</li>
+                    <li><b>Write concrete products</b> for each family, implementing step 1's interfaces.</li>
+                    <li><b>Create the factory interface</b> — one creation method per product from step 1.</li>
+                    <li><b>Write a concrete factory per family</b>, implementing step 4's interface.</li>
+                    <li><b>Wire each concrete factory to its own products</b> from step 3.</li>
+                    <li><b>Build the Client</b>, depending only on the interfaces from steps 1 and 4.</li>
+                </ol>
+                <div class="mnemonic">
+                    <span class="label">Memory hook</span>
+                    <span class="phrase">"PIP-FICO" the build order</span>
+                    <p style="margin:0"><b>P</b>roduct interfaces → <b>I</b>dentify families → <b>P</b>roducts
+                        (concrete) → <b>F</b>actory interface → <b>I</b>ndividual concrete factories → <b>C</b>onnect
+                        factory↔product → <b>O</b>ne client at the end.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- STATION 08 -->
+        <section class="station" id="s8">
+            <div class="station-head"><span class="station-num">STATION 08</span>
+                <h2>Bonus Example — Riyadh HQ Car Factories</h2>
+            </div>
+            <div class="card">
+                <p><b>Riyadh HQ</b> (the client) only ever talks to a <code>CarFactory</code> interface with
+                    <code>makeMercedes()</code> and <code>makeBMW()</code>. It never touches
+                    <code>JeddahCarFactory</code> or <code>DammamCarFactory</code> directly.</p>
+                <ul>
+                    <li><b>Why HQ doesn't care who builds the car:</b> HQ codes against the <i>abstract</i>
+                        <code>CarFactory</code>, <code>Mercedes</code>, and <code>BMW</code> types — the concrete branch
+                        is an implementation detail hidden behind those interfaces.</li>
+                    <li><b>Why it's easy to switch branches at runtime:</b> swapping <code>JeddahCarFactory</code> for
+                        <code>DammamCarFactory</code> is a one‑line change (which object gets assigned) — no recompiling
+                        or editing of HQ's logic.</li>
+                    <li><b>Why this is Abstract Factory:</b> two concrete factories (branches) each produce their own
+                        consistent <i>family</i> of two related products (Mercedes + BMW), behind one shared interface.
+                    </li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- STATION 09 -->
+        <section class="station" id="s9">
+            <div class="station-head"><span class="station-num">STATION 09</span>
+                <h2>"But We Still Write Concrete Classes…?"</h2>
+            </div>
+            <div class="card">
+                <p>Yes — <code>DarkButton</code>, <code>LightButton</code>, <code>DarkThemeFactory</code>, etc. all get
+                    written somewhere. The pattern's promise isn't "no concrete classes exist" — it's that the <b>client
+                        never mentions their names</b>. The client only ever declares variables of the abstract types
+                    (<code>Button</code>, <code>GUIFactory</code>…), so adding a brand‑new family later touches zero
+                    client code.</p>
+                <div class="mnemonic">
+                    <span class="label">Memory hook</span>
+                    <span class="phrase">"The client says WHAT, never WHICH."</span>
+                    <p style="margin:0">WHAT it needs (a <code>Button</code>) — never WHICH concrete class makes it.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- STATION 10 -->
+        <section class="station" id="s10">
+            <div class="station-head"><span class="station-num">STATION 10</span>
+                <h2>Pros &amp; Cons</h2>
+            </div>
+            <div class="pc">
+                <div class="pcard good">
+                    <h3 style="margin:0 0 8px;">✅ Pros</h3>
+                    <ul>
+                        <li>Isolates concrete product classes → easier to reuse them</li>
+                        <li>Keeps each product family internally consistent</li>
+                        <li>New families = pure extension, existing code untouched (Open/Closed Principle)</li>
+                        <li>Increases overall modifiability</li>
+                    </ul>
+                </div>
+                <div class="pcard bad">
+                    <h3 style="margin:0 0 8px;">⚠️ Con</h3>
+                    <ul>
+                        <li>Requires a <b>large number of classes</b> — one interface + N concrete implementations,
+                            times every product</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="mnemonic">
+                <span class="label">Memory hook</span>
+                <span class="phrase">"More classes now, fewer headaches later."</span>
+            </div>
+        </section>
+
+        <!-- STATION 11: Flashcards -->
+        <section class="station" id="s11">
+            <div class="station-head"><span class="station-num">STATION 11</span>
+                <h2>Quick Self‑Test — Flip the Cards</h2>
+            </div>
+            <p>Tap a card to reveal the answer. Cover the section above first!</p>
+            <div class="flashgrid">
+                <div class="flash" onclick="this.classList.toggle('flipped')">
+                    <div class="flash-inner">
+                        <div class="flash-face flash-front">What is the Abstract Factory's <i>intent</i>?<span
+                                class="flash-hint">tap</span></div>
+                        <div class="flash-face flash-back">Provide an interface for creating families of related objects
+                            without exposing their concrete classes.</div>
+                    </div>
+                </div>
+                <div class="flash" onclick="this.classList.toggle('flipped')">
+                    <div class="flash-inner">
+                        <div class="flash-face flash-front">Class‑level vs Object‑level scope?<span
+                                class="flash-hint">tap</span></div>
+                        <div class="flash-face flash-back">Class‑level = fixed at design/compile time. Object‑level =
+                            decided at runtime (Abstract Factory is object‑level).</div>
+                    </div>
+                </div>
+                <div class="flash" onclick="this.classList.toggle('flipped')">
+                    <div class="flash-inner">
+                        <div class="flash-face flash-front">Name the 5 Creational patterns<span
+                                class="flash-hint">tap</span></div>
+                        <div class="flash-face flash-back">Singleton, Prototype, Factory Method, Abstract Factory,
+                            Builder — "Some People Find Amazing Builders".</div>
+                    </div>
+                </div>
+                <div class="flash" onclick="this.classList.toggle('flipped')">
+                    <div class="flash-inner">
+                        <div class="flash-face flash-front">What happens when you add a new family?<span
+                                class="flash-hint">tap</span></div>
+                        <div class="flash-face flash-back">You add a new Concrete Factory + new Concrete Products.
+                            Existing client code is not modified (OCP).</div>
+                    </div>
+                </div>
+                <div class="flash" onclick="this.classList.toggle('flipped')">
+                    <div class="flash-inner">
+                        <div class="flash-face flash-front">Biggest downside?<span class="flash-hint">tap</span></div>
+                        <div class="flash-face flash-back">A large number of classes — one interface plus one
+                            implementation per family, for every product.</div>
+                    </div>
+                </div>
+                <div class="flash" onclick="this.classList.toggle('flipped')">
+                    <div class="flash-inner">
+                        <div class="flash-face flash-front">Creator classes vs Product classes?<span
+                                class="flash-hint">tap</span></div>
+                        <div class="flash-face flash-back">Creator = the (Abstract/Concrete) Factories. Product = the
+                            (Abstract/Concrete) items the factories build.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- STATION 12 -->
+        <section class="station" id="s12">
+            <div class="station-head"><span class="station-num">STATION 12</span>
+                <h2>Chapter Recap &amp; What's Next</h2>
+            </div>
+            <div class="card">
+                <p>This chapter covered pattern fundamentals (purpose vs. scope, documentation categories) and the first
+                    creational pattern: <b>Abstract Factory</b> — one interface, many families, client stays blind to
+                    the concrete classes.</p>
+                <p><b>Up next in Creational Patterns:</b> <span class="tag">Factory Method</span><span
+                        class="tag">Builder</span><span class="tag">Singleton</span></p>
+            </div>
+        </section>
+
+    </div>
+
+    <footer>
+        <span class="credit">Rebuilt study guide · Source: <i>Software Design and Architecture</i>, Ch.06 L01 — Prince
+            Sultan University, adapted from <i>"Software Engineering Design: Theory and Practice"</i></span>
+        <span class="credit">Made by <b>Shoug Alomran</b></span>
+    </footer>
+
+    <script>
+        function applyTheme(t) {
+            document.documentElement.setAttribute('data-theme', t);
+            document.getElementById('themeIcon').textContent = t === 'dark' ? '☀️' : '🌙';
+            document.getElementById('themeLabel').textContent = t === 'dark' ? 'Light mode' : 'Dark mode';
+            window.__theme = t;
+        }
+        function toggleTheme() {
+            applyTheme(window.__theme === 'dark' ? 'light' : 'dark');
+        }
+        (function initTheme() {
+            var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            applyTheme(prefersDark ? 'dark' : 'light');
+        })();
+    </script>
+
+</body>
+
+</html>

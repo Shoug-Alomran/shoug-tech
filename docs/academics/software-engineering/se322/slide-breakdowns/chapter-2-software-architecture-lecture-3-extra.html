@@ -1,0 +1,1089 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The 4+1 View Model — Study Blueprint</title>
+    <style>
+        :root {
+            --paper: #EFE9D8;
+            --paper-2: #F7F3E6;
+            --ink: #182338;
+            --ink-soft: #4A5670;
+            --line: #B9AD8C;
+            --line-soft: #D8CFB4;
+            --accent: #C1571C;
+            --accent-2: #2F6F62;
+            --accent-3: #2F5D8A;
+            --card: #FFFDF6;
+            --shadow: 0 1px 0 rgba(24, 35, 56, .08);
+            --mono: "Courier New", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            --serif: Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+            --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            --radius: 6px;
+            --grid-line: rgba(47, 93, 138, .14);
+        }
+
+        [data-theme="dark"] {
+            --paper: #0B1C2C;
+            --paper-2: #0E2337;
+            --ink: #DCEEF7;
+            --ink-soft: #8FB4CB;
+            --line: #2E5878;
+            --line-soft: #1D3A52;
+            --accent: #F2A65A;
+            --accent-2: #6FD3B8;
+            --accent-3: #7FC4E8;
+            --card: #0F2338;
+            --shadow: 0 1px 0 rgba(0, 0, 0, .4);
+            --grid-line: rgba(111, 179, 210, .14);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            background:
+                linear-gradient(var(--grid-line) 1px, transparent 1px) 0 0/34px 34px,
+                linear-gradient(90deg, var(--grid-line) 1px, transparent 1px) 0 0/34px 34px,
+                var(--paper);
+            color: var(--ink);
+            font-family: var(--serif);
+            line-height: 1.6;
+            transition: background-color .25s ease, color .25s ease;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            html {
+                scroll-behavior: auto;
+            }
+
+            * {
+                transition: none !important;
+                animation: none !important;
+            }
+        }
+
+        a {
+            color: var(--accent-3);
+        }
+
+        .wrap {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: clamp(14px, 3vw, 36px);
+        }
+
+        /* ---------- TOP BAR ---------- */
+        .topbar {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            backdrop-filter: blur(6px);
+            background: color-mix(in srgb, var(--paper) 88%, transparent);
+            border-bottom: 1px solid var(--line);
+        }
+
+        .topbar-inner {
+            max-width: 960px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px clamp(14px, 3vw, 36px);
+        }
+
+        .brand {
+            font-family: var(--mono);
+            letter-spacing: .08em;
+            font-size: clamp(11px, 1.6vw, 13px);
+            text-transform: uppercase;
+            color: var(--ink-soft);
+            white-space: nowrap;
+        }
+
+        .brand b {
+            color: var(--accent);
+        }
+
+        nav.sheets {
+            display: flex;
+            gap: 4px;
+            overflow-x: auto;
+            scrollbar-width: thin;
+            flex: 1;
+        }
+
+        nav.sheets a {
+            flex: 0 0 auto;
+            text-decoration: none;
+            font-family: var(--mono);
+            font-size: 11px;
+            letter-spacing: .03em;
+            color: var(--ink-soft);
+            border: 1px solid var(--line-soft);
+            border-radius: 4px;
+            padding: 5px 8px;
+            white-space: nowrap;
+        }
+
+        nav.sheets a:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .toggle {
+            position: relative;
+            width: 52px;
+            height: 28px;
+            flex: 0 0 auto;
+            border-radius: 20px;
+            border: 1px solid var(--line);
+            cursor: pointer;
+            background: var(--paper-2);
+        }
+
+        .toggle .knob {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: var(--accent);
+            transition: left .2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+
+        [data-theme="dark"] .toggle .knob {
+            left: 26px;
+        }
+
+        /* ---------- HERO / TITLE BLOCK ---------- */
+        .hero {
+            border: 2px solid var(--ink);
+            border-radius: var(--radius);
+            padding: clamp(18px, 4vw, 34px);
+            margin: 22px 0 30px;
+            background: var(--card);
+            box-shadow: var(--shadow);
+            position: relative;
+        }
+
+        .hero:before,
+        .hero:after {
+            content: "";
+            position: absolute;
+            width: 14px;
+            height: 14px;
+            border: 2px solid var(--accent);
+            top: -2px;
+            left: -2px;
+            border-right: none;
+            border-bottom: none;
+        }
+
+        .hero:after {
+            left: auto;
+            right: -2px;
+            top: auto;
+            bottom: -2px;
+            border: 2px solid var(--accent);
+            border-left: none;
+            border-top: none;
+        }
+
+        .hero .eyebrow {
+            font-family: var(--mono);
+            text-transform: uppercase;
+            letter-spacing: .2em;
+            font-size: clamp(10px, 1.5vw, 12px);
+            color: var(--accent-2);
+            margin-bottom: 10px;
+        }
+
+        .hero h1 {
+            font-family: var(--mono);
+            text-transform: uppercase;
+            font-size: clamp(24px, 5.2vw, 46px);
+            letter-spacing: .02em;
+            margin: 0 0 8px;
+            line-height: 1.08;
+        }
+
+        .hero p.sub {
+            font-size: clamp(14px, 2.2vw, 17px);
+            color: var(--ink-soft);
+            margin: 0 0 18px;
+            max-width: 60ch;
+        }
+
+        .titleblock {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            border-top: 1px solid var(--line);
+            margin-top: 16px;
+            font-family: var(--mono);
+            font-size: clamp(10px, 1.6vw, 12px);
+        }
+
+        .titleblock div {
+            padding: 10px 12px 0;
+        }
+
+        .titleblock span {
+            display: block;
+            color: var(--ink-soft);
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            font-size: 9px;
+            margin-bottom: 3px;
+        }
+
+        /* ---------- diamond compass diagram ---------- */
+        .compass {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 10px;
+            max-width: 520px;
+            margin: 18px auto;
+            position: relative;
+        }
+
+        .compass .qbox {
+            border: 1.5px solid var(--ink);
+            border-radius: 6px;
+            padding: 16px 14px;
+            background: var(--card);
+            font-family: var(--sans);
+            font-weight: 700;
+            text-align: center;
+            font-size: clamp(12px, 2vw, 15px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 70px;
+        }
+
+        .compass .center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 118px;
+            height: 74px;
+            border: 2px dashed var(--accent);
+            border-radius: 50%;
+            background: var(--paper-2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            font-family: var(--sans);
+            font-weight: 700;
+            font-size: 11px;
+            text-align: center;
+            color: var(--accent);
+            z-index: 2;
+            padding: 4px;
+        }
+
+        .compass .center small {
+            font-weight: 400;
+            font-size: 9px;
+            color: var(--ink-soft);
+        }
+
+        /* ---------- SHEETS (sections) ---------- */
+        .sheet {
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            margin-bottom: 22px;
+            box-shadow: var(--shadow);
+            scroll-margin-top: 70px;
+            overflow: hidden;
+        }
+
+        .sheet-head {
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+            padding: 14px clamp(14px, 3vw, 26px);
+            border-bottom: 1px solid var(--line-soft);
+            background: linear-gradient(180deg, color-mix(in srgb, var(--accent-3) 8%, transparent), transparent);
+        }
+
+        .sheet-head .num {
+            font-family: var(--mono);
+            color: var(--accent);
+            font-size: clamp(20px, 3vw, 26px);
+            font-weight: bold;
+        }
+
+        .sheet-head h2 {
+            margin: 0;
+            font-family: var(--sans);
+            font-weight: 700;
+            font-size: clamp(17px, 3vw, 24px);
+        }
+
+        .sheet-head .tag {
+            margin-left: auto;
+            font-family: var(--mono);
+            font-size: 10px;
+            color: var(--ink-soft);
+            border: 1px solid var(--line-soft);
+            border-radius: 3px;
+            padding: 3px 7px;
+            white-space: nowrap;
+        }
+
+        .sheet-body {
+            padding: clamp(14px, 3vw, 26px);
+        }
+
+        .sheet-body h3 {
+            font-family: var(--sans);
+            font-size: clamp(15px, 2.2vw, 17px);
+            margin: 20px 0 8px;
+            color: var(--accent-3);
+        }
+
+        .sheet-body h3:first-child {
+            margin-top: 0;
+        }
+
+        .sheet-body p {
+            margin: 0 0 12px;
+            font-size: clamp(14.5px, 2vw, 16px);
+        }
+
+        .sheet-body ul,
+        .sheet-body ol {
+            padding-left: 1.2em;
+            margin: 0 0 12px;
+        }
+
+        .sheet-body li {
+            margin-bottom: 6px;
+            font-size: clamp(14px, 1.9vw, 15.5px);
+        }
+
+        /* mnemonic callout */
+        .mnemonic {
+            background: color-mix(in srgb, var(--accent) 12%, var(--card));
+            border-left: 4px solid var(--accent);
+            border-radius: 4px;
+            padding: 12px 16px;
+            margin: 10px 0 16px;
+            font-family: var(--sans);
+        }
+
+        .mnemonic .label {
+            font-family: var(--mono);
+            text-transform: uppercase;
+            letter-spacing: .1em;
+            font-size: 10.5px;
+            color: var(--accent);
+            margin-bottom: 4px;
+            display: block;
+        }
+
+        .mnemonic strong {
+            font-size: clamp(14.5px, 2vw, 16.5px);
+        }
+
+        /* tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0 18px;
+            font-size: clamp(12px, 1.7vw, 14px);
+        }
+
+        caption {
+            caption-side: top;
+            text-align: left;
+            font-family: var(--mono);
+            font-size: 11px;
+            color: var(--ink-soft);
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+        }
+
+        th,
+        td {
+            border: 1px solid var(--line-soft);
+            padding: 7px 9px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        th {
+            background: color-mix(in srgb, var(--accent-3) 14%, var(--card));
+            font-family: var(--sans);
+        }
+
+        tr:nth-child(even) td {
+            background: color-mix(in srgb, var(--paper-2) 60%, transparent);
+        }
+
+        .bigtable {
+            overflow-x: auto;
+        }
+
+        .bigtable table {
+            min-width: 680px;
+        }
+
+        /* grid of cards */
+        .grid {
+            display: grid;
+            gap: 12px;
+        }
+
+        .grid.two {
+            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+        }
+
+        .grid.three {
+            grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+        }
+
+        .grid.four {
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        }
+
+        .card {
+            border: 1px solid var(--line-soft);
+            border-radius: 5px;
+            padding: 12px 14px;
+            background: var(--paper-2);
+        }
+
+        .card h4 {
+            margin: 0 0 6px;
+            font-family: var(--sans);
+            font-size: 14.5px;
+            color: var(--accent);
+        }
+
+        .card p {
+            margin: 0;
+            font-size: 13.5px;
+        }
+
+        .card ul {
+            margin: 6px 0 0;
+            padding-left: 18px;
+        }
+
+        .card li {
+            font-size: 13px;
+            margin-bottom: 3px;
+        }
+
+        /* view header badge */
+        .viewhead {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .viewhead .badge {
+            font-family: var(--mono);
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            background: var(--accent);
+            color: var(--card);
+            padding: 4px 10px;
+            border-radius: 20px;
+            white-space: nowrap;
+        }
+
+        .viewhead .who {
+            font-family: var(--sans);
+            font-size: 12.5px;
+            color: var(--ink-soft);
+        }
+
+        /* details / accordion */
+        details {
+            border: 1px solid var(--line-soft);
+            border-radius: 5px;
+            margin-bottom: 8px;
+            background: var(--paper-2);
+            overflow: hidden;
+        }
+
+        summary {
+            cursor: pointer;
+            padding: 10px 14px;
+            font-family: var(--sans);
+            font-weight: 600;
+            font-size: 14px;
+            list-style: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        summary::-webkit-details-marker {
+            display: none;
+        }
+
+        summary:before {
+            content: "+";
+            font-family: var(--mono);
+            color: var(--accent);
+            font-size: 16px;
+            width: 16px;
+        }
+
+        details[open] summary:before {
+            content: "–";
+        }
+
+        details .inner {
+            padding: 0 14px 14px 40px;
+            font-size: 14px;
+        }
+
+        details .inner p {
+            margin: 0 0 8px;
+        }
+
+        details .inner ol,
+        details .inner ul {
+            margin: 0 0 8px;
+            padding-left: 1.1em;
+        }
+
+        details .inner li {
+            margin-bottom: 4px;
+        }
+
+        /* flashcards */
+        .flashcards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+            gap: 12px;
+        }
+
+        .flash {
+            border: 1px dashed var(--line);
+            border-radius: 6px;
+            background: var(--paper-2);
+        }
+
+        .flash summary {
+            font-size: 13.5px;
+        }
+
+        .flash .inner {
+            padding: 0 14px 12px 14px;
+            font-size: 13.5px;
+            color: var(--ink-soft);
+        }
+
+        .pill {
+            display: inline-block;
+            font-family: var(--mono);
+            font-size: 10.5px;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            padding: 2px 8px;
+            border-radius: 20px;
+            border: 1px solid var(--accent-2);
+            color: var(--accent-2);
+            margin: 0 4px 4px 0;
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px 14px 60px;
+            font-family: var(--mono);
+            font-size: 12px;
+            color: var(--ink-soft);
+        }
+
+        footer .stamp {
+            display: inline-block;
+            border: 2px solid var(--accent);
+            color: var(--accent);
+            border-radius: 4px;
+            padding: 6px 14px;
+            transform: rotate(-2deg);
+            font-weight: bold;
+            letter-spacing: .05em;
+            margin-top: 10px;
+        }
+
+        .note {
+            font-size: 12.5px;
+            color: var(--ink-soft);
+            font-family: var(--sans);
+            font-style: italic;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="topbar">
+        <div class="topbar-inner">
+            <div class="brand">SE322 · <b>4+1</b>BLUEPRINT</div>
+            <nav class="sheets" id="sheetNav">
+                <a href="#s00">00</a><a href="#s01">01</a><a href="#s02">02</a><a href="#s03">03</a>
+                <a href="#s04">04</a><a href="#s05">05</a><a href="#s06">06</a><a href="#s07">07</a>
+                <a href="#s08">08</a><a href="#s09">09</a><a href="#s10">10</a>
+            </nav>
+            <div class="toggle" id="themeToggle" role="button" aria-label="Toggle dark/light mode">
+                <div class="knob">☀</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="wrap">
+
+        <section class="hero" id="s00">
+            <span class="eyebrow">Study Blueprint — Do not scale from drawing</span>
+            <h1>The 4+1 View Model</h1>
+            <p class="sub">Week 03 · Chapter 02, L03 — five lenses, one ATM system. Kruchten's model for describing an
+                architecture so every stakeholder gets the picture they actually need.</p>
+            <div class="titleblock">
+                <div><span>Drawn by</span>Shoug Alomran</div>
+                <div><span>Course</span>SE322 · Software Design &amp; Architecture</div>
+                <div><span>Scale</span>1 : Simplified</div>
+                <div><span>Sheets</span>00 – 10</div>
+            </div>
+        </section>
+
+        <!-- 01 -->
+        <section class="sheet" id="s01">
+            <div class="sheet-head"><span class="num">01</span>
+                <h2>Why Do We Need Multiple Views?</h2><span class="tag">The problem this solves</span>
+            </div>
+            <div class="sheet-body">
+                <p>No single diagram can capture every aspect of a complex system. So architects split the description
+                    into a <strong>collection of views</strong>, each giving a partial, purpose-built picture to a
+                    specific stakeholder (users, analysts, developers...).</p>
+                <div class="grid two">
+                    <div class="card">
+                        <h4>Manages complexity</h4>
+                        <p>Breaks an overwhelming system into understandable, digestible perspectives.</p>
+                    </div>
+                    <div class="card">
+                        <h4>Serves every stakeholder</h4>
+                        <p>Developers, users, and managers each get the concern that actually matters to them.</p>
+                    </div>
+                    <div class="card">
+                        <h4>Eases development</h4>
+                        <p>Makes the system easier to build, analyze, and maintain.</p>
+                    </div>
+                    <div class="card">
+                        <h4>Targets different aspects</h4>
+                        <p>Functional, structural, and behavioral concerns each get their own lens.</p>
+                    </div>
+                </div>
+                <p class="note">The most popular model for organizing these views is Philippe Kruchten's <strong>4+1
+                        View Model</strong> (1995).</p>
+            </div>
+        </section>
+
+        <!-- 02 -->
+        <section class="sheet" id="s02">
+            <div class="sheet-head"><span class="num">02</span>
+                <h2>The 4+1 Model, at a Glance</h2><span class="tag">Kruchten, 1995</span>
+            </div>
+            <div class="sheet-body">
+                <div class="mnemonic">
+                    <span class="label">Mnemonic</span>
+                    <strong>"Lions Prefer Dark Pizza, +1 Umbrella"</strong> → <b>L</b>ogical, <b>P</b>rocess,
+                    <b>D</b>evelopment, <b>P</b>hysical, <b>+1 U</b>ser/Scenario view holding them together.
+                </div>
+                <div class="compass">
+                    <div class="qbox">Logical View</div>
+                    <div class="qbox">Development View</div>
+                    <div class="qbox">Process View</div>
+                    <div class="qbox">Physical View</div>
+                    <div class="center">User View<small>(Scenarios)</small></div>
+                </div>
+                <p>Four views describe the system from four independent angles. The <strong>+1 (User/Scenario)
+                        view</strong> isn't a fifth equal view — it's a set of use cases that keeps the other four
+                    <strong>consistent</strong> with each other and validates the whole design against real usage.</p>
+            </div>
+        </section>
+
+        <!-- 03 -->
+        <section class="sheet" id="s03">
+            <div class="sheet-head"><span class="num">03</span>
+                <h2>The Logical View</h2><span class="tag">What the system should do</span>
+            </div>
+            <div class="sheet-body">
+                <div class="viewhead"><span class="badge">Structural + Behavioral</span><span class="who">Stakeholders:
+                        end-users, analysts, designers</span></div>
+                <p>Specifies the system's decomposition into conceptual entities (objects/classes) and how they connect
+                    — essentially an abstraction of the system's <strong>functional requirements</strong>.</p>
+                <div class="grid two">
+                    <div class="card">
+                        <h4>Static diagrams</h4>
+                        <p>Class diagram, Object diagram</p>
+                    </div>
+                    <div class="card">
+                        <h4>Dynamic diagrams</h4>
+                        <p>Sequence, Communication/Collaboration, State, Activity, Interaction Overview</p>
+                    </div>
+                </div>
+
+                <h3>ATM example — Class Diagram</h3>
+                <p>Shows the classes, their inter-relationships, and each class's operations &amp; attributes. A few
+                    notation rules worth memorizing:</p>
+                <ul>
+                    <li><strong>Directional arrows</strong> — point from the class that <em>initiates</em> an action to
+                        the one it affects (e.g. ATM Transaction → Account).</li>
+                    <li><strong>Inheritance</strong> — a line with a hollow triangular arrowhead, pointing from subclass
+                        up to superclass (e.g. Current Account &amp; Saving Account → Account).</li>
+                    <li><strong>Names above arrows</strong> — describe the relationship (e.g. "Maintains" from Bank to
+                        ATM Info = each Bank maintains one or more ATMs).</li>
+                    <li><strong>Multiplicities</strong> — numbers near the lines, e.g. <code>1..*</code> = one-to-many,
+                        <code>1</code> = exactly one.</li>
+                    <li><strong>Bidirectional associations</strong> — shown with either two arrows or no arrows at all.
+                    </li>
+                </ul>
+
+                <h3>ATM example — Collaboration (Communication) Diagram</h3>
+                <p>Focuses on <em>who talks to whom</em>: Bank Client ↔ ATM Machine ↔ Account/Checking Account. The
+                    numbered messages trace one full transaction — insert card → request/enter PIN → request/enter
+                    amount → process against the account → dispense cash → print receipt.</p>
+
+                <h3>ATM example — Sequence Diagram</h3>
+                <p>Models interactions <strong>over time</strong>: same actors, but now ordered top-to-bottom by exact
+                    message sequence.</p>
+                <div class="grid two">
+                    <div class="card">
+                        <h4>Class Diagram = Structure</h4>
+                        <p>Shows the objects and their relationships.</p>
+                    </div>
+                    <div class="card">
+                        <h4>Sequence Diagram = Behavior</h4>
+                        <p>Shows the order of interactions, step-by-step, clarifying who does what in a use case.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 04 -->
+        <section class="sheet" id="s04">
+            <div class="sheet-head"><span class="num">04</span>
+                <h2>The Process View</h2><span class="tag">How it behaves at runtime</span>
+            </div>
+            <div class="sheet-body">
+                <div class="viewhead"><span class="badge">Dynamic</span><span class="who">Stakeholders: developers,
+                        integrators</span></div>
+                <p>Focuses on the system's <strong>execution-time behavior</strong> — an abstraction of
+                    processes/threads, showing synchronization and concurrency, and how all execution units are
+                    organized at runtime.</p>
+                <div class="grid two">
+                    <div class="card">
+                        <h4>Concurrency</h4>
+                        <p>How tasks running at the same time interact and coordinate.</p>
+                    </div>
+                    <div class="card">
+                        <h4>Synchronization</h4>
+                        <p>How processes share resources/data without interfering with each other.</p>
+                    </div>
+                </div>
+                <p>Feeds directly into non-functional requirements like <strong>scalability</strong> and
+                    <strong>performance</strong>. Modeled with UML <strong>activity diagrams</strong> and
+                    <strong>interaction overview diagrams</strong>.</p>
+                <p class="note"><strong>ATM example:</strong> the activity diagram traces card validation → PIN entry →
+                    balance check → cash dispensing / account debit, running in parallel swim-lanes for Customer, ATM
+                    Machine, and Bank.</p>
+            </div>
+        </section>
+
+        <!-- 05 -->
+        <section class="sheet" id="s05">
+            <div class="sheet-head"><span class="num">05</span>
+                <h2>The Development View</h2><span class="tag">How it's built</span>
+            </div>
+            <div class="sheet-body">
+                <div class="viewhead"><span class="badge">Implementation</span><span class="who">Stakeholders:
+                        programmers, project managers</span></div>
+                <p>Describes the software's <strong>static organization</strong> into modules — class libraries,
+                    sub-systems, packages — from an implementation point of view: how source code is organized into
+                    modules, packages, and libraries.</p>
+                <p>Modeled with UML <strong>package diagrams</strong> and <strong>component diagrams</strong>. Useful
+                    for mapping logical components down to physical files and directories.</p>
+                <div class="card">
+                    <p><strong>ATM example (Component Diagram):</strong> shows components like Customer Console, ATM
+                        Machine, Card Reader, Bank Database, Web Page, Employee Console, and Client Desktop, along with
+                        their required interfaces and ports — together forming the full banking system.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 06 -->
+        <section class="sheet" id="s06">
+            <div class="sheet-head"><span class="num">06</span>
+                <h2>The Physical View</h2><span class="tag">How it's deployed</span>
+            </div>
+            <div class="sheet-body">
+                <div class="viewhead"><span class="badge">Deployment</span><span class="who">Stakeholders: system
+                        installers, admins, engineers</span></div>
+                <p>Represents deployment aspects — configuration and installation — modeled with UML <strong>deployment
+                        diagrams</strong>.</p>
+                <p>This is the view to reach for when evaluating:</p>
+                <div class="grid three">
+                    <div class="card">
+                        <h4>Availability</h4>
+                        <p>e.g. redundant nodes to boost uptime</p>
+                    </div>
+                    <div class="card">
+                        <h4>Performance &amp; Scalability</h4>
+                        <p>e.g. required processor speed, bandwidth</p>
+                    </div>
+                    <div class="card">
+                        <h4>Security</h4>
+                        <p>e.g. required firewalls</p>
+                    </div>
+                </div>
+                <p class="note"><strong>ATM example:</strong> physical nodes — Customer Console, Card Reader, ATM
+                    Machine, Bank Database, Web Page, Client Desktop, Employee Console — connected as deployed hardware,
+                    mirroring the development view's components but now showing <em>where</em> they physically run.</p>
+            </div>
+        </section>
+
+        <!-- 07 -->
+        <section class="sheet" id="s07">
+            <div class="sheet-head"><span class="num">07</span>
+                <h2>The User (Scenario) View</h2><span class="tag">The "+1"</span>
+            </div>
+            <div class="sheet-body">
+                <div class="viewhead"><span class="badge">Validation &amp; Glue</span><span class="who">Stakeholders:
+                        everyone — it validates the other 4 views</span></div>
+                <p>Describes the system's functionality — how the user uses it, and how the system serves the user. It's
+                    the foundation that lets the other four views work together <strong>seamlessly and
+                        logically</strong>.</p>
+                <ul>
+                    <li>Helps designers <strong>discover</strong> architectural elements during design.</li>
+                    <li>Helps <strong>validate</strong> the architecture afterward.</li>
+                    <li>Keeps the whole architecture consistent against both functional and non-functional requirements.
+                    </li>
+                </ul>
+                <p>Modeled with <strong>use-case diagrams</strong> and textual scenarios.</p>
+                <p class="note"><strong>ATM example:</strong> a Bank Client actor triggers "Bank ATM Transaction," which
+                    extends into Checking Transaction, Saving Transaction History, Deposit Amount, and Withdrawal Amount
+                    — each of which uses an Approval Process, which itself extends to handle an Invalid PIN case.</p>
+            </div>
+        </section>
+
+        <!-- 08 -->
+        <section class="sheet" id="s08">
+            <div class="sheet-head"><span class="num">08</span>
+                <h2>Diagram Cheat-Sheet by View</h2><span class="tag">Match the right diagram to the right view</span>
+            </div>
+            <div class="sheet-body">
+                <div class="grid two">
+                    <div class="card">
+                        <h4>1 · Logical (what it should do)</h4>
+                        <ul>
+                            <li>Class Diagram — static structure</li>
+                            <li>Sequence Diagram — dynamic behavior</li>
+                            <li>Collaboration Diagram — object interactions</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h4>2 · Process (how it runs)</h4>
+                        <ul>
+                            <li>Activity Diagram — workflow, actions</li>
+                            <li>Interaction Overview Diagram</li>
+                            <li>State Machine Diagram — object life cycles</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h4>3 · Development (how it's built)</h4>
+                        <ul>
+                            <li>Package Diagram</li>
+                            <li>Component Diagram</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h4>4 · Physical (where it runs)</h4>
+                        <ul>
+                            <li>Deployment Diagram</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h4>+1 · User/Scenario (why it exists)</h4>
+                        <ul>
+                            <li>Use-Case Diagram</li>
+                            <li>Textual scenarios</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 09 -->
+        <section class="sheet" id="s09">
+            <div class="sheet-head"><span class="num">09</span>
+                <h2>The Full Summary Table</h2><span class="tag">Exam's favorite table</span>
+            </div>
+            <div class="sheet-body bigtable">
+                <table>
+                    <tr>
+                        <th></th>
+                        <th>Logical</th>
+                        <th>Process</th>
+                        <th>Development</th>
+                        <th>Physical</th>
+                        <th>Scenario</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Description</strong></td>
+                        <td>Components (objects) of the system + their interaction</td>
+                        <td>Processes/workflow rules + how they communicate; dynamic view</td>
+                        <td>Building-block view; static organization of system modules</td>
+                        <td>Installation, configuration &amp; deployment of the application</td>
+                        <td>Shows the design is complete via validation &amp; illustration</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Stakeholder</strong></td>
+                        <td>End-user, Analysts, Designer</td>
+                        <td>Integrators &amp; developers</td>
+                        <td>Programmer, software project managers</td>
+                        <td>System engineer, operators, admins, installers</td>
+                        <td>Stakeholders of other views + evaluators</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Considers</strong></td>
+                        <td>Functional requirements</td>
+                        <td>Non-functional requirements</td>
+                        <td>Software module organization (reuse, tool constraints)</td>
+                        <td>Non-functional requirements re: underlying hardware</td>
+                        <td>System consistency &amp; validity</td>
+                    </tr>
+                    <tr>
+                        <td><strong>UML Diagram</strong></td>
+                        <td>Class, State, Object, Sequence, Communication</td>
+                        <td>Activity Diagram</td>
+                        <td>Component, Package diagram</td>
+                        <td>Deployment diagram</td>
+                        <td>Use-case diagram</td>
+                    </tr>
+                </table>
+                <p class="note">⚠ Same exam trap as before: a diagram of physical machines/consoles connected together
+                    is the <strong>Physical view</strong> (hardware/deployment), even if it looks similar to a Component
+                    diagram (Development view, which is about software module organization, not hardware).</p>
+            </div>
+        </section>
+
+        <!-- 10 -->
+        <section class="sheet" id="s10">
+            <div class="sheet-head"><span class="num">10</span>
+                <h2>Quick Self-Test</h2><span class="tag">Cover the answer, then click</span>
+            </div>
+            <div class="sheet-body">
+                <div class="flashcards">
+                    <details class="flash">
+                        <summary>Who invented the 4+1 View Model, and when?</summary>
+                        <div class="inner">Philippe Kruchten, in 1995.</div>
+                    </details>
+                    <details class="flash">
+                        <summary>What is the "+1" view really doing?</summary>
+                        <div class="inner">It's not a 5th independent view — it's the set of use cases/scenarios that
+                            ties the other 4 views together and validates them for consistency.</div>
+                    </details>
+                    <details class="flash">
+                        <summary>Which view is an abstraction of the functional requirements?</summary>
+                        <div class="inner">The Logical View.</div>
+                    </details>
+                    <details class="flash">
+                        <summary>Which view is best for evaluating availability, performance, and security via
+                            redundancy/firewalls?</summary>
+                        <div class="inner">The Physical View.</div>
+                    </details>
+                    <details class="flash">
+                        <summary>Which diagrams support the Process View?</summary>
+                        <div class="inner">Activity diagrams and Interaction Overview diagrams.</div>
+                    </details>
+                    <details class="flash">
+                        <summary>Component diagram vs. Deployment diagram — which view is each?</summary>
+                        <div class="inner">Component diagram = Development View (software module organization).
+                            Deployment diagram = Physical View (hardware/installation).</div>
+                    </details>
+                    <details class="flash">
+                        <summary>What does an inheritance arrow look like in a class diagram, and which way does it
+                            point?</summary>
+                        <div class="inner">A line ending in a hollow triangular arrowhead, pointing from the subclass up
+                            to the superclass.</div>
+                    </details>
+                    <details class="flash">
+                        <summary>What does a multiplicity of "1..*" mean?</summary>
+                        <div class="inner">One-to-many.</div>
+                    </details>
+                    <details class="flash">
+                        <summary>Class diagram vs. Sequence diagram — structure or behavior?</summary>
+                        <div class="inner">Class diagram = structure (objects &amp; relationships). Sequence diagram =
+                            behavior over time (order of interactions).</div>
+                    </details>
+                    <details class="flash">
+                        <summary>Who are the typical stakeholders of the Development View?</summary>
+                        <div class="inner">Programmers and software project managers.</div>
+                    </details>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            Software Design &amp; Architecture — Study Blueprint<br>
+            <span class="stamp">Made by Shoug Alomran</span>
+        </footer>
+
+    </div>
+
+    <script>
+        const root = document.documentElement;
+        const toggle = document.getElementById('themeToggle');
+        const knob = toggle.querySelector('.knob');
+
+        function applyTheme(theme) {
+            if (theme === 'dark') {
+                root.setAttribute('data-theme', 'dark');
+                knob.textContent = '☾';
+            } else {
+                root.removeAttribute('data-theme');
+                knob.textContent = '☀';
+            }
+        }
+
+        const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        applyTheme(prefersDark ? 'dark' : 'light');
+
+        toggle.addEventListener('click', () => {
+            const isDark = root.getAttribute('data-theme') === 'dark';
+            applyTheme(isDark ? 'light' : 'dark');
+        });
+    </script>
+
+</body>
+
+</html>

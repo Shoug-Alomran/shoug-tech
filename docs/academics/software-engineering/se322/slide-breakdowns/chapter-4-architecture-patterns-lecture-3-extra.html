@@ -1,0 +1,1462 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Architecture Patterns — MVC &amp; Layered | Sheet Set</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --sp-1: clamp(.4rem, .5vw, .55rem);
+            --sp-2: clamp(.7rem, 1vw, 1rem);
+            --sp-3: clamp(1.1rem, 2vw, 1.6rem);
+            --sp-4: clamp(1.8rem, 3.5vw, 3rem);
+            --sp-5: clamp(2.8rem, 6vw, 5rem);
+            --radius: 10px;
+            --maxw: 1180px;
+            --display: 'Space Grotesk', sans-serif;
+            --body: 'Inter', sans-serif;
+            --mono: 'JetBrains Mono', monospace;
+        }
+
+        [data-theme="dark"] {
+            --bg: #0a0f1c;
+            --bg-grid: rgba(255, 255, 255, .045);
+            --bg-grid-major: rgba(255, 255, 255, .09);
+            --surface: #101a2c;
+            --surface-2: #16233b;
+            --surface-3: #0d1626;
+            --ink: #e8edf7;
+            --ink-soft: #94a7c4;
+            --ink-faint: #5c6d8a;
+            --line: rgba(210, 225, 255, .16);
+            --line-strong: rgba(210, 225, 255, .32);
+            --accent: #69b3ef;
+            --accent-ink: #04101f;
+            --accent-2: #f0b15c;
+            --accent-3: #8fd9c4;
+            --bad: #ef8a72;
+            --shadow: 0 20px 50px -20px rgba(0, 0, 0, .6);
+        }
+
+        [data-theme="light"] {
+            --bg: #f1ede2;
+            --bg-grid: rgba(20, 30, 45, .055);
+            --bg-grid-major: rgba(20, 30, 45, .11);
+            --surface: #fdfcf8;
+            --surface-2: #eee8d8;
+            --surface-3: #e4dcc8;
+            --ink: #1c2430;
+            --ink-soft: #4c5972;
+            --ink-faint: #8592a6;
+            --line: rgba(28, 36, 48, .18);
+            --line-strong: rgba(28, 36, 48, .36);
+            --accent: #2662a6;
+            --accent-ink: #ffffff;
+            --accent-2: #b06a1d;
+            --accent-3: #1f8067;
+            --bad: #b3452b;
+            --shadow: 0 20px 45px -22px rgba(28, 36, 48, .35);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            background:
+                repeating-linear-gradient(0deg, var(--bg-grid) 0 1px, transparent 1px 28px),
+                repeating-linear-gradient(90deg, var(--bg-grid) 0 1px, transparent 1px 28px),
+                repeating-linear-gradient(0deg, var(--bg-grid-major) 0 1.5px, transparent 1.5px 140px),
+                repeating-linear-gradient(90deg, var(--bg-grid-major) 0 1.5px, transparent 1.5px 140px),
+                var(--bg);
+            color: var(--ink);
+            font-family: var(--body);
+            line-height: 1.55;
+            -webkit-font-smoothing: antialiased;
+            transition: background-color .35s ease, color .35s ease;
+            font-size: clamp(15px, .95vw + .55rem, 17.5px);
+        }
+
+        h1,
+        h2,
+        h3,
+        h4 {
+            font-family: var(--display);
+            margin: 0;
+            letter-spacing: -.01em;
+        }
+
+        code,
+        .mono {
+            font-family: var(--mono);
+        }
+
+        p {
+            margin: 0 0 .8em;
+        }
+
+        a {
+            color: var(--accent);
+        }
+
+        /* ---------- corner-bracket "sheet" frame ---------- */
+        .sheet {
+            position: relative;
+            border: 1px solid var(--line);
+            background: var(--surface);
+            border-radius: 4px;
+            box-shadow: var(--shadow);
+        }
+
+        .corner {
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            pointer-events: none;
+        }
+
+        .corner.tl {
+            top: -1px;
+            left: -1px;
+            border-top: 2px solid var(--accent);
+            border-left: 2px solid var(--accent);
+        }
+
+        .corner.tr {
+            top: -1px;
+            right: -1px;
+            border-top: 2px solid var(--accent);
+            border-right: 2px solid var(--accent);
+        }
+
+        .corner.bl {
+            bottom: -1px;
+            left: -1px;
+            border-bottom: 2px solid var(--accent);
+            border-left: 2px solid var(--accent);
+        }
+
+        .corner.br {
+            bottom: -1px;
+            right: -1px;
+            border-bottom: 2px solid var(--accent);
+            border-right: 2px solid var(--accent);
+        }
+
+        .wrap {
+            max-width: var(--maxw);
+            margin: 0 auto;
+            padding: 0 var(--sp-3);
+        }
+
+        /* ---------- top bar ---------- */
+        .topbar {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            backdrop-filter: blur(10px);
+            background: color-mix(in srgb, var(--bg) 82%, transparent);
+            border-bottom: 1px solid var(--line);
+        }
+
+        .topbar-inner {
+            max-width: var(--maxw);
+            margin: 0 auto;
+            padding: .7rem var(--sp-3);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: .6rem;
+            font-family: var(--mono);
+            font-size: .8rem;
+            color: var(--ink-soft);
+        }
+
+        .brand b {
+            color: var(--ink);
+            font-family: var(--display);
+            font-size: 1.02rem;
+            letter-spacing: .01em;
+        }
+
+        .brand .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--accent-3);
+            box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-3) 25%, transparent);
+        }
+
+        nav.pills {
+            display: flex;
+            gap: .35rem;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+
+        nav.pills a {
+            font-family: var(--mono);
+            font-size: .72rem;
+            text-decoration: none;
+            color: var(--ink-soft);
+            padding: .35rem .6rem;
+            border: 1px solid transparent;
+            border-radius: 20px;
+            white-space: nowrap;
+        }
+
+        nav.pills a:hover {
+            border-color: var(--line);
+            color: var(--ink);
+        }
+
+        #themeToggle {
+            border: 1px solid var(--line);
+            background: var(--surface-2);
+            color: var(--ink);
+            border-radius: 20px;
+            padding: .4rem .7rem;
+            font-family: var(--mono);
+            font-size: .72rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: .4rem;
+        }
+
+        #themeToggle:hover {
+            border-color: var(--accent);
+        }
+
+        section {
+            padding: var(--sp-5) 0;
+        }
+
+        .kicker {
+            font-family: var(--mono);
+            font-size: .72rem;
+            letter-spacing: .14em;
+            text-transform: uppercase;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+            margin-bottom: .6rem;
+        }
+
+        .kicker::before {
+            content: "";
+            width: 22px;
+            height: 1px;
+            background: var(--accent);
+        }
+
+        h2.title {
+            font-size: clamp(1.5rem, 3.2vw, 2.3rem);
+            margin-bottom: .4rem;
+        }
+
+        .lede {
+            color: var(--ink-soft);
+            max-width: 62ch;
+            font-size: clamp(.95rem, 1.1vw, 1.05rem);
+            margin-bottom: var(--sp-4);
+        }
+
+        /* ---------- hero ---------- */
+        .hero {
+            padding-top: var(--sp-5);
+            padding-bottom: var(--sp-4);
+        }
+
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1.15fr .85fr;
+            gap: var(--sp-4);
+            align-items: center;
+        }
+
+        @media(max-width:900px) {
+            .hero-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .hero h1 {
+            font-size: clamp(2rem, 5vw, 3.4rem);
+            line-height: 1.04;
+        }
+
+        .hero h1 span {
+            color: var(--accent);
+        }
+
+        .hero .sub {
+            color: var(--ink-soft);
+            font-size: clamp(1rem, 1.3vw, 1.15rem);
+            margin-top: 1rem;
+            max-width: 52ch;
+        }
+
+        .tag-row {
+            display: flex;
+            gap: .5rem;
+            flex-wrap: wrap;
+            margin-top: 1.3rem;
+        }
+
+        .tag {
+            font-family: var(--mono);
+            font-size: .72rem;
+            border: 1px solid var(--line);
+            border-radius: 20px;
+            padding: .32rem .7rem;
+            color: var(--ink-soft);
+        }
+
+        /* hero diagram */
+        .hero-diagram {
+            padding: var(--sp-3);
+            position: relative;
+        }
+
+        .hd-title {
+            font-family: var(--mono);
+            font-size: .68rem;
+            color: var(--ink-faint);
+            text-transform: uppercase;
+            letter-spacing: .1em;
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .vc-row {
+            display: flex;
+            gap: .55rem;
+            margin-bottom: .4rem;
+        }
+
+        .vc-col {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: .35rem;
+            align-items: center;
+        }
+
+        .box {
+            width: 100%;
+            text-align: center;
+            border: 1.5px solid var(--line-strong);
+            border-radius: 6px;
+            padding: .5rem .3rem;
+            font-family: var(--mono);
+            font-size: .72rem;
+            background: var(--surface-2);
+        }
+
+        .box.view {
+            color: var(--accent-3);
+            border-color: color-mix(in srgb, var(--accent-3) 55%, var(--line));
+        }
+
+        .box.ctrl {
+            color: var(--accent-2);
+            border-color: color-mix(in srgb, var(--accent-2) 55%, var(--line));
+        }
+
+        .arrow-v {
+            font-size: .7rem;
+            color: var(--ink-faint);
+            line-height: 1;
+        }
+
+        .model-bar {
+            margin-top: .5rem;
+            text-align: center;
+            border: 1.5px dashed var(--accent);
+            border-radius: 6px;
+            padding: .55rem;
+            font-family: var(--mono);
+            font-size: .78rem;
+            color: var(--accent);
+            background: color-mix(in srgb, var(--accent) 10%, transparent);
+        }
+
+        /* ---------- cards / grids ---------- */
+        .grid {
+            display: grid;
+            gap: var(--sp-3);
+        }
+
+        .grid-2 {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .grid-3 {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .grid-4 {
+            grid-template-columns: repeat(4, 1fr);
+        }
+
+        @media(max-width:820px) {
+
+            .grid-2,
+            .grid-3,
+            .grid-4 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media(min-width:821px) and (max-width:1080px) {
+
+            .grid-3,
+            .grid-4 {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .card {
+            padding: var(--sp-3);
+            position: relative;
+        }
+
+        .card h3 {
+            font-size: 1.05rem;
+            margin-bottom: .5rem;
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+        }
+
+        .card h3 .ico {
+            width: 26px;
+            height: 26px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: color-mix(in srgb, var(--accent) 18%, transparent);
+            color: var(--accent);
+            font-family: var(--mono);
+            font-size: .75rem;
+            flex: none;
+        }
+
+        .card p {
+            color: var(--ink-soft);
+            font-size: .92rem;
+        }
+
+        .card .foot {
+            color: var(--ink-faint);
+            font-size: .78rem;
+            font-family: var(--mono);
+            margin-top: .6rem;
+            border-top: 1px dashed var(--line);
+            padding-top: .5rem;
+        }
+
+        /* ---------- mnemonic banner ---------- */
+        .mnemonic {
+            margin-top: var(--sp-3);
+            border: 1px dashed var(--accent-2);
+            border-radius: 8px;
+            padding: .9rem 1.1rem;
+            background: color-mix(in srgb, var(--accent-2) 8%, transparent);
+            display: flex;
+            gap: .7rem;
+            align-items: flex-start;
+        }
+
+        .mnemonic .m-ico {
+            font-family: var(--mono);
+            font-size: .7rem;
+            color: var(--accent-2);
+            border: 1px solid var(--accent-2);
+            border-radius: 5px;
+            padding: .2rem .4rem;
+            flex: none;
+            margin-top: .1rem;
+        }
+
+        .mnemonic b {
+            color: var(--accent-2);
+        }
+
+        .mnemonic .sentence {
+            font-family: var(--display);
+            font-size: 1.02rem;
+        }
+
+        .mnemonic p {
+            margin: .25rem 0 0;
+            font-size: .86rem;
+        }
+
+        /* ---------- flow strip ---------- */
+        .flow {
+            display: flex;
+            align-items: center;
+            gap: .4rem;
+            flex-wrap: wrap;
+            margin: var(--sp-3) 0;
+        }
+
+        .flow .step {
+            font-family: var(--mono);
+            font-size: .82rem;
+            border: 1px solid var(--line-strong);
+            border-radius: 20px;
+            padding: .5rem 1rem;
+            background: var(--surface-2);
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+        }
+
+        .flow .step b {
+            color: var(--accent);
+        }
+
+        .flow .sep {
+            color: var(--ink-faint);
+            font-size: 1rem;
+        }
+
+        /* ---------- table ---------- */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: .88rem;
+        }
+
+        th,
+        td {
+            text-align: left;
+            padding: .65rem .7rem;
+            border-bottom: 1px solid var(--line);
+            vertical-align: top;
+        }
+
+        th {
+            font-family: var(--mono);
+            font-size: .7rem;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            color: var(--ink-faint);
+            font-weight: 600;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        .tbl-wrap {
+            overflow-x: auto;
+        }
+
+        /* ---------- layered stack diagram ---------- */
+        .stack {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+
+        .layer {
+            border: 1.5px solid var(--line-strong);
+            border-radius: 6px;
+            padding: .75rem 1rem;
+            margin-bottom: .5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            background: var(--surface-2);
+            position: relative;
+        }
+
+        .layer .lname {
+            font-family: var(--mono);
+            font-weight: 600;
+            font-size: .86rem;
+        }
+
+        .layer .lrole {
+            color: var(--ink-soft);
+            font-size: .8rem;
+        }
+
+        .layer .liface {
+            font-family: var(--mono);
+            font-size: .7rem;
+            color: var(--accent);
+            white-space: nowrap;
+            text-align: right;
+        }
+
+        .layer .liface small {
+            display: block;
+            color: var(--ink-faint);
+            font-size: .65rem;
+        }
+
+        .layer-arrow {
+            text-align: center;
+            color: var(--ink-faint);
+            font-size: .75rem;
+            margin: -.15rem 0 .35rem;
+            font-family: var(--mono);
+        }
+
+        /* ---------- comparison ---------- */
+        .vs {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 1.2rem;
+            align-items: center;
+        }
+
+        @media(max-width:700px) {
+            .vs {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .vs .side {
+            padding: var(--sp-3);
+        }
+
+        .vs .vslabel {
+            font-family: var(--display);
+            font-weight: 700;
+            color: var(--ink-faint);
+            text-align: center;
+            writing-mode: horizontal-tb;
+            font-size: .85rem;
+            border: 1px solid var(--line);
+            border-radius: 50%;
+            width: 42px;
+            height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+        }
+
+        @media(max-width:700px) {
+            .vs .vslabel {
+                margin: .4rem auto;
+            }
+        }
+
+        /* ---------- exam / bonus ---------- */
+        .examnote {
+            border-left: 3px solid var(--bad);
+            padding: .6rem .9rem;
+            background: color-mix(in srgb, var(--bad) 8%, transparent);
+            border-radius: 0 6px 6px 0;
+            font-size: .85rem;
+            color: var(--ink-soft);
+            margin-top: .6rem;
+        }
+
+        .examnote b {
+            color: var(--bad);
+        }
+
+        .pill-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: .4rem;
+            margin-top: .6rem;
+        }
+
+        .pill-list span {
+            font-family: var(--mono);
+            font-size: .72rem;
+            border: 1px solid var(--line);
+            border-radius: 20px;
+            padding: .28rem .65rem;
+            color: var(--ink-soft);
+        }
+
+        /* ---------- scenario anatomy chip row ---------- */
+        .chips6 {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: .5rem;
+            margin-top: .8rem;
+        }
+
+        @media(max-width:820px) {
+            .chips6 {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media(max-width:480px) {
+            .chips6 {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .chip6 {
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            padding: .6rem .5rem;
+            text-align: center;
+            background: var(--surface-2);
+        }
+
+        .chip6 .n {
+            font-family: var(--mono);
+            font-size: .65rem;
+            color: var(--accent);
+        }
+
+        .chip6 .t {
+            font-family: var(--display);
+            font-weight: 600;
+            font-size: .82rem;
+            margin-top: .15rem;
+        }
+
+        /* ---------- title-block footer ---------- */
+        footer {
+            border-top: 1px solid var(--line);
+            margin-top: var(--sp-5);
+        }
+
+        .titleblock {
+            max-width: var(--maxw);
+            margin: 0 auto;
+            padding: var(--sp-3);
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0;
+            border: 1px solid var(--line);
+            margin-top: var(--sp-3);
+            margin-bottom: var(--sp-4);
+        }
+
+        @media(max-width:700px) {
+            .titleblock {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .tb-cell {
+            border-right: 1px solid var(--line);
+            border-bottom: 1px solid var(--line);
+            padding: .6rem .8rem;
+        }
+
+        .tb-cell:nth-child(4n) {
+            border-right: none;
+        }
+
+        .tb-cell .k {
+            font-family: var(--mono);
+            font-size: .62rem;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            color: var(--ink-faint);
+        }
+
+        .tb-cell .v {
+            font-family: var(--display);
+            font-size: .92rem;
+            margin-top: .15rem;
+        }
+
+        .backtop {
+            position: fixed;
+            right: 1.1rem;
+            bottom: 1.1rem;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: var(--surface-2);
+            border: 1px solid var(--line);
+            color: var(--ink);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity .25s ease;
+            z-index: 40;
+            font-size: 1rem;
+        }
+
+        .backtop.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(14px);
+            transition: opacity .6s ease, transform .6s ease;
+        }
+
+        .reveal.in {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                transition: none !important;
+                scroll-behavior: auto !important;
+            }
+
+            .reveal {
+                opacity: 1;
+                transform: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="topbar">
+        <div class="topbar-inner">
+            <div class="brand"><span class="dot"></span><b>SD&amp;A</b> · Sheet Set 04.03</div>
+            <nav class="pills">
+                <a href="#map">Map</a>
+                <a href="#mvc">MVC</a>
+                <a href="#mvc-flow">Flow</a>
+                <a href="#hier">Layered</a>
+                <a href="#compare">Compare</a>
+                <a href="#toolkit">Toolkit</a>
+                <a href="#exam">Exam</a>
+            </nav>
+            <button id="themeToggle" aria-label="toggle theme">
+                <span id="themeIcon">☾</span><span id="themeLabel">Dark</span>
+            </button>
+        </div>
+    </div>
+
+    <div class="wrap">
+
+        <!-- HERO -->
+        <section class="hero">
+            <div class="hero-grid">
+                <div>
+                    <div class="kicker">Chapter 04 · Lecture 03 · Architecture Patterns</div>
+                    <h1>Boxes talk to <span>boxes.</span><br>Learn the wiring.</h1>
+                    <p class="sub">A memorize-friendly rebuild of the MVC and Layered pattern lecture — with the
+                        mnemonics,
+                        flows, and interfaces you actually need for the exam, drawn as the box‑and‑line schematics they
+                        really are.</p>
+                    <div class="tag-row">
+                        <span class="tag">Interactive Systems</span>
+                        <span class="tag">Hierarchical Systems</span>
+                        <span class="tag">MVC</span>
+                        <span class="tag">Layered Pattern</span>
+                        <span class="tag">Real‑Estate Case Study</span>
+                    </div>
+                </div>
+                <div class="sheet hero-diagram">
+                    <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+                    <div class="hd-title"><span>FIG. 01 — MVC SKELETON</span><span>NTS</span></div>
+                    <div class="vc-row">
+                        <div class="vc-col">
+                            <div class="box view">View 1</div>
+                            <div class="arrow-v">↕</div>
+                            <div class="box ctrl">Controller 1</div>
+                        </div>
+                        <div class="vc-col">
+                            <div class="box view">View 2</div>
+                            <div class="arrow-v">↕</div>
+                            <div class="box ctrl">Controller 2</div>
+                        </div>
+                        <div class="vc-col">
+                            <div class="box view">View n</div>
+                            <div class="arrow-v">↕</div>
+                            <div class="box ctrl">Controller n</div>
+                        </div>
+                    </div>
+                    <div class="model-bar">Model — core data &amp; functionality</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- MAP -->
+        <section id="map">
+            <div class="kicker">01 · The Big Map</div>
+            <h2 class="title">Two families of systems, one pattern each (plus a bonus)</h2>
+            <p class="lede">Everything in this chapter hangs off one split. Ask: <b>does the user interact with it?</b>
+                If yes → Interactive.
+                If it's built from clean levels of abstraction → Hierarchical.</p>
+
+            <div class="grid grid-2">
+                <div class="sheet card reveal">
+                    <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+                    <h3><span class="ico">IS</span>Interactive Systems</h3>
+                    <p>Systems built around user interfaces. The two quality attributes that matter most:
+                        <b>Usability</b> and <b>Modifiability</b>.</p>
+                    <p><b>Main pattern:</b> Model‑View‑Controller (MVC)</p>
+                    <div class="foot">Think: any app with a screen the user touches, speaks to, or gestures at.</div>
+                </div>
+                <div class="sheet card reveal">
+                    <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+                    <h3><span class="ico">HS</span>Hierarchical Systems</h3>
+                    <p>Systems decomposed into levels, top (abstract) to bottom (concrete). Each level only needs to
+                        know the level next to it.</p>
+                    <p><b>Two patterns:</b> Main Program &amp; Subroutine · <b>Layered</b> (our focus)</p>
+                    <div class="foot">Think: an OS — hardware drivers at the bottom, UI logic at the top.</div>
+                </div>
+            </div>
+
+            <div class="mnemonic reveal">
+                <span class="m-ico">MEM</span>
+                <div>
+                    <div class="sentence"><b>I</b>nteract with a <b>V</b>iew → <b>H</b>ierarchy of <b>L</b>ayers</div>
+                    <p><b>IVHL</b> — Interactive→MVC, Hierarchical→Layered. If you remember this pairing, you can't mix
+                        up which pattern answers which question type on the exam.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- MVC -->
+        <section id="mvc">
+            <div class="kicker">02 · Model‑View‑Controller</div>
+            <h2 class="title">MVC — three roles, one job each</h2>
+            <p class="lede">MVC decomposes an interactive system into <b>Model</b>, <b>View</b>, and <b>Controller</b>
+                so the same
+                data can be shown and driven in many different ways without touching the core logic.</p>
+
+            <div class="tbl-wrap sheet" style="padding: var(--sp-2);">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Component</th>
+                            <th>What it does</th>
+                            <th>Memory hook</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="mono" style="color:var(--accent)">Model</td>
+                            <td>The system's core — data + major processing capabilities. When data changes, it updates
+                                its Views.</td>
+                            <td>"The Model has the <i>facts</i>."</td>
+                        </tr>
+                        <tr>
+                            <td class="mono" style="color:var(--accent-3)">View</td>
+                            <td>Output representation shown to the user (graphical, console, voice reply...). Every View
+                                is paired with a Controller.</td>
+                            <td>"The View is the <i>face</i>."</td>
+                        </tr>
+                        <tr>
+                            <td class="mono" style="color:var(--accent-2)">Controller</td>
+                            <td>Receives user input and translates it into service requests sent to the Model.</td>
+                            <td>"The Controller is the <i>hands</i>."</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="mnemonic reveal">
+                <span class="m-ico">MEM</span>
+                <div>
+                    <div class="sentence">"<b>M</b>odel has <b>F</b>acts, <b>V</b>iew has a <b>F</b>ace,
+                        <b>C</b>ontroller has <b>H</b>ands."</div>
+                    <p>Facts don't move until the Hands push them, and the Face just shows whatever the Facts currently
+                        say.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- MVC FLOW -->
+        <section id="mvc-flow">
+            <div class="kicker">03 · The Loop That Never Stops</div>
+            <h2 class="title">The flow: User → Controller → Model → View → User</h2>
+            <p class="lede">Every MVC exam question is secretly asking you to trace this loop. It's alliterative on
+                purpose — use that.</p>
+
+            <div class="flow">
+                <div class="step"><b>1</b> User acts (click / gesture / voice)</div>
+                <span class="sep">→</span>
+                <div class="step"><b>2</b> Controller <span style="color:var(--ink-faint)">translates input →
+                        request</span></div>
+                <span class="sep">→</span>
+                <div class="step"><b>3</b> Model <span style="color:var(--ink-faint)">updates data, notifies
+                        Views</span></div>
+                <span class="sep">→</span>
+                <div class="step"><b>4</b> View <span style="color:var(--ink-faint)">refreshes to show new state</span>
+                </div>
+                <span class="sep">↻</span>
+                <div class="step"><b>User</b> sees result</div>
+            </div>
+
+            <div class="mnemonic reveal">
+                <span class="m-ico">MEM</span>
+                <div>
+                    <div class="sentence">"<b>U</b>sers <b>C</b>lick, <b>C</b>ontrollers <b>C</b>onvert, <b>M</b>odels
+                        <b>M</b>utate, <b>V</b>iews <b>V</b>isualize."</div>
+                    <p>U‑C‑M‑V, and each role's job starts with the same letter as the role — the sentence <i>is</i> the
+                        definition.</p>
+                </div>
+            </div>
+
+            <h3 style="margin-top:var(--sp-4); font-size:1.1rem;">Worked example — real estate system</h3>
+            <p class="lede" style="margin-bottom:var(--sp-3)">Same Model, two very different Views/Controllers — this is
+                <i>why</i> MVC exists.</p>
+
+            <div class="grid grid-2">
+                <div class="sheet card reveal">
+                    <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+                    <h3><span class="ico">🖐</span>Large Screen</h3>
+                    <p><b>User:</b> waves hands at a wall‑sized display.<br>
+                        <b>Controller:</b> gesture recognition → <code>sendCommand(FIND, SFH, 33803)</code><br>
+                        <b>View:</b> map with pins refreshes to show matches.
+                    </p>
+                </div>
+                <div class="sheet card reveal">
+                    <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+                    <h3><span class="ico">🎙</span>Small Screen</h3>
+                    <p><b>User:</b> "Find single family home in Lakeland, FL."<br>
+                        <b>Controller:</b> speech recognition → same <code>sendCommand(...)</code> shape<br>
+                        <b>View:</b> laptop screen updates the same underlying results.
+                    </p>
+                </div>
+            </div>
+
+            <div class="examnote">
+                <b>Two‑way dependency gotcha:</b> a View <i>requires</i> the Model (to fetch data) — but the Model also
+                <i>requires</i>
+                the View (to push updates). Both "provide" and "require" exist at once because of the <b>Observer
+                    pattern</b>
+                wiring underneath MVC (View registers as an <code>IObserver</code> of the Model).
+            </div>
+        </section>
+
+        <!-- MVC QUALITIES -->
+        <section id="mvc-quality">
+            <div class="kicker">04 · Why Bother</div>
+            <h2 class="title">MVC's payoff: M‑U‑R</h2>
+            <div class="grid grid-3">
+                <div class="sheet card reveal">
+                    <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+                    <h3><span class="ico">M</span>Modifiability</h3>
+                    <p>Easy to swap, enhance, or add new user interfaces without rewriting the Model.</p>
+                </div>
+                <div class="sheet card reveal">
+                    <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+                    <h3><span class="ico">U</span>Usability</h3>
+                    <p>Different UIs can be configured per audience (gesture wall vs. voice phone) from the same core.
+                    </p>
+                </div>
+                <div class="sheet card reveal">
+                    <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+                    <h3><span class="ico">R</span>Reusability</h3>
+                    <p>Because concerns are separated, Model, View, and Controller can each be reused in other systems.
+                    </p>
+                </div>
+            </div>
+            <p class="lede" style="margin-top:1rem;">Common variations: fusing View+Controller (Microsoft's 1990s
+                <b>Document‑View</b>) or the more elaborate
+                <b>Process‑Abstraction‑Controller</b> pattern.
+            </p>
+        </section>
+
+        <!-- HIERARCHICAL / LAYERED -->
+        <section id="hier">
+            <div class="kicker">05 · Hierarchical Systems</div>
+            <h2 class="title">Layered Pattern — stack it, don't tangle it</h2>
+            <p class="lede">Each layer only talks to the layer directly above/below through a well‑defined interface.
+                Higher layers <i>consume</i> what lower layers <i>provide</i> — nothing skips a level.</p>
+
+            <div class="sheet card" style="max-width:640px;">
+                <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+                <div class="hd-title"><span>FIG. 02 — REMOTE MONITOR SYSTEM (4 LAYERS)</span><span>TOP → BOTTOM</span>
+                </div>
+                <div class="stack">
+                    <div class="layer">
+                        <div>
+                            <div class="lname">SatcomLayer</div>
+                            <div class="lrole">Satellite communication functions</div>
+                        </div>
+                        <div class="liface">IJSatcom<small>provides comms to layers below</small></div>
+                    </div>
+                    <div class="layer-arrow">provides ↓ / requires ↑</div>
+                    <div class="layer">
+                        <div>
+                            <div class="lname">SecurityLayer</div>
+                            <div class="lrole">Encryption &amp; security</div>
+                        </div>
+                        <div class="liface">IJSecure<small>provides security · requires app</small></div>
+                    </div>
+                    <div class="layer-arrow">provides ↓ / requires ↑</div>
+                    <div class="layer">
+                        <div>
+                            <div class="lname">ApplicationLayer</div>
+                            <div class="lrole">Main app logic, business rules</div>
+                        </div>
+                        <div class="liface">IApplication<small>provides app · requires hardware</small></div>
+                    </div>
+                    <div class="layer-arrow">provides ↓ / requires ↑</div>
+                    <div class="layer">
+                        <div>
+                            <div class="lname">HardwareLayer</div>
+                            <div class="lrole">Physical devices &amp; sensors</div>
+                        </div>
+                        <div class="liface">IHardware<small>provides HW access · requires monitoring</small></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mnemonic reveal" style="margin-top:var(--sp-3)">
+                <span class="m-ico">MEM</span>
+                <div>
+                    <div class="sentence">"<b>S</b>ecurity <b>S</b>tacks <b>A</b>bove <b>H</b>ardware" → Satcom /
+                        Security / Application / Hardware, top to bottom.</div>
+                    <p>Or just remember: the layer nearest the user is the most abstract; the layer nearest the metal is
+                        the most concrete.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- LAYERED QUALITIES -->
+        <section id="hier-quality">
+            <div class="kicker">06 · Why Layers Pay Off</div>
+            <h2 class="title">Layered's payoff: M‑P‑S‑R</h2>
+            <div class="grid grid-4">
+                <div class="sheet card reveal">
+                    <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+                    <h3><span class="ico">M</span>Modifiability</h3>
+                    <p>Dependencies stay local — swap a layer's implementation without touching the others.</p>
+                </div>
+                <div class="sheet card reveal">
+                    <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+                    <h3><span class="ico">P</span>Portability</h3>
+                    <p>Encapsulate the platform API in one system layer; port <i>that</i> layer and everything above
+                        moves free.</p>
+                </div>
+                <div class="sheet card reveal">
+                    <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+                    <h3><span class="ico">S</span>Security</h3>
+                    <p>Controlled hierarchy makes it easy to slot in an encrypt/decrypt layer at the right boundary.</p>
+                </div>
+                <div class="sheet card reveal">
+                    <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+                    <h3><span class="ico">R</span>Reusability</h3>
+                    <p>Each layer's services are compartmentalized, so they're easy to lift into another system.</p>
+                </div>
+            </div>
+            <div class="mnemonic reveal">
+                <span class="m-ico">MEM</span>
+                <div>
+                    <div class="sentence">"<b>M</b>y <b>P</b>rogram <b>S</b>tays <b>R</b>eusable."</div>
+                    <p>MPSR — the exact same 4 letters, every time a question asks "why use layers?"</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- COMPARE -->
+        <section id="compare">
+            <div class="kicker">07 · Side by Side</div>
+            <h2 class="title">MVC vs. Layered — don't confuse them</h2>
+            <div class="vs sheet" style="padding:var(--sp-3);">
+                <div class="side">
+                    <h3 style="color:var(--accent)">MVC</h3>
+                    <p><b>System type:</b> Interactive</p>
+                    <p><b>Shape:</b> One Model, many View/Controller pairs, all peers.</p>
+                    <p><b>Direction of data:</b> Circular — User↔Controller↔Model↔View↔User.</p>
+                    <p><b>Qualities:</b> Modifiability, Usability, Reusability</p>
+                </div>
+                <div class="vslabel">VS</div>
+                <div class="side">
+                    <h3 style="color:var(--accent-2)">Layered</h3>
+                    <p><b>System type:</b> Hierarchical</p>
+                    <p><b>Shape:</b> Strict stack — level N only touches level N±1.</p>
+                    <p><b>Direction of data:</b> One‑way per hop — provides down, requires up.</p>
+                    <p><b>Qualities:</b> Modifiability, Portability, Security, Reusability</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- TOOLKIT -->
+        <section id="toolkit">
+            <div class="kicker">08 · Memory Toolkit</div>
+            <h2 class="title">All the mnemonics, in one place</h2>
+            <div class="grid grid-2">
+                <div class="sheet card reveal">
+                    <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+                    <h3><span class="ico">1</span>Pattern choice</h3>
+                    <p><b>IVHL</b> — Interact with a View → Hierarchy of Layers.</p>
+                </div>
+                <div class="sheet card reveal">
+                    <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+                    <h3><span class="ico">2</span>MVC roles</h3>
+                    <p>Model = Facts, View = Face, Controller = Hands.</p>
+                </div>
+                <div class="sheet card reveal">
+                    <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+                    <h3><span class="ico">3</span>MVC flow</h3>
+                    <p>Users Click, Controllers Convert, Models Mutate, Views Visualize (U‑C‑M‑V).</p>
+                </div>
+                <div class="sheet card reveal">
+                    <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+                    <h3><span class="ico">4</span>MVC payoff</h3>
+                    <p><b>M‑U‑R</b> — Modifiability, Usability, Reusability.</p>
+                </div>
+                <div class="sheet card reveal">
+                    <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+                    <h3><span class="ico">5</span>Layer order</h3>
+                    <p>Satcom → Security → Application → Hardware (top to bottom).</p>
+                </div>
+                <div class="sheet card reveal">
+                    <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+                    <h3><span class="ico">6</span>Layered payoff</h3>
+                    <p><b>M‑P‑S‑R</b> — "My Program Stays Reusable" (Modifiability, Portability, Security, Reusability).
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- EXAM BONUS -->
+        <section id="exam">
+            <div class="kicker">09 · Bonus — From Your Own Midterm</div>
+            <h2 class="title">Quick refreshers that keep tripping people up</h2>
+            <p class="lede">Pulled straight from the graded midterm pages you shared — the exact spots partial credit
+                was lost.
+                These aren't from this chapter, but they sit right next to it on the exam.</p>
+
+            <div class="grid grid-2">
+                <div class="sheet card reveal">
+                    <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+                    <h3><span class="ico">◇</span>Quality Attribute Scenario — 6 parts</h3>
+                    <p>Every scenario has exactly these six pieces. Say all six, every time, even if the question only
+                        shows a diagram.</p>
+                    <div class="chips6">
+                        <div class="chip6">
+                            <div class="n">1</div>
+                            <div class="t">Source</div>
+                        </div>
+                        <div class="chip6">
+                            <div class="n">2</div>
+                            <div class="t">Stimulus</div>
+                        </div>
+                        <div class="chip6">
+                            <div class="n">3</div>
+                            <div class="t">Artifact</div>
+                        </div>
+                        <div class="chip6">
+                            <div class="n">4</div>
+                            <div class="t">Environment</div>
+                        </div>
+                        <div class="chip6">
+                            <div class="n">5</div>
+                            <div class="t">Response</div>
+                        </div>
+                        <div class="chip6">
+                            <div class="n">6</div>
+                            <div class="t">Response Measure</div>
+                        </div>
+                    </div>
+                    <div class="examnote"><b>Graded note:</b> "describe the scenario" answers lost points for skipping
+                        the
+                        Environment and Response Measure — narrate the picture left‑to‑right, naming each of the six.
+                    </div>
+                </div>
+
+                <div class="sheet card reveal">
+                    <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+                    <h3><span class="ico">◇</span>Diagram type ↔ View, don't guess</h3>
+                    <p>A "consoles + LAN server" box diagram is a <b>component diagram</b>, and that represents the
+                        <b>Development view</b> — not Physical/Deployment (that needs actual hardware nodes &amp;
+                        installation).
+                    </p>
+                    <div class="pill-list">
+                        <span>Logical → Class/Object/State/Sequence</span>
+                        <span>Process → Activity</span>
+                        <span>Development → Component/Package</span>
+                        <span>Physical → Deployment</span>
+                        <span>Scenario → Use Case</span>
+                    </div>
+                </div>
+
+                <div class="sheet card reveal">
+                    <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+                    <h3><span class="ico">◇</span>"Valid requirement?" test</h3>
+                    <p>A functional/quality requirement is only valid if it's <b>measurable and specific</b>.
+                        "The software shall be secure and fast" fails — no bandwidth number, no auth mechanism named,
+                        nothing to check it against.</p>
+                    <div class="examnote"><b>Rule of thumb:</b> if two stakeholders could disagree on whether it was
+                        met, it isn't valid yet.</div>
+                </div>
+
+                <div class="sheet card reveal">
+                    <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+                    <h3><span class="ico">◇</span>Modularization — 2 strategies</h3>
+                    <p>Modularization = continuously decomposing a system into fine‑grained components.</p>
+                    <p><b>Abstraction</b> — show only what's important, hide the "how."<br>
+                        <b>Encapsulation</b> — hide data, expose only what's needed.
+                    </p>
+                    <div class="examnote">They work together: Abstraction decides <i>which</i> parts are needed;
+                        Encapsulation decides what's shown vs. hidden about them.</div>
+                </div>
+
+                <div class="sheet card reveal">
+                    <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+                    <h3><span class="ico">◇</span>Pipes &amp; Filters (Ch.4 sibling pattern)</h3>
+                    <p>4 components: <b>Source</b> (data in) → <b>Filter</b> (transform) → <b>Pipe</b> (transmit) →
+                        <b>Sink</b> (consume).</p>
+                    <p>Parallel/graph layout (B) beats strict sequential (A) on performance — filters run concurrently.
+                        Security can be
+                        injected as a filter at any stage (firewall, auth, detection).</p>
+                </div>
+
+                <div class="sheet card reveal">
+                    <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+                    <h3><span class="ico">◇</span>Availability building block</h3>
+                    <p>Source → Stimulus (crash, omission, timing, incorrect response) → Artifact → Response
+                        (prevent / log / notify / disable source / go temporarily unavailable) → Measure (time
+                        available,
+                        detection time, repair time).</p>
+                    <div class="examnote"><b>Graded note:</b> "disable source of failure" and "repair source of failure"
+                        are two
+                        <i>different</i> responses — don't merge them into one bullet.
+                    </div>
+                </div>
+            </div>
+
+            <h3 style="margin-top:var(--sp-4); font-size:1.05rem;">Design‑pattern cheat table (quick recall grid)</h3>
+            <div class="tbl-wrap sheet" style="padding:var(--sp-2); margin-top:.6rem;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Family</th>
+                            <th>Patterns</th>
+                            <th>One‑line hook</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="mono" style="color:var(--accent)">Creational</td>
+                            <td>Abstract Factory · Factory Method · Builder · Singleton · Prototype</td>
+                            <td>How an object gets <i>born</i>.</td>
+                        </tr>
+                        <tr>
+                            <td class="mono" style="color:var(--accent-2)">Structural</td>
+                            <td>Adapter · Facade · Composite · Bridge · Decorator · Flyweight · Proxy</td>
+                            <td>How objects get <i>wired together</i>.</td>
+                        </tr>
+                        <tr>
+                            <td class="mono" style="color:var(--accent-3)">Behavioral</td>
+                            <td>Iterator · Observer · Strategy · State · Command · Template Method · Visitor · Mediator
+                                · Memento · Interpreter · Chain of Responsibility</td>
+                            <td>How objects <i>talk and decide</i>.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="mnemonic reveal">
+                <span class="m-ico">MEM</span>
+                <div>
+                    <div class="sentence">"<b>C</b>reate it, <b>S</b>tructure it, then watch it <b>B</b>ehave." (C‑S‑B,
+                        in build order)</div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <footer>
+        <div class="wrap">
+            <div class="titleblock sheet">
+                <div class="tb-cell">
+                    <div class="k">Course</div>
+                    <div class="v">Software Design &amp; Architecture</div>
+                </div>
+                <div class="tb-cell">
+                    <div class="k">Sheet</div>
+                    <div class="v">Ch.04 · L03 — Patterns</div>
+                </div>
+                <div class="tb-cell">
+                    <div class="k">Scale</div>
+                    <div class="v">NTS (Not To Scale)</div>
+                </div>
+                <div class="tb-cell">
+                    <div class="k">Drawn by</div>
+                    <div class="v">Made by Shoug Alomran</div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <button class="backtop" id="backtop" aria-label="back to top">↑</button>
+
+    <script>
+        // ---- theme ----
+        const root = document.documentElement;
+        const btn = document.getElementById('themeToggle');
+        const icon = document.getElementById('themeIcon');
+        const label = document.getElementById('themeLabel');
+
+        function applyTheme(t) {
+            root.setAttribute('data-theme', t);
+            icon.textContent = t === 'dark' ? '☾' : '☀';
+            label.textContent = t === 'dark' ? 'Dark' : 'Light';
+            try { localStorage.setItem('sda-theme', t); } catch (e) { }
+        }
+
+        (function initTheme() {
+            let saved = null;
+            try { saved = localStorage.getItem('sda-theme'); } catch (e) { }
+            if (saved) { applyTheme(saved); }
+            else {
+                const prefersLight = window.matchMedia('(prefers-color-scheme: light)').matches;
+                applyTheme(prefersLight ? 'light' : 'dark');
+            }
+        })();
+
+        btn.addEventListener('click', () => {
+            const current = root.getAttribute('data-theme');
+            applyTheme(current === 'dark' ? 'light' : 'dark');
+        });
+
+        // ---- reveal on scroll ----
+        const io = new IntersectionObserver((entries) => {
+            entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+        }, { threshold: .12 });
+        document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+        // ---- back to top ----
+        const backtop = document.getElementById('backtop');
+        window.addEventListener('scroll', () => {
+            backtop.classList.toggle('show', window.scrollY > 700);
+        });
+        backtop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+    </script>
+
+</body>
+
+</html>

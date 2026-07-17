@@ -128,6 +128,23 @@ COURSES: dict[str, dict[str, Any]] = {
             "Quizzes": "/Academics/software-engineering/SE311/quizez/overview/",
         },
     },
+    "SE322": {
+        "track": "Software Engineering",
+        "path": "docs/academics/software-engineering/se322/",
+        "url": "/academics/software-engineering/se322/",
+        "sections": {
+            "Overview": "/academics/software-engineering/se322/",
+            "Slide Breakdowns": "/academics/software-engineering/se322/slide-breakdowns/",
+            "Slides": "/academics/software-engineering/se322/slides/",
+            "Study Material": "/academics/software-engineering/se322/extra-resources/",
+            "Quizzes": "/academics/software-engineering/se322/quizzes/",
+        },
+        "title_override": "Software Design and Architecture",
+        "description": "Software architecture, design principles, architectural patterns, design patterns, evaluation, and documentation.",
+        "credits": "3",
+        "prereq": "TBD",
+        "status": "available",
+    },
     "CYS401": {
         "track": "Cybersecurity",
         "path": "docs/Academics/cyber-security/CYS401/intro.md",
@@ -340,7 +357,7 @@ TRACKS: dict[str, dict[str, Any]] = {
         "label": "SOFTWARE ENGINEERING",
         "title": "2 courses.<br>Requirements, design,<br>and engineering practice.",
         "meta": ["SE Track", "2 Courses", "Process", "Requirements", "Design"],
-        "courses": ["SE201", "SE311"],
+        "courses": ["SE201", "SE311", "SE322"],
         "url": "/track-software-engineering.html",
     },
     "cybersecurity": {
@@ -2462,6 +2479,7 @@ def workshop_sidebar(workshop_key: str, active_section: str | None = None) -> st
                 f'{active_dot if section_active else ""}{html.escape(section_label.upper())}</a></li>'
             )
         overview_active = is_active_workshop and not active_section
+        status_class = "coming-soon" if status == "COMING SOON" else "available"
         rows.append(
             f'<li class="tree-item{" dir-open" if is_active_workshop else ""}"><button class="tree-course-link tree-toggle-button" type="button" data-tree-toggle="{child_id}" aria-expanded="{str(is_active_workshop).lower()}">'
             f'<span class="tree-toggle">{"[-]" if is_active_workshop else "[+]"}</span> {html.escape(workshop_title.upper())}/</button></li>'
@@ -3525,7 +3543,7 @@ def section_page(code: str, label: str) -> str:
                             <a href="{html.escape(row_url)}" class="dir-row" data-ar-title="{html.escape(arabic_title)}">
                                 <div class="dir-num">{index:02d}</div>
                                 <div class="dir-title">{html.escape(item_label)}</div>
-                                <div class="dir-status"><span class="status-tag">{status}</span></div>
+                                <div class="dir-status"><span class="status-tag {status_class}">{status}</span></div>
                                 <div class="dir-arrow">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                                 </div>

@@ -1,0 +1,1418 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Software Architecture — Study Blueprint</title>
+    <style>
+        :root {
+            --paper: #EFE9D8;
+            --paper-2: #F7F3E6;
+            --ink: #182338;
+            --ink-soft: #4A5670;
+            --line: #B9AD8C;
+            --line-soft: #D8CFB4;
+            --accent: #C1571C;
+            --accent-2: #2F6F62;
+            --accent-3: #2F5D8A;
+            --card: #FFFDF6;
+            --shadow: 0 1px 0 rgba(24, 35, 56, .08);
+            --mono: "Courier New", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            --serif: Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+            --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            --radius: 6px;
+            --grid-line: rgba(47, 93, 138, .14);
+        }
+
+        [data-theme="dark"] {
+            --paper: #0B1C2C;
+            --paper-2: #0E2337;
+            --ink: #DCEEF7;
+            --ink-soft: #8FB4CB;
+            --line: #2E5878;
+            --line-soft: #1D3A52;
+            --accent: #F2A65A;
+            --accent-2: #6FD3B8;
+            --accent-3: #7FC4E8;
+            --card: #0F2338;
+            --shadow: 0 1px 0 rgba(0, 0, 0, .4);
+            --grid-line: rgba(111, 179, 210, .14);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            background:
+                linear-gradient(var(--grid-line) 1px, transparent 1px) 0 0/34px 34px,
+                linear-gradient(90deg, var(--grid-line) 1px, transparent 1px) 0 0/34px 34px,
+                var(--paper);
+            color: var(--ink);
+            font-family: var(--serif);
+            line-height: 1.6;
+            transition: background-color .25s ease, color .25s ease;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            html {
+                scroll-behavior: auto;
+            }
+
+            * {
+                transition: none !important;
+                animation: none !important;
+            }
+        }
+
+        a {
+            color: var(--accent-3);
+        }
+
+        .wrap {
+            max-width: 920px;
+            margin: 0 auto;
+            padding: clamp(14px, 3vw, 36px);
+        }
+
+        /* ---------- TOP BAR ---------- */
+        .topbar {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            backdrop-filter: blur(6px);
+            background: color-mix(in srgb, var(--paper) 88%, transparent);
+            border-bottom: 1px solid var(--line);
+        }
+
+        .topbar-inner {
+            max-width: 920px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px clamp(14px, 3vw, 36px);
+        }
+
+        .brand {
+            font-family: var(--mono);
+            letter-spacing: .08em;
+            font-size: clamp(11px, 1.6vw, 13px);
+            text-transform: uppercase;
+            color: var(--ink-soft);
+            white-space: nowrap;
+        }
+
+        .brand b {
+            color: var(--accent);
+        }
+
+        nav.sheets {
+            display: flex;
+            gap: 4px;
+            overflow-x: auto;
+            scrollbar-width: thin;
+            flex: 1;
+        }
+
+        nav.sheets a {
+            flex: 0 0 auto;
+            text-decoration: none;
+            font-family: var(--mono);
+            font-size: 11px;
+            letter-spacing: .03em;
+            color: var(--ink-soft);
+            border: 1px solid var(--line-soft);
+            border-radius: 4px;
+            padding: 5px 8px;
+            white-space: nowrap;
+        }
+
+        nav.sheets a:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .toggle {
+            position: relative;
+            width: 52px;
+            height: 28px;
+            flex: 0 0 auto;
+            border-radius: 20px;
+            border: 1px solid var(--line);
+            cursor: pointer;
+            background: var(--paper-2);
+        }
+
+        .toggle .knob {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: var(--accent);
+            transition: left .2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+
+        [data-theme="dark"] .toggle .knob {
+            left: 26px;
+        }
+
+        /* ---------- HERO / TITLE BLOCK ---------- */
+        .hero {
+            border: 2px solid var(--ink);
+            border-radius: var(--radius);
+            padding: clamp(18px, 4vw, 34px);
+            margin: 22px 0 30px;
+            background: var(--card);
+            box-shadow: var(--shadow);
+            position: relative;
+        }
+
+        .hero:before,
+        .hero:after {
+            content: "";
+            position: absolute;
+            width: 14px;
+            height: 14px;
+            border: 2px solid var(--accent);
+            top: -2px;
+            left: -2px;
+            border-right: none;
+            border-bottom: none;
+        }
+
+        .hero:after {
+            left: auto;
+            right: -2px;
+            top: auto;
+            bottom: -2px;
+            border: 2px solid var(--accent);
+            border-left: none;
+            border-top: none;
+        }
+
+        .hero .eyebrow {
+            font-family: var(--mono);
+            text-transform: uppercase;
+            letter-spacing: .2em;
+            font-size: clamp(10px, 1.5vw, 12px);
+            color: var(--accent-2);
+            margin-bottom: 10px;
+        }
+
+        .hero h1 {
+            font-family: var(--mono);
+            text-transform: uppercase;
+            font-size: clamp(28px, 6vw, 52px);
+            letter-spacing: .02em;
+            margin: 0 0 8px;
+            line-height: 1.05;
+        }
+
+        .hero p.sub {
+            font-size: clamp(14px, 2.2vw, 17px);
+            color: var(--ink-soft);
+            margin: 0 0 18px;
+            max-width: 56ch;
+        }
+
+        .titleblock {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            border-top: 1px solid var(--line);
+            margin-top: 16px;
+            font-family: var(--mono);
+            font-size: clamp(10px, 1.6vw, 12px);
+        }
+
+        .titleblock div {
+            padding: 10px 12px 0;
+        }
+
+        .titleblock span {
+            display: block;
+            color: var(--ink-soft);
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            font-size: 9px;
+            margin-bottom: 3px;
+        }
+
+        /* ---------- SHEETS (sections) ---------- */
+        .sheet {
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            margin-bottom: 22px;
+            box-shadow: var(--shadow);
+            scroll-margin-top: 70px;
+            overflow: hidden;
+        }
+
+        .sheet-head {
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+            padding: 14px clamp(14px, 3vw, 26px);
+            border-bottom: 1px solid var(--line-soft);
+            background: linear-gradient(180deg, color-mix(in srgb, var(--accent-3) 8%, transparent), transparent);
+        }
+
+        .sheet-head .num {
+            font-family: var(--mono);
+            color: var(--accent);
+            font-size: clamp(20px, 3vw, 26px);
+            font-weight: bold;
+        }
+
+        .sheet-head h2 {
+            margin: 0;
+            font-family: var(--sans);
+            font-weight: 700;
+            font-size: clamp(18px, 3vw, 24px);
+        }
+
+        .sheet-head .tag {
+            margin-left: auto;
+            font-family: var(--mono);
+            font-size: 10px;
+            color: var(--ink-soft);
+            border: 1px solid var(--line-soft);
+            border-radius: 3px;
+            padding: 3px 7px;
+            white-space: nowrap;
+        }
+
+        .sheet-body {
+            padding: clamp(14px, 3vw, 26px);
+        }
+
+        .sheet-body h3 {
+            font-family: var(--sans);
+            font-size: clamp(15px, 2.2vw, 17px);
+            margin: 20px 0 8px;
+            color: var(--accent-3);
+        }
+
+        .sheet-body h3:first-child {
+            margin-top: 0;
+        }
+
+        .sheet-body p {
+            margin: 0 0 12px;
+            font-size: clamp(14.5px, 2vw, 16px);
+        }
+
+        .sheet-body ul,
+        .sheet-body ol {
+            padding-left: 1.2em;
+            margin: 0 0 12px;
+        }
+
+        .sheet-body li {
+            margin-bottom: 6px;
+            font-size: clamp(14px, 1.9vw, 15.5px);
+        }
+
+        /* mnemonic callout */
+        .mnemonic {
+            background: color-mix(in srgb, var(--accent) 12%, var(--card));
+            border-left: 4px solid var(--accent);
+            border-radius: 4px;
+            padding: 12px 16px;
+            margin: 10px 0 16px;
+            font-family: var(--sans);
+        }
+
+        .mnemonic .label {
+            font-family: var(--mono);
+            text-transform: uppercase;
+            letter-spacing: .1em;
+            font-size: 10.5px;
+            color: var(--accent);
+            margin-bottom: 4px;
+            display: block;
+        }
+
+        .mnemonic strong {
+            font-size: clamp(14.5px, 2vw, 16.5px);
+        }
+
+        /* tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0 18px;
+            font-size: clamp(12.5px, 1.8vw, 14.5px);
+        }
+
+        caption {
+            caption-side: top;
+            text-align: left;
+            font-family: var(--mono);
+            font-size: 11px;
+            color: var(--ink-soft);
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+        }
+
+        th,
+        td {
+            border: 1px solid var(--line-soft);
+            padding: 7px 9px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        th {
+            background: color-mix(in srgb, var(--accent-3) 14%, var(--card));
+            font-family: var(--sans);
+        }
+
+        tr:nth-child(even) td {
+            background: color-mix(in srgb, var(--paper-2) 60%, transparent);
+        }
+
+        /* grid of cards */
+        .grid {
+            display: grid;
+            gap: 12px;
+        }
+
+        .grid.two {
+            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+        }
+
+        .grid.three {
+            grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+        }
+
+        .card {
+            border: 1px solid var(--line-soft);
+            border-radius: 5px;
+            padding: 12px 14px;
+            background: var(--paper-2);
+        }
+
+        .card h4 {
+            margin: 0 0 6px;
+            font-family: var(--sans);
+            font-size: 14.5px;
+            color: var(--accent);
+        }
+
+        .card p {
+            margin: 0;
+            font-size: 13.5px;
+        }
+
+        /* flow diagram */
+        .flow {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: stretch;
+            gap: 6px;
+            margin: 14px 0;
+            font-family: var(--sans);
+        }
+
+        .flow .box {
+            flex: 1 1 130px;
+            border: 1.5px solid var(--ink);
+            border-radius: 5px;
+            padding: 10px 12px;
+            background: var(--card);
+            font-size: 13px;
+        }
+
+        .flow .box b {
+            display: block;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            color: var(--accent);
+            margin-bottom: 4px;
+        }
+
+        .flow .arrow {
+            align-self: center;
+            font-size: 20px;
+            color: var(--ink-soft);
+            flex: 0 0 auto;
+        }
+
+        /* details / accordion */
+        details {
+            border: 1px solid var(--line-soft);
+            border-radius: 5px;
+            margin-bottom: 8px;
+            background: var(--paper-2);
+            overflow: hidden;
+        }
+
+        summary {
+            cursor: pointer;
+            padding: 10px 14px;
+            font-family: var(--sans);
+            font-weight: 600;
+            font-size: 14px;
+            list-style: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        summary::-webkit-details-marker {
+            display: none;
+        }
+
+        summary:before {
+            content: "+";
+            font-family: var(--mono);
+            color: var(--accent);
+            font-size: 16px;
+            width: 16px;
+        }
+
+        details[open] summary:before {
+            content: "–";
+        }
+
+        details .inner {
+            padding: 0 14px 14px 40px;
+            font-size: 14px;
+        }
+
+        details .inner p {
+            margin: 0 0 8px;
+        }
+
+        /* flashcards */
+        .flashcards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+            gap: 12px;
+        }
+
+        .flash {
+            border: 1px dashed var(--line);
+            border-radius: 6px;
+            background: var(--paper-2);
+        }
+
+        .flash summary {
+            font-size: 13.5px;
+        }
+
+        .flash .inner {
+            padding: 0 14px 12px 14px;
+            font-size: 13.5px;
+            color: var(--ink-soft);
+        }
+
+        .pill {
+            display: inline-block;
+            font-family: var(--mono);
+            font-size: 10.5px;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            padding: 2px 8px;
+            border-radius: 20px;
+            border: 1px solid var(--accent-2);
+            color: var(--accent-2);
+            margin: 0 4px 4px 0;
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px 14px 60px;
+            font-family: var(--mono);
+            font-size: 12px;
+            color: var(--ink-soft);
+        }
+
+        footer .stamp {
+            display: inline-block;
+            border: 2px solid var(--accent);
+            color: var(--accent);
+            border-radius: 4px;
+            padding: 6px 14px;
+            transform: rotate(-2deg);
+            font-weight: bold;
+            letter-spacing: .05em;
+            margin-top: 10px;
+        }
+
+        .note {
+            font-size: 12.5px;
+            color: var(--ink-soft);
+            font-family: var(--sans);
+            font-style: italic;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="topbar">
+        <div class="topbar-inner">
+            <div class="brand">SE322 · <b>ARCH</b>BLUEPRINT</div>
+            <nav class="sheets" id="sheetNav">
+                <a href="#s00">00</a><a href="#s01">01</a><a href="#s02">02</a><a href="#s03">03</a>
+                <a href="#s04">04</a><a href="#s05">05</a><a href="#s06">06</a><a href="#s07">07</a>
+                <a href="#s08">08</a><a href="#s09">09</a><a href="#s10">10</a><a href="#s11">11</a>
+                <a href="#s12">12</a><a href="#s13">13</a><a href="#s14">14</a><a href="#s15">15</a>
+            </nav>
+            <div class="toggle" id="themeToggle" role="button" aria-label="Toggle dark/light mode">
+                <div class="knob">☀</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="wrap">
+
+        <section class="hero" id="s00">
+            <span class="eyebrow">Study Blueprint — Do not scale from drawing</span>
+            <h1>Software Architecture</h1>
+            <p class="sub">A memorable, exam-ready walkthrough of the "parts, connections, and qualities" that make a
+                system work — condensed from Chapter 2 / Week 03 L01, plus ATAM, the 4+1 view model, design patterns,
+                and real midterm questions.</p>
+            <div class="titleblock">
+                <div><span>Drawn by</span>Shoug Alomran</div>
+                <div><span>Course</span>SE322 · Software Design &amp; Architecture</div>
+                <div><span>Scale</span>1 : Simplified</div>
+                <div><span>Sheets</span>00 – 15</div>
+            </div>
+        </section>
+
+        <!-- 01 -->
+        <section class="sheet" id="s01">
+            <div class="sheet-head"><span class="num">01</span>
+                <h2>What Is Software Architecture?</h2><span class="tag">Foundations</span>
+            </div>
+            <div class="sheet-body">
+                <p>Architecture is about <strong>communication</strong>: what parts exist, and how they fit together. It
+                    is <em>not</em> the code, the algorithms, or the data structures — those come later, in detailed
+                    design.</p>
+
+                <div class="grid two">
+                    <div class="card">
+                        <h4>Architecture IS</h4>
+                        <p>The high-level structure of a system, the discipline of creating it, and the documentation of
+                            it. It captures the stuff that's <strong>hard to change once built</strong>.</p>
+                    </div>
+                    <div class="card">
+                        <h4>Architecture is NOT</h4>
+                        <p>Development, algorithms, or data structures — those are <em>detailed design</em>, done after
+                            the architecture is set.</p>
+                    </div>
+                </div>
+
+                <h3>The 3 dimensions it captures</h3>
+                <div class="mnemonic">
+                    <span class="label">Mnemonic</span>
+                    <strong>"Skeleton, Chat, Needs"</strong> — every building has a <strong>S</strong>keleton
+                    (Structure), people <strong>C</strong>hat inside it (Communication/behavior), and it must satisfy
+                    code <strong>N</strong>eeds (Non-functional requirements).
+                </div>
+                <table>
+                    <tr>
+                        <th>Dimension</th>
+                        <th>Meaning</th>
+                    </tr>
+                    <tr>
+                        <td>Structure</td>
+                        <td>What the parts are and how they're organized</td>
+                    </tr>
+                    <tr>
+                        <td>Communication (behavior)</td>
+                        <td>How parts interact / talk to each other</td>
+                    </tr>
+                    <tr>
+                        <td>Nonfunctional requirements</td>
+                        <td>Qualities the system must exhibit (speed, security, etc.)</td>
+                    </tr>
+                </table>
+            </div>
+        </section>
+
+        <!-- 02 -->
+        <section class="sheet" id="s02">
+            <div class="sheet-head"><span class="num">02</span>
+                <h2>Architecture vs. Detailed Design</h2><span class="tag">Big picture vs. zoomed-in</span>
+            </div>
+            <div class="sheet-body">
+                <p>Same shopping-app example, two zoom levels:</p>
+                <table>
+                    <tr>
+                        <th></th>
+                        <th>Software Architecture</th>
+                        <th>Detailed Design</th>
+                    </tr>
+                    <tr>
+                        <td>Focus</td>
+                        <td>Which components exist &amp; how they connect</td>
+                        <td>How each component works internally</td>
+                    </tr>
+                    <tr>
+                        <td>Shows</td>
+                        <td>Subsystems / major modules</td>
+                        <td>Classes, methods, algorithms</td>
+                    </tr>
+                    <tr>
+                        <td>Interaction</td>
+                        <td>Component-to-component</td>
+                        <td>Object-to-object / class-to-class</td>
+                    </tr>
+                    <tr>
+                        <td>Product</td>
+                        <td>Blueprint (high-level diagrams)</td>
+                        <td>Class/sequence diagrams, code-level docs</td>
+                    </tr>
+                    <tr>
+                        <td>Example</td>
+                        <td>Frontend ↔ Backend ↔ Database ↔ Payment Gateway</td>
+                        <td><code>ShoppingCart.checkout()</code> calls <code>Payment.processCreditCard()</code></td>
+                    </tr>
+                </table>
+                <p class="note">Same diagram <em>types</em> can appear in both — the difference is the zoom level:
+                    architecture = subsystems/actors; design = classes/methods/attributes.</p>
+            </div>
+        </section>
+
+        <!-- 03 -->
+        <section class="sheet" id="s03">
+            <div class="sheet-head"><span class="num">03</span>
+                <h2>The Formal Definition, Decoded</h2><span class="tag">Word-by-word</span>
+            </div>
+            <div class="sheet-body">
+                <p>Software architecture = <em>the foundational design activity that translates requirements into design
+                        elements describing the major components, their structure, behavior, and provided quality —
+                        supporting detailed design and construction.</em></p>
+
+                <div class="mnemonic">
+                    <span class="label">Mnemonic</span>
+                    <strong>"Fantastic Toucans Carry Many Suitcases"</strong> → <b>F</b>oundational design →
+                    <b>T</b>ranslates requirements → <b>C</b>ollection of design elements → <b>M</b>ajor components +
+                    quality → <b>S</b>upports detailed design.
+                </div>
+
+                <details>
+                    <summary>F — Foundational design</summary>
+                    <div class="inner">
+                        <p>Architecture is not optional — it's where designing for <em>quality</em> begins. It's forward
+                            engineering (guides the build), not reverse engineering (analyzing after the fact). Skipping
+                            quality attributes here is a serious mistake.</p>
+                    </div>
+                </details>
+                <details>
+                    <summary>T — Translates requirements</summary>
+                    <div class="inner">
+                        <p>Turns textual requirements into graphical design elements, so requirements can be traced
+                            through the lifecycle. This assumes requirements are well understood — so architects also
+                            need requirements-engineering skills.</p>
+                    </div>
+                </details>
+                <details>
+                    <summary>C — Collection of design elements</summary>
+                    <div class="inner">
+                        <p>No single diagram can show everything (usability, performance, deployment...). Different
+                            stakeholders need different diagrams — e.g. a Component Diagram for architects,
+                            Class/Sequence diagrams for developers.</p>
+                    </div>
+                </details>
+                <details>
+                    <summary>M — Major components + provided quality</summary>
+                    <div class="inner">
+                        <p>It's not enough to say "Component B provides an algorithm." You must tag it with its quality:
+                            e.g. Performance = O(n²), Reusability = Low — so clients using it know its limits and can
+                            make informed choices.</p>
+                    </div>
+                </details>
+                <details>
+                    <summary>S — Supports detailed design &amp; construction</summary>
+                    <div class="inner">
+                        <p>Quality requirements trickle down into implementation — but architecture alone <strong>cannot
+                                guarantee</strong> quality. If a programmer skips the security requirements during
+                            coding, the final code misses them even though the architecture demanded them.</p>
+                    </div>
+                </details>
+            </div>
+        </section>
+
+        <!-- 04 -->
+        <section class="sheet" id="s04">
+            <div class="sheet-head"><span class="num">04</span>
+                <h2>7 Key Tasks in Architectural Design</h2><span class="tag">The architect's checklist</span>
+            </div>
+            <div class="sheet-body">
+                <div class="mnemonic">
+                    <span class="label">Mnemonic</span>
+                    <strong>"Silly Vikings Sailed Over Choppy Estuaries, Slowly"</strong> → <b>S</b>takeholder concerns
+                    → <b>V</b>iews → <b>S</b>tyles &amp; patterns → <b>O</b>rganizational influence → <b>C</b>omponents
+                    &amp; interfaces → <b>E</b>valuate/validate → <b>S</b>ynchronicity policies.
+                </div>
+                <ol>
+                    <li><strong>Identify stakeholder concerns</strong> — requirements &amp; quality attributes that
+                        matter to each stakeholder.</li>
+                    <li><strong>Identify architectural views</strong> — different representations for different
+                        audiences.</li>
+                    <li><strong>Identify architectural styles &amp; patterns</strong> — reusable, proven solution
+                        templates.</li>
+                    <li><strong>Identify organizational influences</strong> — budget, schedule, and resources shape
+                        decisions too.</li>
+                    <li><strong>Identify major components &amp; interfaces</strong> — the actual building blocks and how
+                        they connect.</li>
+                    <li><strong>Evaluate &amp; validate the architecture</strong> — catch defects early; they're cheap
+                        to fix now, expensive later.</li>
+                    <li><strong>Establish policies for design synchronicity</strong> — keep the implementation matching
+                        the design over time.</li>
+                </ol>
+                <p class="note">"Synchronicity" = how well the built system still reflects its original design. It's
+                    easy to drift on multi-year projects — hence the need for documented, enforced policies (even during
+                    maintenance, years later).</p>
+            </div>
+        </section>
+
+        <!-- 05 -->
+        <section class="sheet" id="s05">
+            <div class="sheet-head"><span class="num">05</span>
+                <h2>Stakeholders &amp; Their Concerns</h2><span class="tag">Who cares, and why</span>
+            </div>
+            <div class="sheet-body">
+                <p>A stakeholder's <strong>concern</strong> = high-level info about desired system characteristics.
+                    Concerns are the driving force behind architectural decisions.</p>
+                <table>
+                    <tr>
+                        <th>Direct Stakeholders</th>
+                        <th>Indirect Stakeholders</th>
+                    </tr>
+                    <tr>
+                        <td>Directly use / operate the system</td>
+                        <td>Don't use it directly, but are affected by it</td>
+                    </tr>
+                    <tr>
+                        <td>Drive <strong>functional</strong> requirements</td>
+                        <td>Drive <strong>non-functional</strong> / external requirements</td>
+                    </tr>
+                    <tr>
+                        <td>End users, admins, developers, testers</td>
+                        <td>Regulators, investors, marketing, managers</td>
+                    </tr>
+                </table>
+                <p class="note">Example: for a university app, students want an easy schedule/grades view, professors
+                    need grade upload tools, admins need course management + security. Each group must be consulted
+                    <em>before</em> design starts.</p>
+            </div>
+        </section>
+
+        <!-- 06 -->
+        <section class="sheet" id="s06">
+            <div class="sheet-head"><span class="num">06</span>
+                <h2>9 Quality Attributes</h2><span class="tag">What "good" means</span>
+            </div>
+            <div class="sheet-body">
+                <div class="mnemonic">
+                    <span class="label">Mnemonic</span>
+                    <strong>"Uncle Max Says Please Return Purple Toys After Inspection"</strong> → <b>U</b>sability,
+                    <b>M</b>odifiability, <b>S</b>ecurity, <b>P</b>erformance, <b>R</b>eliability, <b>P</b>ortability,
+                    <b>T</b>estability, <b>A</b>vailability, <b>I</b>nteroperability.
+                </div>
+                <table>
+                    <tr>
+                        <th>Quality</th>
+                        <th>In one line</th>
+                    </tr>
+                    <tr>
+                        <td>Usability</td>
+                        <td>How easy it is to learn / use</td>
+                    </tr>
+                    <tr>
+                        <td>Modifiability</td>
+                        <td>How easy it is to change for current/future needs</td>
+                    </tr>
+                    <tr>
+                        <td>Security</td>
+                        <td>Ability to protect information &amp; itself</td>
+                    </tr>
+                    <tr>
+                        <td>Performance</td>
+                        <td>Getting work done within time/resource limits</td>
+                    </tr>
+                    <tr>
+                        <td>Reliability</td>
+                        <td>The system's failure rate</td>
+                    </tr>
+                    <tr>
+                        <td>Portability</td>
+                        <td>Ease of adapting to other hardware/software</td>
+                    </tr>
+                    <tr>
+                        <td>Testability</td>
+                        <td>Ease of verifying &amp; validating functions</td>
+                    </tr>
+                    <tr>
+                        <td>Availability</td>
+                        <td>System uptime</td>
+                    </tr>
+                    <tr>
+                        <td>Interoperability</td>
+                        <td>Ability to work with other systems (e.g. Word ↔ Google Docs sharing .docx)</td>
+                    </tr>
+                </table>
+                <p class="note"><strong>NFR vs. Quality Tag:</strong> an NFR is a system-wide goal ("process 1000
+                    orders/sec"); a quality tag assigns that goal to one specific component ("Order Service ≤
+                    100ms/order").</p>
+            </div>
+        </section>
+
+        <!-- 07 -->
+        <section class="sheet" id="s07">
+            <div class="sheet-head"><span class="num">07</span>
+                <h2>Tactics: Turning Goals Into Decisions</h2><span class="tag">Goal → Decision</span>
+            </div>
+            <div class="sheet-body">
+                <div class="mnemonic">
+                    <span class="label">In short</span>
+                    <strong>Quality attribute = the goal (what we want). Tactic = the design decision (how we get
+                        it).</strong> A tactic supports, controls, and achieves a quality attribute's response.
+                </div>
+                <div class="grid two">
+                    <div class="card">
+                        <h4>Security</h4>
+                        <p>Authenticate users, limit exposure/access (need-to-know), detect intrusions.</p>
+                    </div>
+                    <div class="card">
+                        <h4>Testability</h4>
+                        <p>Event logging — log data/operations so testers can trace what happened.</p>
+                    </div>
+                    <div class="card">
+                        <h4>Modifiability</h4>
+                        <p>Localize changes (modularization, abstraction, encapsulation); reduce ripple effects (loose
+                            coupling).</p>
+                    </div>
+                    <div class="card">
+                        <h4>Availability</h4>
+                        <p>Redundancy, task monitors, watchdog timers, heartbeats.</p>
+                    </div>
+                    <div class="card">
+                        <h4>Performance</h4>
+                        <p>Increase computation efficiency, reduce overhead, introduce concurrency.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 08 -->
+        <section class="sheet" id="s08">
+            <div class="sheet-head"><span class="num">08</span>
+                <h2>Views vs. Styles vs. Patterns</h2><span class="tag">Don't mix these up!</span>
+            </div>
+            <div class="sheet-body">
+                <table>
+                    <tr>
+                        <th>Term</th>
+                        <th>Definition</th>
+                        <th>Example</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Architectural View</strong></td>
+                        <td>A representation of the system for a specific stakeholder's perspective</td>
+                        <td>Deployment view: servers, nodes, network</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Architectural Style</strong></td>
+                        <td>A general template for organizing a <em>family</em> of systems (high-level shape)</td>
+                        <td>Distributed systems</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Architectural Pattern</strong></td>
+                        <td>A reusable solution to a recurring, more specific problem (guides detail inside a style)
+                        </td>
+                        <td>Client–Server, Pipes &amp; Filters</td>
+                    </tr>
+                </table>
+                <p class="note">Both styles and patterns save time by reusing years of documented experience — but
+                    architects must weigh their impact on customers, budget, schedule, and resources.</p>
+            </div>
+        </section>
+
+        <!-- 09 -->
+        <section class="sheet" id="s09">
+            <div class="sheet-head"><span class="num">09</span>
+                <h2>The 4+1 View Model</h2><span class="tag">One system, five lenses</span>
+            </div>
+            <div class="sheet-body">
+                <p>Because one diagram can't satisfy every stakeholder, Kruchten's 4+1 model gives each group its own
+                    view of the <em>same</em> architecture.</p>
+                <div class="mnemonic">
+                    <span class="label">Mnemonic</span>
+                    <strong>"Lions Prefer Dark Pizza, +1 Umbrella"</strong> → <b>L</b>ogical, <b>P</b>rocess,
+                    <b>D</b>evelopment, <b>P</b>hysical, <b>+1</b> <b>U</b>se-case (Scenarios) tying them all together.
+                </div>
+                <table>
+                    <tr>
+                        <th>View</th>
+                        <th>Shows</th>
+                        <th>Stakeholder</th>
+                        <th>UML diagrams</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Logical</strong> (structural)</td>
+                        <td>Object model of the design</td>
+                        <td>End-users, analysts, designers</td>
+                        <td>Class, State, Object, Sequence, Communication</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Process</strong> (behavioral)</td>
+                        <td>Concurrency &amp; synchronization / workflow</td>
+                        <td>Integrators &amp; developers</td>
+                        <td>Activity</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Development</strong> (implementation)</td>
+                        <td>Static organization of software modules</td>
+                        <td>Programmers, project managers</td>
+                        <td>Component, Package</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Physical</strong> (deployment)</td>
+                        <td>Installation, configuration &amp; deployment onto hardware</td>
+                        <td>System engineers, operators, installers</td>
+                        <td>Deployment</td>
+                    </tr>
+                    <tr>
+                        <td><strong>+1 Use-Case</strong> (scenarios)</td>
+                        <td>Validates the design is complete &amp; consistent</td>
+                        <td>Stakeholders of all other views</td>
+                        <td>Use-case</td>
+                    </tr>
+                </table>
+                <p class="note">⚠ Exam trap: a diagram of physical boxes/consoles connected to hardware (like servers)
+                    is a <strong>Physical/Deployment view</strong>, even though it visually resembles a component
+                    diagram — check whether it shows hardware/installation (Physical) or just software module
+                    organization (Development).</p>
+            </div>
+        </section>
+
+        <!-- 10 -->
+        <section class="sheet" id="s10">
+            <div class="sheet-head"><span class="num">10</span>
+                <h2>ATAM: Evaluating the Architecture</h2><span class="tag">Architecture Tradeoff Analysis Method</span>
+            </div>
+            <div class="sheet-body">
+                <h3>Quality Attribute Scenario — 6 parts</h3>
+                <div class="mnemonic">
+                    <span class="label">Mnemonic</span>
+                    <strong>"Some Silly Animals Eat Ripe Mangoes"</strong> → <b>S</b>ource → <b>S</b>timulus →
+                    <b>A</b>rtifact/<b>E</b>nvironment → <b>R</b>esponse → <b>M</b>easure.
+                </div>
+                <div class="flow">
+                    <div class="box"><b>Source</b>Who/what triggers it (internal/external)</div>
+                    <div class="arrow">→</div>
+                    <div class="box"><b>Stimulus</b>Crash, omission, timing, incorrect response</div>
+                    <div class="arrow">→</div>
+                    <div class="box"><b>Artifact + Environment</b>What's affected + system state (normal, startup,
+                        degraded...)</div>
+                    <div class="arrow">→</div>
+                    <div class="box"><b>Response</b>Prevent, log, notify, disable failure source</div>
+                    <div class="arrow">→</div>
+                    <div class="box"><b>Measure</b>Detection time, repair time, availability %</div>
+                </div>
+
+                <h3>ATAM roles</h3>
+                <div class="mnemonic">
+                    <span class="label">Mnemonic</span>
+                    <strong>"Ten Elephants Sing Perfectly, Quietly"</strong> → <b>T</b>eam leader, <b>E</b>valuation
+                    leader, <b>S</b>cenario scribe, <b>P</b>roceedings scribe, <b>Q</b>uestioner.
+                </div>
+                <table>
+                    <tr>
+                        <th>Role</th>
+                        <th>Responsibility</th>
+                    </tr>
+                    <tr>
+                        <td>Team Leader</td>
+                        <td>Sets up the evaluation, coordinates with the client, delivers the final report</td>
+                    </tr>
+                    <tr>
+                        <td>Evaluation Leader</td>
+                        <td>Runs the evaluation, facilitates scenario elicitation &amp; prioritization</td>
+                    </tr>
+                    <tr>
+                        <td>Scenario Scribe</td>
+                        <td>Writes agreed-on scenario wording on the flipchart/whiteboard</td>
+                    </tr>
+                    <tr>
+                        <td>Proceedings Scribe</td>
+                        <td>Captures everything electronically: issues, resolutions, adopted scenarios</td>
+                    </tr>
+                    <tr>
+                        <td>Questioner</td>
+                        <td>Raises architecturally-interesting questions (their expertise area)</td>
+                    </tr>
+                </table>
+
+                <h3>ATAM phases</h3>
+                <div class="mnemonic"><span class="label">Mnemonic</span><strong>"Please Excuse Every Fumble"</strong> →
+                    <b>P</b>artnership/prep → <b>E</b>valuation (steps 1–6) → <b>E</b>valuation (steps 7–9) →
+                    <b>F</b>ollow-up.</div>
+                <table>
+                    <tr>
+                        <th>Phase</th>
+                        <th>Activity</th>
+                        <th>Duration</th>
+                    </tr>
+                    <tr>
+                        <td>0</td>
+                        <td>Partnership &amp; prep: logistics, planning, team formation</td>
+                        <td>A few weeks, informal</td>
+                    </tr>
+                    <tr>
+                        <td>1</td>
+                        <td>Evaluation: steps 1–6</td>
+                        <td>1–2 days, then a 2–3 week hiatus</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>Evaluation: steps 7–9</td>
+                        <td>2 days</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>Follow-up: report + process improvement</td>
+                        <td>1 week</td>
+                    </tr>
+                </table>
+
+                <h3>Utility Tree — priority filter</h3>
+                <p>The tree ranks scenarios by <strong>(Importance, Difficulty)</strong> so the team spends limited
+                    evaluation time on what matters most, e.g. <em>Availability → HW failure → "Redirect traffic in
+                        &lt;3s" (H,H)</em> — high importance, high risk, gets evaluated first.</p>
+
+                <h3>Worked example — Scenario A12</h3>
+                <div class="card">
+                    <p><strong>Scenario:</strong> Detect &amp; recover from HW failure of the main switch (Attribute:
+                        Availability).</p>
+                    <p><strong>Stimulus:</strong> A CPU fails, during normal operation → <strong>Response:</strong>
+                        0.999999 availability of the switch.</p>
+                    <p><strong>Architecture:</strong> Primary CPU + Backup CPU (with watchdog) send a 1-sec heartbeat,
+                        both feed a Switch CPU. Backup CPU runs a different OS to avoid common-mode failure.</p>
+                    <p><strong>Risk noted:</strong> No backup <em>data channel</em> — could threaten the availability
+                        requirement even though the CPU failover itself is solid.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 11 -->
+        <section class="sheet" id="s11">
+            <div class="sheet-head"><span class="num">11</span>
+                <h2>Design Patterns Cheat-Sheet</h2><span class="tag">GoF quick reference</span>
+            </div>
+            <div class="sheet-body">
+                <p>Patterns are grouped by <strong>what they do</strong>: Creational = how objects are made; Structural
+                    = how objects are composed; Behavioral = how objects communicate.</p>
+
+                <h3>Creational</h3>
+                <table>
+                    <tr>
+                        <th>Pattern</th>
+                        <th>Intent</th>
+                    </tr>
+                    <tr>
+                        <td>Abstract Factory</td>
+                        <td>Create families of related objects without specifying concrete classes</td>
+                    </tr>
+                    <tr>
+                        <td>Factory Method</td>
+                        <td>Define an interface for creating an object, let subclasses decide which class</td>
+                    </tr>
+                    <tr>
+                        <td>Builder</td>
+                        <td>Separate construction of a complex object from its representation</td>
+                    </tr>
+                    <tr>
+                        <td>Singleton</td>
+                        <td>Ensure a class has only one instance with a global access point</td>
+                    </tr>
+                </table>
+
+                <h3>Structural</h3>
+                <table>
+                    <tr>
+                        <th>Pattern</th>
+                        <th>Intent</th>
+                    </tr>
+                    <tr>
+                        <td>Adapter</td>
+                        <td>Convert one interface into another that clients expect</td>
+                    </tr>
+                    <tr>
+                        <td>Facade</td>
+                        <td>Provide one unified, simple interface to a complex subsystem</td>
+                    </tr>
+                    <tr>
+                        <td>Composite</td>
+                        <td>Compose objects into tree structures for whole-part hierarchies, treated uniformly</td>
+                    </tr>
+                </table>
+
+                <h3>Behavioral</h3>
+                <table>
+                    <tr>
+                        <th>Pattern</th>
+                        <th>Intent</th>
+                    </tr>
+                    <tr>
+                        <td>Iterator</td>
+                        <td>Access elements of a collection sequentially without exposing its internals</td>
+                    </tr>
+                    <tr>
+                        <td>Observer</td>
+                        <td>One-to-many dependency — when one object changes, all dependents are notified</td>
+                    </tr>
+                </table>
+
+                <details>
+                    <summary>Full GoF 23-pattern reference list</summary>
+                    <div class="inner">
+                        <p><strong>Creational:</strong> Abstract Factory, Builder, Factory Method, Prototype, Singleton
+                        </p>
+                        <p><strong>Structural:</strong> Adapter, Bridge, Composite, Decorator, Facade, Flyweight, Proxy
+                        </p>
+                        <p><strong>Behavioral:</strong> Chain of Responsibility, Command, Interpreter, Iterator,
+                            Mediator, Memento, Observer, State, Strategy, Template Method, Visitor</p>
+                    </div>
+                </details>
+
+                <p class="note">Exam tip — trade-offs: Adapter adds overhead (everything gets forwarded); Facade &amp;
+                    Composite reduce client complexity and coupling; Singleton doesn't play well with multithreading.
+                </p>
+            </div>
+        </section>
+
+        <!-- 12 -->
+        <section class="sheet" id="s12">
+            <div class="sheet-head"><span class="num">12</span>
+                <h2>Documentation Roadmap &amp; View Template</h2><span class="tag">How the SEI writes it down</span>
+            </div>
+            <div class="sheet-body">
+                <p>A standard architecture document is structured so any stakeholder can find their view quickly:</p>
+                <ol>
+                    <li>Documentation Roadmap (incl. Stakeholder Representation, Viewpoint Definitions)</li>
+                    <li>Architecture Background (problem &amp; solution background, product-line considerations)</li>
+                    <li>Views (one section per view: description, packet overview, primary presentation, element
+                        catalog, context diagram)</li>
+                    <li>… supporting material</li>
+                    <li>Directory (index, glossary, acronyms)</li>
+                </ol>
+                <p class="note">Each <strong>view packet</strong> repeats the same skeleton: Primary Presentation →
+                    Element Catalog → Context Diagram → Variability → Background → Related packets — consistency makes
+                    large documents navigable.</p>
+            </div>
+        </section>
+
+        <!-- 13 -->
+        <section class="sheet" id="s13">
+            <div class="sheet-head"><span class="num">13</span>
+                <h2>Problem-Solving Loop During Architecture</h2><span class="tag">The engine room</span>
+            </div>
+            <div class="sheet-body">
+                <p>Requirements rarely arrive complete — architecture is an iterative loop, not a straight line:</p>
+                <div class="flow">
+                    <div class="box"><b>1</b>Requirements, Goals, Scenarios</div>
+                    <div class="arrow">→</div>
+                    <div class="box"><b>2</b>Interpret the Problem</div>
+                    <div class="arrow">→</div>
+                    <div class="box"><b>3</b>Evaluate Constraints (cost, schedule, quality)</div>
+                    <div class="arrow">→</div>
+                    <div class="box"><b>4</b>Collaborative Brainstorming</div>
+                    <div class="arrow">→</div>
+                    <div class="box"><b>5</b>Architectural Design</div>
+                    <div class="arrow">→</div>
+                    <div class="box"><b>6</b>Evaluate → 7 Document</div>
+                </div>
+                <p>Three support pillars run underneath the whole loop: <strong>Resources</strong> (people, tools,
+                    hardware), <strong>Activities</strong> (tasks like design reviews), and <strong>Controls</strong>
+                    (rules for how/when/where activities happen — e.g. "reviews need 1 week's notice").</p>
+            </div>
+        </section>
+
+        <!-- 14 -->
+        <section class="sheet" id="s14">
+            <div class="sheet-head"><span class="num">14</span>
+                <h2>Midterm Flashbacks</h2><span class="tag">Real exam questions, cleaned up</span>
+            </div>
+            <div class="sheet-body">
+                <p><span class="pill">Q1</span> Modularization &amp; its two strategies</p>
+                <div class="card">
+                    <p><strong>Modularization</strong> = continuously decomposing the system until reaching fine-grained
+                        components ("what" should be done).</p>
+                    <p><strong>Abstraction</strong> = show only what's important, hide detail ("what parts are needed").
+                    </p>
+                    <p><strong>Encapsulation</strong> = hide data, expose only what's needed ("what info should be
+                        shown/hidden").</p>
+                    <p class="note">They work together: abstraction decides <em>what</em> parts matter; encapsulation
+                        decides <em>what</em> to reveal or hide about them.</p>
+                </div>
+
+                <p><span class="pill">Q2</span> Are these functional requirements valid?</p>
+                <div class="card">
+                    <p>"The software shall be secure and fast." → <strong>Invalid</strong>: doesn't say <em>how</em>
+                        secure or <em>how</em> fast — not measurable, not testable.</p>
+                    <p>"The system shall maximize communication speed." → <strong>Invalid</strong>: no concrete target.
+                        One stakeholder might think 2 seconds is fine; another won't. Without a specified value, it
+                        can't be verified.</p>
+                </div>
+
+                <p><span class="pill">Q3</span> Key tasks in software architecture</p>
+                <div class="card">
+                    <p>Recall the 7-task list in Sheet 04 — common mix-up: "ethical/professional practice" is
+                        <em>not</em> one of them. The real tasks are about stakeholders, views, styles, org influence,
+                        components, evaluation, and synchronicity.</p>
+                </div>
+
+                <p><span class="pill">Q4</span> Consoles + LAN server diagram</p>
+                <div class="card">
+                    <p>1) This is a <strong>Physical (Deployment) view</strong> — it shows hardware and installation,
+                        not just software module structure (careful: it's easy to mistake it for a
+                        Component/Development-view diagram).</p>
+                    <p>2) Structure: multiple consoles connected to each other, and each console also has its own direct
+                        link to the LAN server.</p>
+                    <p>3) To allow secure outside access: add a <strong>firewall</strong> between an external "employee
+                        console" and the server, controlling incoming/outgoing traffic.</p>
+                    <p>4) Availability (before): poor — no backup server, so a crash means total downtime.</p>
+                    <p>5) Improve it: add <strong>redundant servers</strong> connected to the LAN server to act as
+                        backups when the primary crashes.</p>
+                </div>
+
+                <p><span class="pill">Q5</span> Heartbeat / unresponsive server scenario</p>
+                <div class="card">
+                    <p>a) Quality attribute = <strong>Availability</strong>.</p>
+                    <p>b) The heartbeat detects the server going unresponsive during normal operation; the affected
+                        artifact is the process; the response is to disable the failing source and attempt repair; the
+                        measure is repair time.</p>
+                    <p>c) 4 related availability tactics: <strong>Fault Detection</strong> (heartbeat/ping-echo),
+                        <strong>Recovery – Preparation &amp; Repair</strong> (redundancy, rollback), <strong>Recovery –
+                            Reintroduction</strong>, <strong>Prevention</strong> (removal from service, transactions).
+                    </p>
+                </div>
+
+                <p><span class="pill">Q6</span> Pipes &amp; Filters (patterns A vs B)</p>
+                <div class="card">
+                    <p>1) Pattern = <strong>Pipes and Filters</strong>. 2) Used for data-flow / transformation systems.
+                        3) Components: <strong>Source</strong> (data origin), <strong>Filter</strong> (transforms data),
+                        <strong>Pipe</strong> (transmits data), <strong>Sink</strong> (consumes final output).</p>
+                    <p>4) The <strong>parallel</strong> arrangement (filters running concurrently) has better
+                        performance — the sequential arrangement is slower since each filter waits its turn.</p>
+                    <p>5) Yes, it supports security — you can inject a security filter (e.g. firewall, authentication,
+                        intrusion detection) at any point in the pipeline.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 15 -->
+        <section class="sheet" id="s15">
+            <div class="sheet-head"><span class="num">15</span>
+                <h2>Quick Self-Test</h2><span class="tag">Cover the answer, then click</span>
+            </div>
+            <div class="sheet-body">
+                <div class="flashcards">
+                    <details class="flash">
+                        <summary>What are architecture's 3 dimensions?</summary>
+                        <div class="inner">Structure, Communication (behavior), Nonfunctional requirements — "Skeleton,
+                            Chat, Needs".</div>
+                    </details>
+                    <details class="flash">
+                        <summary>Quality attribute vs. tactic?</summary>
+                        <div class="inner">Quality attribute = the goal. Tactic = the design decision used to achieve
+                            it.</div>
+                    </details>
+                    <details class="flash">
+                        <summary>Direct vs. indirect stakeholders?</summary>
+                        <div class="inner">Direct = use the system, drive functional requirements. Indirect = affected
+                            but don't use it, drive non-functional/external requirements.</div>
+                    </details>
+                    <details class="flash">
+                        <summary>Which 4+1 view uses a Deployment diagram?</summary>
+                        <div class="inner">The Physical view.</div>
+                    </details>
+                    <details class="flash">
+                        <summary>Which 4+1 view uses Activity diagrams?</summary>
+                        <div class="inner">The Process view (concurrency &amp; workflow).</div>
+                    </details>
+                    <details class="flash">
+                        <summary>6 parts of a quality attribute scenario?</summary>
+                        <div class="inner">Source, Stimulus, Artifact, Environment, Response, Measure.</div>
+                    </details>
+                    <details class="flash">
+                        <summary>Style vs. pattern?</summary>
+                        <div class="inner">Style = high-level template for a family of systems. Pattern = a specific,
+                            reusable solution inside that style.</div>
+                    </details>
+                    <details class="flash">
+                        <summary>Why can't architecture alone guarantee quality?</summary>
+                        <div class="inner">Because implementation must actually follow through — a programmer skipping a
+                            requirement (e.g. security) breaks the guarantee even if the architecture demanded it.</div>
+                    </details>
+                    <details class="flash">
+                        <summary>Pipes &amp; Filters components?</summary>
+                        <div class="inner">Source, Filter, Pipe, Sink.</div>
+                    </details>
+                    <details class="flash">
+                        <summary>What does "design synchronicity" mean?</summary>
+                        <div class="inner">How closely the built system still matches its original design/architecture
+                            over time.</div>
+                    </details>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            Software Design &amp; Architecture — Study Blueprint<br>
+            <span class="stamp">Made by Shoug Alomran</span>
+        </footer>
+
+    </div>
+
+    <script>
+        const root = document.documentElement;
+        const toggle = document.getElementById('themeToggle');
+        const knob = toggle.querySelector('.knob');
+
+        function applyTheme(theme) {
+            if (theme === 'dark') {
+                root.setAttribute('data-theme', 'dark');
+                knob.textContent = '☾';
+            } else {
+                root.removeAttribute('data-theme');
+                knob.textContent = '☀';
+            }
+        }
+
+        const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        applyTheme(prefersDark ? 'dark' : 'light');
+
+        toggle.addEventListener('click', () => {
+            const isDark = root.getAttribute('data-theme') === 'dark';
+            applyTheme(isDark ? 'light' : 'dark');
+        });
+    </script>
+
+</body>
+
+</html>
