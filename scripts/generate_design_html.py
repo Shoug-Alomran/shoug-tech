@@ -2479,7 +2479,6 @@ def workshop_sidebar(workshop_key: str, active_section: str | None = None) -> st
                 f'{active_dot if section_active else ""}{html.escape(section_label.upper())}</a></li>'
             )
         overview_active = is_active_workshop and not active_section
-        status_class = "coming-soon" if status == "COMING SOON" else "available"
         rows.append(
             f'<li class="tree-item{" dir-open" if is_active_workshop else ""}"><button class="tree-course-link tree-toggle-button" type="button" data-tree-toggle="{child_id}" aria-expanded="{str(is_active_workshop).lower()}">'
             f'<span class="tree-toggle">{"[-]" if is_active_workshop else "[+]"}</span> {html.escape(workshop_title.upper())}/</button></li>'
@@ -2670,6 +2669,10 @@ def discovered_section_items(code: str, label: str) -> list[tuple[str, str]]:
         name = path.name
         stem_lower = path.stem.lower()
         if name.startswith(".") or ".ar." in name.lower() or stem_lower in {"overview", "intro"}:
+            continue
+        # Generated viewer routes live in numbered directories and must not be
+        # rediscovered as source slide breakdowns on subsequent builds.
+        if path.name == "index.html" and re.match(r"^\d{2}-", path.parent.name):
             continue
         if path.name == "index.html" and any(path.parent == candidate for candidate in candidates):
             continue
@@ -3538,6 +3541,7 @@ def section_page(code: str, label: str) -> str:
                 arabic_title = markdown_title(arabic_path) or prettify_filename(arabic_path)
         row_url = viewer_url(code, label, item_label, index)
         status = "COMING SOON" if is_coming_soon_slide_breakdown(label, source_url) else "AVAILABLE"
+        status_class = "coming-soon" if status == "COMING SOON" else "available"
         rows.append(
             f'''
                             <a href="{html.escape(row_url)}" class="dir-row" data-ar-title="{html.escape(arabic_title)}">
@@ -3910,7 +3914,7 @@ def source_has_html_embed(source_url: str) -> bool:
     if path is None:
         return False
     if path.suffix.lower() == ".html":
-        return True
+        return path.is_file() and path.stat().st_size > 0
     if path.suffix.lower() == ".md":
         return markdown_contains_html_embed(path)
     return False
@@ -3999,15 +4003,15 @@ def viewer_page(code: str, section_label: str, item_label: str, source_url: str,
         ]),
         text,
     )
-    text = replace_first(r'<div class="ch-label uppercase"[^>]*>.*?</div>', f'<div class="ch-label uppercase">ITEM_{index:02d} // {html.escape(section_label.upper())}</div>', text)
-    text = replace_first(r'<h1 class="ch-title uppercase"[^>]*>.*?</h1>', f'<h1 class="ch-title uppercase">{html.escape(item_label)}</h1>', text)
+    text = replace_first(r'<div class="ch-label(?: uppercase)?"[^>]*>.*?</div>', f'<div class="ch-label uppercase">ITEM_{index:02d} // {html.escape(section_label.upper())}</div>', text)
+    text = replace_first(r'<h1 class="ch-title(?: uppercase)?"[^>]*>.*?</h1>', f'<h1 class="ch-title uppercase">{html.escape(item_label)}</h1>', text)
     text = replace_first(
         r'<div class="action-buttons"[^>]*>.*?</div>',
         render_viewer_actions(open_url, section_url(code, section_label)),
         text,
     )
     text = replace_first(
-        r'<div class="nav-strip uppercase"[^>]*>.*?</div>',
+        r'<div class="nav-strip(?: uppercase)?"[^>]*>.*?</div>',
         f'<div class="nav-strip uppercase"><a href="{html.escape(previous_url)}" class="nav-link prev"><- PREVIOUS</a><a href="{html.escape(next_url)}" class="nav-link next">NEXT -></a></div>',
         text,
     )

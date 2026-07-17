@@ -369,7 +369,7 @@ def main() -> int:
     offline_placeholders = 0
     for path in SITE.rglob("*.html"):
         stat = path.stat()
-        if stat.st_size > 0 and stat.st_blocks == 0:
+        if stat.st_size == 0 or stat.st_blocks == 0:
             offline_placeholders += 1
             continue
         original = path.read_text(encoding="utf-8")
