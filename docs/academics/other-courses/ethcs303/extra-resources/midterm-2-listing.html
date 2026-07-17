@@ -1,0 +1,1389 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ETHC303 — The Listing Vault</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --teal-950: #04211f;
+            --teal-900: #063330;
+            --teal-800: #0a4744;
+            --teal-700: #0e5f5a;
+            --teal-600: #137a73;
+            --teal-500: #18948c;
+            --teal-400: #3db3aa;
+            --amber: #d9a441;
+            --amber-soft: #f0d9a6;
+
+            --bg: #f6f4ee;
+            --bg-alt: #eeebe1;
+            --surface: #ffffff;
+            --surface-2: #fbfaf5;
+            --border: #dcd7c8;
+            --text: #1c2624;
+            --text-dim: #5b6a67;
+            --accent: var(--teal-600);
+            --accent-strong: var(--teal-800);
+            --star: #b6832a;
+            --shadow: 0 1px 2px rgba(20, 30, 28, .04), 0 8px 24px rgba(20, 30, 28, .06);
+            --radius: 14px;
+        }
+
+        html[data-theme="dark"] {
+            --bg: #0a1512;
+            --bg-alt: #0e1b17;
+            --surface: #122320;
+            --surface-2: #0e1b17;
+            --border: #1f3733;
+            --text: #e8f0ed;
+            --text-dim: #8fa8a2;
+            --accent: var(--teal-400);
+            --accent-strong: var(--teal-400);
+            --star: #e6b757;
+            --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 12px 32px rgba(0, 0, 0, .35);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', system-ui, sans-serif;
+            line-height: 1.55;
+            transition: background .25s ease, color .25s ease;
+            min-height: 100vh;
+        }
+
+        ::selection {
+            background: var(--amber-soft);
+            color: var(--teal-950);
+        }
+
+        /* ---------- top bar ---------- */
+        .topbar {
+            position: sticky;
+            top: 0;
+            z-index: 40;
+            backdrop-filter: blur(10px) saturate(1.4);
+            background: color-mix(in srgb, var(--bg) 82%, transparent);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .topbar-inner {
+            max-width: 1180px;
+            margin: 0 auto;
+            padding: 14px clamp(16px, 3vw, 32px);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .brand {
+            display: flex;
+            align-items: baseline;
+            gap: 10px;
+            flex: 1 1 auto;
+            min-width: 200px;
+        }
+
+        .brand .mark {
+            font-family: 'Fraunces', serif;
+            font-weight: 700;
+            font-size: 22px;
+            letter-spacing: -.01em;
+            color: var(--accent-strong);
+        }
+
+        .brand .sub {
+            font-size: 11.5px;
+            letter-spacing: .09em;
+            text-transform: uppercase;
+            color: var(--text-dim);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .search-wrap {
+            position: relative;
+            flex: 1 1 260px;
+            max-width: 420px;
+        }
+
+        .search-wrap input {
+            width: 100%;
+            padding: 9px 14px 9px 34px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            outline: none;
+            transition: border-color .2s, box-shadow .2s;
+        }
+
+        .search-wrap input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 20%, transparent);
+        }
+
+        .search-wrap svg {
+            position: absolute;
+            left: 11px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 15px;
+            height: 15px;
+            color: var(--text-dim);
+            pointer-events: none;
+        }
+
+        .search-count {
+            font-size: 11px;
+            color: var(--text-dim);
+            font-family: 'JetBrains Mono', monospace;
+            white-space: nowrap;
+        }
+
+        .theme-toggle {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            padding: 4px;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .theme-toggle button {
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            padding: 6px 9px;
+            border-radius: 999px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-dim);
+            transition: background .2s, color .2s;
+        }
+
+        .theme-toggle button.active {
+            background: var(--accent);
+            color: var(--bg);
+        }
+
+        .theme-toggle svg {
+            width: 15px;
+            height: 15px;
+        }
+
+        /* ---------- nav chips ---------- */
+        .chapnav {
+            max-width: 1180px;
+            margin: 0 auto;
+            padding: 0 clamp(16px, 3vw, 32px) 14px;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .chapnav a {
+            font-size: 12.5px;
+            font-family: 'JetBrains Mono', monospace;
+            text-decoration: none;
+            color: var(--text-dim);
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            padding: 6px 12px;
+            transition: all .2s;
+            white-space: nowrap;
+        }
+
+        .chapnav a:hover {
+            border-color: var(--accent);
+            color: var(--accent-strong);
+        }
+
+        .chapnav a .n {
+            color: var(--star);
+            margin-right: 4px;
+        }
+
+        /* ---------- layout ---------- */
+        .wrap {
+            max-width: 1180px;
+            margin: 0 auto;
+            padding: 8px clamp(16px, 3vw, 32px) 80px;
+        }
+
+        .hero {
+            padding: 28px 0 8px;
+        }
+
+        .hero h1 {
+            font-family: 'Fraunces', serif;
+            font-weight: 600;
+            font-size: clamp(26px, 4vw, 38px);
+            margin: 0 0 8px;
+            letter-spacing: -.01em;
+        }
+
+        .hero p {
+            color: var(--text-dim);
+            font-size: 14.5px;
+            max-width: 640px;
+            margin: 0;
+        }
+
+        .hero .stat-row {
+            display: flex;
+            gap: 22px;
+            margin-top: 18px;
+            flex-wrap: wrap;
+        }
+
+        .stat {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .stat b {
+            display: block;
+            font-size: 22px;
+            color: var(--accent-strong);
+            font-family: 'Fraunces', serif;
+            font-weight: 700;
+        }
+
+        .stat span {
+            font-size: 11px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: .07em;
+        }
+
+        /* ---------- chapter block ---------- */
+        .chapter {
+            margin-top: 44px;
+            scroll-margin-top: 130px;
+        }
+
+        .chapter-head {
+            display: flex;
+            align-items: baseline;
+            gap: 14px;
+            margin-bottom: 18px;
+            border-bottom: 2px solid var(--accent);
+            padding-bottom: 10px;
+        }
+
+        .chapter-head .num {
+            font-family: 'Fraunces', serif;
+            font-size: 15px;
+            color: var(--accent);
+            font-weight: 700;
+        }
+
+        .chapter-head h2 {
+            font-family: 'Fraunces', serif;
+            font-size: clamp(19px, 2.4vw, 25px);
+            font-weight: 600;
+            margin: 0;
+            flex: 1;
+        }
+
+        .chapter-head .tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10.5px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: .06em;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 16px;
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 18px 20px;
+            box-shadow: var(--shadow);
+            transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            border-color: var(--accent);
+        }
+
+        .card.full {
+            grid-column: 1/-1;
+        }
+
+        .card h3 {
+            margin: 0 0 4px;
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--accent-strong);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card .count-badge {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            font-weight: 500;
+            background: var(--bg-alt);
+            color: var(--text-dim);
+            border-radius: 6px;
+            padding: 2px 7px;
+            margin-left: auto;
+        }
+
+        .card .desc {
+            font-size: 12.5px;
+            color: var(--text-dim);
+            margin: 0 0 12px;
+        }
+
+        .card ol,
+        .card ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        .card li {
+            margin-bottom: 7px;
+            font-size: 14px;
+        }
+
+        .card li:last-child {
+            margin-bottom: 0;
+        }
+
+        .card li b {
+            color: var(--text);
+        }
+
+        .card li .hint {
+            color: var(--text-dim);
+            font-size: 12.5px;
+        }
+
+        .star {
+            color: var(--star);
+            font-size: 12px;
+            margin-right: 2px;
+        }
+
+        mark {
+            background: var(--amber-soft);
+            color: var(--teal-950);
+            border-radius: 3px;
+            padding: 0 2px;
+        }
+
+        html[data-theme="dark"] mark {
+            background: #4a3a12;
+            color: #ffe9b3;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .subgrid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 14px;
+            margin-top: 10px;
+        }
+
+        .subgrid .sub {
+            background: var(--surface-2);
+            border: 1px dashed var(--border);
+            border-radius: 10px;
+            padding: 12px 14px;
+        }
+
+        .subgrid .sub h4 {
+            margin: 0 0 6px;
+            font-size: 12.5px;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--accent-strong);
+            text-transform: uppercase;
+            letter-spacing: .04em;
+        }
+
+        .subgrid .sub ul {
+            margin: 0;
+            padding-left: 18px;
+        }
+
+        .subgrid .sub li {
+            font-size: 13px;
+            margin-bottom: 5px;
+        }
+
+        .examtable {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13.5px;
+            margin-top: 6px;
+        }
+
+        .examtable th {
+            text-align: left;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10.5px;
+            text-transform: uppercase;
+            letter-spacing: .05em;
+            color: var(--text-dim);
+            border-bottom: 1px solid var(--border);
+            padding: 6px 8px;
+        }
+
+        .examtable td {
+            padding: 8px;
+            border-bottom: 1px solid var(--border);
+            vertical-align: top;
+        }
+
+        .examtable tr:last-child td {
+            border-bottom: none;
+        }
+
+        .pill {
+            display: inline-block;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            background: var(--bg-alt);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 2px 7px;
+            margin: 2px 4px 2px 0;
+        }
+
+        .banner {
+            background: linear-gradient(135deg, var(--teal-800), var(--teal-600));
+            color: #fdf9ee;
+            border-radius: var(--radius);
+            padding: 16px 20px;
+            margin-bottom: 22px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            font-size: 13.5px;
+        }
+
+        html[data-theme="dark"] .banner {
+            background: linear-gradient(135deg, #0d2624, #144a44);
+        }
+
+        .banner svg {
+            flex-shrink: 0;
+            width: 22px;
+            height: 22px;
+            color: var(--amber-soft);
+        }
+
+        footer {
+            max-width: 1180px;
+            margin: 60px auto 0;
+            padding: 26px clamp(16px, 3vw, 32px) 30px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        footer .name {
+            font-family: 'Fraunces', serif;
+            font-weight: 600;
+            font-size: 15px;
+            color: var(--accent-strong);
+        }
+
+        footer .meta {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: var(--text-dim);
+        }
+
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 10px;
+        }
+
+        @media (max-width:640px) {
+            .chapnav {
+                overflow-x: auto;
+                flex-wrap: nowrap;
+                padding-bottom: 12px;
+            }
+
+            footer {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="topbar">
+        <div class="topbar-inner">
+            <div class="brand">
+                <span class="mark">The Listing Vault</span>
+                <span class="sub">ETHC303 · list-based recall</span>
+            </div>
+            <div class="search-wrap">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="7" />
+                    <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                </svg>
+                <input id="searchInput" type="text" placeholder="Search any list, term, or item…">
+            </div>
+            <span class="search-count" id="searchCount"></span>
+            <div class="theme-toggle" role="group" aria-label="Theme toggle">
+                <button id="lightBtn" title="Light mode" aria-label="Light mode">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="4" />
+                        <path
+                            d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
+                    </svg>
+                </button>
+                <button id="darkBtn" title="Dark mode" aria-label="Dark mode">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <nav class="chapnav">
+            <a href="#ch1"><span class="n">01</span>Cloud &amp; Privacy</a>
+            <a href="#ch2"><span class="n">02</span>Business Ethics</a>
+            <a href="#ch3"><span class="n">03</span>Social Media</a>
+            <a href="#ch4"><span class="n">04</span>Ethical Hacking</a>
+            <a href="#ch5"><span class="n">05</span>Social Engineering</a>
+            <a href="#ch6"><span class="n">06</span>Privacy in Cyberspace</a>
+        </nav>
+    </div>
+
+    <div class="wrap">
+
+        <div class="hero">
+            <h1>Every list, gathered in one place.</h1>
+            <p>Built for the 10-mark listing section of your midterm — every numbered set, category, and "types of…"
+                across all six chapters, extracted and organized for fast recall. <span class="star">★</span> marks
+                items confirmed on a past exam.</p>
+            <div class="stat-row">
+                <div class="stat"><b>6</b><span>chapters</span></div>
+                <div class="stat"><b id="listCountStat">—</b><span>lists</span></div>
+                <div class="stat"><b id="itemCountStat">—</b><span>total items</span></div>
+            </div>
+        </div>
+
+        <div class="banner">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2l9 4.5v6c0 5-3.8 8.5-9 9.5-5.2-1-9-4.5-9-9.5v-6L12 2z" />
+                <path d="M9 12l2 2 4-4" />
+            </svg>
+            <span>Read each list out loud once, then cover it and rebuild it from memory — that's the fastest way to
+                lock a "list" question in before an exam.</span>
+        </div>
+
+        <!-- ================= CHAPTER 1 : CLOUD & PRIVACY ================= -->
+        <section class="chapter" id="ch1">
+            <div class="chapter-head">
+                <span class="num">01</span>
+                <h2>Privacy Issues in Cloud Computing</h2>
+                <span class="tag">7 lists</span>
+            </div>
+            <div class="grid">
+
+                <div class="card">
+                    <h3>Cloud Service Models <span class="count-badge">4</span></h3>
+                    <ol>
+                        <li><b>SaaS</b> — Software as a Service <span class="hint">(Google Apps, Office 365, Gmail,
+                                Dropbox)</span></li>
+                        <li><b>IaaS</b> — Infrastructure as a Service <span class="hint">(Azure, AWS — CPU, storage,
+                                bandwidth)</span></li>
+                        <li><b>PaaS</b> — Platform as a Service <span class="hint">(dev/test/deploy platform)</span>
+                        </li>
+                        <li><b>EaaS</b> — Equipment as a Service <span class="hint">(IoT device connectivity)</span>
+                        </li>
+                    </ol>
+                </div>
+
+                <div class="card">
+                    <h3>6 Facts About the Cloud Industry <span class="count-badge">6</span></h3>
+                    <ol>
+                        <li>Amazon &amp; Microsoft earn a growing share of revenue from the cloud</li>
+                        <li>Security concerns are waning — 60% feel adequately safeguarded</li>
+                        <li>Investment in cloud computing is increasing across all industries</li>
+                        <li>Nearly half of US government agencies use the cloud (largest user)</li>
+                        <li>Banks are the most active cloud users (mobile banking, PayPal, Bitcoin)</li>
+                        <li>Most companies use the cloud mainly for storage &amp; backup/recovery</li>
+                    </ol>
+                </div>
+
+                <div class="card full">
+                    <h3>Advantages of Cloud Computing <span class="count-badge">12</span></h3>
+                    <div class="subgrid">
+                        <div class="sub">
+                            <ul>
+                                <li>Economical — reduced cost, pay incrementally</li>
+                                <li>Increased storage capacity</li>
+                                <li>Flexibility</li>
+                            </ul>
+                        </div>
+                        <div class="sub">
+                            <ul>
+                                <li>More mobility — access from anywhere</li>
+                                <li>Allows IT to shift focus to business goals</li>
+                                <li>Insight — integrated cloud analytics</li>
+                            </ul>
+                        </div>
+                        <div class="sub">
+                            <ul>
+                                <li>Collaboration made simple</li>
+                                <li>Quality control in reporting</li>
+                                <li>Disaster recovery</li>
+                            </ul>
+                        </div>
+                        <div class="sub">
+                            <ul>
+                                <li>Loss prevention</li>
+                                <li>Automatic software updates</li>
+                                <li>Sustainability</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Disadvantages of Cloud Computing <span class="count-badge">5</span></h3>
+                    <ol>
+                        <li>Possible downtime</li>
+                        <li>Slow upload/download (internet-dependent)</li>
+                        <li>Security and legal issues</li>
+                        <li>Lack of support in some circumstances</li>
+                        <li>Data lost if company goes bankrupt</li>
+                    </ol>
+                </div>
+
+                <div class="card">
+                    <h3>Cloud Security Issues <span class="count-badge">5</span></h3>
+                    <ol>
+                        <li><b>Data breaches</b> — targeted attack or human error/vulnerability</li>
+                        <li><b>Hijacking of accounts</b> — stolen login credentials abused</li>
+                        <li><b>Abuse of cloud services</b> — malware injection (malicious "valid instance" scripts)</li>
+                        <li><b>Shared vulnerabilities</b> — security is a shared client/provider responsibility</li>
+                        <li><b>Data loss</b> — attack, disaster, or provider wipe <span class="hint">(e.g. Amazon 2011,
+                                Google lightning strike)</span></li>
+                    </ol>
+                </div>
+
+                <div class="card">
+                    <h3>Ethical Issues in Cloud Computing <span class="count-badge">5</span></h3>
+                    <ol>
+                        <li>Compliance — must meet standards for the application/service</li>
+                        <li>Spiteful activity — disgruntled insiders/competitors doing harm</li>
+                        <li>Policies ignoring customers' interests — utilitarian duty to all users</li>
+                        <li>Intellectual property — easy unauthorized redistribution of digital media</li>
+                        <li>Discrimination — vendors favoring big accounts over small ones</li>
+                    </ol>
+                </div>
+
+                <div class="card full">
+                    <h3>Legal Issues in Cloud Computing <span class="count-badge">6</span></h3>
+                    <ol>
+                        <li>User doesn't know where/how data is stored or recorded</li>
+                        <li>Data stored abroad falls under a different country's laws/jurisdiction</li>
+                        <li>Conflicting regulations across countries of processing, storage, and transit</li>
+                        <li>Users can specify storage countries via agreement, but it's hard to verify (proprietary
+                            tech)</li>
+                        <li>Responsibility for data (insurance, third-party partner access) must be clear</li>
+                        <li>Unclear rights over files when a customer stops using the service; T&amp;Cs often unread
+                        </li>
+                    </ol>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ================= CHAPTER 2 : BUSINESS ETHICS ================= -->
+        <section class="chapter" id="ch2">
+            <div class="chapter-head">
+                <span class="num">02</span>
+                <h2>Business Ethics</h2>
+                <span class="tag">6 lists</span>
+            </div>
+            <div class="grid">
+
+                <div class="card">
+                    <h3>Core Ethical Principles <span class="count-badge">5</span></h3>
+                    <ol>
+                        <li><b>Integrity</b> — honesty, strong moral principles</li>
+                        <li><b>Fairness</b> — treating stakeholders equally</li>
+                        <li><b>Respect</b> — valuing others' rights &amp; dignity</li>
+                        <li><b>Responsibility</b> — accountability for actions</li>
+                        <li><b>Transparency</b> — open communication</li>
+                    </ol>
+                </div>
+
+                <div class="card">
+                    <h3>Types of Ethics in Business <span class="count-badge">4</span></h3>
+                    <ol>
+                        <li>Personal Ethics — individual moral beliefs</li>
+                        <li>Professional Ethics — profession-specific standards</li>
+                        <li>Organizational Ethics — company values/principles</li>
+                        <li>Global Ethics — international business issues</li>
+                    </ol>
+                </div>
+
+                <div class="card">
+                    <h3>Common Ethical Dilemmas <span class="count-badge">5</span></h3>
+                    <ol>
+                        <li>Offering or accepting bribes</li>
+                        <li>Misleading advertising</li>
+                        <li>Using insider information</li>
+                        <li>Discriminatory hiring or promotion</li>
+                        <li>Environmental pollution</li>
+                    </ol>
+                </div>
+
+                <div class="card">
+                    <h3>Ethical Decision-Making Model <span class="count-badge">5</span></h3>
+                    <ol>
+                        <li>Recognize the ethical issue</li>
+                        <li>Gather relevant facts &amp; stakeholders' views</li>
+                        <li>Consider ethical principles (fairness, harm, honesty)</li>
+                        <li>Evaluate alternatives &amp; decide</li>
+                        <li>Reflect on the outcome</li>
+                    </ol>
+                </div>
+
+                <div class="card">
+                    <h3>Importance of Business Ethics <span class="count-badge">4</span></h3>
+                    <ol>
+                        <li>Builds consumer trust &amp; loyalty</li>
+                        <li>Enhances reputation &amp; brand image</li>
+                        <li>Encourages transparency &amp; accountability</li>
+                        <li>Helps avoid legal issues &amp; scandals</li>
+                    </ol>
+                </div>
+
+                <div class="card">
+                    <h3>Consequences of Unethical Behavior <span class="count-badge">4</span></h3>
+                    <ol>
+                        <li>Loss of reputation &amp; customer trust</li>
+                        <li>Legal penalties &amp; lawsuits</li>
+                        <li>Decline in employee morale</li>
+                        <li>Financial losses &amp; market exit</li>
+                    </ol>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ================= CHAPTER 3 : SOCIAL MEDIA ================= -->
+        <section class="chapter" id="ch3">
+            <div class="chapter-head">
+                <span class="num">03</span>
+                <h2>Social Media: Ethical, Legal &amp; Security Issues</h2>
+                <span class="tag">8 lists</span>
+            </div>
+            <div class="grid">
+
+                <div class="card">
+                    <h3>Applications of Social Media <span class="count-badge">3</span></h3>
+                    <ol>
+                        <li>Employee hiring process</li>
+                        <li>Organizations (internal communication)</li>
+                        <li>Digital marketing</li>
+                    </ol>
+                </div>
+
+                <div class="card">
+                    <h3>Social Media in Hiring <span class="count-badge">2</span></h3>
+                    <ol>
+                        <li>Recruit candidates — publicize job openings</li>
+                        <li>Conduct background checks — confirm qualifications</li>
+                    </ol>
+                </div>
+
+                <div class="card">
+                    <h3>Reasons Candidates Get Rejected <span class="count-badge">4</span></h3>
+                    <ol>
+                        <li>Posts about drinking or drug use</li>
+                        <li>Provocative or inappropriate photos</li>
+                        <li>Discriminatory remarks (race, gender, religion)</li>
+                        <li>Confidential information posted</li>
+                    </ol>
+                </div>
+
+                <div class="card">
+                    <h3>Pros of Social Media in Organizations <span class="count-badge">6</span></h3>
+                    <ol>
+                        <li>Facilitates open communication</li>
+                        <li>Employees discuss ideas, share links/news</li>
+                        <li>Widens business contacts</li>
+                        <li>Effective, wide-reach recruitment tool</li>
+                        <li>Improves reputation &amp; client base cheaply</li>
+                        <li>Expands market research &amp; campaigns</li>
+                    </ol>
+                </div>
+
+                <div class="card">
+                    <h3>Cons of Social Media in Organizations <span class="count-badge">4</span></h3>
+                    <ol>
+                        <li>Opens door to fraud, spam &amp; virus attacks</li>
+                        <li>Risk of scams → data/identity theft</li>
+                        <li>Negative employee comments / legal exposure</li>
+                        <li>Lost productivity</li>
+                    </ol>
+                </div>
+
+                <div class="card">
+                    <h3>Role of Social Media in Digital Marketing <span class="count-badge">7</span></h3>
+                    <ol>
+                        <li>See your target close &amp; personal</li>
+                        <li>Respond to problems immediately</li>
+                        <li>Drives more sales</li>
+                        <li>It's free</li>
+                        <li>Increased brand recognition</li>
+                        <li>Improved brand loyalty</li>
+                        <li>Improved customer insights</li>
+                    </ol>
+                </div>
+
+                <div class="card">
+                    <h3>Benefits of Brand Promotion on Social Media <span class="count-badge">9</span></h3>
+                    <ol>
+                        <li>Growing social signals (SEO boost)</li>
+                        <li>Company branding &amp; awareness</li>
+                        <li>Word of mouth advertising</li>
+                        <li>Improved customer insights</li>
+                        <li>Better customer service</li>
+                        <li>Cost efficient</li>
+                        <li>Connectivity with customers</li>
+                        <li>Establishing brand awareness</li>
+                        <li>Sales growth</li>
+                    </ol>
+                </div>
+
+                <div class="card">
+                    <h3>Drawbacks of Brand Promotion <span class="count-badge">4</span></h3>
+                    <ol>
+                        <li>Exposure to competitors</li>
+                        <li>Needs qualified personnel</li>
+                        <li>Can tarnish brand name</li>
+                        <li>Time consuming</li>
+                    </ol>
+                </div>
+
+                <div class="card full">
+                    <h3>Tips for Safer Social Networking <span class="count-badge">12</span></h3>
+                    <div class="subgrid">
+                        <div class="sub">
+                            <ul>
+                                <li>Use a strong, unique password</li>
+                                <li>Share as little personal info as possible</li>
+                                <li>Customize privacy settings</li>
+                            </ul>
+                        </div>
+                        <div class="sub">
+                            <ul>
+                                <li>Don't allow 3rd-party app access</li>
+                                <li>Be careful what you post (photos, opinions, complaints)</li>
+                                <li>Don't post about your employer without authorization</li>
+                            </ul>
+                        </div>
+                        <div class="sub">
+                            <ul>
+                                <li>Supervise kids' social media use</li>
+                                <li>Be suspicious of friend/follow requests &amp; ads</li>
+                                <li>Minimize careless clicking on ads/videos/games</li>
+                            </ul>
+                        </div>
+                        <div class="sub">
+                            <ul>
+                                <li>Use browser anti-phishing/malicious-site warnings</li>
+                                <li>Google yourself &amp; scrutinize results</li>
+                                <li>Think before you click</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ================= CHAPTER 4 : ETHICAL HACKING ================= -->
+        <section class="chapter" id="ch4">
+            <div class="chapter-head">
+                <span class="num">04</span>
+                <h2>Introduction to Ethical Hacking</h2>
+                <span class="tag">7 lists</span>
+            </div>
+            <div class="grid">
+
+                <div class="card full">
+                    <h3>Threat Categories (by level) <span class="count-badge">3 groups</span></h3>
+                    <div class="subgrid">
+                        <div class="sub">
+                            <h4>Host-Level Threats (6)</h4>
+                            <ul>
+                                <li>Malware</li>
+                                <li>Password attacks</li>
+                                <li>Arbitrary code execution</li>
+                                <li>Login bypass</li>
+                                <li>Privilege escalation</li>
+                                <li>Backdoors</li>
+                            </ul>
+                        </div>
+                        <div class="sub">
+                            <h4>Network-Level Threats (6)</h4>
+                            <ul>
+                                <li>Scanning</li>
+                                <li>Sniffing &amp; eavesdropping</li>
+                                <li>Spoofing</li>
+                                <li>Session hijacking</li>
+                                <li>Man-in-the-middle attack</li>
+                                <li>DNS &amp; ARP poisoning</li>
+                            </ul>
+                        </div>
+                        <div class="sub">
+                            <h4>Application-Level Threats (8)</h4>
+                            <ul>
+                                <li>Improper input validation</li>
+                                <li>Broken authentication &amp; authorization</li>
+                                <li>Security misconfiguration</li>
+                                <li>SQL injection</li>
+                                <li>Broken session management</li>
+                                <li>Buffer overflow issues</li>
+                                <li>Cryptography failures</li>
+                                <li>Improper error/exception handling</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Cyber Attack Components <span class="count-badge">3</span></h3>
+                    <ol>
+                        <li><b>Motive</b> — the goal driving the attacker (financial, espionage, disruption)</li>
+                        <li><b>Method</b> — technique used (phishing, malware, SQL injection)</li>
+                        <li><b>Vulnerability</b> — the exploitable weakness</li>
+                    </ol>
+                </div>
+
+                <div class="card">
+                    <h3>Botnet Uses <span class="count-badge">4</span></h3>
+                    <ol>
+                        <li>DDoS attacks</li>
+                        <li>Sending spam emails</li>
+                        <li>Data theft</li>
+                        <li>Cryptomining</li>
+                    </ol>
+                </div>
+
+                <div class="card">
+                    <h3>Common Mobile Threats <span class="count-badge">6</span></h3>
+                    <ol>
+                        <li>Phishing attacks</li>
+                        <li>Spyware</li>
+                        <li>Broken cryptography</li>
+                        <li>Data leakage</li>
+                        <li>Unsecured Wi-Fi</li>
+                        <li>Network spoofing</li>
+                    </ol>
+                </div>
+
+                <div class="card full">
+                    <h3>Security Concept Terminologies <span class="count-badge">8</span></h3>
+                    <div class="subgrid">
+                        <div class="sub">
+                            <ul>
+                                <li><b>Hack Value</b> — target's attractiveness to a hacker</li>
+                                <li><b>Zero-Day Attack</b> — exploited before a patch exists</li>
+                                <li><b>Vulnerability</b> — a weak point/loophole</li>
+                            </ul>
+                        </div>
+                        <div class="sub">
+                            <ul>
+                                <li><b>Payload</b> — malicious part of exploit code</li>
+                                <li><b>Bot</b> — software remotely controlling a target</li>
+                                <li><b>Daisy Chaining</b> — sequential attacks reusing prior info</li>
+                            </ul>
+                        </div>
+                        <div class="sub">
+                            <ul>
+                                <li><b>Exploit</b> — breach via vulnerability/zero-day</li>
+                                <li><b>Doxing</b> — publishing an individual's info from public sources</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Shrink-Wrap Exploit Targets <span class="count-badge">3</span></h3>
+                    <ol>
+                        <li>Unpatched operating systems</li>
+                        <li>Commercial off-the-shelf (COTS) software</li>
+                        <li>Poorly designed / outdated applications</li>
+                    </ol>
+                </div>
+
+                <div class="card">
+                    <h3>Other Cybersecurity Threat Types <span class="count-badge">4</span></h3>
+                    <ol>
+                        <li>Insider Threat — misuse of legitimate access</li>
+                        <li>Botnets — network of compromised "zombie" devices</li>
+                        <li>Viruses &amp; Worms — self-spreading malicious software</li>
+                        <li>Mobile Threats — see list above</li>
+                    </ol>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ================= CHAPTER 5 : SOCIAL ENGINEERING ================= -->
+        <section class="chapter" id="ch5">
+            <div class="chapter-head">
+                <span class="num">05</span>
+                <h2>Social Engineering</h2>
+                <span class="tag">7 lists</span>
+            </div>
+            <div class="grid">
+
+                <div class="card">
+                    <h3>Why Social Engineering Is Dangerous <span class="count-badge">5</span></h3>
+                    <ol>
+                        <li>Identity theft (bank #s, SSNs, user IDs/passwords)</li>
+                        <li>All kinds of data theft</li>
+                        <li>Corruption of data</li>
+                        <li>Unplanned system downtime</li>
+                        <li>Physical security threat</li>
+                    </ol>
+                </div>
+
+                <div class="card">
+                    <h3>Types of Email Phishing <span class="count-badge">2</span></h3>
+                    <ol>
+                        <li><b>Spear phishing</b> — targeted at a specific individual</li>
+                        <li><b>Whaling</b> — targets high-value people (execs/government) to access many users' data
+                        </li>
+                    </ol>
+                </div>
+
+                <div class="card">
+                    <h3>Impersonation Attack Vectors <span class="count-badge">2</span></h3>
+                    <ol>
+                        <li>Impersonating a delivery person</li>
+                        <li>Impersonating tech support — gains physical PC access</li>
+                    </ol>
+                </div>
+
+                <div class="card">
+                    <h3>Common Social Engineering Attacks <span class="count-badge">4</span></h3>
+                    <ol>
+                        <li>Phishing (email)</li>
+                        <li>Vishing (voice/phone)</li>
+                        <li>SMiShing (SMS)</li>
+                        <li>Impersonation (delivery/tech support)</li>
+                    </ol>
+                </div>
+
+                <div class="card full">
+                    <h3>How to Avoid Social Engineering Frauds <span class="count-badge">7</span></h3>
+                    <div class="subgrid">
+                        <div class="sub">
+                            <ul>
+                                <li>Secure your computing devices (AV, firewall, updates)</li>
+                                <li>Set spam filters to high</li>
+                                <li>Beware of any download</li>
+                            </ul>
+                        </div>
+                        <div class="sub">
+                            <ul>
+                                <li>Delete requests for financial info/passwords</li>
+                                <li>Slow down — don't act on urgency</li>
+                                <li>Research the facts independently</li>
+                            </ul>
+                        </div>
+                        <div class="sub">
+                            <ul>
+                                <li>Watch for email/account hijacking — verify before clicking links</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Protecting Against Vishing <span class="count-badge">5</span></h3>
+                    <ol>
+                        <li>Never answer calls from unknown numbers</li>
+                        <li>Never give personal info over the phone</li>
+                        <li>Use a caller ID app</li>
+                        <li>Don't fully trust caller ID</li>
+                        <li>Treat vishing like smishing scams</li>
+                    </ol>
+                </div>
+
+                <div class="card">
+                    <h3>Protecting Against Phishing <span class="count-badge">3</span></h3>
+                    <ol>
+                        <li>Restrict social media privacy to people you know</li>
+                        <li>Observe emails carefully for authenticity</li>
+                        <li>Watch for typos, unofficial docs, false URLs</li>
+                    </ol>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ================= CHAPTER 6 : PRIVACY IN CYBERSPACE ================= -->
+        <section class="chapter" id="ch6">
+            <div class="chapter-head">
+                <span class="num">06</span>
+                <h2>Privacy Issues in Cyberspace</h2>
+                <span class="tag">6 lists + exam mapping</span>
+            </div>
+            <div class="grid">
+
+                <div class="card full">
+                    <h3>How Cybertechnology Changed Privacy <span class="count-badge">4</span></h3>
+                    <ol>
+                        <li><b>Amount</b> of personal info that can be collected — huge, low storage cost</li>
+                        <li><b>Speed</b> of transmission — records move in milliseconds</li>
+                        <li><b>Duration</b> of retention — can be kept indefinitely</li>
+                        <li><b>Kind</b> of information acquired/exchanged — detailed transactional profiles</li>
+                    </ol>
+                </div>
+
+                <div class="card">
+                    <h3>Cyber-Privacy Focuses On <span class="count-badge">4</span></h3>
+                    <ol>
+                        <li>What data should be collected?</li>
+                        <li>What personal info can be shared, with whom?</li>
+                        <li>How much control do individuals have over gathering/mining/exchange?</li>
+                        <li>How long should data be retained?</li>
+                    </ol>
+                </div>
+
+                <div class="card">
+                    <h3>Categories of Private Information <span class="count-badge">4</span></h3>
+                    <ol>
+                        <li>Private communications</li>
+                        <li>Health privacy / medical information</li>
+                        <li>Personal information (financial, academic)</li>
+                        <li>Information about one's possessions (property-related)</li>
+                    </ol>
+                </div>
+
+                <div class="card">
+                    <h3>Types of Internet Cookies <span class="count-badge">2</span></h3>
+                    <ol>
+                        <li><b>First-party cookies</b> — offers/tracking for returning users</li>
+                        <li><b>Third-party cookies</b> — shared with ad agencies/marketers ("tracking cookies")</li>
+                    </ol>
+                </div>
+
+                <div class="card">
+                    <h3>Solutions to Protect Online Privacy <span class="count-badge">5</span></h3>
+                    <ol>
+                        <li>Anti-virus software</li>
+                        <li>Firewalls</li>
+                        <li>Encryption tools</li>
+                        <li>Raise awareness of privacy</li>
+                        <li>P3P — Platform for Privacy Preferences (W3C protocol)</li>
+                    </ol>
+                </div>
+
+                <div class="card">
+                    <h3>Dataveillance Examples <span class="count-badge">3</span></h3>
+                    <ol>
+                        <li>Video cameras monitoring shoppers in retail stores</li>
+                        <li>Intelligent highway vehicle scanning systems</li>
+                        <li>"Invisible supervisor" software monitoring employees</li>
+                    </ol>
+                </div>
+
+                <div class="card full">
+                    <h3>★ Confirmed Past-Exam Mapping — Privacy Data-Collection Techniques &amp; Countermeasures</h3>
+                    <p class="desc">Major Exam 2 asked you to match each scenario to a technique/tool AND a
+                        countermeasure. Memorize both banks whole — questions rotate which items get described.</p>
+                    <table class="examtable">
+                        <tr>
+                            <th>Data-collection technique bank (13)</th>
+                            <th>Countermeasure bank (8)</th>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span class="pill">RFID</span><span class="pill">Fingerprinting</span><span
+                                    class="pill">Drone</span>
+                                <span class="pill">First-party Cookies</span><span class="pill">Third-party
+                                    Cookies</span>
+                                <span class="pill">Data mining</span><span class="pill">IRIS recognition</span>
+                                <span class="pill">Video Cameras</span><span class="pill">Flash-Cookies</span>
+                                <span class="pill">Cross-device tracking</span><span class="pill">Biometrics</span>
+                                <span class="pill">GPS tracking</span><span class="pill">Behavioral profiling</span>
+                            </td>
+                            <td>
+                                <span class="pill">Encryption tool</span><span class="pill">Privacy Preferences
+                                    (P3P)</span>
+                                <span class="pill">Anti-virus software</span><span class="pill">Raise Awareness</span>
+                                <span class="pill">Access Control Policies</span><span class="pill">Firewall</span>
+                                <span class="pill">Multi-Factor Authentication (MFA)</span>
+                                <span class="pill">User-Consent Management</span>
+                            </td>
+                        </tr>
+                    </table>
+                    <p class="desc" style="margin-top:10px;">Known scenario→answer pairs from the exam text:
+                        <b>Dataveillance</b> = general monitoring techniques · <b>Hard-to-detect/delete cookies</b> =
+                        Flash-Cookies · <b>Verifying identity via intrinsic physical traits</b> = Biometrics ·
+                        <b>Short-range chip + reader</b> = RFID · <b>Summary of device software/hardware settings</b> =
+                        Fingerprinting · <b>Shopping data → healthy habits or insurance decisions</b> = Data mining.</p>
+                </div>
+
+            </div>
+        </section>
+
+    </div>
+
+    <footer>
+        <span class="name">Shoug Alomran</span>
+        <span class="meta">ETHC303 · The Listing Vault · built for exam recall</span>
+    </footer>
+
+    <script>
+        // ---------- theme ----------
+        const root = document.documentElement;
+        const lightBtn = document.getElementById('lightBtn');
+        const darkBtn = document.getElementById('darkBtn');
+
+        function setTheme(t) {
+            root.setAttribute('data-theme', t);
+            lightBtn.classList.toggle('active', t === 'light');
+            darkBtn.classList.toggle('active', t === 'dark');
+            try { localStorage.setItem('listingVaultTheme', t); } catch (e) { }
+        }
+        let saved = 'dark';
+        try { saved = localStorage.getItem('listingVaultTheme') || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'); } catch (e) { }
+        setTheme(saved);
+        lightBtn.addEventListener('click', () => setTheme('light'));
+        darkBtn.addEventListener('click', () => setTheme('dark'));
+
+        // ---------- search ----------
+        const input = document.getElementById('searchInput');
+        const countEl = document.getElementById('searchCount');
+        const cards = Array.from(document.querySelectorAll('.card'));
+        const chapters = Array.from(document.querySelectorAll('.chapter'));
+
+        function clearMarks(el) {
+            el.querySelectorAll('mark').forEach(m => {
+                m.replaceWith(document.createTextNode(m.textContent));
+            });
+        }
+
+        function highlight(el, term) {
+            const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null);
+            const nodes = [];
+            let n;
+            while (n = walker.nextNode()) nodes.push(n);
+            nodes.forEach(node => {
+                const text = node.textContent;
+                const idx = text.toLowerCase().indexOf(term);
+                if (idx === -1) return;
+                const before = text.slice(0, idx);
+                const match = text.slice(idx, idx + term.length);
+                const after = text.slice(idx + term.length);
+                const frag = document.createDocumentFragment();
+                frag.appendChild(document.createTextNode(before));
+                const markEl = document.createElement('mark');
+                markEl.textContent = match;
+                frag.appendChild(markEl);
+                frag.appendChild(document.createTextNode(after));
+                node.parentNode.replaceChild(frag, node);
+            });
+        }
+
+        function runSearch() {
+            const term = input.value.trim().toLowerCase();
+            let visibleCards = 0;
+
+            cards.forEach(card => {
+                clearMarks(card);
+                if (!term) {
+                    card.classList.remove('hidden');
+                    return;
+                }
+                const text = card.textContent.toLowerCase();
+                if (text.includes(term)) {
+                    card.classList.remove('hidden');
+                    highlight(card, term);
+                    visibleCards++;
+                } else {
+                    card.classList.add('hidden');
+                }
+            });
+
+            chapters.forEach(ch => {
+                const anyVisible = Array.from(ch.querySelectorAll('.card')).some(c => !c.classList.contains('hidden'));
+                ch.classList.toggle('hidden', term && !anyVisible);
+            });
+
+            countEl.textContent = term ? (visibleCards + ' match' + (visibleCards === 1 ? '' : 'es')) : '';
+        }
+        input.addEventListener('input', runSearch);
+
+        // ---------- stats ----------
+        const listCards = document.querySelectorAll('.card h3');
+        let totalItems = 0;
+        document.querySelectorAll('.card ol, .card ul').forEach(list => {
+            // only count top-level lists, not nested sub lists twice — subgrid uses ul inside .sub, count those too but avoid double count of parent
+            if (list.closest('.sub') || !list.closest('.subgrid')) {
+                totalItems += list.querySelectorAll(':scope > li').length;
+            }
+        });
+        document.getElementById('listCountStat').textContent = listCards.length;
+        document.getElementById('itemCountStat').textContent = totalItems + '+';
+    </script>
+
+</body>
+
+</html>
