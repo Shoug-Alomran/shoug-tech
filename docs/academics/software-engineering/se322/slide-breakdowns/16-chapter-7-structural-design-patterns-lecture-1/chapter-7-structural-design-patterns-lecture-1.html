@@ -1,0 +1,1406 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ch.7 — Structural Design Patterns | Study Blueprint</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg: #081a2e;
+            --bg-elev: #0e2440;
+            --bg-elev-2: #122b4c;
+            --grid: rgba(125, 211, 252, 0.075);
+            --grid-strong: rgba(125, 211, 252, 0.16);
+            --ink: #e9f2ff;
+            --ink-dim: #93a9c7;
+            --ink-faint: #5f7896;
+            --cyan: #7dd3fc;
+            --cyan-strong: #38bdf8;
+            --amber: #fbbf24;
+            --amber-dim: #a8791c;
+            --rose: #fb7185;
+            --green: #34d399;
+            --border: rgba(125, 211, 252, 0.28);
+            --border-soft: rgba(125, 211, 252, 0.14);
+            --shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
+            --radius: 14px;
+            --font-display: 'Space Grotesk', sans-serif;
+            --font-body: 'IBM Plex Sans', sans-serif;
+            --font-mono: 'IBM Plex Mono', monospace;
+        }
+
+        html[data-theme="light"] {
+            --bg: #eef2f7;
+            --bg-elev: #ffffff;
+            --bg-elev-2: #e4ecf5;
+            --grid: rgba(3, 105, 161, 0.07);
+            --grid-strong: rgba(3, 105, 161, 0.14);
+            --ink: #0a1929;
+            --ink-dim: #3d5674;
+            --ink-faint: #7488a3;
+            --cyan: #0369a1;
+            --cyan-strong: #075985;
+            --amber: #b45309;
+            --amber-dim: #92400e;
+            --rose: #be123c;
+            --green: #0f766e;
+            --border: rgba(3, 105, 161, 0.3);
+            --border-soft: rgba(3, 105, 161, 0.15);
+            --shadow: 0 20px 40px rgba(10, 25, 41, 0.12);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            background: radial-gradient(circle at 1px 1px, var(--grid-strong) 1px, transparent 1px) 0 0/48px 48px, linear-gradient(var(--bg), var(--bg));
+            color: var(--ink);
+            font-family: var(--font-body);
+            font-size: clamp(15px, 0.92vw + 10px, 18px);
+            line-height: 1.6;
+            transition: background-color .35s ease, color .35s ease;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        ::selection {
+            background: var(--amber);
+            color: #0a1929;
+        }
+
+        .wrap {
+            max-width: 1180px;
+            margin: 0 auto;
+            padding: 0 clamp(16px, 4vw, 56px);
+        }
+
+        .topbar {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            backdrop-filter: blur(10px);
+            background: color-mix(in srgb, var(--bg) 82%, transparent);
+            border-bottom: 1px solid var(--border-soft);
+        }
+
+        .topbar-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px clamp(16px, 4vw, 56px);
+            max-width: 1180px;
+            margin: 0 auto;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: var(--font-mono);
+            font-size: .8rem;
+            letter-spacing: .08em;
+            color: var(--ink-dim);
+            text-transform: uppercase;
+        }
+
+        .brand .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--amber);
+            box-shadow: 0 0 10px var(--amber);
+        }
+
+        .toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            padding: 4px;
+            background: var(--bg-elev);
+        }
+
+        .toggle button {
+            border: none;
+            background: transparent;
+            color: var(--ink-dim);
+            padding: 6px 12px;
+            border-radius: 999px;
+            cursor: pointer;
+            font-family: var(--font-mono);
+            font-size: .72rem;
+            letter-spacing: .05em;
+            transition: all .25s ease;
+        }
+
+        .toggle button.active {
+            background: var(--cyan);
+            color: var(--bg);
+            font-weight: 600;
+        }
+
+        html[data-theme="light"] .toggle button.active {
+            color: #fff;
+        }
+
+        .progress-track {
+            height: 2px;
+            background: var(--border-soft);
+        }
+
+        .progress-bar {
+            height: 2px;
+            width: 0%;
+            background: linear-gradient(90deg, var(--cyan), var(--amber));
+            transition: width .1s linear;
+        }
+
+        .hero {
+            padding: clamp(48px, 8vw, 96px) 0 clamp(32px, 6vw, 64px);
+        }
+
+        .eyebrow {
+            font-family: var(--font-mono);
+            font-size: .78rem;
+            letter-spacing: .16em;
+            color: var(--amber);
+            text-transform: uppercase;
+            margin: 0 0 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .eyebrow::before {
+            content: "§";
+            font-size: 1rem;
+        }
+
+        h1.title {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: clamp(2.1rem, 5vw, 3.6rem);
+            line-height: 1.08;
+            margin: 0 0 14px;
+            letter-spacing: -.01em;
+        }
+
+        h1.title span {
+            color: var(--cyan);
+        }
+
+        .subtitle {
+            color: var(--ink-dim);
+            font-size: clamp(1rem, 1.3vw, 1.2rem);
+            max-width: 660px;
+            margin: 0 0 28px;
+        }
+
+        .hero-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px 28px;
+            font-family: var(--font-mono);
+            font-size: .78rem;
+            color: var(--ink-faint);
+            border-top: 1px dashed var(--border);
+            padding-top: 18px;
+        }
+
+        .hero-meta b {
+            color: var(--ink-dim);
+            font-weight: 600;
+        }
+
+        section {
+            padding: clamp(40px, 6vw, 72px) 0;
+            border-top: 1px solid var(--border-soft);
+        }
+
+        .sec-head {
+            display: flex;
+            align-items: baseline;
+            gap: 16px;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+        }
+
+        .sec-num {
+            font-family: var(--font-mono);
+            color: var(--amber);
+            font-size: .85rem;
+            border: 1px solid var(--amber-dim);
+            padding: 2px 8px;
+            border-radius: 6px;
+        }
+
+        h2 {
+            font-family: var(--font-display);
+            font-weight: 600;
+            font-size: clamp(1.5rem, 2.6vw, 2.1rem);
+            margin: 0;
+        }
+
+        .sec-sub {
+            color: var(--ink-dim);
+            max-width: 780px;
+            margin: 14px 0 34px;
+        }
+
+        .pattern-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: var(--font-mono);
+            font-size: .72rem;
+            letter-spacing: .06em;
+            text-transform: uppercase;
+            color: var(--bg);
+            background: var(--cyan);
+            padding: 4px 12px;
+            border-radius: 999px;
+            margin-bottom: 14px;
+        }
+
+        .mnemonic {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-family: var(--font-mono);
+            font-size: .85rem;
+            background: var(--bg-elev);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 10px 16px;
+            margin: 10px 0 30px;
+            color: var(--ink-dim);
+        }
+
+        .mnemonic b {
+            color: var(--amber);
+            font-weight: 600;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 22px;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+        }
+
+        @media (max-width:820px) {
+
+            .grid-2,
+            .grid-3 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: var(--bg-elev);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 24px;
+            box-shadow: var(--shadow);
+        }
+
+        .card h3 {
+            font-family: var(--font-display);
+            margin: 0 0 10px;
+            font-size: 1.12rem;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .card p {
+            color: var(--ink-dim);
+            margin: 0 0 10px;
+            font-size: .95rem;
+        }
+
+        .card .tag {
+            display: inline-block;
+            font-family: var(--font-mono);
+            font-size: .7rem;
+            letter-spacing: .05em;
+            color: var(--cyan);
+            border: 1px solid var(--border);
+            padding: 2px 8px;
+            border-radius: 6px;
+            margin-bottom: 12px;
+        }
+
+        .blueprint-line {
+            border: none;
+            border-top: 1px dashed var(--border);
+            margin: 14px 0;
+        }
+
+        .example-box {
+            margin-top: 12px;
+            background: var(--bg-elev-2);
+            border-left: 3px solid var(--amber);
+            padding: 10px 14px;
+            border-radius: 0 8px 8px 0;
+            font-size: .88rem;
+        }
+
+        .example-box b {
+            color: var(--amber);
+            font-family: var(--font-mono);
+            font-size: .75rem;
+            letter-spacing: .04em;
+        }
+
+        .uml-wrap {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 22px;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 0;
+        }
+
+        .uml-col {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .uml-box {
+            font-family: var(--font-mono);
+            font-size: .76rem;
+            border: 1.5px solid var(--cyan);
+            border-radius: 8px;
+            background: var(--bg-elev-2);
+            min-width: 150px;
+            overflow: hidden;
+        }
+
+        .uml-box .h {
+            background: var(--cyan);
+            color: var(--bg);
+            text-align: center;
+            padding: 6px 10px;
+            font-weight: 600;
+        }
+
+        .uml-box .h.abstract {
+            font-style: italic;
+        }
+
+        .uml-box .b {
+            padding: 8px 12px;
+            color: var(--ink-dim);
+        }
+
+        .uml-box .b div {
+            padding: 2px 0;
+        }
+
+        .uml-arrow {
+            font-family: var(--font-mono);
+            color: var(--ink-faint);
+            text-align: center;
+            font-size: 1.3rem;
+        }
+
+        .uml-label {
+            font-family: var(--font-mono);
+            font-size: .64rem;
+            color: var(--amber);
+            text-align: center;
+        }
+
+        pre.code {
+            background: #05121f;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px 18px;
+            overflow-x: auto;
+            font-family: var(--font-mono);
+            font-size: .79rem;
+            color: #cde6ff;
+            line-height: 1.55;
+            margin: 14px 0 0;
+        }
+
+        html[data-theme="light"] pre.code {
+            background: #0a1929;
+        }
+
+        pre.code .c {
+            color: #5f7896;
+        }
+
+        pre.code .k {
+            color: #7dd3fc;
+        }
+
+        pre.code .s {
+            color: #fbbf24;
+        }
+
+        pre.code .f {
+            color: #a78bfa;
+        }
+
+        .step-list {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .step-item {
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+            background: var(--bg-elev);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px 18px;
+        }
+
+        .step-num {
+            font-family: var(--font-mono);
+            font-weight: 700;
+            color: var(--bg);
+            background: var(--cyan);
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .step-item b {
+            font-family: var(--font-display);
+        }
+
+        .step-item span {
+            color: var(--ink-dim);
+            display: block;
+            font-size: .9rem;
+            margin-top: 2px;
+        }
+
+        table.cmp {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: .87rem;
+        }
+
+        table.cmp th,
+        table.cmp td {
+            text-align: left;
+            padding: 12px 14px;
+            border-bottom: 1px solid var(--border-soft);
+            vertical-align: top;
+        }
+
+        table.cmp th {
+            font-family: var(--font-mono);
+            color: var(--amber);
+            font-size: .72rem;
+            letter-spacing: .06em;
+            text-transform: uppercase;
+        }
+
+        table.cmp td:first-child {
+            font-family: var(--font-display);
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        table.cmp td {
+            color: var(--ink-dim);
+        }
+
+        .task {
+            background: var(--bg-elev);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+            margin-bottom: 12px;
+        }
+
+        .task-head {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 18px 20px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .task-letter {
+            font-family: var(--font-mono);
+            font-weight: 700;
+            font-size: 1.05rem;
+            color: var(--bg);
+            background: var(--cyan);
+            width: 38px;
+            height: 38px;
+            border-radius: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .task-head b {
+            font-family: var(--font-display);
+            font-size: 1.02rem;
+        }
+
+        .task-head span.sub {
+            display: block;
+            color: var(--ink-dim);
+            font-size: .84rem;
+            font-weight: 400;
+        }
+
+        .task-chevron {
+            margin-left: auto;
+            color: var(--ink-faint);
+            transition: transform .3s ease;
+            font-family: var(--font-mono);
+        }
+
+        .task.open .task-chevron {
+            transform: rotate(45deg);
+            color: var(--amber);
+        }
+
+        .task-body {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height .35s ease;
+            padding: 0 20px;
+            color: var(--ink-dim);
+            font-size: .92rem;
+        }
+
+        .task.open .task-body {
+            padding: 0 20px 22px;
+        }
+
+        .flash-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 18px;
+        }
+
+        .flash {
+            perspective: 1200px;
+            height: 150px;
+            cursor: pointer;
+        }
+
+        .flash-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform .5s;
+            transform-style: preserve-3d;
+        }
+
+        .flash.flipped .flash-inner {
+            transform: rotateY(180deg);
+        }
+
+        .flash-face {
+            position: absolute;
+            inset: 0;
+            backface-visibility: hidden;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-size: .9rem;
+        }
+
+        .flash-front {
+            background: var(--bg-elev);
+            font-family: var(--font-display);
+            font-weight: 600;
+            color: var(--cyan);
+        }
+
+        .flash-back {
+            background: var(--bg-elev-2);
+            transform: rotateY(180deg);
+            color: var(--ink-dim);
+            font-size: .83rem;
+            padding: 14px;
+        }
+
+        .flash-hint {
+            position: absolute;
+            bottom: 8px;
+            right: 12px;
+            font-family: var(--font-mono);
+            font-size: .6rem;
+            color: var(--ink-faint);
+        }
+
+        .quiz-item {
+            background: var(--bg-elev);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 20px 22px;
+            margin-bottom: 16px;
+        }
+
+        .quiz-q {
+            font-family: var(--font-display);
+            font-weight: 600;
+            margin-bottom: 12px;
+            font-size: 1.02rem;
+        }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .quiz-option {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 10px 14px;
+            cursor: pointer;
+            font-size: .9rem;
+            transition: all .2s ease;
+        }
+
+        .quiz-option:hover {
+            border-color: var(--cyan);
+        }
+
+        .quiz-option.correct {
+            border-color: #22c55e;
+            background: color-mix(in srgb, #22c55e 12%, var(--bg-elev));
+        }
+
+        .quiz-option.wrong {
+            border-color: var(--rose);
+            background: color-mix(in srgb, var(--rose) 12%, var(--bg-elev));
+        }
+
+        .reveal-btn {
+            font-family: var(--font-mono);
+            font-size: .78rem;
+            background: transparent;
+            color: var(--cyan);
+            border: 1px solid var(--border);
+            padding: 8px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .short-answer {
+            display: none;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px dashed var(--border);
+            color: var(--ink-dim);
+            font-size: .9rem;
+        }
+
+        .short-answer.show {
+            display: block;
+        }
+
+        .short-answer b {
+            color: var(--amber);
+        }
+
+        .recap-list {
+            columns: 2;
+            column-gap: 32px;
+        }
+
+        @media (max-width:700px) {
+            .recap-list {
+                columns: 1;
+            }
+        }
+
+        .recap-list li {
+            break-inside: avoid;
+            margin-bottom: 12px;
+            color: var(--ink-dim);
+            font-size: .92rem;
+        }
+
+        .recap-list li b {
+            color: var(--ink);
+        }
+
+        footer {
+            text-align: center;
+            padding: 48px 0 60px;
+            font-family: var(--font-mono);
+            font-size: .8rem;
+            color: var(--ink-faint);
+            border-top: 1px solid var(--border-soft);
+        }
+
+        footer .made {
+            margin-top: 10px;
+            letter-spacing: .08em;
+            color: var(--cyan);
+            font-size: .75rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="topbar">
+        <div class="topbar-inner">
+            <div class="brand"><span class="dot"></span> CH.07 · STRUCTURAL PATTERNS</div>
+            <div class="toggle" id="themeToggle">
+                <button data-theme="dark" class="active">DARK</button>
+                <button data-theme="light">LIGHT</button>
+            </div>
+        </div>
+        <div class="progress-track">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+    </div>
+
+    <div class="wrap">
+
+        <section class="hero" style="border-top:none;">
+            <p class="eyebrow">Software Design &amp; Architecture · Structural Patterns</p>
+            <h1 class="title">Adapter, Composite <span>&amp; Facade</span></h1>
+            <p class="subtitle">Three patterns, one job in common: reshape how existing classes and objects fit together
+                — without touching what's already there.</p>
+            <div class="hero-meta">
+                <span><b>Chapter</b> 07 · Lecture 01</span>
+                <span><b>Category</b> Structural Design Patterns</span>
+                <span><b>Previously</b> Creational Patterns</span>
+                <span><b>Next up</b> Behavioral Design Patterns</span>
+            </div>
+        </section>
+
+        <!-- 0. OVERVIEW -->
+        <section id="s0">
+            <div class="sec-head"><span class="sec-num">00</span>
+                <h2>What Are Structural Patterns?</h2>
+            </div>
+            <p class="sec-sub">Structural design patterns deal with <b style="color:var(--ink)">how classes and objects
+                    are composed</b> to form larger structures — at run time. This chapter covers three of the most
+                popular ones.</p>
+            <div class="mnemonic">🧠 Mnemonic — <b>A.C.F.</b> → "<b>A</b>dapt, <b>C</b>ombine, <b>F</b>acilitate" —
+                Adapter adapts a mismatched interface, Composite combines parts into a whole, Facade facilitates
+                (simplifies) access to a complex subsystem.</div>
+            <div class="grid-3">
+                <div class="card">
+                    <h3>🔌 Adapter</h3>
+                    <p>Makes two incompatible interfaces work together — like a power plug adapter.</p>
+                </div>
+                <div class="card">
+                    <h3>🌳 Composite</h3>
+                    <p>Lets you treat a single object and a group of objects the same way — a tree of parts and wholes.
+                    </p>
+                </div>
+                <div class="card">
+                    <h3>🏪 Facade</h3>
+                    <p>Wraps a complicated subsystem behind one simple, friendly interface.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 1. ADAPTER -->
+        <section id="s1">
+            <div class="sec-head"><span class="sec-num">01</span>
+                <h2>The Adapter Pattern</h2>
+            </div>
+            <span class="pattern-pill">Class / Object Structural Pattern</span>
+            <p class="sec-sub">Converts the interface of a class into another interface clients expect — so classes that
+                couldn't otherwise work together, because of incompatible interfaces, now can.</p>
+
+            <div class="mnemonic">🧠 Mnemonic — think of a <b>travel power plug adapter</b>: your charger (Client)
+                expects one socket shape (Target), the wall (Adaptee) has another — the little plug adapter (Adapter)
+                translates between them without changing either.</div>
+
+            <div class="card">
+                <h3>❓ Problems the Adapter solves</h3>
+                <ul style="color:var(--ink-dim); font-size:.92rem; padding-left:20px; margin:0;">
+                    <li>How can a class be reused that doesn't have the interface a client requires?</li>
+                    <li>How can classes with incompatible interfaces work together?</li>
+                    <li>How can an alternative interface be provided for a class, without changing it?</li>
+                </ul>
+            </div>
+
+            <div class="card" style="margin-top:22px;">
+                <h3>📐 Structure — Object Adapter vs Class Adapter</h3>
+                <div class="uml-wrap">
+                    <div class="uml-col">
+                        <div class="uml-box">
+                            <div class="h">Client</div>
+                        </div>
+                        <div class="uml-arrow">→</div>
+                    </div>
+                    <div class="uml-col">
+                        <div class="uml-box">
+                            <div class="h abstract">Target</div>
+                            <div class="b">
+                                <div>+request()</div>
+                            </div>
+                        </div>
+                        <div class="uml-arrow">↑</div>
+                        <div class="uml-box">
+                            <div class="h">Adapter</div>
+                            <div class="b">
+                                <div>+request()</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="uml-col">
+                        <div class="uml-label">delegates to (Object Adapter)<br>or inherits (Class Adapter)</div>
+                        <div class="uml-arrow" style="font-size:1.5rem;">⤳</div>
+                    </div>
+                    <div class="uml-col">
+                        <div class="uml-box">
+                            <div class="h">Adaptee</div>
+                            <div class="b">
+                                <div>+specificRequest()</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <table class="cmp" style="margin-top:10px;">
+                    <tr>
+                        <th>Aspect</th>
+                        <th>Object Adapter</th>
+                        <th>Class Adapter</th>
+                    </tr>
+                    <tr>
+                        <td>Mechanism</td>
+                        <td>Delegates to an Adaptee instance at <b style="color:var(--ink)">run-time</b> (composition)
+                        </td>
+                        <td>Inherits from the Adaptee at <b style="color:var(--ink)">compile-time</b></td>
+                    </tr>
+                    <tr>
+                        <td>Requires</td>
+                        <td>Just holding a reference to the adaptee object</td>
+                        <td><b style="color:var(--rose)">Multiple inheritance</b> — not supported by many languages</td>
+                    </tr>
+                    <tr>
+                        <td>Preferred?</td>
+                        <td>✅ Yes — generally preferred</td>
+                        <td>Rarely — only where multiple inheritance is available &amp; safe</td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="card" style="margin-top:22px;">
+                <h3>🐦 Worked Example — Bird → ToyDuck</h3>
+                <p><b style="color:var(--ink)">Setup:</b> a <code>Bird</code> class has <code>fly()</code> and
+                    <code>makeSound()</code>. A <code>ToyDuck</code> interface only has <code>squeak()</code>. You're
+                    short on real ToyDuck objects and want to use a Bird (Sparrow) in its place. <b
+                        style="color:var(--cyan)">Target = ToyDuck</b>, <b style="color:var(--amber)">Adaptee =
+                        Bird</b>.</p>
+                <pre class="code"><span class="k">interface</span> <span class="f">ToyDuck</span> { <span class="k">public void</span> squeak(); } <span class="c">// Target</span>
+<span class="k">interface</span> <span class="f">Bird</span> { <span class="k">public void</span> fly(); <span class="k">public void</span> makeSound(); } <span class="c">// Adaptee interface</span>
+
+<span class="k">class</span> <span class="f">Sparrow</span> <span class="k">implements</span> Bird {
+  <span class="k">public void</span> <span class="f">fly</span>(){ System.out.println(<span class="s">"Flying"</span>); }
+  <span class="k">public void</span> <span class="f">makeSound</span>(){ System.out.println(<span class="s">"Chirp Chirp"</span>); }
+}
+
+<span class="c">// The Adapter — implements Target, wraps an Adaptee</span>
+<span class="k">class</span> <span class="f">BirdAdapter</span> <span class="k">implements</span> ToyDuck {
+  Bird bird; <span class="c">// reference to the object we're adapting</span>
+  <span class="k">public</span> <span class="f">BirdAdapter</span>(Bird bird) { <span class="k">this</span>.bird = bird; }
+  <span class="k">public void</span> <span class="f">squeak</span>() {
+    bird.makeSound(); <span class="c">// translate the call to the adaptee's method</span>
+  }
+}
+
+<span class="c">// Client</span>
+Sparrow sparrow = <span class="k">new</span> Sparrow();
+ToyDuck birdAdapter = <span class="k">new</span> BirdAdapter(sparrow); <span class="c">// wrap it</span>
+birdAdapter.squeak(); <span class="c">// → "Chirp Chirp" — a bird behaving like a toy duck!</span></pre>
+                <div class="example-box"><b>HOW TO USE AN ADAPTER —</b> (1) client calls the adapter using the target
+                    interface → (2) adapter translates the request onto the adaptee using the adaptee's interface → (3)
+                    client receives the result.</div>
+            </div>
+
+            <div class="grid-2" style="margin-top:22px;">
+                <div class="card">
+                    <h3>✅ Advantages</h3>
+                    <p>Helps achieve reusability &amp; flexibility. Client isn't complicated by a different interface,
+                        and can use polymorphism to swap between different adapter implementations.</p>
+                </div>
+                <div class="card">
+                    <h3>⚠️ Disadvantages</h3>
+                    <p>All requests are forwarded → slight overhead. Sometimes several adaptations are needed in a chain
+                        to reach the required type.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. COMPOSITE -->
+        <section id="s2">
+            <div class="sec-head"><span class="sec-num">02</span>
+                <h2>The Composite Pattern</h2>
+            </div>
+            <span class="pattern-pill">Object Structural Pattern</span>
+            <p class="sec-sub">Composes objects into <b style="color:var(--ink)">tree structures</b> to represent
+                whole-part hierarchies. Lets clients treat individual objects and compositions of objects <b
+                    style="color:var(--ink)">uniformly</b>.</p>
+
+            <div class="mnemonic">🧠 Mnemonic — <b>"one leaf, one branch, same rules."</b> Whether you call an operation
+                on a single Leaf or an entire Composite tree, the client code doesn't change.</div>
+
+            <div class="card">
+                <h3>📐 Structure</h3>
+                <div class="uml-wrap">
+                    <div class="uml-col">
+                        <div class="uml-box">
+                            <div class="h">Client</div>
+                        </div>
+                    </div>
+                    <div class="uml-arrow">⟶</div>
+                    <div class="uml-col">
+                        <div class="uml-box">
+                            <div class="h abstract">&lt;&lt;interface&gt;&gt; Component</div>
+                            <div class="b">
+                                <div>+doOperation()</div>
+                            </div>
+                        </div>
+                        <div class="uml-arrow">↑ ↑</div>
+                    </div>
+                    <div class="uml-col">
+                        <div class="uml-box">
+                            <div class="h">Leaf</div>
+                            <div class="b">
+                                <div>+doOperation()</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="uml-col">
+                        <div class="uml-box">
+                            <div class="h">Composite</div>
+                            <div class="b">
+                                <div>+doOperation()</div>
+                                <div>+addComponent()</div>
+                                <div>+removeComponent()</div>
+                                <div>+getChild(i)</div>
+                            </div>
+                        </div>
+                        <div class="uml-label">holds 0..* Components ♦</div>
+                    </div>
+                </div>
+                <p style="color:var(--ink-dim); font-size:.88rem; text-align:center; margin-top:6px;">Both <b
+                        style="color:var(--ink)">Leaf</b> (a single object) and <b
+                        style="color:var(--ink)">Composite</b> (a collection of Components) implement the same <b
+                        style="color:var(--ink)">Component</b> interface — that's the whole trick.</p>
+            </div>
+
+            <div class="grid-2" style="margin-top:22px;">
+                <div class="card">
+                    <h3>🗂️ Real-life example — File System</h3>
+                    <p>A <b style="color:var(--ink)">file</b> is a primitive (Leaf) — it holds no other objects. A <b
+                            style="color:var(--ink)">folder</b> is a Composite — it can contain files and other folders.
+                        Opening either uses the same <code>open()</code> operation.</p>
+                </div>
+                <div class="card">
+                    <h3>🎓 Real-life example — University Program</h3>
+                    <p>A single <b style="color:var(--ink)">course</b> ("Math 101") is a Leaf. A <b
+                            style="color:var(--ink)">program</b> ("CS degree") is a Composite of many courses. Checking
+                        details works the same way for both.</p>
+                </div>
+            </div>
+
+            <div class="card" style="margin-top:22px;">
+                <h3>☕ Java — Component / Leaf / Composite</h3>
+                <pre class="code"><span class="k">public interface</span> <span class="f">Component</span> {
+  <span class="k">public void</span> sayHello();
+  <span class="k">public void</span> sayGoodbye();
+}
+
+<span class="k">public class</span> <span class="f">Leaf</span> <span class="k">implements</span> Component {
+  String name;
+  <span class="k">public</span> <span class="f">Leaf</span>(String name){ <span class="k">this</span>.name = name; }
+  <span class="k">public void</span> <span class="f">sayHello</span>(){ System.out.println(name + <span class="s">" leaf says hello"</span>); }
+  <span class="k">public void</span> <span class="f">sayGoodbye</span>(){ System.out.println(name + <span class="s">" leaf says goodbye"</span>); }
+}
+
+<span class="k">public class</span> <span class="f">Composite</span> <span class="k">implements</span> Component {
+  List&lt;Component&gt; components = <span class="k">new</span> ArrayList&lt;&gt;();
+  <span class="k">public void</span> <span class="f">add</span>(Component c){ components.add(c); }
+  <span class="k">public void</span> <span class="f">sayHello</span>(){ <span class="k">for</span>(Component c : components) c.sayHello(); }
+  <span class="k">public void</span> <span class="f">sayGoodbye</span>(){ <span class="k">for</span>(Component c : components) c.sayGoodbye(); }
+}
+
+<span class="c">// Client</span>
+Composite composite1 = <span class="k">new</span> Composite();
+composite1.add(<span class="k">new</span> Leaf(<span class="s">"Bob"</span>));
+composite1.add(<span class="k">new</span> Leaf(<span class="s">"Fred"</span>));
+composite1.sayHello(); <span class="c">// → "Bob leaf says hello" then "Fred leaf says hello"</span>
+<span class="c">// composites can even nest inside other composites!</span></pre>
+            </div>
+
+            <div class="grid-2" style="margin-top:22px;">
+                <div class="card">
+                    <h3>🪜 Steps to design it</h3>
+                    <div class="mnemonic" style="margin:0 0 12px;">🧠 <b>P.C.C.L.C.</b> → Plan the tree → Component →
+                        Composite → Leaf → Client.</div>
+                    <ol style="color:var(--ink-dim); font-size:.9rem; padding-left:20px; margin:0;">
+                        <li>Plan the tree-like structure needed</li>
+                        <li>Design the <b style="color:var(--ink)">Component</b> base (shared, overridable methods)</li>
+                        <li>Design <b style="color:var(--ink)">Composite</b> — overrides shared methods + add/remove
+                            children + internal storage</li>
+                        <li>Design <b style="color:var(--ink)">Leaf</b> classes — override the Component methods</li>
+                        <li>Design the <b style="color:var(--ink)">Client</b> that uses both uniformly</li>
+                    </ol>
+                </div>
+                <div class="card">
+                    <h3>✅ Benefits</h3>
+                    <ul style="color:var(--ink-dim); font-size:.9rem; padding-left:20px; margin:0;">
+                        <li>Supports both primitive and composite objects in one structure</li>
+                        <li>Minimizes client complexity — same call works on both</li>
+                        <li>Easy to add new component objects to the application</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. FACADE -->
+        <section id="s3">
+            <div class="sec-head"><span class="sec-num">03</span>
+                <h2>The Facade Pattern</h2>
+            </div>
+            <span class="pattern-pill">Object Structural Pattern</span>
+            <p class="sec-sub">Provides a <b style="color:var(--ink)">unified, simplified interface</b> to a set of
+                interfaces in a subsystem — a higher-level interface that makes the whole subsystem easier to use.</p>
+
+            <div class="mnemonic">🧠 Mnemonic — think of a <b>shop keeper</b>: you (the client) just ask for "an
+                iPhone," you don't deal with the manufacturer's internal parts logic — the shop keeper (Facade) handles
+                that complexity for you.</div>
+
+            <div class="card">
+                <h3>📐 Structure</h3>
+                <div class="uml-wrap">
+                    <div class="uml-col">
+                        <div class="uml-box">
+                            <div class="h">Client</div>
+                        </div>
+                    </div>
+                    <div class="uml-arrow">⟶</div>
+                    <div class="uml-col">
+                        <div class="uml-box">
+                            <div class="h">Facade</div>
+                            <div class="b">
+                                <div>+operation()</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="uml-arrow">⟶</div>
+                    <div class="uml-col">
+                        <div class="uml-box">
+                            <div class="h">ClassA</div>
+                            <div class="b">
+                                <div>+op1() +op2()</div>
+                            </div>
+                        </div>
+                        <div class="uml-box">
+                            <div class="h">ClassB</div>
+                            <div class="b">
+                                <div>+op3() +op4()</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <p style="color:var(--ink-dim); font-size:.88rem; text-align:center; margin-top:6px;">The client never
+                    touches ClassA / ClassB directly — only the Facade.</p>
+            </div>
+
+            <div class="card" style="margin-top:22px;">
+                <h3>📱 Worked Example — MobileShop</h3>
+                <p><b style="color:var(--ink)">Setup:</b> a <code>MobileShop</code> interface is implemented by Iphone,
+                    Samsung, Blackberry. Instead of the client juggling all three directly, a <code>ShopKeeper</code>
+                    Facade wraps them.</p>
+                <pre class="code"><span class="k">public interface</span> <span class="f">MobileShop</span> { <span class="k">void</span> modelNo(); <span class="k">void</span> price(); }
+
+<span class="k">public class</span> <span class="f">Iphone</span> <span class="k">implements</span> MobileShop { <span class="c">/* Iphone 6, Rs 65000 */</span> }
+<span class="k">public class</span> <span class="f">Samsung</span> <span class="k">implements</span> MobileShop { <span class="c">/* Galaxy Tab 3, Rs 45000 */</span> }
+<span class="k">public class</span> <span class="f">Blackberry</span> <span class="k">implements</span> MobileShop { <span class="c">/* Z10, Rs 55000 */</span> }
+
+<span class="c">// The Facade</span>
+<span class="k">public class</span> <span class="f">ShopKeeper</span> {
+  <span class="k">private</span> MobileShop iphone, samsung, blackberry;
+  <span class="k">public</span> <span class="f">ShopKeeper</span>(){
+    iphone = <span class="k">new</span> Iphone(); samsung = <span class="k">new</span> Samsung(); blackberry = <span class="k">new</span> Blackberry();
+  }
+  <span class="k">public void</span> <span class="f">iphoneSale</span>(){ iphone.modelNo(); iphone.price(); }
+  <span class="k">public void</span> <span class="f">samsungSale</span>(){ samsung.modelNo(); samsung.price(); }
+  <span class="k">public void</span> <span class="f">blackberrySale</span>(){ blackberry.modelNo(); blackberry.price(); }
+}
+
+<span class="c">// Client — never touches Iphone/Samsung/Blackberry directly</span>
+ShopKeeper sk = <span class="k">new</span> ShopKeeper();
+sk.iphoneSale(); <span class="c">// → "Iphone 6" · "Rs 65000.00"</span></pre>
+            </div>
+
+            <div class="grid-2" style="margin-top:22px;">
+                <div class="card">
+                    <h3>🪜 Steps to design it</h3>
+                    <div class="mnemonic" style="margin:0 0 12px;">🧠 <b>I.L.D.I.A.</b> → Identify components → List
+                        operations → Design Facade class → Implement it → Allow client access.</div>
+                    <ol style="color:var(--ink-dim); font-size:.9rem; padding-left:20px; margin:0;">
+                        <li>Identify all components in the subsystem operation</li>
+                        <li>List operations required to execute it</li>
+                        <li>Design a Facade class with an interface method</li>
+                        <li>Implement it by calling the listed subsystem operations</li>
+                        <li>Let clients access the subsystem only through the Facade</li>
+                    </ol>
+                </div>
+                <div class="card">
+                    <h3>✅ Benefits</h3>
+                    <div class="mnemonic" style="margin:0 0 12px;">🧠 <b>S.S.W.</b> → Shields clients, Stable interface,
+                        Weak coupling.</div>
+                    <ul style="color:var(--ink-dim); font-size:.9rem; padding-left:20px; margin:0;">
+                        <li><b style="color:var(--ink)">Shields</b> clients from complex subsystem internals</li>
+                        <li>Provides a <b style="color:var(--ink)">stable interface</b> — internal changes don't break
+                            clients</li>
+                        <li>Promotes <b style="color:var(--ink)">weak coupling</b> — clients depend on one interface,
+                            not many</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. COMPARISON -->
+        <section id="s4">
+            <div class="sec-head"><span class="sec-num">04</span>
+                <h2>All Three, Side by Side</h2>
+            </div>
+            <p class="sec-sub">A quick way to tell them apart on an exam: ask "what is this pattern actually solving?"
+            </p>
+            <div class="card">
+                <table class="cmp">
+                    <tr>
+                        <th>Pattern</th>
+                        <th>Solves</th>
+                        <th>Shape</th>
+                        <th>Cue phrase</th>
+                    </tr>
+                    <tr>
+                        <td>Adapter</td>
+                        <td>Two incompatible interfaces need to work together</td>
+                        <td>Client → Adapter → Adaptee</td>
+                        <td>"convert this interface into that one"</td>
+                    </tr>
+                    <tr>
+                        <td>Composite</td>
+                        <td>Need to treat single objects &amp; groups of objects the same way</td>
+                        <td>Tree: Component ← Leaf / Composite</td>
+                        <td>"whole-part hierarchy, uniform treatment"</td>
+                    </tr>
+                    <tr>
+                        <td>Facade</td>
+                        <td>A subsystem is too complex for clients to use directly</td>
+                        <td>Client → Facade → {ClassA, ClassB, …}</td>
+                        <td>"one simple interface for a messy subsystem"</td>
+                    </tr>
+                </table>
+            </div>
+        </section>
+
+        <!-- 5. FLASHCARDS -->
+        <section id="s5">
+            <div class="sec-head"><span class="sec-num">05</span>
+                <h2>Quick-Fire Flashcards</h2>
+            </div>
+            <p class="sec-sub">Tap a card to flip it.</p>
+            <div class="flash-grid" id="flashGrid"></div>
+        </section>
+
+        <!-- 6. QUIZ -->
+        <section id="s6">
+            <div class="sec-head"><span class="sec-num">06</span>
+                <h2>Practice Questions</h2>
+            </div>
+            <p class="sec-sub">Written from this chapter's content — self-check practice, not an official past paper.
+            </p>
+            <div id="quizContainer"></div>
+        </section>
+
+        <!-- 7. RECAP -->
+        <section id="s7">
+            <div class="sec-head"><span class="sec-num">07</span>
+                <h2>One-Screen Recap</h2>
+            </div>
+            <ul class="recap-list">
+                <li><b>Structural patterns</b> = deal with how classes/objects are composed at run time. Mnemonic:
+                    <b>A.C.F.</b> — Adapt, Combine, Facilitate.</li>
+                <li><b>Adapter</b> converts an interface into another one clients expect. Roles: Client → Target ←
+                    Adapter → Adaptee.</li>
+                <li><b>Object Adapter</b> (delegation, run-time) is preferred over <b>Class Adapter</b> (inheritance,
+                    compile-time, needs multiple inheritance).</li>
+                <li>Using an adapter: client calls it via Target interface → adapter translates → adaptee executes →
+                    client gets the result.</li>
+                <li><b>Composite</b> builds tree structures so Leaf and Composite objects are treated uniformly through
+                    one Component interface.</li>
+                <li>Composite build order: <b>P.C.C.L.C.</b> — Plan tree, Component, Composite, Leaf, Client.</li>
+                <li><b>Facade</b> gives one simplified interface over a complex subsystem — client never touches the
+                    subsystem classes directly.</li>
+                <li>Facade build order: <b>I.L.D.I.A.</b> — Identify, List, Design, Implement, Allow.</li>
+                <li>Facade benefits: <b>S.S.W.</b> — Shields clients, Stable interface, Weak coupling.</li>
+                <li>Next up in the course: <b>Behavioral Design Patterns</b>.</li>
+            </ul>
+        </section>
+
+        <footer>
+            <div>Software Design &amp; Architecture — Chapter 07, Lecture 01 · Prince Sultan University</div>
+            <div class="made">Made by Shoug Alomran</div>
+        </footer>
+
+    </div>
+
+    <script>
+        const themeButtons = document.querySelectorAll('.toggle button');
+        themeButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.documentElement.setAttribute('data-theme', btn.dataset.theme);
+                themeButtons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            });
+        });
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+            document.documentElement.setAttribute('data-theme', 'light');
+            themeButtons.forEach(b => b.classList.toggle('active', b.dataset.theme === 'light'));
+        }
+
+        const bar = document.getElementById('progressBar');
+        window.addEventListener('scroll', () => {
+            const h = document.documentElement;
+            bar.style.width = (h.scrollTop / (h.scrollHeight - h.clientHeight) * 100) + '%';
+        });
+
+        const flashData = [
+            ["Structural patterns (1-liner)", "Patterns that deal with designing the structure of existing classes/objects at run time."],
+            ["A.C.F.", "Adapter = Adapt · Composite = Combine · Facade = Facilitate."],
+            ["Adapter intent", "Convert the interface of a class into another interface clients expect."],
+            ["Object Adapter vs Class Adapter", "Object Adapter = delegation at run-time (preferred). Class Adapter = inheritance at compile-time (needs multiple inheritance)."],
+            ["Composite intent", "Compose objects into tree structures representing whole-part hierarchies; treat individuals and composites uniformly."],
+            ["Composite's shared interface", "Component — implemented by both Leaf and Composite."],
+            ["Facade intent", "Provide a unified, simplified interface to a complex subsystem."],
+            ["Facade benefit — S.S.W.", "Shields clients, Stable interface, Weak coupling."],
+            ["Adapter real-life analogy", "A travel power-plug adapter — translates one plug shape into another."],
+            ["Composite real-life analogy", "A file system: files are Leaves, folders are Composites, `open()` works on both."],
+        ];
+        const flashGrid = document.getElementById('flashGrid');
+        flashData.forEach(([front, back]) => {
+            const card = document.createElement('div');
+            card.className = 'flash';
+            card.innerHTML = `<div class="flash-inner">
+      <div class="flash-face flash-front">${front}</div>
+      <div class="flash-face flash-back">${back}<span class="flash-hint">tap to flip back</span></div>
+    </div>`;
+            card.addEventListener('click', () => card.classList.toggle('flipped'));
+            flashGrid.appendChild(card);
+        });
+
+        const quizData = [
+            {
+                type: 'mcq', q: "1. What is the core intent of the Adapter pattern?",
+                options: ["Create families of related objects", "Convert the interface of a class into another interface clients expect", "Provide a simplified interface to a subsystem", "Compose objects into tree structures"], correct: 1
+            },
+            {
+                type: 'mcq', q: "2. Which type of Adapter uses inheritance (and needs multiple inheritance to implement)?",
+                options: ["Object Adapter", "Class Adapter", "Facade Adapter", "Composite Adapter"], correct: 1
+            },
+            {
+                type: 'mcq', q: "3. In the Composite pattern, what interface do both Leaf and Composite implement?",
+                options: ["Adaptee", "Target", "Component", "Facade"], correct: 2
+            },
+            {
+                type: 'mcq', q: "4. What is the main benefit of the Facade pattern?",
+                options: ["It lets subclasses decide which class to instantiate", "It shields clients from a complex subsystem's internals via one simple interface", "It allows multiple inheritance", "It creates families of related products"], correct: 1
+            },
+            {
+                type: 'mcq', q: "5. A media player needs to play files from an old library that exposes `decodeStream()`, but your app's player interface expects `play()`. Which pattern fits best?",
+                options: ["Composite", "Facade", "Adapter", "Factory Method"], correct: 2
+            },
+            {
+                type: 'short', q: "6. Short answer: A drawing app needs to let users group shapes (circles, rectangles) into groups, and apply operations like 'resize' or 'move' to either a single shape or an entire group, using the same method call. Identify the pattern and map its 4 structural roles to this scenario.",
+                answer: "This is the <b>Composite</b> pattern. Roles: <b>Component</b> = a Shape interface with resize()/move(); <b>Leaf</b> = Circle, Rectangle (individual shapes); <b>Composite</b> = ShapeGroup, which holds a list of Shapes and applies resize()/move() to each child; <b>Client</b> = the drawing app, which calls resize()/move() the same way whether it holds a single shape or a group."
+            },
+            {
+                type: 'short', q: "7. Short answer: Explain, in your own words, why the Facade pattern 'promotes weak coupling.' Use the ShopKeeper example to support your explanation.",
+                answer: "Weak coupling means the client depends on as little as possible from the rest of the system. Without a Facade, the client (FacadePatternClient) would need to know about and directly depend on Iphone, Samsung, and Blackberry individually. With the ShopKeeper Facade, the client depends on just <b>one</b> interface (ShopKeeper) — if the mobile classes change internally, or new ones are added, the client code doesn't need to change, since it never touches them directly."
+            }
+        ];
+
+        const quizContainer = document.getElementById('quizContainer');
+        quizData.forEach((item, idx) => {
+            const wrap = document.createElement('div');
+            wrap.className = 'quiz-item';
+            if (item.type === 'mcq') {
+                wrap.innerHTML = `<div class="quiz-q">${item.q}</div>
+        <div class="quiz-options" data-idx="${idx}">
+          ${item.options.map((opt, i) => `<div class="quiz-option" data-i="${i}">${String.fromCharCode(65 + i)}. ${opt}</div>`).join('')}
+        </div>`;
+                quizContainer.appendChild(wrap);
+                const optsEl = wrap.querySelectorAll('.quiz-option');
+                optsEl.forEach(optEl => {
+                    optEl.addEventListener('click', () => {
+                        if (wrap.dataset.answered) return;
+                        wrap.dataset.answered = 'true';
+                        const chosen = parseInt(optEl.dataset.i);
+                        optsEl.forEach((o, i) => {
+                            if (i === item.correct) o.classList.add('correct');
+                            else if (i === chosen) o.classList.add('wrong');
+                        });
+                    });
+                });
+            } else {
+                wrap.innerHTML = `<div class="quiz-q">${item.q}</div>
+        <button class="reveal-btn">Show model answer</button>
+        <div class="short-answer">${item.answer}</div>`;
+                quizContainer.appendChild(wrap);
+                const btn = wrap.querySelector('.reveal-btn');
+                const ans = wrap.querySelector('.short-answer');
+                btn.addEventListener('click', () => {
+                    ans.classList.toggle('show');
+                    btn.textContent = ans.classList.contains('show') ? 'Hide model answer' : 'Show model answer';
+                });
+            }
+        });
+    </script>
+
+</body>
+
+</html>

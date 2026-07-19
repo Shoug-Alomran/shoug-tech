@@ -1,0 +1,1394 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Factory Method Design Pattern | Sheet Set 06.02</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --sp-1: clamp(.4rem, .5vw, .55rem);
+            --sp-2: clamp(.7rem, 1vw, 1rem);
+            --sp-3: clamp(1.1rem, 2vw, 1.6rem);
+            --sp-4: clamp(1.8rem, 3.5vw, 3rem);
+            --sp-5: clamp(2.8rem, 6vw, 5rem);
+            --maxw: 1180px;
+            --display: 'Space Grotesk', sans-serif;
+            --body: 'Inter', sans-serif;
+            --mono: 'JetBrains Mono', monospace;
+        }
+
+        [data-theme="dark"] {
+            --bg: #0a0f1c;
+            --bg-grid: rgba(255, 255, 255, .045);
+            --bg-grid-major: rgba(255, 255, 255, .09);
+            --surface: #101a2c;
+            --surface-2: #16233b;
+            --ink: #e8edf7;
+            --ink-soft: #94a7c4;
+            --ink-faint: #5c6d8a;
+            --line: rgba(210, 225, 255, .16);
+            --line-strong: rgba(210, 225, 255, .32);
+            --accent: #69b3ef;
+            --accent-2: #f0b15c;
+            --accent-3: #8fd9c4;
+            --bad: #ef8a72;
+            --code-bg: #0c1526;
+            --shadow: 0 20px 50px -20px rgba(0, 0, 0, .6);
+        }
+
+        [data-theme="light"] {
+            --bg: #f1ede2;
+            --bg-grid: rgba(20, 30, 45, .055);
+            --bg-grid-major: rgba(20, 30, 45, .11);
+            --surface: #fdfcf8;
+            --surface-2: #eee8d8;
+            --ink: #1c2430;
+            --ink-soft: #4c5972;
+            --ink-faint: #8592a6;
+            --line: rgba(28, 36, 48, .18);
+            --line-strong: rgba(28, 36, 48, .36);
+            --accent: #2662a6;
+            --accent-2: #b06a1d;
+            --accent-3: #1f8067;
+            --bad: #b3452b;
+            --code-bg: #0d1420;
+            --shadow: 0 20px 45px -22px rgba(28, 36, 48, .35);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            background:
+                repeating-linear-gradient(0deg, var(--bg-grid) 0 1px, transparent 1px 28px),
+                repeating-linear-gradient(90deg, var(--bg-grid) 0 1px, transparent 1px 28px),
+                repeating-linear-gradient(0deg, var(--bg-grid-major) 0 1.5px, transparent 1.5px 140px),
+                repeating-linear-gradient(90deg, var(--bg-grid-major) 0 1.5px, transparent 1.5px 140px),
+                var(--bg);
+            color: var(--ink);
+            font-family: var(--body);
+            line-height: 1.55;
+            -webkit-font-smoothing: antialiased;
+            transition: background-color .35s ease, color .35s ease;
+            font-size: clamp(15px, .95vw + .55rem, 17.5px);
+        }
+
+        h1,
+        h2,
+        h3,
+        h4 {
+            font-family: var(--display);
+            margin: 0;
+            letter-spacing: -.01em;
+        }
+
+        code,
+        .mono {
+            font-family: var(--mono);
+        }
+
+        p {
+            margin: 0 0 .8em;
+        }
+
+        a {
+            color: var(--accent);
+        }
+
+        i.notice-italic {
+            font-style: italic;
+        }
+
+        .sheet {
+            position: relative;
+            border: 1px solid var(--line);
+            background: var(--surface);
+            border-radius: 4px;
+            box-shadow: var(--shadow);
+        }
+
+        .corner {
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            pointer-events: none;
+        }
+
+        .corner.tl {
+            top: -1px;
+            left: -1px;
+            border-top: 2px solid var(--accent);
+            border-left: 2px solid var(--accent);
+        }
+
+        .corner.tr {
+            top: -1px;
+            right: -1px;
+            border-top: 2px solid var(--accent);
+            border-right: 2px solid var(--accent);
+        }
+
+        .corner.bl {
+            bottom: -1px;
+            left: -1px;
+            border-bottom: 2px solid var(--accent);
+            border-left: 2px solid var(--accent);
+        }
+
+        .corner.br {
+            bottom: -1px;
+            right: -1px;
+            border-bottom: 2px solid var(--accent);
+            border-right: 2px solid var(--accent);
+        }
+
+        .wrap {
+            max-width: var(--maxw);
+            margin: 0 auto;
+            padding: 0 var(--sp-3);
+        }
+
+        .topbar {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            backdrop-filter: blur(10px);
+            background: color-mix(in srgb, var(--bg) 82%, transparent);
+            border-bottom: 1px solid var(--line);
+        }
+
+        .topbar-inner {
+            max-width: var(--maxw);
+            margin: 0 auto;
+            padding: .7rem var(--sp-3);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: .6rem;
+            font-family: var(--mono);
+            font-size: .8rem;
+            color: var(--ink-soft);
+        }
+
+        .brand b {
+            color: var(--ink);
+            font-family: var(--display);
+            font-size: 1.02rem;
+            letter-spacing: .01em;
+        }
+
+        .brand .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--accent-3);
+            box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-3) 25%, transparent);
+        }
+
+        nav.pills {
+            display: flex;
+            gap: .35rem;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+
+        nav.pills a {
+            font-family: var(--mono);
+            font-size: .72rem;
+            text-decoration: none;
+            color: var(--ink-soft);
+            padding: .35rem .6rem;
+            border: 1px solid transparent;
+            border-radius: 20px;
+            white-space: nowrap;
+        }
+
+        nav.pills a:hover {
+            border-color: var(--line);
+            color: var(--ink);
+        }
+
+        #themeToggle {
+            border: 1px solid var(--line);
+            background: var(--surface-2);
+            color: var(--ink);
+            border-radius: 20px;
+            padding: .4rem .7rem;
+            font-family: var(--mono);
+            font-size: .72rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: .4rem;
+        }
+
+        #themeToggle:hover {
+            border-color: var(--accent);
+        }
+
+        section {
+            padding: var(--sp-5) 0;
+        }
+
+        .kicker {
+            font-family: var(--mono);
+            font-size: .72rem;
+            letter-spacing: .14em;
+            text-transform: uppercase;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+            margin-bottom: .6rem;
+        }
+
+        .kicker::before {
+            content: "";
+            width: 22px;
+            height: 1px;
+            background: var(--accent);
+        }
+
+        h2.title {
+            font-size: clamp(1.5rem, 3.2vw, 2.3rem);
+            margin-bottom: .4rem;
+        }
+
+        .lede {
+            color: var(--ink-soft);
+            max-width: 64ch;
+            font-size: clamp(.95rem, 1.1vw, 1.05rem);
+            margin-bottom: var(--sp-4);
+        }
+
+        .hero {
+            padding-top: var(--sp-5);
+            padding-bottom: var(--sp-4);
+        }
+
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1.15fr .85fr;
+            gap: var(--sp-4);
+            align-items: center;
+        }
+
+        @media(max-width:900px) {
+            .hero-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .hero h1 {
+            font-size: clamp(2rem, 5vw, 3.4rem);
+            line-height: 1.04;
+        }
+
+        .hero h1 span {
+            color: var(--accent);
+        }
+
+        .hero .sub {
+            color: var(--ink-soft);
+            font-size: clamp(1rem, 1.3vw, 1.15rem);
+            margin-top: 1rem;
+            max-width: 52ch;
+        }
+
+        .tag-row {
+            display: flex;
+            gap: .5rem;
+            flex-wrap: wrap;
+            margin-top: 1.3rem;
+        }
+
+        .tag {
+            font-family: var(--mono);
+            font-size: .72rem;
+            border: 1px solid var(--line);
+            border-radius: 20px;
+            padding: .32rem .7rem;
+            color: var(--ink-soft);
+        }
+
+        .grid {
+            display: grid;
+            gap: var(--sp-3);
+        }
+
+        .grid-2 {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .grid-3 {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .grid-4 {
+            grid-template-columns: repeat(4, 1fr);
+        }
+
+        @media(max-width:820px) {
+
+            .grid-2,
+            .grid-3,
+            .grid-4 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media(min-width:821px) and (max-width:1080px) {
+
+            .grid-3,
+            .grid-4 {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .card {
+            padding: var(--sp-3);
+            position: relative;
+        }
+
+        .card h3 {
+            font-size: 1.05rem;
+            margin-bottom: .5rem;
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+        }
+
+        .card h3 .ico {
+            width: 26px;
+            height: 26px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: color-mix(in srgb, var(--accent) 18%, transparent);
+            color: var(--accent);
+            font-family: var(--mono);
+            font-size: .75rem;
+            flex: none;
+        }
+
+        .card p {
+            color: var(--ink-soft);
+            font-size: .92rem;
+        }
+
+        .card .foot {
+            color: var(--ink-faint);
+            font-size: .78rem;
+            font-family: var(--mono);
+            margin-top: .6rem;
+            border-top: 1px dashed var(--line);
+            padding-top: .5rem;
+        }
+
+        .mnemonic {
+            margin-top: var(--sp-3);
+            border: 1px dashed var(--accent-2);
+            border-radius: 8px;
+            padding: .9rem 1.1rem;
+            background: color-mix(in srgb, var(--accent-2) 8%, transparent);
+            display: flex;
+            gap: .7rem;
+            align-items: flex-start;
+        }
+
+        .mnemonic .m-ico {
+            font-family: var(--mono);
+            font-size: .7rem;
+            color: var(--accent-2);
+            border: 1px solid var(--accent-2);
+            border-radius: 5px;
+            padding: .2rem .4rem;
+            flex: none;
+            margin-top: .1rem;
+        }
+
+        .mnemonic b {
+            color: var(--accent-2);
+        }
+
+        .mnemonic .sentence {
+            font-family: var(--display);
+            font-size: 1.02rem;
+        }
+
+        .mnemonic p {
+            margin: .25rem 0 0;
+            font-size: .86rem;
+        }
+
+        /* UML box diagram */
+        .uml {
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            gap: 2.2rem;
+            flex-wrap: wrap;
+            margin: var(--sp-3) 0;
+        }
+
+        .uml-col {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0;
+        }
+
+        .uml-box {
+            border: 1.5px solid var(--line-strong);
+            border-radius: 6px;
+            background: var(--surface-2);
+            min-width: 180px;
+            overflow: hidden;
+            font-family: var(--mono);
+            font-size: .72rem;
+        }
+
+        .uml-box .hd {
+            padding: .4rem .6rem;
+            font-weight: 700;
+            text-align: center;
+            border-bottom: 1px solid var(--line-strong);
+            font-family: var(--display);
+            font-size: .85rem;
+        }
+
+        .uml-box .bd {
+            padding: .4rem .6rem;
+            color: var(--ink-soft);
+            display: flex;
+            flex-direction: column;
+            gap: .15rem;
+        }
+
+        .uml-box.interface .hd {
+            color: var(--accent-3);
+        }
+
+        .uml-box.abstract .hd {
+            color: var(--accent-2);
+            font-style: italic;
+        }
+
+        .uml-box.concrete .hd {
+            color: var(--accent);
+        }
+
+        .uml-arrow {
+            font-family: var(--mono);
+            font-size: 1.1rem;
+            color: var(--ink-faint);
+            text-align: center;
+            padding: .15rem 0;
+        }
+
+        .uml-arrow.hollow::after {
+            content: "△";
+            display: block;
+        }
+
+        .uml-arrow.dash::after {
+            content: "┊△";
+            display: block;
+            font-size: .9rem;
+        }
+
+        .link-line {
+            display: flex;
+            align-items: center;
+            gap: .4rem;
+            color: var(--ink-faint);
+            font-family: var(--mono);
+            font-size: .85rem;
+            align-self: center;
+            margin: 0 -.5rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: .88rem;
+        }
+
+        th,
+        td {
+            text-align: left;
+            padding: .65rem .7rem;
+            border-bottom: 1px solid var(--line);
+            vertical-align: top;
+        }
+
+        th {
+            font-family: var(--mono);
+            font-size: .7rem;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            color: var(--ink-faint);
+            font-weight: 600;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        .tbl-wrap {
+            overflow-x: auto;
+        }
+
+        .steps {
+            counter-reset: step;
+            display: flex;
+            flex-direction: column;
+            gap: .7rem;
+        }
+
+        .step-row {
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: .8rem 1rem;
+            background: var(--surface-2);
+        }
+
+        .step-row .num {
+            counter-increment: step;
+            font-family: var(--mono);
+            font-weight: 700;
+            color: var(--accent);
+            font-size: 1.1rem;
+            flex: none;
+            width: 2rem;
+            text-align: center;
+        }
+
+        .step-row .num::before {
+            content: counter(step, decimal-leading-zero);
+        }
+
+        .step-row h4 {
+            font-size: .98rem;
+            margin-bottom: .2rem;
+        }
+
+        .step-row p {
+            margin: 0;
+            font-size: .85rem;
+            color: var(--ink-soft);
+        }
+
+        .step-row .ex {
+            margin-top: .35rem;
+            font-size: .78rem;
+            color: var(--ink-faint);
+            font-family: var(--mono);
+        }
+
+        .code {
+            background: var(--code-bg);
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 1rem 1.1rem;
+            font-family: var(--mono);
+            font-size: .78rem;
+            color: var(--accent-3);
+            overflow-x: auto;
+            line-height: 1.6;
+        }
+
+        .code .kw {
+            color: var(--accent-2);
+        }
+
+        .code .cm {
+            color: var(--ink-faint);
+            font-style: italic;
+        }
+
+        .code .ty {
+            color: var(--accent);
+        }
+
+        .examnote {
+            border-left: 3px solid var(--bad);
+            padding: .6rem .9rem;
+            background: color-mix(in srgb, var(--bad) 8%, transparent);
+            border-radius: 0 6px 6px 0;
+            font-size: .85rem;
+            color: var(--ink-soft);
+            margin-top: .6rem;
+        }
+
+        .examnote b {
+            color: var(--bad);
+        }
+
+        .pill-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: .4rem;
+            margin-top: .6rem;
+        }
+
+        .pill-list span {
+            font-family: var(--mono);
+            font-size: .72rem;
+            border: 1px solid var(--line);
+            border-radius: 20px;
+            padding: .28rem .65rem;
+            color: var(--ink-soft);
+        }
+
+        .qcard {
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 1rem 1.1rem;
+            background: var(--surface-2);
+            margin-top: 1rem;
+        }
+
+        .qcard .qtag {
+            font-family: var(--mono);
+            font-size: .68rem;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: .08em;
+        }
+
+        .qcard h4 {
+            margin: .3rem 0 .5rem;
+            font-size: 1rem;
+        }
+
+        .qcard p {
+            font-size: .88rem;
+            color: var(--ink-soft);
+            margin: 0 0 .5rem;
+        }
+
+        .qcard ol {
+            margin: .4rem 0 0;
+            padding-left: 1.2rem;
+            font-size: .85rem;
+            color: var(--ink-soft);
+        }
+
+        footer {
+            border-top: 1px solid var(--line);
+            margin-top: var(--sp-5);
+        }
+
+        .titleblock {
+            max-width: var(--maxw);
+            margin: 0 auto;
+            padding: var(--sp-3);
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0;
+            border: 1px solid var(--line);
+            margin-top: var(--sp-3);
+            margin-bottom: var(--sp-4);
+        }
+
+        @media(max-width:700px) {
+            .titleblock {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .tb-cell {
+            border-right: 1px solid var(--line);
+            border-bottom: 1px solid var(--line);
+            padding: .6rem .8rem;
+        }
+
+        .tb-cell:nth-child(4n) {
+            border-right: none;
+        }
+
+        .tb-cell .k {
+            font-family: var(--mono);
+            font-size: .62rem;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            color: var(--ink-faint);
+        }
+
+        .tb-cell .v {
+            font-family: var(--display);
+            font-size: .92rem;
+            margin-top: .15rem;
+        }
+
+        .backtop {
+            position: fixed;
+            right: 1.1rem;
+            bottom: 1.1rem;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: var(--surface-2);
+            border: 1px solid var(--line);
+            color: var(--ink);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity .25s ease;
+            z-index: 40;
+            font-size: 1rem;
+        }
+
+        .backtop.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(14px);
+            transition: opacity .6s ease, transform .6s ease;
+        }
+
+        .reveal.in {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                transition: none !important;
+                scroll-behavior: auto !important;
+            }
+
+            .reveal {
+                opacity: 1;
+                transform: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="topbar">
+        <div class="topbar-inner">
+            <div class="brand"><span class="dot"></span><b>SD&amp;A</b> · Sheet Set 06.02</div>
+            <nav class="pills">
+                <a href="#what">What Is It</a>
+                <a href="#structure">Structure</a>
+                <a href="#example">Store Example</a>
+                <a href="#steps">5 Steps</a>
+                <a href="#code">Code Walk</a>
+                <a href="#benefits">Benefits</a>
+                <a href="#vs">vs Abstract Factory</a>
+                <a href="#exam">Practice</a>
+                <a href="#toolkit">Toolkit</a>
+            </nav>
+            <button id="themeToggle" aria-label="toggle theme">
+                <span id="themeIcon">☾</span><span id="themeLabel">Dark</span>
+            </button>
+        </div>
+    </div>
+
+    <div class="wrap">
+
+        <!-- HERO -->
+        <section class="hero">
+            <div class="hero-grid">
+                <div>
+                    <div class="kicker">Chapter 06 · Lecture 02 · Creational Design Patterns</div>
+                    <h1>One method. <span>Many products.</span></h1>
+                    <p class="sub">Factory Method lets a class defer <i>who</i> gets created to its subclasses —
+                        so the client only ever talks to an interface, never a concrete type.</p>
+                    <div class="tag-row">
+                        <span class="tag">Class Creational</span>
+                        <span class="tag">One Product at a Time</span>
+                        <span class="tag">"Defer instantiation to subclasses"</span>
+                        <span class="tag">Computer Store Case Study</span>
+                    </div>
+                </div>
+                <div class="sheet" style="padding:var(--sp-3);">
+                    <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+                    <div class="kicker" style="margin-bottom:1rem;">FIG. 01 — QUICK FACTS</div>
+                    <table style="font-size:.85rem;">
+                        <tbody>
+                            <tr>
+                                <td class="mono" style="color:var(--accent)">Purpose</td>
+                                <td>One method creates an object; subclasses decide the concrete class.</td>
+                            </tr>
+                            <tr>
+                                <td class="mono" style="color:var(--accent)">Key idea</td>
+                                <td>"Defer instantiation to subclasses."</td>
+                            </tr>
+                            <tr>
+                                <td class="mono" style="color:var(--accent)">Creates</td>
+                                <td>One product at a time.</td>
+                            </tr>
+                            <tr>
+                                <td class="mono" style="color:var(--accent)">Type</td>
+                                <td>Class creational pattern.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- WHAT -->
+        <section id="what">
+            <div class="kicker">01 · Definition</div>
+            <h2 class="title">Factory Method, in one breath</h2>
+            <p class="lede">A <b>class creational pattern</b> used to encapsulate and defer object instantiation to
+                derived
+                classes. It defines an interface for creating an object, but lets subclasses decide which class to
+                instantiate.</p>
+
+            <div class="mnemonic reveal">
+                <span class="m-ico">MEM</span>
+                <div>
+                    <div class="sentence">"The parent <b>declares</b> the recipe. The child <b>decides</b> the
+                        ingredient."</div>
+                    <p>Creator declares <code>createProduct()</code> — it never says which Product. Each ConcreteCreator
+                        fills that in.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- STRUCTURE -->
+        <section id="structure">
+            <div class="kicker">02 · Structure</div>
+            <h2 class="title">4 roles: Creator · ConcreteCreator · Product · ConcreteProduct</h2>
+            <p class="lede">Unlike Abstract Factory (many factory methods, many product families), Factory Method needs
+                only
+                <b>one</b> creational interface method for products that share <b>one</b> interface.
+            </p>
+
+            <div class="sheet" style="padding:var(--sp-3);">
+                <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+                <div class="uml">
+                    <div class="uml-col">
+                        <div class="uml-box abstract">
+                            <div class="hd">Creator</div>
+                            <div class="bd"><span>+createProduct()</span><span>+someOperation()</span></div>
+                        </div>
+                        <div class="uml-arrow hollow"></div>
+                        <div class="uml-box concrete">
+                            <div class="hd">ConcreteCreator</div>
+                            <div class="bd"><span>+createProduct()</span></div>
+                        </div>
+                    </div>
+                    <div class="link-line">creates →</div>
+                    <div class="uml-col">
+                        <div class="uml-box interface">
+                            <div class="hd">«interface» Product</div>
+                            <div class="bd"><span>+productOperation1()</span><span>+createOperation2()</span></div>
+                        </div>
+                        <div class="uml-arrow dash"></div>
+                        <div class="uml-box concrete">
+                            <div class="hd">ConcreteProduct</div>
+                            <div class="bd"><span>+productOperation1()</span><span>+productOperation2()</span></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="examnote">
+                    <b>Reading the diagram fast:</b> hollow triangle (△) = inheritance/implements. Anything written
+                    <i class="notice-italic">in italics</i> on a UML diagram, or marked <code>virtual</code> in C++
+                    code, is
+                    <b>abstract</b> — that's your signal it's the Factory Method itself.
+                </div>
+            </div>
+
+            <div class="mnemonic reveal">
+                <span class="m-ico">MEM</span>
+                <div>
+                    <div class="sentence"><b>C‑C‑P‑P</b> — Creator, ConcreteCreator, Product, ConcreteProduct.</div>
+                    <p>Two "creator" boxes on the left build; two "product" boxes on the right get built. Same shape,
+                        mirrored.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- EXAMPLE -->
+        <section id="example">
+            <div class="kicker">03 · Worked Example</div>
+            <h2 class="title">The Computer Store</h2>
+            <div class="sheet card reveal">
+                <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+                <p><b>Scenario:</b> An electronics store sells Standard and Advanced computers. The Standard Store can
+                    only
+                    build standard computers; the Advanced Store can only build advanced ones. Customers get a common
+                    interface —
+                    ask for a computer, get back its monitor/CPU/keyboard/cost — and new store categories (Workstation,
+                    Budget…)
+                    should slot in without touching existing code.</p>
+            </div>
+
+            <div class="sheet" style="padding:var(--sp-3); margin-top:var(--sp-3);">
+                <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+                <div class="kicker" style="margin-bottom:1rem;">FIG. 02 — COMPUTER STORE CLASS DIAGRAM</div>
+                <div class="uml">
+                    <div class="uml-col">
+                        <div class="uml-box abstract">
+                            <div class="hd">ComputerStore</div>
+                            <div class="bd"><span>+createComputer(type): Computer*</span><span>+displayComputer(type):
+                                    void</span></div>
+                        </div>
+                        <div class="uml-arrow hollow"></div>
+                        <div class="uml-box concrete">
+                            <div class="hd">StandardComputerStore</div>
+                            <div class="bd"><span>+createComputer(type): Computer*</span></div>
+                        </div>
+                        <div style="height:.5rem"></div>
+                        <div class="uml-box concrete">
+                            <div class="hd">AdvancedComputerStore</div>
+                            <div class="bd"><span>+createComputer(type): Computer*</span></div>
+                        </div>
+                    </div>
+                    <div class="link-line">creates →</div>
+                    <div class="uml-col">
+                        <div class="uml-box interface">
+                            <div class="hd">«interface» Computer</div>
+                            <div class="bd">
+                                <span>+displayMonitorInfo()</span><span>+displayCpuInfo()</span><span>+displayKeyboardInfo()</span><span>+displayCost()</span>
+                            </div>
+                        </div>
+                        <div class="uml-arrow dash"></div>
+                        <div class="uml-box concrete">
+                            <div class="hd">StandardComputer</div>
+                            <div class="bd"><span>displayMonitorInfo() ...</span></div>
+                        </div>
+                        <div style="height:.5rem"></div>
+                        <div class="uml-box concrete">
+                            <div class="hd">AdvancedComputer</div>
+                            <div class="bd"><span>displayMonitorInfo() ...</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-2" style="margin-top:var(--sp-3);">
+                <div class="sheet card reveal">
+                    <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+                    <h3><span class="ico">◆</span>ComputerStore (abstract)</h3>
+                    <p>Declares the factory method <code>createComputer()</code> and a helper
+                        <code>displayComputer()</code> that
+                        calls it, then prints whatever it gets back.</p>
+                </div>
+                <div class="sheet card reveal">
+                    <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+                    <h3><span class="ico">◆</span>Derived stores</h3>
+                    <p><code>StandardComputerStore</code> / <code>AdvancedComputerStore</code> each override
+                        <code>createComputer()</code> to return their own concrete <code>Computer</code>.
+                    </p>
+                </div>
+            </div>
+
+            <div class="mnemonic reveal">
+                <span class="m-ico">MEM</span>
+                <div>
+                    <div class="sentence">Summary in one line: the Factory Method pattern makes new
+                        <code>Computer</code> types
+                        possible <b>without changing the client code</b> — the creation logic lives only in
+                        <code>ComputerStore</code> and its children.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5 STEPS -->
+        <section id="steps">
+            <div class="kicker">04 · Design Recipe</div>
+            <h2 class="title">5 steps to build any Factory Method</h2>
+            <div class="mnemonic reveal">
+                <span class="m-ico">MEM</span>
+                <div>
+                    <div class="sentence">"<b>P</b>roducts get <b>C</b>oncrete, <b>F</b>actories get <b>C</b>oncrete,
+                        then <b>A</b>ssociate them." (PCFCA)</div>
+                </div>
+            </div>
+            <div class="steps" style="margin-top:var(--sp-3);">
+                <div class="step-row reveal">
+                    <div class="num"></div>
+                    <div>
+                        <h4>Design the product interface</h4>
+                        <p>e.g. <code>Computer</code>, <code>Parser</code>, <code>Channel</code>.</p>
+                    </div>
+                </div>
+                <div class="step-row reveal">
+                    <div class="num"></div>
+                    <div>
+                        <h4>Design the concrete products</h4>
+                        <p>Each realizes the interface. e.g. <code>StandardComputer</code>,
+                            <code>AdvancedComputer</code>.</p>
+                    </div>
+                </div>
+                <div class="step-row reveal">
+                    <div class="num"></div>
+                    <div>
+                        <h4>Design the factory interface (Creator)</h4>
+                        <p>One abstract method that delegates product creation to derived classes. e.g.
+                            <code>ComputerStore</code>.</p>
+                    </div>
+                </div>
+                <div class="step-row reveal">
+                    <div class="num"></div>
+                    <div>
+                        <h4>Design one concrete factory per product</h4>
+                        <p>e.g. <code>StandardComputerStore</code>, <code>AdvancedComputerStore</code>.</p>
+                    </div>
+                </div>
+                <div class="step-row reveal">
+                    <div class="num"></div>
+                    <div>
+                        <h4>Associate each factory with its product</h4>
+                        <p>Wire each ConcreteCreator's factory method to return the matching ConcreteProduct.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="examnote" style="margin-top:var(--sp-3);">
+                <b>Alternate build order (from the "general order for writing classes" note):</b>
+                1) Product interface → 2) Concrete Products → 3) Creator (abstract class) → 4) Concrete Creators → 5)
+                Client / <code>main</code>.
+                Same five ingredients, ordered the way you'd actually type the files.
+            </div>
+        </section>
+
+        <!-- CODE WALK -->
+        <section id="code">
+            <div class="kicker">05 · Reading the Code</div>
+            <h2 class="title">C++ walk‑through: ComputerStore</h2>
+            <p class="lede">The three pieces below are the same class split across declaration and two implementations —
+                read
+                them top to bottom and the pattern clicks.</p>
+
+            <div class="code">
+                <span class="cm">// The Creator — abstract because instantiate() is virtual</span>
+                <span class="kw">class</span> ComputerStore {
+                <span class="kw">public</span>:
+                <span class="cm">// The factory method itself</span>
+                <span class="kw">virtual</span> <span class="ty">Computer*</span> createComputer(std::string type);
+
+                <span class="cm">// Uses the factory method — doesn't know which Computer it gets</span>
+                <span class="kw">void</span> displayComputer(std::string type);
+                };
+
+                <span class="cm">// displayComputer() delegates creation, then just prints the result</span>
+                <span class="kw">void</span> ComputerStore::displayComputer(<span class="ty">string</span> type) {
+                Computer* computer = createComputer(type); <span class="cm">// delegated!</span>
+                computer->displayMonitorInfo();
+                computer->displayCpuInfo();
+                computer->displayKeyboardInfo();
+                computer->displayCost();
+                }
+
+                <span class="cm">// ConcreteCreator — implements the factory method</span>
+                <span class="ty">Computer*</span> StandardComputerStore::createComputer(<span class="ty">string</span>
+                type) {
+                <span class="kw">if</span> (type.compare(<span class="ty">"standard"</span>) == 0)
+                <span class="kw">return</span> <span class="kw">new</span> StandardComputer;
+                <span class="kw">return</span> <span class="kw">new</span> NullComputer;
+                }
+            </div>
+
+            <div class="grid grid-2" style="margin-top:var(--sp-3);">
+                <div class="sheet card reveal">
+                    <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+                    <h3><span class="ico">C++</span>Spot the abstract method</h3>
+                    <p>Look for the <code>virtual</code> keyword — that marks the factory method.</p>
+                </div>
+                <div class="sheet card reveal">
+                    <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+                    <h3><span class="ico">UML</span>Spot it on a diagram</h3>
+                    <p>Look for methods written <i class="notice-italic">in italics</i> — same meaning, different
+                        notation.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- BENEFITS -->
+        <section id="benefits">
+            <div class="kicker">06 · Payoff</div>
+            <h2 class="title">Benefits — S·E·R·M·T</h2>
+            <div class="grid grid-3">
+                <div class="sheet card reveal">
+                    <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+                    <h3><span class="ico">S</span>Separates</h3>
+                    <p>Client code from product‑specific classes — the same code works with existing <i>or</i> new
+                        product classes.</p>
+                </div>
+                <div class="sheet card reveal">
+                    <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+                    <h3><span class="ico">E</span>Efficient</h3>
+                    <p>Different developers can build different concrete creators/products at the same time.</p>
+                </div>
+                <div class="sheet card reveal">
+                    <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+                    <h3><span class="ico">R</span>Reuse</h3>
+                    <p>Easier to reuse specific parts of the code in other systems.</p>
+                </div>
+                <div class="sheet card reveal">
+                    <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+                    <h3><span class="ico">M</span>Maintain</h3>
+                    <p>Easier to maintain specific parts without touching the rest.</p>
+                </div>
+                <div class="sheet card reveal">
+                    <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+                    <h3><span class="ico">T</span>Testability</h3>
+                    <p>Improves testability — swap in a fake ConcreteCreator for tests.</p>
+                </div>
+            </div>
+            <div class="mnemonic reveal">
+                <span class="m-ico">MEM</span>
+                <div>
+                    <div class="sentence">"<b>S</b>arah <b>E</b>ats <b>R</b>ice, <b>M</b>ostly <b>T</b>uesdays." (SERMT)
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- VS ABSTRACT FACTORY -->
+        <section id="vs">
+            <div class="kicker">07 · Don't Confuse Them</div>
+            <h2 class="title">Factory Method vs. Abstract Factory</h2>
+            <div class="tbl-wrap sheet" style="padding:var(--sp-2);">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Aspect</th>
+                            <th>Factory Method</th>
+                            <th>Abstract Factory</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="mono">Purpose</td>
+                            <td>One factory method creates one product at a time.</td>
+                            <td>Interface for creating <b>families</b> of related products.</td>
+                        </tr>
+                        <tr>
+                            <td class="mono">Factory</td>
+                            <td>One factory method (often parameterized); subclasses decide the product.</td>
+                            <td>Factory interface with <b>multiple</b> factory methods (one per product type).</td>
+                        </tr>
+                        <tr>
+                            <td class="mono">Products</td>
+                            <td>Usually <b>one</b> hierarchy — e.g. Parser → PdfParser, WordParser.</td>
+                            <td><b>Multiple</b> related hierarchies — e.g. Button+Checkbox families for Windows/Mac.
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="mono">Flexibility</td>
+                            <td>Lightweight — one kind of product needed.</td>
+                            <td>More complex — guarantees consistency across a family.</td>
+                        </tr>
+                        <tr>
+                            <td class="mono">Client calls</td>
+                            <td>A single method, e.g. <code>createParser()</code>.</td>
+                            <td>Multiple methods, e.g. <code>createButton()</code> + <code>createCheckbox()</code>,
+                                always matched.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="mnemonic reveal">
+                <span class="m-ico">MEM</span>
+                <div>
+                    <div class="sentence">"<b>One</b> product, <b>one</b> method → Factory Method. <b>Many</b> products,
+                        <b>many</b> methods, <b>one</b> family → Abstract Factory."</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- EXAM / PRACTICE -->
+        <section id="exam">
+            <div class="kicker">08 · Practice Scenarios</div>
+            <h2 class="title">The two extra questions from your slides</h2>
+            <p class="lede">Both are the exact same skeleton as the Computer Store — swap the nouns and the answer
+                barely changes.
+                That repetition <i>is</i> the exam prep.</p>
+
+            <div class="qcard reveal">
+                <div class="qtag">Scenario A</div>
+                <h4>Document Reader framework (PDF / Word / Excel)</h4>
+                <p>Abstract <code>DocumentReader</code> declares one overridable method that returns the
+                    <code>Parser</code>
+                    to use. Each concrete reader (<code>PdfReader</code>, <code>WordReader</code>,
+                    <code>ExcelReader</code>)
+                    overrides it to return its own parser. Adding PowerPoint support = add one new reader subclass, zero
+                    changes
+                    to existing client code.</p>
+                <div class="pill-list">
+                    <span>Creator = DocumentReader</span>
+                    <span>Factory method = createParser()</span>
+                    <span>Product = Parser interface</span>
+                    <span>ConcreteProducts = PdfParser / WordParser / ExcelParser</span>
+                </div>
+                <p style="margin-top:.6rem;"><b>Answer:</b> Factory Method — one product family (Parser), one factory
+                    method, subclasses decide.</p>
+            </div>
+
+            <div class="qcard reveal">
+                <div class="qtag">Scenario B</div>
+                <h4>Notification Sender framework (Email / SMS / Push)</h4>
+                <p>Abstract <code>NotificationSender</code> implements the fixed workflow — validate →
+                    <code>createChannel()</code>
+                    → send. Each concrete sender (<code>EmailSender</code>, <code>SmsSender</code>,
+                    <code>PushSender</code>) overrides
+                    <code>createChannel()</code> to return its own <code>Channel</code>. Adding WhatsApp = one new
+                    sender + one new channel class.
+                </p>
+                <div class="pill-list">
+                    <span>Creator = NotificationSender</span>
+                    <span>Factory method = createChannel()</span>
+                    <span>Product = Channel interface</span>
+                    <span>ConcreteProducts = EmailChannel / SmsChannel / PushChannel</span>
+                </div>
+                <p style="margin-top:.6rem;"><b>Answer:</b> Factory Method again — same shape as Scenario A, different
+                    domain.</p>
+            </div>
+
+            <div class="examnote" style="margin-top:var(--sp-3);">
+                <b>Pattern‑recognition trigger phrase:</b> whenever a question says "a base class implements the overall
+                workflow, and declares <i>one</i> overridable method whose job is to return the [product] to use" —
+                that's
+                always Factory Method. Count the overridable methods: <b>one</b> → Factory Method, <b>several</b> (one
+                per
+                product type) → Abstract Factory.
+            </div>
+        </section>
+
+        <!-- TOOLKIT -->
+        <section id="toolkit">
+            <div class="kicker">09 · Memory Toolkit</div>
+            <h2 class="title">All the mnemonics, in one place</h2>
+            <div class="grid grid-3">
+                <div class="sheet card reveal">
+                    <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+                    <h3><span class="ico">1</span>Core idea</h3>
+                    <p>"The parent declares the recipe. The child decides the ingredient."</p>
+                </div>
+                <div class="sheet card reveal">
+                    <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+                    <h3><span class="ico">2</span>Structure</h3>
+                    <p><b>CCPP</b> — Creator, ConcreteCreator, Product, ConcreteProduct.</p>
+                </div>
+                <div class="sheet card reveal">
+                    <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+                    <h3><span class="ico">3</span>Spotting abstract</h3>
+                    <p><code>virtual</code> in code = <i class="notice-italic">italics</i> in UML.</p>
+                </div>
+                <div class="sheet card reveal">
+                    <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+                    <h3><span class="ico">4</span>Design recipe</h3>
+                    <p><b>PCFCA</b> — Product, Concrete products, Factory, Concrete factories, Associate.</p>
+                </div>
+                <div class="sheet card reveal">
+                    <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+                    <h3><span class="ico">5</span>Benefits</h3>
+                    <p><b>SERMT</b> — Separates, Efficient, Reuse, Maintain, Testability.</p>
+                </div>
+                <div class="sheet card reveal">
+                    <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+                    <h3><span class="ico">6</span>vs. Abstract Factory</h3>
+                    <p>One product/one method → Factory Method. Many products/many methods/one family → Abstract
+                        Factory.</p>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <footer>
+        <div class="wrap">
+            <div class="titleblock sheet">
+                <div class="tb-cell">
+                    <div class="k">Course</div>
+                    <div class="v">Software Design &amp; Architecture</div>
+                </div>
+                <div class="tb-cell">
+                    <div class="k">Sheet</div>
+                    <div class="v">Ch.06 · L02 — Factory Method</div>
+                </div>
+                <div class="tb-cell">
+                    <div class="k">Scale</div>
+                    <div class="v">NTS (Not To Scale)</div>
+                </div>
+                <div class="tb-cell">
+                    <div class="k">Drawn by</div>
+                    <div class="v">Made by Shoug Alomran</div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <button class="backtop" id="backtop" aria-label="back to top">↑</button>
+
+    <script>
+        const root = document.documentElement;
+        const btn = document.getElementById('themeToggle');
+        const icon = document.getElementById('themeIcon');
+        const label = document.getElementById('themeLabel');
+
+        function applyTheme(t) {
+            root.setAttribute('data-theme', t);
+            icon.textContent = t === 'dark' ? '☾' : '☀';
+            label.textContent = t === 'dark' ? 'Dark' : 'Light';
+            try { localStorage.setItem('sda-theme', t); } catch (e) { }
+        }
+
+        (function initTheme() {
+            let saved = null;
+            try { saved = localStorage.getItem('sda-theme'); } catch (e) { }
+            if (saved) { applyTheme(saved); }
+            else {
+                const prefersLight = window.matchMedia('(prefers-color-scheme: light)').matches;
+                applyTheme(prefersLight ? 'light' : 'dark');
+            }
+        })();
+
+        btn.addEventListener('click', () => {
+            const current = root.getAttribute('data-theme');
+            applyTheme(current === 'dark' ? 'light' : 'dark');
+        });
+
+        const io = new IntersectionObserver((entries) => {
+            entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+        }, { threshold: .12 });
+        document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+        const backtop = document.getElementById('backtop');
+        window.addEventListener('scroll', () => { backtop.classList.toggle('show', window.scrollY > 700); });
+        backtop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,1689 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Card Catalog: Documenting Software Architectures — Chapter 09</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&family=JetBrains+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            color-scheme: light;
+            --bg: #EEE3C9;
+            --bg-line: rgba(43, 36, 26, 0.05);
+            --surface: #FBF6E8;
+            --surface-2: #E3D6AE;
+            --ink: #2B241A;
+            --ink-soft: #5B4F3B;
+            --ink-faint: #8C7F63;
+            --green: #2F5D50;
+            --green-soft: #4C8577;
+            --brass: #A97B33;
+            --brass-soft: #CDA05C;
+            --red: #8B3A3A;
+            --red-soft: #B96A5C;
+            --border: rgba(43, 36, 26, 0.2);
+            --border-strong: rgba(43, 36, 26, 0.38);
+            --shadow: 0 1px 2px rgba(43, 36, 26, 0.08), 0 10px 26px rgba(43, 36, 26, 0.09);
+            --panel-ink: #F3ECD8;
+        }
+
+        html[data-theme="dark"] {
+            color-scheme: dark;
+            --bg: #16130E;
+            --bg-line: rgba(237, 227, 203, 0.05);
+            --surface: #211B13;
+            --surface-2: #2B2317;
+            --ink: #EDE3CB;
+            --ink-soft: #C4B693;
+            --ink-faint: #8C7F63;
+            --green: #74C0A9;
+            --green-soft: #4C8577;
+            --brass: #E3B15E;
+            --brass-soft: #B0813C;
+            --red: #E08A80;
+            --red-soft: #B96A5C;
+            --border: rgba(237, 227, 203, 0.16);
+            --border-strong: rgba(237, 227, 203, 0.32);
+            --shadow: 0 1px 2px rgba(0, 0, 0, 0.35), 0 14px 34px rgba(0, 0, 0, 0.4);
+            --panel-ink: #241D14;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            background:
+                repeating-linear-gradient(0deg, var(--bg-line) 0px, var(--bg-line) 1px, transparent 1px, transparent 27px),
+                var(--bg);
+            color: var(--ink);
+            font-family: 'Source Serif 4', Georgia, serif;
+            font-size: clamp(15px, 0.9vw + 11px, 18px);
+            line-height: 1.62;
+            transition: background-color .35s ease, color .35s ease;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        .display {
+            font-family: 'Fraunces', serif;
+            font-optical-sizing: auto;
+            color: var(--ink);
+            margin: 0;
+        }
+
+        code,
+        .mono,
+        .call-no,
+        .tag,
+        .drawer-label,
+        .card-q small {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        a {
+            color: inherit;
+        }
+
+        .wrap {
+            max-width: min(1180px, 94vw);
+            margin: 0 auto;
+            padding: 0 clamp(14px, 2.5vw, 32px);
+        }
+
+        /* ===== Top bar ===== */
+        .topbar {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            backdrop-filter: blur(10px);
+            background: color-mix(in srgb, var(--bg) 84%, transparent);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .topbar-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 10px clamp(14px, 2.5vw, 32px);
+            max-width: min(1180px, 94vw);
+            margin: 0 auto;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: clamp(11.5px, 0.95vw, 13.5px);
+            font-weight: 600;
+            color: var(--ink-soft);
+            white-space: nowrap;
+            font-family: 'JetBrains Mono', monospace;
+            letter-spacing: .03em;
+        }
+
+        .brand .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--red);
+            flex: none;
+        }
+
+        nav.pills {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+
+        nav.pills a {
+            text-decoration: none;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: clamp(10.5px, 0.8vw, 12px);
+            font-weight: 500;
+            color: var(--ink-soft);
+            padding: 6px 11px;
+            border-radius: 4px;
+            border: 1px solid transparent;
+            transition: all .2s ease;
+        }
+
+        nav.pills a:hover {
+            color: var(--green);
+            border-color: var(--border);
+            background: var(--surface);
+        }
+
+        .theme-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            border: 1px solid var(--border-strong);
+            background: var(--surface);
+            color: var(--ink);
+            cursor: pointer;
+            flex: none;
+            transition: transform .3s ease;
+        }
+
+        .theme-btn:hover {
+            transform: rotate(18deg);
+        }
+
+        .theme-btn svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* ===== Hero ===== */
+        .hero {
+            padding: clamp(36px, 7vw, 84px) 0 clamp(20px, 4vw, 40px);
+        }
+
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: clamp(10.5px, 0.8vw, 12.5px);
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--red);
+            border: 1px dashed var(--border-strong);
+            padding: 5px 12px;
+            border-radius: 3px;
+            margin-bottom: 18px;
+        }
+
+        .hero h1 {
+            font-size: clamp(30px, 5.2vw, 58px);
+            line-height: 1.06;
+            font-weight: 700;
+            max-width: 20ch;
+        }
+
+        .hero h1 em {
+            font-style: italic;
+            color: var(--green);
+        }
+
+        .hero-sub {
+            margin-top: 16px;
+            max-width: 64ch;
+            color: var(--ink-soft);
+            font-size: clamp(15px, 1.1vw, 19px);
+        }
+
+        /* catalog drawer front for hero */
+        .drawer {
+            margin-top: clamp(26px, 4vw, 40px);
+            border: 1.5px solid var(--border-strong);
+            background: linear-gradient(180deg, var(--surface-2), var(--surface));
+            border-radius: 6px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .drawer-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 18px;
+            background: var(--surface-2);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .drawer-label {
+            font-size: 11px;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+            color: var(--ink-faint);
+        }
+
+        .drawer-pull {
+            width: 34px;
+            height: 8px;
+            border-radius: 4px;
+            background: var(--brass);
+            box-shadow: inset 0 1px 1px rgba(0, 0, 0, .2);
+        }
+
+        .drawer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        }
+
+        .dcell {
+            padding: 13px 18px;
+            border-right: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .dcell:last-child {
+            border-right: none;
+        }
+
+        .dcell .dl {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            color: var(--ink-faint);
+            margin-bottom: 4px;
+        }
+
+        .dcell .dv {
+            font-family: 'Fraunces', serif;
+            font-weight: 600;
+            font-size: clamp(12.5px, 1vw, 14.5px);
+        }
+
+        /* ===== Sections ===== */
+        section {
+            padding: clamp(38px, 6vw, 76px) 0;
+        }
+
+        .section-head {
+            display: flex;
+            align-items: baseline;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-bottom: clamp(18px, 3vw, 30px);
+        }
+
+        .call-no {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: clamp(12px, 1vw, 14px);
+            font-weight: 600;
+            color: var(--brass);
+            border: 1px solid var(--brass);
+            padding: 5px 10px;
+            border-radius: 3px;
+            white-space: nowrap;
+        }
+
+        .section-head h2 {
+            font-size: clamp(22px, 2.8vw, 34px);
+            font-weight: 700;
+        }
+
+        .section-kicker {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: clamp(10.5px, 0.8vw, 12px);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--ink-faint);
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        .lede {
+            max-width: 78ch;
+            color: var(--ink-soft);
+            font-size: clamp(14.5px, 1.05vw, 17.5px);
+            margin-bottom: clamp(20px, 3vw, 32px);
+        }
+
+        .lede strong {
+            color: var(--ink);
+        }
+
+        hr.tear {
+            border: none;
+            border-top: 1px dashed var(--border-strong);
+            margin: clamp(36px, 5vw, 70px) 0 0;
+        }
+
+        /* ===== Mnemonic banner ===== */
+        .mnemonic-banner {
+            display: grid;
+            grid-template-columns: minmax(130px, 200px) 1fr;
+            gap: clamp(16px, 3vw, 30px);
+            align-items: center;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: clamp(18px, 3vw, 28px);
+            box-shadow: var(--shadow);
+            margin-bottom: clamp(26px, 4vw, 40px);
+            border-left: 5px solid var(--red);
+        }
+
+        .mnemonic-visual {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: clamp(42px, 6vw, 72px);
+            line-height: 1;
+        }
+
+        .mnemonic-text .tag {
+            display: inline-block;
+            font-size: clamp(10px, 0.75vw, 11.5px);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--red);
+            background: color-mix(in srgb, var(--red) 14%, transparent);
+            padding: 3px 10px;
+            border-radius: 3px;
+            margin-bottom: 10px;
+        }
+
+        .mnemonic-text h3 {
+            font-size: clamp(18px, 1.9vw, 25px);
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .mnemonic-text p {
+            margin: 0;
+            color: var(--ink-soft);
+            font-size: clamp(13.5px, 1vw, 15.5px);
+        }
+
+        /* ===== Index card component ===== */
+        .grid {
+            display: grid;
+            gap: clamp(12px, 1.6vw, 20px);
+        }
+
+        .grid.cols-5 {
+            grid-template-columns: repeat(5, 1fr);
+        }
+
+        .grid.cols-4 {
+            grid-template-columns: repeat(4, 1fr);
+        }
+
+        .grid.cols-3 {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .grid.cols-2 {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        @media (max-width: 980px) {
+
+            .grid.cols-5,
+            .grid.cols-4 {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .grid.cols-3 {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 560px) {
+
+            .grid.cols-5,
+            .grid.cols-4,
+            .grid.cols-3,
+            .grid.cols-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .idx-card {
+            position: relative;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 20px 16px 16px;
+            box-shadow: var(--shadow);
+            transition: transform .2s ease;
+        }
+
+        .idx-card:hover {
+            transform: translateY(-3px) rotate(-0.3deg);
+        }
+
+        .idx-card::before {
+            content: "";
+            position: absolute;
+            top: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: var(--bg);
+            border: 1px solid var(--border-strong);
+        }
+
+        .idx-card .rule {
+            border-top: 1px solid var(--border);
+            margin: 8px 0;
+        }
+
+        .idx-icon {
+            font-size: clamp(20px, 2vw, 26px);
+            margin-top: 6px;
+        }
+
+        .idx-card h4 {
+            font-size: clamp(13.5px, 1vw, 15.5px);
+            font-weight: 600;
+            margin: 6px 0 4px;
+        }
+
+        .idx-card p {
+            margin: 0;
+            color: var(--ink-soft);
+            font-size: clamp(12px, 0.88vw, 13.8px);
+        }
+
+        .idx-tab {
+            position: absolute;
+            top: -1px;
+            left: 14px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9.5px;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            background: var(--brass);
+            color: var(--panel-ink);
+            padding: 2px 8px;
+            border-radius: 0 0 4px 4px;
+        }
+
+        .acronym-strip {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: clamp(16px, 2vw, 24px);
+            padding: 14px 16px;
+            background: var(--surface-2);
+            border: 1px dashed var(--border-strong);
+            border-radius: 6px;
+            align-items: center;
+            font-size: clamp(12.5px, 0.95vw, 14.5px);
+        }
+
+        .acronym-strip .lead {
+            font-family: 'Fraunces', serif;
+            font-weight: 700;
+            color: var(--green);
+            margin-right: 4px;
+        }
+
+        /* ===== Steps ===== */
+        .steps {
+            counter-reset: step;
+            display: grid;
+            gap: 14px;
+        }
+
+        .step {
+            counter-increment: step;
+            display: grid;
+            grid-template-columns: 40px 1fr;
+            gap: 14px;
+            padding: 12px 16px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            box-shadow: var(--shadow);
+        }
+
+        .step::before {
+            content: counter(step);
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--green);
+            color: var(--surface);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex: none;
+        }
+
+        html[data-theme="dark"] .step::before {
+            color: var(--bg);
+        }
+
+        .step h4 {
+            font-size: clamp(13.5px, 1vw, 15px);
+            margin-bottom: 3px;
+        }
+
+        .step p {
+            margin: 0;
+            color: var(--ink-soft);
+            font-size: clamp(12.5px, 0.9vw, 14px);
+        }
+
+        /* ===== Callouts ===== */
+        .callout {
+            display: flex;
+            gap: 14px;
+            padding: clamp(14px, 1.8vw, 20px);
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            box-shadow: var(--shadow);
+            margin: clamp(16px, 2vw, 24px) 0;
+        }
+
+        .callout .ci {
+            font-size: 22px;
+            flex: none;
+        }
+
+        .callout.good {
+            border-left: 4px solid var(--green);
+        }
+
+        .callout.warn {
+            border-left: 4px solid var(--brass);
+        }
+
+        .callout.vs {
+            border-left: 4px solid var(--red);
+        }
+
+        .callout h4 {
+            font-size: clamp(13.5px, 1vw, 15.5px);
+            margin-bottom: 4px;
+        }
+
+        .callout p {
+            margin: 0;
+            color: var(--ink-soft);
+            font-size: clamp(12.5px, 0.92vw, 14.5px);
+        }
+
+        /* ===== Stamp badge ===== */
+        .stamp-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            border: 2px solid var(--red);
+            color: var(--red);
+            padding: 4px 12px;
+            border-radius: 3px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            transform: rotate(-2deg);
+        }
+
+        /* ===== Table ===== */
+        .tbl-wrap {
+            overflow-x: auto;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--surface);
+            font-size: clamp(12.5px, 0.9vw, 14.5px);
+            min-width: 560px;
+        }
+
+        th,
+        td {
+            text-align: left;
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border);
+            vertical-align: top;
+        }
+
+        th {
+            font-family: 'Fraunces', serif;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+            color: var(--ink-faint);
+            background: var(--surface-2);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        td strong {
+            color: var(--green);
+        }
+
+        td em.faint {
+            color: var(--ink-faint);
+            font-style: italic;
+        }
+
+        /* ===== Central diagram (doc essentials) ===== */
+        .radial {
+            position: relative;
+            display: grid;
+            place-items: center;
+            padding: clamp(30px, 5vw, 60px) 0;
+        }
+
+        .radial-center {
+            width: clamp(110px, 14vw, 150px);
+            height: clamp(110px, 14vw, 150px);
+            border-radius: 50%;
+            background: var(--green);
+            color: var(--surface);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-family: 'Fraunces', serif;
+            font-weight: 700;
+            font-size: clamp(11.5px, 1vw, 13.5px);
+            box-shadow: var(--shadow);
+            z-index: 2;
+            padding: 8px;
+        }
+
+        html[data-theme="dark"] .radial-center {
+            color: var(--bg);
+        }
+
+        .radial-items {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+            margin-top: -8px;
+        }
+
+        @media (max-width: 700px) {
+            .radial-items {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .radial-item {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 12px 14px;
+            box-shadow: var(--shadow);
+            text-align: center;
+            font-size: clamp(12px, 0.9vw, 14px);
+        }
+
+        .radial-item .ri-icon {
+            font-size: 20px;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        /* ===== Flash cards (reuse style, retint) ===== */
+        .flash-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: clamp(12px, 1.6vw, 18px);
+        }
+
+        @media (max-width: 900px) {
+            .flash-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 560px) {
+            .flash-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .flash {
+            perspective: 1000px;
+            height: 172px;
+            cursor: pointer;
+        }
+
+        .flash-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform .55s cubic-bezier(.4, .2, .2, 1);
+            transform-style: preserve-3d;
+        }
+
+        .flash.flipped .flash-inner {
+            transform: rotateY(180deg);
+        }
+
+        .card-q,
+        .card-a {
+            position: absolute;
+            inset: 0;
+            backface-visibility: hidden;
+            border-radius: 6px;
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+        }
+
+        .card-q {
+            background: var(--surface);
+        }
+
+        .card-q small {
+            display: block;
+            color: var(--ink-faint);
+            font-size: 10px;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .card-q span {
+            font-family: 'Fraunces', serif;
+            font-weight: 600;
+            font-size: clamp(13px, 1vw, 15.5px);
+        }
+
+        .card-a {
+            background: var(--green);
+            color: var(--surface);
+            transform: rotateY(180deg);
+            font-size: clamp(12.5px, 0.95vw, 14.5px);
+        }
+
+        html[data-theme="dark"] .card-a {
+            color: var(--bg);
+        }
+
+        .flash-hint {
+            text-align: center;
+            font-size: 12px;
+            color: var(--ink-faint);
+            margin-bottom: 16px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(16px);
+            transition: opacity .6s ease, transform .6s ease;
+        }
+
+        .reveal.in {
+            opacity: 1;
+            transform: none;
+        }
+
+        footer {
+            border-top: 1px solid var(--border);
+            padding: clamp(28px, 4vw, 44px) 0 clamp(40px, 5vw, 60px);
+            margin-top: clamp(30px, 4vw, 50px);
+        }
+
+        .footer-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .credit {
+            font-family: 'Fraunces', serif;
+            font-size: clamp(12.5px, 0.95vw, 14.5px);
+            color: var(--ink-soft);
+        }
+
+        .credit strong {
+            color: var(--ink);
+        }
+
+        .foot-note {
+            color: var(--ink-faint);
+            font-size: 12px;
+            margin-top: 14px;
+        }
+
+        ::selection {
+            background: var(--brass);
+            color: var(--panel-ink);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="topbar">
+        <div class="topbar-inner">
+            <div class="brand"><span class="dot"></span> DOCUMENTING SOFTWARE ARCHITECTURES</div>
+            <nav class="pills">
+                <a href="#why">Why</a>
+                <a href="#uses">Uses</a>
+                <a href="#stakeholders">Stakeholders</a>
+                <a href="#views">4+1 Views</a>
+                <a href="#docview">Doc a View</a>
+                <a href="#beyond">Beyond Views</a>
+                <a href="#quality">Quality</a>
+                <a href="#quiz">Flashcards</a>
+            </nav>
+            <button class="theme-btn" id="themeToggle" aria-label="Toggle dark mode" title="Toggle dark / light mode">
+                <svg id="iconMoon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+                </svg>
+                <svg id="iconSun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    style="display:none">
+                    <circle cx="12" cy="12" r="4" />
+                    <path
+                        d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <div class="wrap">
+        <section class="hero">
+            <span class="eyebrow">● Chapter 09 — Software Design &amp; Architecture</span>
+            <h1>An architecture nobody can <em>read</em> is an architecture that <em>fails</em>.</h1>
+            <p class="hero-sub">Think of this chapter as a library card catalog: the architecture is the whole
+                collection, and documentation is the cataloging system that lets every stakeholder find exactly the view
+                they need.</p>
+
+            <div class="drawer">
+                <div class="drawer-top"><span class="drawer-label">Catalog Drawer — CH.09</span><span
+                        class="drawer-pull"></span></div>
+                <div class="drawer-grid">
+                    <div class="dcell">
+                        <div class="dl">Subject</div>
+                        <div class="dv">Documenting Architecture</div>
+                    </div>
+                    <div class="dcell">
+                        <div class="dl">Core Model</div>
+                        <div class="dv">Kruchten's 4+1 Views</div>
+                    </div>
+                    <div class="dcell">
+                        <div class="dl">3 Purposes</div>
+                        <div class="dv">Teach · Talk · Test</div>
+                    </div>
+                    <div class="dcell">
+                        <div class="dl">Golden Rule</div>
+                        <div class="dv">Minimal but adequate</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============ WHY DOCUMENT ============ -->
+        <section id="why">
+            <div class="section-head reveal">
+                <span class="call-no">005.1 WHY</span>
+                <div><span class="section-kicker">The stakes</span>
+                    <h2>Why document the architecture at all?</h2>
+                </div>
+            </div>
+            <p class="lede reveal">A system's architecture may be <strong>the</strong> single biggest determinant of
+                success or failure. But an architecture that only lives in one person's head might as well not exist —
+                <strong>communicating it is as important a job as designing it.</strong></p>
+
+            <div class="mnemonic-banner reveal">
+                <div class="mnemonic-visual">🗂️</div>
+                <div class="mnemonic-text">
+                    <span class="tag">Memory Hook</span>
+                    <h3>"Unknown. Unclear. Misused."</h3>
+                    <p>Even the best architecture becomes useless the same three ways: people <strong>don't
+                            know</strong> it exists, <strong>can't understand</strong> it well enough to use it, or
+                        <strong>misunderstand</strong> it and apply it wrong. Documentation is the fix for all three.
+                    </p>
+                </div>
+            </div>
+
+            <div class="grid cols-3 reveal">
+                <div class="idx-card"><span class="idx-tab">01</span>
+                    <div class="idx-icon">🙈</div>
+                    <h4>Don't know it</h4>
+                    <div class="rule"></div>
+                    <p>No documentation reaches them at all — the architecture is effectively invisible.</p>
+                </div>
+                <div class="idx-card"><span class="idx-tab">02</span>
+                    <div class="idx-icon">😵</div>
+                    <h4>Can't understand it</h4>
+                    <div class="rule"></div>
+                    <p>Documentation exists but isn't clear enough to build, use, or modify the system with.</p>
+                </div>
+                <div class="idx-card"><span class="idx-tab">03</span>
+                    <div class="idx-icon">🚧</div>
+                    <h4>Misunderstand it</h4>
+                    <div class="rule"></div>
+                    <p>They read it, get the wrong idea, and apply the architecture incorrectly — often the costliest
+                        failure.</p>
+                </div>
+            </div>
+
+            <div class="callout vs reveal">
+                <div class="ci">📇</div>
+                <div>
+                    <h4>What "documenting" actually means</h4>
+                    <p>Choose a set of relevant <strong>views</strong> → document <strong>each view</strong> → document
+                        information that spans <strong>more than one view</strong> (or the whole set). That's the entire
+                        job, in one sentence.</p>
+                </div>
+            </div>
+        </section>
+
+        <hr class="tear">
+
+        <!-- ============ 3 USES ============ -->
+        <section id="uses">
+            <div class="section-head reveal">
+                <span class="call-no">005.2 USES</span>
+                <div><span class="section-kicker">Three jobs, one document</span>
+                    <h2>The three uses of documentation</h2>
+                </div>
+            </div>
+            <div class="mnemonic-banner reveal">
+                <div class="mnemonic-visual">🎓</div>
+                <div class="mnemonic-text">
+                    <span class="tag">Memory Hook</span>
+                    <h3>"Teach it. Talk it. Test it."</h3>
+                    <p>Every piece of architecture documentation ultimately serves one of three purposes —
+                        <strong>E</strong>ducation, <strong>C</strong>ommunication, or <strong>A</strong>nalysis.</p>
+                </div>
+            </div>
+            <div class="grid cols-3 reveal">
+                <div class="idx-card"><span class="idx-tab">TEACH</span>
+                    <div class="idx-icon">🎓</div>
+                    <h4>Education</h4>
+                    <div class="rule"></div>
+                    <p>Introduces new people to the project — the on-ramp for anyone joining.</p>
+                </div>
+                <div class="idx-card"><span class="idx-tab">TALK</span>
+                    <div class="idx-icon">💬</div>
+                    <h4>Communication</h4>
+                    <div class="rule"></div>
+                    <p>Keeps every stakeholder — up, down, and across the org chart — on the same page.</p>
+                </div>
+                <div class="idx-card"><span class="idx-tab">TEST</span>
+                    <div class="idx-icon">🔍</div>
+                    <h4>Analysis</h4>
+                    <div class="rule"></div>
+                    <p>Lets you (or a reviewer) verify the quality attributes are actually going to be met.</p>
+                </div>
+            </div>
+        </section>
+
+        <hr class="tear">
+
+        <!-- ============ PLANNING GOALS ============ -->
+        <section id="planning">
+            <div class="section-head reveal">
+                <span class="call-no">005.3 PLAN</span>
+                <div><span class="section-kicker">Before you write a word</span>
+                    <h2>The goal of documentation planning</h2>
+                </div>
+            </div>
+            <p class="lede reveal">Four questions to answer before producing any documentation — remember them as
+                <strong>Views → Who → Worries → Write-up</strong>.</p>
+            <div class="steps reveal">
+                <div class="step">
+                    <h4>Select common views of the software architecture</h4>
+                    <p>Decide which architectural views (see the 4+1 model below) are actually worth documenting for
+                        this system.</p>
+                </div>
+                <div class="step">
+                    <h4>Define stakeholders</h4>
+                    <p>Who is this documentation for? Managers, developers, testers, and customers all need different
+                        things.</p>
+                </div>
+                <div class="step">
+                    <h4>Identify stakeholders' concerns</h4>
+                    <p>What does each stakeholder actually need to know? Build a table mapping stakeholder → concern →
+                        view.</p>
+                </div>
+                <div class="step">
+                    <h4>Define what and how to document</h4>
+                    <p>Pick a template (e.g. RUP or SEI) that structures the content consistently.</p>
+                </div>
+            </div>
+        </section>
+
+        <hr class="tear">
+
+        <!-- ============ STAKEHOLDERS ============ -->
+        <section id="stakeholders">
+            <div class="section-head reveal">
+                <span class="call-no">005.4 WHO</span>
+                <div><span class="section-kicker">The readers of your catalog</span>
+                    <h2>Define your stakeholders</h2>
+                </div>
+            </div>
+            <p class="lede reveal">Every card in the catalog has a different patron. Sample stakeholders you'll
+                typically document for:</p>
+
+            <div class="grid cols-5 reveal">
+                <div class="idx-card">
+                    <div class="idx-icon">🧭</div>
+                    <h4>Project Manager</h4>
+                    <p>Tracks progress &amp; risk</p>
+                </div>
+                <div class="idx-card">
+                    <div class="idx-icon">👩‍💻</div>
+                    <h4>Dev Team Member</h4>
+                    <p>Builds within the design</p>
+                </div>
+                <div class="idx-card">
+                    <div class="idx-icon">🧪</div>
+                    <h4>Testers / Integrators</h4>
+                    <p>Verify behavior &amp; fit</p>
+                </div>
+                <div class="idx-card">
+                    <div class="idx-icon">🔧</div>
+                    <h4>Maintainers</h4>
+                    <p>Modify it long-term</p>
+                </div>
+                <div class="idx-card">
+                    <div class="idx-icon">🏗️</div>
+                    <h4>Product Line Builder</h4>
+                    <p>Reuses across products</p>
+                </div>
+                <div class="idx-card">
+                    <div class="idx-icon">🤝</div>
+                    <h4>Customer</h4>
+                    <p>Confirms it meets needs</p>
+                </div>
+                <div class="idx-card">
+                    <div class="idx-icon">🙋</div>
+                    <h4>End User</h4>
+                    <p>Cares about the outcome</p>
+                </div>
+                <div class="idx-card">
+                    <div class="idx-icon">📊</div>
+                    <h4>Analyst</h4>
+                    <p>Assesses quality attributes</p>
+                </div>
+                <div class="idx-card">
+                    <div class="idx-icon">🖧</div>
+                    <h4>Infrastructure Support</h4>
+                    <p>Runs &amp; hosts the system</p>
+                </div>
+                <div class="idx-card">
+                    <div class="idx-icon">🏛️</div>
+                    <h4>Current / Future Architect</h4>
+                    <p>Owns &amp; evolves the design</p>
+                </div>
+            </div>
+
+            <h3 style="font-size:clamp(16px,1.3vw,19px); margin:28px 0 12px;" class="reveal">Then map their concerns to
+                a view</h3>
+            <p class="lede reveal" style="margin-bottom:14px;">Build a table like this — it lets you prioritize views by
+                whose concerns carry the most weight.</p>
+            <div class="tbl-wrap reveal">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>No.</th>
+                            <th>Stakeholder</th>
+                            <th>Concern to address</th>
+                            <th>Suitable view</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>Project Manager</td>
+                            <td><em class="faint">e.g. Is the schedule realistic?</em></td>
+                            <td><em class="faint">Development view</em></td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>Maintainer</td>
+                            <td><em class="faint">How do I change module X safely?</em></td>
+                            <td><em class="faint">Development / Logical</em></td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>Infrastructure Support</td>
+                            <td><em class="faint">Where does each service run?</em></td>
+                            <td><em class="faint">Physical view</em></td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td>Analyst</td>
+                            <td><em class="faint">Will it handle peak load?</em></td>
+                            <td><em class="faint">Process view</em></td>
+                        </tr>
+                        <tr>
+                            <td>5</td>
+                            <td>End User</td>
+                            <td><em class="faint">Does it support my workflow?</em></td>
+                            <td><em class="faint">+1 Use-case view</em></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <hr class="tear">
+
+        <!-- ============ 4+1 VIEWS ============ -->
+        <section id="views">
+            <div class="section-head reveal">
+                <span class="call-no">005.5 VIEWS</span>
+                <div><span class="section-kicker">Kruchten's model — the one this course uses</span>
+                    <h2>The 4+1 architectural views</h2>
+                </div>
+            </div>
+            <p class="lede reveal">Several view-set approaches exist (Siemens Four Views, Herzum &amp; Sims, the SCR
+                method) — but <strong>Kruchten's 4+1</strong> is the most widely used, and the one we focus on.</p>
+
+            <div class="mnemonic-banner reveal">
+                <div class="mnemonic-visual">🏛️</div>
+                <div class="mnemonic-text">
+                    <span class="tag">Memory Hook</span>
+                    <h3>Think of a building's drawing set.</h3>
+                    <p>A floor plan, a traffic-flow diagram, a set of construction packages, a site map — and a guided
+                        tour that walks you through all four at once using a real use case.</p>
+                </div>
+            </div>
+
+            <div class="grid cols-5 reveal">
+                <div class="idx-card"><span class="idx-tab">L</span>
+                    <div class="idx-icon">🧠</div>
+                    <h4>Logical View</h4>
+                    <div class="rule"></div>
+                    <p>Behavioral requirements. Key abstractions — objects and object classes. <em>(the floor plan)</em>
+                    </p>
+                </div>
+                <div class="idx-card"><span class="idx-tab">P</span>
+                    <div class="idx-icon">⚙️</div>
+                    <h4>Process View</h4>
+                    <div class="rule"></div>
+                    <p>Concurrency &amp; distribution — maps threads to objects. <em>(the traffic flow)</em></p>
+                </div>
+                <div class="idx-card"><span class="idx-tab">D</span>
+                    <div class="idx-icon">📁</div>
+                    <h4>Development View</h4>
+                    <div class="rule"></div>
+                    <p>Organization of modules, libraries, subsystems, units of development. <em>(construction
+                            packages)</em></p>
+                </div>
+                <div class="idx-card"><span class="idx-tab">P</span>
+                    <div class="idx-icon">🖥️</div>
+                    <h4>Physical View</h4>
+                    <div class="rule"></div>
+                    <p>Maps elements onto processing &amp; communication nodes. <em>(the site map)</em></p>
+                </div>
+                <div class="idx-card"><span class="idx-tab">+1</span>
+                    <div class="idx-icon">🎬</div>
+                    <h4>Use-Case View</h4>
+                    <div class="rule"></div>
+                    <p>Maps the other four views onto key use cases to show how they work together. <em>(the guided
+                            tour)</em></p>
+                </div>
+            </div>
+
+            <div class="acronym-strip reveal">
+                <span class="lead">Say it as:</span> "L-P-D-P, plus one" — four independent lenses on the same system,
+                tied together by one narrated walkthrough.
+            </div>
+
+            <h3 style="font-size:clamp(16px,1.3vw,19px); margin:30px 0 12px;" class="reveal">Other view-set approaches
+                (for context)</h3>
+            <div class="tbl-wrap reveal">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Approach</th>
+                            <th>Views it defines</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Siemens Four Views</strong></td>
+                            <td>Conceptual · Module interconnection · Execution · Code</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Herzum &amp; Sims</strong></td>
+                            <td>Technical · Application · Project management · Functional architecture</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Software Cost Reduction (SCR)</strong></td>
+                            <td>Module view (modifiability) · Process view (performance) · Uses view (incremental
+                                development)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="callout warn reveal">
+                <div class="ci">💡</div>
+                <div>
+                    <h4>Planning tip</h4>
+                    <p>Choosing a view set means understanding stakeholder needs, how they'll actually use the
+                        documentation, and the resources you have available — not just picking every view that exists.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <hr class="tear">
+
+        <!-- ============ DEFINE HOW TO DOCUMENT / TEMPLATES ============ -->
+        <section id="templates">
+            <div class="section-head reveal">
+                <span class="call-no">005.6 HOW</span>
+                <div><span class="section-kicker">Picking a format</span>
+                    <h2>Define how to document</h2>
+                </div>
+            </div>
+            <p class="lede reveal">Once you know your views, stakeholders, and concerns, pick a
+                <strong>template</strong> to structure the write-up. Two common ones:</p>
+
+            <div class="grid cols-2 reveal">
+                <div class="idx-card" style="text-align:left;">
+                    <span class="idx-tab">RUP</span>
+                    <h4 style="margin-top:14px;">Rational Unified Process template</h4>
+                    <div class="rule"></div>
+                    <p>Introduction → Architectural Representation → Goals &amp; Constraints → Use-Case View → Logical
+                        View → Process View → Deployment View → Implementation View → Data View → Size &amp; Performance
+                        → Quality.</p>
+                </div>
+                <div class="idx-card" style="text-align:left;">
+                    <span class="idx-tab">SEI</span>
+                    <h4 style="margin-top:14px;">Software Engineering Institute template</h4>
+                    <div class="rule"></div>
+                    <p>Documentation Roadmap → Stakeholder Representation → Viewpoint Definitions → Architecture
+                        Background (problem + solution) → Views → Directory (index, glossary, acronyms).</p>
+                </div>
+            </div>
+
+            <h3 style="font-size:clamp(16px,1.3vw,19px); margin:30px 0 16px;" class="reveal">What every architecture
+                document needs — no more, no less</h3>
+            <div class="radial reveal">
+                <div class="radial-center">Software<br>Architecture<br>Document</div>
+                <div class="radial-items">
+                    <div class="radial-item"><span class="ri-icon">❓</span>Problem description</div>
+                    <div class="radial-item"><span class="ri-icon">🌍</span>Context</div>
+                    <div class="radial-item"><span class="ri-icon">💡</span>Rationale</div>
+                    <div class="radial-item"><span class="ri-icon">📐</span>Principles &amp; guidelines</div>
+                    <div class="radial-item"><span class="ri-icon">🏗️</span>Structure</div>
+                    <div class="radial-item"><span class="ri-icon">🗺️</span>Views</div>
+                    <div class="radial-item" style="grid-column: 1 / -1;"><span class="ri-icon">📈</span>Quality
+                        attributes</div>
+                </div>
+            </div>
+            <div class="callout good reveal">
+                <div class="ci">✅</div>
+                <div>
+                    <h4>The golden rule</h4>
+                    <p>A software architecture document should contain the <strong>minimum information necessary to
+                            understand the system — but no more than that.</strong></p>
+                </div>
+            </div>
+        </section>
+
+        <hr class="tear">
+
+        <!-- ============ DOCUMENTING A VIEW ============ -->
+        <section id="docview">
+            <div class="section-head reveal">
+                <span class="call-no">005.7 CARD</span>
+                <div><span class="section-kicker">Filling out one catalog card</span>
+                    <h2>Documenting a single view</h2>
+                </div>
+            </div>
+            <p class="lede reveal">Every view — Logical, Process, whichever — gets documented the same way, with up to
+                five parts.</p>
+
+            <div class="mnemonic-banner reveal">
+                <div class="mnemonic-visual">📇</div>
+                <div class="mnemonic-text">
+                    <span class="tag">Memory Hook</span>
+                    <h3>"Penguins Explain Context Very Beautifully."</h3>
+                    <p><strong>P</strong>rimary presentation, <strong>E</strong>lement catalog, <strong>C</strong>ontext
+                        diagram, <strong>V</strong>ariability guide, architecture <strong>B</strong>ackground — in that
+                        order, front to back of the card.</p>
+                </div>
+            </div>
+
+            <div class="steps reveal">
+                <div class="step">
+                    <h4>Primary presentation</h4>
+                    <p>Usually graphical ("the cartoon"), sometimes a table. Includes a key/legend and shows the
+                        elements + relationships you most want to convey. Often all a reader gets — but rarely enough on
+                        its own.</p>
+                </div>
+                <div class="step">
+                    <h4>Element catalog</h4>
+                    <p>Explains every element in the picture: their properties, their relations, any exceptions, and
+                        their interfaces.</p>
+                </div>
+                <div class="step">
+                    <h4>Context diagram</h4>
+                    <p>Shows how this view — or the part of the system it covers — relates to its surrounding
+                        environment.</p>
+                </div>
+                <div class="step">
+                    <h4>Variability guide</h4>
+                    <p>Explains how to exercise any variation points left unbound until a later development stage.</p>
+                </div>
+                <div class="step">
+                    <h4>Architecture background</h4>
+                    <p>The rationale for this view's decisions — including rejected alternatives, analysis results, and
+                        assumptions about the environment and the need being met.</p>
+                </div>
+            </div>
+        </section>
+
+        <hr class="tear">
+
+        <!-- ============ BEYOND VIEWS ============ -->
+        <section id="beyond">
+            <div class="section-head reveal">
+                <span class="call-no">005.8 XREF</span>
+                <div><span class="section-kicker">The cross-references in the catalog</span>
+                    <h2>Documenting beyond the view</h2>
+                </div>
+            </div>
+            <p class="lede reveal">Some information doesn't belong to just one view — it applies across the whole set,
+                like the drawers of the catalog cabinet itself.</p>
+
+            <div class="mnemonic-banner reveal">
+                <div class="mnemonic-visual">🗄️</div>
+                <div class="mnemonic-text">
+                    <span class="tag">Memory Hook</span>
+                    <h3>"Read View, Study Maps, Reason Directly."</h3>
+                    <p><strong>R</strong>oadmap, <strong>V</strong>iew documentation, <strong>S</strong>ystem overview,
+                        <strong>M</strong>apping between views, <strong>R</strong>ationale, <strong>D</strong>irectory.
+                    </p>
+                </div>
+            </div>
+
+            <div class="grid cols-3 reveal">
+                <div class="idx-card"><span class="idx-tab">01</span>
+                    <div class="idx-icon">🗺️</div>
+                    <h4>Documentation roadmap</h4>
+                    <div class="rule"></div>
+                    <p>How the docs are organized per stakeholder — a list of views plus scenarios for which parts to
+                        consult.</p>
+                </div>
+                <div class="idx-card"><span class="idx-tab">02</span>
+                    <div class="idx-icon">📐</div>
+                    <h4>View documentation</h4>
+                    <div class="rule"></div>
+                    <p>Explains how each view is documented, and the standard organization used for all of them.</p>
+                </div>
+                <div class="idx-card"><span class="idx-tab">03</span>
+                    <div class="idx-icon">📝</div>
+                    <h4>System overview</h4>
+                    <div class="rule"></div>
+                    <p>A short prose description of the system's function, users, background, and constraints — a shared
+                        mental model.</p>
+                </div>
+                <div class="idx-card"><span class="idx-tab">04</span>
+                    <div class="idx-icon">🔗</div>
+                    <h4>Mapping between views</h4>
+                    <div class="rule"></div>
+                    <p>Useful correspondences between views, often captured as tables.</p>
+                </div>
+                <div class="idx-card"><span class="idx-tab">05</span>
+                    <div class="idx-icon">💭</div>
+                    <h4>Rationale</h4>
+                    <div class="rule"></div>
+                    <p>Architectural decisions that span multiple views — background constraints, major requirements,
+                        and which fundamental patterns were chosen.</p>
+                </div>
+                <div class="idx-card"><span class="idx-tab">06</span>
+                    <div class="idx-icon">📚</div>
+                    <h4>Directory</h4>
+                    <div class="rule"></div>
+                    <p>Reference material for quick lookup: index of terms, glossary, acronym list.</p>
+                </div>
+            </div>
+        </section>
+
+        <hr class="tear">
+
+        <!-- ============ QUALITY ATTRIBUTES ============ -->
+        <section id="quality">
+            <div class="section-head reveal">
+                <span class="call-no">005.9 QA</span>
+                <div><span class="section-kicker">The fine print every stakeholder checks</span>
+                    <h2>Documenting quality attributes</h2>
+                </div>
+            </div>
+            <p class="lede reveal">Quality attribute requirements need their own paper trail — every one of them has a
+                constituency of stakeholders who need proof it will be satisfied.</p>
+
+            <div class="grid cols-2 reveal">
+                <div class="callout vs" style="margin:0;">
+                    <div class="ci">💬</div>
+                    <div>
+                        <h4>Rationale &amp; tradeoffs</h4>
+                        <p>The document should explain <em>why</em> a design approach was chosen, and discuss the
+                            tradeoffs among competing quality attributes.</p>
+                    </div>
+                </div>
+                <div class="callout vs" style="margin:0;">
+                    <div class="ci">📏</div>
+                    <div>
+                        <h4>Bounds on elements</h4>
+                        <p>Architectural elements providing a service often get explicit quality-attribute bounds
+                            assigned to them.</p>
+                    </div>
+                </div>
+                <div class="callout vs" style="margin:0;">
+                    <div class="ci">🔗</div>
+                    <div>
+                        <h4>Requirements mapping</h4>
+                        <p>Documentation often maps requirements — including quality-attribute requirements — to how the
+                            architecture satisfies them.</p>
+                    </div>
+                </div>
+                <div class="callout vs" style="margin:0;">
+                    <div class="ci">👥</div>
+                    <div>
+                        <h4>Named, not implied</h4>
+                        <p>Quality attributes should be clearly and explicitly identified — never left for the reader to
+                            infer.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <hr class="tear">
+
+        <!-- ============ SUMMARY / CHEAT SHEET ============ -->
+        <section id="summary">
+            <div class="section-head reveal">
+                <span class="call-no">005.10 TL;DR</span>
+                <div><span class="section-kicker">The whole chapter, one card</span>
+                    <h2>Summary cheat sheet</h2>
+                </div>
+            </div>
+            <div class="tbl-wrap reveal">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Question</th>
+                            <th>Answer</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Why document?</td>
+                            <td>An architecture no one can find, understand, or apply correctly might as well not exist.
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>What are the 3 uses?</td>
+                            <td>Education, Communication, Analysis — "Teach it, Talk it, Test it."</td>
+                        </tr>
+                        <tr>
+                            <td>What's the planning order?</td>
+                            <td>Views → Who (stakeholders) → Worries (concerns) → Write-up (template).</td>
+                        </tr>
+                        <tr>
+                            <td>Which view model do we use?</td>
+                            <td>Kruchten's 4+1: Logical, Process, Development, Physical, +1 Use-Case.</td>
+                        </tr>
+                        <tr>
+                            <td>How do you document one view?</td>
+                            <td>Primary Presentation, Element Catalog, Context Diagram, Variability Guide, Architecture
+                                Background.</td>
+                        </tr>
+                        <tr>
+                            <td>What spans multiple views?</td>
+                            <td>Roadmap, View Documentation, System Overview, Mapping, Rationale, Directory.</td>
+                        </tr>
+                        <tr>
+                            <td>How much documentation is enough?</td>
+                            <td>The minimum necessary to understand the system — no more.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <hr class="tear">
+
+        <!-- ============ FLASHCARDS ============ -->
+        <section id="quiz">
+            <div class="section-head reveal">
+                <span class="call-no">005.11 QUIZ</span>
+                <div><span class="section-kicker">Active recall</span>
+                    <h2>Flip-card review</h2>
+                </div>
+            </div>
+            <p class="flash-hint reveal">tap a card to flip it</p>
+
+            <div class="flash-grid reveal">
+                <div class="flash">
+                    <div class="flash-inner">
+                        <div class="card-q"><small>Q1</small><span>Name the three ways an undocumented architecture
+                                fails people.</span></div>
+                        <div class="card-a">They don't know it exists, can't understand it well enough to use it, or
+                            misunderstand it and apply it incorrectly.</div>
+                    </div>
+                </div>
+                <div class="flash">
+                    <div class="flash-inner">
+                        <div class="card-q"><small>Q2</small><span>What are the three uses of architecture
+                                documentation?</span></div>
+                        <div class="card-a">Education (teach), Communication (talk), Analysis (test quality attributes).
+                        </div>
+                    </div>
+                </div>
+                <div class="flash">
+                    <div class="flash-inner">
+                        <div class="card-q"><small>Q3</small><span>What are the 4 views in Kruchten's model, plus the
+                                "+1"?</span></div>
+                        <div class="card-a">Logical, Process, Development, Physical — plus a Use-Case view that maps the
+                            others onto real scenarios.</div>
+                    </div>
+                </div>
+                <div class="flash">
+                    <div class="flash-inner">
+                        <div class="card-q"><small>Q4</small><span>Which view addresses concurrency and
+                                distribution?</span></div>
+                        <div class="card-a">The Process view — it maps threads to objects.</div>
+                    </div>
+                </div>
+                <div class="flash">
+                    <div class="flash-inner">
+                        <div class="card-q"><small>Q5</small><span>What 5 parts make up the documentation of one
+                                view?</span></div>
+                        <div class="card-a">Primary Presentation, Element Catalog, Context Diagram, Variability Guide,
+                            Architecture Background.</div>
+                    </div>
+                </div>
+                <div class="flash">
+                    <div class="flash-inner">
+                        <div class="card-q"><small>Q6</small><span>What 6 things get documented beyond individual
+                                views?</span></div>
+                        <div class="card-a">Documentation Roadmap, View Documentation, System Overview, Mapping between
+                            views, Rationale, Directory.</div>
+                    </div>
+                </div>
+                <div class="flash">
+                    <div class="flash-inner">
+                        <div class="card-q"><small>Q7</small><span>What's the golden rule for how much to
+                                document?</span></div>
+                        <div class="card-a">Include the minimum information necessary to understand the system — and no
+                            more.</div>
+                    </div>
+                </div>
+                <div class="flash">
+                    <div class="flash-inner">
+                        <div class="card-q"><small>Q8</small><span>What three things live in a documentation
+                                "Directory"?</span></div>
+                        <div class="card-a">An index of terms, a glossary, and an acronym list.</div>
+                    </div>
+                </div>
+                <div class="flash">
+                    <div class="flash-inner">
+                        <div class="card-q"><small>Q9</small><span>Name two other view-set approaches besides
+                                4+1.</span></div>
+                        <div class="card-a">Siemens Four Views (Conceptual, Module interconnection, Execution, Code) and
+                            Herzum &amp; Sims (Technical, Application, Project management, Functional).</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <div class="footer-row">
+                <div class="stamp-badge">✎ Catalogued &amp; Filed</div>
+                <div class="credit">Made by <strong>Shoug Alomran</strong></div>
+            </div>
+            <p class="foot-note">Based on Prince Sultan University — Software Design &amp; Architecture, Chapter 09
+                (Documenting Software Architectures).</p>
+        </footer>
+    </div>
+
+    <script>
+        const root = document.documentElement;
+        const btn = document.getElementById('themeToggle');
+        const moon = document.getElementById('iconMoon');
+        const sun = document.getElementById('iconSun');
+        function applyTheme(theme) {
+            root.setAttribute('data-theme', theme);
+            moon.style.display = theme === 'dark' ? 'none' : 'block';
+            sun.style.display = theme === 'dark' ? 'block' : 'none';
+        }
+        applyTheme(window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        btn.addEventListener('click', () => {
+            applyTheme(root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+        });
+
+        document.querySelectorAll('.flash').forEach(card => {
+            card.addEventListener('click', () => card.classList.toggle('flipped'));
+        });
+
+        const io = new IntersectionObserver((entries) => {
+            entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+        }, { threshold: 0.12 });
+        document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+    </script>
+
+</body>
+
+</html>

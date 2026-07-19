@@ -1,0 +1,1519 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Architecture &amp; Design Evaluation — ATAM | Sheet Set 08.01</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --sp-1: clamp(.4rem, .5vw, .55rem);
+            --sp-2: clamp(.7rem, 1vw, 1rem);
+            --sp-3: clamp(1.1rem, 2vw, 1.6rem);
+            --sp-4: clamp(1.8rem, 3.5vw, 3rem);
+            --sp-5: clamp(2.8rem, 6vw, 5rem);
+            --maxw: 1180px;
+            --display: 'Space Grotesk', sans-serif;
+            --body: 'Inter', sans-serif;
+            --mono: 'JetBrains Mono', monospace;
+        }
+
+        [data-theme="dark"] {
+            --bg: #0a0f1c;
+            --bg-grid: rgba(255, 255, 255, .045);
+            --bg-grid-major: rgba(255, 255, 255, .09);
+            --surface: #101a2c;
+            --surface-2: #16233b;
+            --ink: #e8edf7;
+            --ink-soft: #94a7c4;
+            --ink-faint: #5c6d8a;
+            --line: rgba(210, 225, 255, .16);
+            --line-strong: rgba(210, 225, 255, .32);
+            --accent: #69b3ef;
+            --accent-2: #f0b15c;
+            --accent-3: #8fd9c4;
+            --bad: #ef8a72;
+            --good: #7fd99a;
+            --shadow: 0 20px 50px -20px rgba(0, 0, 0, .6);
+        }
+
+        [data-theme="light"] {
+            --bg: #f1ede2;
+            --bg-grid: rgba(20, 30, 45, .055);
+            --bg-grid-major: rgba(20, 30, 45, .11);
+            --surface: #fdfcf8;
+            --surface-2: #eee8d8;
+            --ink: #1c2430;
+            --ink-soft: #4c5972;
+            --ink-faint: #8592a6;
+            --line: rgba(28, 36, 48, .18);
+            --line-strong: rgba(28, 36, 48, .36);
+            --accent: #2662a6;
+            --accent-2: #b06a1d;
+            --accent-3: #1f8067;
+            --bad: #b3452b;
+            --good: #1f8067;
+            --shadow: 0 20px 45px -22px rgba(28, 36, 48, .35);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            background:
+                repeating-linear-gradient(0deg, var(--bg-grid) 0 1px, transparent 1px 28px),
+                repeating-linear-gradient(90deg, var(--bg-grid) 0 1px, transparent 1px 28px),
+                repeating-linear-gradient(0deg, var(--bg-grid-major) 0 1.5px, transparent 1.5px 140px),
+                repeating-linear-gradient(90deg, var(--bg-grid-major) 0 1.5px, transparent 1.5px 140px),
+                var(--bg);
+            color: var(--ink);
+            font-family: var(--body);
+            line-height: 1.55;
+            -webkit-font-smoothing: antialiased;
+            transition: background-color .35s ease, color .35s ease;
+            font-size: clamp(15px, .95vw + .55rem, 17.5px);
+        }
+
+        h1,
+        h2,
+        h3,
+        h4 {
+            font-family: var(--display);
+            margin: 0;
+            letter-spacing: -.01em;
+        }
+
+        code,
+        .mono {
+            font-family: var(--mono);
+        }
+
+        p {
+            margin: 0 0 .8em;
+        }
+
+        a {
+            color: var(--accent);
+        }
+
+        .sheet {
+            position: relative;
+            border: 1px solid var(--line);
+            background: var(--surface);
+            border-radius: 4px;
+            box-shadow: var(--shadow);
+        }
+
+        .corner {
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            pointer-events: none;
+        }
+
+        .corner.tl {
+            top: -1px;
+            left: -1px;
+            border-top: 2px solid var(--accent);
+            border-left: 2px solid var(--accent);
+        }
+
+        .corner.tr {
+            top: -1px;
+            right: -1px;
+            border-top: 2px solid var(--accent);
+            border-right: 2px solid var(--accent);
+        }
+
+        .corner.bl {
+            bottom: -1px;
+            left: -1px;
+            border-bottom: 2px solid var(--accent);
+            border-left: 2px solid var(--accent);
+        }
+
+        .corner.br {
+            bottom: -1px;
+            right: -1px;
+            border-bottom: 2px solid var(--accent);
+            border-right: 2px solid var(--accent);
+        }
+
+        .wrap {
+            max-width: var(--maxw);
+            margin: 0 auto;
+            padding: 0 var(--sp-3);
+        }
+
+        .topbar {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            backdrop-filter: blur(10px);
+            background: color-mix(in srgb, var(--bg) 82%, transparent);
+            border-bottom: 1px solid var(--line);
+        }
+
+        .topbar-inner {
+            max-width: var(--maxw);
+            margin: 0 auto;
+            padding: .7rem var(--sp-3);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: .6rem;
+            font-family: var(--mono);
+            font-size: .8rem;
+            color: var(--ink-soft);
+        }
+
+        .brand b {
+            color: var(--ink);
+            font-family: var(--display);
+            font-size: 1.02rem;
+            letter-spacing: .01em;
+        }
+
+        .brand .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--accent-3);
+            box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-3) 25%, transparent);
+        }
+
+        nav.pills {
+            display: flex;
+            gap: .32rem;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+
+        nav.pills a {
+            font-family: var(--mono);
+            font-size: .7rem;
+            text-decoration: none;
+            color: var(--ink-soft);
+            padding: .32rem .55rem;
+            border: 1px solid transparent;
+            border-radius: 20px;
+            white-space: nowrap;
+        }
+
+        nav.pills a:hover {
+            border-color: var(--line);
+            color: var(--ink);
+        }
+
+        #themeToggle {
+            border: 1px solid var(--line);
+            background: var(--surface-2);
+            color: var(--ink);
+            border-radius: 20px;
+            padding: .4rem .7rem;
+            font-family: var(--mono);
+            font-size: .72rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: .4rem;
+        }
+
+        #themeToggle:hover {
+            border-color: var(--accent);
+        }
+
+        section {
+            padding: var(--sp-5) 0;
+        }
+
+        .kicker {
+            font-family: var(--mono);
+            font-size: .72rem;
+            letter-spacing: .14em;
+            text-transform: uppercase;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+            margin-bottom: .6rem;
+        }
+
+        .kicker::before {
+            content: "";
+            width: 22px;
+            height: 1px;
+            background: var(--accent);
+        }
+
+        h2.title {
+            font-size: clamp(1.5rem, 3.2vw, 2.3rem);
+            margin-bottom: .4rem;
+        }
+
+        .lede {
+            color: var(--ink-soft);
+            max-width: 64ch;
+            font-size: clamp(.95rem, 1.1vw, 1.05rem);
+            margin-bottom: var(--sp-4);
+        }
+
+        .hero {
+            padding-top: var(--sp-5);
+            padding-bottom: var(--sp-4);
+        }
+
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1.15fr .85fr;
+            gap: var(--sp-4);
+            align-items: center;
+        }
+
+        @media(max-width:900px) {
+            .hero-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .hero h1 {
+            font-size: clamp(2rem, 5vw, 3.2rem);
+            line-height: 1.05;
+        }
+
+        .hero h1 span {
+            color: var(--accent);
+        }
+
+        .hero .sub {
+            color: var(--ink-soft);
+            font-size: clamp(1rem, 1.3vw, 1.15rem);
+            margin-top: 1rem;
+            max-width: 52ch;
+        }
+
+        .tag-row {
+            display: flex;
+            gap: .5rem;
+            flex-wrap: wrap;
+            margin-top: 1.3rem;
+        }
+
+        .tag {
+            font-family: var(--mono);
+            font-size: .72rem;
+            border: 1px solid var(--line);
+            border-radius: 20px;
+            padding: .32rem .7rem;
+            color: var(--ink-soft);
+        }
+
+        .grid {
+            display: grid;
+            gap: var(--sp-3);
+        }
+
+        .grid-2 {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .grid-3 {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .grid-4 {
+            grid-template-columns: repeat(4, 1fr);
+        }
+
+        .grid-5 {
+            grid-template-columns: repeat(5, 1fr);
+        }
+
+        @media(max-width:820px) {
+
+            .grid-2,
+            .grid-3,
+            .grid-4,
+            .grid-5 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media(min-width:821px) and (max-width:1080px) {
+
+            .grid-3,
+            .grid-4,
+            .grid-5 {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .card {
+            padding: var(--sp-3);
+            position: relative;
+        }
+
+        .card h3 {
+            font-size: 1.02rem;
+            margin-bottom: .5rem;
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+        }
+
+        .card h3 .ico {
+            width: 26px;
+            height: 26px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: color-mix(in srgb, var(--accent) 18%, transparent);
+            color: var(--accent);
+            font-family: var(--mono);
+            font-size: .72rem;
+            flex: none;
+        }
+
+        .card p {
+            color: var(--ink-soft);
+            font-size: .9rem;
+        }
+
+        .card .foot {
+            color: var(--ink-faint);
+            font-size: .76rem;
+            font-family: var(--mono);
+            margin-top: .6rem;
+            border-top: 1px dashed var(--line);
+            padding-top: .5rem;
+        }
+
+        .mnemonic {
+            margin-top: var(--sp-3);
+            border: 1px dashed var(--accent-2);
+            border-radius: 8px;
+            padding: .9rem 1.1rem;
+            background: color-mix(in srgb, var(--accent-2) 8%, transparent);
+            display: flex;
+            gap: .7rem;
+            align-items: flex-start;
+        }
+
+        .mnemonic .m-ico {
+            font-family: var(--mono);
+            font-size: .7rem;
+            color: var(--accent-2);
+            border: 1px solid var(--accent-2);
+            border-radius: 5px;
+            padding: .2rem .4rem;
+            flex: none;
+            margin-top: .1rem;
+        }
+
+        .mnemonic b {
+            color: var(--accent-2);
+        }
+
+        .mnemonic .sentence {
+            font-family: var(--display);
+            font-size: 1.0rem;
+        }
+
+        .mnemonic p {
+            margin: .25rem 0 0;
+            font-size: .85rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: .86rem;
+        }
+
+        th,
+        td {
+            text-align: left;
+            padding: .6rem .68rem;
+            border-bottom: 1px solid var(--line);
+            vertical-align: top;
+        }
+
+        th {
+            font-family: var(--mono);
+            font-size: .68rem;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            color: var(--ink-faint);
+            font-weight: 600;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        .tbl-wrap {
+            overflow-x: auto;
+        }
+
+        .steps {
+            display: flex;
+            flex-direction: column;
+            gap: .6rem;
+        }
+
+        .step-row {
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: .75rem 1rem;
+            background: var(--surface-2);
+        }
+
+        .step-row .num {
+            font-family: var(--mono);
+            font-weight: 700;
+            color: var(--accent);
+            font-size: 1rem;
+            flex: none;
+            width: 2.2rem;
+            text-align: center;
+        }
+
+        .step-row.phase1 .num {
+            color: var(--accent);
+        }
+
+        .step-row.phase2 .num {
+            color: var(--accent-2);
+        }
+
+        .step-row h4 {
+            font-size: .95rem;
+            margin-bottom: .15rem;
+        }
+
+        .step-row p {
+            margin: 0;
+            font-size: .83rem;
+            color: var(--ink-soft);
+        }
+
+        .phase-label {
+            font-family: var(--mono);
+            font-size: .7rem;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            margin: 1rem 0 .4rem;
+            color: var(--ink-faint);
+        }
+
+        .examnote {
+            border-left: 3px solid var(--bad);
+            padding: .6rem .9rem;
+            background: color-mix(in srgb, var(--bad) 8%, transparent);
+            border-radius: 0 6px 6px 0;
+            font-size: .84rem;
+            color: var(--ink-soft);
+            margin-top: .6rem;
+        }
+
+        .examnote b {
+            color: var(--bad);
+        }
+
+        .goodnote {
+            border-left: 3px solid var(--good);
+            padding: .6rem .9rem;
+            background: color-mix(in srgb, var(--good) 8%, transparent);
+            border-radius: 0 6px 6px 0;
+            font-size: .84rem;
+            color: var(--ink-soft);
+            margin-top: .6rem;
+        }
+
+        .goodnote b {
+            color: var(--good);
+        }
+
+        .pill-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: .4rem;
+            margin-top: .6rem;
+        }
+
+        .pill-list span {
+            font-family: var(--mono);
+            font-size: .7rem;
+            border: 1px solid var(--line);
+            border-radius: 20px;
+            padding: .26rem .62rem;
+            color: var(--ink-soft);
+        }
+
+        /* utility tree */
+        .utree {
+            font-family: var(--mono);
+            font-size: .82rem;
+        }
+
+        .ut-root {
+            font-family: var(--display);
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: .4rem;
+        }
+
+        .ut-node {
+            border-left: 2px solid var(--line-strong);
+            margin-left: .6rem;
+            padding-left: 1rem;
+            padding-bottom: .6rem;
+        }
+
+        .ut-node .ut-label {
+            color: var(--accent-3);
+            font-weight: 600;
+            margin: .3rem 0;
+        }
+
+        .ut-leaf {
+            border-left: 2px dashed var(--line);
+            margin-left: 1.2rem;
+            padding-left: 1rem;
+            padding: .3rem 0 .3rem 1rem;
+            color: var(--ink-soft);
+            font-size: .8rem;
+        }
+
+        .ut-leaf .score {
+            color: var(--accent-2);
+            font-weight: 700;
+            margin-right: .4rem;
+        }
+
+        footer {
+            border-top: 1px solid var(--line);
+            margin-top: var(--sp-5);
+        }
+
+        .titleblock {
+            max-width: var(--maxw);
+            margin: 0 auto;
+            padding: var(--sp-3);
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0;
+            border: 1px solid var(--line);
+            margin-top: var(--sp-3);
+            margin-bottom: var(--sp-4);
+        }
+
+        @media(max-width:700px) {
+            .titleblock {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .tb-cell {
+            border-right: 1px solid var(--line);
+            border-bottom: 1px solid var(--line);
+            padding: .6rem .8rem;
+        }
+
+        .tb-cell:nth-child(4n) {
+            border-right: none;
+        }
+
+        .tb-cell .k {
+            font-family: var(--mono);
+            font-size: .62rem;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            color: var(--ink-faint);
+        }
+
+        .tb-cell .v {
+            font-family: var(--display);
+            font-size: .92rem;
+            margin-top: .15rem;
+        }
+
+        .backtop {
+            position: fixed;
+            right: 1.1rem;
+            bottom: 1.1rem;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: var(--surface-2);
+            border: 1px solid var(--line);
+            color: var(--ink);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity .25s ease;
+            z-index: 40;
+            font-size: 1rem;
+        }
+
+        .backtop.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(14px);
+            transition: opacity .6s ease, transform .6s ease;
+        }
+
+        .reveal.in {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                transition: none !important;
+                scroll-behavior: auto !important;
+            }
+
+            .reveal {
+                opacity: 1;
+                transform: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="topbar">
+        <div class="topbar-inner">
+            <div class="brand"><span class="dot"></span><b>SD&amp;A</b> · Sheet Set 08.01</div>
+            <nav class="pills">
+                <a href="#why">Why</a>
+                <a href="#methods">Methods</a>
+                <a href="#atam">ATAM</a>
+                <a href="#qa">Quality Attrs</a>
+                <a href="#people">People</a>
+                <a href="#steps">9 Steps</a>
+                <a href="#tree">Utility Tree</a>
+                <a href="#analyze">S·T·R·N</a>
+                <a href="#light">Lightweight</a>
+                <a href="#toolkit">Toolkit</a>
+            </nav>
+            <button id="themeToggle" aria-label="toggle theme">
+                <span id="themeIcon">☾</span><span id="themeLabel">Dark</span>
+            </button>
+        </div>
+    </div>
+
+    <div class="wrap">
+
+        <!-- HERO -->
+        <section class="hero">
+            <div class="hero-grid">
+                <div>
+                    <div class="kicker">Chapter 08 · Lecture 01 · Architecture and Design Evaluation</div>
+                    <h1>Before you build it, <span>put it on trial.</span></h1>
+                    <p class="sub">Architecture evaluation catches expensive mistakes while they're still cheap to fix.
+                        ATAM is the courtroom — quality attributes are cross-examined against every architectural
+                        decision.</p>
+                    <div class="tag-row">
+                        <span class="tag">ATAM · SAAM · ARID</span>
+                        <span class="tag">Quality Attribute Tradeoffs</span>
+                        <span class="tag">9 Steps · 4 Phases</span>
+                        <span class="tag">Utility Tree</span>
+                    </div>
+                </div>
+                <div class="sheet" style="padding:var(--sp-3);">
+                    <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+                    <div class="kicker" style="margin-bottom:1rem;">FIG. 01 — WHY EVALUATE EARLY</div>
+                    <p style="font-family:var(--display); font-size:1.1rem; margin:0;">
+                        The earlier a design flaw is found, <span style="color:var(--accent)">the cheaper it is to
+                            fix.</span>
+                    </p>
+                    <p style="color:var(--ink-soft); font-size:.88rem; margin-top:.6rem;">
+                        Architecture must be evaluated <b>before construction begins</b> — not after. Architecture is
+                        shaped by
+                        three drivers: functional requirements, non‑functional requirements, and business constraints.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- WHY -->
+        <section id="why">
+            <div class="kicker">01 · Benefits</div>
+            <h2 class="title">Why bother evaluating architecture?</h2>
+            <div class="grid grid-5">
+                <div class="sheet card reveal">
+                    <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+                    <h3><span class="ico">1</span>Prioritization</h3>
+                    <p>Forces prioritization of conflicting goals.</p>
+                </div>
+                <div class="sheet card reveal">
+                    <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+                    <h3><span class="ico">2</span>Clarity</h3>
+                    <p>Forces clear explanation of the architecture.</p>
+                </div>
+                <div class="sheet card reveal">
+                    <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+                    <h3><span class="ico">3</span>Documentation</h3>
+                    <p>Improves quality of architecture documentation.</p>
+                </div>
+                <div class="sheet card reveal">
+                    <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+                    <h3><span class="ico">4</span>Reuse</h3>
+                    <p>Uncovers opportunities for cross‑project reuse.</p>
+                </div>
+                <div class="sheet card reveal">
+                    <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+                    <h3><span class="ico">5</span>Practice</h3>
+                    <p>Results in improved architecture practices overall.</p>
+                </div>
+            </div>
+            <div class="mnemonic reveal">
+                <span class="m-ico">MEM</span>
+                <div>
+                    <div class="sentence">"<b>P</b>riorities get <b>C</b>lear, <b>D</b>ocs get better, <b>R</b>euse gets
+                        found, <b>P</b>ractice improves." (PCDRP)</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- METHODS -->
+        <section id="methods">
+            <div class="kicker">02 · The Three Methods</div>
+            <h2 class="title">ATAM · SAAM · ARID</h2>
+            <p class="lede">All three lean on the same two ingredients: <b>scenarios</b> and <b>quality attributes</b>.
+                The
+                difference is depth and focus, not the underlying idea.</p>
+            <div class="grid grid-3">
+                <div class="sheet card reveal">
+                    <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+                    <h3><span class="ico">A</span>ATAM</h3>
+                    <p><b>Architecture Tradeoff Analysis Method.</b> The most‑used method — full focus on
+                        quality‑attribute
+                        tradeoffs and risk discovery. This chapter's main subject.</p>
+                </div>
+                <div class="sheet card reveal">
+                    <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+                    <h3><span class="ico">S</span>SAAM</h3>
+                    <p><b>Software Architecture Analysis Method.</b> ATAM's predecessor — simpler, earlier
+                        scenario‑based
+                        analysis technique.</p>
+                </div>
+                <div class="sheet card reveal">
+                    <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+                    <h3><span class="ico">A</span>ARID</h3>
+                    <p><b>Active Reviews for Intermediate Designs.</b> Reviews designs that aren't complete
+                        architectures yet
+                        — earlier in the process, more informal.</p>
+                </div>
+            </div>
+            <div class="mnemonic reveal">
+                <span class="m-ico">MEM</span>
+                <div>
+                    <div class="sentence">"<b>A</b>rchitects <b>S</b>ometimes <b>A</b>rgue" — ATAM, SAAM, ARID, in that
+                        order.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ATAM -->
+        <section id="atam">
+            <div class="kicker">03 · ATAM Purpose</div>
+            <h2 class="title">What ATAM is actually looking for</h2>
+            <p class="lede">ATAM assesses the consequences of architectural decisions against quality‑attribute
+                requirements
+                and business goals — which really means: hunting for <b>risk where one quality attribute is affected by
+                    a
+                    decision made for another.</b></p>
+
+            <div class="sheet card reveal">
+                <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+                <h3><span class="ico">◆</span>The core insight</h3>
+                <p>In complex systems, quality attributes are <b>never achieved in isolation.</b> Chasing one quality
+                    often
+                    moves another — sometimes helping it, sometimes hurting it. So every architectural decision is
+                    really a
+                    <b>tradeoff between quality attributes</b>, made in service of the business goals.
+                </p>
+            </div>
+
+            <div class="mnemonic reveal">
+                <span class="m-ico">MEM</span>
+                <div>
+                    <div class="sentence">"You can't max out every quality at once — architecture is the art of <b>which
+                            tradeoffs you're willing to make.</b>"</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- QUALITY ATTRIBUTES -->
+        <section id="qa">
+            <div class="kicker">04 · Quality Attributes, Grouped</div>
+            <h2 class="title">3 perspectives on quality</h2>
+            <div class="grid grid-3">
+                <div class="sheet card reveal">
+                    <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+                    <h3><span class="ico">E</span>End‑user perspective</h3>
+                    <p>Performance, Availability, Usability, Security — <b>PAUS</b>. What the person using the system
+                        feels.</p>
+                </div>
+                <div class="sheet card reveal">
+                    <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+                    <h3><span class="ico">T</span>Technical perspective</h3>
+                    <p>Modifiability, Portability, Reusability, Testability, Interoperability — <b>MPRTI</b>. What the
+                        engineering team feels.</p>
+                </div>
+                <div class="sheet card reveal">
+                    <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+                    <h3><span class="ico">B</span>Business perspective</h3>
+                    <p>Time to market, cost &amp; benefits, projected lifetime, project budget — <b>TLCB</b>. What the
+                        business feels.</p>
+                </div>
+            </div>
+            <div class="examnote">
+                <b>Bridge to Chapter 3:</b> to actually evaluate any of these, you characterize them as a
+                <b>quality attribute scenario</b> (Source → Stimulus → Artifact → Environment → Response → Response
+                Measure).
+                That scenario is then what gets prioritized and traced through the architecture.
+            </div>
+        </section>
+
+        <!-- PEOPLE -->
+        <section id="people">
+            <div class="kicker">05 · Who's in the Room</div>
+            <h2 class="title">3 groups, 5 roles</h2>
+            <p class="lede">ATAM only works if these three groups cooperate — leave one out and the evaluation is blind
+                to part of the system's reality.</p>
+
+            <div class="grid grid-3">
+                <div class="sheet card reveal">
+                    <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+                    <h3><span class="ico">E</span>Evaluation team</h3>
+                    <p>3–5 experienced architects, external to the project. They run the process.</p>
+                </div>
+                <div class="sheet card reveal">
+                    <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+                    <h3><span class="ico">P</span>Project decision makers</h3>
+                    <p>People with authority to change the project — project manager, customer, senior manager.</p>
+                </div>
+                <div class="sheet card reveal">
+                    <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+                    <h3><span class="ico">A</span>Architecture stakeholders</h3>
+                    <p>Developers, testers, integrators, maintainers, performance engineers, users.</p>
+                </div>
+            </div>
+            <div class="mnemonic reveal">
+                <span class="m-ico">MEM</span>
+                <div>
+                    <div class="sentence">"<b>EPA</b> protects the architecture" — Evaluation team, Project decision
+                        makers, Architecture stakeholders.</div>
+                </div>
+            </div>
+
+            <div class="tbl-wrap sheet" style="padding:var(--sp-2); margin-top:var(--sp-3);">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Role</th>
+                            <th>Responsibility, in one line</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="mono" style="color:var(--accent)">Team leader</td>
+                            <td>Sets up the evaluation, coordinates with the client, forms the team, delivers the final
+                                report.</td>
+                        </tr>
+                        <tr>
+                            <td class="mono" style="color:var(--accent)">Evaluation leader</td>
+                            <td>Runs the evaluation — facilitates scenario elicitation, prioritization, analysis,
+                                on‑site work.</td>
+                        </tr>
+                        <tr>
+                            <td class="mono" style="color:var(--accent)">Scenario scribe</td>
+                            <td>Writes scenarios on the flipchart/whiteboard; locks the exact agreed wording.</td>
+                        </tr>
+                        <tr>
+                            <td class="mono" style="color:var(--accent)">Proceedings scribe</td>
+                            <td>Types everything electronically — raw scenarios, motivating issues, resolutions; hands
+                                out the adopted list.</td>
+                        </tr>
+                        <tr>
+                            <td class="mono" style="color:var(--accent)">Questioner</td>
+                            <td>Raises architecturally interesting issues, usually tied to their own quality‑attribute
+                                expertise.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="mnemonic reveal">
+                <span class="m-ico">MEM</span>
+                <div>
+                    <div class="sentence">"<b>T</b>eam leads, <b>E</b>valuation runs, <b>S</b>cribe writes it on the
+                        wall, <b>P</b>roceedings types it up, <b>Q</b>uestioner pokes holes." (TESPQ)</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 9 STEPS -->
+        <section id="steps">
+            <div class="kicker">06 · The Process</div>
+            <h2 class="title">The 9 ATAM steps</h2>
+            <p class="lede">Notice the shape: it opens with <b>three "Present" steps</b>, works through
+                <b>Identify → Generate → Analyze</b>, loops back for <b>Brainstorm → Analyze</b> again, then closes with
+                one more
+                <b>Present.</b>
+            </p>
+
+            <div class="phase-label">Phase 1 — Steps 1 to 6</div>
+            <div class="steps">
+                <div class="step-row phase1 reveal">
+                    <div class="num">1</div>
+                    <div>
+                        <h4>Present the ATAM method</h4>
+                        <p>Overview of steps, techniques, and expected outputs (utility tree, scenarios, risks,
+                            sensitivity points).</p>
+                    </div>
+                </div>
+                <div class="step-row phase1 reveal">
+                    <div class="num">2</div>
+                    <div>
+                        <h4>Present the business drivers</h4>
+                        <p>Goals, stakeholders, high‑level requirements, top quality scenarios, constraints — from the
+                            decision maker.</p>
+                    </div>
+                </div>
+                <div class="step-row phase1 reveal">
+                    <div class="num">3</div>
+                    <div>
+                        <h4>Present the architecture</h4>
+                        <p>Lead architect walks through it — often using the 4+1 view model — and flags known risks.</p>
+                    </div>
+                </div>
+                <div class="step-row phase1 reveal">
+                    <div class="num">4</div>
+                    <div>
+                        <h4>Identify architectural approaches</h4>
+                        <p>Evaluation team names the patterns in play — client‑server, layered, pipe‑filter, etc.</p>
+                    </div>
+                </div>
+                <div class="step-row phase1 reveal">
+                    <div class="num">5</div>
+                    <div>
+                        <h4>Generate quality attribute utility tree</h4>
+                        <p>Top‑down prioritization of quality goals into concrete, scored scenarios.</p>
+                    </div>
+                </div>
+                <div class="step-row phase1 reveal">
+                    <div class="num">6</div>
+                    <div>
+                        <h4>Analyze architectural approaches</h4>
+                        <p>Trace the highest‑ranked scenarios through the architecture; capture decisions, risks,
+                            sensitivities, tradeoffs.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="phase-label">Phase 2 — Steps 7 to 9</div>
+            <div class="steps">
+                <div class="step-row phase2 reveal">
+                    <div class="num">7</div>
+                    <div>
+                        <h4>Brainstorm &amp; prioritize scenarios</h4>
+                        <p>Now the full stakeholder community adds scenarios and votes — checking whether they agree
+                            with the utility tree.</p>
+                    </div>
+                </div>
+                <div class="step-row phase2 reveal">
+                    <div class="num">8</div>
+                    <div>
+                        <h4>Analyze architectural approaches</h4>
+                        <p>Same analysis as step 6, now against the newly brainstormed, stakeholder‑driven scenarios.
+                        </p>
+                    </div>
+                </div>
+                <div class="step-row phase2 reveal">
+                    <div class="num">9</div>
+                    <div>
+                        <h4>Present results</h4>
+                        <p>Report + slides: business context, architecture documentation, prioritized scenarios, utility
+                            tree, risks/non‑risks/sensitivities/tradeoffs.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mnemonic reveal">
+                <span class="m-ico">MEM</span>
+                <div>
+                    <div class="sentence">"<b>3 Presents</b> open it, <b>I‑G‑A</b> builds it, <b>Brainstorm‑Analyze</b>
+                        stress‑tests it, one more <b>Present</b> closes it."</div>
+                    <p>Present ×3 (1,2,3) → Identify, Generate, Analyze (4,5,6) → Brainstorm, Analyze (7,8) → Present
+                        (9).</p>
+                </div>
+            </div>
+
+            <div class="examnote">
+                <b>Step 6 vs Step 8 — the trap question:</b> they use the <i>same</i> analysis technique. The only
+                difference
+                is <b>whose</b> scenarios: Step 6 analyzes the utility‑tree scenarios (architect‑driven), Step 8
+                analyzes the
+                brainstormed scenarios (stakeholder‑driven).
+            </div>
+        </section>
+
+        <!-- PHASES TABLE -->
+        <section id="phases">
+            <div class="kicker">07 · Zooming Out</div>
+            <h2 class="title">The 4 phases that wrap the 9 steps</h2>
+            <div class="tbl-wrap sheet" style="padding:var(--sp-2);">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Phase</th>
+                            <th>Activity</th>
+                            <th>Participants</th>
+                            <th>Typical duration</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="mono" style="color:var(--accent)">0</td>
+                            <td>Partnership &amp; preparation: logistics, planning, stakeholder recruitment, team
+                                formation.</td>
+                            <td>Evaluation team leadership + key decision‑makers</td>
+                            <td>Informal, over a few weeks</td>
+                        </tr>
+                        <tr>
+                            <td class="mono" style="color:var(--accent)">1</td>
+                            <td>Evaluation: Steps 1–6</td>
+                            <td>Evaluation team + project decision‑makers</td>
+                            <td>1–2 days, then a 2–3 week hiatus</td>
+                        </tr>
+                        <tr>
+                            <td class="mono" style="color:var(--accent)">2</td>
+                            <td>Evaluation: Steps 7–9</td>
+                            <td>Evaluation team, decision‑makers, stakeholders</td>
+                            <td>2 days</td>
+                        </tr>
+                        <tr>
+                            <td class="mono" style="color:var(--accent)">3</td>
+                            <td>Follow‑up: report generation &amp; delivery, process improvement.</td>
+                            <td>Evaluation team + evaluation client</td>
+                            <td>1 week</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="mnemonic reveal">
+                <span class="m-ico">MEM</span>
+                <div>
+                    <div class="sentence">Phase 0 = Prep. Phase 1 = Steps 1–6. Phase 2 = Steps 7–9. Phase 3 = Wrap‑up.
+                        "0 preps, 1 does 6, 2 does 3 more, 3 reports."</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- UTILITY TREE -->
+        <section id="tree">
+            <div class="kicker">08 · Step 5 in Detail</div>
+            <h2 class="title">The Utility Tree — turning fuzzy goals into scored scenarios</h2>
+            <p class="lede">A <b>top‑down</b> structure: Utility → Quality Attributes → Refinements → concrete
+                Scenarios.
+                Every leaf scenario gets scored <b>(Importance, Difficulty)</b> — e.g. <code>(H,H)</code> means high
+                business
+                importance, high architectural difficulty. That's the pair the team prioritizes first.</p>
+
+            <div class="sheet" style="padding:var(--sp-3);">
+                <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+                <div class="kicker" style="margin-bottom:1rem;">FIG. 02 — UTILITY TREE (SAMPLE)</div>
+                <div class="utree">
+                    <div class="ut-root">Utility</div>
+                    <div class="ut-node">
+                        <div class="ut-label">Performance</div>
+                        <div class="ut-leaf"><span class="score">(L,M)</span>Reduce storage latency on customer DB to
+                            &lt; 200ms.</div>
+                        <div class="ut-leaf"><span class="score">(M,M)</span>Deliver video in real time.</div>
+                    </div>
+                    <div class="ut-node">
+                        <div class="ut-label">Modifiability</div>
+                        <div class="ut-leaf"><span class="score">(H,H)</span>Add CORBA middleware in &lt; 20
+                            person‑months.</div>
+                        <div class="ut-leaf"><span class="score">(H,L)</span>Change the Web user interface in &lt; 4
+                            person‑weeks.</div>
+                    </div>
+                    <div class="ut-node">
+                        <div class="ut-label">Availability</div>
+                        <div class="ut-leaf"><span class="score">(H,H)</span>Power outage at site 1 → traffic redirected
+                            to site 2 in &lt; 3 seconds.</div>
+                        <div class="ut-leaf"><span class="score">(H,H)</span>Network failure detected &amp; recovered in
+                            &lt; 1.5 minutes.</div>
+                    </div>
+                    <div class="ut-node">
+                        <div class="ut-label">Security</div>
+                        <div class="ut-leaf"><span class="score">(H,M)</span>Credit card transactions are secure 99.999%
+                            of the time.</div>
+                        <div class="ut-leaf"><span class="score">(H,L)</span>Customer DB authorization works 99.999% of
+                            the time.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mnemonic reveal">
+                <span class="m-ico">MEM</span>
+                <div>
+                    <div class="sentence">Score order is always <b>(Importance, Difficulty)</b> — "<b>I</b> before
+                        <b>D</b>," same order as the letters in the word "AID" minus the A.</div>
+                    <p>High‑High leaves are triaged first in Step 6 — they're the scenarios most likely to reveal real
+                        risk.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- STEP 6 ANALYSIS -->
+        <section id="analyze">
+            <div class="kicker">09 · Step 6/8 in Detail</div>
+            <h2 class="title">Sensitivity · Tradeoff · Risk · Non‑risk</h2>
+            <p class="lede">These four labels are what the evaluation team attaches to every architectural decision
+                while
+                tracing a scenario. Getting these definitions exact is one of the most commonly tested parts of ATAM.
+            </p>
+
+            <div class="grid grid-2">
+                <div class="sheet card reveal">
+                    <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+                    <h3><span class="ico">S</span>Sensitivity Point</h3>
+                    <p>A decision that has a <b>significant effect on one</b> quality attribute. Tune this decision and
+                        that
+                        one attribute moves noticeably.</p>
+                </div>
+                <div class="sheet card reveal">
+                    <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+                    <h3><span class="ico">T</span>Tradeoff Point</h3>
+                    <p>A decision that's a sensitivity point for <b>more than one</b> attribute — improving one
+                        <i>costs</i> another.</p>
+                </div>
+                <div class="sheet card reveal">
+                    <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+                    <h3><span class="ico">R</span>Risk</h3>
+                    <p>A <b>potentially problematic</b> architectural decision — something that could threaten a quality
+                        goal
+                        if left unaddressed.</p>
+                </div>
+                <div class="sheet card reveal">
+                    <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+                    <h3><span class="ico">N</span>Non‑risk</h3>
+                    <p>A decision the team is <b>confident is safe</b> — reviewed and found sound.</p>
+                </div>
+            </div>
+
+            <div class="mnemonic reveal">
+                <span class="m-ico">MEM</span>
+                <div>
+                    <div class="sentence">"<b>Sensitivity</b> = affects <b>one</b>. <b>Tradeoff</b> = affects
+                        <b>two+</b>, pulling opposite ways. <b>Risk</b> = might go bad. <b>Non‑risk</b> = confirmed
+                        fine."</div>
+                </div>
+            </div>
+
+            <div class="tbl-wrap sheet" style="padding:var(--sp-2); margin-top:var(--sp-3);">
+                <div class="kicker" style="padding: var(--sp-2) var(--sp-2) 0;">FIG. 03 — WORKED SCENARIO A12</div>
+                <table>
+                    <tbody>
+                        <tr>
+                            <td class="mono" style="color:var(--accent)">Scenario</td>
+                            <td>Detect and recover from HW failure of the main switch.</td>
+                        </tr>
+                        <tr>
+                            <td class="mono" style="color:var(--accent)">Attribute</td>
+                            <td>Availability</td>
+                        </tr>
+                        <tr>
+                            <td class="mono" style="color:var(--accent)">Stimulus → Response</td>
+                            <td>One CPU fails → 0.999999 availability of the switch.</td>
+                        </tr>
+                        <tr>
+                            <td class="mono" style="color:var(--accent)">Backup CPU(s)</td>
+                            <td>Sensitivity S2 · Risk R8</td>
+                        </tr>
+                        <tr>
+                            <td class="mono" style="color:var(--accent)">No backup data channel</td>
+                            <td>Sensitivity S3 · Tradeoff T3 · Risk R9</td>
+                        </tr>
+                        <tr>
+                            <td class="mono" style="color:var(--accent)">Watchdog / Heartbeat / Failover routing</td>
+                            <td>Sensitivities S4–S6 · Non‑risks N12–N14</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="goodnote">
+                <b>Reading this fast:</b> everything in the decisions column got a sensitivity number — that's expected,
+                almost every decision is sensitive to <i>something</i>. What separates a healthy design from a risky one
+                is
+                whether that sensitivity resolves into a <b>Risk</b> or a <b>Non‑risk.</b>
+            </div>
+        </section>
+
+        <!-- OUTPUT -->
+        <section id="output">
+            <div class="kicker">10 · Deliverables</div>
+            <h2 class="title">What ATAM must hand back</h2>
+            <div class="grid grid-2">
+                <div class="sheet card reveal">
+                    <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+                    <h3><span class="ico">SAD</span>Software Architecture Document</h3>
+                    <p>The key artifact documenting the selected architecture itself.</p>
+                </div>
+                <div class="sheet card reveal">
+                    <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+                    <h3><span class="ico">REP</span>Evaluation report</h3>
+                    <p>Recaps the process, captures the scenario analysis, and explains the candidate architectures with
+                        the
+                        rationale behind the final choice.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- LIGHTWEIGHT -->
+        <section id="light">
+            <div class="kicker">11 · The Fast Version</div>
+            <h2 class="title">Lightweight ATAM</h2>
+            <p class="lede">Same 9‑step skeleton, built for smaller / lower‑risk projects — sometimes done in a single
+                half‑day, entirely with people already inside the organization.</p>
+
+            <div class="grid grid-2">
+                <div class="sheet card reveal">
+                    <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+                    <h3><span class="ico">+</span>What you gain</h3>
+                    <p>Speed. Internal‑only participants mean faster shared understanding — no external onboarding
+                        needed.</p>
+                </div>
+                <div class="sheet card reveal">
+                    <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+                    <h3><span class="ico">−</span>What you lose</h3>
+                    <p>Depth and objectivity. Internal‑only reviewers probe the architecture less deeply than an outside
+                        evaluation team.</p>
+                </div>
+            </div>
+
+            <div class="tbl-wrap sheet" style="padding:var(--sp-2); margin-top:var(--sp-3);">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Step</th>
+                            <th>Time</th>
+                            <th>What changes vs. full ATAM</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1. Present ATAM</td>
+                            <td class="mono">0h</td>
+                            <td>Skipped — participants already know the process.</td>
+                        </tr>
+                        <tr>
+                            <td>2. Business drivers</td>
+                            <td class="mono">0.25h</td>
+                            <td>Quick refresh only.</td>
+                        </tr>
+                        <tr>
+                            <td>3. Present architecture</td>
+                            <td class="mono">0.5h</td>
+                            <td>Module + C&amp;C views, 1–2 scenarios traced.</td>
+                        </tr>
+                        <tr>
+                            <td>4. Architectural approaches</td>
+                            <td class="mono">0.25h</td>
+                            <td>Often folded into step 3.</td>
+                        </tr>
+                        <tr>
+                            <td>5. Utility tree</td>
+                            <td class="mono">0.5–1.5h</td>
+                            <td>May reuse an existing tree from earlier work.</td>
+                        </tr>
+                        <tr>
+                            <td>6. Analyze approaches</td>
+                            <td class="mono">2–3h</td>
+                            <td><b>Bulk of the time</b> — unchanged in spirit from full ATAM.</td>
+                        </tr>
+                        <tr>
+                            <td>7. Brainstorm scenarios</td>
+                            <td class="mono">0h</td>
+                            <td>Omitted — same internal people already contributed in step 5.</td>
+                        </tr>
+                        <tr>
+                            <td>8. Analyze approaches</td>
+                            <td class="mono">0h</td>
+                            <td>Omitted — all analysis already happened in step 6.</td>
+                        </tr>
+                        <tr>
+                            <td>9. Present results</td>
+                            <td class="mono">0.5h</td>
+                            <td>Review risks/non‑risks/sensitivities/tradeoffs; check for new risk themes.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="mnemonic reveal">
+                <span class="m-ico">MEM</span>
+                <div>
+                    <div class="sentence">Lightweight ATAM zeroes out steps <b>1, 7, and 8</b> — the "teach the process"
+                        step and both stakeholder‑brainstorm steps — because everyone's already internal and aligned.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TOOLKIT -->
+        <section id="toolkit">
+            <div class="kicker">12 · Memory Toolkit</div>
+            <h2 class="title">All the mnemonics, in one place</h2>
+            <div class="grid grid-3">
+                <div class="sheet card reveal"><i class="corner tl"></i><i class="corner tr"></i><i
+                        class="corner bl"></i><i class="corner br"></i>
+                    <h3><span class="ico">1</span>Benefits</h3>
+                    <p><b>PCDRP</b> — Priorities, Clarity, Docs, Reuse, Practice.</p>
+                </div>
+                <div class="sheet card reveal"><i class="corner tl"></i><i class="corner tr"></i><i
+                        class="corner bl"></i><i class="corner br"></i>
+                    <h3><span class="ico">2</span>Methods</h3>
+                    <p>"Architects Sometimes Argue" — ATAM, SAAM, ARID.</p>
+                </div>
+                <div class="sheet card reveal"><i class="corner tl"></i><i class="corner tr"></i><i
+                        class="corner bl"></i><i class="corner br"></i>
+                    <h3><span class="ico">3</span>QA perspectives</h3>
+                    <p><b>PAUS</b> (end‑user) / <b>MPRTI</b> (technical) / <b>TLCB</b> (business).</p>
+                </div>
+                <div class="sheet card reveal"><i class="corner tl"></i><i class="corner tr"></i><i
+                        class="corner bl"></i><i class="corner br"></i>
+                    <h3><span class="ico">4</span>Participants</h3>
+                    <p><b>EPA</b> — Evaluation team, Project decision‑makers, Architecture stakeholders.</p>
+                </div>
+                <div class="sheet card reveal"><i class="corner tl"></i><i class="corner tr"></i><i
+                        class="corner bl"></i><i class="corner br"></i>
+                    <h3><span class="ico">5</span>Roles</h3>
+                    <p><b>TESPQ</b> — Team leader, Evaluation leader, Scribe, Proceedings, Questioner.</p>
+                </div>
+                <div class="sheet card reveal"><i class="corner tl"></i><i class="corner tr"></i><i
+                        class="corner bl"></i><i class="corner br"></i>
+                    <h3><span class="ico">6</span>9 steps shape</h3>
+                    <p>3 Presents → Identify‑Generate‑Analyze → Brainstorm‑Analyze → Present.</p>
+                </div>
+                <div class="sheet card reveal"><i class="corner tl"></i><i class="corner tr"></i><i
+                        class="corner bl"></i><i class="corner br"></i>
+                    <h3><span class="ico">7</span>4 phases</h3>
+                    <p>0 preps, 1 does steps 1–6, 2 does steps 7–9, 3 reports.</p>
+                </div>
+                <div class="sheet card reveal"><i class="corner tl"></i><i class="corner tr"></i><i
+                        class="corner bl"></i><i class="corner br"></i>
+                    <h3><span class="ico">8</span>Utility tree score</h3>
+                    <p>Always (Importance, Difficulty) — "I before D."</p>
+                </div>
+                <div class="sheet card reveal"><i class="corner tl"></i><i class="corner tr"></i><i
+                        class="corner bl"></i><i class="corner br"></i>
+                    <h3><span class="ico">9</span>S·T·R·N</h3>
+                    <p>Sensitivity=one attribute · Tradeoff=two+ opposite · Risk=maybe bad · Non‑risk=confirmed fine.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <footer>
+        <div class="wrap">
+            <div class="titleblock sheet">
+                <div class="tb-cell">
+                    <div class="k">Course</div>
+                    <div class="v">Software Design &amp; Architecture</div>
+                </div>
+                <div class="tb-cell">
+                    <div class="k">Sheet</div>
+                    <div class="v">Ch.08 · L01 — ATAM Evaluation</div>
+                </div>
+                <div class="tb-cell">
+                    <div class="k">Scale</div>
+                    <div class="v">NTS (Not To Scale)</div>
+                </div>
+                <div class="tb-cell">
+                    <div class="k">Drawn by</div>
+                    <div class="v">Made by Shoug Alomran</div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <button class="backtop" id="backtop" aria-label="back to top">↑</button>
+
+    <script>
+        const root = document.documentElement;
+        const btn = document.getElementById('themeToggle');
+        const icon = document.getElementById('themeIcon');
+        const label = document.getElementById('themeLabel');
+
+        function applyTheme(t) {
+            root.setAttribute('data-theme', t);
+            icon.textContent = t === 'dark' ? '☾' : '☀';
+            label.textContent = t === 'dark' ? 'Dark' : 'Light';
+            try { localStorage.setItem('sda-theme', t); } catch (e) { }
+        }
+
+        (function initTheme() {
+            let saved = null;
+            try { saved = localStorage.getItem('sda-theme'); } catch (e) { }
+            if (saved) { applyTheme(saved); }
+            else {
+                const prefersLight = window.matchMedia('(prefers-color-scheme: light)').matches;
+                applyTheme(prefersLight ? 'light' : 'dark');
+            }
+        })();
+
+        btn.addEventListener('click', () => {
+            const current = root.getAttribute('data-theme');
+            applyTheme(current === 'dark' ? 'light' : 'dark');
+        });
+
+        const io = new IntersectionObserver((entries) => {
+            entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+        }, { threshold: .12 });
+        document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+        const backtop = document.getElementById('backtop');
+        window.addEventListener('scroll', () => { backtop.classList.toggle('show', window.scrollY > 700); });
+        backtop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+    </script>
+
+</body>
+
+</html>
