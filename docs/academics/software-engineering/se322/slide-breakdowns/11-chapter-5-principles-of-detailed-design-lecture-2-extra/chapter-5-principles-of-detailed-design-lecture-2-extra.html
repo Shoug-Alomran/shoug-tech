@@ -1,0 +1,1583 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ch.5 L02 — Component Design &amp; SOLID (SRP/OCP/LSP) | Study Blueprint</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg: #081a2e;
+            --bg-elev: #0e2440;
+            --bg-elev-2: #122b4c;
+            --grid: rgba(125, 211, 252, 0.075);
+            --grid-strong: rgba(125, 211, 252, 0.16);
+            --ink: #e9f2ff;
+            --ink-dim: #93a9c7;
+            --ink-faint: #5f7896;
+            --cyan: #7dd3fc;
+            --cyan-strong: #38bdf8;
+            --amber: #fbbf24;
+            --amber-dim: #a8791c;
+            --rose: #fb7185;
+            --border: rgba(125, 211, 252, 0.28);
+            --border-soft: rgba(125, 211, 252, 0.14);
+            --shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
+            --radius: 14px;
+            --font-display: 'Space Grotesk', sans-serif;
+            --font-body: 'IBM Plex Sans', sans-serif;
+            --font-mono: 'IBM Plex Mono', monospace;
+        }
+
+        html[data-theme="light"] {
+            --bg: #eef2f7;
+            --bg-elev: #ffffff;
+            --bg-elev-2: #e4ecf5;
+            --grid: rgba(3, 105, 161, 0.07);
+            --grid-strong: rgba(3, 105, 161, 0.14);
+            --ink: #0a1929;
+            --ink-dim: #3d5674;
+            --ink-faint: #7488a3;
+            --cyan: #0369a1;
+            --cyan-strong: #075985;
+            --amber: #b45309;
+            --amber-dim: #92400e;
+            --rose: #be123c;
+            --border: rgba(3, 105, 161, 0.3);
+            --border-soft: rgba(3, 105, 161, 0.15);
+            --shadow: 0 20px 40px rgba(10, 25, 41, 0.12);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            background:
+                radial-gradient(circle at 1px 1px, var(--grid-strong) 1px, transparent 1px) 0 0/48px 48px,
+                linear-gradient(var(--bg), var(--bg));
+            color: var(--ink);
+            font-family: var(--font-body);
+            font-size: clamp(15px, 0.92vw + 10px, 18px);
+            line-height: 1.6;
+            transition: background-color .35s ease, color .35s ease;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        ::selection {
+            background: var(--amber);
+            color: #0a1929;
+        }
+
+        .wrap {
+            max-width: 1180px;
+            margin: 0 auto;
+            padding: 0 clamp(16px, 4vw, 56px);
+        }
+
+        .topbar {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            backdrop-filter: blur(10px);
+            background: color-mix(in srgb, var(--bg) 82%, transparent);
+            border-bottom: 1px solid var(--border-soft);
+        }
+
+        .topbar-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px clamp(16px, 4vw, 56px);
+            max-width: 1180px;
+            margin: 0 auto;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: var(--font-mono);
+            font-size: .8rem;
+            letter-spacing: .08em;
+            color: var(--ink-dim);
+            text-transform: uppercase;
+        }
+
+        .brand .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--amber);
+            box-shadow: 0 0 10px var(--amber);
+        }
+
+        .toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            padding: 4px;
+            background: var(--bg-elev);
+            cursor: pointer;
+            font-family: var(--font-mono);
+            font-size: .72rem;
+        }
+
+        .toggle button {
+            border: none;
+            background: transparent;
+            color: var(--ink-dim);
+            padding: 6px 12px;
+            border-radius: 999px;
+            cursor: pointer;
+            font-family: var(--font-mono);
+            font-size: .72rem;
+            letter-spacing: .05em;
+            transition: all .25s ease;
+        }
+
+        .toggle button.active {
+            background: var(--cyan);
+            color: var(--bg);
+            font-weight: 600;
+        }
+
+        html[data-theme="light"] .toggle button.active {
+            color: #fff;
+        }
+
+        .progress-track {
+            height: 2px;
+            background: var(--border-soft);
+        }
+
+        .progress-bar {
+            height: 2px;
+            width: 0%;
+            background: linear-gradient(90deg, var(--cyan), var(--amber));
+            transition: width .1s linear;
+        }
+
+        .hero {
+            padding: clamp(48px, 8vw, 96px) 0 clamp(32px, 6vw, 64px);
+            position: relative;
+        }
+
+        .eyebrow {
+            font-family: var(--font-mono);
+            font-size: .78rem;
+            letter-spacing: .16em;
+            color: var(--amber);
+            text-transform: uppercase;
+            margin: 0 0 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .eyebrow::before {
+            content: "§";
+            font-size: 1rem;
+        }
+
+        h1.title {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: clamp(2.1rem, 5vw, 3.6rem);
+            line-height: 1.08;
+            margin: 0 0 14px;
+            letter-spacing: -0.01em;
+        }
+
+        h1.title span {
+            color: var(--cyan);
+        }
+
+        .subtitle {
+            color: var(--ink-dim);
+            font-size: clamp(1rem, 1.3vw, 1.2rem);
+            max-width: 640px;
+            margin: 0 0 28px;
+        }
+
+        .hero-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px 28px;
+            font-family: var(--font-mono);
+            font-size: .78rem;
+            color: var(--ink-faint);
+            border-top: 1px dashed var(--border);
+            padding-top: 18px;
+        }
+
+        .hero-meta b {
+            color: var(--ink-dim);
+            font-weight: 600;
+        }
+
+        section {
+            padding: clamp(40px, 6vw, 72px) 0;
+            border-top: 1px solid var(--border-soft);
+        }
+
+        .sec-head {
+            display: flex;
+            align-items: baseline;
+            gap: 16px;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+        }
+
+        .sec-num {
+            font-family: var(--font-mono);
+            color: var(--amber);
+            font-size: .85rem;
+            border: 1px solid var(--amber-dim);
+            padding: 2px 8px;
+            border-radius: 6px;
+        }
+
+        h2 {
+            font-family: var(--font-display);
+            font-weight: 600;
+            font-size: clamp(1.5rem, 2.6vw, 2.1rem);
+            margin: 0;
+        }
+
+        .sec-sub {
+            color: var(--ink-dim);
+            max-width: 760px;
+            margin: 14px 0 34px;
+        }
+
+        .mnemonic {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-family: var(--font-mono);
+            font-size: .85rem;
+            background: var(--bg-elev);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 10px 16px;
+            margin: 10px 0 30px;
+            color: var(--ink-dim);
+        }
+
+        .mnemonic b {
+            color: var(--amber);
+            font-weight: 600;
+        }
+
+        .funnel-wrap {
+            display: grid;
+            grid-template-columns: 1.1fr 1fr;
+            gap: 36px;
+            align-items: center;
+        }
+
+        @media (max-width:820px) {
+            .funnel-wrap {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .funnel-card {
+            background: var(--bg-elev);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 22px;
+            box-shadow: var(--shadow);
+        }
+
+        .stage-row {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 12px;
+            border-radius: 10px;
+            cursor: default;
+            transition: background .25s ease;
+        }
+
+        .stage-row:hover {
+            background: var(--bg-elev-2);
+        }
+
+        .stage-badge {
+            font-family: var(--font-mono);
+            font-weight: 600;
+            font-size: .95rem;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1.5px solid var(--cyan);
+            color: var(--cyan);
+            flex-shrink: 0;
+        }
+
+        .stage-row.here .stage-badge {
+            background: var(--amber);
+            border-color: var(--amber);
+            color: var(--bg);
+        }
+
+        .stage-text b {
+            display: block;
+            font-family: var(--font-display);
+            font-size: 1.02rem;
+        }
+
+        .stage-text span {
+            color: var(--ink-dim);
+            font-size: .9rem;
+        }
+
+        .stage-arrow {
+            text-align: center;
+            color: var(--ink-faint);
+            font-family: var(--font-mono);
+        }
+
+        .we-are-tag {
+            display: inline-block;
+            margin-top: 2px;
+            font-family: var(--font-mono);
+            font-size: .68rem;
+            background: var(--amber);
+            color: var(--bg);
+            padding: 2px 8px;
+            border-radius: 5px;
+            letter-spacing: .06em;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 22px;
+        }
+
+        @media (max-width:760px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: var(--bg-elev);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 24px;
+            box-shadow: var(--shadow);
+        }
+
+        .card h3 {
+            font-family: var(--font-display);
+            margin: 0 0 10px;
+            font-size: 1.15rem;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .card p {
+            color: var(--ink-dim);
+            margin: 0 0 10px;
+            font-size: .95rem;
+        }
+
+        .card .tag {
+            display: inline-block;
+            font-family: var(--font-mono);
+            font-size: .7rem;
+            letter-spacing: .05em;
+            color: var(--cyan);
+            border: 1px solid var(--border);
+            padding: 2px 8px;
+            border-radius: 6px;
+            margin-bottom: 12px;
+        }
+
+        .blueprint-line {
+            border: none;
+            border-top: 1px dashed var(--border);
+            margin: 14px 0;
+        }
+
+        .bidir {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            font-family: var(--font-mono);
+            font-size: .82rem;
+            margin-top: 14px;
+            flex-wrap: wrap;
+        }
+
+        .bidir .node {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 10px 14px;
+            text-align: center;
+            background: var(--bg-elev-2);
+            min-width: 110px;
+        }
+
+        .bidir .arrows {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            color: var(--ink-faint);
+            font-size: .75rem;
+            text-align: center;
+        }
+
+        .task-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .task {
+            background: var(--bg-elev);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+        }
+
+        .task-head {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 18px 20px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .task-letter {
+            font-family: var(--font-mono);
+            font-weight: 700;
+            font-size: 1.15rem;
+            color: var(--bg);
+            background: var(--cyan);
+            width: 40px;
+            height: 40px;
+            border-radius: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .task-head b {
+            font-family: var(--font-display);
+            font-size: 1.05rem;
+        }
+
+        .task-head span.sub {
+            display: block;
+            color: var(--ink-dim);
+            font-size: .85rem;
+            font-weight: 400;
+        }
+
+        .task-chevron {
+            margin-left: auto;
+            color: var(--ink-faint);
+            transition: transform .3s ease;
+            font-family: var(--font-mono);
+        }
+
+        .task.open .task-chevron {
+            transform: rotate(45deg);
+            color: var(--amber);
+        }
+
+        .task-body {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height .35s ease;
+            padding: 0 20px;
+            color: var(--ink-dim);
+            font-size: .92rem;
+        }
+
+        .task.open .task-body {
+            padding: 0 20px 22px;
+        }
+
+        .task-body ul {
+            margin: 6px 0 0;
+            padding-left: 20px;
+        }
+
+        .task-body li {
+            margin-bottom: 6px;
+        }
+
+        .example-box {
+            margin-top: 12px;
+            background: var(--bg-elev-2);
+            border-left: 3px solid var(--amber);
+            padding: 10px 14px;
+            border-radius: 0 8px 8px 0;
+            font-size: .88rem;
+        }
+
+        .example-box b {
+            color: var(--amber);
+            font-family: var(--font-mono);
+            font-size: .75rem;
+            letter-spacing: .04em;
+        }
+
+        pre.code {
+            background: var(--bg-elev-2);
+            border: 1px solid var(--border-soft);
+            border-radius: 10px;
+            padding: 14px 16px;
+            overflow-x: auto;
+            font-family: var(--font-mono);
+            font-size: .78rem;
+            line-height: 1.55;
+            color: var(--ink-dim);
+            margin: 10px 0 0;
+        }
+
+        pre.code b {
+            color: var(--cyan-strong);
+        }
+
+        pre.code .s {
+            color: var(--amber);
+        }
+
+        pre.code .c {
+            color: var(--ink-faint);
+            font-style: italic;
+        }
+
+        .sdd-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width:760px) {
+            .sdd-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .compare-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: .85rem;
+        }
+
+        .compare-table th,
+        .compare-table td {
+            text-align: left;
+            padding: 9px 10px;
+            border-bottom: 1px solid var(--border-soft);
+            color: var(--ink-dim);
+            vertical-align: top;
+        }
+
+        .compare-table th {
+            color: var(--ink);
+            font-family: var(--font-display);
+            font-weight: 600;
+            font-size: .82rem;
+        }
+
+        .solid-strip {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin: 10px 0 30px;
+        }
+
+        @media (max-width:820px) {
+            .solid-strip {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .solid-chip {
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px 10px;
+            text-align: center;
+            background: var(--bg-elev);
+            font-family: var(--font-mono);
+        }
+
+        .solid-chip.now {
+            border-color: var(--amber);
+            box-shadow: 0 0 0 1px var(--amber) inset;
+        }
+
+        .solid-chip .letter {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--cyan);
+            display: block;
+        }
+
+        .solid-chip.now .letter {
+            color: var(--amber);
+        }
+
+        .solid-chip .name {
+            font-size: .68rem;
+            color: var(--ink-faint);
+            display: block;
+            margin-top: 4px;
+            letter-spacing: .02em;
+        }
+
+        .flash-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 18px;
+        }
+
+        .flash {
+            perspective: 1200px;
+            height: 150px;
+            cursor: pointer;
+        }
+
+        .flash-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform .5s;
+            transform-style: preserve-3d;
+        }
+
+        .flash.flipped .flash-inner {
+            transform: rotateY(180deg);
+        }
+
+        .flash-face {
+            position: absolute;
+            inset: 0;
+            backface-visibility: hidden;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-size: .92rem;
+        }
+
+        .flash-front {
+            background: var(--bg-elev);
+            font-family: var(--font-display);
+            font-weight: 600;
+            color: var(--cyan);
+        }
+
+        .flash-back {
+            background: var(--bg-elev-2);
+            transform: rotateY(180deg);
+            color: var(--ink-dim);
+            font-size: .85rem;
+            padding: 14px;
+        }
+
+        .flash-hint {
+            position: absolute;
+            bottom: 8px;
+            right: 12px;
+            font-family: var(--font-mono);
+            font-size: .62rem;
+            color: var(--ink-faint);
+        }
+
+        .callout {
+            display: flex;
+            gap: 18px;
+            background: var(--bg-elev);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 24px;
+            align-items: flex-start;
+            box-shadow: var(--shadow);
+        }
+
+        .callout .icon {
+            font-family: var(--font-mono);
+            font-size: 1.4rem;
+            color: var(--rose);
+            border: 1.5px solid var(--rose);
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .quiz-item {
+            background: var(--bg-elev);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 20px 22px;
+            margin-bottom: 16px;
+        }
+
+        .quiz-q {
+            font-family: var(--font-display);
+            font-weight: 600;
+            margin-bottom: 12px;
+            font-size: 1.02rem;
+        }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .quiz-option {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 10px 14px;
+            cursor: pointer;
+            font-size: .9rem;
+            transition: all .2s ease;
+        }
+
+        .quiz-option:hover {
+            border-color: var(--cyan);
+        }
+
+        .quiz-option.correct {
+            border-color: #22c55e;
+            background: color-mix(in srgb, #22c55e 12%, var(--bg-elev));
+        }
+
+        .quiz-option.wrong {
+            border-color: var(--rose);
+            background: color-mix(in srgb, var(--rose) 12%, var(--bg-elev));
+        }
+
+        .reveal-btn {
+            font-family: var(--font-mono);
+            font-size: .78rem;
+            background: transparent;
+            color: var(--cyan);
+            border: 1px solid var(--border);
+            padding: 8px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .short-answer {
+            display: none;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px dashed var(--border);
+            color: var(--ink-dim);
+            font-size: .9rem;
+        }
+
+        .short-answer.show {
+            display: block;
+        }
+
+        .short-answer b {
+            color: var(--amber);
+        }
+
+        .recap-list {
+            columns: 2;
+            column-gap: 32px;
+        }
+
+        @media (max-width:700px) {
+            .recap-list {
+                columns: 1;
+            }
+        }
+
+        .recap-list li {
+            break-inside: avoid;
+            margin-bottom: 12px;
+            color: var(--ink-dim);
+            font-size: .92rem;
+        }
+
+        .recap-list li b {
+            color: var(--ink);
+        }
+
+        footer {
+            text-align: center;
+            padding: 48px 0 60px;
+            font-family: var(--font-mono);
+            font-size: .8rem;
+            color: var(--ink-faint);
+            border-top: 1px solid var(--border-soft);
+        }
+
+        footer .made {
+            margin-top: 10px;
+            letter-spacing: .08em;
+            color: var(--cyan);
+            font-size: .75rem;
+        }
+
+        a.jump {
+            color: var(--cyan);
+            text-decoration: none;
+            border-bottom: 1px dotted var(--border);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="topbar">
+        <div class="topbar-inner">
+            <div class="brand"><span class="dot"></span> CH.05 L02 · COMPONENT DESIGN + SOLID</div>
+            <div class="toggle" id="themeToggle">
+                <button data-theme="dark" class="active">DARK</button>
+                <button data-theme="light">LIGHT</button>
+            </div>
+        </div>
+        <div class="progress-track">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+    </div>
+
+    <div class="wrap">
+
+        <section class="hero" style="border-top:none;">
+            <p class="eyebrow">Software Design &amp; Architecture</p>
+            <h1 class="title">Component Design &amp; the <span>SOLID</span> Principles</h1>
+            <p class="subtitle">This is where detailed design gets its hands dirty: defining the internal classes of
+                each component, then using five battle-tested principles — SOLID — to stop that internal design from
+                rotting the moment requirements change.</p>
+            <div class="hero-meta">
+                <span><b>Chapter</b> 05 · Lecture 02</span>
+                <span><b>Builds on</b> Lecture 01 — Detailed Design overview</span>
+                <span><b>Covers</b> SRP · OCP · LSP</span>
+                <span><b>Next lecture</b> ISP · DIP · Internal Behavior</span>
+            </div>
+        </section>
+
+        <!-- 1. OVERVIEW OF COMPONENT DESIGN -->
+        <section id="s1">
+            <div class="sec-head"><span class="sec-num">01</span>
+                <h2>Overview of Component Design</h2>
+            </div>
+            <p class="sec-sub">Component design (a.k.a. component-level design) is the detailed-design task of defining
+                the <b style="color:var(--ink)">internal structure</b> and <b style="color:var(--ink)">behavior</b> of
+                the components that were already identified during architecture.</p>
+
+            <div class="grid-2">
+                <div class="card">
+                    <span class="tag">DURING ARCHITECTURE</span>
+                    <h3>📦 Abstract components</h3>
+                    <p>Architecture defines high-level components and interfaces — e.g. a <code>ClientSystem</code>
+                        talking to a <code>ServerSystem</code> through a <code>ServerInterface</code>. You know the
+                        boxes and the arrows, not the code.</p>
+                    <div class="bidir" style="justify-content:flex-start;">
+                        <div class="node">«component»<br>ClientSystem</div>
+                        <div class="arrows">– – – ○ – – –</div>
+                        <div class="node">«component»<br>ServerSystem</div>
+                    </div>
+                </div>
+                <div class="card">
+                    <span class="tag">DURING DETAILED DESIGN</span>
+                    <h3>🧩 Concrete classes</h3>
+                    <p>Component design refines those same boxes into <b>classes, interfaces, and types</b> — enough
+                        detail that a developer could start typing code immediately.</p>
+                    <div class="example-box"><b>EX —</b> <code>ClientSystem</code> becomes a real <code>Client</code>
+                        class; <code>ServerSystem</code> becomes a <code>ConcreteServer</code> class that
+                        <i>implements</i> a <code>ServerInterface</code>.
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" style="margin-top:22px;">
+                <h3>🎯 Why this task matters most</h3>
+                <p>During component design, the <b style="color:var(--ink)">internal data structures, algorithms,
+                        interface details, and communication mechanisms</b> for every component get defined. That's
+                    why this single task provides the most significant mechanism for determining the
+                    <b style="color:var(--ink)">functional correctness</b> of the whole system — and it lets you
+                    <b style="color:var(--ink)">evaluate alternative solutions before construction even begins</b>,
+                    when changes are still cheap.
+                </p>
+                <hr class="blueprint-line">
+                <p style="margin-bottom:0;">Before you can design components in OO, you need four building blocks
+                    fluent in your fingers: <b style="color:var(--ink)">classes/objects</b>,
+                    <b style="color:var(--ink)">abstract classes &amp; interfaces</b>,
+                    <b style="color:var(--ink)">inheritance</b>, and <b style="color:var(--ink)">polymorphism</b>. The
+                    refresher below is deliberately compressed — you've seen this in programming courses, this is just
+                    the "why it matters for design" angle.
+                </p>
+            </div>
+        </section>
+
+        <!-- 2. OOP REFRESHER -->
+        <section id="s2">
+            <div class="sec-head"><span class="sec-num">02</span>
+                <h2>OOP Refresher — the Four Tools</h2>
+            </div>
+            <p class="sec-sub">Four concepts, one mnemonic: <b style="color:var(--ink)">C.A.I.P.</b> — <b>C</b>lasses →
+                <b>A</b>bstract classes/Interfaces → <b>I</b>nheritance → <b>P</b>olymorphism. Each one exists to let
+                you write code against a <i>promise</i> instead of a specific implementation.
+            </p>
+
+            <div class="task-list" id="taskList">
+
+                <div class="task open">
+                    <div class="task-head" onclick="toggleTask(this)">
+                        <div class="task-letter">A</div>
+                        <div><b>Abstract Classes</b><span class="sub">A partial blueprint — some methods done, some
+                                left for subclasses</span></div>
+                        <div class="task-chevron">+</div>
+                    </div>
+                    <div class="task-body">
+                        <p>A class with the <code>abstract</code> keyword. It must have at least one
+                            <b>abstract method</b> (no body) but can also have fully-implemented
+                            <b>concrete methods</b>. It <b>cannot be instantiated</b> — you can only inherit from it.
+                        </p>
+                        <ul>
+                            <li>Offers default functionality subclasses get for free (concrete methods)</li>
+                            <li>Forces subclasses to fill in the blanks (abstract methods)</li>
+                            <li>Can hold real state: <code>private</code>/<code>protected</code>/<code>public</code>,
+                                <code>final</code>, <code>static</code>, and normal instance fields
+                            </li>
+                        </ul>
+                        <pre class="code"><b>abstract class</b> Animal {
+    <span class="c">// concrete — has a body, inherited as-is or overridden</span>
+    <b>public void</b> eat() { System.out.println(name + " is eating.."); }
+
+    <span class="c">// abstract — no body, subclass MUST implement it</span>
+    <b>public abstract void</b> makeSound();
+}
+
+<b>class</b> Dog <b>extends</b> Animal {
+    <span class="c">@Override</span>
+    <b>public void</b> makeSound() { System.out.println(name + <span class="s">" says: Woof!"</span>); }
+}</pre>
+                        <div class="example-box"><b>EX —</b> <code>new Animal(...)</code> is illegal (abstract), but
+                            <code>new Dog(...)</code> is fine — it inherited <code>eat()</code> for free and was
+                            forced to implement <code>makeSound()</code>.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="task">
+                    <div class="task-head" onclick="toggleTask(this)">
+                        <div class="task-letter">I</div>
+                        <div><b>Interfaces</b><span class="sub">A pure contract — 100% abstract, no implementation at
+                                all</span></div>
+                        <div class="task-chevron">+</div>
+                    </div>
+                    <div class="task-body">
+                        <p>An interface is a special kind of abstract class: a <b>blueprint</b> with
+                            <b>zero concrete methods</b>. It cannot be instantiated, never holds instance variables
+                            (only <code>public static final</code> constants), and any class that
+                            <code>implements</code> it can be instantiated as long as it fills in every method.
+                        </p>
+                        <table class="compare-table" style="margin-top:10px;">
+                            <tr>
+                                <th>Feature</th>
+                                <th>Abstract Class</th>
+                                <th>Interface</th>
+                            </tr>
+                            <tr>
+                                <td>Methods</td>
+                                <td>Abstract + concrete</td>
+                                <td>Originally abstract only</td>
+                            </tr>
+                            <tr>
+                                <td>Variables</td>
+                                <td>Instance variables allowed</td>
+                                <td>Only constants</td>
+                            </tr>
+                            <tr>
+                                <td>Inheritance</td>
+                                <td>Extend <b>only one</b></td>
+                                <td>Implement <b>multiple</b></td>
+                            </tr>
+                            <tr>
+                                <td>Coupling</td>
+                                <td>Tighter — carries implementation</td>
+                                <td>Looser — signatures only</td>
+                            </tr>
+                        </table>
+                        <div class="example-box"><b>WHY BOTHER —</b> Interfaces define a contract ("anyone who
+                            implements me must provide these methods"), give you multiple inheritance of
+                            <i>type</i>, and achieve loose coupling: code depends on the interface, not on any one
+                            concrete implementation, so it's easy to extend.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="task">
+                    <div class="task-head" onclick="toggleTask(this)">
+                        <div class="task-letter">H</div>
+                        <div><b>Inheritance</b><span class="sub">"is-a" — reuse a parent's shape, specialize its
+                                behavior</span></div>
+                        <div class="task-chevron">+</div>
+                    </div>
+                    <div class="task-body">
+                        <p>UML calls this a <b>Generalization</b> relationship (hollow triangle arrow pointing to the
+                            parent). A subclass automatically gets every field and method of its superclass, and can
+                            override any of them.</p>
+                        <pre class="code"><b>public class</b> Animal {
+    <b>public void</b> sound(){ System.out.println(<span class="s">"Animal is making a sound"</span>); }
+}
+<b>public class</b> Cat <b>extends</b> Animal {
+    <span class="c">@Override</span>
+    <b>public void</b> sound(){ System.out.println(<span class="s">"Miaw"</span>); }
+}</pre>
+                    </div>
+                </div>
+
+                <div class="task">
+                    <div class="task-head" onclick="toggleTask(this)">
+                        <div class="task-letter">P</div>
+                        <div><b>Polymorphism</b><span class="sub">One reference type, many possible run-time
+                                behaviors</span></div>
+                        <div class="task-chevron">+</div>
+                    </div>
+                    <div class="task-body">
+                        <p>You can point a variable of the <i>parent</i> type at a <i>child</i> object, and calling an
+                            overridden method runs the <b>child's</b> version — decided at runtime, not compile time.
+                        </p>
+                        <pre class="code"><b>Animal</b> ah = <b>new</b> Horse();  <span class="c">// declared as Animal, actually a Horse</span>
+ah.sound();               <span class="c">// runs Horse's override → "Neigh"</span>
+<b>Animal</b> ac = <b>new</b> Cat();
+ac.sound();               <span class="c">// runs Cat's override → "Miaw"</span></pre>
+                        <div class="example-box"><b>WHY IT MATTERS FOR DESIGN —</b> polymorphism is the mechanism
+                            that makes OCP (section 4) possible: you can add a brand-new subclass and the code that
+                            calls it through the parent/interface type never has to change.</div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- 3. SOLID / SRP -->
+        <section id="s3">
+            <div class="sec-head"><span class="sec-num">03</span>
+                <h2>SOLID — and the Single Responsibility Principle</h2>
+            </div>
+            <p class="sec-sub">When designing at the component level, five principles keep designs from becoming
+                complex, hard to reuse, and painful to change. Together they spell <b
+                    style="color:var(--ink)">SOLID</b>.</p>
+
+            <div class="solid-strip">
+                <div class="solid-chip now"><span class="letter">S</span><span class="name">Single
+                        Responsibility</span></div>
+                <div class="solid-chip now"><span class="letter">O</span><span class="name">Open-Closed</span></div>
+                <div class="solid-chip now"><span class="letter">L</span><span class="name">Liskov
+                        Substitution</span></div>
+                <div class="solid-chip"><span class="letter">I</span><span class="name">Interface Segregation
+                        <br>(next lecture)</span></div>
+                <div class="solid-chip"><span class="letter">D</span><span class="name">Dependency Inversion
+                        <br>(next lecture)</span></div>
+            </div>
+
+            <div class="mnemonic">🧠 Mnemonic — <b>S.O.L.I.D.</b> → "<b>S</b>ome <b>O</b>ld <b>L</b>ibraries
+                <b>I</b>nspire <b>D</b>evelopers" — Single Responsibility, Open-Closed, Liskov Substitution, Interface
+                Segregation, Dependency Inversion.
+            </div>
+
+            <div class="card">
+                <span class="tag">SRP</span>
+                <h3>1️⃣ Single Responsibility Principle — "one reason to change"</h3>
+                <p><i>"A module should be responsible to one, and only one, user or stakeholder."</i> A class should
+                    do <b style="color:var(--ink)">only one job</b>. If it does more than one, every unrelated
+                    reason-to-change forces you to open a class that has nothing to do with that change.</p>
+                <div class="example-box"><b>ANALOGY —</b> A restaurant: the Chef only cooks, the Waiter only serves,
+                    the Cashier only handles money. Force the Waiter to also cook and handle money, and the whole
+                    restaurant becomes chaotic the moment any one of those jobs changes.</div>
+            </div>
+
+            <div class="grid-2" style="margin-top:22px;">
+                <div class="card">
+                    <span class="tag">❌ VIOLATES SRP</span>
+                    <h3>The bloated <code>Student</code> class</h3>
+                    <pre class="code"><b>class</b> Student {
+    <b>void</b> storeData()      { <span class="c">/* save student data */</span> }
+    <b>void</b> calculateGrades(){ <span class="c">/* calculate grades  */</span> }
+    <b>void</b> printReport()    { <span class="c">/* print report      */</span> }
+}</pre>
+                    <p style="margin-top:10px;">This class has <b>three reasons to change</b>: storage format,
+                        grading logic, and report format. Switch from paper reports to PDF? Open this class. Switch
+                        the database from MySQL to MongoDB? Open this <i>same</i> class again.</p>
+                </div>
+                <div class="card">
+                    <span class="tag">✅ APPLIES SRP</span>
+                    <h3>Three focused classes</h3>
+                    <pre class="code"><b>class</b> StudentData    { <b>void</b> storeData() {…} }
+<b>class</b> GradeCalculator { <b>void</b> calculateGrades() {…} }
+<b>class</b> ReportPrinter   { <b>void</b> printReport() {…} }</pre>
+                    <p style="margin-top:10px;">Each class now has <b>one job = one reason to change</b> → easier to
+                        maintain, test, and extend independently.</p>
+                </div>
+            </div>
+
+            <div class="card" style="margin-top:22px;">
+                <h3>📧 SRP worked example — <code>Person</code> + email validation</h3>
+                <p>A <code>Person</code> class that validates its own email is doing two jobs: being a person, and
+                    knowing the rules of a valid email address (that's not "person behavior").</p>
+                <div class="grid-2">
+                    <div>
+                        <div class="example-box"><b>BEFORE —</b> <code>Person</code> has <code>name</code>,
+                            <code>surname</code>, <code>email</code>, and its own <code>validateEmail()</code> regex
+                            check baked in.
+                        </div>
+                    </div>
+                    <div>
+                        <div class="example-box"><b>AFTER —</b> Pull email validation into its own
+                            <code>Email</code> class. <code>Person</code> now just holds a
+                            <code>name</code>, <code>surname</code>, and an <code>Email</code> object — it no longer
+                            needs to know <i>anything</i> about regex rules.
+                        </div>
+                    </div>
+                </div>
+                <p style="margin-top:12px; margin-bottom:0;">Giving a class a single responsibility (for a single
+                    actor/stakeholder) makes it, by default, easier to see what it does and easier to extend or
+                    improve later.</p>
+            </div>
+        </section>
+
+        <!-- 4. OCP -->
+        <section id="s4">
+            <div class="sec-head"><span class="sec-num">04</span>
+                <h2>The Open-Closed Principle (OCP)</h2>
+            </div>
+            <p class="sec-sub"><i>"Software designs should be open to extension, but closed for modification."</i>
+                Code that already works should stay untouched. New requirements get satisfied by
+                <b style="color:var(--ink)">adding new code</b>, not by editing old code that was already tested and
+                shipped.
+            </p>
+
+            <div class="card">
+                <h3>🎮 Worked example — a gaming system</h3>
+                <p>A fictional game has several types of terrestrial (land) characters, and <i>new character types are
+                        expected in the future</i>.</p>
+                <pre class="code"><span class="c">// v1 — violates OCP</span>
+<b>class</b> TerrestrialCharacter {
+    <b>virtual void</b> draw() { <span class="c">/* draw the terrestrial character */</span> }
+    <b>virtual void</b> run()  { <span class="c">/* make the character run */</span> }
+}
+<b>class</b> GameEngine {
+    <b>void</b> add(TerrestrialCharacter* pCharacter) {
+        pCharacter->draw();
+        pCharacter->run();
+    }
+}</pre>
+                <div class="example-box"><b>WHY THIS VIOLATES OCP —</b> <code>GameEngine</code> depends directly on
+                    the <i>concrete</i> class <code>TerrestrialCharacter</code>. Add a new
+                    <code>AerialCharacter</code> that needs to <code>fly()</code> instead of <code>run()</code>, and
+                    you're forced to <b>modify</b> <code>GameEngine.add(...)</code> to branch on the character's
+                    type. That's a modification to code that already worked — a straight-up OCP violation.
+                </div>
+            </div>
+
+            <div class="card" style="margin-top:22px;">
+                <h3>🛠️ The fix — encapsulate the variation behind an interface</h3>
+                <p>Design principle at play: <b style="color:var(--amber)">Encapsulate Variation</b> — find the part
+                    of the design that's likely to change (how a character moves) and hide it behind polymorphism.
+                </p>
+                <pre class="code"><span class="c">// v2 — adheres to OCP</span>
+<b>public interface</b> Character {
+    <b>void</b> draw();
+    <b>void</b> move();  <span class="c">// generalized: run, fly, swim, etc.</span>
+}
+<b>public class</b> TerrestrialCharacter <b>implements</b> Character {
+    <b>public void</b> draw() { System.out.println(<span class="s">"Drawing terrestrial character..."</span>); }
+    <b>public void</b> move() { System.out.println(<span class="s">"Running on the ground..."</span>); }
+}
+<b>public class</b> AerialCharacter <b>implements</b> Character {
+    <b>public void</b> draw() { System.out.println(<span class="s">"Drawing aerial character..."</span>); }
+    <b>public void</b> move() { System.out.println(<span class="s">"Flying in the sky..."</span>); }
+}
+<b>public class</b> GameEngine {
+    <b>public void</b> add(Character character) {
+        character.draw();
+        character.move();  <span class="c">// engine code never branches on type</span>
+    }
+}</pre>
+                <div class="example-box"><b>✅ NEW REQUIREMENT ARRIVES —</b> Need an
+                    <code>AquaticCharacter</code> that swims? Just write a new class that
+                    <code>implements Character</code>. <code>GameEngine</code> is never touched again —
+                    <b>extended, not modified</b>.
+                    <pre class="code" style="margin-top:8px;"><b>public class</b> AquaticCharacter <b>implements</b> Character {
+    <b>public void</b> draw() { System.out.println(<span class="s">"Drawing aquatic character..."</span>); }
+    <b>public void</b> move() { System.out.println(<span class="s">"Swimming in the water..."</span>); }
+}
+engine.add(<b>new</b> AquaticCharacter());  <span class="c">// engine.add(...) itself: unchanged</span></pre>
+                </div>
+            </div>
+
+            <div class="callout" style="margin-top:22px;">
+                <div class="icon">i</div>
+                <div>
+                    <p style="margin:0;"><b style="color:var(--ink)">One honest caveat about OCP:</b> no design is
+                        100% closed forever — at some point, some code has to be readily editable for any real
+                        system. The real goal of OCP is to <b>locate</b> the parts of the software that are likely to
+                        vary, and encapsulate + implement those variations through polymorphism, so the
+                        <i>rest</i> of the system stays closed.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. LSP -->
+        <section id="s5">
+            <div class="sec-head"><span class="sec-num">05</span>
+                <h2>The Liskov Substitution Principle (LSP)</h2>
+            </div>
+            <p class="sec-sub"><i>"Objects should be replaceable with instances of their subtypes without altering
+                    the correctness of that program."</i> Any class derived from a base class must honor the
+                <b style="color:var(--ink)">implied contract</b> between that base class and whatever code uses it.
+            </p>
+
+            <div class="grid-2">
+                <div class="card">
+                    <span class="tag">RULE 1</span>
+                    <h3>Signature Rule</h3>
+                    <p>If a program is type-correct for the <b>super type</b>, it must remain type-correct for the
+                        <b>subtype</b> too — method signatures in the subtype must match the base class
+                        (same/compatible parameter and return types).
+                    </p>
+                </div>
+                <div class="card">
+                    <span class="tag">RULE 2</span>
+                    <h3>Methods Rule</h3>
+                    <p>Calls to base-class methods must stay valid reasoning even when they actually run
+                        <i>overridden</i> subtype code. Subtypes may <b>weaken preconditions</b> (require less) and
+                        <b>strengthen postconditions</b> (guarantee more) — never the reverse.
+                    </p>
+                </div>
+            </div>
+
+            <div class="card" style="margin-top:22px;">
+                <h3>🐦 The classic violation — Bird / Penguin</h3>
+                <div class="grid-2">
+                    <div>
+                        <p><b style="color:var(--ink)">Base class:</b></p>
+                        <pre class="code"><b>class</b> Bird {
+  fly(): void { console.log(<span class="s">"Flying"</span>); }
+}</pre>
+                    </div>
+                    <div>
+                        <p><b style="color:var(--rose)">❌ Violation:</b></p>
+                        <pre class="code"><b>class</b> Penguin <b>extends</b> Bird {
+  fly(): void {
+    <b>throw new</b> Error(<span class="s">"Penguins can't fly!"</span>);
+  }
+}</pre>
+                    </div>
+                </div>
+                <div class="example-box"><b>WHY IT BREAKS —</b> Any code that does <code>bird.fly()</code> expecting a
+                    <code>Bird</code> will crash the instant that <code>Bird</code> is actually a
+                    <code>Penguin</code>. Substituting the subtype changed the program's correctness — a direct LSP
+                    violation. A <code>Sparrow extends Bird</code> that really flies would be a perfectly valid,
+                    LSP-honoring subtype.
+                </div>
+            </div>
+
+            <div class="grid-2" style="margin-top:22px;">
+                <div class="card">
+                    <span class="tag">EXAMPLE 2</span>
+                    <h3>⬛ Square / Rectangle problem</h3>
+                    <p><code>Square</code> is <b>not</b> a proper subtype of <code>Rectangle</code>: a
+                        <code>Rectangle</code>'s height and width are independently mutable, but a
+                        <code>Square</code>'s must always change <i>together</i>. A <code>User</code> that thinks
+                        it's talking to a <code>Rectangle</code> (call <code>setH()</code> then check the area) gets
+                        confused the moment the object is actually a <code>Square</code>.
+                    </p>
+                    <p style="margin-bottom:0;">Lesson: a substitutability violation, even a "simple" one, can pollute
+                        an entire architecture with extra defensive-checking mechanisms.</p>
+                </div>
+                <div class="card">
+                    <span class="tag">EXAMPLE 3 — CONFORMS</span>
+                    <h3>🧾 License / PersonalLicense / BusinessLicense</h3>
+                    <p>A <code>Billing</code> app calls <code>license.calcFee()</code> on a <code>License</code>
+                        reference. <code>PersonalLicense</code> and <code>BusinessLicense</code> each calculate the
+                        fee differently, but <code>Billing</code> never needs to know which one it has.</p>
+                    <p style="margin-bottom:0;">This example satisfies <b>both</b> OCP (new license types can be added
+                        without touching <code>Billing</code>) <b>and</b> LSP (both subtypes are fully substitutable
+                        for <code>License</code>).</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. FLASHCARDS -->
+        <section id="s6">
+            <div class="sec-head"><span class="sec-num">06</span>
+                <h2>Quick-Fire Flashcards</h2>
+            </div>
+            <p class="sec-sub">Tap a card to flip it. Good for a 5-minute recap right before an exam.</p>
+            <div class="flash-grid" id="flashGrid"></div>
+        </section>
+
+        <!-- 7. QUIZ -->
+        <section id="s7">
+            <div class="sec-head"><span class="sec-num">07</span>
+                <h2>Practice Questions</h2>
+            </div>
+            <p class="sec-sub">Self-check practice written from this lecture's content — not official past-paper
+                questions.</p>
+            <div id="quizContainer"></div>
+        </section>
+
+        <!-- 8. RECAP -->
+        <section id="s8">
+            <div class="sec-head"><span class="sec-num">08</span>
+                <h2>One-Screen Recap</h2>
+            </div>
+            <ul class="recap-list">
+                <li><b>Component design</b> defines the internal structure (class diagrams) and behavior of
+                    components already identified during architecture — it's the biggest lever on functional
+                    correctness.</li>
+                <li>OOP toolkit refresher: <b>abstract classes</b> (partial blueprint, can hold state),
+                    <b>interfaces</b> (pure contract, no state), <b>inheritance</b> ("is-a"), and
+                    <b>polymorphism</b> (one reference type, many runtime behaviors).
+                </li>
+                <li><b>SOLID</b> = Single Responsibility, Open-Closed, Liskov Substitution, Interface Segregation,
+                    Dependency Inversion.</li>
+                <li><b>SRP</b> — a class should have <b>one reason to change</b>. Split storage / calculation /
+                    presentation into separate classes.</li>
+                <li><b>OCP</b> — "open to extension, closed for modification." Encapsulate the part likely to vary
+                    behind an interface, so new types extend the system instead of editing it.</li>
+                <li><b>LSP</b> — subtypes must be fully substitutable for their base type without breaking program
+                    correctness. Signature Rule + Methods Rule. Classic failure case: Penguin can't honor
+                    Bird.fly().</li>
+                <li>Square/Rectangle: mutable independent dimensions vs. coupled dimensions — a textbook LSP
+                    violation even though it "feels" like natural inheritance.</li>
+                <li>ISP and DIP — the remaining two SOLID principles — plus modeling a component's internal
+                    <b>behavior</b> are covered in Lecture 03.
+                </li>
+            </ul>
+        </section>
+
+        <footer>
+            <div>Software Design &amp; Architecture — Chapter 05, Lecture 02 · Prince Sultan University</div>
+            <div class="made">Made by Shoug Alomran</div>
+        </footer>
+
+    </div>
+
+    <script>
+        const themeButtons = document.querySelectorAll('.toggle button');
+        themeButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const theme = btn.dataset.theme;
+                document.documentElement.setAttribute('data-theme', theme);
+                themeButtons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            });
+        });
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+            document.documentElement.setAttribute('data-theme', 'light');
+            themeButtons.forEach(b => b.classList.toggle('active', b.dataset.theme === 'light'));
+        }
+
+        const bar = document.getElementById('progressBar');
+        window.addEventListener('scroll', () => {
+            const h = document.documentElement;
+            const scrolled = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
+            bar.style.width = scrolled + '%';
+        });
+
+        function toggleTask(headEl) {
+            const task = headEl.parentElement;
+            const wasOpen = task.classList.contains('open');
+            document.querySelectorAll('.task').forEach(t => {
+                t.classList.remove('open');
+                t.querySelector('.task-body').style.maxHeight = null;
+            });
+            if (!wasOpen) {
+                task.classList.add('open');
+                const body = task.querySelector('.task-body');
+                body.style.maxHeight = body.scrollHeight + 60 + 'px';
+            }
+        }
+        window.addEventListener('load', () => {
+            document.querySelectorAll('.task.open .task-body').forEach(b => {
+                b.style.maxHeight = b.scrollHeight + 60 + 'px';
+            });
+        });
+
+        const flashData = [
+            ["Component Design (1-liner)", "The detailed-design task of defining the internal structure & behavior of components identified during architecture."],
+            ["Abstract class vs Interface", "Abstract class: can hold state + concrete methods, extend only one. Interface: pure contract, only constants, implement many."],
+            ["Polymorphism, in one line", "One reference type (parent/interface), many possible run-time behaviors (child overrides)."],
+            ["SOLID", "Single Responsibility · Open-Closed · Liskov Substitution · Interface Segregation · Dependency Inversion."],
+            ["SRP", "A module should be responsible to one, and only one, user or stakeholder — one reason to change."],
+            ["OCP", "Software should be open to extension but closed for modification — add new code, don't edit old working code."],
+            ["How OCP is achieved", "Encapsulate the part of the design likely to vary behind an interface, then extend via new implementing classes + polymorphism."],
+            ["LSP", "Objects should be replaceable with instances of their subtypes without altering the correctness of the program."],
+            ["LSP — Signature Rule", "Method signatures in the subtype must match/generalize the base type so type-correct code stays type-correct."],
+            ["LSP — classic violation", "Penguin extends Bird but throws on fly() — breaks any code that calls bird.fly() expecting it to work."],
+            ["Square/Rectangle problem", "Square isn't a true subtype of Rectangle — width/height must change together in Square but independently in Rectangle."],
+        ];
+        const flashGrid = document.getElementById('flashGrid');
+        flashData.forEach(([front, back]) => {
+            const card = document.createElement('div');
+            card.className = 'flash';
+            card.innerHTML = `
+      <div class="flash-inner">
+        <div class="flash-face flash-front">${front}</div>
+        <div class="flash-face flash-back">${back}<span class="flash-hint">tap to flip back</span></div>
+      </div>`;
+            card.addEventListener('click', () => card.classList.toggle('flipped'));
+            flashGrid.appendChild(card);
+        });
+
+        const quizData = [
+            {
+                type: 'mcq',
+                q: "1. During component design, what is primarily being defined for each component?",
+                options: [
+                    "Marketing requirements and pricing",
+                    "Internal data structures, algorithms, interface details, and communication mechanisms",
+                    "The company's org chart",
+                    "Only the GUI color scheme"
+                ],
+                correct: 1
+            },
+            {
+                type: 'mcq',
+                q: "2. Which OOP construct can hold instance variables AND have some methods fully implemented, while others are left abstract?",
+                options: [
+                    "Interface",
+                    "Abstract class",
+                    "Enum",
+                    "Static class"
+                ],
+                correct: 1
+            },
+            {
+                type: 'mcq',
+                q: "3. A class 'Student' both stores student data, calculates grades, and prints reports. Which principle does this violate?",
+                options: [
+                    "Liskov Substitution Principle",
+                    "Open-Closed Principle",
+                    "Single Responsibility Principle",
+                    "None — this is good design"
+                ],
+                correct: 2
+            },
+            {
+                type: 'mcq',
+                q: "4. A GameEngine.add() method has an if-statement that checks a character's type and calls fly() or run() accordingly. Adding a new character type requires editing this method. This design violates:",
+                options: [
+                    "The Open-Closed Principle",
+                    "The Single Responsibility Principle only",
+                    "Nothing, this is normal and expected",
+                    "The Liskov Substitution Principle only"
+                ],
+                correct: 0
+            },
+            {
+                type: 'mcq',
+                q: "5. Why does 'Penguin extends Bird' with a fly() that throws an exception violate LSP?",
+                options: [
+                    "Because Penguin should extend Fish instead",
+                    "Because it breaks any code that substitutes a Bird reference with a Penguin and calls fly()",
+                    "Because Java doesn't allow method overriding",
+                    "It doesn't violate LSP, it's a valid design"
+                ],
+                correct: 1
+            },
+            {
+                type: 'mcq',
+                q: "6. Per the LSP Methods Rule, a subtype method is allowed to:",
+                options: [
+                    "Strengthen preconditions and weaken postconditions",
+                    "Weaken preconditions (require less) and strengthen postconditions (guarantee more)",
+                    "Change the return type to anything unrelated",
+                    "Remove the method entirely"
+                ],
+                correct: 1
+            },
+            {
+                type: 'short',
+                q: "7. Short answer: Explain why 'Square extends Rectangle' is a famous example of an LSP violation, even though a square is mathematically a special rectangle.",
+                answer: "Key idea: LSP is about <b>behavioral</b> substitutability, not mathematical set membership. A Rectangle's width and height can be set independently; a Square must keep them equal. If a client calls setWidth() then setHeight() expecting only height to change (as a real Rectangle would), a Square silently changes width too — breaking the client's expected contract/behavior, even though 'a square is a rectangle' sounds true geometrically."
+            },
+            {
+                type: 'short',
+                q: "8. Short answer: Using the GameEngine/Character example, explain in your own words how the Open-Closed Principle and polymorphism work together to let you add an AquaticCharacter without touching GameEngine.",
+                answer: "Key idea: GameEngine depends only on the abstract Character interface (draw/move), not on any concrete character class. Because AquaticCharacter implements Character, GameEngine.add(Character c) can accept it without any code change — polymorphism resolves c.draw()/c.move() to AquaticCharacter's implementation at runtime. This is 'extension' (a brand new class) without 'modification' (GameEngine's source is untouched) — exactly what OCP asks for."
+            }
+        ];
+
+        const quizContainer = document.getElementById('quizContainer');
+        quizData.forEach((item, idx) => {
+            const wrap = document.createElement('div');
+            wrap.className = 'quiz-item';
+            if (item.type === 'mcq') {
+                wrap.innerHTML = `
+        <div class="quiz-q">${item.q}</div>
+        <div class="quiz-options" data-idx="${idx}">
+          ${item.options.map((opt, i) => `<div class="quiz-option" data-i="${i}">${String.fromCharCode(65 + i)}. ${opt}</div>`).join('')}
+        </div>`;
+                quizContainer.appendChild(wrap);
+                const optsEl = wrap.querySelectorAll('.quiz-option');
+                optsEl.forEach(optEl => {
+                    optEl.addEventListener('click', () => {
+                        if (wrap.dataset.answered) return;
+                        wrap.dataset.answered = 'true';
+                        const chosen = parseInt(optEl.dataset.i);
+                        optsEl.forEach((o, i) => {
+                            if (i === item.correct) o.classList.add('correct');
+                            else if (i === chosen) o.classList.add('wrong');
+                        });
+                    });
+                });
+            } else {
+                wrap.innerHTML = `
+        <div class="quiz-q">${item.q}</div>
+        <button class="reveal-btn">Show model answer</button>
+        <div class="short-answer">${item.answer}</div>`;
+                quizContainer.appendChild(wrap);
+                const btn = wrap.querySelector('.reveal-btn');
+                const ans = wrap.querySelector('.short-answer');
+                btn.addEventListener('click', () => {
+                    ans.classList.toggle('show');
+                    btn.textContent = ans.classList.contains('show') ? 'Hide model answer' : 'Show model answer';
+                });
+            }
+        });
+    </script>
+
+</body>
+
+</html>

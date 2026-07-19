@@ -1,0 +1,1452 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ch.5 L03 — ISP, DIP, Internal Behavior &amp; Rules of Design | Study Blueprint</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg: #081a2e;
+            --bg-elev: #0e2440;
+            --bg-elev-2: #122b4c;
+            --grid: rgba(125, 211, 252, 0.075);
+            --grid-strong: rgba(125, 211, 252, 0.16);
+            --ink: #e9f2ff;
+            --ink-dim: #93a9c7;
+            --ink-faint: #5f7896;
+            --cyan: #7dd3fc;
+            --cyan-strong: #38bdf8;
+            --amber: #fbbf24;
+            --amber-dim: #a8791c;
+            --rose: #fb7185;
+            --border: rgba(125, 211, 252, 0.28);
+            --border-soft: rgba(125, 211, 252, 0.14);
+            --shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
+            --radius: 14px;
+            --font-display: 'Space Grotesk', sans-serif;
+            --font-body: 'IBM Plex Sans', sans-serif;
+            --font-mono: 'IBM Plex Mono', monospace;
+        }
+
+        html[data-theme="light"] {
+            --bg: #eef2f7;
+            --bg-elev: #ffffff;
+            --bg-elev-2: #e4ecf5;
+            --grid: rgba(3, 105, 161, 0.07);
+            --grid-strong: rgba(3, 105, 161, 0.14);
+            --ink: #0a1929;
+            --ink-dim: #3d5674;
+            --ink-faint: #7488a3;
+            --cyan: #0369a1;
+            --cyan-strong: #075985;
+            --amber: #b45309;
+            --amber-dim: #92400e;
+            --rose: #be123c;
+            --border: rgba(3, 105, 161, 0.3);
+            --border-soft: rgba(3, 105, 161, 0.15);
+            --shadow: 0 20px 40px rgba(10, 25, 41, 0.12);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            background:
+                radial-gradient(circle at 1px 1px, var(--grid-strong) 1px, transparent 1px) 0 0/48px 48px,
+                linear-gradient(var(--bg), var(--bg));
+            color: var(--ink);
+            font-family: var(--font-body);
+            font-size: clamp(15px, 0.92vw + 10px, 18px);
+            line-height: 1.6;
+            transition: background-color .35s ease, color .35s ease;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        ::selection {
+            background: var(--amber);
+            color: #0a1929;
+        }
+
+        .wrap {
+            max-width: 1180px;
+            margin: 0 auto;
+            padding: 0 clamp(16px, 4vw, 56px);
+        }
+
+        .topbar {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            backdrop-filter: blur(10px);
+            background: color-mix(in srgb, var(--bg) 82%, transparent);
+            border-bottom: 1px solid var(--border-soft);
+        }
+
+        .topbar-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px clamp(16px, 4vw, 56px);
+            max-width: 1180px;
+            margin: 0 auto;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: var(--font-mono);
+            font-size: .8rem;
+            letter-spacing: .08em;
+            color: var(--ink-dim);
+            text-transform: uppercase;
+        }
+
+        .brand .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--amber);
+            box-shadow: 0 0 10px var(--amber);
+        }
+
+        .toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            padding: 4px;
+            background: var(--bg-elev);
+            cursor: pointer;
+            font-family: var(--font-mono);
+            font-size: .72rem;
+        }
+
+        .toggle button {
+            border: none;
+            background: transparent;
+            color: var(--ink-dim);
+            padding: 6px 12px;
+            border-radius: 999px;
+            cursor: pointer;
+            font-family: var(--font-mono);
+            font-size: .72rem;
+            letter-spacing: .05em;
+            transition: all .25s ease;
+        }
+
+        .toggle button.active {
+            background: var(--cyan);
+            color: var(--bg);
+            font-weight: 600;
+        }
+
+        html[data-theme="light"] .toggle button.active {
+            color: #fff;
+        }
+
+        .progress-track {
+            height: 2px;
+            background: var(--border-soft);
+        }
+
+        .progress-bar {
+            height: 2px;
+            width: 0%;
+            background: linear-gradient(90deg, var(--cyan), var(--amber));
+            transition: width .1s linear;
+        }
+
+        .hero {
+            padding: clamp(48px, 8vw, 96px) 0 clamp(32px, 6vw, 64px);
+            position: relative;
+        }
+
+        .eyebrow {
+            font-family: var(--font-mono);
+            font-size: .78rem;
+            letter-spacing: .16em;
+            color: var(--amber);
+            text-transform: uppercase;
+            margin: 0 0 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .eyebrow::before {
+            content: "§";
+            font-size: 1rem;
+        }
+
+        h1.title {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: clamp(2.1rem, 5vw, 3.6rem);
+            line-height: 1.08;
+            margin: 0 0 14px;
+            letter-spacing: -0.01em;
+        }
+
+        h1.title span {
+            color: var(--cyan);
+        }
+
+        .subtitle {
+            color: var(--ink-dim);
+            font-size: clamp(1rem, 1.3vw, 1.2rem);
+            max-width: 640px;
+            margin: 0 0 28px;
+        }
+
+        .hero-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px 28px;
+            font-family: var(--font-mono);
+            font-size: .78rem;
+            color: var(--ink-faint);
+            border-top: 1px dashed var(--border);
+            padding-top: 18px;
+        }
+
+        .hero-meta b {
+            color: var(--ink-dim);
+            font-weight: 600;
+        }
+
+        section {
+            padding: clamp(40px, 6vw, 72px) 0;
+            border-top: 1px solid var(--border-soft);
+        }
+
+        .sec-head {
+            display: flex;
+            align-items: baseline;
+            gap: 16px;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+        }
+
+        .sec-num {
+            font-family: var(--font-mono);
+            color: var(--amber);
+            font-size: .85rem;
+            border: 1px solid var(--amber-dim);
+            padding: 2px 8px;
+            border-radius: 6px;
+        }
+
+        h2 {
+            font-family: var(--font-display);
+            font-weight: 600;
+            font-size: clamp(1.5rem, 2.6vw, 2.1rem);
+            margin: 0;
+        }
+
+        .sec-sub {
+            color: var(--ink-dim);
+            max-width: 760px;
+            margin: 14px 0 34px;
+        }
+
+        .mnemonic {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-family: var(--font-mono);
+            font-size: .85rem;
+            background: var(--bg-elev);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 10px 16px;
+            margin: 10px 0 30px;
+            color: var(--ink-dim);
+        }
+
+        .mnemonic b {
+            color: var(--amber);
+            font-weight: 600;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 22px;
+        }
+
+        @media (max-width:760px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: var(--bg-elev);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 24px;
+            box-shadow: var(--shadow);
+        }
+
+        .card h3 {
+            font-family: var(--font-display);
+            margin: 0 0 10px;
+            font-size: 1.15rem;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .card p {
+            color: var(--ink-dim);
+            margin: 0 0 10px;
+            font-size: .95rem;
+        }
+
+        .card .tag {
+            display: inline-block;
+            font-family: var(--font-mono);
+            font-size: .7rem;
+            letter-spacing: .05em;
+            color: var(--cyan);
+            border: 1px solid var(--border);
+            padding: 2px 8px;
+            border-radius: 6px;
+            margin-bottom: 12px;
+        }
+
+        .blueprint-line {
+            border: none;
+            border-top: 1px dashed var(--border);
+            margin: 14px 0;
+        }
+
+        .bidir {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            font-family: var(--font-mono);
+            font-size: .82rem;
+            margin-top: 14px;
+            flex-wrap: wrap;
+        }
+
+        .bidir .node {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 10px 14px;
+            text-align: center;
+            background: var(--bg-elev-2);
+            min-width: 110px;
+        }
+
+        .bidir .arrows {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            color: var(--ink-faint);
+            font-size: .75rem;
+            text-align: center;
+        }
+
+        .task-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .task {
+            background: var(--bg-elev);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+        }
+
+        .task-head {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 18px 20px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .task-letter {
+            font-family: var(--font-mono);
+            font-weight: 700;
+            font-size: 1.15rem;
+            color: var(--bg);
+            background: var(--cyan);
+            width: 40px;
+            height: 40px;
+            border-radius: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .task-head b {
+            font-family: var(--font-display);
+            font-size: 1.05rem;
+        }
+
+        .task-head span.sub {
+            display: block;
+            color: var(--ink-dim);
+            font-size: .85rem;
+            font-weight: 400;
+        }
+
+        .task-chevron {
+            margin-left: auto;
+            color: var(--ink-faint);
+            transition: transform .3s ease;
+            font-family: var(--font-mono);
+        }
+
+        .task.open .task-chevron {
+            transform: rotate(45deg);
+            color: var(--amber);
+        }
+
+        .task-body {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height .35s ease;
+            padding: 0 20px;
+            color: var(--ink-dim);
+            font-size: .92rem;
+        }
+
+        .task.open .task-body {
+            padding: 0 20px 22px;
+        }
+
+        .task-body ul {
+            margin: 6px 0 0;
+            padding-left: 20px;
+        }
+
+        .task-body li {
+            margin-bottom: 6px;
+        }
+
+        .example-box {
+            margin-top: 12px;
+            background: var(--bg-elev-2);
+            border-left: 3px solid var(--amber);
+            padding: 10px 14px;
+            border-radius: 0 8px 8px 0;
+            font-size: .88rem;
+        }
+
+        .example-box b {
+            color: var(--amber);
+            font-family: var(--font-mono);
+            font-size: .75rem;
+            letter-spacing: .04em;
+        }
+
+        pre.code {
+            background: var(--bg-elev-2);
+            border: 1px solid var(--border-soft);
+            border-radius: 10px;
+            padding: 14px 16px;
+            overflow-x: auto;
+            font-family: var(--font-mono);
+            font-size: .78rem;
+            line-height: 1.55;
+            color: var(--ink-dim);
+            margin: 10px 0 0;
+        }
+
+        pre.code b {
+            color: var(--cyan-strong);
+        }
+
+        pre.code .s {
+            color: var(--amber);
+        }
+
+        pre.code .c {
+            color: var(--ink-faint);
+            font-style: italic;
+        }
+
+        .solid-strip {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin: 10px 0 30px;
+        }
+
+        @media (max-width:820px) {
+            .solid-strip {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .solid-chip {
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px 10px;
+            text-align: center;
+            background: var(--bg-elev);
+            font-family: var(--font-mono);
+        }
+
+        .solid-chip.now {
+            border-color: var(--amber);
+            box-shadow: 0 0 0 1px var(--amber) inset;
+        }
+
+        .solid-chip .letter {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--cyan);
+            display: block;
+        }
+
+        .solid-chip.now .letter {
+            color: var(--amber);
+        }
+
+        .solid-chip .name {
+            font-size: .68rem;
+            color: var(--ink-faint);
+            display: block;
+            margin-top: 4px;
+            letter-spacing: .02em;
+        }
+
+        .seq-wrap {
+            background: var(--bg-elev);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 22px;
+            box-shadow: var(--shadow);
+            overflow-x: auto;
+        }
+
+        .seq-lifelines {
+            display: flex;
+            gap: 34px;
+            min-width: 560px;
+            font-family: var(--font-mono);
+            font-size: .74rem;
+        }
+
+        .seq-lane {
+            flex: 1;
+            text-align: center;
+            position: relative;
+            padding-top: 6px;
+        }
+
+        .seq-lane .box {
+            display: inline-block;
+            border: 1px solid var(--border);
+            background: var(--bg-elev-2);
+            padding: 6px 10px;
+            border-radius: 6px;
+            color: var(--ink);
+            margin-bottom: 10px;
+        }
+
+        .seq-lane .line {
+            border-left: 1px dashed var(--border);
+            height: 180px;
+            margin: 0 auto;
+            position: relative;
+            width: 1px;
+        }
+
+        .seq-msg {
+            position: absolute;
+            left: 0;
+            right: -100%;
+            font-size: .68rem;
+            color: var(--ink-dim);
+            white-space: nowrap;
+            text-align: left;
+        }
+
+        .rules-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+        }
+
+        @media (max-width:760px) {
+            .rules-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .rule-card {
+            border: 1px solid var(--border);
+            background: var(--bg-elev);
+            border-radius: 10px;
+            padding: 14px 16px;
+        }
+
+        .rule-card .num {
+            font-family: var(--font-mono);
+            color: var(--amber);
+            font-size: .72rem;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .rule-card b {
+            font-family: var(--font-display);
+            font-size: .96rem;
+        }
+
+        .rule-card p {
+            color: var(--ink-dim);
+            font-size: .85rem;
+            margin: 6px 0 0;
+        }
+
+        .mistake-row {
+            display: flex;
+            gap: 14px;
+            padding: 14px 0;
+            border-bottom: 1px dashed var(--border-soft);
+        }
+
+        .mistake-row:last-child {
+            border-bottom: none;
+        }
+
+        .mistake-row .x {
+            font-family: var(--font-mono);
+            color: var(--rose);
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .mistake-row b {
+            display: block;
+            font-family: var(--font-display);
+        }
+
+        .mistake-row p {
+            margin: 4px 0 0;
+            color: var(--ink-dim);
+            font-size: .9rem;
+        }
+
+        .flash-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 18px;
+        }
+
+        .flash {
+            perspective: 1200px;
+            height: 150px;
+            cursor: pointer;
+        }
+
+        .flash-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform .5s;
+            transform-style: preserve-3d;
+        }
+
+        .flash.flipped .flash-inner {
+            transform: rotateY(180deg);
+        }
+
+        .flash-face {
+            position: absolute;
+            inset: 0;
+            backface-visibility: hidden;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-size: .92rem;
+        }
+
+        .flash-front {
+            background: var(--bg-elev);
+            font-family: var(--font-display);
+            font-weight: 600;
+            color: var(--cyan);
+        }
+
+        .flash-back {
+            background: var(--bg-elev-2);
+            transform: rotateY(180deg);
+            color: var(--ink-dim);
+            font-size: .85rem;
+            padding: 14px;
+        }
+
+        .flash-hint {
+            position: absolute;
+            bottom: 8px;
+            right: 12px;
+            font-family: var(--font-mono);
+            font-size: .62rem;
+            color: var(--ink-faint);
+        }
+
+        .callout {
+            display: flex;
+            gap: 18px;
+            background: var(--bg-elev);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 24px;
+            align-items: flex-start;
+            box-shadow: var(--shadow);
+        }
+
+        .callout .icon {
+            font-family: var(--font-mono);
+            font-size: 1.4rem;
+            color: var(--rose);
+            border: 1.5px solid var(--rose);
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .quiz-item {
+            background: var(--bg-elev);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 20px 22px;
+            margin-bottom: 16px;
+        }
+
+        .quiz-q {
+            font-family: var(--font-display);
+            font-weight: 600;
+            margin-bottom: 12px;
+            font-size: 1.02rem;
+        }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .quiz-option {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 10px 14px;
+            cursor: pointer;
+            font-size: .9rem;
+            transition: all .2s ease;
+        }
+
+        .quiz-option:hover {
+            border-color: var(--cyan);
+        }
+
+        .quiz-option.correct {
+            border-color: #22c55e;
+            background: color-mix(in srgb, #22c55e 12%, var(--bg-elev));
+        }
+
+        .quiz-option.wrong {
+            border-color: var(--rose);
+            background: color-mix(in srgb, var(--rose) 12%, var(--bg-elev));
+        }
+
+        .reveal-btn {
+            font-family: var(--font-mono);
+            font-size: .78rem;
+            background: transparent;
+            color: var(--cyan);
+            border: 1px solid var(--border);
+            padding: 8px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .short-answer {
+            display: none;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px dashed var(--border);
+            color: var(--ink-dim);
+            font-size: .9rem;
+        }
+
+        .short-answer.show {
+            display: block;
+        }
+
+        .short-answer b {
+            color: var(--amber);
+        }
+
+        .recap-list {
+            columns: 2;
+            column-gap: 32px;
+        }
+
+        @media (max-width:700px) {
+            .recap-list {
+                columns: 1;
+            }
+        }
+
+        .recap-list li {
+            break-inside: avoid;
+            margin-bottom: 12px;
+            color: var(--ink-dim);
+            font-size: .92rem;
+        }
+
+        .recap-list li b {
+            color: var(--ink);
+        }
+
+        footer {
+            text-align: center;
+            padding: 48px 0 60px;
+            font-family: var(--font-mono);
+            font-size: .8rem;
+            color: var(--ink-faint);
+            border-top: 1px solid var(--border-soft);
+        }
+
+        footer .made {
+            margin-top: 10px;
+            letter-spacing: .08em;
+            color: var(--cyan);
+            font-size: .75rem;
+        }
+
+        a.jump {
+            color: var(--cyan);
+            text-decoration: none;
+            border-bottom: 1px dotted var(--border);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="topbar">
+        <div class="topbar-inner">
+            <div class="brand"><span class="dot"></span> CH.05 L03 · ISP · DIP · BEHAVIOR</div>
+            <div class="toggle" id="themeToggle">
+                <button data-theme="dark" class="active">DARK</button>
+                <button data-theme="light">LIGHT</button>
+            </div>
+        </div>
+        <div class="progress-track">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+    </div>
+
+    <div class="wrap">
+
+        <section class="hero" style="border-top:none;">
+            <p class="eyebrow">Software Design &amp; Architecture</p>
+            <h1 class="title">Finishing <span>SOLID</span> &amp; Designing Behavior</h1>
+            <p class="subtitle">The last two SOLID principles — Interface Segregation and Dependency Inversion — plus
+                how to model a component's internal <i>behavior</i> (not just its structure), and the practical rules
+                &amp; common mistakes that tie the whole detailed-design chapter together.</p>
+            <div class="hero-meta">
+                <span><b>Chapter</b> 05 · Lecture 03</span>
+                <span><b>Builds on</b> Lecture 02 — SRP · OCP · LSP</span>
+                <span><b>Covers</b> ISP · DIP · Sequence diagrams · Rules of Design</span>
+                <span><b>Next chapter</b> Creational Design Patterns</span>
+            </div>
+        </section>
+
+        <!-- 0. RECAP STRIP -->
+        <section id="s0">
+            <div class="sec-head"><span class="sec-num">00</span>
+                <h2>SOLID So Far</h2>
+            </div>
+            <p class="sec-sub">Lecture 02 covered the first three letters. This lecture finishes the acronym.</p>
+            <div class="solid-strip">
+                <div class="solid-chip"><span class="letter">S</span><span class="name">Single Responsibility
+                        <br>✓ done</span></div>
+                <div class="solid-chip"><span class="letter">O</span><span class="name">Open-Closed <br>✓ done</span>
+                </div>
+                <div class="solid-chip"><span class="letter">L</span><span class="name">Liskov Substitution <br>✓
+                        done</span></div>
+                <div class="solid-chip now"><span class="letter">I</span><span class="name">Interface Segregation
+                        <br>⚡ today</span></div>
+                <div class="solid-chip now"><span class="letter">D</span><span class="name">Dependency Inversion
+                        <br>⚡ today</span></div>
+            </div>
+        </section>
+
+        <!-- 1. ISP -->
+        <section id="s1">
+            <div class="sec-head"><span class="sec-num">01</span>
+                <h2>The Interface Segregation Principle (ISP)</h2>
+            </div>
+            <p class="sec-sub"><i>"Classes/methods should not be forced to depend on methods that they do not
+                    use."</i> The ISP implies that <b style="color:var(--ink)">many small, client-specific
+                    interfaces</b> are better than <b style="color:var(--ink)">one general-purpose, bloated
+                    interface</b>.</p>
+
+            <div class="card">
+                <h3>🎮 Worked example — enemy characters</h3>
+                <p>A game has enemy characters that can either roam over land, fly, or swim — plus a
+                    <code>SuperCharacter</code> that can do all three. A tempting (but wrong) design puts every
+                    ability on one shared interface:
+                </p>
+                <pre class="code"><b>interface</b> EnemyCharacter {
+    <b>void</b> fly();
+    <b>void</b> run();
+    <b>void</b> swim();
+}
+<span class="c">// AerialCharacter, TerrestrialCharacter, AquaticCharacter, SuperCharacter</span>
+<span class="c">// ALL implement EnemyCharacter</span></pre>
+                <div class="example-box"><b>WHY THIS IS BLOATED —</b> <code>AerialCharacter</code> only needs
+                    <code>fly()</code>, yet is forced to also implement <code>run()</code> and
+                    <code>swim()</code> (usually with empty/no-op bodies). Only <code>SuperCharacter</code> actually
+                    needs the full interface — everyone else is "polluted" with methods they don't use. This is
+                    <b>also</b> an LSP violation: a <code>TerrestrialCharacter</code> can't honestly replace an
+                    <code>EnemyCharacter</code> if calling code expects <code>fly()</code> to work.
+                </div>
+            </div>
+
+            <div class="card" style="margin-top:22px;">
+                <h3>🛠️ The fix — split into small, specific interfaces</h3>
+                <pre class="code"><b>interface</b> SuperCharacter {
+    <b>void</b> fly(); <b>void</b> run(); <b>void</b> swim();
+}
+<b>interface</b> AerialCharacter <b>extends</b> SuperCharacter { <b>void</b> fly(); }
+<b>interface</b> TerrestrialCharacter <b>extends</b> SuperCharacter { <b>void</b> run(); }
+<b>interface</b> AquaticCharacter <b>extends</b> SuperCharacter { <b>void</b> swim(); }
+
+<span class="c">// Each client implements ONLY the specific interface it needs</span>
+<b>class</b> AerialCharacterClient <b>implements</b> AerialCharacter {
+    <b>public void</b> fly() { System.out.println(<span class="s">"flying"</span>); }
+}</pre>
+                <p style="margin-top:10px; margin-bottom:0;">Now <code>AerialCharacterClient</code> depends on
+                    exactly one method it actually uses. Only a true "does everything" character needs to implement
+                    the full <code>SuperCharacter</code> contract.</p>
+            </div>
+
+            <div class="grid-2" style="margin-top:22px;">
+                <div class="card">
+                    <span class="tag">❌ ISP VIOLATION</span>
+                    <h3><code>Worker</code> — one bloated interface</h3>
+                    <pre class="code"><b>interface</b> Worker {
+    <b>void</b> work();
+    <b>void</b> eat();
+}
+<b>class</b> Robot <b>implements</b> Worker {
+    <b>public void</b> work() { System.out.println(<span class="s">"Robot working"</span>); }
+    <b>public void</b> eat() { }  <span class="c">// ❌ Robot doesn't eat!</span>
+}</pre>
+                </div>
+                <div class="card">
+                    <span class="tag">✅ ISP APPLIED</span>
+                    <h3>Split into <code>Workable</code> + <code>Eatable</code></h3>
+                    <pre class="code"><b>interface</b> Workable { <b>void</b> work(); }
+<b>interface</b> Eatable  { <b>void</b> eat(); }
+
+<b>class</b> Robot <b>implements</b> Workable { <span class="c">// only what it needs</span>
+    <b>public void</b> work() { … }
+}
+<b>class</b> Human <b>implements</b> Workable, Eatable {
+    <b>public void</b> work() { … }
+    <b>public void</b> eat()  { … }
+}</pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. DIP -->
+        <section id="s2">
+            <div class="sec-head"><span class="sec-num">02</span>
+                <h2>The Dependency Inversion Principle (DIP)</h2>
+            </div>
+            <p class="sec-sub">The most flexible systems are those where source-code dependencies refer
+                <b style="color:var(--ink)">only to abstractions</b>, never to concretions.
+                <b>High-level modules should not depend on low-level modules — both should depend on
+                    abstractions.</b> And: abstractions should not depend on details; details should depend on
+                abstractions.
+            </p>
+
+            <div class="grid-2">
+                <div class="card">
+                    <span class="tag">❌ REAL-LIFE BAD IDEA</span>
+                    <h3>🔌 A charger that only works with Samsung</h3>
+                    <p>Buy a charger that works <b>only</b> with Samsung phones — switch to an iPhone, and the charger
+                        is useless.</p>
+                </div>
+                <div class="card">
+                    <span class="tag">✅ REAL-LIFE GOOD IDEA</span>
+                    <h3>🔌 A USB charger</h3>
+                    <p>Buy a charger built for the <b>USB abstraction</b> — any phone that speaks USB can use it:
+                        Samsung, iPhone, anything. USB is the interface (abstraction).</p>
+                </div>
+            </div>
+
+            <div class="grid-2" style="margin-top:22px;">
+                <div class="card">
+                    <span class="tag">❌ VIOLATES DIP</span>
+                    <h3><code>Switch</code> depends on concrete <code>Fan</code></h3>
+                    <pre class="code"><b>class</b> Fan {
+    <b>void</b> turnOn() { System.out.println(<span class="s">"Fan is ON"</span>); }
+}
+<b>class</b> Switch {
+    Fan fan = <b>new</b> Fan();  <span class="c">// directly depends on Fan</span>
+    <b>void</b> press() { fan.turnOn(); }
+}</pre>
+                    <p style="margin-top:10px;">Want a <code>Switch</code> that controls a <code>Light</code>
+                        instead? You have to <b>modify</b> <code>Switch</code>.</p>
+                </div>
+                <div class="card">
+                    <span class="tag">✅ APPLIES DIP</span>
+                    <h3><code>Switch</code> depends on a <code>Device</code> interface</h3>
+                    <pre class="code"><b>interface</b> Device { <b>void</b> turnOn(); }
+<b>class</b> Fan   <b>implements</b> Device { <b>public void</b> turnOn(){…} }
+<b>class</b> Light <b>implements</b> Device { <b>public void</b> turnOn(){…} }
+
+<b>class</b> Switch {
+    Device device;
+    Switch(Device device) { <b>this</b>.device = device; }
+    <b>void</b> press() { device.turnOn(); }
+}
+<span class="c">// usage:</span>
+Switch s1 = <b>new</b> Switch(<b>new</b> Fan());
+Switch s2 = <b>new</b> Switch(<b>new</b> Light());</pre>
+                </div>
+            </div>
+
+            <div class="card" style="margin-top:22px;">
+                <h3>👷 Manager / Worker example</h3>
+                <div class="grid-2">
+                    <div>
+                        <p><b style="color:var(--rose)">❌ Bad — tightly coupled:</b></p>
+                        <pre class="code"><b>class</b> Manager {
+    Worker worker;  <span class="c">// fixed to ONE type</span>
+    <b>void</b> setWorker(Worker w){ worker = w; }
+    <b>void</b> manage(){ worker.work(); }
+}</pre>
+                    </div>
+                    <div>
+                        <p><b style="color:var(--cyan)">✅ Good — depends on abstraction:</b></p>
+                        <pre class="code"><b>interface</b> IWorker { <b>void</b> work(); }
+<b>class</b> Manager {
+    IWorker worker;  <span class="c">// any worker type!</span>
+    <b>void</b> setWorker(IWorker w){ worker = w; }
+    <b>void</b> manage(){ worker.work(); }
+}</pre>
+                    </div>
+                </div>
+                <div class="example-box"><b>PAYOFF —</b> <code>Manager</code> can now handle
+                    <code>RobotWorker</code>, <code>AIWorker</code>, <code>InternWorker</code> — anything implementing
+                    <code>IWorker</code> — without a single change to <code>Manager</code> itself.
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. INTERNAL BEHAVIOR -->
+        <section id="s3">
+            <div class="sec-head"><span class="sec-num">03</span>
+                <h2>Modeling the Internal Behavior of a Component</h2>
+            </div>
+            <p class="sec-sub">Component design models <b style="color:var(--ink)">two</b> different things, with two
+                different diagrams: internal <b>structure</b> → a <b>class diagram</b>. Internal
+                <b>behavior</b> (how objects talk to each other over time) → a <b>sequence diagram</b>.
+            </p>
+
+            <div class="seq-wrap">
+                <div class="seq-lifelines">
+                    <div class="seq-lane">
+                        <div class="box">sm : ScheduleManager</div>
+                        <div class="line">
+                            <div class="seq-msg" style="top:10px;">1: timer expires</div>
+                            <div class="seq-msg" style="top:60px;">2: getMsg()</div>
+                            <div class="seq-msg" style="top:90px;">‹‹return›› msgId</div>
+                            <div class="seq-msg" style="top:120px;">4: interpretMsg()</div>
+                        </div>
+                    </div>
+                    <div class="seq-lane">
+                        <div class="box">s : Schedule</div>
+                        <div class="line"></div>
+                    </div>
+                    <div class="seq-lane">
+                        <div class="box">HeatSensor : Sensor</div>
+                        <div class="line">
+                            <div class="seq-msg" style="top:150px;">5: activate() &nbsp;[if msgId == HEAT_MSG_ID]</div>
+                        </div>
+                    </div>
+                    <div class="seq-lane">
+                        <div class="box">VibrationSensor : Sensor</div>
+                        <div class="line">
+                            <div class="seq-msg" style="top:180px;">6: activate() &nbsp;[if msgId == VIBRATE_MSG_ID]
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <p style="margin-top:24px; color:var(--ink-dim); font-size:.85rem;">Reading this diagram: a timer
+                    expires → <code>ScheduleManager</code> asks the <code>Schedule</code> for the next message →
+                    interprets the message id → based on an <code>alt</code> (alternative) fragment, activates
+                    <b>either</b> the heat sensor <b>or</b> the vibration sensor, never both. This is exactly the kind
+                    of internal timing/collaboration detail a class diagram cannot show on its own.
+                </p>
+            </div>
+        </section>
+
+        <!-- 4. RULES OF DESIGN -->
+        <section id="s4">
+            <div class="sec-head"><span class="sec-num">04</span>
+                <h2>Rules of Design</h2>
+            </div>
+            <p class="sec-sub">A checklist of practical habits that make any detailed design — not just OO ones —
+                more likely to succeed.</p>
+
+            <div class="rules-grid">
+                <div class="rule-card"><span class="num">01</span><b>Make sure the problem is well-defined</b>
+                    <p>All design criteria, requirements, and constraints should be known before design starts.</p>
+                </div>
+                <div class="rule-card"><span class="num">02</span><b>What comes before how</b>
+                    <p>Define the functionalities to be performed at every level of abstraction before deciding which
+                        structures implement them.</p>
+                </div>
+                <div class="rule-card"><span class="num">03</span><b>Separate orthogonal concerns</b>
+                    <p>Do not connect what is independent.</p>
+                </div>
+                <div class="rule-card"><span class="num">04</span><b>Design external functionality before
+                        internal</b>
+                    <p>Treat the solution as a black-box first — decide how it interacts with its environment — then
+                        design what's inside it, recursively.</p>
+                </div>
+                <div class="rule-card"><span class="num">05</span><b>Keep it simple</b>
+                    <p>Fancy designs are buggier than simple ones — harder to implement, verify, and often less
+                        efficient. Complex problems are usually just simple problems huddled together.</p>
+                </div>
+                <div class="rule-card"><span class="num">06</span><b>Work at multiple levels of abstraction</b>
+                    <p>Good designers move between high-level view and low-level detail quickly and easily.</p>
+                </div>
+                <div class="rule-card"><span class="num">07</span><b>Design for extensibility</b>
+                    <p>A good design is "open-ended" — easy to extend. Don't introduce what's immaterial; don't
+                        restrict what's irrelevant.</p>
+                </div>
+                <div class="rule-card"><span class="num">08</span><b>Use rapid prototyping when applicable</b>
+                    <p>Before fully implementing a design, build a high-level prototype and verify the design
+                        criteria are met.</p>
+                </div>
+                <div class="rule-card"><span class="num">09</span><b>Details should depend on abstractions</b>
+                    <p>Abstractions should not depend on details (this is DIP, restated as a general design rule).
+                    </p>
+                </div>
+                <div class="rule-card"><span class="num">10</span><b>Classes in one component change together</b>
+                    <p>Classes within a released component should share common closure — if one needs to change, they
+                        all likely need to change too.</p>
+                </div>
+                <div class="rule-card"><span class="num">11</span><b>Classes in one component are reused together</b>
+                    <p>It should be impossible to reuse less than the whole component — you reuse the total, not
+                        partially.</p>
+                </div>
+                <div class="rule-card"><span class="num">12</span><b>Dependencies run toward stability</b>
+                    <p>The dependee must be more stable than the depender. The more stable a component is, the more
+                        it should consist purely of abstract classes — a completely stable component is nothing but
+                        abstractions.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. COMMON MISTAKES -->
+        <section id="s5">
+            <div class="sec-head"><span class="sec-num">05</span>
+                <h2>Common Design Mistakes</h2>
+            </div>
+            <div class="card">
+                <div class="mistake-row">
+                    <div class="x">✕</div>
+                    <div>
+                        <b>Depth-first design</b>
+                        <p>Diving deep into one part of the design before the rest is even sketched out — only
+                            partially satisfies the requirements. Experience is the best cure for this.</p>
+                    </div>
+                </div>
+                <div class="mistake-row">
+                    <div class="x">✕</div>
+                    <div>
+                        <b>Directly refining the requirements specification</b>
+                        <p>Jumping straight from raw requirements text into design details leads to overly
+                            constrained, inefficient designs.</p>
+                    </div>
+                </div>
+                <div class="mistake-row">
+                    <div class="x">✕</div>
+                    <div>
+                        <b>Failure to consider potential changes</b>
+                        <p>Always design for extension <i>and</i> contraction — assume today's requirements are not
+                            the final ones.</p>
+                    </div>
+                </div>
+                <div class="mistake-row">
+                    <div class="x">✕</div>
+                    <div>
+                        <b>Making the design too detailed</b>
+                        <p>Over-specifying now over-constrains the implementation later, removing flexibility the
+                            developer should have.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. FLASHCARDS -->
+        <section id="s6">
+            <div class="sec-head"><span class="sec-num">06</span>
+                <h2>Quick-Fire Flashcards</h2>
+            </div>
+            <p class="sec-sub">Tap a card to flip it. Good for a 5-minute recap right before an exam.</p>
+            <div class="flash-grid" id="flashGrid"></div>
+        </section>
+
+        <!-- 7. QUIZ -->
+        <section id="s7">
+            <div class="sec-head"><span class="sec-num">07</span>
+                <h2>Practice Questions</h2>
+            </div>
+            <p class="sec-sub">Self-check practice written from this lecture's content — not official past-paper
+                questions.</p>
+            <div id="quizContainer"></div>
+        </section>
+
+        <!-- 8. RECAP -->
+        <section id="s8">
+            <div class="sec-head"><span class="sec-num">08</span>
+                <h2>One-Screen Recap</h2>
+            </div>
+            <ul class="recap-list">
+                <li><b>ISP</b> — many small, client-specific interfaces beat one bloated general-purpose interface.
+                    Classes shouldn't be forced to implement methods they don't use.</li>
+                <li>The enemy-character ISP fix: split one <code>EnemyCharacter</code> interface into
+                    <code>Aerial</code>/<code>Terrestrial</code>/<code>Aquatic</code>, all extending a minimal
+                    <code>SuperCharacter</code> base — only the "does everything" type implements it all.
+                </li>
+                <li><b>DIP</b> — high-level modules and low-level modules should both depend on abstractions; nothing
+                    concrete should be depended on. USB-charger analogy: depend on the interface, not one specific
+                    device.</li>
+                <li><code>Switch → Device</code> and <code>Manager → IWorker</code>: the concrete class becomes a
+                    constructor/setter parameter of an abstract type, so new implementations plug in without
+                    modifying the depender.</li>
+                <li>A component's <b>structure</b> is modeled with a class diagram; its <b>behavior</b> (message
+                    order over time) is modeled with a <b>sequence diagram</b>.</li>
+                <li>12 practical <b>Rules of Design</b>: define the problem first, what-before-how, separate
+                    orthogonal concerns, external-before-internal, keep it simple, work at multiple abstraction
+                    levels, design for extensibility, prototype early, depend on abstractions, common closure,
+                    reused-together, dependencies toward stability.</li>
+                <li>4 <b>Common Mistakes</b>: depth-first design, refining requirements directly into design, ignoring
+                    future change, over-detailing the design.</li>
+                <li>Chapter 5 (Principles of Detailed Design) is complete — next up: <b>Creational Design
+                        Patterns</b>.</li>
+            </ul>
+        </section>
+
+        <footer>
+            <div>Software Design &amp; Architecture — Chapter 05, Lecture 03 · Prince Sultan University</div>
+            <div class="made">Made by Shoug Alomran</div>
+        </footer>
+
+    </div>
+
+    <script>
+        const themeButtons = document.querySelectorAll('.toggle button');
+        themeButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const theme = btn.dataset.theme;
+                document.documentElement.setAttribute('data-theme', theme);
+                themeButtons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            });
+        });
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+            document.documentElement.setAttribute('data-theme', 'light');
+            themeButtons.forEach(b => b.classList.toggle('active', b.dataset.theme === 'light'));
+        }
+
+        const bar = document.getElementById('progressBar');
+        window.addEventListener('scroll', () => {
+            const h = document.documentElement;
+            const scrolled = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
+            bar.style.width = scrolled + '%';
+        });
+
+        const flashData = [
+            ["ISP", "Classes/methods should not be forced to depend on methods they don't use — many small interfaces beat one bloated one."],
+            ["ISP fix pattern", "Split one 'god interface' into several focused interfaces; a class implements only the ones relevant to it."],
+            ["DIP", "High-level modules should not depend on low-level modules — both should depend on abstractions. Details depend on abstractions, never the reverse."],
+            ["DIP real-life analogy", "A USB charger works with any phone (abstraction); a Samsung-only charger breaks the moment you switch phones (concretion)."],
+            ["Class diagram vs sequence diagram", "Class diagram = internal STRUCTURE of a component. Sequence diagram = internal BEHAVIOR (message order over time)."],
+            ["Rule: what before how", "Define what functionality is needed at each abstraction level before deciding which structure implements it."],
+            ["Rule: common closure", "Classes within a released component should change together — if one needs modification, the rest likely do too."],
+            ["Rule: dependency stability", "Dependencies must run toward stability — the dependee should be more stable than the depender."],
+            ["Mistake: depth-first design", "Diving deep into one part before the whole design is sketched — only partially satisfies requirements."],
+            ["Mistake: over-detailing", "Making the design too detailed over-constrains the implementation."],
+        ];
+        const flashGrid = document.getElementById('flashGrid');
+        flashData.forEach(([front, back]) => {
+            const card = document.createElement('div');
+            card.className = 'flash';
+            card.innerHTML = `
+      <div class="flash-inner">
+        <div class="flash-face flash-front">${front}</div>
+        <div class="flash-face flash-back">${back}<span class="flash-hint">tap to flip back</span></div>
+      </div>`;
+            card.addEventListener('click', () => card.classList.toggle('flipped'));
+            flashGrid.appendChild(card);
+        });
+
+        const quizData = [
+            {
+                type: 'mcq',
+                q: "1. A single 'EnemyCharacter' interface forces every character (aerial, terrestrial, aquatic) to implement fly(), run(), and swim(), even ones that only need one. This violates:",
+                options: [
+                    "The Dependency Inversion Principle",
+                    "The Interface Segregation Principle",
+                    "The Single Responsibility Principle only",
+                    "Nothing — this is good design"
+                ],
+                correct: 1
+            },
+            {
+                type: 'mcq',
+                q: "2. Per the Dependency Inversion Principle, which statement is correct?",
+                options: [
+                    "High-level modules should depend directly on low-level modules for performance",
+                    "Both high-level and low-level modules should depend on abstractions",
+                    "Abstractions should depend on details to stay flexible",
+                    "Low-level modules should never implement any interface"
+                ],
+                correct: 1
+            },
+            {
+                type: 'mcq',
+                q: "3. In the Switch/Fan/Light example, what change makes the design DIP-compliant?",
+                options: [
+                    "Making Switch inherit from Fan",
+                    "Making Switch hold a reference to a Device interface instead of a concrete Fan",
+                    "Deleting the Light class",
+                    "Making Fan and Light both extend Switch"
+                ],
+                correct: 1
+            },
+            {
+                type: 'mcq',
+                q: "4. Which UML diagram is used to model the internal BEHAVIOR of a component (the order messages are exchanged over time)?",
+                options: [
+                    "Class diagram",
+                    "Deployment diagram",
+                    "Sequence diagram",
+                    "Package diagram"
+                ],
+                correct: 2
+            },
+            {
+                type: 'mcq',
+                q: "5. Which of the following is one of the 'Rules of Design' covered in this lecture?",
+                options: [
+                    "Design internal functionality before external functionality",
+                    "Add as much detail as possible up front to avoid ambiguity",
+                    "Design external functionality (black-box behavior) before internal functionality",
+                    "Ignore potential future changes to keep the design simple"
+                ],
+                correct: 2
+            },
+            {
+                type: 'mcq',
+                q: "6. 'Depth-first design' is listed as a common design mistake because it:",
+                options: [
+                    "Makes the design too abstract",
+                    "Only partially satisfies the requirements by diving too deep into one part before the rest is designed",
+                    "Is always faster and therefore always preferred",
+                    "Only applies to database design"
+                ],
+                correct: 1
+            },
+            {
+                type: 'short',
+                q: "7. Short answer: Using the Manager/IWorker example, explain how ISP and DIP can work together in the same design.",
+                answer: "Key idea: DIP says Manager should depend on an abstraction (IWorker) rather than a concrete Worker class, so new worker types can be introduced without modifying Manager. ISP complements this by keeping IWorker itself small and focused (e.g., just work()) rather than bloated with unrelated methods (like eat() or sleep()) that not every worker type would need — so implementers of IWorker aren't forced to stub out irrelevant methods."
+            },
+            {
+                type: 'short',
+                q: "8. Short answer: A component's class diagram looks perfect, but the system still misbehaves at runtime (wrong order of calls, race conditions). What design activity was likely skipped, and why does it matter?",
+                answer: "Key idea: modeling the component's internal BEHAVIOR with a sequence diagram was likely skipped. A class diagram only shows static structure (what methods/attributes exist) — it says nothing about the order, timing, or conditional branching (e.g., alt fragments) of method calls at runtime. Without a sequence diagram, subtle collaboration bugs (wrong call order, missing conditions) are easy to miss until implementation or testing."
+            }
+        ];
+
+        const quizContainer = document.getElementById('quizContainer');
+        quizData.forEach((item, idx) => {
+            const wrap = document.createElement('div');
+            wrap.className = 'quiz-item';
+            if (item.type === 'mcq') {
+                wrap.innerHTML = `
+        <div class="quiz-q">${item.q}</div>
+        <div class="quiz-options" data-idx="${idx}">
+          ${item.options.map((opt, i) => `<div class="quiz-option" data-i="${i}">${String.fromCharCode(65 + i)}. ${opt}</div>`).join('')}
+        </div>`;
+                quizContainer.appendChild(wrap);
+                const optsEl = wrap.querySelectorAll('.quiz-option');
+                optsEl.forEach(optEl => {
+                    optEl.addEventListener('click', () => {
+                        if (wrap.dataset.answered) return;
+                        wrap.dataset.answered = 'true';
+                        const chosen = parseInt(optEl.dataset.i);
+                        optsEl.forEach((o, i) => {
+                            if (i === item.correct) o.classList.add('correct');
+                            else if (i === chosen) o.classList.add('wrong');
+                        });
+                    });
+                });
+            } else {
+                wrap.innerHTML = `
+        <div class="quiz-q">${item.q}</div>
+        <button class="reveal-btn">Show model answer</button>
+        <div class="short-answer">${item.answer}</div>`;
+                quizContainer.appendChild(wrap);
+                const btn = wrap.querySelector('.reveal-btn');
+                const ans = wrap.querySelector('.short-answer');
+                btn.addEventListener('click', () => {
+                    ans.classList.toggle('show');
+                    btn.textContent = ans.classList.contains('show') ? 'Hide model answer' : 'Show model answer';
+                });
+            }
+        });
+    </script>
+
+</body>
+
+</html>
