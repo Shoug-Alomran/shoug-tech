@@ -1,0 +1,1702 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+  <link rel="icon" type="image/png" href="/assets/favicon.png?v=2">
+  <link rel="shortcut icon" href="/assets/favicon.png?v=2">
+  <link rel="apple-touch-icon" href="/assets/favicon.png?v=2">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CYS406 - Cryptography Basics - Des And Aes</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Playfair+Display:wght@700;800&display=swap"
+    rel="stylesheet">
+  <style>
+    /* ============================================================
+   THEME VARIABLES
+   ============================================================ */
+    :root {
+      --a: #6ee7f7;
+      /* cyan accent */
+      --b: #f472b6;
+      /* pink accent */
+      --c: #a78bfa;
+      /* violet accent */
+      --d: #34d399;
+      /* emerald accent */
+      --e: #fb923c;
+      /* orange accent */
+      --f: #facc15;
+      /* yellow accent */
+    }
+
+    [data-theme="dark"] {
+      --bg: #080c14;
+      --bg2: #0e1422;
+      --bg3: #141c2e;
+      --surface: rgba(255, 255, 255, 0.04);
+      --surface2: rgba(255, 255, 255, 0.07);
+      --border: rgba(255, 255, 255, 0.08);
+      --border2: rgba(255, 255, 255, 0.13);
+      --text: #e2e8f0;
+      --text2: #94a3b8;
+      --text3: #64748b;
+      --heading: #f8fafc;
+      --code-bg: rgba(255, 255, 255, 0.06);
+      --shadow: rgba(0, 0, 0, 0.5);
+      --toggle-bg: rgba(255, 255, 255, 0.08);
+    }
+
+    [data-theme="light"] {
+      --bg: #f0f4ff;
+      --bg2: #e8eef9;
+      --bg3: #dde5f5;
+      --surface: rgba(255, 255, 255, 0.75);
+      --surface2: rgba(255, 255, 255, 0.95);
+      --border: rgba(80, 100, 160, 0.12);
+      --border2: rgba(80, 100, 160, 0.2);
+      --text: #1e2a45;
+      --text2: #475569;
+      --text3: #94a3b8;
+      --heading: #0f172a;
+      --code-bg: rgba(80, 100, 160, 0.08);
+      --shadow: rgba(100, 120, 200, 0.15);
+      --toggle-bg: rgba(80, 100, 160, 0.12);
+    }
+
+    /* ============================================================
+   RESET & BASE
+   ============================================================ */
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Space Grotesk', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      overflow-x: hidden;
+      transition: background 0.4s ease, color 0.4s ease;
+    }
+
+    /* ============================================================
+   THEME TOGGLE
+   ============================================================ */
+    .theme-toggle {
+      position: fixed;
+      top: 1.25rem;
+      right: 1.5rem;
+      z-index: 1000;
+      background: var(--toggle-bg);
+      border: 1px solid var(--border2);
+      border-radius: 100px;
+      padding: 0.45rem 1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text2);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      transition: all 0.3s ease;
+      user-select: none;
+    }
+
+    .theme-toggle:hover {
+      border-color: var(--a);
+      color: var(--a);
+      transform: scale(1.04);
+    }
+
+    .toggle-icon {
+      font-size: 1rem;
+      transition: transform 0.4s ease;
+    }
+
+    /* ============================================================
+   HERO
+   ============================================================ */
+    .hero {
+      min-height: 60vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      position: relative;
+      padding: 5rem 2rem 4rem;
+      overflow: hidden;
+    }
+
+    [data-theme="dark"] .hero {
+      background:
+        radial-gradient(ellipse 70% 50% at 20% 20%, rgba(110, 231, 247, 0.12) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 80% 80%, rgba(167, 139, 250, 0.12) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 40% at 50% 60%, rgba(244, 114, 182, 0.08) 0%, transparent 60%),
+        var(--bg);
+    }
+
+    [data-theme="light"] .hero {
+      background:
+        radial-gradient(ellipse 70% 50% at 20% 20%, rgba(110, 231, 247, 0.18) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 80% 80%, rgba(167, 139, 250, 0.15) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 40% at 50% 60%, rgba(244, 114, 182, 0.12) 0%, transparent 60%),
+        var(--bg);
+    }
+
+    .hero-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(var(--border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 50px 50px;
+      opacity: 0.7;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-radius: 100px;
+      padding: 0.4rem 1.1rem;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--a);
+      margin-bottom: 1.75rem;
+      position: relative;
+      z-index: 1;
+      animation: fadeUp 0.7s ease both;
+    }
+
+    .badge-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--a);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1
+      }
+
+      50% {
+        opacity: 0.4
+      }
+    }
+
+    .hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.4rem, 5.5vw, 4.6rem);
+      font-weight: 800;
+      line-height: 1.15;
+      color: var(--heading);
+      position: relative;
+      z-index: 1;
+      animation: fadeUp 0.85s ease both;
+    }
+
+    .hero h1 .gradient-word {
+      background: linear-gradient(135deg, var(--a), var(--c), var(--b));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-sub {
+      font-size: 1.05rem;
+      color: var(--text2);
+      margin-top: 1.25rem;
+      max-width: 560px;
+      position: relative;
+      z-index: 1;
+      animation: fadeUp 1s ease both;
+    }
+
+    .hero-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      justify-content: center;
+      max-width: 720px;
+      margin-top: 2rem;
+      position: relative;
+      z-index: 1;
+      animation: fadeUp 1.1s ease both;
+    }
+
+    .chip {
+      padding: 0.3rem 0.85rem;
+      border-radius: 100px;
+      font-size: 0.76rem;
+      font-weight: 600;
+      border: 1px solid;
+      transition: transform 0.2s;
+    }
+
+    .chip:hover {
+      transform: translateY(-2px);
+    }
+
+    .chip-a {
+      color: var(--a);
+      border-color: rgba(110, 231, 247, 0.35);
+      background: rgba(110, 231, 247, 0.08);
+    }
+
+    .chip-b {
+      color: var(--b);
+      border-color: rgba(244, 114, 182, 0.35);
+      background: rgba(244, 114, 182, 0.08);
+    }
+
+    .chip-c {
+      color: var(--c);
+      border-color: rgba(167, 139, 250, 0.35);
+      background: rgba(167, 139, 250, 0.08);
+    }
+
+    .chip-d {
+      color: var(--d);
+      border-color: rgba(52, 211, 153, 0.35);
+      background: rgba(52, 211, 153, 0.08);
+    }
+
+    .chip-e {
+      color: var(--e);
+      border-color: rgba(251, 146, 60, 0.35);
+      background: rgba(251, 146, 60, 0.08);
+    }
+
+    .chip-f {
+      color: var(--f);
+      border-color: rgba(250, 204, 21, 0.35);
+      background: rgba(250, 204, 21, 0.08);
+    }
+
+    .scroll-hint {
+      position: absolute;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      color: var(--text3);
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.4rem;
+      animation: bounce 2.5s infinite;
+      z-index: 1;
+    }
+
+    @keyframes bounce {
+
+      0%,
+      100% {
+        transform: translateX(-50%) translateY(0)
+      }
+
+      50% {
+        transform: translateX(-50%) translateY(8px)
+      }
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(24px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    /* ============================================================
+   LAYOUT
+   ============================================================ */
+    main {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 4rem 2rem;
+    }
+
+    section {
+      margin-bottom: 5.5rem;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .sec-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text3);
+      white-space: nowrap;
+    }
+
+    .sec-line {
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, var(--border2), transparent);
+    }
+
+    h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.6rem, 3vw, 2.3rem);
+      font-weight: 800;
+      color: var(--heading);
+      margin-bottom: 0.4rem;
+    }
+
+    h3 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 1.05rem;
+      margin-bottom: 0.6rem;
+      color: var(--heading);
+    }
+
+    p {
+      font-size: 0.94rem;
+      color: var(--text2);
+      margin-bottom: 0.7rem;
+    }
+
+    strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    /* ============================================================
+   GRADIENT TEXT HELPERS
+   ============================================================ */
+    .ga {
+      background: linear-gradient(135deg, var(--a), var(--d));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .gb {
+      background: linear-gradient(135deg, var(--b), var(--c));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .gc {
+      background: linear-gradient(135deg, var(--e), var(--b));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .gd {
+      background: linear-gradient(135deg, var(--c), var(--a));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* ============================================================
+   CARDS
+   ============================================================ */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.6rem;
+      transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
+    }
+
+    .card:hover {
+      border-color: var(--border2);
+      transform: translateY(-3px);
+      box-shadow: 0 12px 30px var(--shadow);
+    }
+
+    .grid2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1rem;
+    }
+
+    .grid3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1rem;
+    }
+
+    .grid4 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 1rem;
+    }
+
+    .bl-a {
+      border-left: 3px solid var(--a);
+    }
+
+    .bl-b {
+      border-left: 3px solid var(--b);
+    }
+
+    .bl-c {
+      border-left: 3px solid var(--c);
+    }
+
+    .bl-d {
+      border-left: 3px solid var(--d);
+    }
+
+    .bl-e {
+      border-left: 3px solid var(--e);
+    }
+
+    .bl-f {
+      border-left: 3px solid var(--f);
+    }
+
+    .ta {
+      color: var(--a);
+    }
+
+    .tb {
+      color: var(--b);
+    }
+
+    .tc {
+      color: var(--c);
+    }
+
+    .td {
+      color: var(--d);
+    }
+
+    .te {
+      color: var(--e);
+    }
+
+    .tf {
+      color: var(--f);
+    }
+
+    /* ============================================================
+   DEFINITION CARDS
+   ============================================================ */
+    .def-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 0.75rem;
+    }
+
+    .def-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.2rem;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s;
+    }
+
+    .def-card:hover {
+      transform: translateY(-2px);
+    }
+
+    .def-top {
+      height: 2px;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+    }
+
+    .def-term {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .def-desc {
+      font-size: 0.87rem;
+      color: var(--text2);
+    }
+
+    /* ============================================================
+   MONO / CODE STYLE
+   ============================================================ */
+    .mono {
+      font-family: 'JetBrains Mono', monospace;
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      font-size: 0.85rem;
+      color: var(--a);
+      margin-top: 0.75rem;
+      overflow-x: auto;
+      white-space: pre;
+    }
+
+    .mono span.comment {
+      color: var(--text3);
+    }
+
+    .mono span.key {
+      color: var(--b);
+    }
+
+    .mono span.val {
+      color: var(--d);
+    }
+
+    /* ============================================================
+   EXAMPLE BOXES
+   ============================================================ */
+    .ex {
+      border-radius: 14px;
+      padding: 1.4rem;
+      border: 1px solid;
+      margin-top: 1.25rem;
+    }
+
+    .ex-a {
+      background: rgba(110, 231, 247, 0.06);
+      border-color: rgba(110, 231, 247, 0.25);
+    }
+
+    .ex-b {
+      background: rgba(244, 114, 182, 0.06);
+      border-color: rgba(244, 114, 182, 0.25);
+    }
+
+    .ex-c {
+      background: rgba(167, 139, 250, 0.06);
+      border-color: rgba(167, 139, 250, 0.25);
+    }
+
+    .ex-d {
+      background: rgba(52, 211, 153, 0.06);
+      border-color: rgba(52, 211, 153, 0.25);
+    }
+
+    .ex-e {
+      background: rgba(251, 146, 60, 0.06);
+      border-color: rgba(251, 146, 60, 0.25);
+    }
+
+    .ex-f {
+      background: rgba(250, 204, 21, 0.06);
+      border-color: rgba(250, 204, 21, 0.25);
+    }
+
+    .ex-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .ex-label::before {
+      content: '';
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    /* ============================================================
+   TIP BOXES
+   ============================================================ */
+    .tip {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      padding: 1.1rem 1.25rem;
+      border-radius: 12px;
+      margin-top: 1rem;
+    }
+
+    .tip-green {
+      background: rgba(52, 211, 153, 0.08);
+      border: 1px solid rgba(52, 211, 153, 0.25);
+    }
+
+    .tip-blue {
+      background: rgba(110, 231, 247, 0.08);
+      border: 1px solid rgba(110, 231, 247, 0.25);
+    }
+
+    .tip-warn {
+      background: rgba(251, 146, 60, 0.08);
+      border: 1px solid rgba(251, 146, 60, 0.25);
+    }
+
+    .tip-yellow {
+      background: rgba(250, 204, 21, 0.08);
+      border: 1px solid rgba(250, 204, 21, 0.25);
+    }
+
+    .tip-icon {
+      font-size: 1.2rem;
+      flex-shrink: 0;
+      margin-top: 0.1rem;
+    }
+
+    .tip-body h4 {
+      font-size: 0.84rem;
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+    }
+
+    .tip-body p {
+      font-size: 0.86rem;
+      color: var(--text2);
+      margin: 0;
+    }
+
+    /* ============================================================
+   MNEMONIC BOXES  (memory aids - distinct brain/purple styling)
+   ============================================================ */
+    .mnemonic {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      padding: 1.25rem 1.4rem;
+      border-radius: 14px;
+      margin-top: 1.25rem;
+      background: linear-gradient(135deg, rgba(167, 139, 250, 0.10), rgba(244, 114, 182, 0.07));
+      border: 1px solid rgba(167, 139, 250, 0.35);
+      position: relative;
+    }
+
+    .mnemonic-icon {
+      font-size: 1.3rem;
+      flex-shrink: 0;
+    }
+
+    .mnemonic-body h4 {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--c);
+      margin-bottom: 0.4rem;
+    }
+
+    .mnemonic-body p {
+      font-size: 0.92rem;
+      color: var(--text);
+      margin: 0;
+    }
+
+    .mnemonic-body .mnem-key {
+      color: var(--b);
+      font-weight: 700;
+    }
+
+    /* ============================================================
+   TABLES
+   ============================================================ */
+    .tbl {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.87rem;
+    }
+
+    .tbl th {
+      text-align: left;
+      padding: 0.65rem 0.9rem;
+      background: var(--surface2);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text3);
+      border-bottom: 1px solid var(--border2);
+    }
+
+    .tbl td {
+      padding: 0.7rem 0.9rem;
+      border-bottom: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .tbl tr:last-child td {
+      border-bottom: none;
+    }
+
+    .tbl tr:hover td {
+      background: var(--surface2);
+    }
+
+    .tbl-wrap {
+      overflow-x: auto;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+
+    /* ============================================================
+   VS (COMPARISON) CARDS
+   ============================================================ */
+    .vs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    @media(max-width:640px) {
+      .vs {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* ============================================================
+   FLOW DIAGRAM
+   ============================================================ */
+    .flow {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      flex-wrap: wrap;
+      margin: 1.5rem 0;
+    }
+
+    .flow-box {
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-radius: 10px;
+      padding: 0.75rem 1rem;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--heading);
+      text-align: center;
+      flex: 1;
+      min-width: 80px;
+    }
+
+    .flow-box.accent {
+      background: rgba(110, 231, 247, 0.12);
+      border-color: rgba(110, 231, 247, 0.4);
+      color: var(--a);
+    }
+
+    .flow-box.accent2 {
+      background: rgba(167, 139, 250, 0.12);
+      border-color: rgba(167, 139, 250, 0.4);
+      color: var(--c);
+    }
+
+    .flow-box.accent3 {
+      background: rgba(52, 211, 153, 0.12);
+      border-color: rgba(52, 211, 153, 0.4);
+      color: var(--d);
+    }
+
+    .flow-arrow {
+      font-size: 1.2rem;
+      color: var(--text3);
+      padding: 0 0.35rem;
+      flex-shrink: 0;
+    }
+
+    /* ============================================================
+   STEPS
+   ============================================================ */
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .step {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      padding: 1rem 1.25rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      transition: all 0.3s;
+    }
+
+    .step:hover {
+      border-color: var(--border2);
+    }
+
+    .step-num {
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      font-size: 0.8rem;
+      flex-shrink: 0;
+      color: #000;
+      background: linear-gradient(135deg, var(--a), var(--c));
+    }
+
+    .step-body h4 {
+      font-weight: 700;
+      font-size: 0.9rem;
+      margin-bottom: 0.2rem;
+    }
+
+    .step-body p {
+      font-size: 0.86rem;
+      color: var(--text2);
+      margin: 0;
+    }
+
+    /* ============================================================
+   BADGES
+   ============================================================ */
+    .badge {
+      display: inline-block;
+      padding: 0.2rem 0.55rem;
+      border-radius: 100px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      border: 1px solid;
+    }
+
+    .badge-a {
+      color: var(--a);
+      border-color: rgba(110, 231, 247, 0.4);
+      background: rgba(110, 231, 247, 0.1);
+    }
+
+    .badge-b {
+      color: var(--b);
+      border-color: rgba(244, 114, 182, 0.4);
+      background: rgba(244, 114, 182, 0.1);
+    }
+
+    .badge-c {
+      color: var(--c);
+      border-color: rgba(167, 139, 250, 0.4);
+      background: rgba(167, 139, 250, 0.1);
+    }
+
+    .badge-e {
+      color: var(--e);
+      border-color: rgba(251, 146, 60, 0.4);
+      background: rgba(251, 146, 60, 0.1);
+    }
+
+    .row-highlight td {
+      background: rgba(52, 211, 153, 0.06) !important;
+    }
+
+    .row-warn td {
+      background: rgba(244, 114, 182, 0.06) !important;
+    }
+
+    /* ============================================================
+   FOOTER
+   ============================================================ */
+    footer {
+      text-align: center;
+      padding: 3rem 2rem 4rem;
+      position: relative;
+    }
+
+    footer::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 10%;
+      right: 10%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border2), transparent);
+    }
+
+    .footer-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--a), var(--c), var(--b));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .footer-sub {
+      font-size: 0.78rem;
+      color: var(--text3);
+      margin-top: 0.3rem;
+    }
+
+    /* UL RESET */
+    ul {
+      list-style: none;
+    }
+
+    ul li {
+      padding: 0.32rem 0;
+      padding-left: 1rem;
+      position: relative;
+      font-size: 0.9rem;
+      color: var(--text2);
+    }
+
+    ul li::before {
+      content: '▸';
+      position: absolute;
+      left: 0;
+      color: var(--c);
+      font-size: 0.65rem;
+      top: 0.44rem;
+    }
+
+    .divider {
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border), transparent);
+      margin: 4rem 0;
+    }
+
+    @media(max-width:600px) {
+      .grid4 {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .flow {
+        justify-content: center;
+      }
+
+      .flow-box {
+        min-width: 70px;
+        font-size: 0.75rem;
+      }
+    }
+  </style>
+  <script src="/javascripts/standalone-theme.js"></script>
+  <script src="/javascripts/html-theme-sync.js"></script>
+
+  <meta name="description"
+    content="Complete study guide for CYS406 Chapter 3: Cryptography Basics - DES and AES — cryptographic objectives, symmetric vs asymmetric encryption, cipher types, DES, and a full walkthrough of the AES Rijndael structure (SubBytes, ShiftRows, MixColumns, AddRoundKey). With mnemonics.">
+  <link rel="canonical"
+    href="https://shoug-tech.com/academics/cybersecurity/cys406/slide-breakdowns/03-chapter-3-cryptography-basics-des-and-aes/chapter-3-cryptography-basics-des-and-aes.html">
+  <meta property="og:title" content="CYS406 - Cryptography Basics - Des And Aes">
+  <meta property="og:description"
+    content="Complete study guide for CYS406 Chapter 3: Cryptography Basics - DES and AES — cryptographic objectives, symmetric vs asymmetric encryption, cipher types, DES, and a full walkthrough of the AES Rijndael structure (SubBytes, ShiftRows, MixColumns, AddRoundKey). With mnemonics.">
+  <meta property="og:url"
+    content="https://shoug-tech.com/academics/cybersecurity/cys406/slide-breakdowns/03-chapter-3-cryptography-basics-des-and-aes/chapter-3-cryptography-basics-des-and-aes.html">
+  <meta property="og:type" content="article">
+  <meta property="og:image" content="https://shoug-tech.com/assets/og-banner.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="CYS406 - Cryptography Basics - Des And Aes">
+  <meta name="twitter:description"
+    content="Complete study guide for CYS406 Chapter 3: Cryptography Basics - DES and AES — cryptographic objectives, symmetric vs asymmetric encryption, cipher types, DES, and a full walkthrough of the AES Rijndael structure (SubBytes, ShiftRows, MixColumns, AddRoundKey). With mnemonics.">
+  <meta name="twitter:image" content="https://shoug-tech.com/assets/og-banner.png">
+</head>
+
+<body>
+
+
+  <!-- THEME TOGGLE -->
+  <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+    <span class="toggle-icon" id="toggle-icon">☀️</span>
+    <span id="toggle-label">Light Mode</span>
+  </button>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-grid"></div>
+
+    <div class="hero-badge">
+      <span class="badge-dot"></span>
+      CYS406 · Chapter 3
+    </div>
+
+    <h1>
+      Cryptography Basics<br>
+      <span class="gradient-word">DES & AES</span>
+    </h1>
+    <p class="hero-sub">Turning readable data into scrambled nonsense and back — cryptographic goals, cipher families,
+      symmetric vs asymmetric encryption, and a deep dive into DES and the AES/Rijndael round structure.</p>
+
+    <div class="hero-chips">
+      <span class="chip chip-a">Confidentiality · Integrity</span>
+      <span class="chip chip-b">Symmetric vs Asymmetric</span>
+      <span class="chip chip-c">Block vs Stream Ciphers</span>
+      <span class="chip chip-d">DES</span>
+      <span class="chip chip-e">AES / Rijndael</span>
+      <span class="chip chip-f">Key Expansion</span>
+    </div>
+
+    <div class="scroll-hint">
+      scroll ↓
+    </div>
+  </div>
+
+  <main>
+
+    <!-- SECTION 1: CRYPTOGRAPHY BASICS -->
+    <section>
+      <div class="section-header"><span class="sec-num">01 / Foundations</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="ga">Cryptography</h2>
+      <p>Cryptography is the conversion of data into a scrambled code that is encrypted and sent across a private or
+        public network. It protects confidential data — email, chat sessions, web transactions, personal data, corporate
+        data, and e-commerce applications.</p>
+
+      <h3 class="tb">Objectives of Cryptography</h3>
+      <div class="def-grid">
+        <div class="def-card">
+          <div class="def-top" style="background:var(--a)"></div>
+          <div class="def-term ta">Confidentiality</div>
+          <div class="def-desc">Keeps data hidden from unauthorized parties.</div>
+        </div>
+        <div class="def-card">
+          <div class="def-top" style="background:var(--b)"></div>
+          <div class="def-term tb">Authentication</div>
+          <div class="def-desc">Verifies the identity of the communicating parties.</div>
+        </div>
+        <div class="def-card">
+          <div class="def-top" style="background:var(--c)"></div>
+          <div class="def-term tc">Integrity</div>
+          <div class="def-desc">Ensures data hasn't been altered in transit.</div>
+        </div>
+        <div class="def-card">
+          <div class="def-top" style="background:var(--d)"></div>
+          <div class="def-term td">Nonrepudiation</div>
+          <div class="def-desc">Prevents a sender from denying they sent a message.</div>
+        </div>
+      </div>
+
+      <div class="flow">
+        <div class="flow-box">Plaintext</div>
+        <div class="flow-arrow">→ Encryption →</div>
+        <div class="flow-box accent">Ciphertext</div>
+        <div class="flow-arrow">→ Decryption →</div>
+        <div class="flow-box accent3">Plaintext</div>
+      </div>
+
+      <div class="mnemonic">
+        <div class="mnemonic-icon">🧠</div>
+        <div class="mnemonic-body">
+          <h4>Mnemonic — CAIN</h4>
+          <p><span class="mnem-key">"CAIN guards the message"</span> → <strong>C</strong>onfidentiality,
+            <strong>A</strong>uthentication, <strong>I</strong>ntegrity, <strong>N</strong>onrepudiation — the four
+            goals of cryptography. Same idea as CIA from Chapter 1, plus Authentication and Nonrepudiation baked in
+            explicitly.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 2: SYMMETRIC VS ASYMMETRIC -->
+    <section>
+      <div class="section-header"><span class="sec-num">02 / Encryption Types</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gb">Symmetric vs Asymmetric Encryption</h2>
+      <p>Encryption is a way of protecting information by transforming it so the result is unreadable to unauthorized
+        parties — an encryption algorithm uses a <strong>key</strong> to perform the transformation.</p>
+
+      <div class="vs">
+        <div class="ex ex-a">
+          <div class="ex-label ta">🔑 Symmetric Encryption</div>
+          <p>The oldest cryptographic technique for ensuring data confidentiality. Called "symmetric" because <strong>a
+              single key</strong> is used for both encrypting and decrypting the data. Used to encrypt <strong>large
+              amounts of data</strong> — fast and efficient. Both sender and receiver share the same secret key.</p>
+        </div>
+        <div class="ex ex-b">
+          <div class="ex-label tb">🔐🔓 Asymmetric Encryption</div>
+          <p>Uses <strong>two separate keys</strong>: a <strong>public key</strong> (encrypts messages, can be known by
+            anybody) and a <strong>private key</strong> (decrypts messages, known only to the recipient). Also called
+            public-key encryption; used to encrypt <strong>small amounts of data</strong> because it's slower.</p>
+        </div>
+      </div>
+
+      <div class="ex ex-c">
+        <div class="ex-label tc">📘 Example — Asymmetric Flow</div>
+        <p>The receiver selects a public/private key pair and sends the <strong>public key</strong> to the sender. The
+          sender uses that public key to encrypt the confidential message and sends it. The receiver decrypts the data
+          using their own <strong>private key</strong> to read the message.</p>
+      </div>
+
+      <div class="mnemonic">
+        <div class="mnemonic-icon">🧠</div>
+        <div class="mnemonic-body">
+          <h4>Mnemonic — One Key, Two Keys</h4>
+          <p><span class="mnem-key">"Symmetric = Same key (1), Asymmetric = A-pair of keys (2)"</span> — the word
+            "symmetric" itself means "the same on both sides," so one shared key. "Asymmetric" means "not equal," so two
+            different, unequal keys (public ≠ private).</p>
+        </div>
+      </div>
+
+      <h3 class="tc" style="margin-top:2rem;">Government Access to Keys (GAK)</h3>
+      <p>GAK means software companies give copies of all (or a sufficient proportion of) cryptographic keys to the
+        government, which promises to hold them securely and only use them when a court issues a warrant — conceptually
+        similar to the government's ability to wiretap phones.</p>
+    </section>
+
+    <!-- SECTION 3: CIPHERS -->
+    <section>
+      <div class="section-header"><span class="sec-num">03 / Ciphers</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gc">Ciphers — Types and Classification</h2>
+      <p>Ciphers are algorithms used to encrypt or decrypt data. They can be classified along three different axes.</p>
+
+      <div class="grid3">
+        <div class="card bl-a">
+          <h3 class="ta">By Era</h3>
+          <p><strong>Classical Ciphers</strong>: Substitution cipher (block of plaintext replaced with ciphertext) and
+            Transposition cipher (letters shifted about to form a cryptogram).<br><strong>Modern Ciphers</strong>: what
+            this chapter focuses on (DES, AES).</p>
+        </div>
+        <div class="card bl-b">
+          <h3 class="tb">By Key Type</h3>
+          <p><strong>Private/Secret Key</strong>: same key used for encryption and decryption.<br><strong>Public
+              Key</strong>: two different keys are used for encryption and decryption.</p>
+        </div>
+        <div class="card bl-c">
+          <h3 class="tc">By Input Type</h3>
+          <p><strong>Block Cipher</strong>: encrypts blocks of data of fixed size.<br><strong>Stream Cipher</strong>:
+            encrypts continuous streams of data.</p>
+        </div>
+      </div>
+
+      <h3 class="td" style="margin-top:2rem;">Secret Key Algorithms</h3>
+      <div class="vs">
+        <div class="ex ex-d">
+          <div class="ex-label td">Block Ciphers (e.g., DES, AES)</div>
+          <p>Take a key and a fixed-size input block to generate a fixed-size output block.</p>
+        </div>
+        <div class="ex ex-e">
+          <div class="ex-label te">Stream Ciphers (e.g., RC4)</div>
+          <p>Take a key and generate a stream of pseudorandom bits, which are XOR'd into the data.</p>
+        </div>
+      </div>
+
+      <div class="mnemonic">
+        <div class="mnemonic-icon">🧠</div>
+        <div class="mnemonic-body">
+          <h4>Mnemonic — Brick vs Hose</h4>
+          <p>Think of a <strong>block cipher</strong> as stacking <strong>bricks</strong> — fixed-size chunks processed
+            one at a time (DES = 64-bit bricks, AES = 128-bit bricks). A <strong>stream cipher</strong> is a
+            <strong>hose</strong> — a continuous flow of bits XOR'd on the fly, no fixed chunk size (RC4).</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 4: DES -->
+    <section>
+      <div class="section-header"><span class="sec-num">04 / DES</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gd">Data Encryption Standard (DES)</h2>
+      <p>DES is designed to encipher and decipher blocks of data consisting of <strong>64 bits</strong> under control of
+        a <strong>56-bit key</strong>. DES is the archetypal block cipher — an algorithm that takes a fixed-length
+        string of plaintext bits and transforms it into a ciphertext bit string of the same length.</p>
+
+      <div class="def-grid">
+        <div class="def-card">
+          <div class="def-top" style="background:var(--a)"></div>
+          <div class="def-term ta">Block Size</div>
+          <div class="def-desc">64 bits of plaintext per block.</div>
+        </div>
+        <div class="def-card">
+          <div class="def-top" style="background:var(--b)"></div>
+          <div class="def-term tb">Key Size</div>
+          <div class="def-desc">56-bit key (the classic weak point of DES today).</div>
+        </div>
+        <div class="def-card">
+          <div class="def-top" style="background:var(--c)"></div>
+          <div class="def-term tc">3DES</div>
+          <div class="def-desc">Due to DES's weakness against modern computing power, some organizations triple-repeat
+            the DES process (3DES) for added strength until they can move to AES.</div>
+        </div>
+      </div>
+
+      <div class="tip tip-warn">
+        <div class="tip-icon">⚠️</div>
+        <div class="tip-body">
+          <h4 class="te">Why DES is considered weak today</h4>
+          <p>Its 56-bit key is small by modern standards — brute-forceable with today's computing power. 3DES was the
+            stopgap fix before AES became the new standard.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 5: AES OVERVIEW & HISTORY -->
+    <section>
+      <div class="section-header"><span class="sec-num">05 / AES History</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="ga">Advanced Encryption Standard (AES)</h2>
+      <p>AES is a symmetric-key algorithm used by US government agencies to secure sensitive but unclassified material.
+        It is an <strong>iterated block cipher</strong> that works by repeating the same operation multiple times. It
+        has a <strong>128-bit block size</strong>, with key sizes of <strong>128, 192, or 256 bits</strong> for AES-128,
+        AES-192, and AES-256 respectively.</p>
+
+      <h3 class="tb" style="margin-top:1.5rem;">How AES Was Chosen — Timeline</h3>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <h4>1997 — NIST Call</h4>
+            <p>US NIST issued a call for ciphers to replace DES/Triple-DES, which was slow and used small blocks.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <h4>Jun 1998 — 15 Candidates</h4>
+            <p>15 candidate ciphers were accepted for consideration.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <h4>Aug 1999 — 5 Shortlisted</h4>
+            <p>The field was narrowed down to 5 finalists.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <h4>Oct 2000 — Rijndael Selected</h4>
+            <p>Rijndael, designed by Vincent Rijmen and Joan Daemen (Belgium), was selected as the AES winner.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">5</div>
+          <div class="step-body">
+            <h4>Nov 2001 — FIPS PUB 197</h4>
+            <p>AES was formally issued as the FIPS PUB 197 standard.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="mnemonic">
+        <div class="mnemonic-icon">🧠</div>
+        <div class="mnemonic-body">
+          <h4>Mnemonic — "1997, Never 15-5-Rijndael-01"</h4>
+          <p><span class="mnem-key">"Call, Cut, Choose, Codify"</span> → NIST <strong>C</strong>alled for ciphers ('97)
+            → <strong>C</strong>ut down to 15 ('98) → <strong>C</strong>ut further to 5 ('99) → <strong>C</strong>hose
+            Rijndael ('00) → <strong>C</strong>odified as FIPS 197 ('01). Five C's, five years (1997–2001), five steps.
+          </p>
+        </div>
+      </div>
+
+      <h3 class="tc" style="margin-top:2rem;">Rijndael Design Goals</h3>
+      <div class="grid3">
+        <div class="card bl-c">
+          <p>Resistant against known cryptanalysis attacks</p>
+        </div>
+        <div class="card bl-c">
+          <p>Speed and code compactness on many CPUs</p>
+        </div>
+        <div class="card bl-c">
+          <p>Design simplicity</p>
+        </div>
+      </div>
+      <p>Rijndael is an <strong>iterative</strong> cipher (rather than a Feistel cipher like DES) — it processes data as
+        a block of 4 columns of 4 bytes and operates on the entire data block in every round.</p>
+    </section>
+
+    <!-- SECTION 6: AES STRUCTURE -->
+    <section>
+      <div class="section-header"><span class="sec-num">06 / AES Internals</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gb">AES Structure — The State & Rounds</h2>
+      <p>AES is a <strong>non-Feistel cipher</strong> that encrypts and decrypts a data block of 128 bits arranged in a
+        matrix of 4 columns of 4 bytes, called the <strong>state</strong>. It uses 10, 12, or 14 rounds, depending on
+        key size (128/192/256 bits). The key is expanded into an array of words to supply each round.</p>
+
+      <div class="vs">
+        <div class="ex ex-a">
+          <div class="ex-label ta">Key Size → Rounds</div>
+          <div class="tbl-wrap">
+            <table class="tbl">
+              <thead>
+                <tr>
+                  <th>Variant</th>
+                  <th>Key Size</th>
+                  <th>Rounds</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>AES-128</td>
+                  <td>128 bits</td>
+                  <td>10</td>
+                </tr>
+                <tr>
+                  <td>AES-192</td>
+                  <td>192 bits</td>
+                  <td>12</td>
+                </tr>
+                <tr>
+                  <td>AES-256</td>
+                  <td>256 bits</td>
+                  <td>14</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="ex ex-b">
+          <div class="ex-label tb">DES vs AES</div>
+          <ul>
+            <li>DES: 64-bit block, 56-bit key, Feistel structure</li>
+            <li>AES: 128-bit block, 128/192/256-bit key, non-Feistel (substitution-permutation)</li>
+            <li>AES is faster, more compact in code, and far more resistant to brute force</li>
+          </ul>
+        </div>
+      </div>
+
+      <h3 class="tc" style="margin-top:2rem;">The Four Round Operations</h3>
+      <p>In each round, the state undergoes four transformations in this exact order (the final round skips MixColumns):
+      </p>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <h4>SubBytes (Byte Substitution)</h4>
+            <p>Substitutes each byte using a single S-box, applied to every byte independently. Interprets the byte as
+              two hexadecimal digits to look up its substitution.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <h4>ShiftRows</h4>
+            <p>A circular byte shift to the left in each row of the state. Decryption inverts this using shifts to the
+              right. Since the state is processed by columns, this step permutes bytes between the columns.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <h4>MixColumns</h4>
+            <p>Mixes bytes using matrix multiplication. Each column is processed separately; each byte is replaced by a
+              value that depends on all 4 bytes in that column.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <h4>AddRoundKey</h4>
+            <p>XORs the state with 128 bits of the round key. Processed by column (though effectively a series of byte
+              operations). Since XOR is its own inverse, decryption uses the same operation with reversed keys — a form
+              of the Vernam cipher applied to the expanded key.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="mnemonic">
+        <div class="mnemonic-icon">🧠</div>
+        <div class="mnemonic-body">
+          <h4>Mnemonic — "Sub Shifts Mix Keys" (SSMK)</h4>
+          <p><span class="mnem-key">"Silly Snakes Mix Kool-Aid"</span> → <strong>S</strong>ubBytes (swap bytes via
+            S-box) → <strong>S</strong>hiftRows (slide rows sideways) → <strong>M</strong>ixColumns (blend each column
+            with matrix math) → <strong>A</strong>ddRoundKey/<strong>K</strong>ey (XOR in the round key). Only the last
+            step (AddRoundKey) actually uses the key — the other three just scramble structure.</p>
+        </div>
+      </div>
+
+      <h3 class="td" style="margin-top:2rem;">Key Expansion</h3>
+      <p>Objective: create round keys for each round. If the number of rounds is Nr, the key-expansion routine creates
+        <strong>Nr + 1</strong> 128-bit round keys from one single 128-bit cipher key. It takes the 128-bit (16-byte)
+        key and expands it into an array of 44/52/60 32-bit words (for AES-128/192/256 respectively).</p>
+      <div class="ex ex-d">
+        <div class="ex-label td">📘 How Expansion Works</div>
+        <p>Start by copying the key into the first 4 words. Then loop, creating new words that depend on the value in
+          the previous word and the word 4 positions back. In 3 of every 4 cases, these are simply XOR'd together. In
+          the 1st word of every group of 4, there's an extra transform: rotate the bytes, run them through the S-box,
+          then XOR with a round constant, before XOR-ing with the word 4 back.</p>
+      </div>
+
+      <div class="ex ex-e" style="margin-top:1rem;">
+        <div class="ex-label te">📘 SubBytes Worked Concept</div>
+        <p>To substitute a byte, interpret it as two hexadecimal digits — the first digit selects the row, the second
+          selects the column in the AES S-box lookup table, and the value found there replaces the original byte.</p>
+      </div>
+
+      <h3 class="ta" style="margin-top:2rem;">AES Summary — Key Facts</h3>
+      <ul>
+        <li>Has a simple, elegant structure</li>
+        <li>Only AddRoundKey actually uses the key material</li>
+        <li>AddRoundKey is a form of the Vernam (one-time-pad-style) cipher</li>
+        <li>Each stage is easily reversible</li>
+        <li>Decryption uses the round keys in reverse order and correctly recovers the plaintext</li>
+        <li>The final round has only 3 stages (MixColumns is skipped)</li>
+      </ul>
+    </section>
+
+    <!-- EXAM TIPS -->
+    <section>
+      <div class="section-header"><span class="sec-num">07 / Exam Prep</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gc">Exam Tips & Tricks</h2>
+      <div class="grid2">
+        <div class="tip tip-blue">
+          <div class="tip-icon">💡</div>
+          <div class="tip-body">
+            <h4 class="ta">DES numbers to memorize</h4>
+            <p>64-bit block, 56-bit key. AES numbers: 128-bit block always, with 128/192/256-bit keys and 10/12/14
+              rounds respectively.</p>
+          </div>
+        </div>
+        <div class="tip tip-green">
+          <div class="tip-icon">✅</div>
+          <div class="tip-body">
+            <h4 class="td">Symmetric = 1 key, large data / Asymmetric = 2 keys, small data</h4>
+            <p>This speed/size trade-off is a favorite exam distinction.</p>
+          </div>
+        </div>
+        <div class="tip tip-warn">
+          <div class="tip-icon">⚠️</div>
+          <div class="tip-body">
+            <h4 class="te">AES is non-Feistel, DES is Feistel</h4>
+            <p>Don't mix these up — AES processes the whole block every round (substitution-permutation network); DES
+              splits into halves each round (Feistel network).</p>
+          </div>
+        </div>
+        <div class="tip tip-yellow">
+          <div class="tip-icon">🔑</div>
+          <div class="tip-body">
+            <h4 class="tf">Round order: Sub → Shift → Mix → AddRoundKey</h4>
+            <p>Only AddRoundKey uses the actual key; the final round skips MixColumns.</p>
+          </div>
+        </div>
+        <div class="tip tip-blue">
+          <div class="tip-icon">📋</div>
+          <div class="tip-body">
+            <h4 class="ta">Rijndael naming</h4>
+            <p>Rijndael = the cipher's original name (Rijmen + Daemen); AES = the name once NIST standardized it as FIPS
+              PUB 197 in 2001.</p>
+          </div>
+        </div>
+        <div class="tip tip-green">
+          <div class="tip-icon">🌐</div>
+          <div class="tip-body">
+            <h4 class="td">Key expansion count</h4>
+            <p>Number of round keys = Nr + 1 (one extra beyond the number of rounds, because one is used before round 1
+              begins).</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- QUICK REFERENCE -->
+    <section>
+      <div class="section-header"><span class="sec-num">08 / Cheat Sheet</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gd">Quick Reference — Everything at a Glance</h2>
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>Topic</th>
+              <th>Key Point</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Cryptography</td>
+              <td>Converts data into scrambled code sent across a network</td>
+            </tr>
+            <tr>
+              <td>Objectives of cryptography</td>
+              <td>Confidentiality, Integrity, Authentication, Nonrepudiation</td>
+            </tr>
+            <tr>
+              <td>Encryption / Decryption</td>
+              <td>Plaintext → Ciphertext → Plaintext, via key-driven algorithm</td>
+            </tr>
+            <tr>
+              <td>Symmetric encryption</td>
+              <td>One shared key; fast; used for large data</td>
+            </tr>
+            <tr>
+              <td>Asymmetric encryption</td>
+              <td>Public key (encrypt) + private key (decrypt); used for small data</td>
+            </tr>
+            <tr>
+              <td>GAK</td>
+              <td>Government Access to Keys — govt holds key copies, uses only with a warrant</td>
+            </tr>
+            <tr>
+              <td>Classical ciphers</td>
+              <td>Substitution (replace) and Transposition (shift order)</td>
+            </tr>
+            <tr>
+              <td>Modern cipher key types</td>
+              <td>Private key (1 key) vs Public key (2 keys)</td>
+            </tr>
+            <tr>
+              <td>Block cipher</td>
+              <td>Encrypts fixed-size blocks (DES, AES)</td>
+            </tr>
+            <tr>
+              <td>Stream cipher</td>
+              <td>Encrypts continuous streams via XOR (RC4)</td>
+            </tr>
+            <tr>
+              <td>DES block/key size</td>
+              <td>64-bit blocks, 56-bit key</td>
+            </tr>
+            <tr>
+              <td>3DES</td>
+              <td>DES applied 3 times for extra strength as an interim fix</td>
+            </tr>
+            <tr>
+              <td>AES block size</td>
+              <td>Always 128 bits</td>
+            </tr>
+            <tr>
+              <td>AES key sizes &amp; rounds</td>
+              <td>128-bit/10 rounds, 192-bit/12 rounds, 256-bit/14 rounds</td>
+            </tr>
+            <tr>
+              <td>AES history</td>
+              <td>NIST call 1997 → 15 candidates 1998 → 5 finalists 1999 → Rijndael chosen 2000 → FIPS 197 in 2001</td>
+            </tr>
+            <tr>
+              <td>Rijndael designers</td>
+              <td>Vincent Rijmen &amp; Joan Daemen (Belgium)</td>
+            </tr>
+            <tr>
+              <td>AES cipher type</td>
+              <td>Non-Feistel, iterative, operates on the whole "state" each round</td>
+            </tr>
+            <tr>
+              <td>State</td>
+              <td>128-bit block arranged as 4 columns of 4 bytes</td>
+            </tr>
+            <tr>
+              <td>SubBytes</td>
+              <td>Byte substitution via S-box</td>
+            </tr>
+            <tr>
+              <td>ShiftRows</td>
+              <td>Circular left shift of bytes within each row</td>
+            </tr>
+            <tr>
+              <td>MixColumns</td>
+              <td>Matrix-multiply mixing of each column's 4 bytes</td>
+            </tr>
+            <tr>
+              <td>AddRoundKey</td>
+              <td>XOR state with round key — only step that uses key material</td>
+            </tr>
+            <tr>
+              <td>Key expansion</td>
+              <td>128-bit key expanded into 44/52/60 32-bit words; produces Nr+1 round keys</td>
+            </tr>
+            <tr>
+              <td>Final round</td>
+              <td>Only 3 stages — MixColumns is omitted</td>
+            </tr>
+            <tr>
+              <td>Decryption</td>
+              <td>Uses round keys in reverse order; every step is reversible</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="footer-name">Made by Shoug Alomran</div>
+    <div class="footer-sub">CYS406 · Chapter 3: Cryptography Basics - Des And Aes · Study Guide</div>
+  </footer>
+
+  <script>
+    // Auto-detect system preference on load
+    (function () {
+      const _stored = localStorage.getItem('shoug-theme');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const theme = _stored === 'dark' ? 'dark' : _stored === 'light' ? 'light' : (prefersDark ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', theme);
+      updateToggle(theme);
+    })();
+
+    // Listen for system changes
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+      if (localStorage.getItem('shoug-theme')) return;
+      const theme = e.matches ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', theme);
+      updateToggle(theme);
+    });
+
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme');
+      const next = current === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      try { localStorage.setItem('shoug-theme', document.documentElement.getAttribute('data-theme')); } catch (e) { }
+      updateToggle(next);
+    }
+
+    function updateToggle(theme) {
+      const icon = document.getElementById('toggle-icon');
+      const label = document.getElementById('toggle-label');
+      if (theme === 'dark') {
+        icon.textContent = '☀️';
+        label.textContent = 'Light Mode';
+      } else {
+        icon.textContent = '🌙';
+        label.textContent = 'Dark Mode';
+      }
+    }
+  </script>
+
+</body>
+
+</html>

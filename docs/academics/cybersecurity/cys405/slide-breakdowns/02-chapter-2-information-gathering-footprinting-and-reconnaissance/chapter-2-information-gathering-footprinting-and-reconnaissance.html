@@ -1,0 +1,1911 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+  <link rel="icon" type="image/png" href="/assets/favicon.png?v=2">
+  <link rel="shortcut icon" href="/assets/favicon.png?v=2">
+  <link rel="apple-touch-icon" href="/assets/favicon.png?v=2">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CYS405 - Chapter 2: Information Gathering, Footprinting and Reconnaissance</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Playfair+Display:wght@700;800&display=swap"
+    rel="stylesheet">
+  <style>
+    /* ============================================================
+   THEME VARIABLES
+   ============================================================ */
+    :root {
+      --a: #6ee7f7;
+      /* cyan accent */
+      --b: #f472b6;
+      /* pink accent */
+      --c: #a78bfa;
+      /* violet accent */
+      --d: #34d399;
+      /* emerald accent */
+      --e: #fb923c;
+      /* orange accent */
+      --f: #facc15;
+      /* yellow accent */
+    }
+
+    [data-theme="dark"] {
+      --bg: #080c14;
+      --bg2: #0e1422;
+      --bg3: #141c2e;
+      --surface: rgba(255, 255, 255, 0.04);
+      --surface2: rgba(255, 255, 255, 0.07);
+      --border: rgba(255, 255, 255, 0.08);
+      --border2: rgba(255, 255, 255, 0.13);
+      --text: #e2e8f0;
+      --text2: #94a3b8;
+      --text3: #64748b;
+      --heading: #f8fafc;
+      --code-bg: rgba(255, 255, 255, 0.06);
+      --shadow: rgba(0, 0, 0, 0.5);
+      --toggle-bg: rgba(255, 255, 255, 0.08);
+    }
+
+    [data-theme="light"] {
+      --bg: #f0f4ff;
+      --bg2: #e8eef9;
+      --bg3: #dde5f5;
+      --surface: rgba(255, 255, 255, 0.75);
+      --surface2: rgba(255, 255, 255, 0.95);
+      --border: rgba(80, 100, 160, 0.12);
+      --border2: rgba(80, 100, 160, 0.2);
+      --text: #1e2a45;
+      --text2: #475569;
+      --text3: #94a3b8;
+      --heading: #0f172a;
+      --code-bg: rgba(80, 100, 160, 0.08);
+      --shadow: rgba(100, 120, 200, 0.15);
+      --toggle-bg: rgba(80, 100, 160, 0.12);
+    }
+
+    /* ============================================================
+   RESET & BASE
+   ============================================================ */
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Space Grotesk', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      overflow-x: hidden;
+      transition: background 0.4s ease, color 0.4s ease;
+    }
+
+    /* ============================================================
+   THEME TOGGLE
+   ============================================================ */
+    .theme-toggle {
+      position: fixed;
+      top: 1.25rem;
+      right: 1.5rem;
+      z-index: 1000;
+      background: var(--toggle-bg);
+      border: 1px solid var(--border2);
+      border-radius: 100px;
+      padding: 0.45rem 1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text2);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      transition: all 0.3s ease;
+      user-select: none;
+    }
+
+    .theme-toggle:hover {
+      border-color: var(--a);
+      color: var(--a);
+      transform: scale(1.04);
+    }
+
+    .toggle-icon {
+      font-size: 1rem;
+      transition: transform 0.4s ease;
+    }
+
+    /* ============================================================
+   HERO
+   ============================================================ */
+    .hero {
+      min-height: 60vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      position: relative;
+      padding: 5rem 2rem 4rem;
+      overflow: hidden;
+    }
+
+    [data-theme="dark"] .hero {
+      background:
+        radial-gradient(ellipse 70% 50% at 20% 20%, rgba(110, 231, 247, 0.12) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 80% 80%, rgba(167, 139, 250, 0.12) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 40% at 50% 60%, rgba(244, 114, 182, 0.08) 0%, transparent 60%),
+        var(--bg);
+    }
+
+    [data-theme="light"] .hero {
+      background:
+        radial-gradient(ellipse 70% 50% at 20% 20%, rgba(110, 231, 247, 0.18) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 80% 80%, rgba(167, 139, 250, 0.15) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 40% at 50% 60%, rgba(244, 114, 182, 0.12) 0%, transparent 60%),
+        var(--bg);
+    }
+
+    .hero-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(var(--border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 50px 50px;
+      opacity: 0.7;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-radius: 100px;
+      padding: 0.4rem 1.1rem;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--a);
+      margin-bottom: 1.75rem;
+      position: relative;
+      z-index: 1;
+      animation: fadeUp 0.7s ease both;
+    }
+
+    .badge-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--a);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1
+      }
+
+      50% {
+        opacity: 0.4
+      }
+    }
+
+    .hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.4rem, 5.5vw, 4.6rem);
+      font-weight: 800;
+      line-height: 1.15;
+      color: var(--heading);
+      position: relative;
+      z-index: 1;
+      animation: fadeUp 0.85s ease both;
+    }
+
+    .hero h1 .gradient-word {
+      background: linear-gradient(135deg, var(--a), var(--c), var(--b));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-sub {
+      font-size: 1.05rem;
+      color: var(--text2);
+      margin-top: 1.25rem;
+      max-width: 560px;
+      position: relative;
+      z-index: 1;
+      animation: fadeUp 1s ease both;
+    }
+
+    .hero-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      justify-content: center;
+      max-width: 720px;
+      margin-top: 2rem;
+      position: relative;
+      z-index: 1;
+      animation: fadeUp 1.1s ease both;
+    }
+
+    .chip {
+      padding: 0.3rem 0.85rem;
+      border-radius: 100px;
+      font-size: 0.76rem;
+      font-weight: 600;
+      border: 1px solid;
+      transition: transform 0.2s;
+    }
+
+    .chip:hover {
+      transform: translateY(-2px);
+    }
+
+    .chip-a {
+      color: var(--a);
+      border-color: rgba(110, 231, 247, 0.35);
+      background: rgba(110, 231, 247, 0.08);
+    }
+
+    .chip-b {
+      color: var(--b);
+      border-color: rgba(244, 114, 182, 0.35);
+      background: rgba(244, 114, 182, 0.08);
+    }
+
+    .chip-c {
+      color: var(--c);
+      border-color: rgba(167, 139, 250, 0.35);
+      background: rgba(167, 139, 250, 0.08);
+    }
+
+    .chip-d {
+      color: var(--d);
+      border-color: rgba(52, 211, 153, 0.35);
+      background: rgba(52, 211, 153, 0.08);
+    }
+
+    .chip-e {
+      color: var(--e);
+      border-color: rgba(251, 146, 60, 0.35);
+      background: rgba(251, 146, 60, 0.08);
+    }
+
+    .chip-f {
+      color: var(--f);
+      border-color: rgba(250, 204, 21, 0.35);
+      background: rgba(250, 204, 21, 0.08);
+    }
+
+    .scroll-hint {
+      position: absolute;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      color: var(--text3);
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.4rem;
+      animation: bounce 2.5s infinite;
+      z-index: 1;
+    }
+
+    @keyframes bounce {
+
+      0%,
+      100% {
+        transform: translateX(-50%) translateY(0)
+      }
+
+      50% {
+        transform: translateX(-50%) translateY(8px)
+      }
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(24px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    /* ============================================================
+   LAYOUT
+   ============================================================ */
+    main {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 4rem 2rem;
+    }
+
+    section {
+      margin-bottom: 5.5rem;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .sec-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text3);
+      white-space: nowrap;
+    }
+
+    .sec-line {
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, var(--border2), transparent);
+    }
+
+    h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.6rem, 3vw, 2.3rem);
+      font-weight: 800;
+      color: var(--heading);
+      margin-bottom: 0.4rem;
+    }
+
+    h3 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 1.05rem;
+      margin-bottom: 0.6rem;
+      color: var(--heading);
+    }
+
+    p {
+      font-size: 0.94rem;
+      color: var(--text2);
+      margin-bottom: 0.7rem;
+    }
+
+    strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    /* ============================================================
+   GRADIENT TEXT HELPERS
+   ============================================================ */
+    .ga {
+      background: linear-gradient(135deg, var(--a), var(--d));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .gb {
+      background: linear-gradient(135deg, var(--b), var(--c));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .gc {
+      background: linear-gradient(135deg, var(--e), var(--b));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .gd {
+      background: linear-gradient(135deg, var(--c), var(--a));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* ============================================================
+   CARDS
+   ============================================================ */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.6rem;
+      transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
+    }
+
+    .card:hover {
+      border-color: var(--border2);
+      transform: translateY(-3px);
+      box-shadow: 0 12px 30px var(--shadow);
+    }
+
+    .grid2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1rem;
+    }
+
+    .grid3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1rem;
+    }
+
+    .grid4 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 1rem;
+    }
+
+    .bl-a {
+      border-left: 3px solid var(--a);
+    }
+
+    .bl-b {
+      border-left: 3px solid var(--b);
+    }
+
+    .bl-c {
+      border-left: 3px solid var(--c);
+    }
+
+    .bl-d {
+      border-left: 3px solid var(--d);
+    }
+
+    .bl-e {
+      border-left: 3px solid var(--e);
+    }
+
+    .bl-f {
+      border-left: 3px solid var(--f);
+    }
+
+    .ta {
+      color: var(--a);
+    }
+
+    .tb {
+      color: var(--b);
+    }
+
+    .tc {
+      color: var(--c);
+    }
+
+    .td {
+      color: var(--d);
+    }
+
+    .te {
+      color: var(--e);
+    }
+
+    .tf {
+      color: var(--f);
+    }
+
+    /* ============================================================
+   DEFINITION CARDS
+   ============================================================ */
+    .def-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 0.75rem;
+    }
+
+    .def-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.2rem;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s;
+    }
+
+    .def-card:hover {
+      transform: translateY(-2px);
+    }
+
+    .def-top {
+      height: 2px;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+    }
+
+    .def-term {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .def-desc {
+      font-size: 0.87rem;
+      color: var(--text2);
+    }
+
+    /* ============================================================
+   MONO / CODE STYLE
+   ============================================================ */
+    .mono {
+      font-family: 'JetBrains Mono', monospace;
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      font-size: 0.85rem;
+      color: var(--a);
+      margin-top: 0.75rem;
+      overflow-x: auto;
+      white-space: pre;
+    }
+
+    .mono span.comment {
+      color: var(--text3);
+    }
+
+    .mono span.key {
+      color: var(--b);
+    }
+
+    .mono span.val {
+      color: var(--d);
+    }
+
+    /* ============================================================
+   EXAMPLE BOXES
+   ============================================================ */
+    .ex {
+      border-radius: 14px;
+      padding: 1.4rem;
+      border: 1px solid;
+      margin-top: 1.25rem;
+    }
+
+    .ex-a {
+      background: rgba(110, 231, 247, 0.06);
+      border-color: rgba(110, 231, 247, 0.25);
+    }
+
+    .ex-b {
+      background: rgba(244, 114, 182, 0.06);
+      border-color: rgba(244, 114, 182, 0.25);
+    }
+
+    .ex-c {
+      background: rgba(167, 139, 250, 0.06);
+      border-color: rgba(167, 139, 250, 0.25);
+    }
+
+    .ex-d {
+      background: rgba(52, 211, 153, 0.06);
+      border-color: rgba(52, 211, 153, 0.25);
+    }
+
+    .ex-e {
+      background: rgba(251, 146, 60, 0.06);
+      border-color: rgba(251, 146, 60, 0.25);
+    }
+
+    .ex-f {
+      background: rgba(250, 204, 21, 0.06);
+      border-color: rgba(250, 204, 21, 0.25);
+    }
+
+    .ex-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .ex-label::before {
+      content: '';
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    /* ============================================================
+   TIP BOXES
+   ============================================================ */
+    .tip {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      padding: 1.1rem 1.25rem;
+      border-radius: 12px;
+      margin-top: 1rem;
+    }
+
+    .tip-green {
+      background: rgba(52, 211, 153, 0.08);
+      border: 1px solid rgba(52, 211, 153, 0.25);
+    }
+
+    .tip-blue {
+      background: rgba(110, 231, 247, 0.08);
+      border: 1px solid rgba(110, 231, 247, 0.25);
+    }
+
+    .tip-warn {
+      background: rgba(251, 146, 60, 0.08);
+      border: 1px solid rgba(251, 146, 60, 0.25);
+    }
+
+    .tip-yellow {
+      background: rgba(250, 204, 21, 0.08);
+      border: 1px solid rgba(250, 204, 21, 0.25);
+    }
+
+    .tip-icon {
+      font-size: 1.2rem;
+      flex-shrink: 0;
+      margin-top: 0.1rem;
+    }
+
+    .tip-body h4 {
+      font-size: 0.84rem;
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+    }
+
+    .tip-body p {
+      font-size: 0.86rem;
+      color: var(--text2);
+      margin: 0;
+    }
+
+    /* ============================================================
+   MNEMONIC BOXES  (memory aids - distinct brain/purple styling)
+   ============================================================ */
+    .mnemonic {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      padding: 1.25rem 1.4rem;
+      border-radius: 14px;
+      margin-top: 1.25rem;
+      background: linear-gradient(135deg, rgba(167, 139, 250, 0.10), rgba(244, 114, 182, 0.07));
+      border: 1px solid rgba(167, 139, 250, 0.35);
+      position: relative;
+    }
+
+    .mnemonic-icon {
+      font-size: 1.3rem;
+      flex-shrink: 0;
+    }
+
+    .mnemonic-body h4 {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--c);
+      margin-bottom: 0.4rem;
+    }
+
+    .mnemonic-body p {
+      font-size: 0.92rem;
+      color: var(--text);
+      margin: 0;
+    }
+
+    .mnemonic-body .mnem-key {
+      color: var(--b);
+      font-weight: 700;
+    }
+
+    /* ============================================================
+   TABLES
+   ============================================================ */
+    .tbl {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.87rem;
+    }
+
+    .tbl th {
+      text-align: left;
+      padding: 0.65rem 0.9rem;
+      background: var(--surface2);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text3);
+      border-bottom: 1px solid var(--border2);
+    }
+
+    .tbl td {
+      padding: 0.7rem 0.9rem;
+      border-bottom: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .tbl tr:last-child td {
+      border-bottom: none;
+    }
+
+    .tbl tr:hover td {
+      background: var(--surface2);
+    }
+
+    .tbl-wrap {
+      overflow-x: auto;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+
+    /* ============================================================
+   VS (COMPARISON) CARDS
+   ============================================================ */
+    .vs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    @media(max-width:640px) {
+      .vs {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* ============================================================
+   FLOW DIAGRAM
+   ============================================================ */
+    .flow {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      flex-wrap: wrap;
+      margin: 1.5rem 0;
+    }
+
+    .flow-box {
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-radius: 10px;
+      padding: 0.75rem 1rem;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--heading);
+      text-align: center;
+      flex: 1;
+      min-width: 80px;
+    }
+
+    .flow-box.accent {
+      background: rgba(110, 231, 247, 0.12);
+      border-color: rgba(110, 231, 247, 0.4);
+      color: var(--a);
+    }
+
+    .flow-box.accent2 {
+      background: rgba(167, 139, 250, 0.12);
+      border-color: rgba(167, 139, 250, 0.4);
+      color: var(--c);
+    }
+
+    .flow-box.accent3 {
+      background: rgba(52, 211, 153, 0.12);
+      border-color: rgba(52, 211, 153, 0.4);
+      color: var(--d);
+    }
+
+    .flow-arrow {
+      font-size: 1.2rem;
+      color: var(--text3);
+      padding: 0 0.35rem;
+      flex-shrink: 0;
+    }
+
+    /* ============================================================
+   STEPS
+   ============================================================ */
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .step {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      padding: 1rem 1.25rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      transition: all 0.3s;
+    }
+
+    .step:hover {
+      border-color: var(--border2);
+    }
+
+    .step-num {
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      font-size: 0.8rem;
+      flex-shrink: 0;
+      color: #000;
+      background: linear-gradient(135deg, var(--a), var(--c));
+    }
+
+    .step-body h4 {
+      font-weight: 700;
+      font-size: 0.9rem;
+      margin-bottom: 0.2rem;
+    }
+
+    .step-body p {
+      font-size: 0.86rem;
+      color: var(--text2);
+      margin: 0;
+    }
+
+    /* ============================================================
+   BADGES
+   ============================================================ */
+    .badge {
+      display: inline-block;
+      padding: 0.2rem 0.55rem;
+      border-radius: 100px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      border: 1px solid;
+    }
+
+    .badge-a {
+      color: var(--a);
+      border-color: rgba(110, 231, 247, 0.4);
+      background: rgba(110, 231, 247, 0.1);
+    }
+
+    .badge-b {
+      color: var(--b);
+      border-color: rgba(244, 114, 182, 0.4);
+      background: rgba(244, 114, 182, 0.1);
+    }
+
+    .badge-c {
+      color: var(--c);
+      border-color: rgba(167, 139, 250, 0.4);
+      background: rgba(167, 139, 250, 0.1);
+    }
+
+    .badge-e {
+      color: var(--e);
+      border-color: rgba(251, 146, 60, 0.4);
+      background: rgba(251, 146, 60, 0.1);
+    }
+
+    .row-highlight td {
+      background: rgba(52, 211, 153, 0.06) !important;
+    }
+
+    .row-warn td {
+      background: rgba(244, 114, 182, 0.06) !important;
+    }
+
+    /* ============================================================
+   FOOTER
+   ============================================================ */
+    footer {
+      text-align: center;
+      padding: 3rem 2rem 4rem;
+      position: relative;
+    }
+
+    footer::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 10%;
+      right: 10%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border2), transparent);
+    }
+
+    .footer-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--a), var(--c), var(--b));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .footer-sub {
+      font-size: 0.78rem;
+      color: var(--text3);
+      margin-top: 0.3rem;
+    }
+
+    /* UL RESET */
+    ul {
+      list-style: none;
+    }
+
+    ul li {
+      padding: 0.32rem 0;
+      padding-left: 1rem;
+      position: relative;
+      font-size: 0.9rem;
+      color: var(--text2);
+    }
+
+    ul li::before {
+      content: '▸';
+      position: absolute;
+      left: 0;
+      color: var(--c);
+      font-size: 0.65rem;
+      top: 0.44rem;
+    }
+
+    .divider {
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border), transparent);
+      margin: 4rem 0;
+    }
+
+    @media(max-width:600px) {
+      .grid4 {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .flow {
+        justify-content: center;
+      }
+
+      .flow-box {
+        min-width: 70px;
+        font-size: 0.75rem;
+      }
+    }
+  </style>
+  <script src="/javascripts/standalone-theme.js"></script>
+  <script src="/javascripts/html-theme-sync.js"></script>
+
+  <meta name="description"
+    content="A comprehensive study guide covering footprinting fundamentals, OSINT, the six-step information-gathering process, Google hacking operators, WHOIS/Nslookup/traceroute reconnaissance tools, the five Regional Internet Registries, and countermeasures against footprinting.">
+  <link rel="canonical"
+    href="https://shoug-tech.com/academics/cybersecurity/cys405/slide-breakdowns/02-chapter-2-information-gathering-footprinting-and-reconnaissance/chapter-2-information-gathering-footprinting-and-reconnaissance.html">
+  <meta property="og:title" content="CYS405 - Chapter 2: Information Gathering, Footprinting and Reconnaissance">
+  <meta property="og:description"
+    content="A comprehensive study guide covering footprinting fundamentals, OSINT, the six-step information-gathering process, Google hacking operators, WHOIS/Nslookup/traceroute reconnaissance tools, the five Regional Internet Registries, and countermeasures against footprinting.">
+  <meta property="og:url"
+    content="https://shoug-tech.com/academics/cybersecurity/cys405/slide-breakdowns/02-chapter-2-information-gathering-footprinting-and-reconnaissance/chapter-2-information-gathering-footprinting-and-reconnaissance.html">
+  <meta property="og:type" content="article">
+  <meta property="og:image" content="https://shoug-tech.com/assets/og-banner.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="CYS405 - Chapter 2: Information Gathering, Footprinting and Reconnaissance">
+  <meta name="twitter:description"
+    content="A comprehensive study guide covering footprinting fundamentals, OSINT, the six-step information-gathering process, Google hacking operators, WHOIS/Nslookup/traceroute reconnaissance tools, the five Regional Internet Registries, and countermeasures against footprinting.">
+  <meta name="twitter:image" content="https://shoug-tech.com/assets/og-banner.png">
+</head>
+
+<body>
+
+
+  <!-- THEME TOGGLE -->
+  <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+    <span class="toggle-icon" id="toggle-icon">☀️</span>
+    <span id="toggle-label">Light Mode</span>
+  </button>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-grid"></div>
+
+    <div class="hero-badge">
+      <span class="badge-dot"></span>
+      CYS405 · Chapter 2
+    </div>
+
+    <h1>
+      Footprinting Tools and<br>
+      <span class="gradient-word">Reconnaissance</span>
+    </h1>
+    <p class="hero-sub">How attackers (and ethical hackers) quietly map a target before ever touching its network — from
+      Google dorks to WHOIS, DNS, traceroute, and social media recon.</p>
+
+    <div class="hero-chips">
+      <span class="chip chip-a">Footprinting</span>
+      <span class="chip chip-b">OSINT</span>
+      <span class="chip chip-c">Google Hacking</span>
+      <span class="chip chip-d">Whois &amp; Nslookup</span>
+      <span class="chip chip-e">Regional Internet Registries</span>
+      <span class="chip chip-f">Traceroute</span>
+      <span class="chip chip-a">Countermeasures</span>
+    </div>
+
+    <div class="scroll-hint">
+      scroll ↓
+    </div>
+  </div>
+
+  <main>
+
+    <!-- SECTION 1: WHAT IS FOOTPRINTING -->
+    <section>
+      <div class="section-header"><span class="sec-num">01</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="ga">What Is Footprinting?</h2>
+      <p><strong>Footprinting</strong> is the process of collecting as much information as possible about a target
+        network, in order to identify various ways to intrude into an organization's network system. Think of it as
+        building a dossier on a target before ever sending a single malicious packet — it is entirely (or almost
+        entirely) passive and relies on information that is already out there.</p>
+      <p>Footprinting is the <strong>first step of any attack</strong> on information systems. An attacker gathers
+        publicly available, sensitive information and then uses it to perform social engineering, system attacks, and
+        network attacks — activities that can lead to huge financial loss and reputational damage for the victim
+        organization. For an ethical hacker, the exact same techniques are used defensively: to find out what an
+        attacker could see, and fix it before they look.</p>
+
+      <div class="card bl-a" style="margin-top:1.25rem;">
+        <h3 class="ta">Why Footprint? (4 Reasons)</h3>
+        <ul>
+          <li><strong>Know Security Posture</strong> — footprinting lets an attacker understand the external security
+            posture of the target organization: what defenses are visible from the outside.</li>
+          <li><strong>Reduce Focus Area</strong> — it narrows the attacker's focus down to a specific range of IP
+            addresses, networks, domain names, remote-access points, etc., instead of guessing blindly.</li>
+          <li><strong>Identify Vulnerabilities</strong> — it helps the attacker spot weaknesses in target systems so
+            they can pick the right exploits.</li>
+          <li><strong>Draw Network Map</strong> — it lets the attacker sketch a map or outline of the target's network
+            infrastructure, so they understand the actual environment they are about to break into.</li>
+        </ul>
+      </div>
+
+      <div class="mnemonic">
+        <div class="mnemonic-icon">🧠</div>
+        <div class="mnemonic-body">
+          <h4>Mnemonic — Why Footprint?</h4>
+          <p><span class="mnem-key">K.R.I.D.</span> — <strong>K</strong>now security posture, <strong>R</strong>educe
+            focus area, <strong>I</strong>dentify vulnerabilities, <strong>D</strong>raw the network map. Read it as
+            "the KID who footprints" narrows down, learns, finds cracks, and draws the map.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 2: OSINT -->
+    <section>
+      <div class="section-header"><span class="sec-num">02</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gb">Open-Source Intelligence (OSINT)</h2>
+      <p>There are a lot of places an ethical hacker can find information about a target. <strong>Open-Source
+          Intelligence (OSINT)</strong> is the term used to describe identifying information about a target using only
+        <strong>freely and publicly available sources</strong> — no hacking, no exploiting, just looking at what is
+        already published.</p>
+      <div class="def-grid">
+        <div class="def-card">
+          <div class="def-top" style="background:var(--a)"></div>
+          <div class="def-term ta">Why OSINT?</div>
+          <div class="def-desc">It is free, legal, and low-risk — nothing is touched on the target's systems, yet it can
+            reveal an enormous amount: employee names, technologies in use, network ranges, and organizational
+            structure.</div>
+        </div>
+        <div class="def-card">
+          <div class="def-top" style="background:var(--c)"></div>
+          <div class="def-term tc">Sources</div>
+          <div class="def-desc">Search engines, company websites, job postings, social media, domain registration
+            records, DNS records, and public government/business databases.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 3: THE INFORMATION-GATHERING PROCESS (6 STEPS) -->
+    <section>
+      <div class="section-header"><span class="sec-num">03</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gc">The Information-Gathering Process</h2>
+      <p>Footprinting follows a broad, structured six-step process that moves from very general public information down
+        to specific technical detail about the target's systems.</p>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <h4>Gather information from general resources</h4>
+            <p>Start broad — Google, the organization's own website, news articles, social media.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <h4>Determine the network's logical and physical dimensions</h4>
+            <p>Map out IP ranges, domain structure, and physical office/branch locations.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <h4>Identify active computers and devices</h4>
+            <p>Determine which hosts within the discovered range are actually alive and reachable.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <h4>Find open ports, active services, and access points</h4>
+            <p>Discover what is listening on those live hosts — services, remote-access points, etc.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">5</div>
+          <div class="step-body">
+            <h4>Detect operating systems</h4>
+            <p>Fingerprint the OS running on discovered devices to narrow down applicable exploits.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">6</div>
+          <div class="step-body">
+            <h4>Research known vulnerabilities of running software</h4>
+            <p>Once software and OS versions are known, look up their published vulnerabilities (CVEs, advisories) to
+              plan an attack — or, for a defender, to plan patching.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="mnemonic">
+        <div class="mnemonic-icon">🧠</div>
+        <div class="mnemonic-body">
+          <h4>Mnemonic — The 6-Step Process</h4>
+          <p><span class="mnem-key">G.D.I.F.D.R.</span> — "<strong>G</strong>randma <strong>D</strong>rives
+            <strong>I</strong>nto <strong>F</strong>oggy <strong>D</strong>itches <strong>R</strong>egularly":
+            <strong>G</strong>ather general info → <strong>D</strong>etermine network dimensions →
+            <strong>I</strong>dentify active hosts → <strong>F</strong>ind open ports/services → <strong>D</strong>etect
+            OS → <strong>R</strong>esearch vulnerabilities. The process narrows from "the whole internet" down to "this
+            exact exploit."</p>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <h3 class="td">Footprinting Activities</h3>
+      <p>Within that six-step process, the concrete activities a footprinter actually performs include:</p>
+      <div class="grid2">
+        <div class="card bl-d">
+          <h3 class="td">Organizational Recon</h3>
+          <ul>
+            <li>Examine the company's website</li>
+            <li>Identify key employees</li>
+            <li>Analyze open job positions and job requests</li>
+            <li>Assess affiliate, parent, or sister companies</li>
+            <li>Find technologies and software used by the organization</li>
+          </ul>
+        </div>
+        <div class="card bl-e">
+          <h3 class="te">Technical &amp; Data Recon</h3>
+          <ul>
+            <li>Determine network address and range</li>
+            <li>Review the network range to determine whether the organization owns it or whether systems are hosted by
+              a third party</li>
+            <li>Look for employee postings, blogs, and other leaked information</li>
+            <li>Review all the collected data as a whole to draw conclusions</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 4: INFO ON A COMPANY WEBSITE -->
+    <section>
+      <div class="section-header"><span class="sec-num">04</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gd">Information Found on a Company Website</h2>
+      <p>A company's own public-facing website is often the single richest, easiest, and most legal source of
+        footprinting data. Slides emphasize three categories typically exposed there:</p>
+      <div class="def-grid">
+        <div class="def-card">
+          <div class="def-top" style="background:var(--a)"></div>
+          <div class="def-term ta">Employee Names &amp; Emails</div>
+          <div class="def-desc">Staff directories, "About Us" and "Our Team" pages, press releases, and contact forms
+            often reveal full names and email address formats (e.g. first.last@company.com), which are gold for social
+            engineering and phishing.</div>
+        </div>
+        <div class="def-card">
+          <div class="def-top" style="background:var(--b)"></div>
+          <div class="def-term tb">Branch Office Locations</div>
+          <div class="def-desc">"Locations" or "Contact Us" pages reveal every physical office, warehouse, or data
+            center — expanding the attacker's view of the physical attack surface.</div>
+        </div>
+        <div class="def-card">
+          <div class="def-top" style="background:var(--c)"></div>
+          <div class="def-term tc">Technologies Used</div>
+          <div class="def-desc">Case studies, careers pages, and even page source code/metadata can reveal the CMS,
+            frameworks, cloud provider, or vendor products in use.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 5: JOB POSTINGS -->
+    <section>
+      <div class="section-header"><span class="sec-num">05</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="ga">Job Postings as an Infrastructure Clue</h2>
+      <p>Job postings are an underrated goldmine: to attract qualified candidates, HR and IT departments frequently list
+        the exact software, hardware, and vendor products used internally — effectively publishing an infrastructure
+        inventory to the entire internet.</p>
+
+      <div class="ex ex-a">
+        <div class="ex-label ta">📘 Real Slide Example — What a Job Posting Reveals</div>
+        <p>A real IT job posting example from the slides lists these requirements, each of which is a direct clue to the
+          target's environment:</p>
+        <ul>
+          <li>Advanced knowledge of <strong>Microsoft Windows 8, Windows 10, Server 2008, Server 2012, Server
+              2016</strong></li>
+          <li><strong>Microsoft Office 2010, Office 2013, Office 2016</strong></li>
+          <li><strong>Microsoft SQL Server, Microsoft IIS, Visual Basic</strong></li>
+          <li>Relevant experience/knowledge: <strong>Cisco PIX</strong>; <strong>Check Point Firewall</strong> helpful
+            but not necessary</li>
+          <li><strong>VMware, SAP</strong>, and other data-gathering systems</li>
+          <li>Knowledge of <strong>Active Directory</strong></li>
+          <li>Experience with <strong>Symantec Security Suite</strong></li>
+        </ul>
+        <p>From this single posting alone, an attacker can infer: a Windows Server/Active Directory domain environment,
+          SQL Server and IIS web infrastructure, a Cisco PIX or Check Point perimeter firewall, VMware virtualization,
+          SAP for ERP, and Symantec for endpoint security — a near-complete infrastructure sketch, with zero packets
+          sent to the target.</p>
+      </div>
+    </section>
+
+    <!-- SECTION 6: GOOGLE HACKING -->
+    <section>
+      <div class="section-header"><span class="sec-num">06</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gb">Footprinting Using Advanced Google Hacking Techniques</h2>
+      <p><strong>Google hacking</strong> (a.k.a. "Google dorking") is the goal of locating useful information using
+        techniques the search engine already provides, but applying them in creative, offensive ways. The same idea
+        works with <strong>Yahoo and Bing</strong> as well — Google is simply the most commonly discussed because of its
+        market dominance and rich operator set.</p>
+
+      <h3 class="tb" style="margin-top:1.5rem;">Google Advanced Search Operators</h3>
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>Operator</th>
+              <th>Purpose</th>
+              <th>Example</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="mono" style="display:inline-block;padding:0.2rem 0.5rem;">intitle:</td>
+              <td>Instructs Google to search for a term within the <strong>title</strong> of a document/page.</td>
+              <td>intitle:"index of"</td>
+            </tr>
+            <tr>
+              <td class="mono" style="display:inline-block;padding:0.2rem 0.5rem;">filetype:</td>
+              <td>Restricts the search to results of a particular <strong>file type</strong> only (PDF, DOC, XLS, etc.).
+              </td>
+              <td>filetype:pdf "confidential"</td>
+            </tr>
+            <tr>
+              <td class="mono" style="display:inline-block;padding:0.2rem 0.5rem;">inurl:</td>
+              <td>Searches within a site's <strong>URL string</strong>. Useful when the attacker knows standard URL
+                patterns used by particular applications/devices.</td>
+              <td>inurl:"view.shtml" "Network Camera"</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="ex ex-b">
+        <div class="ex-label tb">📘 Real Slide Example — Finding Open Network Cameras</div>
+        <p>Try this search: <strong>inurl:"view.shtml" "Network Camera"</strong> — this combination targets the specific
+          URL pattern and title text used by a common brand of web-accessible security camera, potentially surfacing
+          camera feeds left open to the public internet with no authentication.</p>
+      </div>
+
+      <div class="mnemonic">
+        <div class="mnemonic-icon">🧠</div>
+        <div class="mnemonic-body">
+          <h4>Mnemonic — The 3 Core Operators</h4>
+          <p><span class="mnem-key">T.F.U.</span> = <strong>T</strong>itle (intitle), <strong>F</strong>ile type
+            (filetype), <strong>U</strong>RL (inurl). Picture a "TFU" checklist: what's the page's Title, what File type
+            is it, what's in the URL?</p>
+        </div>
+      </div>
+
+      <div class="card bl-c" style="margin-top:1.25rem;">
+        <h3 class="tc">Practice Exercises From the Slides</h3>
+        <ul>
+          <li>Use the <strong>site:</strong> operator to search for armchairs on IKEA's site, www.ikea.com.</li>
+          <li>Use the Advanced Search form to find the page whose title is "Detect Plagiarism."</li>
+          <li>Find pages on google.com but not on answers.google.com nor directory.google.com whose titles include "FAQ"
+            or "help."</li>
+          <li>Use the <strong>link:</strong> operator to see who links to googleguide.com or another site of choice.
+          </li>
+          <li>Find pages whose titles include "surfing" that are not about surfing the World Wide Web.</li>
+          <li>Search for [google help] restricted to Google Guide (www.googleguide.com) and the UC Berkeley library site
+            (www.lib.berkeley.edu).</li>
+        </ul>
+      </div>
+
+      <div class="ex ex-c" style="margin-top:1.5rem;">
+        <div class="ex-label tc">📘 Google Hacking Database (GHDB)</div>
+        <p>The <strong>Google Hacking Database (GHDB)</strong> is a curated, community-maintained collection of proven
+          Google dorks, hosted as a project at
+          <strong>www.offensive-security.com/community-projects/google-hacking-database/</strong>. Instead of inventing
+          your own dorks from scratch, the GHDB catalogs ready-made queries organized by category (e.g. exposed files,
+          login portals, vulnerable servers, sensitive directories) so pentesters can quickly test known-effective
+          searches against a target.</p>
+      </div>
+    </section>
+
+    <!-- SECTION 7: DOMAIN INFORMATION LEAKAGE -->
+    <section>
+      <div class="section-header"><span class="sec-num">07</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gc">Exploring Domain Information Leakage</h2>
+      <p>Beyond the website itself, domain registration and DNS infrastructure leak a huge amount about a target. The
+        key techniques and tools are:</p>
+
+      <div class="def-grid">
+        <div class="def-card">
+          <div class="def-top" style="background:var(--a)"></div>
+          <div class="def-term ta">Manual Registrar Query</div>
+          <div class="def-desc">Manually visiting a domain registrar's own lookup page to pull registration details for
+            a specific domain.</div>
+        </div>
+        <div class="def-card">
+          <div class="def-top" style="background:var(--b)"></div>
+          <div class="def-term tb">Automatic Registrar Query</div>
+          <div class="def-desc">Third-party aggregator sites that automate the lookup: http://www.betterwhois.com,
+            http://geektools.com, www.all-nettools.com, www.smartwhois.com, www.dnsstuff.com,
+            http://whois.domaintools.com.</div>
+        </div>
+        <div class="def-card">
+          <div class="def-top" style="background:var(--c)"></div>
+          <div class="def-term tc">Whois</div>
+          <div class="def-desc">Queries databases that hold domain registration information; designed to interrogate the
+            Internet DNS system and return domain ownership, addresses, physical location, phone number, etc.
+            Availability of the tool depends on the operating system.</div>
+        </div>
+        <div class="def-card">
+          <div class="def-top" style="background:var(--d)"></div>
+          <div class="def-term td">Nslookup</div>
+          <div class="def-desc">A command-line tool for querying DNS servers to obtain domain-name-to-IP-address
+            mappings or other DNS-related records. "Nslookup" literally stands for "name server lookup." Available on
+            Windows, macOS, and various Unix-like systems.</div>
+        </div>
+        <div class="def-card">
+          <div class="def-top" style="background:var(--e)"></div>
+          <div class="def-term te">IANA</div>
+          <div class="def-desc">The Internet Assigned Numbers Authority — the global authority responsible for the
+            top-level coordination of DNS root, IP addressing, and other Internet protocol resources.</div>
+        </div>
+        <div class="def-card">
+          <div class="def-top" style="background:var(--f)"></div>
+          <div class="def-term tf">Determining a Network Range</div>
+          <div class="def-desc">Using the Regional Internet Registries (see below) to figure out exactly which block of
+            IP addresses belongs to the target organization.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 8: THE 5 RIRs -->
+    <section>
+      <div class="section-header"><span class="sec-num">08</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gd">The 5 Regional Internet Registries (RIRs)</h2>
+      <p>Determining a network range means figuring out which Regional Internet Registry allocated the target's IP
+        space, then querying that registry directly. There are exactly five RIRs, each responsible for a distinct region
+        of the world:</p>
+
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>Registry</th>
+              <th>Full Name</th>
+              <th>Region Covered</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>ARIN</strong></td>
+              <td>American Registry for Internet Numbers</td>
+              <td>North America and parts of the Caribbean</td>
+            </tr>
+            <tr>
+              <td><strong>RIPE NCC</strong></td>
+              <td>Réseaux IP Européens Network Coordination Centre</td>
+              <td>Europe, the Middle East, and Central Asia</td>
+            </tr>
+            <tr>
+              <td><strong>APNIC</strong></td>
+              <td>Asia-Pacific Network Information Centre</td>
+              <td>Asia and the Pacific Rim</td>
+            </tr>
+            <tr>
+              <td><strong>LACNIC</strong></td>
+              <td>Latin American and Caribbean Internet Addresses Registry</td>
+              <td>Latin America and parts of the Caribbean region</td>
+            </tr>
+            <tr>
+              <td><strong>AfriNIC</strong></td>
+              <td>African Network Information Centre</td>
+              <td>Africa</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="mnemonic">
+        <div class="mnemonic-icon">🧠</div>
+        <div class="mnemonic-body">
+          <h4>Mnemonic — The 5 RIRs</h4>
+          <p><span class="mnem-key">"A Rapper And Lil' Africa"</span> — <strong>A</strong>RIN (North America),
+            <strong>R</strong>IPE NCC (Europe/Middle East/Central Asia), <strong>A</strong>PNIC (Asia-Pacific),
+            <strong>L</strong>ACNIC (Latin America), <strong>A</strong>friNIC (Africa). Five continents, five registries
+            — walk around the globe from the Americas → Europe → Asia → Latin America → Africa.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 9: TRACEROUTE -->
+    <section>
+      <div class="section-header"><span class="sec-num">09</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="ga">Traceroute</h2>
+      <p><strong>Traceroute</strong> is a software program that helps determine the path a data packet traverses to
+        reach a specific IP address. It is one of the easiest ways to identify the path to a targeted website, and by
+        extension can reveal internal network topology, ISPs in the path, and sometimes internal hostnames of routers.
+      </p>
+      <p>Traceroute works by displaying the list of routers on the path to a network destination, using
+        <strong>time-to-live (TTL) timeouts</strong> and <strong>Internet Control Message Protocol (ICMP) error
+          messages</strong>: it sends packets with increasing TTL values, and each router along the path that decrements
+        the TTL to zero sends back an ICMP "time exceeded" message, revealing itself as one hop in the path.</p>
+
+      <div class="vs">
+        <div class="ex ex-d">
+          <div class="ex-label td">Windows</div>
+          <p>Command: <strong>tracert</strong></p>
+        </div>
+        <div class="ex ex-b">
+          <div class="ex-label tb">UNIX / Linux</div>
+          <p>Command: <strong>traceroute</strong></p>
+        </div>
+      </div>
+
+      <div class="mnemonic">
+        <div class="mnemonic-icon">🧠</div>
+        <div class="mnemonic-body">
+          <h4>Mnemonic — Command Names</h4>
+          <p><span class="mnem-key">tracert = "tract" (short, Windows-y)</span>, <span class="mnem-key">traceroute =
+              full word (UNIX likes verbose names)</span>. Windows abbreviates almost everything (ipconfig, tracert);
+            UNIX/Linux tends to spell things out (traceroute, ifconfig).</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 10: TRACKING EMPLOYEES -->
+    <section>
+      <div class="section-header"><span class="sec-num">10</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gb">Tracking an Organization's Employees</h2>
+      <p>People are frequently the weakest link, and they leave a huge amount of footprinting-relevant data behind
+        online, often without realizing it.</p>
+
+      <h3 class="tb">Information That Can Be Uncovered Online</h3>
+      <ul>
+        <li>Posted photographs, videos, or other personal information</li>
+        <li>Posted content about personal activities, political or activist affiliations, and beliefs</li>
+        <li>Derogatory information posted about previous employers, coworkers, or clients</li>
+        <li>Discriminatory comments or fabricated qualifications</li>
+      </ul>
+
+      <h3 class="tb" style="margin-top:1.5rem;">Sites Worth Examining</h3>
+      <p>These sites can be examined for names, email addresses, phone numbers, photographs, and more:</p>
+      <div class="grid3">
+        <div class="card bl-a">
+          <h3 class="ta">Blogs</h3>
+          <p>Personal or professional blogs often contain unfiltered opinions, work details, and identifying info.</p>
+        </div>
+        <div class="card bl-c">
+          <h3 class="tc">Social Networking Profiles</h3>
+          <p>Facebook, YouTube, LinkedIn, Instagram, Twitter, and even "[company] sucks"-style domains created by
+            disgruntled current or former employees.</p>
+        </div>
+        <div class="card bl-e">
+          <h3 class="te">Organizational Social Media</h3>
+          <p>The organization's own official social media outlet pages, which reveal branding, staff, partners, and
+            announcements.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 11: USING SOCIAL NETWORKS -->
+    <section>
+      <div class="section-header"><span class="sec-num">11</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gc">Using Social Networks</h2>
+      <p>Platforms like <strong>Facebook, LinkedIn, and Twitter</strong> are both a footprinting goldmine and an active
+        attack vector in their own right.</p>
+      <div class="ex ex-e">
+        <div class="ex-label te">📘 Real Slide Example — Malicious Video Link</div>
+        <p>Clicking a video on a social network can be linked to a malicious site that steals the victim's credentials
+          or other information, or the site itself could install malicious software onto the user's system — a reminder
+          that footprinting and initial compromise are often just one click apart.</p>
+      </div>
+      <ul style="margin-top:1rem;">
+        <li>Be aware of potentially malicious URLs shared or embedded in posts</li>
+        <li>Innocent-looking items (trivia quizzes, fantasy sports apps, personality tests, etc.) may harvest and
+          distribute or publish user information without obvious consent</li>
+        <li>Profile information is valuable to <strong>both</strong> ethical hackers (for legitimate security
+          assessments) and non-ethical hackers (for social engineering and attacks)</li>
+      </ul>
+    </section>
+
+    <!-- SECTION 12: COUNTERMEASURES -->
+    <section>
+      <div class="section-header"><span class="sec-num">12</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gd">Basic Countermeasures Against Footprinting</h2>
+      <p>Since almost all footprinting relies on information an organization or its employees have made public, the core
+        countermeasure philosophy is <strong>minimize the public attack surface</strong>: publish only what is
+        operationally necessary, train staff on what not to share, and monitor what is already out there.</p>
+      <div class="grid2">
+        <div class="tip tip-blue">
+          <div class="tip-icon">🔒</div>
+          <div class="tip-body">
+            <h4 class="ta">Limit Public Disclosure</h4>
+            <p>Avoid publishing detailed employee names/emails, exact software/hardware versions, or internal network
+              details in job postings and website content.</p>
+          </div>
+        </div>
+        <div class="tip tip-green">
+          <div class="tip-icon">🧭</div>
+          <div class="tip-body">
+            <h4 class="td">Employee Awareness Training</h4>
+            <p>Train staff on social media hygiene — what not to post about employer, projects, or infrastructure — and
+              on recognizing malicious/social-engineering links.</p>
+          </div>
+        </div>
+        <div class="tip tip-warn">
+          <div class="tip-icon">🌐</div>
+          <div class="tip-body">
+            <h4 class="te">Domain Privacy</h4>
+            <p>Use WHOIS privacy/proxy services where possible to reduce the personal and organizational detail exposed
+              in domain registration records.</p>
+          </div>
+        </div>
+        <div class="tip tip-yellow">
+          <div class="tip-icon">🔍</div>
+          <div class="tip-body">
+            <h4 class="tf">Self-Footprint Regularly</h4>
+            <p>Periodically run the same OSINT/Google-hacking techniques against your own organization to discover and
+              remove leaked information before attackers find it.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 13: EXAM TIPS & TRICKS -->
+    <section>
+      <div class="section-header"><span class="sec-num">13</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="ga">Exam Tips &amp; Tricks</h2>
+      <div class="grid2">
+        <div class="tip tip-blue">
+          <div class="tip-icon">💡</div>
+          <div class="tip-body">
+            <h4 class="ta">Footprinting = First Step</h4>
+            <p>Remember: footprinting is always the FIRST phase of an attack, and it is (almost entirely) passive — no
+              direct interaction that would alert the target.</p>
+          </div>
+        </div>
+        <div class="tip tip-green">
+          <div class="tip-icon">💡</div>
+          <div class="tip-body">
+            <h4 class="td">4 Reasons to Footprint</h4>
+            <p>Know security posture, Reduce focus area, Identify vulnerabilities, Draw network map — a favorite exam
+              list, know all four exactly.</p>
+          </div>
+        </div>
+        <div class="tip tip-warn">
+          <div class="tip-icon">💡</div>
+          <div class="tip-body">
+            <h4 class="te">6-Step Process Order Matters</h4>
+            <p>Exams love asking you to order the 6 steps: general resources → network dimensions → active hosts → open
+              ports/services → OS detection → known vulnerabilities.</p>
+          </div>
+        </div>
+        <div class="tip tip-yellow">
+          <div class="tip-icon">💡</div>
+          <div class="tip-body">
+            <h4 class="tf">3 Google Operators</h4>
+            <p>intitle (title text), filetype (specific file extension), inurl (text within the URL). Know the exact
+              camera example: inurl:"view.shtml" "Network Camera".</p>
+          </div>
+        </div>
+        <div class="tip tip-blue">
+          <div class="tip-icon">💡</div>
+          <div class="tip-body">
+            <h4 class="ta">GHDB Source</h4>
+            <p>The Google Hacking Database lives at offensive-security.com's community-projects page — a common
+              multiple-choice distractor swaps this for "exploit-db.com" (which hosts exploits, not dorks).</p>
+          </div>
+        </div>
+        <div class="tip tip-green">
+          <div class="tip-icon">💡</div>
+          <div class="tip-body">
+            <h4 class="td">Whois vs Nslookup</h4>
+            <p>Whois = domain REGISTRATION info (owner, address, phone). Nslookup = DNS RESOLUTION info (domain-to-IP
+              mapping). Don't mix them up.</p>
+          </div>
+        </div>
+        <div class="tip tip-warn">
+          <div class="tip-icon">💡</div>
+          <div class="tip-body">
+            <h4 class="te">5 RIRs by Region</h4>
+            <p>ARIN=N.America, RIPE NCC=Europe/Mideast/CentralAsia, APNIC=Asia-Pacific, LACNIC=Latin America,
+              AfriNIC=Africa. Exams may ask "which RIR covers the Middle East?" → RIPE NCC.</p>
+          </div>
+        </div>
+        <div class="tip tip-yellow">
+          <div class="tip-icon">💡</div>
+          <div class="tip-body">
+            <h4 class="tf">tracert vs traceroute</h4>
+            <p>Windows uses "tracert" (no second 'e' or 'ou'); UNIX/Linux uses the full "traceroute." Both rely on TTL
+              timeouts and ICMP error messages.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 14: QUICK REFERENCE -->
+    <section>
+      <div class="section-header"><span class="sec-num">14</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gb">Quick Reference — Everything at a Glance</h2>
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>Topic</th>
+              <th>Key Point</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Footprinting</td>
+              <td>Collecting as much info as possible about a target network to find ways to intrude; the first step of
+                any attack.</td>
+            </tr>
+            <tr>
+              <td>Why footprint</td>
+              <td>Know security posture, reduce focus area, identify vulnerabilities, draw network map.</td>
+            </tr>
+            <tr>
+              <td>OSINT</td>
+              <td>Open-Source Intelligence — identifying target info using only freely available public sources.</td>
+            </tr>
+            <tr>
+              <td>6-step info-gathering process</td>
+              <td>General resources → network dimensions → active hosts/devices → open ports/services/access points → OS
+                detection → known vulnerability research.</td>
+            </tr>
+            <tr>
+              <td>Footprinting activities</td>
+              <td>Examine website, identify key employees, analyze job postings, assess affiliate companies, find tech
+                used, determine network range, review ownership, find leaked employee info, review all data.</td>
+            </tr>
+            <tr>
+              <td>Company website leaks</td>
+              <td>Employee names/emails, branch office locations, technologies used.</td>
+            </tr>
+            <tr>
+              <td>Job postings</td>
+              <td>Reveal exact OS, software, firewall, virtualization, and ERP products in use (e.g. Windows Server, SQL
+                Server, Cisco PIX, VMware, Active Directory, Symantec).</td>
+            </tr>
+            <tr>
+              <td>Google hacking</td>
+              <td>Using search-engine operators creatively to surface sensitive data; also works on Yahoo/Bing.</td>
+            </tr>
+            <tr>
+              <td>intitle:</td>
+              <td>Search for a term within a document's title.</td>
+            </tr>
+            <tr>
+              <td>filetype:</td>
+              <td>Restrict results to a specific file type.</td>
+            </tr>
+            <tr>
+              <td>inurl:</td>
+              <td>Search within a site's URL string (e.g. inurl:"view.shtml" "Network Camera").</td>
+            </tr>
+            <tr>
+              <td>GHDB</td>
+              <td>Google Hacking Database — curated dork collection at
+                offensive-security.com/community-projects/google-hacking-database/.</td>
+            </tr>
+            <tr>
+              <td>Manual/automatic registrar query</td>
+              <td>Manual = query registrar directly; automatic = use aggregator sites like betterwhois.com,
+                dnsstuff.com, whois.domaintools.com.</td>
+            </tr>
+            <tr>
+              <td>Whois</td>
+              <td>Queries registration databases for domain ownership, address, location, phone number; OS-dependent
+                availability.</td>
+            </tr>
+            <tr>
+              <td>Nslookup</td>
+              <td>Command-line DNS query tool for domain-to-IP mapping; "name server lookup"; available on
+                Windows/macOS/Unix.</td>
+            </tr>
+            <tr>
+              <td>IANA</td>
+              <td>Internet Assigned Numbers Authority — top-level coordinator of DNS root and IP address resources.</td>
+            </tr>
+            <tr>
+              <td>ARIN</td>
+              <td>North America and parts of the Caribbean.</td>
+            </tr>
+            <tr>
+              <td>RIPE NCC</td>
+              <td>Europe, the Middle East, and Central Asia.</td>
+            </tr>
+            <tr>
+              <td>APNIC</td>
+              <td>Asia and the Pacific Rim.</td>
+            </tr>
+            <tr>
+              <td>LACNIC</td>
+              <td>Latin America and parts of the Caribbean.</td>
+            </tr>
+            <tr>
+              <td>AfriNIC</td>
+              <td>Africa.</td>
+            </tr>
+            <tr>
+              <td>Traceroute</td>
+              <td>Determines the path a packet takes to a destination using TTL timeouts and ICMP error messages.</td>
+            </tr>
+            <tr>
+              <td>tracert vs traceroute</td>
+              <td>tracert = Windows command; traceroute = UNIX/Linux command.</td>
+            </tr>
+            <tr>
+              <td>Tracking employees</td>
+              <td>Photos, personal activity, complaints about employers, discriminatory comments can all be uncovered
+                online.</td>
+            </tr>
+            <tr>
+              <td>Sites to check for employee data</td>
+              <td>Blogs, Facebook, YouTube, LinkedIn, Instagram, Twitter, "sucks" domains, organizational social media
+                pages.</td>
+            </tr>
+            <tr>
+              <td>Social network risks</td>
+              <td>Malicious URLs can steal credentials or install malware; innocent-looking quizzes/apps may harvest
+                user data; profile info is valuable to both ethical and non-ethical hackers.</td>
+            </tr>
+            <tr>
+              <td>Countermeasures</td>
+              <td>Limit public disclosure, train employees, use WHOIS privacy, and regularly self-footprint the
+                organization.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="footer-name">Made by Shoug Alomran</div>
+    <div class="footer-sub">CYS405 · Chapter 2: Information Gathering, Footprinting and Reconnaissance · Study Guide
+    </div>
+  </footer>
+
+  <script>
+    // Auto-detect system preference on load
+    (function () {
+      const _stored = localStorage.getItem('shoug-theme');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const theme = _stored === 'dark' ? 'dark' : _stored === 'light' ? 'light' : (prefersDark ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', theme);
+      updateToggle(theme);
+    })();
+
+    // Listen for system changes
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+      if (localStorage.getItem('shoug-theme')) return;
+      const theme = e.matches ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', theme);
+      updateToggle(theme);
+    });
+
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme');
+      const next = current === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      try { localStorage.setItem('shoug-theme', document.documentElement.getAttribute('data-theme')); } catch (e) { }
+      updateToggle(next);
+    }
+
+    function updateToggle(theme) {
+      const icon = document.getElementById('toggle-icon');
+      const label = document.getElementById('toggle-label');
+      if (theme === 'dark') {
+        icon.textContent = '☀️';
+        label.textContent = 'Light Mode';
+      } else {
+        icon.textContent = '🌙';
+        label.textContent = 'Dark Mode';
+      }
+    }
+  </script>
+
+</body>
+
+</html>

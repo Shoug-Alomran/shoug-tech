@@ -1,0 +1,1821 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+  <link rel="icon" type="image/png" href="/assets/favicon.png?v=2">
+  <link rel="shortcut icon" href="/assets/favicon.png?v=2">
+  <link rel="apple-touch-icon" href="/assets/favicon.png?v=2">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CYS406 - RC4 and Modes of Operation</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Playfair+Display:wght@700;800&display=swap"
+    rel="stylesheet">
+  <style>
+    /* ============================================================
+   THEME VARIABLES
+   ============================================================ */
+    :root {
+      --a: #6ee7f7;
+      /* cyan accent */
+      --b: #f472b6;
+      /* pink accent */
+      --c: #a78bfa;
+      /* violet accent */
+      --d: #34d399;
+      /* emerald accent */
+      --e: #fb923c;
+      /* orange accent */
+      --f: #facc15;
+      /* yellow accent */
+    }
+
+    [data-theme="dark"] {
+      --bg: #080c14;
+      --bg2: #0e1422;
+      --bg3: #141c2e;
+      --surface: rgba(255, 255, 255, 0.04);
+      --surface2: rgba(255, 255, 255, 0.07);
+      --border: rgba(255, 255, 255, 0.08);
+      --border2: rgba(255, 255, 255, 0.13);
+      --text: #e2e8f0;
+      --text2: #94a3b8;
+      --text3: #64748b;
+      --heading: #f8fafc;
+      --code-bg: rgba(255, 255, 255, 0.06);
+      --shadow: rgba(0, 0, 0, 0.5);
+      --toggle-bg: rgba(255, 255, 255, 0.08);
+    }
+
+    [data-theme="light"] {
+      --bg: #f0f4ff;
+      --bg2: #e8eef9;
+      --bg3: #dde5f5;
+      --surface: rgba(255, 255, 255, 0.75);
+      --surface2: rgba(255, 255, 255, 0.95);
+      --border: rgba(80, 100, 160, 0.12);
+      --border2: rgba(80, 100, 160, 0.2);
+      --text: #1e2a45;
+      --text2: #475569;
+      --text3: #94a3b8;
+      --heading: #0f172a;
+      --code-bg: rgba(80, 100, 160, 0.08);
+      --shadow: rgba(100, 120, 200, 0.15);
+      --toggle-bg: rgba(80, 100, 160, 0.12);
+    }
+
+    /* ============================================================
+   RESET & BASE
+   ============================================================ */
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Space Grotesk', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      overflow-x: hidden;
+      transition: background 0.4s ease, color 0.4s ease;
+    }
+
+    /* ============================================================
+   THEME TOGGLE
+   ============================================================ */
+    .theme-toggle {
+      position: fixed;
+      top: 1.25rem;
+      right: 1.5rem;
+      z-index: 1000;
+      background: var(--toggle-bg);
+      border: 1px solid var(--border2);
+      border-radius: 100px;
+      padding: 0.45rem 1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text2);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      transition: all 0.3s ease;
+      user-select: none;
+    }
+
+    .theme-toggle:hover {
+      border-color: var(--a);
+      color: var(--a);
+      transform: scale(1.04);
+    }
+
+    .toggle-icon {
+      font-size: 1rem;
+      transition: transform 0.4s ease;
+    }
+
+    /* ============================================================
+   HERO
+   ============================================================ */
+    .hero {
+      min-height: 60vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      position: relative;
+      padding: 5rem 2rem 4rem;
+      overflow: hidden;
+    }
+
+    [data-theme="dark"] .hero {
+      background:
+        radial-gradient(ellipse 70% 50% at 20% 20%, rgba(110, 231, 247, 0.12) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 80% 80%, rgba(167, 139, 250, 0.12) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 40% at 50% 60%, rgba(244, 114, 182, 0.08) 0%, transparent 60%),
+        var(--bg);
+    }
+
+    [data-theme="light"] .hero {
+      background:
+        radial-gradient(ellipse 70% 50% at 20% 20%, rgba(110, 231, 247, 0.18) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 80% 80%, rgba(167, 139, 250, 0.15) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 40% at 50% 60%, rgba(244, 114, 182, 0.12) 0%, transparent 60%),
+        var(--bg);
+    }
+
+    .hero-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(var(--border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 50px 50px;
+      opacity: 0.7;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-radius: 100px;
+      padding: 0.4rem 1.1rem;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--a);
+      margin-bottom: 1.75rem;
+      position: relative;
+      z-index: 1;
+      animation: fadeUp 0.7s ease both;
+    }
+
+    .badge-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--a);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1
+      }
+
+      50% {
+        opacity: 0.4
+      }
+    }
+
+    .hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.4rem, 5.5vw, 4.6rem);
+      font-weight: 800;
+      line-height: 1.15;
+      color: var(--heading);
+      position: relative;
+      z-index: 1;
+      animation: fadeUp 0.85s ease both;
+    }
+
+    .hero h1 .gradient-word {
+      background: linear-gradient(135deg, var(--a), var(--c), var(--b));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-sub {
+      font-size: 1.05rem;
+      color: var(--text2);
+      margin-top: 1.25rem;
+      max-width: 560px;
+      position: relative;
+      z-index: 1;
+      animation: fadeUp 1s ease both;
+    }
+
+    .hero-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      justify-content: center;
+      max-width: 720px;
+      margin-top: 2rem;
+      position: relative;
+      z-index: 1;
+      animation: fadeUp 1.1s ease both;
+    }
+
+    .chip {
+      padding: 0.3rem 0.85rem;
+      border-radius: 100px;
+      font-size: 0.76rem;
+      font-weight: 600;
+      border: 1px solid;
+      transition: transform 0.2s;
+    }
+
+    .chip:hover {
+      transform: translateY(-2px);
+    }
+
+    .chip-a {
+      color: var(--a);
+      border-color: rgba(110, 231, 247, 0.35);
+      background: rgba(110, 231, 247, 0.08);
+    }
+
+    .chip-b {
+      color: var(--b);
+      border-color: rgba(244, 114, 182, 0.35);
+      background: rgba(244, 114, 182, 0.08);
+    }
+
+    .chip-c {
+      color: var(--c);
+      border-color: rgba(167, 139, 250, 0.35);
+      background: rgba(167, 139, 250, 0.08);
+    }
+
+    .chip-d {
+      color: var(--d);
+      border-color: rgba(52, 211, 153, 0.35);
+      background: rgba(52, 211, 153, 0.08);
+    }
+
+    .chip-e {
+      color: var(--e);
+      border-color: rgba(251, 146, 60, 0.35);
+      background: rgba(251, 146, 60, 0.08);
+    }
+
+    .chip-f {
+      color: var(--f);
+      border-color: rgba(250, 204, 21, 0.35);
+      background: rgba(250, 204, 21, 0.08);
+    }
+
+    .scroll-hint {
+      position: absolute;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      color: var(--text3);
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.4rem;
+      animation: bounce 2.5s infinite;
+      z-index: 1;
+    }
+
+    @keyframes bounce {
+
+      0%,
+      100% {
+        transform: translateX(-50%) translateY(0)
+      }
+
+      50% {
+        transform: translateX(-50%) translateY(8px)
+      }
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(24px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    /* ============================================================
+   LAYOUT
+   ============================================================ */
+    main {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 4rem 2rem;
+    }
+
+    section {
+      margin-bottom: 5.5rem;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .sec-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text3);
+      white-space: nowrap;
+    }
+
+    .sec-line {
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, var(--border2), transparent);
+    }
+
+    h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.6rem, 3vw, 2.3rem);
+      font-weight: 800;
+      color: var(--heading);
+      margin-bottom: 0.4rem;
+    }
+
+    h3 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 1.05rem;
+      margin-bottom: 0.6rem;
+      color: var(--heading);
+    }
+
+    p {
+      font-size: 0.94rem;
+      color: var(--text2);
+      margin-bottom: 0.7rem;
+    }
+
+    strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    /* ============================================================
+   GRADIENT TEXT HELPERS
+   ============================================================ */
+    .ga {
+      background: linear-gradient(135deg, var(--a), var(--d));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .gb {
+      background: linear-gradient(135deg, var(--b), var(--c));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .gc {
+      background: linear-gradient(135deg, var(--e), var(--b));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .gd {
+      background: linear-gradient(135deg, var(--c), var(--a));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* ============================================================
+   CARDS
+   ============================================================ */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.6rem;
+      transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
+    }
+
+    .card:hover {
+      border-color: var(--border2);
+      transform: translateY(-3px);
+      box-shadow: 0 12px 30px var(--shadow);
+    }
+
+    .grid2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1rem;
+    }
+
+    .grid3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1rem;
+    }
+
+    .grid4 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 1rem;
+    }
+
+    .bl-a {
+      border-left: 3px solid var(--a);
+    }
+
+    .bl-b {
+      border-left: 3px solid var(--b);
+    }
+
+    .bl-c {
+      border-left: 3px solid var(--c);
+    }
+
+    .bl-d {
+      border-left: 3px solid var(--d);
+    }
+
+    .bl-e {
+      border-left: 3px solid var(--e);
+    }
+
+    .bl-f {
+      border-left: 3px solid var(--f);
+    }
+
+    .ta {
+      color: var(--a);
+    }
+
+    .tb {
+      color: var(--b);
+    }
+
+    .tc {
+      color: var(--c);
+    }
+
+    .td {
+      color: var(--d);
+    }
+
+    .te {
+      color: var(--e);
+    }
+
+    .tf {
+      color: var(--f);
+    }
+
+    /* ============================================================
+   DEFINITION CARDS
+   ============================================================ */
+    .def-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 0.75rem;
+    }
+
+    .def-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.2rem;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s;
+    }
+
+    .def-card:hover {
+      transform: translateY(-2px);
+    }
+
+    .def-top {
+      height: 2px;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+    }
+
+    .def-term {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .def-desc {
+      font-size: 0.87rem;
+      color: var(--text2);
+    }
+
+    /* ============================================================
+   MONO / CODE STYLE
+   ============================================================ */
+    .mono {
+      font-family: 'JetBrains Mono', monospace;
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      font-size: 0.85rem;
+      color: var(--a);
+      margin-top: 0.75rem;
+      overflow-x: auto;
+      white-space: pre;
+    }
+
+    .mono span.comment {
+      color: var(--text3);
+    }
+
+    .mono span.key {
+      color: var(--b);
+    }
+
+    .mono span.val {
+      color: var(--d);
+    }
+
+    /* ============================================================
+   EXAMPLE BOXES
+   ============================================================ */
+    .ex {
+      border-radius: 14px;
+      padding: 1.4rem;
+      border: 1px solid;
+      margin-top: 1.25rem;
+    }
+
+    .ex-a {
+      background: rgba(110, 231, 247, 0.06);
+      border-color: rgba(110, 231, 247, 0.25);
+    }
+
+    .ex-b {
+      background: rgba(244, 114, 182, 0.06);
+      border-color: rgba(244, 114, 182, 0.25);
+    }
+
+    .ex-c {
+      background: rgba(167, 139, 250, 0.06);
+      border-color: rgba(167, 139, 250, 0.25);
+    }
+
+    .ex-d {
+      background: rgba(52, 211, 153, 0.06);
+      border-color: rgba(52, 211, 153, 0.25);
+    }
+
+    .ex-e {
+      background: rgba(251, 146, 60, 0.06);
+      border-color: rgba(251, 146, 60, 0.25);
+    }
+
+    .ex-f {
+      background: rgba(250, 204, 21, 0.06);
+      border-color: rgba(250, 204, 21, 0.25);
+    }
+
+    .ex-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .ex-label::before {
+      content: '';
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    /* ============================================================
+   TIP BOXES
+   ============================================================ */
+    .tip {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      padding: 1.1rem 1.25rem;
+      border-radius: 12px;
+      margin-top: 1rem;
+    }
+
+    .tip-green {
+      background: rgba(52, 211, 153, 0.08);
+      border: 1px solid rgba(52, 211, 153, 0.25);
+    }
+
+    .tip-blue {
+      background: rgba(110, 231, 247, 0.08);
+      border: 1px solid rgba(110, 231, 247, 0.25);
+    }
+
+    .tip-warn {
+      background: rgba(251, 146, 60, 0.08);
+      border: 1px solid rgba(251, 146, 60, 0.25);
+    }
+
+    .tip-yellow {
+      background: rgba(250, 204, 21, 0.08);
+      border: 1px solid rgba(250, 204, 21, 0.25);
+    }
+
+    .tip-icon {
+      font-size: 1.2rem;
+      flex-shrink: 0;
+      margin-top: 0.1rem;
+    }
+
+    .tip-body h4 {
+      font-size: 0.84rem;
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+    }
+
+    .tip-body p {
+      font-size: 0.86rem;
+      color: var(--text2);
+      margin: 0;
+    }
+
+    /* ============================================================
+   MNEMONIC BOXES  (memory aids - distinct brain/purple styling)
+   ============================================================ */
+    .mnemonic {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      padding: 1.25rem 1.4rem;
+      border-radius: 14px;
+      margin-top: 1.25rem;
+      background: linear-gradient(135deg, rgba(167, 139, 250, 0.10), rgba(244, 114, 182, 0.07));
+      border: 1px solid rgba(167, 139, 250, 0.35);
+      position: relative;
+    }
+
+    .mnemonic-icon {
+      font-size: 1.3rem;
+      flex-shrink: 0;
+    }
+
+    .mnemonic-body h4 {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--c);
+      margin-bottom: 0.4rem;
+    }
+
+    .mnemonic-body p {
+      font-size: 0.92rem;
+      color: var(--text);
+      margin: 0;
+    }
+
+    .mnemonic-body .mnem-key {
+      color: var(--b);
+      font-weight: 700;
+    }
+
+    /* ============================================================
+   TABLES
+   ============================================================ */
+    .tbl {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.87rem;
+    }
+
+    .tbl th {
+      text-align: left;
+      padding: 0.65rem 0.9rem;
+      background: var(--surface2);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text3);
+      border-bottom: 1px solid var(--border2);
+    }
+
+    .tbl td {
+      padding: 0.7rem 0.9rem;
+      border-bottom: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .tbl tr:last-child td {
+      border-bottom: none;
+    }
+
+    .tbl tr:hover td {
+      background: var(--surface2);
+    }
+
+    .tbl-wrap {
+      overflow-x: auto;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+
+    /* ============================================================
+   VS (COMPARISON) CARDS
+   ============================================================ */
+    .vs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    @media(max-width:640px) {
+      .vs {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* ============================================================
+   FLOW DIAGRAM
+   ============================================================ */
+    .flow {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      flex-wrap: wrap;
+      margin: 1.5rem 0;
+    }
+
+    .flow-box {
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-radius: 10px;
+      padding: 0.75rem 1rem;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--heading);
+      text-align: center;
+      flex: 1;
+      min-width: 80px;
+    }
+
+    .flow-box.accent {
+      background: rgba(110, 231, 247, 0.12);
+      border-color: rgba(110, 231, 247, 0.4);
+      color: var(--a);
+    }
+
+    .flow-box.accent2 {
+      background: rgba(167, 139, 250, 0.12);
+      border-color: rgba(167, 139, 250, 0.4);
+      color: var(--c);
+    }
+
+    .flow-box.accent3 {
+      background: rgba(52, 211, 153, 0.12);
+      border-color: rgba(52, 211, 153, 0.4);
+      color: var(--d);
+    }
+
+    .flow-arrow {
+      font-size: 1.2rem;
+      color: var(--text3);
+      padding: 0 0.35rem;
+      flex-shrink: 0;
+    }
+
+    /* ============================================================
+   STEPS
+   ============================================================ */
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .step {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      padding: 1rem 1.25rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      transition: all 0.3s;
+    }
+
+    .step:hover {
+      border-color: var(--border2);
+    }
+
+    .step-num {
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      font-size: 0.8rem;
+      flex-shrink: 0;
+      color: #000;
+      background: linear-gradient(135deg, var(--a), var(--c));
+    }
+
+    .step-body h4 {
+      font-weight: 700;
+      font-size: 0.9rem;
+      margin-bottom: 0.2rem;
+    }
+
+    .step-body p {
+      font-size: 0.86rem;
+      color: var(--text2);
+      margin: 0;
+    }
+
+    /* ============================================================
+   BADGES
+   ============================================================ */
+    .badge {
+      display: inline-block;
+      padding: 0.2rem 0.55rem;
+      border-radius: 100px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      border: 1px solid;
+    }
+
+    .badge-a {
+      color: var(--a);
+      border-color: rgba(110, 231, 247, 0.4);
+      background: rgba(110, 231, 247, 0.1);
+    }
+
+    .badge-b {
+      color: var(--b);
+      border-color: rgba(244, 114, 182, 0.4);
+      background: rgba(244, 114, 182, 0.1);
+    }
+
+    .badge-c {
+      color: var(--c);
+      border-color: rgba(167, 139, 250, 0.4);
+      background: rgba(167, 139, 250, 0.1);
+    }
+
+    .badge-e {
+      color: var(--e);
+      border-color: rgba(251, 146, 60, 0.4);
+      background: rgba(251, 146, 60, 0.1);
+    }
+
+    .row-highlight td {
+      background: rgba(52, 211, 153, 0.06) !important;
+    }
+
+    .row-warn td {
+      background: rgba(244, 114, 182, 0.06) !important;
+    }
+
+    /* ============================================================
+   FOOTER
+   ============================================================ */
+    footer {
+      text-align: center;
+      padding: 3rem 2rem 4rem;
+      position: relative;
+    }
+
+    footer::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 10%;
+      right: 10%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border2), transparent);
+    }
+
+    .footer-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--a), var(--c), var(--b));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .footer-sub {
+      font-size: 0.78rem;
+      color: var(--text3);
+      margin-top: 0.3rem;
+    }
+
+    /* UL RESET */
+    ul {
+      list-style: none;
+    }
+
+    ul li {
+      padding: 0.32rem 0;
+      padding-left: 1rem;
+      position: relative;
+      font-size: 0.9rem;
+      color: var(--text2);
+    }
+
+    ul li::before {
+      content: '▸';
+      position: absolute;
+      left: 0;
+      color: var(--c);
+      font-size: 0.65rem;
+      top: 0.44rem;
+    }
+
+    .divider {
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border), transparent);
+      margin: 4rem 0;
+    }
+
+    @media(max-width:600px) {
+      .grid4 {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .flow {
+        justify-content: center;
+      }
+
+      .flow-box {
+        min-width: 70px;
+        font-size: 0.75rem;
+      }
+    }
+  </style>
+  <script src="/javascripts/standalone-theme.js"></script>
+  <script src="/javascripts/html-theme-sync.js"></script>
+
+  <meta name="description"
+    content="A complete, visual study guide to RC4 stream cipher and block cipher modes of operation for CYS406: KSA, PRGA, a worked RC4 example, plus ECB, CBC, CFB, OFB and CTR modes explained.">
+  <link rel="canonical"
+    href="https://shoug-tech.com/academics/cybersecurity/cys406/slide-breakdowns/06-chapter-6-rc4-and-modes-of-operation/chapter-6-rc4-and-modes-of-operation.html">
+  <meta property="og:title" content="CYS406 - RC4 and Modes of Operation">
+  <meta property="og:description"
+    content="A complete, visual study guide to RC4 stream cipher and block cipher modes of operation for CYS406: KSA, PRGA, a worked RC4 example, plus ECB, CBC, CFB, OFB and CTR modes explained.">
+  <meta property="og:url"
+    content="https://shoug-tech.com/academics/cybersecurity/cys406/slide-breakdowns/06-chapter-6-rc4-and-modes-of-operation/chapter-6-rc4-and-modes-of-operation.html">
+  <meta property="og:type" content="article">
+  <meta property="og:image" content="https://shoug-tech.com/assets/og-banner.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="CYS406 - RC4 and Modes of Operation">
+  <meta name="twitter:description"
+    content="A complete, visual study guide to RC4 stream cipher and block cipher modes of operation for CYS406: KSA, PRGA, a worked RC4 example, plus ECB, CBC, CFB, OFB and CTR modes explained.">
+  <meta name="twitter:image" content="https://shoug-tech.com/assets/og-banner.png">
+</head>
+
+<body>
+
+
+  <!-- THEME TOGGLE -->
+  <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+    <span class="toggle-icon" id="toggle-icon">☀️</span>
+    <span id="toggle-label">Light Mode</span>
+  </button>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-grid"></div>
+
+    <div class="hero-badge">
+      <span class="badge-dot"></span>
+      CYS406 · Chapter 6
+    </div>
+
+    <h1>
+      RC4 &amp;<br>
+      <span class="gradient-word">Modes of Operation</span>
+    </h1>
+    <p class="hero-sub">One byte-shuffling stream cipher, and five different recipes for turning a block cipher into
+      something that can encrypt a real message of any length.</p>
+
+    <div class="hero-chips">
+      <span class="chip chip-a">PRNGs</span>
+      <span class="chip chip-b">Stream ciphers</span>
+      <span class="chip chip-c">RC4 KSA &amp; PRGA</span>
+      <span class="chip chip-d">ECB</span>
+      <span class="chip chip-e">CBC</span>
+      <span class="chip chip-f">CFB / OFB / CTR</span>
+    </div>
+
+    <div class="scroll-hint">
+      scroll ↓
+    </div>
+  </div>
+
+  <main>
+
+    <!-- 01 -->
+    <section>
+      <div class="section-header"><span class="sec-num">01 / Randomness</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="ga">Random Numbers &amp; PRNGs</h2>
+      <p>Cryptography leans on random numbers everywhere: authentication protocols (to stop replay attacks), temporary
+        session keys, public-key generation, and stream-cipher keys. For all of these uses, the numbers must be:</p>
+
+      <div class="grid2">
+        <div class="card bl-a">
+          <h3 class="ta">Statistically random</h3>
+          <p>Uniform distribution across the possible values, with no dependency between successive values.</p>
+        </div>
+        <div class="card bl-b">
+          <h3 class="tb">Unpredictable</h3>
+          <p>You cannot predict future values even if you know all previous values in the sequence.</p>
+        </div>
+      </div>
+
+      <p>"True" random sequences (e.g. from physical noise sources) satisfy both properties naturally, but they're slow
+        and hard to reproduce. In practice, systems use <strong>Pseudorandom Number Generators (PRNGs)</strong> —
+        deterministic algorithms that produce sequences which <em>look</em> random and pass statistical randomness
+        tests, without actually being truly random. Because a PRNG is a deterministic function of a seed/key, care is
+        needed: if the seed is guessable or reused, the "randomness" collapses.</p>
+
+      <div class="tip tip-blue">
+        <div class="tip-icon">💡</div>
+        <div class="tip-body">
+          <h4 class="ta">True random vs pseudorandom</h4>
+          <p>True random numbers come from unpredictable physical processes (thermal noise, radioactive decay).
+            Pseudorandom numbers come from an algorithm + a seed — reproducible if you know the seed, which is exactly
+            why the seed/key must stay secret.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 02 -->
+    <section>
+      <div class="section-header"><span class="sec-num">02 / Stream Ciphers</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gb">Stream Cipher Structure &amp; Properties</h2>
+
+      <div class="flow">
+        <div class="flow-box">Plaintext (bit/byte)</div>
+        <div class="flow-arrow">⊕</div>
+        <div class="flow-box accent">Pseudorandom keystream</div>
+        <div class="flow-arrow">=</div>
+        <div class="flow-box accent2">Ciphertext</div>
+      </div>
+
+      <p>A stream cipher processes plaintext one bit (or byte) at a time: it generates a pseudorandom keystream from the
+        key, then XORs that keystream with the plaintext, bit by bit.</p>
+
+      <div class="def-grid">
+        <div class="def-card">
+          <div class="def-top" style="background:var(--a)"></div>
+          <div class="def-term ta">Security</div>
+          <div class="def-desc">Properly designed, can be as secure as a block cipher of the same key length.</div>
+        </div>
+        <div class="def-card">
+          <div class="def-top" style="background:var(--b)"></div>
+          <div class="def-term tb">Speed</div>
+          <div class="def-desc">Usually simpler and faster than block ciphers.</div>
+        </div>
+        <div class="def-card">
+          <div class="def-top" style="background:var(--c)"></div>
+          <div class="def-term tc">Golden Rule</div>
+          <div class="def-desc">Must NEVER reuse the same key — otherwise cryptanalysis becomes trivially easy (two
+            ciphertexts XORed together cancel the keystream, exposing the XOR of the two plaintexts).</div>
+        </div>
+      </div>
+
+      <div class="tip tip-warn">
+        <div class="tip-icon">⚠️</div>
+        <div class="tip-body">
+          <h4 class="te">Why key reuse breaks everything</h4>
+          <p>If C1 = P1 ⊕ K and C2 = P2 ⊕ K, then C1 ⊕ C2 = P1 ⊕ P2 — the keystream cancels out entirely, leaking a
+            relationship between the two plaintexts that statistical/language analysis can crack.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 03 -->
+    <section>
+      <div class="section-header"><span class="sec-num">03 / RC4</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gc">RC4 — Overview</h2>
+      <p>RC4 is the classic example of a stream cipher covered in this chapter.</p>
+
+      <div class="def-grid">
+        <div class="def-card">
+          <div class="def-top" style="background:var(--a)"></div>
+          <div class="def-term ta">Origin</div>
+          <div class="def-desc">A proprietary cipher owned by RSA Data Security Inc. Designed by Ron Rivest — simple but
+            effective.</div>
+        </div>
+        <div class="def-card">
+          <div class="def-top" style="background:var(--b)"></div>
+          <div class="def-term tb">Structure</div>
+          <div class="def-desc">Variable key size, byte-oriented stream cipher.</div>
+        </div>
+        <div class="def-card">
+          <div class="def-top" style="background:var(--c)"></div>
+          <div class="def-term tc">Adoption</div>
+          <div class="def-desc">Widely used historically — web SSL/TLS, wireless WEP/WPA.</div>
+        </div>
+        <div class="def-card">
+          <div class="def-top" style="background:var(--d)"></div>
+          <div class="def-term td">Core idea</div>
+          <div class="def-desc">The key forms a random permutation of all 256 possible byte values; that permutation is
+            then used to scramble the input, one byte at a time.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 04 -->
+    <section>
+      <div class="section-header"><span class="sec-num">04 / RC4 Internals</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gd">RC4 Key Schedule Algorithm (KSA)</h2>
+      <p>RC4 keeps an internal state array <strong>S</strong> of 256 numbers (0…255). The KSA scrambles S using the key
+        before any encryption happens.</p>
+
+      <div class="mono">for i = 0 to 255 do
+        S[i] = i;
+        T[i] = K[i mod keylen];
+        j = 0;
+        for i = 0 to 255 do
+        j = (j + S[i] + T[i]) mod 256;
+        swap (S[i], S[j]);</div>
+
+      <div class="steps" style="margin-top:1.5rem;">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <h4>Initialize S</h4>
+            <p>S[i] = i for i = 0…255 (identity permutation to start).</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <h4>Build T from the key</h4>
+            <p>T[i] = K[i mod keylen] — the key is repeated cyclically to fill all 256 slots.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <h4>Scramble S with j</h4>
+            <p>For each i, update j using S[i] and T[i], then swap S[i] and S[j]. After all 256 iterations, S is a
+              key-dependent random permutation.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="mnemonic">
+        <div class="mnemonic-icon">🧠</div>
+        <div class="mnemonic-body">
+          <h4>Mnemonic — RC4 KSA</h4>
+          <p><span class="mnem-key">"Start plain, Tag with key, Jumble with j"</span> — S <strong>Start</strong>s as
+            0…255 plain, T <strong>Tag</strong>s each slot with a repeated key byte, then j <strong>Jumble</strong>s S
+            by swapping pairs 256 times. That's the whole KSA in three verbs.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 05 -->
+    <section>
+      <div class="section-header"><span class="sec-num">05 / RC4 Internals</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="ga">RC4 Encryption — The PRGA</h2>
+      <p>Once S is scrambled, encryption continues shuffling the array to generate a fresh keystream byte for every
+        message byte.</p>
+
+      <div class="mono">i = j = 0
+        for each message byte Mi
+        i = (i + 1) (mod 256)
+        j = (j + S[i]) (mod 256)
+        swap(S[i], S[j])
+        t = (S[i] + S[j]) (mod 256)
+        Ci = Mi XOR S[t]</div>
+
+      <p>In words: bump i, use S[i] to update j, swap those two entries, then add S[i]+S[j] together to pick
+        <strong>t</strong> — the index of the actual keystream byte. XOR S[t] with the next plaintext byte to get
+        ciphertext (and the same operation in reverse to decrypt, since XOR is its own inverse).</p>
+
+      <div class="mnemonic">
+        <div class="mnemonic-icon">🧠</div>
+        <div class="mnemonic-body">
+          <h4>Mnemonic — RC4 PRGA</h4>
+          <p><span class="mnem-key">"i steps, j chases, swap, sum, XOR"</span> — <strong>i</strong> steps forward by 1,
+            <strong>j</strong> chases by adding S[i], you <strong>swap</strong> S[i] and S[j], <strong>sum</strong> them
+            to get t, then <strong>XOR</strong> S[t] with the plaintext byte. Five words, five actions, one keystream
+            byte produced.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 06 -->
+    <section>
+      <div class="section-header"><span class="sec-num">06 / Worked Example</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gb">RC4 Example — Simplified 3-bit Version</h2>
+      <p>To make the algorithm tractable by hand, the slides shrink RC4 down: instead of a 256-byte state, use <strong>8
+          × 3-bit</strong> values (S can hold 0–7).</p>
+
+      <div class="ex ex-c">
+        <div class="ex-label tc">📘 Setup</div>
+        <p>Key K = [1, 2, 3, 6]. Plaintext P = [1, 2, 2, 2].</p>
+        <p><strong>Step 1 — Generate the stream:</strong> initialize S so S[i] = i, and T so it holds the key repeated
+          as necessary:</p>
+        <div class="mono">S = [0 1 2 3 4 5 6 7]
+          T = [1 2 3 6 1 2 3 6]</div>
+        <p>Then perform the initial permutation (the KSA scramble described in Section 04, run with N=8 instead of 256)
+          to scramble S using the key.</p>
+      </div>
+
+      <div class="ex ex-d">
+        <div class="ex-label td">📘 Result</div>
+        <p>Running the simplified RC4 stream cipher on plaintext P = [1 2 2 2] with key K = [1 2 3 6] produces
+          ciphertext:</p>
+        <div class="mono">C = [4 1 2 0]
+
+          <span class="comment">In binary:</span>
+          P = 001 010 010 010
+          K = 001 010 011 110
+          C = 100 001 010 000
+        </div>
+      </div>
+
+      <div class="tip tip-blue">
+        <div class="tip-icon">💡</div>
+        <div class="tip-body">
+          <h4 class="ta">The point of the shrunk example</h4>
+          <p>The 8×3-bit toy version exists purely so you can trace the KSA and PRGA by hand on an exam without doing
+            256 iterations. The logic is identical to real RC4 — only N (256 → 8) and the byte width (8 bits → 3 bits)
+            change.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 07 -->
+    <section>
+      <div class="section-header"><span class="sec-num">07 / RC4 Security</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gc">RC4 Security</h2>
+      <div class="grid2">
+        <div class="card bl-d">
+          <h3 class="td">Claimed secure</h3>
+          <p>RC4 is claimed secure against known attacks — there has been analysis, but nothing considered practically
+            exploitable against the core algorithm itself.</p>
+        </div>
+        <div class="card bl-e">
+          <h3 class="te">Never reuse a key</h3>
+          <p>As a stream cipher, RC4 must never reuse the same key (see Section 02's golden rule).</p>
+        </div>
+      </div>
+      <div class="tip tip-warn">
+        <div class="tip-icon">⚠️</div>
+        <div class="tip-body">
+          <h4 class="te">The WEP lesson</h4>
+          <p>WEP's real-world weakness was <strong>not</strong> a flaw in RC4 the algorithm — it was in <em>how WEP
+              generated the per-packet keys fed into RC4</em> (short, reused/predictable IVs). The lesson: a cipher can
+            be sound while its surrounding key-management protocol is broken.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 08 -->
+    <section>
+      <div class="section-header"><span class="sec-num">08 / Block Cipher Problem</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gd">Modes of Operation — Why We Need Them</h2>
+      <p>Block ciphers (like DES: 64-bit blocks, 56-bit key) only know how to encrypt one fixed-size block at a time.
+        Real messages are arbitrary length — e.g. 1000 bytes — so we need a systematic way to chain many block
+        encryptions together. <strong>NIST SP 800-38A</strong> defines 5 standard modes, covering both block-oriented
+        and stream-oriented use cases, and any of them can be used with any block cipher.</p>
+
+      <div class="card bl-a">
+        <h3 class="ta">Message padding</h3>
+        <p>The last block of a message is often shorter than the cipher's block size. Options: pad with a known non-data
+          value (e.g. nulls), or pad the last block plus a count of the pad size (e.g. [b1 b2 b3 0 0 0 0 5] means 3 real
+          data bytes + 5 bytes of pad+count). Padding may require an entire extra block. Some modes (the stream modes
+          below) avoid this problem entirely.</p>
+      </div>
+    </section>
+
+    <!-- 09 -->
+    <section>
+      <div class="section-header"><span class="sec-num">09 / Block Modes</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="ga">Electronic Codebook (ECB)</h2>
+      <p>The message is broken into independent blocks, each encrypted with the same key: <strong>Ci =
+          E<sub>K</sub>(Pi)</strong>. Each block is essentially "looked up" like a codebook entry — hence the name — and
+        each block is encoded completely independently of every other block.</p>
+
+      <div class="flow">
+        <div class="flow-box">P1</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box accent">E<sub>K</sub></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box">C1</div>
+      </div>
+      <div class="flow">
+        <div class="flow-box">P2</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box accent">E<sub>K</sub></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box">C2</div>
+      </div>
+
+      <div class="tip tip-warn">
+        <div class="tip-icon">⚠️</div>
+        <div class="tip-body">
+          <h4 class="te">ECB's big weakness</h4>
+          <p>Repeated plaintext blocks produce identical ciphertext blocks (if aligned to block boundaries) — a serious
+            problem for data like graphics or messages that barely change, since patterns leak straight through
+            ("codebook analysis"). ECB is really only suitable for encrypting a few independent values, e.g. a session
+            key.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 10 -->
+    <section>
+      <div class="section-header"><span class="sec-num">10 / Block Modes</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gb">Cipher Block Chaining (CBC)</h2>
+      <p>Each ciphertext block is chained into the next plaintext block before encryption, so blocks are no longer
+        independent:</p>
+
+      <div class="mono">Ci = E<sub>K</sub>(Pi XOR C<sub>i-1</sub>)
+        C<sub>-1</sub> = IV <span class="comment">// Initialization Vector starts the chain</span></div>
+
+      <p>Used for: bulk data encryption, authentication.</p>
+
+      <div class="grid2">
+        <div class="card bl-d">
+          <h3 class="td">Strength</h3>
+          <p>Because each ciphertext block depends on every block before it, any change to a block affects all following
+            ciphertext blocks — a useful integrity side-effect.</p>
+        </div>
+        <div class="card bl-e">
+          <h3 class="te">IV handling matters</h3>
+          <p>The IV must be known to both sender and receiver. If sent in the clear, an attacker can flip bits of the
+            first plaintext block and adjust the IV to compensate. Fix: either use a fixed IV (as in EFTPOS) or send the
+            IV encrypted in ECB mode before the rest of the message.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 11 -->
+    <section>
+      <div class="section-header"><span class="sec-num">11 / Stream Modes</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gc">Stream Modes of Operation — Turning a Block Cipher into a PRNG</h2>
+      <p>Sometimes we need to operate on units smaller than a full block (e.g. real-time data). The stream modes convert
+        a block cipher into a stream cipher by using it as a pseudorandom number generator:</p>
+      <ul>
+        <li>Cipher Feedback (CFB)</li>
+        <li>Output Feedback (OFB)</li>
+        <li>Counter (CTR)</li>
+      </ul>
+
+      <div class="def-grid">
+        <div class="def-card">
+          <div class="def-top" style="background:var(--a)"></div>
+          <div class="def-term ta">CTR as PRNG</div>
+          <div class="def-desc">X<sub>i</sub> = E<sub>K</sub>[V<sub>i</sub>] — encrypts a counter value.</div>
+        </div>
+        <div class="def-card">
+          <div class="def-top" style="background:var(--b)"></div>
+          <div class="def-term tb">OFB as PRNG</div>
+          <div class="def-desc">X<sub>i</sub> = E<sub>K</sub>[X<sub>i-1</sub>] — encrypts the previous output.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 12 -->
+    <section>
+      <div class="section-header"><span class="sec-num">12 / Stream Modes</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gd">Cipher Feedback (CFB)</h2>
+      <p>The message is treated as a stream of bits added to the output of the block cipher; the result is fed back for
+        the next stage (hence "feedback").</p>
+
+      <div class="mono">Ci = Pi XOR E<sub>K</sub>(C<sub>i-1</sub>)
+        C<sub>-1</sub> = IV</div>
+
+      <p>The standard allows feeding back any number of bits (1, 8, 64, 128…), denoted CFB-1, CFB-8, CFB-64, CFB-128.
+        It's most efficient to feed back the full block width (64 or 128 bits). Used for: stream data encryption,
+        authentication.</p>
+
+      <div class="tip tip-warn">
+        <div class="tip-icon">⚠️</div>
+        <div class="tip-body">
+          <h4 class="te">Error propagation</h4>
+          <p>CFB is appropriate when data arrives in bits/bytes and is the most common stream mode, but errors propagate
+            for several blocks after the point of error.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 13 -->
+    <section>
+      <div class="section-header"><span class="sec-num">13 / Stream Modes</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="ga">Output Feedback (OFB)</h2>
+      <p>The message is treated as a stream of bits; the output of the cipher is XORed with the message, and that output
+        is then fed back for the next stage — but the feedback path is independent of the message, so it can be computed
+        in advance.</p>
+
+      <div class="mono">Oi = E<sub>K</sub>(O<sub>i-1</sub>)
+        Ci = Pi XOR Oi
+        O<sub>-1</sub> = IV</div>
+
+      <p>Used for: stream encryption on noisy channels.</p>
+
+      <div class="vs">
+        <div class="ex ex-d">
+          <div class="ex-label td">Advantage</div>
+          <p>Bit errors in transmission do not propagate — a corrupted ciphertext bit only corrupts the corresponding
+            plaintext bit.</p>
+        </div>
+        <div class="ex ex-b">
+          <div class="ex-label tb">Disadvantages</div>
+          <p>Needs an IV unique for every use (reuse lets an attacker recover outputs). More vulnerable to message
+            stream modification. Sender/receiver must stay in sync. Research shows only full block feedback (CFB-64/128
+            style) should ever be used.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 14 -->
+    <section>
+      <div class="section-header"><span class="sec-num">14 / Stream Modes</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gb">Counter (CTR)</h2>
+      <p>A "new" mode (though proposed early on), similar to OFB but it encrypts a <strong>counter value</strong> rather
+        than a feedback chain:</p>
+
+      <div class="mono">Oi = E<sub>K</sub>(i)
+        Ci = Pi XOR Oi</div>
+
+      <p>Must use a different key &amp; counter value for every plaintext block — never reused. Used for: high-speed
+        network encryption.</p>
+
+      <div class="grid2">
+        <div class="card bl-d">
+          <h3 class="td">Efficiency</h3>
+          <ul>
+            <li>Can do parallel encryption in hardware or software</li>
+            <li>Can pre-process keystream in advance</li>
+            <li>Supports random-access processing of blocks</li>
+          </ul>
+        </div>
+        <div class="card bl-e">
+          <h3 class="te">Caveats</h3>
+          <p>Provably as secure as the other modes, but you must never reuse a key/counter combination, or security can
+            break down (same failure mode as OFB key/IV reuse).</p>
+        </div>
+      </div>
+
+      <div class="mnemonic">
+        <div class="mnemonic-icon">🧠</div>
+        <div class="mnemonic-body">
+          <h4>Mnemonic — The 5 NIST Modes</h4>
+          <p><span class="mnem-key">"Every Cook Bakes Cakes Fresh, Overnight, Constantly Tracked, Really"</span> →
+            shorten to <strong>E</strong>CB, <strong>C</strong>BC, <strong>C</strong>FB, <strong>O</strong>FB,
+            <strong>C</strong>TR — "Each Cipher Block Craves Order, Constantly Ticking." Order to remember: block modes
+            first (ECB, CBC), then stream modes (CFB, OFB, CTR) which turn a block cipher into a keystream generator.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 15 comparison -->
+    <section>
+      <div class="section-header"><span class="sec-num">15 / Comparison</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gc">Modes Side-by-Side</h2>
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>Mode</th>
+              <th>Formula</th>
+              <th>Errors Propagate?</th>
+              <th>Typical Use</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>ECB</strong></td>
+              <td>Ci = E<sub>K</sub>(Pi)</td>
+              <td>No (blocks independent)</td>
+              <td>Single values, e.g. session keys</td>
+            </tr>
+            <tr>
+              <td><strong>CBC</strong></td>
+              <td>Ci = E<sub>K</sub>(Pi ⊕ C<sub>i-1</sub>)</td>
+              <td>Yes — all following blocks</td>
+              <td>Bulk data, authentication</td>
+            </tr>
+            <tr>
+              <td><strong>CFB</strong></td>
+              <td>Ci = Pi ⊕ E<sub>K</sub>(C<sub>i-1</sub>)</td>
+              <td>Yes — several blocks</td>
+              <td>Stream data, authentication</td>
+            </tr>
+            <tr>
+              <td><strong>OFB</strong></td>
+              <td>Ci = Pi ⊕ Oi, Oi = E<sub>K</sub>(O<sub>i-1</sub>)</td>
+              <td>No (bit errors stay local)</td>
+              <td>Noisy channels</td>
+            </tr>
+            <tr>
+              <td><strong>CTR</strong></td>
+              <td>Ci = Pi ⊕ E<sub>K</sub>(i)</td>
+              <td>No</td>
+              <td>High-speed network encryption</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- EXAM TIPS -->
+    <section>
+      <div class="section-header"><span class="sec-num">16 / Exam Prep</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="ga">Exam Tips &amp; Tricks</h2>
+      <div class="grid2">
+        <div class="tip tip-blue">
+          <div class="tip-icon">🎯</div>
+          <div class="tip-body">
+            <h4 class="ta">RC4 = 2 algorithms</h4>
+            <p>KSA (Key Scheduling Algorithm) scrambles S using the key. PRGA (Pseudo-Random Generation Algorithm) uses
+              the scrambled S to produce the keystream byte-by-byte. Don't confuse them.</p>
+          </div>
+        </div>
+        <div class="tip tip-green">
+          <div class="tip-icon">🎯</div>
+          <div class="tip-body">
+            <h4 class="td">RC4 state size</h4>
+            <p>Real RC4: S has 256 entries (bytes 0–255). The exam's toy example shrinks this to 8 entries (3-bit
+              values) — same logic, smaller numbers.</p>
+          </div>
+        </div>
+        <div class="tip tip-yellow">
+          <div class="tip-icon">🎯</div>
+          <div class="tip-body">
+            <h4 class="tf">Golden rule of stream ciphers</h4>
+            <p>Never reuse a key/keystream. This single fact explains the real-world WEP weakness and is a favorite exam
+              trap.</p>
+          </div>
+        </div>
+        <div class="tip tip-warn">
+          <div class="tip-icon">🎯</div>
+          <div class="tip-body">
+            <h4 class="te">ECB is the "bad" mode</h4>
+            <p>If an exam question shows a picture with repeating patterns leaking through ciphertext, the answer is
+              always ECB.</p>
+          </div>
+        </div>
+        <div class="tip tip-blue">
+          <div class="tip-icon">🎯</div>
+          <div class="tip-body">
+            <h4 class="ta">CBC needs an IV — protect it</h4>
+            <p>Sending the IV in the clear + unencrypted allows bit-flipping attacks on the first block. Either fix the
+              IV or encrypt it (in ECB) before sending.</p>
+          </div>
+        </div>
+        <div class="tip tip-green">
+          <div class="tip-icon">🎯</div>
+          <div class="tip-body">
+            <h4 class="td">Which modes resist bit-error propagation?</h4>
+            <p>OFB and CTR — because feedback/counter values don't depend on the ciphertext itself. CBC and CFB
+              propagate errors forward.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- QUICK REFERENCE -->
+    <section>
+      <div class="section-header"><span class="sec-num">17 / Cheat Sheet</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gb">Quick Reference — Everything at a Glance</h2>
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>Topic</th>
+              <th>Key Point</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>PRNG</td>
+              <td>Deterministic algorithm producing numbers that pass randomness tests but aren't truly random</td>
+            </tr>
+            <tr>
+              <td>Random number requirements</td>
+              <td>Statistically random (uniform, independent) + unpredictable</td>
+            </tr>
+            <tr>
+              <td>Stream cipher</td>
+              <td>Encrypts bit/byte by bit/byte by XORing with a pseudorandom keystream</td>
+            </tr>
+            <tr>
+              <td>Golden rule</td>
+              <td>Never reuse the same key/keystream in a stream cipher</td>
+            </tr>
+            <tr>
+              <td>RC4 origin</td>
+              <td>Ron Rivest design, owned by RSA DSI; variable key, byte-oriented</td>
+            </tr>
+            <tr>
+              <td>RC4 KSA</td>
+              <td>Scrambles the 256-entry state array S using the key (via T and swaps)</td>
+            </tr>
+            <tr>
+              <td>RC4 PRGA</td>
+              <td>i steps by 1, j += S[i], swap S[i]/S[j], t = S[i]+S[j], keystream byte = S[t]</td>
+            </tr>
+            <tr>
+              <td>RC4 example</td>
+              <td>K=[1,2,3,6], P=[1,2,2,2] → C=[4,1,2,0] (toy 8×3-bit version)</td>
+            </tr>
+            <tr>
+              <td>RC4 real-world weakness</td>
+              <td>WEP's flawed key generation for RC4, not RC4 itself</td>
+            </tr>
+            <tr>
+              <td>Why modes exist</td>
+              <td>Block ciphers only encrypt one fixed block; modes handle arbitrary-length messages</td>
+            </tr>
+            <tr>
+              <td>Padding</td>
+              <td>Pad last short block with nulls, or with data+count of pad bytes</td>
+            </tr>
+            <tr>
+              <td>ECB</td>
+              <td>Ci = E<sub>K</sub>(Pi); blocks independent; leaks repeated patterns</td>
+            </tr>
+            <tr>
+              <td>CBC</td>
+              <td>Ci = E<sub>K</sub>(Pi⊕C<sub>i-1</sub>); needs IV; errors propagate forward</td>
+            </tr>
+            <tr>
+              <td>CFB</td>
+              <td>Ci = Pi⊕E<sub>K</sub>(C<sub>i-1</sub>); converts block cipher to stream mode; errors propagate</td>
+            </tr>
+            <tr>
+              <td>OFB</td>
+              <td>Ci = Pi⊕Oi, Oi=E<sub>K</sub>(O<sub>i-1</sub>); feedback independent of message; bit errors don't
+                propagate</td>
+            </tr>
+            <tr>
+              <td>CTR</td>
+              <td>Ci = Pi⊕E<sub>K</sub>(i); encrypts counter; parallelizable, no error propagation</td>
+            </tr>
+            <tr>
+              <td>NIST standard</td>
+              <td>SP 800-38A defines 5 modes (ECB, CBC, CFB, OFB, CTR)</td>
+            </tr>
+            <tr>
+              <td>Modes needing unique IV/counter every time</td>
+              <td>OFB and CTR — reuse breaks security</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="footer-name">Made by Shoug Alomran</div>
+    <div class="footer-sub">CYS406 · Chapter 6: Rc4 And Modes Of Operation · Study Guide</div>
+  </footer>
+
+  <script>
+    // Auto-detect system preference on load
+    (function () {
+      const _stored = localStorage.getItem('shoug-theme');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const theme = _stored === 'dark' ? 'dark' : _stored === 'light' ? 'light' : (prefersDark ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', theme);
+      updateToggle(theme);
+    })();
+
+    // Listen for system changes
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+      if (localStorage.getItem('shoug-theme')) return;
+      const theme = e.matches ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', theme);
+      updateToggle(theme);
+    });
+
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme');
+      const next = current === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      try { localStorage.setItem('shoug-theme', document.documentElement.getAttribute('data-theme')); } catch (e) { }
+      updateToggle(next);
+    }
+
+    function updateToggle(theme) {
+      const icon = document.getElementById('toggle-icon');
+      const label = document.getElementById('toggle-label');
+      if (theme === 'dark') {
+        icon.textContent = '☀️';
+        label.textContent = 'Light Mode';
+      } else {
+        icon.textContent = '🌙';
+        label.textContent = 'Dark Mode';
+      }
+    }
+  </script>
+
+</body>
+
+</html>

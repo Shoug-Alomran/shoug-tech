@@ -1,0 +1,1950 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+  <link rel="icon" type="image/png" href="/assets/favicon.png?v=2">
+  <link rel="shortcut icon" href="/assets/favicon.png?v=2">
+  <link rel="apple-touch-icon" href="/assets/favicon.png?v=2">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CYS405 - Sniffing, Session Hijacking &amp; DoS/DDoS Attacks</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Playfair+Display:wght@700;800&display=swap"
+    rel="stylesheet">
+  <style>
+    /* ============================================================
+   THEME VARIABLES
+   ============================================================ */
+    :root {
+      --a: #6ee7f7;
+      /* cyan accent */
+      --b: #f472b6;
+      /* pink accent */
+      --c: #a78bfa;
+      /* violet accent */
+      --d: #34d399;
+      /* emerald accent */
+      --e: #fb923c;
+      /* orange accent */
+      --f: #facc15;
+      /* yellow accent */
+    }
+
+    [data-theme="dark"] {
+      --bg: #080c14;
+      --bg2: #0e1422;
+      --bg3: #141c2e;
+      --surface: rgba(255, 255, 255, 0.04);
+      --surface2: rgba(255, 255, 255, 0.07);
+      --border: rgba(255, 255, 255, 0.08);
+      --border2: rgba(255, 255, 255, 0.13);
+      --text: #e2e8f0;
+      --text2: #94a3b8;
+      --text3: #64748b;
+      --heading: #f8fafc;
+      --code-bg: rgba(255, 255, 255, 0.06);
+      --shadow: rgba(0, 0, 0, 0.5);
+      --toggle-bg: rgba(255, 255, 255, 0.08);
+    }
+
+    [data-theme="light"] {
+      --bg: #f0f4ff;
+      --bg2: #e8eef9;
+      --bg3: #dde5f5;
+      --surface: rgba(255, 255, 255, 0.75);
+      --surface2: rgba(255, 255, 255, 0.95);
+      --border: rgba(80, 100, 160, 0.12);
+      --border2: rgba(80, 100, 160, 0.2);
+      --text: #1e2a45;
+      --text2: #475569;
+      --text3: #94a3b8;
+      --heading: #0f172a;
+      --code-bg: rgba(80, 100, 160, 0.08);
+      --shadow: rgba(100, 120, 200, 0.15);
+      --toggle-bg: rgba(80, 100, 160, 0.12);
+    }
+
+    /* ============================================================
+   RESET & BASE
+   ============================================================ */
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Space Grotesk', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      overflow-x: hidden;
+      transition: background 0.4s ease, color 0.4s ease;
+    }
+
+    /* ============================================================
+   THEME TOGGLE
+   ============================================================ */
+    .theme-toggle {
+      position: fixed;
+      top: 1.25rem;
+      right: 1.5rem;
+      z-index: 1000;
+      background: var(--toggle-bg);
+      border: 1px solid var(--border2);
+      border-radius: 100px;
+      padding: 0.45rem 1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text2);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      transition: all 0.3s ease;
+      user-select: none;
+    }
+
+    .theme-toggle:hover {
+      border-color: var(--a);
+      color: var(--a);
+      transform: scale(1.04);
+    }
+
+    .toggle-icon {
+      font-size: 1rem;
+      transition: transform 0.4s ease;
+    }
+
+    /* ============================================================
+   HERO
+   ============================================================ */
+    .hero {
+      min-height: 60vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      position: relative;
+      padding: 5rem 2rem 4rem;
+      overflow: hidden;
+    }
+
+    [data-theme="dark"] .hero {
+      background:
+        radial-gradient(ellipse 70% 50% at 20% 20%, rgba(110, 231, 247, 0.12) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 80% 80%, rgba(167, 139, 250, 0.12) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 40% at 50% 60%, rgba(244, 114, 182, 0.08) 0%, transparent 60%),
+        var(--bg);
+    }
+
+    [data-theme="light"] .hero {
+      background:
+        radial-gradient(ellipse 70% 50% at 20% 20%, rgba(110, 231, 247, 0.18) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 80% 80%, rgba(167, 139, 250, 0.15) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 40% at 50% 60%, rgba(244, 114, 182, 0.12) 0%, transparent 60%),
+        var(--bg);
+    }
+
+    .hero-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(var(--border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 50px 50px;
+      opacity: 0.7;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-radius: 100px;
+      padding: 0.4rem 1.1rem;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--a);
+      margin-bottom: 1.75rem;
+      position: relative;
+      z-index: 1;
+      animation: fadeUp 0.7s ease both;
+    }
+
+    .badge-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--a);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1
+      }
+
+      50% {
+        opacity: 0.4
+      }
+    }
+
+    .hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.4rem, 5.5vw, 4.6rem);
+      font-weight: 800;
+      line-height: 1.15;
+      color: var(--heading);
+      position: relative;
+      z-index: 1;
+      animation: fadeUp 0.85s ease both;
+    }
+
+    .hero h1 .gradient-word {
+      background: linear-gradient(135deg, var(--a), var(--c), var(--b));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-sub {
+      font-size: 1.05rem;
+      color: var(--text2);
+      margin-top: 1.25rem;
+      max-width: 560px;
+      position: relative;
+      z-index: 1;
+      animation: fadeUp 1s ease both;
+    }
+
+    .hero-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      justify-content: center;
+      max-width: 720px;
+      margin-top: 2rem;
+      position: relative;
+      z-index: 1;
+      animation: fadeUp 1.1s ease both;
+    }
+
+    .chip {
+      padding: 0.3rem 0.85rem;
+      border-radius: 100px;
+      font-size: 0.76rem;
+      font-weight: 600;
+      border: 1px solid;
+      transition: transform 0.2s;
+    }
+
+    .chip:hover {
+      transform: translateY(-2px);
+    }
+
+    .chip-a {
+      color: var(--a);
+      border-color: rgba(110, 231, 247, 0.35);
+      background: rgba(110, 231, 247, 0.08);
+    }
+
+    .chip-b {
+      color: var(--b);
+      border-color: rgba(244, 114, 182, 0.35);
+      background: rgba(244, 114, 182, 0.08);
+    }
+
+    .chip-c {
+      color: var(--c);
+      border-color: rgba(167, 139, 250, 0.35);
+      background: rgba(167, 139, 250, 0.08);
+    }
+
+    .chip-d {
+      color: var(--d);
+      border-color: rgba(52, 211, 153, 0.35);
+      background: rgba(52, 211, 153, 0.08);
+    }
+
+    .chip-e {
+      color: var(--e);
+      border-color: rgba(251, 146, 60, 0.35);
+      background: rgba(251, 146, 60, 0.08);
+    }
+
+    .chip-f {
+      color: var(--f);
+      border-color: rgba(250, 204, 21, 0.35);
+      background: rgba(250, 204, 21, 0.08);
+    }
+
+    .scroll-hint {
+      position: absolute;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      color: var(--text3);
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.4rem;
+      animation: bounce 2.5s infinite;
+      z-index: 1;
+    }
+
+    @keyframes bounce {
+
+      0%,
+      100% {
+        transform: translateX(-50%) translateY(0)
+      }
+
+      50% {
+        transform: translateX(-50%) translateY(8px)
+      }
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(24px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    /* ============================================================
+   LAYOUT
+   ============================================================ */
+    main {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 4rem 2rem;
+    }
+
+    section {
+      margin-bottom: 5.5rem;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .sec-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text3);
+      white-space: nowrap;
+    }
+
+    .sec-line {
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, var(--border2), transparent);
+    }
+
+    h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.6rem, 3vw, 2.3rem);
+      font-weight: 800;
+      color: var(--heading);
+      margin-bottom: 0.4rem;
+    }
+
+    h3 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 1.05rem;
+      margin-bottom: 0.6rem;
+      color: var(--heading);
+    }
+
+    p {
+      font-size: 0.94rem;
+      color: var(--text2);
+      margin-bottom: 0.7rem;
+    }
+
+    strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    /* ============================================================
+   GRADIENT TEXT HELPERS
+   ============================================================ */
+    .ga {
+      background: linear-gradient(135deg, var(--a), var(--d));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .gb {
+      background: linear-gradient(135deg, var(--b), var(--c));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .gc {
+      background: linear-gradient(135deg, var(--e), var(--b));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .gd {
+      background: linear-gradient(135deg, var(--c), var(--a));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* ============================================================
+   CARDS
+   ============================================================ */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.6rem;
+      transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
+    }
+
+    .card:hover {
+      border-color: var(--border2);
+      transform: translateY(-3px);
+      box-shadow: 0 12px 30px var(--shadow);
+    }
+
+    .grid2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1rem;
+    }
+
+    .grid3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1rem;
+    }
+
+    .grid4 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 1rem;
+    }
+
+    .bl-a {
+      border-left: 3px solid var(--a);
+    }
+
+    .bl-b {
+      border-left: 3px solid var(--b);
+    }
+
+    .bl-c {
+      border-left: 3px solid var(--c);
+    }
+
+    .bl-d {
+      border-left: 3px solid var(--d);
+    }
+
+    .bl-e {
+      border-left: 3px solid var(--e);
+    }
+
+    .bl-f {
+      border-left: 3px solid var(--f);
+    }
+
+    .ta {
+      color: var(--a);
+    }
+
+    .tb {
+      color: var(--b);
+    }
+
+    .tc {
+      color: var(--c);
+    }
+
+    .td {
+      color: var(--d);
+    }
+
+    .te {
+      color: var(--e);
+    }
+
+    .tf {
+      color: var(--f);
+    }
+
+    /* ============================================================
+   DEFINITION CARDS
+   ============================================================ */
+    .def-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 0.75rem;
+    }
+
+    .def-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.2rem;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s;
+    }
+
+    .def-card:hover {
+      transform: translateY(-2px);
+    }
+
+    .def-top {
+      height: 2px;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+    }
+
+    .def-term {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .def-desc {
+      font-size: 0.87rem;
+      color: var(--text2);
+    }
+
+    /* ============================================================
+   MONO / CODE STYLE
+   ============================================================ */
+    .mono {
+      font-family: 'JetBrains Mono', monospace;
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      font-size: 0.85rem;
+      color: var(--a);
+      margin-top: 0.75rem;
+      overflow-x: auto;
+      white-space: pre;
+    }
+
+    .mono span.comment {
+      color: var(--text3);
+    }
+
+    .mono span.key {
+      color: var(--b);
+    }
+
+    .mono span.val {
+      color: var(--d);
+    }
+
+    /* ============================================================
+   EXAMPLE BOXES
+   ============================================================ */
+    .ex {
+      border-radius: 14px;
+      padding: 1.4rem;
+      border: 1px solid;
+      margin-top: 1.25rem;
+    }
+
+    .ex-a {
+      background: rgba(110, 231, 247, 0.06);
+      border-color: rgba(110, 231, 247, 0.25);
+    }
+
+    .ex-b {
+      background: rgba(244, 114, 182, 0.06);
+      border-color: rgba(244, 114, 182, 0.25);
+    }
+
+    .ex-c {
+      background: rgba(167, 139, 250, 0.06);
+      border-color: rgba(167, 139, 250, 0.25);
+    }
+
+    .ex-d {
+      background: rgba(52, 211, 153, 0.06);
+      border-color: rgba(52, 211, 153, 0.25);
+    }
+
+    .ex-e {
+      background: rgba(251, 146, 60, 0.06);
+      border-color: rgba(251, 146, 60, 0.25);
+    }
+
+    .ex-f {
+      background: rgba(250, 204, 21, 0.06);
+      border-color: rgba(250, 204, 21, 0.25);
+    }
+
+    .ex-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .ex-label::before {
+      content: '';
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    /* ============================================================
+   TIP BOXES
+   ============================================================ */
+    .tip {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      padding: 1.1rem 1.25rem;
+      border-radius: 12px;
+      margin-top: 1rem;
+    }
+
+    .tip-green {
+      background: rgba(52, 211, 153, 0.08);
+      border: 1px solid rgba(52, 211, 153, 0.25);
+    }
+
+    .tip-blue {
+      background: rgba(110, 231, 247, 0.08);
+      border: 1px solid rgba(110, 231, 247, 0.25);
+    }
+
+    .tip-warn {
+      background: rgba(251, 146, 60, 0.08);
+      border: 1px solid rgba(251, 146, 60, 0.25);
+    }
+
+    .tip-yellow {
+      background: rgba(250, 204, 21, 0.08);
+      border: 1px solid rgba(250, 204, 21, 0.25);
+    }
+
+    .tip-icon {
+      font-size: 1.2rem;
+      flex-shrink: 0;
+      margin-top: 0.1rem;
+    }
+
+    .tip-body h4 {
+      font-size: 0.84rem;
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+    }
+
+    .tip-body p {
+      font-size: 0.86rem;
+      color: var(--text2);
+      margin: 0;
+    }
+
+    /* ============================================================
+   MNEMONIC BOXES  (memory aids - distinct brain/purple styling)
+   ============================================================ */
+    .mnemonic {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      padding: 1.25rem 1.4rem;
+      border-radius: 14px;
+      margin-top: 1.25rem;
+      background: linear-gradient(135deg, rgba(167, 139, 250, 0.10), rgba(244, 114, 182, 0.07));
+      border: 1px solid rgba(167, 139, 250, 0.35);
+      position: relative;
+    }
+
+    .mnemonic-icon {
+      font-size: 1.3rem;
+      flex-shrink: 0;
+    }
+
+    .mnemonic-body h4 {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--c);
+      margin-bottom: 0.4rem;
+    }
+
+    .mnemonic-body p {
+      font-size: 0.92rem;
+      color: var(--text);
+      margin: 0;
+    }
+
+    .mnemonic-body .mnem-key {
+      color: var(--b);
+      font-weight: 700;
+    }
+
+    /* ============================================================
+   TABLES
+   ============================================================ */
+    .tbl {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.87rem;
+    }
+
+    .tbl th {
+      text-align: left;
+      padding: 0.65rem 0.9rem;
+      background: var(--surface2);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text3);
+      border-bottom: 1px solid var(--border2);
+    }
+
+    .tbl td {
+      padding: 0.7rem 0.9rem;
+      border-bottom: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .tbl tr:last-child td {
+      border-bottom: none;
+    }
+
+    .tbl tr:hover td {
+      background: var(--surface2);
+    }
+
+    .tbl-wrap {
+      overflow-x: auto;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+
+    /* ============================================================
+   VS (COMPARISON) CARDS
+   ============================================================ */
+    .vs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    @media(max-width:640px) {
+      .vs {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* ============================================================
+   FLOW DIAGRAM
+   ============================================================ */
+    .flow {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      flex-wrap: wrap;
+      margin: 1.5rem 0;
+    }
+
+    .flow-box {
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-radius: 10px;
+      padding: 0.75rem 1rem;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--heading);
+      text-align: center;
+      flex: 1;
+      min-width: 80px;
+    }
+
+    .flow-box.accent {
+      background: rgba(110, 231, 247, 0.12);
+      border-color: rgba(110, 231, 247, 0.4);
+      color: var(--a);
+    }
+
+    .flow-box.accent2 {
+      background: rgba(167, 139, 250, 0.12);
+      border-color: rgba(167, 139, 250, 0.4);
+      color: var(--c);
+    }
+
+    .flow-box.accent3 {
+      background: rgba(52, 211, 153, 0.12);
+      border-color: rgba(52, 211, 153, 0.4);
+      color: var(--d);
+    }
+
+    .flow-arrow {
+      font-size: 1.2rem;
+      color: var(--text3);
+      padding: 0 0.35rem;
+      flex-shrink: 0;
+    }
+
+    /* ============================================================
+   STEPS
+   ============================================================ */
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .step {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      padding: 1rem 1.25rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      transition: all 0.3s;
+    }
+
+    .step:hover {
+      border-color: var(--border2);
+    }
+
+    .step-num {
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      font-size: 0.8rem;
+      flex-shrink: 0;
+      color: #000;
+      background: linear-gradient(135deg, var(--a), var(--c));
+    }
+
+    .step-body h4 {
+      font-weight: 700;
+      font-size: 0.9rem;
+      margin-bottom: 0.2rem;
+    }
+
+    .step-body p {
+      font-size: 0.86rem;
+      color: var(--text2);
+      margin: 0;
+    }
+
+    /* ============================================================
+   BADGES
+   ============================================================ */
+    .badge {
+      display: inline-block;
+      padding: 0.2rem 0.55rem;
+      border-radius: 100px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      border: 1px solid;
+    }
+
+    .badge-a {
+      color: var(--a);
+      border-color: rgba(110, 231, 247, 0.4);
+      background: rgba(110, 231, 247, 0.1);
+    }
+
+    .badge-b {
+      color: var(--b);
+      border-color: rgba(244, 114, 182, 0.4);
+      background: rgba(244, 114, 182, 0.1);
+    }
+
+    .badge-c {
+      color: var(--c);
+      border-color: rgba(167, 139, 250, 0.4);
+      background: rgba(167, 139, 250, 0.1);
+    }
+
+    .badge-e {
+      color: var(--e);
+      border-color: rgba(251, 146, 60, 0.4);
+      background: rgba(251, 146, 60, 0.1);
+    }
+
+    .row-highlight td {
+      background: rgba(52, 211, 153, 0.06) !important;
+    }
+
+    .row-warn td {
+      background: rgba(244, 114, 182, 0.06) !important;
+    }
+
+    /* ============================================================
+   FOOTER
+   ============================================================ */
+    footer {
+      text-align: center;
+      padding: 3rem 2rem 4rem;
+      position: relative;
+    }
+
+    footer::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 10%;
+      right: 10%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border2), transparent);
+    }
+
+    .footer-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--a), var(--c), var(--b));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .footer-sub {
+      font-size: 0.78rem;
+      color: var(--text3);
+      margin-top: 0.3rem;
+    }
+
+    /* UL RESET */
+    ul {
+      list-style: none;
+    }
+
+    ul li {
+      padding: 0.32rem 0;
+      padding-left: 1rem;
+      position: relative;
+      font-size: 0.9rem;
+      color: var(--text2);
+    }
+
+    ul li::before {
+      content: '▸';
+      position: absolute;
+      left: 0;
+      color: var(--c);
+      font-size: 0.65rem;
+      top: 0.44rem;
+    }
+
+    .divider {
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border), transparent);
+      margin: 4rem 0;
+    }
+
+    @media(max-width:600px) {
+      .grid4 {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .flow {
+        justify-content: center;
+      }
+
+      .flow-box {
+        min-width: 70px;
+        font-size: 0.75rem;
+      }
+    }
+  </style>
+  <script src="/javascripts/standalone-theme.js"></script>
+  <script src="/javascripts/html-theme-sync.js"></script>
+
+  <meta name="description"
+    content="Complete CYS405 study guide to network sniffing, ARP poisoning, MAC flooding, session hijacking, and DoS/DDoS attacks with mnemonics and cheat sheets.">
+  <link rel="canonical"
+    href="https://shoug-tech.com/academics/cybersecurity/cys405/slide-breakdowns/10-chapter-10-sniffing-and-dos-attacks/chapter-10-sniffing-and-dos-attacks.html">
+  <meta property="og:title" content="CYS405 - Sniffing, Session Hijacking & DoS/DDoS Attacks">
+  <meta property="og:description"
+    content="Complete CYS405 study guide to network sniffing, ARP poisoning, MAC flooding, session hijacking, and DoS/DDoS attacks with mnemonics and cheat sheets.">
+  <meta property="og:url"
+    content="https://shoug-tech.com/academics/cybersecurity/cys405/slide-breakdowns/10-chapter-10-sniffing-and-dos-attacks/chapter-10-sniffing-and-dos-attacks.html">
+  <meta property="og:type" content="article">
+  <meta property="og:image" content="https://shoug-tech.com/assets/og-banner.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="CYS405 - Sniffing, Session Hijacking & DoS/DDoS Attacks">
+  <meta name="twitter:description"
+    content="Complete CYS405 study guide to network sniffing, ARP poisoning, MAC flooding, session hijacking, and DoS/DDoS attacks with mnemonics and cheat sheets.">
+  <meta name="twitter:image" content="https://shoug-tech.com/assets/og-banner.png">
+</head>
+
+<body>
+
+
+  <!-- THEME TOGGLE -->
+  <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+    <span class="toggle-icon" id="toggle-icon">☀️</span>
+    <span id="toggle-label">Light Mode</span>
+  </button>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-grid"></div>
+
+    <div class="hero-badge">
+      <span class="badge-dot"></span>
+      CYS405 · Chapter 10
+    </div>
+
+    <h1>
+      Eavesdropping the Wire:<br>
+      <span class="gradient-word">Sniffing &amp; DoS Attacks</span>
+    </h1>
+    <p class="hero-sub">From quietly capturing packets on a hub to flooding a server offline — how attackers listen in,
+      hijack sessions, and knock services down.</p>
+
+    <div class="hero-chips">
+      <span class="chip chip-a">Passive vs Active Sniffing</span>
+      <span class="chip chip-b">ARP Poisoning</span>
+      <span class="chip chip-c">MAC Flooding</span>
+      <span class="chip chip-d">Session Hijacking</span>
+      <span class="chip chip-e">DoS / DDoS</span>
+      <span class="chip chip-f">Botnets</span>
+    </div>
+
+    <div class="scroll-hint">
+      scroll ↓
+    </div>
+  </div>
+
+  <main>
+
+    <!-- SECTION 1: SNIFFERS -->
+    <section>
+      <div class="section-header"><span class="sec-num">01 / Sniffing Basics</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="ga">What Is a Sniffer?</h2>
+      <p>A sniffer is an application or device that captures ("sniffs") network traffic as it moves across the wire or
+        through the air. It's a technology used to <strong>steal or observe information</strong> — email passwords, web
+        passwords, FTP credentials, email contents, and transferred files can all be exposed.</p>
+
+      <div class="card bl-a">
+        <h3 class="ta">Network sniffing (eavesdropping)</h3>
+        <p>A type of attack where the attacker captures packets across a wire or wireless connection. The main goal:
+          <strong>capture unencrypted credentials</strong> traveling across the network.</p>
+      </div>
+
+      <div class="tip tip-blue">
+        <div class="tip-icon">💡</div>
+        <div class="tip-body">
+          <h4 class="ta">Why it matters</h4>
+          <p>Anything sent in plaintext — old FTP, HTTP, Telnet — is fair game for a sniffer. Encryption is the #1
+            defense against this entire chapter's worth of attacks.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 2: TYPES OF SNIFFING -->
+    <section>
+      <div class="section-header"><span class="sec-num">02 / Passive vs Active</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gb">Types of Sniffing</h2>
+
+      <div class="vs">
+        <div class="ex ex-d">
+          <div class="ex-label td">1. Passive Sniffing</div>
+          <p>Happens on a <strong>hub</strong>, where traffic is broadcast to all ports. The attacker just listens — no
+            packets are sent.</p>
+          <ul>
+            <li>Works only in a <strong>common collision domain</strong> (unswitched/unbridged segment)</li>
+            <li>Hubs are outdated; most networks use switches now</li>
+            <li>Methods: compromising physical security (plug in a laptop), or a Trojan with built-in sniffing
+              capability</li>
+          </ul>
+        </div>
+        <div class="ex ex-b">
+          <div class="ex-label tb">2. Active Sniffing</div>
+          <p>Used on <strong>switched networks</strong> where traffic isn't broadcast to everyone. The attacker actively
+            injects packets to manipulate traffic flow.</p>
+          <ul>
+            <li><strong>ARP spoofing/poisoning</strong> — redirect traffic through the attacker</li>
+            <li><strong>MAC flooding</strong> — overflow the CAM table, forcing hub-like flooding behavior</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="mnemonic">
+        <div class="mnemonic-icon">🧠</div>
+        <div class="mnemonic-body">
+          <h4>Mnemonic — Hub Whispers, Switch Fights</h4>
+          <p><span class="mnem-key">"HUB = HUSH (Hub Uses Silent Hearing)"</span> vs <span class="mnem-key">"SWITCH =
+              STRIKE (Sends Traffic, Requires Interference to Keep Eavesdropping)"</span>. Passive sniffing = quiet hub
+            listening. Active sniffing = loud switch attacking (ARP/MAC games).</p>
+        </div>
+      </div>
+
+      <div class="tip tip-warn">
+        <div class="tip-icon">⚠️</div>
+        <div class="tip-body">
+          <h4 class="te">Detectability</h4>
+          <p><strong>Passive sniffing</strong> is very hard to detect — no extra traffic generated (only clue: NIC in
+            promiscuous mode, or odd CPU/disk usage). <strong>Active sniffing</strong> is easier to detect — IDS can
+            spot unusual ARP traffic, MAC address flapping, and duplicate IP addresses.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 3: SWITCH BASICS & CAM -->
+    <section>
+      <div class="section-header"><span class="sec-num">03 / Switch Internals</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gc">Switch Basics &amp; the CAM Table</h2>
+      <p>Every switch keeps a <strong>Content Addressable Memory (CAM) table</strong> — a fixed-size table mapping MAC
+        addresses to switch ports (plus VLAN info). When a frame arrives, the switch learns the source MAC and updates
+        the table. If a destination MAC isn't found, the switch <strong>floods</strong> the frame to all ports in that
+        VLAN.</p>
+
+      <div class="ex ex-c">
+        <div class="ex-label tc">📘 Why this matters for attacks</div>
+        <p>The CAM table has a limited size. If you can fill it up with junk entries, the switch can no longer learn new
+          legitimate MACs and starts flooding everything — turning a switch into a hub. That's exactly what MAC flooding
+          does.</p>
+      </div>
+    </section>
+
+    <!-- SECTION 4: ARP PROTOCOL BASICS -->
+    <section>
+      <div class="section-header"><span class="sec-num">04 / ARP</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gd">ARP Protocol Basics</h2>
+      <p>ARP (Address Resolution Protocol) resolves IP addresses to MAC addresses, bridging the Network Layer (IP) and
+        Data Link Layer (MAC), within a LAN.</p>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <h4>Check ARP Cache</h4>
+            <p>Host checks if it already has a mapping for the target IP.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <h4>ARP Request (broadcast)</h4>
+            <p>"Who has IP X.X.X.X?" sent to everyone on the LAN.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <h4>ARP Reply (unicast)</h4>
+            <p>Target host replies: "IP X.X.X.X is at MAC XX:XX:XX:XX:XX:XX."</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <h4>Cache the Mapping</h4>
+            <p>Stored in the ARP cache for a duration that varies by OS.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="def-grid">
+        <div class="def-card">
+          <div class="def-top" style="background:var(--a)"></div>
+          <div class="def-term ta">Stateless</div>
+          <div class="def-desc">No session or verification mechanism exists.</div>
+        </div>
+        <div class="def-card">
+          <div class="def-top" style="background:var(--b)"></div>
+          <div class="def-term tb">No Authentication</div>
+          <div class="def-desc">Replies are automatically trusted → vulnerable to spoofing.</div>
+        </div>
+        <div class="def-card">
+          <div class="def-top" style="background:var(--c)"></div>
+          <div class="def-term tc">Local Scope Only</div>
+          <div class="def-desc">Operates within a LAN; does not cross routers.</div>
+        </div>
+      </div>
+
+      <div class="tip tip-warn">
+        <div class="tip-icon">⚠️</div>
+        <div class="tip-body">
+          <h4 class="te">The core weakness</h4>
+          <p>ARP is a <strong>trust-based protocol</strong> — devices accept ARP replies even without sending a request,
+            and there's no way to verify an IP–MAC mapping is legitimate. This is exactly why ARP poisoning works.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 5: MAC FLOODING -->
+    <section>
+      <div class="section-header"><span class="sec-num">05 / MAC Flooding</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="ga">MAC Flooding Attack</h2>
+      <p>A Layer 2 attack targeting a switch's CAM table. The attacker floods the switch with frames using
+        <strong>random, spoofed source MAC addresses</strong>, filling the table until legitimate entries get evicted.
+      </p>
+
+      <div class="flow">
+        <div class="flow-box">Flood fake MACs</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box accent">CAM table fills up</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box accent2">Switch can't learn new MACs</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box accent3">Switch floods all ports (acts like hub)</div>
+      </div>
+
+      <p>Once in "hub mode," the attacker can passively sniff traffic meant for other devices.</p>
+
+      <h3 class="tb">Defense: Port Security</h3>
+      <p>Port security restricts a switch port to a limited set of authorized MAC addresses.</p>
+      <div class="grid2">
+        <div class="card bl-b">
+          <h3 class="tb">Violation Triggers</h3>
+          <ul>
+            <li>Max number of secure MACs reached on a port</li>
+            <li>An unrecognized MAC tries to access the port</li>
+          </ul>
+        </div>
+        <div class="card bl-d">
+          <h3 class="td">Configuration Methods</h3>
+          <ul>
+            <li>Manually configure secure MACs (<code>switchport port-security mac-address</code>)</li>
+            <li>Dynamically learn from connected devices</li>
+            <li>Hybrid: some manual, rest dynamically learned</li>
+          </ul>
+        </div>
+      </div>
+      <div class="tip tip-green">
+        <div class="tip-icon">✅</div>
+        <div class="tip-body">
+          <h4 class="td">Benefits of Port Security</h4>
+          <p>Limits MAC flooding, locks ports to authorized devices only, and can send SNMP traps for monitoring/alerts.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 6: ARP POISONING -->
+    <section>
+      <div class="section-header"><span class="sec-num">06 / ARP Poisoning</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gb">ARP Poisoning / ARP Spoofing</h2>
+      <p>The attacker sends forged ARP messages to manipulate the ARP tables (caches) of other devices. Goal: associate
+        the <strong>attacker's MAC address</strong> with the IP of a legitimate device (often the default gateway).</p>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <h4>Reconnaissance</h4>
+            <p>Identify the IP addresses of the target victim and the default gateway.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <h4>The Poisoning</h4>
+            <p>Send forged ARP replies: tell the victim "I am the gateway"; tell the gateway "I am the victim" — both
+              point to the attacker's MAC, sent continuously.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <h4>The Redirection</h4>
+            <p>Both sides update their ARP caches with false mappings; all traffic between them now flows through the
+              attacker.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <h4>The Attack</h4>
+            <p>Sniff (steal data), Modify (alter packets in transit), or Block (drop traffic → DoS).</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="mnemonic">
+        <div class="mnemonic-icon">🧠</div>
+        <div class="mnemonic-body">
+          <h4>Mnemonic — R.P.R.A</h4>
+          <p><span class="mnem-key">"Real Pirates Rob Anchors"</span> = <strong>R</strong>econnaissance →
+            <strong>P</strong>oisoning → <strong>R</strong>edirection → <strong>A</strong>ttack (sniff/modify/block).
+            ARP poisoning is the pirate hijacking the ship's route so all cargo passes through them first.</p>
+        </div>
+      </div>
+
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>Result of Successful ARP Poisoning</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Man-in-the-Middle attack (intercept and steal data)</td>
+            </tr>
+            <tr>
+              <td>Launch Denial-of-Service attacks</td>
+            </tr>
+            <tr>
+              <td>Perform session hijacking</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 class="tc" style="margin-top:2rem;">ARP Spoofing Prevention</h3>
+      <div class="grid2">
+        <div class="card bl-a">
+          <h3 class="ta">1. Encryption (mitigation, not prevention)</h3>
+          <p>VPN encrypts traffic so intercepted data is unreadable. Doesn't stop the spoofing itself, only its impact.
+          </p>
+        </div>
+        <div class="card bl-b">
+          <h3 class="tb">2. Static ARP Entries</h3>
+          <p>Manually bind IP↔MAC pairs so devices reject fake replies. Not scalable for large networks.</p>
+        </div>
+        <div class="card bl-c">
+          <h3 class="tc">3. Packet Filtering &amp; Monitoring</h3>
+          <p>IDS/IPS detects conflicting IP–MAC mappings and suspicious ARP traffic, blocking malicious packets.</p>
+        </div>
+        <div class="card bl-d">
+          <h3 class="td">4. Dynamic ARP Inspection (DAI)</h3>
+          <p>Validates ARP packets against the DHCP snooping binding table; drops invalid/spoofed packets. One of the
+            most effective defenses.</p>
+        </div>
+      </div>
+      <div class="card bl-e" style="margin-top:1rem;">
+        <h3 class="te">5. Security / Penetration Testing</h3>
+        <p>Perform controlled ARP spoofing tests to evaluate defenses and find weaknesses.</p>
+      </div>
+
+      <div class="ex ex-f">
+        <div class="ex-label tf">📘 Detection Tip</div>
+        <p>Monitor the network for a <strong>single MAC address mapped to multiple IP addresses</strong>, or use
+          Wireshark to spot unusual ARP traffic. Display the ARP table via the command line (Windows/Linux). If two
+          different IPs share the same MAC, an ARP attack is likely underway — e.g. if 192.168.5.1 (the router) shares a
+          MAC with another IP, the attacker's IP is probably that other address (e.g. 192.168.5.202).</p>
+      </div>
+    </section>
+
+    <!-- SECTION 7: PROTOCOLS & TOOLS -->
+    <section>
+      <div class="section-header"><span class="sec-num">07 / Tools</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gc">Sniffing Tools &amp; Countermeasures</h2>
+
+      <div class="grid4">
+        <div class="card bl-a">
+          <h3 class="ta">Wireshark</h3>
+          <p>Industry-standard packet capture &amp; analysis tool.</p>
+        </div>
+        <div class="card bl-b">
+          <h3 class="tb">Tcpdump / Windump</h3>
+          <p>Command-line packet sniffers (Linux/Windows).</p>
+        </div>
+        <div class="card bl-c">
+          <h3 class="tc">Omnipeek</h3>
+          <p>Commercial network analysis tool.</p>
+        </div>
+        <div class="card bl-d">
+          <h3 class="td">Dsniff</h3>
+          <p>Suite of tools for network auditing/penetration testing including sniffing.</p>
+        </div>
+        <div class="card bl-e">
+          <h3 class="te">EtherApe</h3>
+          <p>Graphical network monitor.</p>
+        </div>
+        <div class="card bl-f">
+          <h3 class="tf">MSN Sniffer</h3>
+          <p>Captures MSN messenger traffic.</p>
+        </div>
+        <div class="card bl-a">
+          <h3 class="ta">NetWitness NextGen</h3>
+          <p>Network forensics/analysis platform.</p>
+        </div>
+        <div class="card bl-b">
+          <h3 class="tb">Throwing Star LAN Tap</h3>
+          <p>Physical passive network tap device.</p>
+        </div>
+      </div>
+
+      <div class="tip tip-green">
+        <div class="tip-icon">🛡️</div>
+        <div class="tip-body">
+          <h4 class="td">Sniffing Countermeasures</h4>
+          <p><strong>Encryption</strong> (renders captured data useless), <strong>Static ARP entries</strong> (blocks
+            spoofed replies), <strong>Port security</strong> (limits MAC flooding).</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 8: SESSION HIJACKING -->
+    <section>
+      <div class="section-header"><span class="sec-num">08 / Session Hijacking</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gd">Session Hijacking</h2>
+      <p>Session hijacking is when an attacker takes over an active, valid TCP session between a client and a server.
+      </p>
+
+      <div class="card bl-c">
+        <h3 class="tc">How it works</h3>
+        <ul>
+          <li>Authentication typically happens only once, at the start of a session</li>
+          <li>The server then relies on a <strong>session ID / cookie</strong> to maintain the connection</li>
+          <li>The attacker captures this session ID (via sniffing or MITM)</li>
+          <li>The attacker reuses it to impersonate the legitimate user</li>
+        </ul>
+      </div>
+
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>Impact of Session Hijacking</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Unauthorized access to systems/accounts</td>
+            </tr>
+            <tr>
+              <td>Identity theft</td>
+            </tr>
+            <tr>
+              <td>Data theft or manipulation</td>
+            </tr>
+            <tr>
+              <td>Fraudulent actions</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 class="ta" style="margin-top:2rem;">Three Ways to Obtain a Session ID</h3>
+      <div class="grid3">
+        <div class="card bl-a">
+          <h3 class="ta">Stealing</h3>
+          <p>Physical access to session ID files/memory, or sniffing traffic with tools like Wireshark / SteelCentral
+            Packet Analyzer.</p>
+        </div>
+        <div class="card bl-b">
+          <h3 class="tb">Guessing</h3>
+          <p>Observing session variables to guess IDs — only effective when the server uses weak/flawed session-ID
+            generation.</p>
+        </div>
+        <div class="card bl-c">
+          <h3 class="tc">Brute Forcing</h3>
+          <p>Trying all possible permutations. A DSL attacker can generate up to 1,000 session IDs/second — most useful
+            when the ID algorithm is non-random.</p>
+        </div>
+      </div>
+
+      <div class="mnemonic">
+        <div class="mnemonic-icon">🧠</div>
+        <div class="mnemonic-body">
+          <h4>Mnemonic — S.G.B</h4>
+          <p><span class="mnem-key">"Sneaky Guys Brute-force"</span> = <strong>S</strong>teal, <strong>G</strong>uess,
+            <strong>B</strong>rute-force — the three ways attackers acquire a session ID.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 9: IDENTIFYING AN ACTIVE SESSION -->
+    <section>
+      <div class="section-header"><span class="sec-num">09 / TCP Sequence Prediction</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="ga">Identifying an Active Session</h2>
+      <p>Hijacking builds on sniffing but goes further — the attacker must find and take control of an
+        <strong>already-authenticated</strong> session. This is hard due to network segmentation, switched networks, and
+        encryption.</p>
+
+      <div class="card bl-d">
+        <h3 class="td">Sequence Number Facts</h3>
+        <ul>
+          <li>TCP sequence numbers are 32-bit values → over 4 billion combinations</li>
+          <li>They ensure packets are ordered correctly and reassembled properly at the destination</li>
+        </ul>
+        <p>To hijack a session, the attacker must <strong>predict or obtain valid sequence numbers.</strong></p>
+      </div>
+
+      <h3 class="tb" style="margin-top:1.5rem;">3-Way Handshake &amp; ISN Prediction</h3>
+      <div class="flow">
+        <div class="flow-box">Client → Server: SYN</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box accent">Server → Client: SYN/ACK</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box accent2">Client → Server: ACK</div>
+      </div>
+      <p>Each side selects an Initial Sequence Number (ISN). Modern systems use pseudo-random ISNs, but if they're
+        predictable, an attacker can forge packets, spoof an IP, establish a connection, and potentially hijack the
+        session.</p>
+
+      <div class="tip tip-warn">
+        <div class="tip-icon">⚠️</div>
+        <div class="tip-body">
+          <h4 class="te">Spoofing vs Hijacking</h4>
+          <p>IP spoofing forges a source address to impersonate a host <em>before</em> a session exists. Session
+            hijacking takes over a session that is <em>already active</em>. Hijacking is the more powerful,
+            harder-to-detect version.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 10: SESSION HIJACKING TOOLS -->
+    <section>
+      <div class="section-header"><span class="sec-num">10 / Tools</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gb">Session Hijacking Tools</h2>
+      <div class="grid3">
+        <div class="card bl-a">
+          <h3 class="ta">Ettercap</h3>
+          <p>Multiplatform tool for MITM attacks, ARP spoofing, and session hijacking.</p>
+        </div>
+        <div class="card bl-b">
+          <h3 class="tb">Hunt</h3>
+          <p>Works on Ethernet-based networks in passive and active modes.</p>
+        </div>
+        <div class="card bl-c">
+          <h3 class="tc">Juggernaut</h3>
+          <p>Linux network sniffer with the ability to hijack TCP sessions.</p>
+        </div>
+        <div class="card bl-d">
+          <h3 class="td">Paros HTTP Hijacker</h3>
+          <p>Java HTTP/HTTPS proxy that intercepts and edits HTTP messages in real time.</p>
+        </div>
+        <div class="card bl-e">
+          <h3 class="te">IP-Watcher</h3>
+          <p>Commercial-grade tool for session hijacking and connection monitoring.</p>
+        </div>
+        <div class="card bl-f">
+          <h3 class="tf">T-sight</h3>
+          <p>Commercial tool that can hijack TCP sessions on a network.</p>
+        </div>
+      </div>
+
+      <div class="tip tip-green">
+        <div class="tip-icon">🛡️</div>
+        <div class="tip-body">
+          <h4 class="td">Thwarting Session Hijacking</h4>
+          <p>Be proactive with encryption; configure routers to block spoofed traffic from outside the protected
+            network; use an intrusion detection system (IDS).</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 11: DOS ATTACKS -->
+    <section>
+      <div class="section-header"><span class="sec-num">11 / DoS Attacks</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gc">Denial of Service (DoS) Attacks</h2>
+      <p>A DoS attack prevents authorized users from accessing a computer or network by targeting <strong>network
+          bandwidth</strong> or <strong>connectivity</strong>.</p>
+
+      <div class="vs">
+        <div class="ex ex-e">
+          <div class="ex-label te">Bandwidth Attacks</div>
+          <p>Overflow the network with high traffic volume using existing resources, depriving legitimate users of
+            bandwidth.</p>
+        </div>
+        <div class="ex ex-c">
+          <div class="ex-label tc">Connectivity Attacks</div>
+          <p>Overflow a computer with a massive number of connection requests, exhausting OS resources so it can't
+            process legitimate requests.</p>
+        </div>
+      </div>
+
+      <h3 class="td" style="margin-top:2rem;">DoS Attack Techniques (7 kinds)</h3>
+      <div class="grid3">
+        <div class="card bl-a">
+          <h3 class="ta">Bandwidth Attacks</h3>
+          <p>Flood the network pipe with volume until it's saturated.</p>
+        </div>
+        <div class="card bl-b">
+          <h3 class="tb">Service Request Floods</h3>
+          <p>Flood a service with repeated legitimate-looking requests to exhaust it.</p>
+        </div>
+        <div class="card bl-c">
+          <h3 class="tc">ICMP Flood Attack</h3>
+          <p>Two variants — Smurf attack and ping flood (details below).</p>
+        </div>
+        <div class="card bl-d">
+          <h3 class="td">SYN Flooding</h3>
+          <p>Sends a flood of TCP SYN packets, never completing the handshake, exhausting connection tables.</p>
+        </div>
+        <div class="card bl-e">
+          <h3 class="te">Peer-to-Peer Attacks</h3>
+          <p>Exploits P2P clients/servers to redirect huge numbers of clients toward a victim.</p>
+        </div>
+        <div class="card bl-f">
+          <h3 class="tf">Application-Level Flood Attacks</h3>
+          <p>Targets application layer resources/logic rather than raw bandwidth.</p>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <h3 class="tb">ICMP Flood — Two Variants</h3>
+      <div class="vs">
+        <div class="ex ex-b">
+          <div class="ex-label tb">Smurf Attack</div>
+          <p>Attacker sends traffic to a network's <strong>broadcast address</strong> with the victim's IP spoofed as
+            the source. Every host on that network replies — flooding the victim, not the attacker.</p>
+        </div>
+        <div class="ex ex-d">
+          <div class="ex-label td">Ping Flood</div>
+          <p>Simply sends a huge number of ping packets directly at the victim to overwhelm it. Very simple,
+            brute-force.</p>
+        </div>
+      </div>
+
+      <div class="mnemonic">
+        <div class="mnemonic-icon">🧠</div>
+        <div class="mnemonic-body">
+          <h4>Mnemonic — B.S.I.S.P.A (7 DoS Techniques)</h4>
+          <p><span class="mnem-key">"Big Sharks Ignore Small Prey, Always"</span> = <strong>B</strong>andwidth attacks,
+            <strong>S</strong>ervice request floods, <strong>I</strong>CMP flood (Smurf/ping), <strong>S</strong>YN
+            flooding, <strong>P</strong>eer-to-peer attacks, <strong>A</strong>pplication-level floods. Seven ways to
+            drown a target in traffic.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 12: DDoS -->
+    <section>
+      <div class="section-header"><span class="sec-num">12 / DDoS &amp; Botnets</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gd">DDoS Attacks &amp; Botnets</h2>
+      <p>A <strong>Distributed Denial-of-Service (DDoS)</strong> attack uses a multitude of compromised systems to
+        attack a single target at once, causing denial of service for that system's legitimate users.</p>
+
+      <div class="flow">
+        <div class="flow-box">Attacker</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box accent">Controls Botnet</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box accent2">Thousands of Bots</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box accent3">Flood Single Target</div>
+      </div>
+
+      <div class="card bl-c">
+        <h3 class="tc">Botnet</h3>
+        <p>Bots are software applications that run automated tasks over the internet — normally benign things like web
+          spidering or search indexing. A <strong>botnet</strong> is a huge network of compromised systems an attacker
+          hijacks to launch DoS/DDoS attacks at scale.</p>
+      </div>
+
+      <div class="vs">
+        <div class="ex ex-e">
+          <div class="ex-label te">DoS</div>
+          <p>One attacker, one (or few) source machines → one target.</p>
+        </div>
+        <div class="ex ex-c">
+          <div class="ex-label tc">DDoS</div>
+          <p>One attacker, thousands of compromised bot machines (a botnet) → one target. Much harder to block since
+            traffic comes from everywhere.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- EXAM TIPS -->
+    <section>
+      <div class="section-header"><span class="sec-num">13 / Exam Prep</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="ga">Exam Tips &amp; Tricks</h2>
+      <div class="grid2">
+        <div class="tip tip-blue">
+          <div class="tip-icon">🎯</div>
+          <div class="tip-body">
+            <h4 class="ta">Passive = hub, Active = switch</h4>
+            <p>Passive sniffing needs a common collision domain (hub). Active sniffing (ARP spoofing/MAC flooding) is
+              required to sniff on switched networks.</p>
+          </div>
+        </div>
+        <div class="tip tip-warn">
+          <div class="tip-icon">🎯</div>
+          <div class="tip-body">
+            <h4 class="te">ARP has NO authentication</h4>
+            <p>This single fact is the root cause of ARP poisoning — memorize it, it's tested directly.</p>
+          </div>
+        </div>
+        <div class="tip tip-green">
+          <div class="tip-icon">🎯</div>
+          <div class="tip-body">
+            <h4 class="td">DAI is the strongest ARP defense</h4>
+            <p>Dynamic ARP Inspection validates against DHCP snooping bindings — called out as "one of the most
+              effective network-level defenses."</p>
+          </div>
+        </div>
+        <div class="tip tip-yellow">
+          <div class="tip-icon">🎯</div>
+          <div class="tip-body">
+            <h4 class="tf">Smurf vs Ping Flood</h4>
+            <p>Smurf = spoofed broadcast address abuse (amplification). Ping flood = brute-force direct flood. Don't mix
+              them up.</p>
+          </div>
+        </div>
+        <div class="tip tip-blue">
+          <div class="tip-icon">🎯</div>
+          <div class="tip-body">
+            <h4 class="ta">TCP sequence numbers are 32-bit</h4>
+            <p>Over 4 billion combinations — session hijacking requires predicting/obtaining these to forge packets.</p>
+          </div>
+        </div>
+        <div class="tip tip-warn">
+          <div class="tip-icon">🎯</div>
+          <div class="tip-body">
+            <h4 class="te">DDoS = botnet-powered DoS</h4>
+            <p>DDoS is DoS at scale using many compromised bots — that's the entire definitional difference tested.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- QUICK REFERENCE -->
+    <section>
+      <div class="section-header"><span class="sec-num">14 / Cheat Sheet</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gb">Quick Reference — Everything at a Glance</h2>
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>Topic</th>
+              <th>Key Point</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Sniffer</td>
+              <td>Captures network traffic to steal/observe unencrypted info</td>
+            </tr>
+            <tr>
+              <td>Passive sniffing</td>
+              <td>Hub-based, only listens, hard to detect, needs common collision domain</td>
+            </tr>
+            <tr>
+              <td>Active sniffing</td>
+              <td>Switch-based, injects packets (ARP spoofing/MAC flooding), easier to detect</td>
+            </tr>
+            <tr>
+              <td>CAM table</td>
+              <td>Maps MAC addresses to switch ports + VLAN; fixed size</td>
+            </tr>
+            <tr>
+              <td>MAC flooding</td>
+              <td>Overflows CAM table with fake MACs → switch floods like a hub</td>
+            </tr>
+            <tr>
+              <td>Port security</td>
+              <td>Restricts a port to authorized MAC addresses; defends against MAC flooding</td>
+            </tr>
+            <tr>
+              <td>ARP</td>
+              <td>Resolves IP→MAC, stateless, no authentication, local scope only</td>
+            </tr>
+            <tr>
+              <td>ARP poisoning</td>
+              <td>Forged ARP replies redirect traffic through attacker (recon→poison→redirect→attack)</td>
+            </tr>
+            <tr>
+              <td>ARP poisoning results</td>
+              <td>MITM, DoS, session hijacking</td>
+            </tr>
+            <tr>
+              <td>ARP prevention</td>
+              <td>Encryption (mitigation), static ARP entries, packet filtering/IDS, Dynamic ARP Inspection (DAI), pen
+                testing</td>
+            </tr>
+            <tr>
+              <td>Sniffing tools</td>
+              <td>Wireshark, Tcpdump, Windump, Omnipeek, Dsniff, EtherApe, MSN Sniffer, NetWitness NextGen, Throwing
+                Star LAN Tap</td>
+            </tr>
+            <tr>
+              <td>Sniffing countermeasures</td>
+              <td>Encryption, static ARP entries, port security</td>
+            </tr>
+            <tr>
+              <td>Session hijacking</td>
+              <td>Taking over an active TCP session using a stolen/guessed/brute-forced session ID</td>
+            </tr>
+            <tr>
+              <td>Ways to get session ID</td>
+              <td>Stealing, guessing, brute forcing (up to 1,000/sec via DSL)</td>
+            </tr>
+            <tr>
+              <td>TCP sequence numbers</td>
+              <td>32-bit, 4+ billion combos, ensure order + reassembly</td>
+            </tr>
+            <tr>
+              <td>3-way handshake</td>
+              <td>SYN → SYN/ACK → ACK; ISN prediction enables hijacking if predictable</td>
+            </tr>
+            <tr>
+              <td>Session hijacking tools</td>
+              <td>Ettercap, Hunt, Juggernaut, Paros HTTP Hijacker, IP-Watcher, T-sight</td>
+            </tr>
+            <tr>
+              <td>Thwarting hijacking</td>
+              <td>Encryption, block spoofed traffic at routers, use IDS</td>
+            </tr>
+            <tr>
+              <td>DoS attack</td>
+              <td>Prevents authorized access by exhausting bandwidth or connectivity</td>
+            </tr>
+            <tr>
+              <td>DoS techniques (7)</td>
+              <td>Bandwidth attacks, service request floods, ICMP flood, SYN flooding, P2P attacks, application-level
+                floods</td>
+            </tr>
+            <tr>
+              <td>Smurf attack</td>
+              <td>Spoofed broadcast traffic — entire network replies to the victim</td>
+            </tr>
+            <tr>
+              <td>Ping flood</td>
+              <td>Simple direct flood of ping packets at the victim</td>
+            </tr>
+            <tr>
+              <td>DDoS</td>
+              <td>Many compromised systems (botnet) attack a single target simultaneously</td>
+            </tr>
+            <tr>
+              <td>Botnet</td>
+              <td>Huge network of compromised machines used to launch DoS/DDoS at scale</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="footer-name">Made by Shoug Alomran</div>
+    <div class="footer-sub">CYS405 · Chapter 10: Sniffing And Dos Attacks · Study Guide</div>
+  </footer>
+
+  <script>
+    // Auto-detect system preference on load
+    (function () {
+      const _stored = localStorage.getItem('shoug-theme');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const theme = _stored === 'dark' ? 'dark' : _stored === 'light' ? 'light' : (prefersDark ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', theme);
+      updateToggle(theme);
+    })();
+
+    // Listen for system changes
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+      if (localStorage.getItem('shoug-theme')) return;
+      const theme = e.matches ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', theme);
+      updateToggle(theme);
+    });
+
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme');
+      const next = current === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      try { localStorage.setItem('shoug-theme', document.documentElement.getAttribute('data-theme')); } catch (e) { }
+      updateToggle(next);
+    }
+
+    function updateToggle(theme) {
+      const icon = document.getElementById('toggle-icon');
+      const label = document.getElementById('toggle-label');
+      if (theme === 'dark') {
+        icon.textContent = '☀️';
+        label.textContent = 'Light Mode';
+      } else {
+        icon.textContent = '🌙';
+        label.textContent = 'Dark Mode';
+      }
+    }
+  </script>
+
+</body>
+
+</html>

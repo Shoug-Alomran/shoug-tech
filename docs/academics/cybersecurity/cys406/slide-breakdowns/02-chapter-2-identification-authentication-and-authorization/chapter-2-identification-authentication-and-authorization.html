@@ -1,0 +1,1718 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+  <link rel="icon" type="image/png" href="/assets/favicon.png?v=2">
+  <link rel="shortcut icon" href="/assets/favicon.png?v=2">
+  <link rel="apple-touch-icon" href="/assets/favicon.png?v=2">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CYS406 - Identification, Authentication And Authorization</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Playfair+Display:wght@700;800&display=swap"
+    rel="stylesheet">
+  <style>
+    /* ============================================================
+   THEME VARIABLES
+   ============================================================ */
+    :root {
+      --a: #6ee7f7;
+      /* cyan accent */
+      --b: #f472b6;
+      /* pink accent */
+      --c: #a78bfa;
+      /* violet accent */
+      --d: #34d399;
+      /* emerald accent */
+      --e: #fb923c;
+      /* orange accent */
+      --f: #facc15;
+      /* yellow accent */
+    }
+
+    [data-theme="dark"] {
+      --bg: #080c14;
+      --bg2: #0e1422;
+      --bg3: #141c2e;
+      --surface: rgba(255, 255, 255, 0.04);
+      --surface2: rgba(255, 255, 255, 0.07);
+      --border: rgba(255, 255, 255, 0.08);
+      --border2: rgba(255, 255, 255, 0.13);
+      --text: #e2e8f0;
+      --text2: #94a3b8;
+      --text3: #64748b;
+      --heading: #f8fafc;
+      --code-bg: rgba(255, 255, 255, 0.06);
+      --shadow: rgba(0, 0, 0, 0.5);
+      --toggle-bg: rgba(255, 255, 255, 0.08);
+    }
+
+    [data-theme="light"] {
+      --bg: #f0f4ff;
+      --bg2: #e8eef9;
+      --bg3: #dde5f5;
+      --surface: rgba(255, 255, 255, 0.75);
+      --surface2: rgba(255, 255, 255, 0.95);
+      --border: rgba(80, 100, 160, 0.12);
+      --border2: rgba(80, 100, 160, 0.2);
+      --text: #1e2a45;
+      --text2: #475569;
+      --text3: #94a3b8;
+      --heading: #0f172a;
+      --code-bg: rgba(80, 100, 160, 0.08);
+      --shadow: rgba(100, 120, 200, 0.15);
+      --toggle-bg: rgba(80, 100, 160, 0.12);
+    }
+
+    /* ============================================================
+   RESET & BASE
+   ============================================================ */
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Space Grotesk', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      overflow-x: hidden;
+      transition: background 0.4s ease, color 0.4s ease;
+    }
+
+    /* ============================================================
+   THEME TOGGLE
+   ============================================================ */
+    .theme-toggle {
+      position: fixed;
+      top: 1.25rem;
+      right: 1.5rem;
+      z-index: 1000;
+      background: var(--toggle-bg);
+      border: 1px solid var(--border2);
+      border-radius: 100px;
+      padding: 0.45rem 1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text2);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      transition: all 0.3s ease;
+      user-select: none;
+    }
+
+    .theme-toggle:hover {
+      border-color: var(--a);
+      color: var(--a);
+      transform: scale(1.04);
+    }
+
+    .toggle-icon {
+      font-size: 1rem;
+      transition: transform 0.4s ease;
+    }
+
+    /* ============================================================
+   HERO
+   ============================================================ */
+    .hero {
+      min-height: 60vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      position: relative;
+      padding: 5rem 2rem 4rem;
+      overflow: hidden;
+    }
+
+    [data-theme="dark"] .hero {
+      background:
+        radial-gradient(ellipse 70% 50% at 20% 20%, rgba(110, 231, 247, 0.12) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 80% 80%, rgba(167, 139, 250, 0.12) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 40% at 50% 60%, rgba(244, 114, 182, 0.08) 0%, transparent 60%),
+        var(--bg);
+    }
+
+    [data-theme="light"] .hero {
+      background:
+        radial-gradient(ellipse 70% 50% at 20% 20%, rgba(110, 231, 247, 0.18) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 80% 80%, rgba(167, 139, 250, 0.15) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 40% at 50% 60%, rgba(244, 114, 182, 0.12) 0%, transparent 60%),
+        var(--bg);
+    }
+
+    .hero-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(var(--border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 50px 50px;
+      opacity: 0.7;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-radius: 100px;
+      padding: 0.4rem 1.1rem;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--a);
+      margin-bottom: 1.75rem;
+      position: relative;
+      z-index: 1;
+      animation: fadeUp 0.7s ease both;
+    }
+
+    .badge-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--a);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1
+      }
+
+      50% {
+        opacity: 0.4
+      }
+    }
+
+    .hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.4rem, 5.5vw, 4.6rem);
+      font-weight: 800;
+      line-height: 1.15;
+      color: var(--heading);
+      position: relative;
+      z-index: 1;
+      animation: fadeUp 0.85s ease both;
+    }
+
+    .hero h1 .gradient-word {
+      background: linear-gradient(135deg, var(--a), var(--c), var(--b));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-sub {
+      font-size: 1.05rem;
+      color: var(--text2);
+      margin-top: 1.25rem;
+      max-width: 560px;
+      position: relative;
+      z-index: 1;
+      animation: fadeUp 1s ease both;
+    }
+
+    .hero-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      justify-content: center;
+      max-width: 720px;
+      margin-top: 2rem;
+      position: relative;
+      z-index: 1;
+      animation: fadeUp 1.1s ease both;
+    }
+
+    .chip {
+      padding: 0.3rem 0.85rem;
+      border-radius: 100px;
+      font-size: 0.76rem;
+      font-weight: 600;
+      border: 1px solid;
+      transition: transform 0.2s;
+    }
+
+    .chip:hover {
+      transform: translateY(-2px);
+    }
+
+    .chip-a {
+      color: var(--a);
+      border-color: rgba(110, 231, 247, 0.35);
+      background: rgba(110, 231, 247, 0.08);
+    }
+
+    .chip-b {
+      color: var(--b);
+      border-color: rgba(244, 114, 182, 0.35);
+      background: rgba(244, 114, 182, 0.08);
+    }
+
+    .chip-c {
+      color: var(--c);
+      border-color: rgba(167, 139, 250, 0.35);
+      background: rgba(167, 139, 250, 0.08);
+    }
+
+    .chip-d {
+      color: var(--d);
+      border-color: rgba(52, 211, 153, 0.35);
+      background: rgba(52, 211, 153, 0.08);
+    }
+
+    .chip-e {
+      color: var(--e);
+      border-color: rgba(251, 146, 60, 0.35);
+      background: rgba(251, 146, 60, 0.08);
+    }
+
+    .chip-f {
+      color: var(--f);
+      border-color: rgba(250, 204, 21, 0.35);
+      background: rgba(250, 204, 21, 0.08);
+    }
+
+    .scroll-hint {
+      position: absolute;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      color: var(--text3);
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.4rem;
+      animation: bounce 2.5s infinite;
+      z-index: 1;
+    }
+
+    @keyframes bounce {
+
+      0%,
+      100% {
+        transform: translateX(-50%) translateY(0)
+      }
+
+      50% {
+        transform: translateX(-50%) translateY(8px)
+      }
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(24px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    /* ============================================================
+   LAYOUT
+   ============================================================ */
+    main {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 4rem 2rem;
+    }
+
+    section {
+      margin-bottom: 5.5rem;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .sec-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text3);
+      white-space: nowrap;
+    }
+
+    .sec-line {
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, var(--border2), transparent);
+    }
+
+    h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.6rem, 3vw, 2.3rem);
+      font-weight: 800;
+      color: var(--heading);
+      margin-bottom: 0.4rem;
+    }
+
+    h3 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 1.05rem;
+      margin-bottom: 0.6rem;
+      color: var(--heading);
+    }
+
+    p {
+      font-size: 0.94rem;
+      color: var(--text2);
+      margin-bottom: 0.7rem;
+    }
+
+    strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    /* ============================================================
+   GRADIENT TEXT HELPERS
+   ============================================================ */
+    .ga {
+      background: linear-gradient(135deg, var(--a), var(--d));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .gb {
+      background: linear-gradient(135deg, var(--b), var(--c));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .gc {
+      background: linear-gradient(135deg, var(--e), var(--b));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .gd {
+      background: linear-gradient(135deg, var(--c), var(--a));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* ============================================================
+   CARDS
+   ============================================================ */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.6rem;
+      transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
+    }
+
+    .card:hover {
+      border-color: var(--border2);
+      transform: translateY(-3px);
+      box-shadow: 0 12px 30px var(--shadow);
+    }
+
+    .grid2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1rem;
+    }
+
+    .grid3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1rem;
+    }
+
+    .grid4 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 1rem;
+    }
+
+    .bl-a {
+      border-left: 3px solid var(--a);
+    }
+
+    .bl-b {
+      border-left: 3px solid var(--b);
+    }
+
+    .bl-c {
+      border-left: 3px solid var(--c);
+    }
+
+    .bl-d {
+      border-left: 3px solid var(--d);
+    }
+
+    .bl-e {
+      border-left: 3px solid var(--e);
+    }
+
+    .bl-f {
+      border-left: 3px solid var(--f);
+    }
+
+    .ta {
+      color: var(--a);
+    }
+
+    .tb {
+      color: var(--b);
+    }
+
+    .tc {
+      color: var(--c);
+    }
+
+    .td {
+      color: var(--d);
+    }
+
+    .te {
+      color: var(--e);
+    }
+
+    .tf {
+      color: var(--f);
+    }
+
+    /* ============================================================
+   DEFINITION CARDS
+   ============================================================ */
+    .def-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 0.75rem;
+    }
+
+    .def-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.2rem;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s;
+    }
+
+    .def-card:hover {
+      transform: translateY(-2px);
+    }
+
+    .def-top {
+      height: 2px;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+    }
+
+    .def-term {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .def-desc {
+      font-size: 0.87rem;
+      color: var(--text2);
+    }
+
+    /* ============================================================
+   MONO / CODE STYLE
+   ============================================================ */
+    .mono {
+      font-family: 'JetBrains Mono', monospace;
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      font-size: 0.85rem;
+      color: var(--a);
+      margin-top: 0.75rem;
+      overflow-x: auto;
+      white-space: pre;
+    }
+
+    .mono span.comment {
+      color: var(--text3);
+    }
+
+    .mono span.key {
+      color: var(--b);
+    }
+
+    .mono span.val {
+      color: var(--d);
+    }
+
+    /* ============================================================
+   EXAMPLE BOXES
+   ============================================================ */
+    .ex {
+      border-radius: 14px;
+      padding: 1.4rem;
+      border: 1px solid;
+      margin-top: 1.25rem;
+    }
+
+    .ex-a {
+      background: rgba(110, 231, 247, 0.06);
+      border-color: rgba(110, 231, 247, 0.25);
+    }
+
+    .ex-b {
+      background: rgba(244, 114, 182, 0.06);
+      border-color: rgba(244, 114, 182, 0.25);
+    }
+
+    .ex-c {
+      background: rgba(167, 139, 250, 0.06);
+      border-color: rgba(167, 139, 250, 0.25);
+    }
+
+    .ex-d {
+      background: rgba(52, 211, 153, 0.06);
+      border-color: rgba(52, 211, 153, 0.25);
+    }
+
+    .ex-e {
+      background: rgba(251, 146, 60, 0.06);
+      border-color: rgba(251, 146, 60, 0.25);
+    }
+
+    .ex-f {
+      background: rgba(250, 204, 21, 0.06);
+      border-color: rgba(250, 204, 21, 0.25);
+    }
+
+    .ex-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .ex-label::before {
+      content: '';
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    /* ============================================================
+   TIP BOXES
+   ============================================================ */
+    .tip {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      padding: 1.1rem 1.25rem;
+      border-radius: 12px;
+      margin-top: 1rem;
+    }
+
+    .tip-green {
+      background: rgba(52, 211, 153, 0.08);
+      border: 1px solid rgba(52, 211, 153, 0.25);
+    }
+
+    .tip-blue {
+      background: rgba(110, 231, 247, 0.08);
+      border: 1px solid rgba(110, 231, 247, 0.25);
+    }
+
+    .tip-warn {
+      background: rgba(251, 146, 60, 0.08);
+      border: 1px solid rgba(251, 146, 60, 0.25);
+    }
+
+    .tip-yellow {
+      background: rgba(250, 204, 21, 0.08);
+      border: 1px solid rgba(250, 204, 21, 0.25);
+    }
+
+    .tip-icon {
+      font-size: 1.2rem;
+      flex-shrink: 0;
+      margin-top: 0.1rem;
+    }
+
+    .tip-body h4 {
+      font-size: 0.84rem;
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+    }
+
+    .tip-body p {
+      font-size: 0.86rem;
+      color: var(--text2);
+      margin: 0;
+    }
+
+    /* ============================================================
+   MNEMONIC BOXES  (memory aids - distinct brain/purple styling)
+   ============================================================ */
+    .mnemonic {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      padding: 1.25rem 1.4rem;
+      border-radius: 14px;
+      margin-top: 1.25rem;
+      background: linear-gradient(135deg, rgba(167, 139, 250, 0.10), rgba(244, 114, 182, 0.07));
+      border: 1px solid rgba(167, 139, 250, 0.35);
+      position: relative;
+    }
+
+    .mnemonic-icon {
+      font-size: 1.3rem;
+      flex-shrink: 0;
+    }
+
+    .mnemonic-body h4 {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--c);
+      margin-bottom: 0.4rem;
+    }
+
+    .mnemonic-body p {
+      font-size: 0.92rem;
+      color: var(--text);
+      margin: 0;
+    }
+
+    .mnemonic-body .mnem-key {
+      color: var(--b);
+      font-weight: 700;
+    }
+
+    /* ============================================================
+   TABLES
+   ============================================================ */
+    .tbl {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.87rem;
+    }
+
+    .tbl th {
+      text-align: left;
+      padding: 0.65rem 0.9rem;
+      background: var(--surface2);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text3);
+      border-bottom: 1px solid var(--border2);
+    }
+
+    .tbl td {
+      padding: 0.7rem 0.9rem;
+      border-bottom: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .tbl tr:last-child td {
+      border-bottom: none;
+    }
+
+    .tbl tr:hover td {
+      background: var(--surface2);
+    }
+
+    .tbl-wrap {
+      overflow-x: auto;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+
+    /* ============================================================
+   VS (COMPARISON) CARDS
+   ============================================================ */
+    .vs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    @media(max-width:640px) {
+      .vs {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* ============================================================
+   FLOW DIAGRAM
+   ============================================================ */
+    .flow {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      flex-wrap: wrap;
+      margin: 1.5rem 0;
+    }
+
+    .flow-box {
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-radius: 10px;
+      padding: 0.75rem 1rem;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--heading);
+      text-align: center;
+      flex: 1;
+      min-width: 80px;
+    }
+
+    .flow-box.accent {
+      background: rgba(110, 231, 247, 0.12);
+      border-color: rgba(110, 231, 247, 0.4);
+      color: var(--a);
+    }
+
+    .flow-box.accent2 {
+      background: rgba(167, 139, 250, 0.12);
+      border-color: rgba(167, 139, 250, 0.4);
+      color: var(--c);
+    }
+
+    .flow-box.accent3 {
+      background: rgba(52, 211, 153, 0.12);
+      border-color: rgba(52, 211, 153, 0.4);
+      color: var(--d);
+    }
+
+    .flow-arrow {
+      font-size: 1.2rem;
+      color: var(--text3);
+      padding: 0 0.35rem;
+      flex-shrink: 0;
+    }
+
+    /* ============================================================
+   STEPS
+   ============================================================ */
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .step {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      padding: 1rem 1.25rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      transition: all 0.3s;
+    }
+
+    .step:hover {
+      border-color: var(--border2);
+    }
+
+    .step-num {
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      font-size: 0.8rem;
+      flex-shrink: 0;
+      color: #000;
+      background: linear-gradient(135deg, var(--a), var(--c));
+    }
+
+    .step-body h4 {
+      font-weight: 700;
+      font-size: 0.9rem;
+      margin-bottom: 0.2rem;
+    }
+
+    .step-body p {
+      font-size: 0.86rem;
+      color: var(--text2);
+      margin: 0;
+    }
+
+    /* ============================================================
+   BADGES
+   ============================================================ */
+    .badge {
+      display: inline-block;
+      padding: 0.2rem 0.55rem;
+      border-radius: 100px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      border: 1px solid;
+    }
+
+    .badge-a {
+      color: var(--a);
+      border-color: rgba(110, 231, 247, 0.4);
+      background: rgba(110, 231, 247, 0.1);
+    }
+
+    .badge-b {
+      color: var(--b);
+      border-color: rgba(244, 114, 182, 0.4);
+      background: rgba(244, 114, 182, 0.1);
+    }
+
+    .badge-c {
+      color: var(--c);
+      border-color: rgba(167, 139, 250, 0.4);
+      background: rgba(167, 139, 250, 0.1);
+    }
+
+    .badge-e {
+      color: var(--e);
+      border-color: rgba(251, 146, 60, 0.4);
+      background: rgba(251, 146, 60, 0.1);
+    }
+
+    .row-highlight td {
+      background: rgba(52, 211, 153, 0.06) !important;
+    }
+
+    .row-warn td {
+      background: rgba(244, 114, 182, 0.06) !important;
+    }
+
+    /* ============================================================
+   FOOTER
+   ============================================================ */
+    footer {
+      text-align: center;
+      padding: 3rem 2rem 4rem;
+      position: relative;
+    }
+
+    footer::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 10%;
+      right: 10%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border2), transparent);
+    }
+
+    .footer-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--a), var(--c), var(--b));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .footer-sub {
+      font-size: 0.78rem;
+      color: var(--text3);
+      margin-top: 0.3rem;
+    }
+
+    /* UL RESET */
+    ul {
+      list-style: none;
+    }
+
+    ul li {
+      padding: 0.32rem 0;
+      padding-left: 1rem;
+      position: relative;
+      font-size: 0.9rem;
+      color: var(--text2);
+    }
+
+    ul li::before {
+      content: '▸';
+      position: absolute;
+      left: 0;
+      color: var(--c);
+      font-size: 0.65rem;
+      top: 0.44rem;
+    }
+
+    .divider {
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border), transparent);
+      margin: 4rem 0;
+    }
+
+    @media(max-width:600px) {
+      .grid4 {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .flow {
+        justify-content: center;
+      }
+
+      .flow-box {
+        min-width: 70px;
+        font-size: 0.75rem;
+      }
+    }
+  </style>
+  <script src="/javascripts/standalone-theme.js"></script>
+  <script src="/javascripts/html-theme-sync.js"></script>
+
+  <meta name="description"
+    content="Complete study guide for CYS406 Chapter 2: Identification, Authentication and Authorization — access control terminology, models (MAC/DAC/RBAC/RB-RBAC), IAM, authentication types, authorization systems, and accounting. With mnemonics.">
+  <link rel="canonical"
+    href="https://shoug-tech.com/academics/cybersecurity/cys406/slide-breakdowns/02-chapter-2-identification-authentication-and-authorization/chapter-2-identification-authentication-and-authorization.html">
+  <meta property="og:title" content="CYS406 - Identification, Authentication And Authorization">
+  <meta property="og:description"
+    content="Complete study guide for CYS406 Chapter 2: Identification, Authentication and Authorization — access control terminology, models (MAC/DAC/RBAC/RB-RBAC), IAM, authentication types, authorization systems, and accounting. With mnemonics.">
+  <meta property="og:url"
+    content="https://shoug-tech.com/academics/cybersecurity/cys406/slide-breakdowns/02-chapter-2-identification-authentication-and-authorization/chapter-2-identification-authentication-and-authorization.html">
+  <meta property="og:type" content="article">
+  <meta property="og:image" content="https://shoug-tech.com/assets/og-banner.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="CYS406 - Identification, Authentication And Authorization">
+  <meta name="twitter:description"
+    content="Complete study guide for CYS406 Chapter 2: Identification, Authentication and Authorization — access control terminology, models (MAC/DAC/RBAC/RB-RBAC), IAM, authentication types, authorization systems, and accounting. With mnemonics.">
+  <meta name="twitter:image" content="https://shoug-tech.com/assets/og-banner.png">
+</head>
+
+<body>
+
+
+  <!-- THEME TOGGLE -->
+  <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+    <span class="toggle-icon" id="toggle-icon">☀️</span>
+    <span id="toggle-label">Light Mode</span>
+  </button>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-grid"></div>
+
+    <div class="hero-badge">
+      <span class="badge-dot"></span>
+      CYS406 · Chapter 2
+    </div>
+
+    <h1>
+      Identification, Authentication<br>
+      <span class="gradient-word">And Authorization</span>
+    </h1>
+    <p class="hero-sub">Who are you, prove it, and what are you allowed to do — access control principles, models, IAM,
+      and the full authentication/authorization/accounting pipeline.</p>
+
+    <div class="hero-chips">
+      <span class="chip chip-a">Access Control</span>
+      <span class="chip chip-b">MAC · DAC · RBAC</span>
+      <span class="chip chip-c">IAM</span>
+      <span class="chip chip-d">Authentication Types</span>
+      <span class="chip chip-e">Authorization</span>
+      <span class="chip chip-f">Accounting</span>
+    </div>
+
+    <div class="scroll-hint">
+      scroll ↓
+    </div>
+  </div>
+
+  <main>
+
+    <!-- SECTION 1: ACCESS CONTROL BASICS -->
+    <section>
+      <div class="section-header"><span class="sec-num">01 / Access Control</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="ga">Access Control</h2>
+      <p>Access control is the selective restriction of access to an asset or a system/network resource. It protects
+        information assets by determining <strong>who can access what</strong>. The mechanism uses user identification,
+        authentication, and authorization together to restrict or grant access to a specific asset/resource.</p>
+
+      <div class="flow">
+        <div class="flow-box">User</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box accent">Authentication Function</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box accent2">Access Control Function</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box accent3">System Resources</div>
+      </div>
+      <p>Behind the scenes, an <strong>Administrator</strong> manages the <strong>Authorization Database</strong> that
+        both the Authentication and Access Control functions consult.</p>
+
+      <h3 class="tb" style="margin-top:1.5rem;">Access Control Terminologies</h3>
+      <div class="def-grid">
+        <div class="def-card">
+          <div class="def-top" style="background:var(--a)"></div>
+          <div class="def-term ta">Subject</div>
+          <div class="def-desc">A particular user or process that wants to access a resource.</div>
+        </div>
+        <div class="def-card">
+          <div class="def-top" style="background:var(--b)"></div>
+          <div class="def-term tb">Object</div>
+          <div class="def-desc">A specific resource the user wants to access — such as a file or a hardware device.
+          </div>
+        </div>
+        <div class="def-card">
+          <div class="def-top" style="background:var(--c)"></div>
+          <div class="def-term tc">Reference Monitor</div>
+          <div class="def-desc">Checks the access control rule for specific restrictions before granting a request.
+          </div>
+        </div>
+        <div class="def-card">
+          <div class="def-top" style="background:var(--d)"></div>
+          <div class="def-term td">Operation</div>
+          <div class="def-desc">An action taken by a subject on an object.</div>
+        </div>
+      </div>
+
+      <div class="flow" style="margin-top:1.5rem;">
+        <div class="flow-box">Subject</div>
+        <div class="flow-arrow">→ Access Request →</div>
+        <div class="flow-box accent2">Reference Monitor</div>
+        <div class="flow-arrow">→ Access Request Granted →</div>
+        <div class="flow-box accent">Object</div>
+      </div>
+      <p style="text-align:center; font-size:0.85rem;">The first arrow into the Reference Monitor is
+        <strong>Authentication</strong>; the granted request out of it is <strong>Authorization</strong>.</p>
+
+      <div class="mnemonic">
+        <div class="mnemonic-icon">🧠</div>
+        <div class="mnemonic-body">
+          <h4>Mnemonic — SORO</h4>
+          <p><span class="mnem-key">"Subjects Operate on Reference-checked Objects"</span> → <strong>S</strong>ubject
+            wants access, <strong>O</strong>bject is the target, <strong>R</strong>eference Monitor is the bouncer
+            checking the rules, <strong>O</strong>peration is the actual action performed. Subject and Object are the
+            "who and what"; Reference Monitor and Operation are the "gatekeeper and the act."</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 2: ACCESS CONTROL PRINCIPLES -->
+    <section>
+      <div class="section-header"><span class="sec-num">02 / Principles</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gb">Access Control Principles</h2>
+
+      <div class="grid3">
+        <div class="card bl-a">
+          <h3 class="ta">Separation of Duties (SoD)</h3>
+          <p>Breaks the authorization process down into multiple steps, assigning different privileges at each step to
+            different subjects. This ensures no single individual has the rights to perform all functions — and
+            simultaneously denies total access to one person.</p>
+        </div>
+        <div class="card bl-b">
+          <h3 class="tb">Need-to-Know</h3>
+          <p>Access is provided only to the information required for performing a specific task — nothing more.</p>
+        </div>
+        <div class="card bl-c">
+          <h3 class="tc">Principle of Least Privilege (POLP)</h3>
+          <p>Extends need-to-know: gives employees exactly the access they need — not more, not less. Protects against
+            malicious behavior and improves system stability and security.</p>
+        </div>
+      </div>
+
+      <div class="mnemonic">
+        <div class="mnemonic-icon">🧠</div>
+        <div class="mnemonic-body">
+          <h4>Mnemonic — SNP Ladder</h4>
+          <p><span class="mnem-key">"Split, Need, Precise"</span> → <strong>S</strong>eparation of duties splits one big
+            job into many small ones so no one person is all-powerful. <strong>N</strong>eed-to-know limits information
+            to what's task-relevant. <strong>P</strong>OLP is the strictest — precise, minimal access across the board.
+            Think of them as three tightening circles: split the job → limit the info → minimize the access.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 3: ACCESS CONTROL MODELS -->
+    <section>
+      <div class="section-header"><span class="sec-num">03 / Models</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gc">Access Control Models</h2>
+      <p>Access control models are standards that provide a predefined framework for implementing the necessary level of
+        access control.</p>
+
+      <div class="vs">
+        <div class="ex ex-a">
+          <div class="ex-label ta">🔒 MAC — Mandatory Access Control</div>
+          <p>Only the administrator/system owner has the rights to assign privileges. It does not permit the end user to
+            decide who can access the information. Examples: <strong>SELinux</strong>, <strong>Trusted Solaris</strong>.
+          </p>
+        </div>
+        <div class="ex ex-b">
+          <div class="ex-label tb">👤 DAC — Discretionary Access Control</div>
+          <p>The end user has complete access to and control over the information they own — they decide who else can
+            access it.</p>
+        </div>
+        <div class="ex ex-c">
+          <div class="ex-label tc">🧑‍💼 RBAC — Role-Based Access Control</div>
+          <p>Permissions are assigned based on user roles (e.g. "Manager", "HR", "Intern") rather than to individual
+            users directly.</p>
+        </div>
+        <div class="ex ex-d">
+          <div class="ex-label td">📏 RB-RBAC — Rule-Based Access Control</div>
+          <p>Permissions are assigned to a user role dynamically based on a set of rules defined by the administrator.
+          </p>
+        </div>
+      </div>
+
+      <div class="mnemonic">
+        <div class="mnemonic-icon">🧠</div>
+        <div class="mnemonic-body">
+          <h4>Mnemonic — "My Dad Really Rules"</h4>
+          <p><strong>M</strong>AC = admin decides, no exceptions (military-grade). <strong>D</strong>AC = owner decides
+            (Dad decides his own stuff). <strong>R</strong>BAC = Role decides (your job title decides access).
+            <strong>R</strong>B-RBAC = Rules decide dynamically on top of roles. Order of strictness: MAC (most rigid) →
+            RB-RBAC → RBAC → DAC (most flexible).</p>
+        </div>
+      </div>
+
+      <h3 class="td" style="margin-top:2rem;">Logical Implementation of DAC, MAC, RBAC</h3>
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>Model</th>
+              <th>Real-World Implementation</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Logical access control (general)</td>
+              <td>Access control lists (ACLs), group policies, passwords, account restrictions</td>
+            </tr>
+            <tr>
+              <td>DAC</td>
+              <td>Windows File Permissions</td>
+            </tr>
+            <tr>
+              <td>MAC</td>
+              <td>User Account Control (UAC) tool in Windows OS</td>
+            </tr>
+            <tr>
+              <td>RBAC</td>
+              <td>Just Enough Administration (JEA); Windows Admin Center (WAC)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- SECTION 4: IAM -->
+    <section>
+      <div class="section-header"><span class="sec-num">04 / IAM</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gd">Identity and Access Management (IAM)</h2>
+      <p>IAM is responsible for providing the right individual with the right access at the right time. It's organized
+        into two big halves that together cover the whole lifecycle of a user's digital identity.</p>
+
+      <div class="vs">
+        <div class="ex ex-a">
+          <div class="ex-label ta">🪪 Identity Management (IDM)</div>
+          <p>Involves storing and managing user attributes in repositories. <strong>User Identification</strong> is a
+            method to ensure an individual holds a valid identity (e.g. username, account number, user roles). Feeds an
+            <strong>Identity Repository</strong> — a database where user identity attributes are stored.</p>
+        </div>
+        <div class="ex ex-b">
+          <div class="ex-label tb">🔑 Access Management (AM)</div>
+          <p>Covers <strong>Authentication</strong> (verifying who you are) and <strong>Authorization</strong> (deciding
+            what you can do), drawing on the Identity Repository built by IDM.</p>
+        </div>
+      </div>
+
+      <div class="flow" style="margin-top:1.5rem;">
+        <div class="flow-box">System Admin / HR / CRM Apps</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box accent2">Identity Management (IDM)</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box accent">Identity Repository</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box accent3">Access Management (AM)</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box">Users / Applications</div>
+      </div>
+      <p>Requesters and approvers submit identity data (via HR systems, CRM, other apps) through IDM into a central
+        Identity Repository, which the AM layer then uses to authenticate and authorize users accessing applications.
+      </p>
+    </section>
+
+    <!-- SECTION 5: AUTHENTICATION -->
+    <section>
+      <div class="section-header"><span class="sec-num">05 / Authentication</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="ga">User Access Management: Authentication</h2>
+      <p>Authentication involves validating the identity of an individual with a system, application, or network. There
+        are five key types covered in this chapter.</p>
+
+      <div class="def-grid">
+        <div class="def-card">
+          <div class="def-top" style="background:var(--a)"></div>
+          <div class="def-term ta">Password Authentication</div>
+          <div class="def-desc">Username + password checked against a database. Vulnerable to brute force and dictionary
+            attacks.</div>
+        </div>
+        <div class="def-card">
+          <div class="def-top" style="background:var(--b)"></div>
+          <div class="def-term tb">Smart Card Authentication</div>
+          <div class="def-desc">A small computer chip device holding personal info; user inserts card + enters a PIN.
+            Cryptography-based, stronger than passwords.</div>
+        </div>
+        <div class="def-card">
+          <div class="def-top" style="background:var(--c)"></div>
+          <div class="def-term tc">Biometric Authentication</div>
+          <div class="def-desc">Identifies individuals based on physical characteristics — fingerprint, retina, iris,
+            vein, face, voice.</div>
+        </div>
+        <div class="def-card">
+          <div class="def-top" style="background:var(--d)"></div>
+          <div class="def-term td">Two-Factor Authentication</div>
+          <div class="def-desc">Combines two of: something you know, something you have, something you are.</div>
+        </div>
+        <div class="def-card">
+          <div class="def-top" style="background:var(--e)"></div>
+          <div class="def-term te">Single Sign-On (SSO)</div>
+          <div class="def-desc">Authenticate once to access multiple servers/applications without re-entering
+            credentials.</div>
+        </div>
+      </div>
+
+      <h3 class="tc" style="margin-top:2rem;">Biometric Identification Techniques</h3>
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>Technique</th>
+              <th>How It Works</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Fingerprint Scanning</td>
+              <td>Compares two fingerprints for verification/identification based on finger patterns</td>
+            </tr>
+            <tr>
+              <td>Retinal Scanning</td>
+              <td>Analyzes the layer of blood vessels at the back of the eye</td>
+            </tr>
+            <tr>
+              <td>Iris Scanning</td>
+              <td>Analyzes the colored part of the eye suspended behind the cornea</td>
+            </tr>
+            <tr>
+              <td>Vein Structure Recognition</td>
+              <td>Analyzes thickness and location of veins</td>
+            </tr>
+            <tr>
+              <td>Face Recognition</td>
+              <td>Uses facial features to identify/verify a person</td>
+            </tr>
+            <tr>
+              <td>Voice Recognition</td>
+              <td>Uses voice patterns to identify/verify a person</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="mnemonic">
+        <div class="mnemonic-icon">🧠</div>
+        <div class="mnemonic-body">
+          <h4>Mnemonic — Know, Have, Are</h4>
+          <p><span class="mnem-key">"KHA"</span> → Something you <strong>K</strong>now (password/PIN), something you
+            <strong>H</strong>ave (smart card/token/phone), something you <strong>A</strong>re (biometrics). Two-factor
+            authentication mixes any two of these. Remember: "<strong>A</strong>re" is the hardest to forge or spoof —
+            biometrics are the strongest partner in a 2FA combo.</p>
+        </div>
+      </div>
+
+      <div class="ex ex-e">
+        <div class="ex-label te">📘 SSO Advantages</div>
+        <ul>
+          <li>No need to remember passwords for multiple applications</li>
+          <li>Reduces time spent entering username and password repeatedly</li>
+          <li>Reduces network traffic to the centralized authentication server</li>
+          <li>Users enter credentials only once for multiple applications (e.g. application server, email server,
+            database server)</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- SECTION 6: AUTHORIZATION -->
+    <section>
+      <div class="section-header"><span class="sec-num">06 / Authorization</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gb">User Access Management: Authorization</h2>
+      <p>Authorization involves controlling the access of information for an individual — e.g. a user may only
+        <em>read</em> a file, but not write to or delete it.</p>
+
+      <div class="vs">
+        <div class="ex ex-a">
+          <div class="ex-label ta">Centralized Authorization</div>
+          <p>Authorization for network access is done via a single centralized unit, maintaining one database for all
+            resources/applications. Easy and inexpensive.</p>
+        </div>
+        <div class="ex ex-b">
+          <div class="ex-label tb">Decentralized Authorization</div>
+          <p>Each network resource maintains its own authorization unit and performs authorization locally, with its own
+            database.</p>
+        </div>
+        <div class="ex ex-c">
+          <div class="ex-label tc">Implicit Authorization</div>
+          <p>Users can access a requested resource on behalf of others — the access request passes through a primary
+            resource to reach the requested resource.</p>
+        </div>
+        <div class="ex ex-d">
+          <div class="ex-label td">Explicit Authorization</div>
+          <p>Unlike implicit, requires separate authorization for each requested resource — it explicitly maintains
+            authorization per object.</p>
+        </div>
+      </div>
+
+      <div class="mnemonic">
+        <div class="mnemonic-icon">🧠</div>
+        <div class="mnemonic-body">
+          <h4>Mnemonic — One Desk vs. Many Desks</h4>
+          <p><strong>Centralized</strong> = one help-desk handles every request (single DB).
+            <strong>Decentralized</strong> = every department has its own help-desk (separate DBs).
+            <strong>Implicit</strong> = you get let in because you're "with someone who's already allowed in."
+            <strong>Explicit</strong> = you need your own separate pass for every single room.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 7: ACCOUNTING -->
+    <section>
+      <div class="section-header"><span class="sec-num">07 / Accounting</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gc">User Accounting & Accountability</h2>
+      <p>Accounting is a method of keeping track of user actions on the network — it records who, when, and how users
+        access the network. It helps identify authorized vs. unauthorized actions, and the data supports trend analysis,
+        data breach detection, and forensics investigations.</p>
+
+      <div class="flow">
+        <div class="flow-box">Identity</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box accent">Authentication (Who are you?)</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box accent2">Authorization (What rights do you have?)</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box">Object</div>
+      </div>
+      <p style="text-align:center;">All of this together — Identity, Authentication, Authorization — is monitored and
+        logged as <strong>Accountability</strong>.</p>
+
+      <div class="mnemonic">
+        <div class="mnemonic-icon">🧠</div>
+        <div class="mnemonic-body">
+          <h4>Mnemonic — The AAA Chain (IAAA)</h4>
+          <p><span class="mnem-key">"I Ate All Apples"</span> → <strong>I</strong>dentification (claim who you are) →
+            <strong>A</strong>uthentication (prove it) → <strong>A</strong>uthorization (get permission) →
+            <strong>A</strong>ccounting (get logged). This four-step chain is the single most tested sequence in this
+            chapter — every access event walks through all four stages in order.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- EXAM TIPS -->
+    <section>
+      <div class="section-header"><span class="sec-num">08 / Exam Prep</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="ga">Exam Tips & Tricks</h2>
+      <div class="grid2">
+        <div class="tip tip-blue">
+          <div class="tip-icon">💡</div>
+          <div class="tip-body">
+            <h4 class="ta">IAAA order matters</h4>
+            <p>Identification → Authentication → Authorization → Accounting. Exam questions often give you a scenario
+              and ask which stage is being described.</p>
+          </div>
+        </div>
+        <div class="tip tip-green">
+          <div class="tip-icon">✅</div>
+          <div class="tip-body">
+            <h4 class="td">MAC vs DAC — who decides?</h4>
+            <p>MAC: administrator decides, no exceptions. DAC: the resource owner decides. This is the #1 distinction
+              tested.</p>
+          </div>
+        </div>
+        <div class="tip tip-warn">
+          <div class="tip-icon">⚠️</div>
+          <div class="tip-body">
+            <h4 class="te">Don't mix up RBAC and RB-RBAC</h4>
+            <p>RBAC assigns permissions by role. RB-RBAC dynamically assigns roles/permissions based on admin-defined
+              rules — the "rule" layer sits on top of roles.</p>
+          </div>
+        </div>
+        <div class="tip tip-yellow">
+          <div class="tip-icon">🔑</div>
+          <div class="tip-body">
+            <h4 class="tf">Know the SELinux example</h4>
+            <p>SELinux and Trusted Solaris are the textbook examples of MAC implementations — memorize them verbatim.
+            </p>
+          </div>
+        </div>
+        <div class="tip tip-blue">
+          <div class="tip-icon">📋</div>
+          <div class="tip-body">
+            <h4 class="ta">Subject/Object/Reference Monitor/Operation</h4>
+            <p>Subject = who, Object = what, Reference Monitor = the checker, Operation = the action. This maps directly
+              onto Authentication (into the monitor) and Authorization (out of the monitor, granted).</p>
+          </div>
+        </div>
+        <div class="tip tip-green">
+          <div class="tip-icon">🌐</div>
+          <div class="tip-body">
+            <h4 class="td">"Something you are" is strongest</h4>
+            <p>In 2FA, biometrics ("something you are") is the hardest factor to forge or spoof — a commonly tested
+              fact.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- QUICK REFERENCE -->
+    <section>
+      <div class="section-header"><span class="sec-num">09 / Cheat Sheet</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gb">Quick Reference — Everything at a Glance</h2>
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>Topic</th>
+              <th>Key Point</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Access control</td>
+              <td>Selective restriction of access; determines who can access what</td>
+            </tr>
+            <tr>
+              <td>Subject</td>
+              <td>User/process wanting access</td>
+            </tr>
+            <tr>
+              <td>Object</td>
+              <td>Resource being accessed</td>
+            </tr>
+            <tr>
+              <td>Reference Monitor</td>
+              <td>Checks access rules for restrictions</td>
+            </tr>
+            <tr>
+              <td>Operation</td>
+              <td>Action taken by subject on object</td>
+            </tr>
+            <tr>
+              <td>Separation of Duties</td>
+              <td>Breaks authorization into steps across multiple individuals</td>
+            </tr>
+            <tr>
+              <td>Need-to-know</td>
+              <td>Access limited to info required for the task</td>
+            </tr>
+            <tr>
+              <td>Least Privilege (POLP)</td>
+              <td>Not more, not less access than needed</td>
+            </tr>
+            <tr>
+              <td>MAC</td>
+              <td>Admin/system owner assigns all privileges (SELinux, Trusted Solaris)</td>
+            </tr>
+            <tr>
+              <td>DAC</td>
+              <td>Owner controls access to their own info (Windows file permissions)</td>
+            </tr>
+            <tr>
+              <td>RBAC</td>
+              <td>Permissions assigned by role (JEA, WAC)</td>
+            </tr>
+            <tr>
+              <td>RB-RBAC</td>
+              <td>Roles assigned dynamically via admin-defined rules</td>
+            </tr>
+            <tr>
+              <td>IAM</td>
+              <td>Right individual, right access, right time</td>
+            </tr>
+            <tr>
+              <td>Identity Management (IDM)</td>
+              <td>Storing/managing user attributes (username, roles, etc.)</td>
+            </tr>
+            <tr>
+              <td>Identity Repository</td>
+              <td>Database storing user identity attributes</td>
+            </tr>
+            <tr>
+              <td>Access Management (AM)</td>
+              <td>Covers authentication + authorization</td>
+            </tr>
+            <tr>
+              <td>Password authentication</td>
+              <td>Username+password vs DB; vulnerable to brute force/dictionary attacks</td>
+            </tr>
+            <tr>
+              <td>Smart card authentication</td>
+              <td>Chip device + PIN; cryptography-based, stronger than passwords</td>
+            </tr>
+            <tr>
+              <td>Biometric authentication</td>
+              <td>Fingerprint, retina, iris, vein, face, voice</td>
+            </tr>
+            <tr>
+              <td>Two-factor authentication</td>
+              <td>Two of: know, have, are — "are" hardest to spoof</td>
+            </tr>
+            <tr>
+              <td>SSO</td>
+              <td>Authenticate once, access many systems; reduces password fatigue & traffic</td>
+            </tr>
+            <tr>
+              <td>Centralized authorization</td>
+              <td>Single unit/DB for all resources; cheap and simple</td>
+            </tr>
+            <tr>
+              <td>Decentralized authorization</td>
+              <td>Each resource has its own authorization unit/DB</td>
+            </tr>
+            <tr>
+              <td>Implicit authorization</td>
+              <td>Access via a primary resource, on behalf of others</td>
+            </tr>
+            <tr>
+              <td>Explicit authorization</td>
+              <td>Separate authorization required per resource</td>
+            </tr>
+            <tr>
+              <td>Accounting</td>
+              <td>Tracks who/when/how users access the network; supports forensics</td>
+            </tr>
+            <tr>
+              <td>Accountability</td>
+              <td>Umbrella of identity + authentication + authorization, all logged</td>
+            </tr>
+            <tr>
+              <td>IAAA chain</td>
+              <td>Identification → Authentication → Authorization → Accounting</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="footer-name">Made by Shoug Alomran</div>
+    <div class="footer-sub">CYS406 · Chapter 2: Identification, Authentication And Authorization · Study Guide</div>
+  </footer>
+
+  <script>
+    // Auto-detect system preference on load
+    (function () {
+      const _stored = localStorage.getItem('shoug-theme');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const theme = _stored === 'dark' ? 'dark' : _stored === 'light' ? 'light' : (prefersDark ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', theme);
+      updateToggle(theme);
+    })();
+
+    // Listen for system changes
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+      if (localStorage.getItem('shoug-theme')) return;
+      const theme = e.matches ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', theme);
+      updateToggle(theme);
+    });
+
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme');
+      const next = current === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      try { localStorage.setItem('shoug-theme', document.documentElement.getAttribute('data-theme')); } catch (e) { }
+      updateToggle(next);
+    }
+
+    function updateToggle(theme) {
+      const icon = document.getElementById('toggle-icon');
+      const label = document.getElementById('toggle-label');
+      if (theme === 'dark') {
+        icon.textContent = '☀️';
+        label.textContent = 'Light Mode';
+      } else {
+        icon.textContent = '🌙';
+        label.textContent = 'Dark Mode';
+      }
+    }
+  </script>
+
+</body>
+
+</html>

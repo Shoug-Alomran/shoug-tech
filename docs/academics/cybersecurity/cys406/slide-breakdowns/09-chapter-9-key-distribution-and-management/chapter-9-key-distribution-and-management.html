@@ -1,0 +1,1907 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+  <link rel="icon" type="image/png" href="/assets/favicon.png?v=2">
+  <link rel="shortcut icon" href="/assets/favicon.png?v=2">
+  <link rel="apple-touch-icon" href="/assets/favicon.png?v=2">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CYS406 - Key Distribution and Management</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Playfair+Display:wght@700;800&display=swap"
+    rel="stylesheet">
+  <style>
+    /* ============================================================
+   THEME VARIABLES
+   ============================================================ */
+    :root {
+      --a: #6ee7f7;
+      /* cyan accent */
+      --b: #f472b6;
+      /* pink accent */
+      --c: #a78bfa;
+      /* violet accent */
+      --d: #34d399;
+      /* emerald accent */
+      --e: #fb923c;
+      /* orange accent */
+      --f: #facc15;
+      /* yellow accent */
+    }
+
+    [data-theme="dark"] {
+      --bg: #080c14;
+      --bg2: #0e1422;
+      --bg3: #141c2e;
+      --surface: rgba(255, 255, 255, 0.04);
+      --surface2: rgba(255, 255, 255, 0.07);
+      --border: rgba(255, 255, 255, 0.08);
+      --border2: rgba(255, 255, 255, 0.13);
+      --text: #e2e8f0;
+      --text2: #94a3b8;
+      --text3: #64748b;
+      --heading: #f8fafc;
+      --code-bg: rgba(255, 255, 255, 0.06);
+      --shadow: rgba(0, 0, 0, 0.5);
+      --toggle-bg: rgba(255, 255, 255, 0.08);
+    }
+
+    [data-theme="light"] {
+      --bg: #f0f4ff;
+      --bg2: #e8eef9;
+      --bg3: #dde5f5;
+      --surface: rgba(255, 255, 255, 0.75);
+      --surface2: rgba(255, 255, 255, 0.95);
+      --border: rgba(80, 100, 160, 0.12);
+      --border2: rgba(80, 100, 160, 0.2);
+      --text: #1e2a45;
+      --text2: #475569;
+      --text3: #94a3b8;
+      --heading: #0f172a;
+      --code-bg: rgba(80, 100, 160, 0.08);
+      --shadow: rgba(100, 120, 200, 0.15);
+      --toggle-bg: rgba(80, 100, 160, 0.12);
+    }
+
+    /* ============================================================
+   RESET & BASE
+   ============================================================ */
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Space Grotesk', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      overflow-x: hidden;
+      transition: background 0.4s ease, color 0.4s ease;
+    }
+
+    /* ============================================================
+   THEME TOGGLE
+   ============================================================ */
+    .theme-toggle {
+      position: fixed;
+      top: 1.25rem;
+      right: 1.5rem;
+      z-index: 1000;
+      background: var(--toggle-bg);
+      border: 1px solid var(--border2);
+      border-radius: 100px;
+      padding: 0.45rem 1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text2);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      transition: all 0.3s ease;
+      user-select: none;
+    }
+
+    .theme-toggle:hover {
+      border-color: var(--a);
+      color: var(--a);
+      transform: scale(1.04);
+    }
+
+    .toggle-icon {
+      font-size: 1rem;
+      transition: transform 0.4s ease;
+    }
+
+    /* ============================================================
+   HERO
+   ============================================================ */
+    .hero {
+      min-height: 60vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      position: relative;
+      padding: 5rem 2rem 4rem;
+      overflow: hidden;
+    }
+
+    [data-theme="dark"] .hero {
+      background:
+        radial-gradient(ellipse 70% 50% at 20% 20%, rgba(110, 231, 247, 0.12) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 80% 80%, rgba(167, 139, 250, 0.12) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 40% at 50% 60%, rgba(244, 114, 182, 0.08) 0%, transparent 60%),
+        var(--bg);
+    }
+
+    [data-theme="light"] .hero {
+      background:
+        radial-gradient(ellipse 70% 50% at 20% 20%, rgba(110, 231, 247, 0.18) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 80% 80%, rgba(167, 139, 250, 0.15) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 40% at 50% 60%, rgba(244, 114, 182, 0.12) 0%, transparent 60%),
+        var(--bg);
+    }
+
+    .hero-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(var(--border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 50px 50px;
+      opacity: 0.7;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-radius: 100px;
+      padding: 0.4rem 1.1rem;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--a);
+      margin-bottom: 1.75rem;
+      position: relative;
+      z-index: 1;
+      animation: fadeUp 0.7s ease both;
+    }
+
+    .badge-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--a);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1
+      }
+
+      50% {
+        opacity: 0.4
+      }
+    }
+
+    .hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.4rem, 5.5vw, 4.6rem);
+      font-weight: 800;
+      line-height: 1.15;
+      color: var(--heading);
+      position: relative;
+      z-index: 1;
+      animation: fadeUp 0.85s ease both;
+    }
+
+    .hero h1 .gradient-word {
+      background: linear-gradient(135deg, var(--a), var(--c), var(--b));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-sub {
+      font-size: 1.05rem;
+      color: var(--text2);
+      margin-top: 1.25rem;
+      max-width: 560px;
+      position: relative;
+      z-index: 1;
+      animation: fadeUp 1s ease both;
+    }
+
+    .hero-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      justify-content: center;
+      max-width: 720px;
+      margin-top: 2rem;
+      position: relative;
+      z-index: 1;
+      animation: fadeUp 1.1s ease both;
+    }
+
+    .chip {
+      padding: 0.3rem 0.85rem;
+      border-radius: 100px;
+      font-size: 0.76rem;
+      font-weight: 600;
+      border: 1px solid;
+      transition: transform 0.2s;
+    }
+
+    .chip:hover {
+      transform: translateY(-2px);
+    }
+
+    .chip-a {
+      color: var(--a);
+      border-color: rgba(110, 231, 247, 0.35);
+      background: rgba(110, 231, 247, 0.08);
+    }
+
+    .chip-b {
+      color: var(--b);
+      border-color: rgba(244, 114, 182, 0.35);
+      background: rgba(244, 114, 182, 0.08);
+    }
+
+    .chip-c {
+      color: var(--c);
+      border-color: rgba(167, 139, 250, 0.35);
+      background: rgba(167, 139, 250, 0.08);
+    }
+
+    .chip-d {
+      color: var(--d);
+      border-color: rgba(52, 211, 153, 0.35);
+      background: rgba(52, 211, 153, 0.08);
+    }
+
+    .chip-e {
+      color: var(--e);
+      border-color: rgba(251, 146, 60, 0.35);
+      background: rgba(251, 146, 60, 0.08);
+    }
+
+    .chip-f {
+      color: var(--f);
+      border-color: rgba(250, 204, 21, 0.35);
+      background: rgba(250, 204, 21, 0.08);
+    }
+
+    .scroll-hint {
+      position: absolute;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      color: var(--text3);
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.4rem;
+      animation: bounce 2.5s infinite;
+      z-index: 1;
+    }
+
+    @keyframes bounce {
+
+      0%,
+      100% {
+        transform: translateX(-50%) translateY(0)
+      }
+
+      50% {
+        transform: translateX(-50%) translateY(8px)
+      }
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(24px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    /* ============================================================
+   LAYOUT
+   ============================================================ */
+    main {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 4rem 2rem;
+    }
+
+    section {
+      margin-bottom: 5.5rem;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .sec-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text3);
+      white-space: nowrap;
+    }
+
+    .sec-line {
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, var(--border2), transparent);
+    }
+
+    h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.6rem, 3vw, 2.3rem);
+      font-weight: 800;
+      color: var(--heading);
+      margin-bottom: 0.4rem;
+    }
+
+    h3 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 1.05rem;
+      margin-bottom: 0.6rem;
+      color: var(--heading);
+    }
+
+    p {
+      font-size: 0.94rem;
+      color: var(--text2);
+      margin-bottom: 0.7rem;
+    }
+
+    strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    /* ============================================================
+   GRADIENT TEXT HELPERS
+   ============================================================ */
+    .ga {
+      background: linear-gradient(135deg, var(--a), var(--d));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .gb {
+      background: linear-gradient(135deg, var(--b), var(--c));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .gc {
+      background: linear-gradient(135deg, var(--e), var(--b));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .gd {
+      background: linear-gradient(135deg, var(--c), var(--a));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* ============================================================
+   CARDS
+   ============================================================ */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.6rem;
+      transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
+    }
+
+    .card:hover {
+      border-color: var(--border2);
+      transform: translateY(-3px);
+      box-shadow: 0 12px 30px var(--shadow);
+    }
+
+    .grid2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1rem;
+    }
+
+    .grid3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1rem;
+    }
+
+    .grid4 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 1rem;
+    }
+
+    .bl-a {
+      border-left: 3px solid var(--a);
+    }
+
+    .bl-b {
+      border-left: 3px solid var(--b);
+    }
+
+    .bl-c {
+      border-left: 3px solid var(--c);
+    }
+
+    .bl-d {
+      border-left: 3px solid var(--d);
+    }
+
+    .bl-e {
+      border-left: 3px solid var(--e);
+    }
+
+    .bl-f {
+      border-left: 3px solid var(--f);
+    }
+
+    .ta {
+      color: var(--a);
+    }
+
+    .tb {
+      color: var(--b);
+    }
+
+    .tc {
+      color: var(--c);
+    }
+
+    .td {
+      color: var(--d);
+    }
+
+    .te {
+      color: var(--e);
+    }
+
+    .tf {
+      color: var(--f);
+    }
+
+    /* ============================================================
+   DEFINITION CARDS
+   ============================================================ */
+    .def-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 0.75rem;
+    }
+
+    .def-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.2rem;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s;
+    }
+
+    .def-card:hover {
+      transform: translateY(-2px);
+    }
+
+    .def-top {
+      height: 2px;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+    }
+
+    .def-term {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .def-desc {
+      font-size: 0.87rem;
+      color: var(--text2);
+    }
+
+    /* ============================================================
+   MONO / CODE STYLE
+   ============================================================ */
+    .mono {
+      font-family: 'JetBrains Mono', monospace;
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      font-size: 0.85rem;
+      color: var(--a);
+      margin-top: 0.75rem;
+      overflow-x: auto;
+      white-space: pre;
+    }
+
+    .mono span.comment {
+      color: var(--text3);
+    }
+
+    .mono span.key {
+      color: var(--b);
+    }
+
+    .mono span.val {
+      color: var(--d);
+    }
+
+    /* ============================================================
+   EXAMPLE BOXES
+   ============================================================ */
+    .ex {
+      border-radius: 14px;
+      padding: 1.4rem;
+      border: 1px solid;
+      margin-top: 1.25rem;
+    }
+
+    .ex-a {
+      background: rgba(110, 231, 247, 0.06);
+      border-color: rgba(110, 231, 247, 0.25);
+    }
+
+    .ex-b {
+      background: rgba(244, 114, 182, 0.06);
+      border-color: rgba(244, 114, 182, 0.25);
+    }
+
+    .ex-c {
+      background: rgba(167, 139, 250, 0.06);
+      border-color: rgba(167, 139, 250, 0.25);
+    }
+
+    .ex-d {
+      background: rgba(52, 211, 153, 0.06);
+      border-color: rgba(52, 211, 153, 0.25);
+    }
+
+    .ex-e {
+      background: rgba(251, 146, 60, 0.06);
+      border-color: rgba(251, 146, 60, 0.25);
+    }
+
+    .ex-f {
+      background: rgba(250, 204, 21, 0.06);
+      border-color: rgba(250, 204, 21, 0.25);
+    }
+
+    .ex-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .ex-label::before {
+      content: '';
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    /* ============================================================
+   TIP BOXES
+   ============================================================ */
+    .tip {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      padding: 1.1rem 1.25rem;
+      border-radius: 12px;
+      margin-top: 1rem;
+    }
+
+    .tip-green {
+      background: rgba(52, 211, 153, 0.08);
+      border: 1px solid rgba(52, 211, 153, 0.25);
+    }
+
+    .tip-blue {
+      background: rgba(110, 231, 247, 0.08);
+      border: 1px solid rgba(110, 231, 247, 0.25);
+    }
+
+    .tip-warn {
+      background: rgba(251, 146, 60, 0.08);
+      border: 1px solid rgba(251, 146, 60, 0.25);
+    }
+
+    .tip-yellow {
+      background: rgba(250, 204, 21, 0.08);
+      border: 1px solid rgba(250, 204, 21, 0.25);
+    }
+
+    .tip-icon {
+      font-size: 1.2rem;
+      flex-shrink: 0;
+      margin-top: 0.1rem;
+    }
+
+    .tip-body h4 {
+      font-size: 0.84rem;
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+    }
+
+    .tip-body p {
+      font-size: 0.86rem;
+      color: var(--text2);
+      margin: 0;
+    }
+
+    /* ============================================================
+   MNEMONIC BOXES  (memory aids - distinct brain/purple styling)
+   ============================================================ */
+    .mnemonic {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      padding: 1.25rem 1.4rem;
+      border-radius: 14px;
+      margin-top: 1.25rem;
+      background: linear-gradient(135deg, rgba(167, 139, 250, 0.10), rgba(244, 114, 182, 0.07));
+      border: 1px solid rgba(167, 139, 250, 0.35);
+      position: relative;
+    }
+
+    .mnemonic-icon {
+      font-size: 1.3rem;
+      flex-shrink: 0;
+    }
+
+    .mnemonic-body h4 {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--c);
+      margin-bottom: 0.4rem;
+    }
+
+    .mnemonic-body p {
+      font-size: 0.92rem;
+      color: var(--text);
+      margin: 0;
+    }
+
+    .mnemonic-body .mnem-key {
+      color: var(--b);
+      font-weight: 700;
+    }
+
+    /* ============================================================
+   TABLES
+   ============================================================ */
+    .tbl {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.87rem;
+    }
+
+    .tbl th {
+      text-align: left;
+      padding: 0.65rem 0.9rem;
+      background: var(--surface2);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text3);
+      border-bottom: 1px solid var(--border2);
+    }
+
+    .tbl td {
+      padding: 0.7rem 0.9rem;
+      border-bottom: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .tbl tr:last-child td {
+      border-bottom: none;
+    }
+
+    .tbl tr:hover td {
+      background: var(--surface2);
+    }
+
+    .tbl-wrap {
+      overflow-x: auto;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+
+    /* ============================================================
+   VS (COMPARISON) CARDS
+   ============================================================ */
+    .vs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    @media(max-width:640px) {
+      .vs {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* ============================================================
+   FLOW DIAGRAM
+   ============================================================ */
+    .flow {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      flex-wrap: wrap;
+      margin: 1.5rem 0;
+    }
+
+    .flow-box {
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-radius: 10px;
+      padding: 0.75rem 1rem;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--heading);
+      text-align: center;
+      flex: 1;
+      min-width: 80px;
+    }
+
+    .flow-box.accent {
+      background: rgba(110, 231, 247, 0.12);
+      border-color: rgba(110, 231, 247, 0.4);
+      color: var(--a);
+    }
+
+    .flow-box.accent2 {
+      background: rgba(167, 139, 250, 0.12);
+      border-color: rgba(167, 139, 250, 0.4);
+      color: var(--c);
+    }
+
+    .flow-box.accent3 {
+      background: rgba(52, 211, 153, 0.12);
+      border-color: rgba(52, 211, 153, 0.4);
+      color: var(--d);
+    }
+
+    .flow-arrow {
+      font-size: 1.2rem;
+      color: var(--text3);
+      padding: 0 0.35rem;
+      flex-shrink: 0;
+    }
+
+    /* ============================================================
+   STEPS
+   ============================================================ */
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .step {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      padding: 1rem 1.25rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      transition: all 0.3s;
+    }
+
+    .step:hover {
+      border-color: var(--border2);
+    }
+
+    .step-num {
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      font-size: 0.8rem;
+      flex-shrink: 0;
+      color: #000;
+      background: linear-gradient(135deg, var(--a), var(--c));
+    }
+
+    .step-body h4 {
+      font-weight: 700;
+      font-size: 0.9rem;
+      margin-bottom: 0.2rem;
+    }
+
+    .step-body p {
+      font-size: 0.86rem;
+      color: var(--text2);
+      margin: 0;
+    }
+
+    /* ============================================================
+   BADGES
+   ============================================================ */
+    .badge {
+      display: inline-block;
+      padding: 0.2rem 0.55rem;
+      border-radius: 100px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      border: 1px solid;
+    }
+
+    .badge-a {
+      color: var(--a);
+      border-color: rgba(110, 231, 247, 0.4);
+      background: rgba(110, 231, 247, 0.1);
+    }
+
+    .badge-b {
+      color: var(--b);
+      border-color: rgba(244, 114, 182, 0.4);
+      background: rgba(244, 114, 182, 0.1);
+    }
+
+    .badge-c {
+      color: var(--c);
+      border-color: rgba(167, 139, 250, 0.4);
+      background: rgba(167, 139, 250, 0.1);
+    }
+
+    .badge-e {
+      color: var(--e);
+      border-color: rgba(251, 146, 60, 0.4);
+      background: rgba(251, 146, 60, 0.1);
+    }
+
+    .row-highlight td {
+      background: rgba(52, 211, 153, 0.06) !important;
+    }
+
+    .row-warn td {
+      background: rgba(244, 114, 182, 0.06) !important;
+    }
+
+    /* ============================================================
+   FOOTER
+   ============================================================ */
+    footer {
+      text-align: center;
+      padding: 3rem 2rem 4rem;
+      position: relative;
+    }
+
+    footer::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 10%;
+      right: 10%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border2), transparent);
+    }
+
+    .footer-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--a), var(--c), var(--b));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .footer-sub {
+      font-size: 0.78rem;
+      color: var(--text3);
+      margin-top: 0.3rem;
+    }
+
+    /* UL RESET */
+    ul {
+      list-style: none;
+    }
+
+    ul li {
+      padding: 0.32rem 0;
+      padding-left: 1rem;
+      position: relative;
+      font-size: 0.9rem;
+      color: var(--text2);
+    }
+
+    ul li::before {
+      content: '▸';
+      position: absolute;
+      left: 0;
+      color: var(--c);
+      font-size: 0.65rem;
+      top: 0.44rem;
+    }
+
+    .divider {
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border), transparent);
+      margin: 4rem 0;
+    }
+
+    @media(max-width:600px) {
+      .grid4 {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .flow {
+        justify-content: center;
+      }
+
+      .flow-box {
+        min-width: 70px;
+        font-size: 0.75rem;
+      }
+    }
+  </style>
+  <script src="/javascripts/standalone-theme.js"></script>
+  <script src="/javascripts/html-theme-sync.js"></script>
+
+  <meta name="description"
+    content="A comprehensive, visual study guide to Key Distribution and Management: key hierarchies, symmetric and public-key distribution, X.509 certificates, CAs, CRLs, OCSP, and PKI.">
+  <link rel="canonical"
+    href="https://shoug-tech.com/academics/cybersecurity/cys406/slide-breakdowns/09-chapter-9-key-distribution-and-management/chapter-9-key-distribution-and-management.html">
+  <meta property="og:title" content="CYS406 - Key Distribution and Management">
+  <meta property="og:description"
+    content="A comprehensive, visual study guide to Key Distribution and Management: key hierarchies, symmetric and public-key distribution, X.509 certificates, CAs, CRLs, OCSP, and PKI.">
+  <meta property="og:url"
+    content="https://shoug-tech.com/academics/cybersecurity/cys406/slide-breakdowns/09-chapter-9-key-distribution-and-management/chapter-9-key-distribution-and-management.html">
+  <meta property="og:type" content="article">
+  <meta property="og:image" content="https://shoug-tech.com/assets/og-banner.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="CYS406 - Key Distribution and Management">
+  <meta name="twitter:description"
+    content="A comprehensive, visual study guide to Key Distribution and Management: key hierarchies, symmetric and public-key distribution, X.509 certificates, CAs, CRLs, OCSP, and PKI.">
+  <meta name="twitter:image" content="https://shoug-tech.com/assets/og-banner.png">
+</head>
+
+<body>
+
+
+  <!-- THEME TOGGLE -->
+  <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+    <span class="toggle-icon" id="toggle-icon">☀️</span>
+    <span id="toggle-label">Light Mode</span>
+  </button>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-grid"></div>
+
+    <div class="hero-badge">
+      <span class="badge-dot"></span>
+      CYS406 · Chapter 9
+    </div>
+
+    <h1>
+      Who Holds the Keys?<br>
+      <span class="gradient-word">Key Distribution &amp; Management</span>
+    </h1>
+    <p class="hero-sub">Every crypto system lives or dies on how it hands out its keys. This chapter is the plumbing
+      behind encryption: session keys, master keys, CAs, certificates, and the whole trust chain that lets strangers on
+      the internet trust each other's public keys.</p>
+
+    <div class="hero-chips">
+      <span class="chip chip-a">Key Hierarchy</span>
+      <span class="chip chip-b">Public Key Distribution</span>
+      <span class="chip chip-c">X.509 Certificates</span>
+      <span class="chip chip-d">CA Hierarchy</span>
+      <span class="chip chip-e">CRL vs OCSP</span>
+      <span class="chip chip-f">PKI</span>
+    </div>
+
+    <div class="scroll-hint">
+      scroll ↓
+    </div>
+  </div>
+
+  <main>
+
+    <!-- SECTION 1: Why Key Management Matters -->
+    <section>
+      <div class="section-header"><span class="sec-num">01 / Foundations</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="ga">Why Key Management Is a Big Deal</h2>
+      <p><strong>Key management</strong> covers the generation, distribution, storage, and revocation of cryptographic
+        keys. It sounds boring compared to the math of encryption itself, but in practice it's where real systems
+        actually break. Almost every historical "crypto failure" wasn't a broken cipher — it was a broken key
+        distribution scheme.</p>
+
+      <div class="def-grid">
+        <div class="def-card">
+          <div class="def-top" style="background:var(--a)"></div>
+          <div class="def-term ta">Key Distribution</div>
+          <div class="def-desc">Establishing the keys two parties need before they can communicate securely.</div>
+        </div>
+        <div class="def-card">
+          <div class="def-top" style="background:var(--b)"></div>
+          <div class="def-term tb">Key Revocation</div>
+          <div class="def-desc">Removing/invalidating keys that are known (or suspected) to be compromised — notoriously
+            hard to do cleanly.</div>
+        </div>
+        <div class="def-card">
+          <div class="def-top" style="background:var(--c)"></div>
+          <div class="def-term tc">Scalability</div>
+          <div class="def-desc">The number of key-pairs needed grows fast as the network grows — a key concern for any
+            distribution scheme.</div>
+        </div>
+      </div>
+
+      <div class="card bl-c" style="margin-top:1rem;">
+        <h3 class="tc">Key Management Protocol Classification</h3>
+        <p>Key management schemes can be classified along two axes: <strong>network structure</strong> (centralized vs.
+          distributed) and <strong>probability of key sharing</strong> (probabilistic vs. deterministic).</p>
+        <div class="vs">
+          <div class="ex ex-a">
+            <div class="ex-label ta">Centralized Key Scheme</div>
+            <p>A single trusted authority (like a KDC) generates and distributes keys to everyone. Simple to manage, but
+              a single point of failure/trust.</p>
+          </div>
+          <div class="ex ex-b">
+            <div class="ex-label tb">Distributed Key Scheme</div>
+            <p>Multiple nodes cooperate to establish keys with no single central authority — more resilient, harder to
+              coordinate.</p>
+          </div>
+        </div>
+        <div class="vs" style="margin-top:0.75rem;">
+          <div class="ex ex-d">
+            <div class="ex-label td">Probabilistic Key Scheme</div>
+            <p>Keys are distributed such that any two nodes share a common key only with some probability (common in
+              sensor networks).</p>
+          </div>
+          <div class="ex ex-e">
+            <div class="ex-label te">Deterministic Key Scheme</div>
+            <p>Key sharing is guaranteed by design — every pair (or every pair meeting some rule) is guaranteed a shared
+              key.</p>
+          </div>
+        </div>
+      </div>
+
+      <p style="margin-top:1.5rem;">Key management is also a <strong>cross-layer</strong> problem — it touches secure
+        routing at the network layer, secure data aggregation at the transport layer, intrusion detection, and secure
+        group communication at the application layer, all built on top of the underlying cryptography at the
+        physical/data-link layers.</p>
+    </section>
+
+    <!-- SECTION 2: Key Distribution using Symmetric Encryption -->
+    <section>
+      <div class="section-header"><span class="sec-num">02 / Symmetric Distribution</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gb">Key Distribution with Symmetric Encryption</h2>
+      <p>Symmetric schemes require <strong>both parties to share a common secret key</strong> before any secure
+        communication can happen. Public key schemes instead require each party to acquire the other's valid public key.
+        Both approaches have their own headaches — this section covers the symmetric side.</p>
+
+      <div class="card bl-a">
+        <h3 class="ta">Four Ways for A and B to Get a Shared Key</h3>
+        <div class="steps">
+          <div class="step">
+            <div class="step-num">1</div>
+            <div class="step-body">
+              <h4>A selects the key</h4>
+              <p>A picks a key and physically delivers it to B (e.g. in person, via courier).</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">2</div>
+            <div class="step-body">
+              <h4>Third party delivers it</h4>
+              <p>A trusted third party selects a key and physically delivers it to both A and B.</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">3</div>
+            <div class="step-body">
+              <h4>Reuse an old key</h4>
+              <p>If A and B already share a previous key, they can use it to encrypt and send a brand-new key.</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">4</div>
+            <div class="step-body">
+              <h4>Relay through C</h4>
+              <p>If A and B each have a secure channel to a trusted third party C, then C can relay/generate a key
+                between them (this is the KDC model).</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mnemonic">
+        <div class="mnemonic-icon">🧠</div>
+        <div class="mnemonic-body">
+          <h4>Mnemonic — "PICK-DELIVER-REUSE-RELAY"</h4>
+          <p><span class="mnem-key">P.D.R.R.</span> Physically deliver (1) → Deliver via third party (2) → Reuse an old
+            key to wrap a new one (3) → Relay through a trusted C (4). Notice the trust keeps moving further away from A
+            and B directly touching each other — by option 4 you've basically invented a Key Distribution Center.</p>
+        </div>
+      </div>
+
+      <h3 style="margin-top:2rem;" class="ta">Key Hierarchy: Session Keys vs. Master Keys</h3>
+      <p>Real systems don't use one key forever — they use a <strong>hierarchy</strong> so that if a key leaks, the
+        damage is limited.</p>
+      <div class="vs">
+        <div class="ex ex-d">
+          <div class="ex-label td">🔑 Session Key</div>
+          <p>A temporary key used to encrypt data between two users for one logical session, then discarded. Short-lived
+            by design — limits exposure if compromised.</p>
+        </div>
+        <div class="ex ex-c">
+          <div class="ex-label tc">🗝️ Master Key</div>
+          <p>A long-lived key shared between a user and the Key Distribution Center (KDC), used only to encrypt/protect
+            the distribution of session keys — never used to encrypt actual data.</p>
+        </div>
+      </div>
+
+      <div class="tip tip-blue">
+        <div class="tip-icon">💡</div>
+        <div class="tip-body">
+          <h4 class="ta">Why bother with two levels?</h4>
+          <p>If you only had one long-term key and used it directly to encrypt data, an attacker who captures enough
+            ciphertext has more material to attack that one key. Session keys mean each conversation only exposes a
+            throwaway key — the master key never touches the actual data.</p>
+        </div>
+      </div>
+
+      <h3 style="margin-top:2rem;" class="tb">Key Distribution Issues (Practical Headaches)</h3>
+      <ul>
+        <li>Large networks need <strong>hierarchies of KDCs</strong> — but those KDCs must trust each other.</li>
+        <li>Session key lifetimes should be kept short for greater security.</li>
+        <li>Automatic key distribution is convenient for users, but requires trusting the automated system itself.</li>
+        <li>Decentralized key distribution removes the single point of failure but adds coordination complexity.</li>
+        <li>Controlling <em>how</em> a key is used (not just who has it) is its own challenge.</li>
+      </ul>
+    </section>
+
+    <!-- SECTION 3: Symmetric Key Distribution Using Public Keys -->
+    <section>
+      <div class="section-header"><span class="sec-num">03 / Hybrid Approach</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gc">Using Public Keys to Distribute Secret Keys</h2>
+      <p>Public-key cryptosystems (like RSA) are computationally expensive, so they're almost never used to encrypt bulk
+        data directly. Instead, the common trick is: <strong>use public-key crypto only to encrypt/exchange the secret
+          session key</strong>, then switch to fast symmetric encryption for the actual data. This is exactly how TLS
+        works today.</p>
+
+      <div class="ex ex-e">
+        <div class="ex-label te">📘 Simple Secret Key Distribution (Merkle's Scheme)</div>
+        <p>Merkle proposed a very simple scheme: two parties exchange public keys openly and use them to agree on a
+          session key, with no pre-shared keys needed before or after. It's elegant — but there's a catch.</p>
+      </div>
+
+      <div class="tip tip-warn">
+        <div class="tip-icon">⚠️</div>
+        <div class="tip-body">
+          <h4 class="te">Man-in-the-Middle Attack</h4>
+          <p>Merkle's simple scheme is vulnerable to an <strong>active man-in-the-middle (MITM) attack</strong>: since
+            public keys are exchanged with no authentication, an attacker can intercept the exchange, substitute their
+            own public key, and relay/read everything both sides think is private. This is why raw key exchange without
+            authentication is never enough — you also need a way to verify identity (hence: certificates, later in this
+            chapter).</p>
+        </div>
+      </div>
+
+      <h3 style="margin-top:2rem;" class="td">Hybrid Key Distribution</h3>
+      <p>The practical fix combines both worlds:</p>
+      <ul>
+        <li>Retain a <strong>private-key KDC</strong> for efficiency.</li>
+        <li>The KDC shares a secret <strong>master key</strong> with each user.</li>
+        <li>The KDC distributes <strong>session keys</strong> using that master key (symmetric — fast).</li>
+        <li><strong>Public-key crypto is used only to distribute the master keys</strong> in the first place —
+          especially useful when users are widely/globally distributed and can't meet in person.</li>
+      </ul>
+      <p><strong>Rationale:</strong> this hybrid gets you the <strong>performance</strong> of symmetric encryption for
+        ongoing traffic, plus <strong>backward compatibility</strong> with existing KDC-based infrastructure.</p>
+
+      <div class="mnemonic">
+        <div class="mnemonic-icon">🧠</div>
+        <div class="mnemonic-body">
+          <h4>Mnemonic — "Public key opens the safe that holds the master key"</h4>
+          <p>Think of the <span class="mnem-key">public key as a courier</span> who only ever delivers the master key
+            (once, securely) — after that, the fast symmetric master key and its disposable session-key children handle
+            everything. Public key crypto is the expensive locksmith you call once; symmetric crypto is the cheap lock
+            you use every day after.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 4: Distribution of Public Keys -->
+    <section>
+      <div class="section-header"><span class="sec-num">04 / Public Key Distribution</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gd">Four Ways to Distribute Public Keys</h2>
+      <p>Public keys don't need to be kept secret — but they DO need to be <strong>authentic</strong> (you need to be
+        sure a given public key really belongs to the person it claims to). There are four classic approaches, each
+        trading convenience for security.</p>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <h4>Public Announcement</h4>
+            <p>Users broadcast their public key to everyone — e.g. appending a PGP key to emails or posting to a
+              newsgroup/mailing list. <strong>Major weakness: forgery.</strong> Anyone can create a key and claim to be
+              someone else; until the forgery is discovered, they can masquerade as that user.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <h4>Publicly Available Directory</h4>
+            <p>Register keys with a trusted directory containing {name, public-key} pairs. The directory must let
+              participants register securely, replace their key anytime, publish periodically, and be accessible
+              electronically. Better than announcement, but still vulnerable to tampering/forgery of the directory
+              itself.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <h4>Public-Key Authority</h4>
+            <p>Tightens control further: the authority itself has a well-known public key, and users interact with it in
+              real time to securely obtain any other user's key. Downside: requires real-time access to the authority
+              whenever a key is needed, and the authority itself can be a target.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <h4>Public-Key Certificates</h4>
+            <p>The winning approach: certificates let you exchange keys <strong>without needing real-time
+                access</strong> to any authority. A certificate binds an identity to a public key (plus validity period,
+              usage rights, etc.), all signed by a trusted Certificate Authority (CA). Anyone who trusts the CA's public
+              key can verify it offline.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="mnemonic">
+        <div class="mnemonic-icon">🧠</div>
+        <div class="mnemonic-body">
+          <h4>Mnemonic — "A-D-A-C: Announce, Directory, Authority, Certificate"</h4>
+          <p><span class="mnem-key">A-D-A-C</span> = increasing trust, decreasing convenience.
+            <strong>A</strong>nnouncement (anyone can lie) → <strong>D</strong>irectory (a trusted list, but still
+            online & tamperable) → <strong>A</strong>uthority (real-time verification, more secure but needs to be
+            always-on) → <strong>C</strong>ertificate (offline-verifiable, signed proof — the modern answer).
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 5: X.509 -->
+    <section>
+      <div class="section-header"><span class="sec-num">05 / X.509</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="ga">X.509 Authentication Service &amp; Certificates</h2>
+      <p>X.509 is part of the CCITT/ITU-T <strong>X.500 directory service</strong> standards — a framework of
+        distributed servers maintaining a database of user info. X.509 specifically defines a framework for
+        <strong>authentication services</strong>: the directory can store public-key certificates, with each user's
+        public key signed by a Certification Authority. It also defines authentication protocols and uses public-key
+        crypto and digital signatures (algorithm not mandated, but RSA is recommended). X.509 certificates are extremely
+        widely used today, and have gone through <strong>3 versions</strong>.
+      </p>
+
+      <div class="card bl-b">
+        <h3 class="tb">What's Inside an X.509 Certificate?</h3>
+        <div class="tbl-wrap">
+          <table class="tbl">
+            <thead>
+              <tr>
+                <th>Field</th>
+                <th>Meaning</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Version (V)</td>
+                <td>1, 2, or 3</td>
+              </tr>
+              <tr>
+                <td>Serial Number (SN)</td>
+                <td>Unique within the issuing CA</td>
+              </tr>
+              <tr>
+                <td>Signature Algorithm ID (AI)</td>
+                <td>Algorithm used to sign the certificate</td>
+              </tr>
+              <tr>
+                <td>Issuer</td>
+                <td>X.500 name of the CA</td>
+              </tr>
+              <tr>
+                <td>Period of Validity (TA)</td>
+                <td>"Not valid before" / "not valid after" dates</td>
+              </tr>
+              <tr>
+                <td>Subject</td>
+                <td>X.500 name of the certificate owner (A)</td>
+              </tr>
+              <tr>
+                <td>Subject Public-Key Info (Ap)</td>
+                <td>Algorithm, parameters, and the actual public key</td>
+              </tr>
+              <tr>
+                <td>Issuer/Subject Unique ID</td>
+                <td>Added in v2+</td>
+              </tr>
+              <tr>
+                <td>Extensions</td>
+                <td>Added in v3 (e.g. email/URL, usage constraints)</td>
+              </tr>
+              <tr>
+                <td>Signature</td>
+                <td>Hash of all the above fields, signed by the CA</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="margin-top:0.75rem;">Notation: <strong>CA&lt;&lt;A&gt;&gt;</strong> denotes "the certificate for user
+          A, signed by CA."</p>
+      </div>
+
+      <h3 style="margin-top:2rem;" class="tc">Obtaining a Certificate</h3>
+      <ul>
+        <li>Any user with access to the CA can request/obtain any certificate from it.</li>
+        <li><strong>Only the CA can modify a certificate</strong> — the signature makes forgery detectable.</li>
+        <li>Because certificates can't be forged undetected, they can safely be placed in a public directory.</li>
+      </ul>
+
+      <h3 style="margin-top:2rem;" class="td">CA Hierarchy</h3>
+      <p>If two users share a common CA, they're assumed to already know its public key and can verify each other
+        directly. But the internet has thousands of CAs — so CAs must form a <strong>hierarchy</strong>, using
+        certificates that link members of the hierarchy to validate each other. Each CA holds certificates both for its
+        clients (forward) and its parent CA (backward). Each client trusts its parent's certificates, which chains all
+        the way up — enabling any user to verify a certificate issued by any other CA in the hierarchy.</p>
+
+      <div class="ex ex-c">
+        <div class="ex-label tc">📘 Example — Chain of Trust</div>
+        <p><strong>A acquires B's certificate</strong> using the chain: X&lt;&lt;W&gt;&gt; W&lt;&lt;V&gt;&gt;
+          V&lt;&lt;Y&gt;&gt; Y&lt;&lt;Z&gt;&gt; Z&lt;&lt;B&gt;&gt;</p>
+        <p><strong>B acquires A's certificate</strong> using the reverse chain: Z&lt;&lt;Y&gt;&gt; Y&lt;&lt;V&gt;&gt;
+          V&lt;&lt;W&gt;&gt; W&lt;&lt;X&gt;&gt; X&lt;&lt;A&gt;&gt;</p>
+        <p>Each link is validated by the CA one step above it, until you reach a CA both parties already trust.</p>
+      </div>
+
+      <h3 style="margin-top:2rem;" class="te">Certificate Revocation</h3>
+      <p>Certificates have a validity period, but may need revoking early if:</p>
+      <ol style="list-style:none;">
+        <li>1. The user's private key is compromised.</li>
+        <li>2. The user is no longer certified by this CA.</li>
+        <li>3. The CA's own certificate is compromised.</li>
+      </ol>
+      <p>Each CA maintains a <strong>Certificate Revocation List (CRL)</strong> — users are expected to check
+        certificates against the issuing CA's CRL before trusting them. Revoked certificates stay in the CRL until their
+        original expiry date.</p>
+
+      <h3 style="margin-top:2rem;" class="ta">X.509 Version 3 &amp; Extensions</h3>
+      <p>V3 recognized that certificates needed more flexible metadata (email/URL, policy details, usage constraints) —
+        rather than hard-coding new fields forever, it introduced a general <strong>extension mechanism</strong>. Each
+        extension consists of an extension identifier, a criticality indicator, and the extension value. Extension
+        categories include:</p>
+      <ul>
+        <li><strong>Key and policy information</strong> — details about subject/issuer keys and certificate policy.</li>
+        <li><strong>Certificate subject and issuer attributes</strong> — alternative name formats.</li>
+        <li><strong>Certificate path constraints</strong> — limits on how other CAs may use this certificate.</li>
+      </ul>
+    </section>
+
+    <!-- SECTION 6: PKI -->
+    <section>
+      <div class="section-header"><span class="sec-num">06 / PKI</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gb">Public Key Infrastructure (PKI)</h2>
+      <p><strong>PKI</strong> is the full infrastructure that supports and manages public-key-based digital certificates
+        (built on X.509). Standards are defined by the IETF's PKIX working group.</p>
+
+      <div class="vs">
+        <div class="ex ex-a">
+          <div class="ex-label ta">🏢 Provider Side</div>
+          <ul>
+            <li>Certificate Authority (CA)</li>
+            <li>Registration Authority (RA)</li>
+            <li>Certificate Distribution System</li>
+          </ul>
+        </div>
+        <div class="ex ex-d">
+          <div class="ex-label td">💻 Consumer Side</div>
+          <ul>
+            <li>PKI-enabled applications</li>
+          </ul>
+        </div>
+      </div>
+
+      <h3 style="margin-top:2rem;" class="tc">X.509 PKI Simple Model — The Flow</h3>
+      <div class="flow">
+        <div class="flow-box">Remote Person / Application</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box accent">Cert. Request → RA</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box accent2">RA verifies identity</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box accent3">CA issues Signed Certificate</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box">Certificate Directory (Certs, CRLs)</div>
+      </div>
+
+      <div class="grid3" style="margin-top:1.5rem;">
+        <div class="card bl-a">
+          <h3 class="ta">Certificate Authority (CA) Tasks</h3>
+          <ul>
+            <li>Key Generation</li>
+            <li>Digital Certificate Generation</li>
+            <li>Certificate Issuance &amp; Distribution</li>
+            <li>Revocation</li>
+            <li>Key Backup &amp; Recovery</li>
+            <li>Cross-Certification</li>
+          </ul>
+        </div>
+        <div class="card bl-b">
+          <h3 class="tb">Registration Authority (RA) Tasks</h3>
+          <ul>
+            <li>Registration of certificate information</li>
+            <li>Face-to-face registration</li>
+            <li>Remote registration</li>
+            <li>Automatic registration</li>
+            <li>Revocation (requests)</li>
+          </ul>
+        </div>
+        <div class="card bl-c">
+          <h3 class="tc">Certificate Distribution System</h3>
+          <ul>
+            <li>Repository for Digital Certificates</li>
+            <li>Repository for CRLs</li>
+            <li>Typically special-purpose DBs or LDAP directories</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="tip tip-blue" style="margin-top:1.5rem;">
+        <div class="tip-icon">💡</div>
+        <div class="tip-body">
+          <h4 class="ta">RA vs CA — don't mix them up</h4>
+          <p>The <strong>RA verifies who you are</strong> (identity vetting — face-to-face, remote, automatic). The
+            <strong>CA actually signs and issues</strong> the certificate. The RA is the bouncer checking your ID; the
+            CA is the one stamping your hand.
+          </p>
+        </div>
+      </div>
+
+      <p style="margin-top:1.5rem;">Real-world example from the slides: <strong>WellsSecure PKI</strong> ran both a
+        SHA-1 hierarchy and, later, a SHA-2 hierarchy (planned to go operational/online in 2012) — illustrating how PKI
+        hierarchies must be upgraded as hash algorithms age out.</p>
+    </section>
+
+    <!-- SECTION 7: CRL vs OCSP -->
+    <section>
+      <div class="section-header"><span class="sec-num">07 / Revocation Checking</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gc">Checking Revocation: CRL vs. OCSP</h2>
+      <p>Once a certificate is issued, how does a relying party find out if it's been revoked <em>before</em> its expiry
+        date? Two competing mechanisms:</p>
+
+      <div class="vs">
+        <div class="ex ex-e">
+          <div class="ex-label te">📄 Certificate Revocation List (CRL)</div>
+          <p>CAs publish CRLs at well-defined time intervals. It's the <strong>user's responsibility</strong> to
+            download the CRL and check whether a given certificate appears on it. Revoked certificates stay listed until
+            they'd have expired anyway. Downside: not real-time — there's a window between revocation and the next CRL
+            publication where a revoked cert might still look valid.</p>
+        </div>
+        <div class="ex ex-d">
+          <div class="ex-label td">⚡ Online Certificate Status Protocol (OCSP)</div>
+          <p>An IETF/PKIX standard alternative to CRLs — provides a <strong>real-time</strong> check of whether a
+            specific certificate has been revoked or suspended. Requires a highly-available OCSP server, since every
+            check is a live query.</p>
+        </div>
+      </div>
+
+      <div class="mnemonic">
+        <div class="mnemonic-icon">🧠</div>
+        <div class="mnemonic-body">
+          <h4>Mnemonic — "CRL = Checklist you download, OCSP = Operator you Call"</h4>
+          <p><span class="mnem-key">CRL</span>: you download a big <strong>C</strong>heck<strong>L</strong>ist
+            periodically and scan it yourself (batch, delayed). <span class="mnem-key">OCSP</span>: you pick up the
+            phone and <strong>C</strong>all the <strong>S</strong>tatus <strong>P</strong>erson right now for one
+            specific certificate (live, real-time, one query at a time).</p>
+        </div>
+      </div>
+
+      <h3 style="margin-top:2rem;" class="ta">Real-World Browser Behavior (Case Study)</h3>
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>Browser</th>
+              <th>Windows 2000 / XP</th>
+              <th>Vista / 7 / 2008+</th>
+              <th>Mac OS X</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Internet Explorer</td>
+              <td>CRL</td>
+              <td>OCSP first, fallback to CRL</td>
+              <td>N/A</td>
+            </tr>
+            <tr>
+              <td>Firefox</td>
+              <td>OCSP</td>
+              <td>OCSP</td>
+              <td>OCSP</td>
+            </tr>
+            <tr>
+              <td>Safari</td>
+              <td>CRL</td>
+              <td>OCSP first, fallback to CRL</td>
+              <td>OCSP first, fallback to CRL</td>
+            </tr>
+            <tr>
+              <td>Chrome</td>
+              <td>CRL</td>
+              <td>OCSP first, fallback to CRL</td>
+              <td>OCSP first, fallback to CRL</td>
+            </tr>
+            <tr>
+              <td>Opera</td>
+              <td>OCSP and CRL</td>
+              <td>OCSP and CRL</td>
+              <td>OCSP and CRL</td>
+            </tr>
+            <tr>
+              <td>Code-signing verification</td>
+              <td>CRL</td>
+              <td>OCSP first, fallback to CRL</td>
+              <td>OCSP first, fallback to CRL</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="margin-top:0.75rem;">Takeaway: most modern platforms prefer OCSP for freshness but keep CRL as a
+        fallback when OCSP is unavailable.</p>
+
+      <h3 style="margin-top:2rem;" class="tb">X.509 PKI-Enabled Applications — Required Functionality</h3>
+      <ul>
+        <li>Cryptographic functionality (to actually use the keys/certs)</li>
+        <li>Secure storage of personal information (private keys)</li>
+        <li>Digital certificate handling</li>
+        <li>Directory access (to fetch certs/CRLs)</li>
+        <li>Communication facilities</li>
+      </ul>
+    </section>
+
+    <!-- SECTION 8: Exam Tips & Tricks -->
+    <section>
+      <div class="section-header"><span class="sec-num">08 / Exam Prep</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gd">Exam Tips &amp; Tricks</h2>
+      <div class="grid2">
+        <div class="tip tip-green">
+          <div class="tip-icon">✅</div>
+          <div class="tip-body">
+            <h4 class="td">Session key ≠ Master key</h4>
+            <p>Session key = temporary, encrypts data, discarded after one session. Master key = long-term, shared with
+              KDC, only ever encrypts session keys — never the data itself.</p>
+          </div>
+        </div>
+        <div class="tip tip-blue">
+          <div class="tip-icon">💡</div>
+          <div class="tip-body">
+            <h4 class="ta">Public key crypto is a courier, not a workhorse</h4>
+            <p>Public-key crypto is too slow for bulk data — it's used to securely deliver symmetric keys, which then do
+              the heavy lifting.</p>
+          </div>
+        </div>
+        <div class="tip tip-warn">
+          <div class="tip-icon">⚠️</div>
+          <div class="tip-body">
+            <h4 class="te">Merkle's scheme = MITM bait</h4>
+            <p>Simple unauthenticated public key exchange is vulnerable to man-in-the-middle — remember WHY certificates
+              exist: to bind identity to key so MITM can be detected.</p>
+          </div>
+        </div>
+        <div class="tip tip-yellow">
+          <div class="tip-icon">📌</div>
+          <div class="tip-body">
+            <h4 class="tf">Know your 4 public-key distribution methods in order</h4>
+            <p>Announcement → Directory → Authority → Certificate. Each step trades convenience for stronger integrity
+              guarantees.</p>
+          </div>
+        </div>
+        <div class="tip tip-green">
+          <div class="tip-icon">✅</div>
+          <div class="tip-body">
+            <h4 class="td">CA&lt;&lt;A&gt;&gt; notation</h4>
+            <p>Means "certificate for A, signed by CA." Chain multiple such certificates to build a CA hierarchy path
+              between two unrelated CAs.</p>
+          </div>
+        </div>
+        <div class="tip tip-blue">
+          <div class="tip-icon">💡</div>
+          <div class="tip-body">
+            <h4 class="ta">RA registers, CA signs</h4>
+            <p>Don't confuse the Registration Authority (identity verification) with the Certificate Authority (actual
+              issuance/signing).</p>
+          </div>
+        </div>
+        <div class="tip tip-warn">
+          <div class="tip-icon">⚠️</div>
+          <div class="tip-body">
+            <h4 class="te">CRL is not real-time; OCSP is</h4>
+            <p>CRLs are published periodically and downloaded by users. OCSP is a live, per-certificate query — but
+              needs a highly available server.</p>
+          </div>
+        </div>
+        <div class="tip tip-yellow">
+          <div class="tip-icon">📌</div>
+          <div class="tip-body">
+            <h4 class="tf">X.509 has 3 versions</h4>
+            <p>V1 = basic fields. V2 = adds issuer/subject unique IDs. V3 = adds general-purpose extensions (the version
+              almost everyone uses today).</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 9: Quick Reference -->
+    <section>
+      <div class="section-header"><span class="sec-num">09 / Cheat Sheet</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="ga">Quick Reference — Everything at a Glance</h2>
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>Topic</th>
+              <th>Key Point</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Key Management</td>
+              <td>Generation, distribution, and revocation of cryptographic keys; scalability is a core concern.</td>
+            </tr>
+            <tr>
+              <td>Centralized Key Scheme</td>
+              <td>Single trusted authority distributes keys.</td>
+            </tr>
+            <tr>
+              <td>Distributed Key Scheme</td>
+              <td>No central authority; nodes cooperate to establish keys.</td>
+            </tr>
+            <tr>
+              <td>Probabilistic Key Scheme</td>
+              <td>Shared key exists between two nodes only with some probability.</td>
+            </tr>
+            <tr>
+              <td>Deterministic Key Scheme</td>
+              <td>Shared key existence is guaranteed by design.</td>
+            </tr>
+            <tr>
+              <td>4 Key Distribution Methods (A/B)</td>
+              <td>Physical delivery, third-party delivery, reuse of old key, relay via trusted C.</td>
+            </tr>
+            <tr>
+              <td>Session Key</td>
+              <td>Temporary, one-session, encrypts data, then discarded.</td>
+            </tr>
+            <tr>
+              <td>Master Key</td>
+              <td>Long-term, shared with KDC, encrypts session keys only.</td>
+            </tr>
+            <tr>
+              <td>Merkle's Simple Scheme</td>
+              <td>Simple public key exchange, vulnerable to man-in-the-middle attack.</td>
+            </tr>
+            <tr>
+              <td>Hybrid Key Distribution</td>
+              <td>KDC + master keys (symmetric) + public key only to distribute master keys.</td>
+            </tr>
+            <tr>
+              <td>Public Announcement</td>
+              <td>Broadcast public key; vulnerable to forgery.</td>
+            </tr>
+            <tr>
+              <td>Publicly Available Directory</td>
+              <td>Trusted {name, key} directory; still vulnerable to tampering.</td>
+            </tr>
+            <tr>
+              <td>Public-Key Authority</td>
+              <td>Real-time interaction with trusted authority to fetch keys securely.</td>
+            </tr>
+            <tr>
+              <td>Public-Key Certificates</td>
+              <td>Offline-verifiable, CA-signed binding of identity to public key.</td>
+            </tr>
+            <tr>
+              <td>X.509</td>
+              <td>Part of X.500 directory standards; defines certificate framework and authentication protocols; RSA
+                recommended.</td>
+            </tr>
+            <tr>
+              <td>X.509 Versions</td>
+              <td>V1 basic; V2 adds unique IDs; V3 adds extensions.</td>
+            </tr>
+            <tr>
+              <td>CA&lt;&lt;A&gt;&gt;</td>
+              <td>Notation for "certificate of A signed by CA."</td>
+            </tr>
+            <tr>
+              <td>CA Hierarchy</td>
+              <td>CAs link via certificates (forward to clients, backward to parent) to enable cross-CA trust.</td>
+            </tr>
+            <tr>
+              <td>Certificate Revocation Reasons</td>
+              <td>Private key compromised, user no longer certified, CA's own cert compromised.</td>
+            </tr>
+            <tr>
+              <td>CRL</td>
+              <td>Published periodically by CA; users must download and check it themselves; not real-time.</td>
+            </tr>
+            <tr>
+              <td>OCSP</td>
+              <td>Real-time revocation check; alternative to CRL; needs high-availability server.</td>
+            </tr>
+            <tr>
+              <td>PKI</td>
+              <td>Infrastructure supporting X.509 digital certificates; standardized by IETF PKIX.</td>
+            </tr>
+            <tr>
+              <td>CA (in PKI)</td>
+              <td>Key generation, cert generation/issuance/revocation, key backup/recovery, cross-certification.</td>
+            </tr>
+            <tr>
+              <td>RA (in PKI)</td>
+              <td>Registers/verifies certificate info (face-to-face, remote, automatic); requests revocation.</td>
+            </tr>
+            <tr>
+              <td>Certificate Distribution System</td>
+              <td>Repository for certs and CRLs; typically special DBs or LDAP.</td>
+            </tr>
+            <tr>
+              <td>Browser CRL/OCSP behavior</td>
+              <td>Older platforms favor CRL; modern platforms try OCSP first, fall back to CRL.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="footer-name">Made by Shoug Alomran</div>
+    <div class="footer-sub">CYS406 · Chapter 9: Key Distribution and Management · Study Guide</div>
+  </footer>
+
+  <script>
+    // Auto-detect system preference on load
+    (function () {
+      const _stored = localStorage.getItem('shoug-theme');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const theme = _stored === 'dark' ? 'dark' : _stored === 'light' ? 'light' : (prefersDark ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', theme);
+      updateToggle(theme);
+    })();
+
+    // Listen for system changes
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+      if (localStorage.getItem('shoug-theme')) return;
+      const theme = e.matches ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', theme);
+      updateToggle(theme);
+    });
+
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme');
+      const next = current === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      try { localStorage.setItem('shoug-theme', document.documentElement.getAttribute('data-theme')); } catch (e) { }
+      updateToggle(next);
+    }
+
+    function updateToggle(theme) {
+      const icon = document.getElementById('toggle-icon');
+      const label = document.getElementById('toggle-label');
+      if (theme === 'dark') {
+        icon.textContent = '☀️';
+        label.textContent = 'Light Mode';
+      } else {
+        icon.textContent = '🌙';
+        label.textContent = 'Dark Mode';
+      }
+    }
+  </script>
+
+</body>
+
+</html>

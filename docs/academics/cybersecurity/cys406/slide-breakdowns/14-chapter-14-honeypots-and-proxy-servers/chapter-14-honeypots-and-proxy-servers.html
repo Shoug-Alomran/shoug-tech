@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<link rel="icon" type="image/png" href="/assets/favicon.png?v=2">
+    <link rel="shortcut icon" href="/assets/favicon.png?v=2">
+    <link rel="apple-touch-icon" href="/assets/favicon.png?v=2">
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CYS406 - Chapter 14: Honeypots and Proxy Servers</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --a: #6ee7f7; --b: #f472b6; --c: #a78bfa; --d: #34d399; --e: #fb923c; --f: #facc15;
+}
+[data-theme="dark"] {
+  --bg:#080c14; --bg2:#0e1422; --bg3:#141c2e;
+  --surface:rgba(255,255,255,0.04); --surface2:rgba(255,255,255,0.07);
+  --border:rgba(255,255,255,0.08); --border2:rgba(255,255,255,0.13);
+  --text:#e2e8f0; --text2:#94a3b8; --text3:#64748b; --heading:#f8fafc;
+  --code-bg:rgba(255,255,255,0.06); --shadow:rgba(0,0,0,0.5); --toggle-bg:rgba(255,255,255,0.08);
+}
+[data-theme="light"] {
+  --bg:#f0f4ff; --bg2:#e8eef9; --bg3:#dde5f5;
+  --surface:rgba(255,255,255,0.75); --surface2:rgba(255,255,255,0.95);
+  --border:rgba(80,100,160,0.12); --border2:rgba(80,100,160,0.2);
+  --text:#1e2a45; --text2:#475569; --text3:#94a3b8; --heading:#0f172a;
+  --code-bg:rgba(80,100,160,0.08); --shadow:rgba(100,120,200,0.15); --toggle-bg:rgba(80,100,160,0.12);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: 'Space Grotesk', sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; overflow-x: hidden; transition: background 0.4s ease, color 0.4s ease; }
+.theme-toggle { position: fixed; top: 1.25rem; right: 1.5rem; z-index: 1000; background: var(--toggle-bg); border: 1px solid var(--border2); border-radius: 100px; padding: 0.45rem 1rem; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; font-size: 0.8rem; font-weight: 600; color: var(--text2); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); transition: all 0.3s ease; user-select: none; }
+.theme-toggle:hover { border-color: var(--a); color: var(--a); transform: scale(1.04); }
+.toggle-icon { font-size: 1rem; transition: transform 0.4s ease; }
+.hero { min-height: 60vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; position: relative; padding: 5rem 2rem 4rem; overflow: hidden; }
+[data-theme="dark"] .hero { background: radial-gradient(ellipse 70% 50% at 20% 20%, rgba(110,231,247,0.12) 0%, transparent 60%), radial-gradient(ellipse 60% 50% at 80% 80%, rgba(167,139,250,0.12) 0%, transparent 60%), radial-gradient(ellipse 50% 40% at 50% 60%, rgba(244,114,182,0.08) 0%, transparent 60%), var(--bg); }
+[data-theme="light"] .hero { background: radial-gradient(ellipse 70% 50% at 20% 20%, rgba(110,231,247,0.18) 0%, transparent 60%), radial-gradient(ellipse 60% 50% at 80% 80%, rgba(167,139,250,0.15) 0%, transparent 60%), radial-gradient(ellipse 50% 40% at 50% 60%, rgba(244,114,182,0.12) 0%, transparent 60%), var(--bg); }
+.hero-grid { position: absolute; inset: 0; background-image: linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px); background-size: 50px 50px; opacity: 0.7; }
+.hero-badge { display: inline-flex; align-items: center; gap: 0.5rem; background: var(--surface2); border: 1px solid var(--border2); border-radius: 100px; padding: 0.4rem 1.1rem; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--a); margin-bottom: 1.75rem; position: relative; z-index: 1; animation: fadeUp 0.7s ease both; }
+.badge-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--a); animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+.hero h1 { font-family: 'Playfair Display', serif; font-size: clamp(2.4rem, 5.5vw, 4.6rem); font-weight: 800; line-height: 1.15; color: var(--heading); position: relative; z-index: 1; animation: fadeUp 0.85s ease both; }
+.hero h1 .gradient-word { background: linear-gradient(135deg, var(--a), var(--c), var(--b)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.hero-sub { font-size: 1.05rem; color: var(--text2); margin-top: 1.25rem; max-width: 560px; position: relative; z-index: 1; animation: fadeUp 1s ease both; }
+.hero-chips { display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; max-width: 720px; margin-top: 2rem; position: relative; z-index: 1; animation: fadeUp 1.1s ease both; }
+.chip { padding: 0.3rem 0.85rem; border-radius: 100px; font-size: 0.76rem; font-weight: 600; border: 1px solid; transition: transform 0.2s; }
+.chip:hover { transform: translateY(-2px); }
+.chip-a { color:var(--a); border-color:rgba(110,231,247,0.35); background:rgba(110,231,247,0.08); }
+.chip-b { color:var(--b); border-color:rgba(244,114,182,0.35); background:rgba(244,114,182,0.08); }
+.chip-c { color:var(--c); border-color:rgba(167,139,250,0.35); background:rgba(167,139,250,0.08); }
+.chip-d { color:var(--d); border-color:rgba(52,211,153,0.35);  background:rgba(52,211,153,0.08); }
+.chip-e { color:var(--e); border-color:rgba(251,146,60,0.35);  background:rgba(251,146,60,0.08); }
+.chip-f { color:var(--f); border-color:rgba(250,204,21,0.35);  background:rgba(250,204,21,0.08); }
+.scroll-hint { position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%); color: var(--text3); font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; display: flex; flex-direction: column; align-items: center; gap: 0.4rem; animation: bounce 2.5s infinite; z-index: 1; }
+@keyframes bounce { 0%,100%{transform:translateX(-50%) translateY(0)} 50%{transform:translateX(-50%) translateY(8px)} }
+@keyframes fadeUp  { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
+main { max-width: 1120px; margin: 0 auto; padding: 4rem 2rem; }
+section { margin-bottom: 5.5rem; }
+.section-header { display:flex; align-items:center; gap:1rem; margin-bottom:2rem; }
+.sec-num { font-family:'JetBrains Mono',monospace; font-size:0.68rem; font-weight:600; letter-spacing:0.2em; text-transform:uppercase; color: var(--text3); white-space:nowrap; }
+.sec-line { flex:1; height:1px; background:linear-gradient(90deg, var(--border2), transparent); }
+h2 { font-family:'Playfair Display',serif; font-size: clamp(1.6rem, 3vw, 2.3rem); font-weight: 800; color: var(--heading); margin-bottom: 0.4rem; }
+h3 { font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1.05rem; margin-bottom:0.6rem; color:var(--heading); }
+p  { font-size:0.94rem; color:var(--text2); margin-bottom:0.7rem; }
+strong { color:var(--text); font-weight:600; }
+.ga { background:linear-gradient(135deg,var(--a),var(--d)); -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text; }
+.gb { background:linear-gradient(135deg,var(--b),var(--c)); -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text; }
+.gc { background:linear-gradient(135deg,var(--e),var(--b)); -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text; }
+.gd { background:linear-gradient(135deg,var(--c),var(--a)); -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 1.6rem; transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s; }
+.card:hover { border-color: var(--border2); transform:translateY(-3px); box-shadow:0 12px 30px var(--shadow); }
+.grid2 { display:grid; grid-template-columns:repeat(auto-fit, minmax(300px,1fr)); gap:1rem; }
+.grid3 { display:grid; grid-template-columns:repeat(auto-fit, minmax(240px,1fr)); gap:1rem; }
+.grid4 { display:grid; grid-template-columns:repeat(auto-fit, minmax(210px,1fr)); gap:1rem; }
+.bl-a { border-left:3px solid var(--a); } .bl-b { border-left:3px solid var(--b); } .bl-c { border-left:3px solid var(--c); }
+.bl-d { border-left:3px solid var(--d); } .bl-e { border-left:3px solid var(--e); } .bl-f { border-left:3px solid var(--f); }
+.ta { color:var(--a); } .tb { color:var(--b); } .tc { color:var(--c); } .td { color:var(--d); } .te { color:var(--e); } .tf { color:var(--f); }
+.def-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(220px,1fr)); gap:0.75rem; }
+.def-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:1.2rem; position:relative; overflow:hidden; transition:all 0.3s; }
+.def-card:hover { transform:translateY(-2px); }
+.def-top { height:2px; position:absolute; top:0; left:0; right:0; }
+.def-term { font-family:'JetBrains Mono',monospace; font-size:0.78rem; font-weight:600; margin-bottom:0.5rem; text-transform:uppercase; letter-spacing:0.05em; }
+.def-desc { font-size:0.87rem; color:var(--text2); }
+.mono { font-family: 'JetBrains Mono', monospace; background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.25rem; font-size: 0.85rem; color: var(--a); margin-top: 0.75rem; overflow-x: auto; white-space: pre; }
+.mono span.comment { color: var(--text3); } .mono span.key { color: var(--b); } .mono span.val { color: var(--d); }
+.ex { border-radius:14px; padding:1.4rem; border:1px solid; margin-top:1.25rem; }
+.ex-a { background:rgba(110,231,247,0.06); border-color:rgba(110,231,247,0.25); }
+.ex-b { background:rgba(244,114,182,0.06); border-color:rgba(244,114,182,0.25); }
+.ex-c { background:rgba(167,139,250,0.06); border-color:rgba(167,139,250,0.25); }
+.ex-d { background:rgba(52,211,153,0.06);  border-color:rgba(52,211,153,0.25); }
+.ex-e { background:rgba(251,146,60,0.06);  border-color:rgba(251,146,60,0.25); }
+.ex-f { background:rgba(250,204,21,0.06);  border-color:rgba(250,204,21,0.25); }
+.ex-label { font-size:0.7rem; font-weight:700; letter-spacing:0.15em; text-transform:uppercase; margin-bottom:0.75rem; display:flex; align-items:center; gap:0.5rem; }
+.ex-label::before { content:''; display:inline-block; width:6px;height:6px;border-radius:50%;background:currentColor; }
+.tip { display:flex; gap:1rem; align-items:flex-start; padding:1.1rem 1.25rem; border-radius:12px; margin-top:1rem; }
+.tip-green { background:rgba(52,211,153,0.08); border:1px solid rgba(52,211,153,0.25); }
+.tip-blue  { background:rgba(110,231,247,0.08); border:1px solid rgba(110,231,247,0.25); }
+.tip-warn  { background:rgba(251,146,60,0.08);  border:1px solid rgba(251,146,60,0.25); }
+.tip-yellow{ background:rgba(250,204,21,0.08);  border:1px solid rgba(250,204,21,0.25); }
+.tip-icon  { font-size:1.2rem; flex-shrink:0; margin-top:0.1rem; }
+.tip-body h4 { font-size:0.84rem; font-weight:700; margin-bottom:0.25rem; }
+.tip-body p  { font-size:0.86rem; color:var(--text2); margin:0; }
+.mnemonic { display:flex; gap:1rem; align-items:flex-start; padding:1.25rem 1.4rem; border-radius:14px; margin-top:1.25rem; background: linear-gradient(135deg, rgba(167,139,250,0.10), rgba(244,114,182,0.07)); border: 1px solid rgba(167,139,250,0.35); position: relative; }
+.mnemonic-icon { font-size:1.3rem; flex-shrink:0; }
+.mnemonic-body h4 { font-family:'JetBrains Mono',monospace; font-size:0.7rem; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color: var(--c); margin-bottom:0.4rem; }
+.mnemonic-body p { font-size:0.92rem; color:var(--text); margin:0; }
+.mnemonic-body .mnem-key { color: var(--b); font-weight: 700; }
+.tbl { width:100%; border-collapse:collapse; font-size:0.87rem; }
+.tbl th { text-align:left; padding:0.65rem 0.9rem; background:var(--surface2); font-family:'JetBrains Mono',monospace; font-size:0.7rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--text3); border-bottom:1px solid var(--border2); }
+.tbl td { padding:0.7rem 0.9rem; border-bottom:1px solid var(--border); color:var(--text); }
+.tbl tr:last-child td { border-bottom:none; }
+.tbl tr:hover td { background:var(--surface2); }
+.tbl-wrap { overflow-x:auto; border-radius:12px; border:1px solid var(--border); }
+.vs { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+@media(max-width:640px){.vs{grid-template-columns:1fr;}}
+.flow { display:flex; align-items:center; gap:0; flex-wrap:wrap; margin:1.5rem 0; }
+.flow-box { background:var(--surface2); border:1px solid var(--border2); border-radius:10px; padding:0.75rem 1rem; font-size:0.82rem; font-weight:600; color:var(--heading); text-align:center; flex:1; min-width:80px; }
+.flow-box.accent { background:rgba(110,231,247,0.12); border-color:rgba(110,231,247,0.4); color:var(--a); }
+.flow-box.accent2{ background:rgba(167,139,250,0.12); border-color:rgba(167,139,250,0.4); color:var(--c); }
+.flow-box.accent3{ background:rgba(52,211,153,0.12);  border-color:rgba(52,211,153,0.4);  color:var(--d); }
+.flow-arrow { font-size:1.2rem; color:var(--text3); padding:0 0.35rem; flex-shrink:0; }
+.steps { display:flex; flex-direction:column; gap:0.75rem; }
+.step { display:flex; gap:1rem; align-items:flex-start; padding:1rem 1.25rem; background:var(--surface); border:1px solid var(--border); border-radius:12px; transition:all 0.3s; }
+.step:hover { border-color:var(--border2); }
+.step-num { width:30px; height:30px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-family:'JetBrains Mono',monospace; font-weight:700; font-size:0.8rem; flex-shrink:0; color:#000; background:linear-gradient(135deg, var(--a), var(--c)); }
+.step-body h4 { font-weight:700; font-size:0.9rem; margin-bottom:0.2rem; }
+.step-body p  { font-size:0.86rem; color:var(--text2); margin:0; }
+.badge { display:inline-block; padding:0.2rem 0.55rem; border-radius:100px; font-size:0.7rem; font-weight:600; border:1px solid; }
+.badge-a { color:var(--a); border-color:rgba(110,231,247,0.4); background:rgba(110,231,247,0.1); }
+.badge-b { color:var(--b); border-color:rgba(244,114,182,0.4); background:rgba(244,114,182,0.1); }
+.badge-c { color:var(--c); border-color:rgba(167,139,250,0.4); background:rgba(167,139,250,0.1); }
+.badge-e { color:var(--e); border-color:rgba(251,146,60,0.4);  background:rgba(251,146,60,0.1); }
+.row-highlight td { background:rgba(52,211,153,0.06) !important; }
+.row-warn td { background:rgba(244,114,182,0.06) !important; }
+footer { text-align:center; padding:3rem 2rem 4rem; position:relative; }
+footer::before { content:''; position:absolute; top:0; left:10%; right:10%; height:1px; background:linear-gradient(90deg, transparent, var(--border2), transparent); }
+.footer-name { font-family:'Playfair Display',serif; font-size:1rem; font-weight:800; background:linear-gradient(135deg, var(--a), var(--c), var(--b)); -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text; }
+.footer-sub { font-size:0.78rem; color:var(--text3); margin-top:0.3rem; }
+ul { list-style:none; }
+ul li { padding:0.32rem 0; padding-left:1rem; position:relative; font-size:0.9rem; color:var(--text2); }
+ul li::before { content:'▸'; position:absolute; left:0; color:var(--c); font-size:0.65rem; top:0.44rem; }
+.divider { width:100%; height:1px; background:linear-gradient(90deg,transparent,var(--border),transparent); margin:4rem 0; }
+@media(max-width:600px){ .grid4 { grid-template-columns:1fr 1fr; } .flow { justify-content:center; } .flow-box { min-width:70px; font-size:0.75rem; } }
+</style>
+  <script src="/javascripts/standalone-theme.js"></script>
+    <script src="/javascripts/html-theme-sync.js"></script>
+
+    <meta name="description" content="Complete CYS406 study guide to honeypots and proxy servers: honeypot classifications (interaction level, deployment, deception tech), proxy types (transparent, SOCKS, anonymous, reverse), functioning and configuration — with mnemonics and exam tips.">
+    <link rel="canonical" href="https://shoug-tech.com/academics/cybersecurity/cys406/slide-breakdowns/14-chapter-14-honeypots-and-proxy-servers/chapter-14-honeypots-and-proxy-servers.html">
+    <meta property="og:title" content="CYS406 - Chapter 14: Honeypots and Proxy Servers">
+    <meta property="og:description" content="Complete CYS406 study guide to honeypots and proxy servers: honeypot classifications (interaction level, deployment, deception tech), proxy types (transparent, SOCKS, anonymous, reverse), functioning and configuration — with mnemonics and exam tips.">
+    <meta property="og:url" content="https://shoug-tech.com/academics/cybersecurity/cys406/slide-breakdowns/14-chapter-14-honeypots-and-proxy-servers/chapter-14-honeypots-and-proxy-servers.html">
+    <meta property="og:type" content="article">
+    <meta property="og:image" content="https://shoug-tech.com/assets/og-banner.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="CYS406 - Chapter 14: Honeypots and Proxy Servers">
+    <meta name="twitter:description" content="Complete CYS406 study guide to honeypots and proxy servers: honeypot classifications, proxy types, functioning and configuration — with mnemonics and exam tips.">
+    <meta name="twitter:image" content="https://shoug-tech.com/assets/og-banner.png">
+</head>
+<body>
+
+<button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+  <span class="toggle-icon" id="toggle-icon">☀️</span>
+  <span id="toggle-label">Light Mode</span>
+</button>
+
+<div class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-badge">
+    <span class="badge-dot"></span>
+    CYS406 · Chapter 14
+  </div>
+  <h1>
+    Sweet Traps & Silent Gatekeepers:<br>
+    <span class="gradient-word">Honeypots and Proxy Servers</span>
+  </h1>
+  <p class="hero-sub">Two very different tools with the same mission — put something between the attacker and the real target. Honeypots lure and study intruders; proxy servers stand guard and hide what's behind them.</p>
+  <div class="hero-chips">
+    <span class="chip chip-a">Honeypot Types</span>
+    <span class="chip chip-b">Production vs Research</span>
+    <span class="chip chip-c">Proxy Server Basics</span>
+    <span class="chip chip-d">Transparent vs Non-Transparent</span>
+    <span class="chip chip-e">SOCKS / Reverse Proxy</span>
+    <span class="chip chip-f">Configuration Steps</span>
+  </div>
+  <div class="scroll-hint">scroll ↓</div>
+</div>
+
+<main>
+
+<!-- SECTION 01: What is a Honeypot -->
+<section>
+  <div class="section-header"><span class="sec-num">01 / Decoys</span><div class="sec-line"></div></div>
+  <h2 class="ga">What Is a Honeypot?</h2>
+  <p>A <strong>honeypot</strong> is an information system resource expressly set up to attract and trap people attempting to penetrate an organization's network. It has <strong>no authorized activity and no production value</strong> — so any traffic touching it is almost certainly a probe, attack, or compromise.</p>
+
+  <div class="card bl-a">
+    <h3 class="ta">Why it's useful</h3>
+    <p>A honeypot can log port-access attempts or monitor an attacker's keystrokes, giving defenders an <strong>early warning</strong> of a larger, more concerted attack — without risking real production assets.</p>
+  </div>
+
+  <div class="flow">
+    <div class="flow-box">Attacker</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-box accent">Internet</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-box accent2">Firewall + Packet Filter</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-box accent3">Honeypot (in DMZ)</div>
+  </div>
+  <p style="font-size:0.85rem;color:var(--text3);">Meanwhile, the real Web Server and Internal Network sit safely behind the firewall, isolated from what the honeypot is exposing to the attacker.</p>
+
+  <div class="mnemonic">
+    <div class="mnemonic-icon">🧠</div>
+    <div class="mnemonic-body">
+      <h4>Mnemonic — What a Honeypot Is</h4>
+      <p><span class="mnem-key">"NO VALUE = ALL SUSPICIOUS"</span> — a honeypot has zero legitimate business value, so unlike a real server, there is no such thing as "normal traffic" hitting it. Every single packet is a red flag by definition.</p>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 02: Honeypot Classification by Interaction -->
+<section>
+  <div class="section-header"><span class="sec-num">02 / Classification</span><div class="sec-line"></div></div>
+  <h2 class="gb">Honeypot Types — By Design (Interaction Level)</h2>
+  <p>Honeypots are classified along a spectrum of how much real functionality they simulate.</p>
+
+  <div class="def-grid">
+    <div class="def-card"><div class="def-top" style="background:var(--a)"></div><div class="def-term ta">Low-Interaction</div><div class="def-desc">Simulates only a limited number of services and applications of a target system/network. Low realism, low risk, low maintenance.</div></div>
+    <div class="def-card"><div class="def-top" style="background:var(--b)"></div><div class="def-term tb">Medium-Interaction</div><div class="def-desc">Simulates a real operating system, applications, and services of a target network — more convincing than low-interaction, but still contained.</div></div>
+    <div class="def-card"><div class="def-top" style="background:var(--c)"></div><div class="def-term tc">High-Interaction</div><div class="def-desc">Simulates ALL services and applications of a target network. Most realistic, gathers the richest intelligence, but carries the highest risk if an attacker actually breaks out.</div></div>
+    <div class="def-card"><div class="def-top" style="background:var(--d)"></div><div class="def-term td">Pure Honeypot</div><div class="def-desc">Emulates the real production network of a target organization in full — effectively a complete decoy replica.</div></div>
+  </div>
+
+  <div class="vs">
+    <div class="ex ex-a">
+      <div class="ex-label ta">Low-Interaction</div>
+      <p>Fewer services simulated → easier to deploy and safer, but attackers can often tell it's fake and less data is captured.</p>
+    </div>
+    <div class="ex ex-c">
+      <div class="ex-label tc">High-Interaction</div>
+      <p>All services/apps simulated → very convincing, captures deep attacker behavior, but higher operational risk and effort to maintain.</p>
+    </div>
+  </div>
+
+  <div class="mnemonic">
+    <div class="mnemonic-icon">🧠</div>
+    <div class="mnemonic-body">
+      <h4>Mnemonic — Interaction Ladder</h4>
+      <p><span class="mnem-key">"LOW < MEDIUM < HIGH < PURE"</span> — climb the ladder from a cardboard cutout (Low: a few fake services) to a full-blown wax museum (Medium: real-looking OS/apps) to an actual functioning decoy building (High: everything simulated) to an exact clone of the real HQ (Pure: emulates the whole production network).</p>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 03: Deployment Strategy -->
+<section>
+  <div class="section-header"><span class="sec-num">03 / Deployment</span><div class="sec-line"></div></div>
+  <h2 class="gc">Honeypot Types — By Deployment Strategy</h2>
+
+  <div class="vs">
+    <div class="ex ex-d">
+      <div class="ex-label td">Production Honeypots</div>
+      <p>Deployed inside the organization's production network alongside other real production servers. Because they sit internally, they also help uncover internal flaws and attackers already inside the organization.</p>
+    </div>
+    <div class="ex ex-b">
+      <div class="ex-label tb">Research Honeypots</div>
+      <p>High-interaction honeypots primarily deployed by research institutes, governments, or military organizations to gain detailed knowledge about intruders' actions — intelligence-gathering, not day-to-day defense.</p>
+    </div>
+  </div>
+
+  <div class="tip tip-blue">
+    <div class="tip-icon">💡</div>
+    <div class="tip-body"><h4 class="ta">Production vs Research — the giveaway word</h4><p>"Production" = protects a real business network day to day. "Research" = studies attackers for knowledge, typically run by research/government/military bodies and always high-interaction.</p></div>
+  </div>
+</section>
+
+<!-- SECTION 04: Deception technology types -->
+<section>
+  <div class="section-header"><span class="sec-num">04 / Deception Types</span><div class="sec-line"></div></div>
+  <h2 class="gd">Honeypot Types — By Deception Technology</h2>
+  <p>A finer-grained classification based on exactly <em>what kind of bait</em> is used.</p>
+
+  <div class="def-grid">
+    <div class="def-card"><div class="def-top" style="background:var(--a)"></div><div class="def-term ta">Malware Honeypots</div><div class="def-desc">Used to trap malware campaigns or malware attempts across the network infrastructure.</div></div>
+    <div class="def-card"><div class="def-top" style="background:var(--b)"></div><div class="def-term tb">Database Honeypots</div><div class="def-desc">Employ fake, deliberately vulnerable databases to attract database attacks like SQL injection and database enumeration.</div></div>
+    <div class="def-card"><div class="def-top" style="background:var(--c)"></div><div class="def-term tc">Spam Honeypots</div><div class="def-desc">Specifically target spammers who abuse vulnerable resources such as open mail relays and open proxies.</div></div>
+    <div class="def-card"><div class="def-top" style="background:var(--d)"></div><div class="def-term td">Email Honeypots</div><div class="def-desc">Fake email addresses used specifically to attract fake and malicious emails from adversaries.</div></div>
+    <div class="def-card"><div class="def-top" style="background:var(--e)"></div><div class="def-term te">Spider Honeypots</div><div class="def-desc">Specifically designed to trap web crawlers and spiders.</div></div>
+    <div class="def-card"><div class="def-top" style="background:var(--f)"></div><div class="def-term tf">Honeynets</div><div class="def-desc">Whole networks of honeypots, very effective at determining the entire capabilities of adversaries by observing lateral movement across the fake network.</div></div>
+  </div>
+
+  <div class="mnemonic">
+    <div class="mnemonic-icon">🧠</div>
+    <div class="mnemonic-body">
+      <h4>Mnemonic — Six Deception Flavors</h4>
+      <p><span class="mnem-key">"MDSE-SH"</span> → <strong>M</strong>alware, <strong>D</strong>atabase, <strong>S</strong>pam, <strong>E</strong>mail, <strong>S</strong>pider, <strong>H</strong>oneynet. Think of six different fishing lures, each shaped to attract a specific type of fish (malware writers, SQL injectors, spammers, phishers, crawlers, or whole gangs of intruders via a full honeynet).</p>
+    </div>
+  </div>
+
+  <h3 class="ta" style="margin-top:2rem;">Honeypot Tools</h3>
+  <div class="tbl-wrap">
+    <table class="tbl">
+      <thead><tr><th>Tool</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>HoneyBOT</td><td>Medium-interaction honeypot for Windows; easy-to-use, ideal for network security research.</td></tr>
+        <tr><td>KFSensor</td><td>Commercial Windows honeypot IDS.</td></tr>
+        <tr><td>MongoDB-HoneyProxy</td><td>Honeypot proxy targeting MongoDB-style attacks.</td></tr>
+        <tr><td>Modern Honey Network</td><td>Framework for managing multiple honeypots centrally.</td></tr>
+        <tr><td>ESPot</td><td>Honeypot tool (open-source, GitHub).</td></tr>
+        <tr><td>HoneyPy</td><td>Low-interaction honeypot written in Python.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- SECTION 05: Proxy Servers Intro -->
+<section>
+  <div class="section-header"><span class="sec-num">05 / Gatekeepers</span><div class="sec-line"></div></div>
+  <h2 class="ga">What Are Proxy Servers?</h2>
+  <p>A <strong>proxy server</strong> is a dedicated computer, or a software system, virtually located between a client and the actual server. It acts as a <strong>sentinel</strong> between an internal network and the open internet.</p>
+
+  <div class="flow">
+    <div class="flow-box">User</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-box accent">Proxy Server</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-box accent2">Server</div>
+  </div>
+
+  <div class="tbl-wrap">
+    <table class="tbl">
+      <thead><tr><th>#</th><th>What a proxy server does</th></tr></thead>
+      <tbody>
+        <tr><td>01</td><td>Sits virtually between client and actual server.</td></tr>
+        <tr><td>02</td><td>Acts as a sentinel between an internal network and the open internet.</td></tr>
+        <tr><td>03</td><td>Serves client requests on behalf of actual servers, preventing them from exposing themselves directly to the outside world.</td></tr>
+        <tr><td>04</td><td>Adds an extra layer of defense, protecting against certain OS- and web-server-specific attacks.</td></tr>
+        <tr><td>05</td><td>Lets security teams intercept malicious/offensive web content, viruses, etc. hidden in client requests.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 class="tb" style="margin-top:2rem;">Benefits of a Proxy Server</h3>
+  <div class="grid4">
+    <div class="card bl-a"><h3 class="ta">1</h3><p>Acts as a security protector between user devices and a server.</p></div>
+    <div class="card bl-b"><h3 class="tb">2</h3><p>Enhances the security and privacy of client devices.</p></div>
+    <div class="card bl-c"><h3 class="tc">3</h3><p>Improves browsing speed (via caching).</p></div>
+    <div class="card bl-d"><h3 class="td">4</h3><p>Provides advanced logging capabilities for user activities.</p></div>
+    <div class="card bl-e"><h3 class="te">5</h3><p>Controls access to specific restricted services.</p></div>
+    <div class="card bl-f"><h3 class="tf">6</h3><p>Hides internal IP addresses and filters requests from external sites.</p></div>
+    <div class="card bl-a"><h3 class="ta">7</h3><p>Reduces the chances of modifying cookies in the browser configuration.</p></div>
+    <div class="card bl-b"><h3 class="tb">8</h3><p>Enables authentication for the proxy server before handling user requests.</p></div>
+  </div>
+</section>
+
+<!-- SECTION 06: How proxy works -->
+<section>
+  <div class="section-header"><span class="sec-num">06 / Mechanics</span><div class="sec-line"></div></div>
+  <h2 class="gb">Functioning of a Proxy Server</h2>
+
+  <div class="steps">
+    <div class="step"><div class="step-num">1</div><div class="step-body"><h4>Internal host requests a website</h4><p>The client sends a request to reach an external site.</p></div></div>
+    <div class="step"><div class="step-num">2</div><div class="step-body"><h4>Proxy inspects it</h4><p>The request enters the proxy server, which examines the header and packet content based on a rule base.</p></div></div>
+    <div class="step"><div class="step-num">3</div><div class="step-body"><h4>Packet is reconstructed</h4><p>The proxy server reconstructs the data packet using a different source IP address (its own).</p></div></div>
+    <div class="step"><div class="step-num">4</div><div class="step-body"><h4>Packet transmitted onward</h4><p>The proxy transmits the packet to the target address, concealing the actual end user who made the request.</p></div></div>
+    <div class="step"><div class="step-num">5</div><div class="step-body"><h4>Return packet re-checked</h4><p>If a reply comes back, it's again sent to the proxy server and checked against the rule base.</p></div></div>
+    <div class="step"><div class="step-num">6</div><div class="step-body"><h4>Reconstructed and delivered</h4><p>The proxy reconstructs the returned packet and sends it to the original requesting source computer.</p></div></div>
+  </div>
+
+  <div class="ex ex-a">
+    <div class="ex-label ta">📘 Worked example</div>
+    <p>PC 1 (192.168.2.3) on the internal network requests a Facebook page (registered IP 55.24.411.16). The request goes: internal PC → firewall → proxy server (external interface 24.67.233.7, internal address 66.44.512.128) → internet → Facebook. The reply is forwarded by the proxy back to the requesting client — Facebook only ever sees the proxy's IP, never PC 1's real private address.</p>
+  </div>
+</section>
+
+<!-- SECTION 07: Proxy vs Packet Filter -->
+<section>
+  <div class="section-header"><span class="sec-num">07 / Comparison</span><div class="sec-line"></div></div>
+  <h2 class="gc">Proxy Servers vs Packet Filters</h2>
+
+  <div class="vs">
+    <div class="ex ex-d">
+      <div class="ex-label td">Proxy Servers</div>
+      <p>Examine the full data payload of the packet. Create detailed log listings since they scan the entire IP packet's data. Restructure the packet with a new source IP. If the proxy server fails, <strong>all network communications cease</strong>.</p>
+    </div>
+    <div class="ex ex-b">
+      <div class="ex-label tb">Packet Filters</div>
+      <p>Only examine routing information (headers) of the packet. Log only header information. Simply allow or block data based on filter rules. If a packet filter fails, packets <strong>may still be allowed through</strong> the internal network.</p>
+    </div>
+  </div>
+
+  <div class="mnemonic">
+    <div class="mnemonic-icon">🧠</div>
+    <div class="mnemonic-body">
+      <h4>Mnemonic — Proxy vs Packet Filter Failure</h4>
+      <p><span class="mnem-key">"PROXY FAILS CLOSED, FILTER FAILS OPEN"</span> — if the proxy dies, the whole road is blocked (no traffic at all). If the packet filter dies, the gate is left wide open (traffic may pass unchecked). This "fail closed vs fail open" contrast is a favorite exam trap.</p>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 08: Types of Proxy Servers -->
+<section>
+  <div class="section-header"><span class="sec-num">08 / Types</span><div class="sec-line"></div></div>
+  <h2 class="gd">Types of Proxy Servers</h2>
+  <p>Five named proxy types appear in the slides: Transparent, Non-Transparent, SOCKS, Anonymous, and Reverse.</p>
+
+  <div class="card bl-a">
+    <h3 class="ta">Transparent Proxy</h3>
+    <p>A proxy through which a client system connects to a server <strong>without its knowledge</strong>. It's configured to be entirely invisible to the end user. Important nuance from the slides: with a transparent proxy, all web clients must still be configured manually (despite being "invisible" in terms of the connection process).</p>
+  </div>
+
+  <div class="card bl-b" style="margin-top:1rem;">
+    <h3 class="tb">Non-Transparent Proxy</h3>
+    <p>Requires client software to be configured to use the proxy server — the client is made aware of the proxy's existence. Harder to set up because each client program must be individually configured to route requests to a single port. Four functional areas: <strong>Group Annotation Services</strong>, <strong>Media Type Transformation</strong>, <strong>Protocol Reduction</strong>, <strong>Anonymity Filtering</strong>.</p>
+  </div>
+
+  <div class="card bl-c" style="margin-top:1rem;">
+    <h3 class="tc">SOCKS Proxy</h3>
+    <p>An IETF (Internet Engineering Task Force) standard. Unlike a caching HTTP proxy, SOCKS does not have special caching abilities. It also prevents external network components from collecting information about the client that generated the request. The SOCKS package includes: a SOCKS server for the specified OS, a client program (FTP, Telnet, browser), and a client library for SOCKS.</p>
+  </div>
+
+  <div class="card bl-d" style="margin-top:1rem;">
+    <h3 class="td">Anonymous Proxy</h3>
+    <p>Does not transfer information about the user's IP address, hiding both the user's identity and their surfing interests.</p>
+    <div class="vs">
+      <div class="ex ex-d"><div class="ex-label td">Pros</div><p>Private browsing; can access even censored websites.</p></div>
+      <div class="ex ex-e"><div class="ex-label te">Cons</div><p>May decrease page-load speed; using it to bypass internet censorship is illegal in some countries.</p></div>
+    </div>
+  </div>
+
+  <div class="card bl-e" style="margin-top:1rem;">
+    <h3 class="te">Reverse Proxy</h3>
+    <p>Situated closer to the server(s); returns only a configured set of resources. Can optimize content by compressing it to speed up loading. The client is unaware of the reverse proxy's presence. Sits between a client and the actual web server — but protects the <strong>server</strong> side, unlike a forward proxy which protects the <strong>client</strong> side.</p>
+  </div>
+
+  <div class="mnemonic">
+    <div class="mnemonic-icon">🧠</div>
+    <div class="mnemonic-body">
+      <h4>Mnemonic — Forward vs Reverse Proxy Direction</h4>
+      <p><span class="mnem-key">"FORWARD PROTECTS THE CLIENT, REVERSE PROTECTS THE SERVER"</span> — a regular/forward proxy (transparent, non-transparent, SOCKS, anonymous) sits near the client hiding who's asking. A reverse proxy sits near the server, hiding what's actually answering.</p>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 09: Configuring proxy -->
+<section>
+  <div class="section-header"><span class="sec-num">09 / Configuration</span><div class="sec-line"></div></div>
+  <h2 class="ga">How to Configure a Proxy Server</h2>
+
+  <h3 class="ta">Automatic Proxy Setup — Windows 10</h3>
+  <div class="steps">
+    <div class="step"><div class="step-num">1</div><div class="step-body"><h4>Open Settings</h4><p>Press Windows key + I.</p></div></div>
+    <div class="step"><div class="step-num">2</div><div class="step-body"><h4>Network & Internet → Proxy</h4><p>Navigate to the Proxy section.</p></div></div>
+    <div class="step"><div class="step-num">3</div><div class="step-body"><h4>Check "Automatically detect settings"</h4><p>Verify the toggle is On.</p></div></div>
+    <div class="step"><div class="step-num">4</div><div class="step-body"><h4>Windows runs an automatic check</h4><p>By default.</p></div></div>
+    <div class="step"><div class="step-num">5</div><div class="step-body"><h4>If a PAC file is detected</h4><p>Set "Use Setup Script" toggle to On.</p></div></div>
+    <div class="step"><div class="step-num">6</div><div class="step-body"><h4>Enter script address</h4><p>Type <code>proxy.certifiedhacker.com</code> in the Script Address field.</p></div></div>
+    <div class="step"><div class="step-num">7</div><div class="step-body"><h4>Save</h4><p>Click Save to implement changes and use the internet through the proxy.</p></div></div>
+  </div>
+
+  <h3 class="tb" style="margin-top:2rem;">Manual Proxy Setup — Windows 10</h3>
+  <div class="steps">
+    <div class="step"><div class="step-num">1</div><div class="step-body"><h4>Open Settings</h4><p>Windows key + I.</p></div></div>
+    <div class="step"><div class="step-num">2</div><div class="step-body"><h4>Network & Internet → Proxy</h4><p>Navigate there.</p></div></div>
+    <div class="step"><div class="step-num">3</div><div class="step-body"><h4>Scroll to Manual proxy setup</h4><p>Set "Use a Proxy Server" toggle to On.</p></div></div>
+    <div class="step"><div class="step-num">4</div><div class="step-body"><h4>Enter address and port</h4><p>Type <code>proxy.certifiedhacker.com</code> in the address field, <code>8888</code> in the port field.</p></div></div>
+    <div class="step"><div class="step-num">5</div><div class="step-body"><h4>Add exemptions</h4><p>Type <code>*.local</code> below the address/port fields to exempt local addresses from the proxy.</p></div></div>
+    <div class="step"><div class="step-num">6</div><div class="step-body"><h4>Save</h4><p>Click Save to implement and use the proxy in Windows 10.</p></div></div>
+  </div>
+
+  <div class="vs" style="margin-top:2rem;">
+    <div class="ex ex-c">
+      <div class="ex-label tc">Google Chrome</div>
+      <p>Settings → scroll to Advanced → System → "Open your computer's proxy settings" → follow OS instructions.</p>
+    </div>
+    <div class="ex ex-e">
+      <div class="ex-label te">Microsoft Edge</div>
+      <p>Settings (top-right menu) → scroll to System → "Open your computer's proxy settings" → follow the proxy server setup instructions.</p>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 10: Limitations & Example -->
+<section>
+  <div class="section-header"><span class="sec-num">10 / Trade-offs</span><div class="sec-line"></div></div>
+  <h2 class="gb">Limitations of Proxy Servers</h2>
+  <div class="tbl-wrap">
+    <table class="tbl">
+      <thead><tr><th>#</th><th>Limitation</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>If not properly secured, the proxy can become a single point of failure during an attack.</td></tr>
+        <tr><td>2</td><td>Increases workload — the proxy must be configured for every service it provides.</td></tr>
+        <tr><td>3</td><td>Changing default settings may break the proxy's functionality.</td></tr>
+        <tr><td>4</td><td>Proxies must reroute information, so web pages can sometimes load slowly.</td></tr>
+        <tr><td>5</td><td>If the proxy tries to bypass suspicious software, some page elements may fail to load.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="ex ex-d">
+    <div class="ex-label td">📘 Example: Squid Proxy</div>
+    <p>Squid is a caching proxy for the web, supporting HTTP, HTTPS, FTP, and more. It reduces bandwidth and improves response time by caching and reusing frequently requested web pages.</p>
+  </div>
+
+  <h3 class="tc" style="margin-top:2rem;">List of Proxy Tools</h3>
+  <div class="tbl-wrap">
+    <table class="tbl">
+      <thead><tr><th>Tool</th><th>Tool</th><th>Tool</th></tr></thead>
+      <tbody>
+        <tr><td>Whonix</td><td>Proxify</td><td>ProxyCap</td></tr>
+        <tr><td>Psiphon</td><td>Guardster</td><td>CCProxy</td></tr>
+        <tr><td>FoxyProxy</td><td>Global Proxy Network</td><td>Fiddler</td></tr>
+        <tr><td>GeoSurf</td><td>Anonym8</td><td>BlackArch Proxy</td></tr>
+        <tr><td>JonDo</td><td>ProxySite</td><td>Artica Proxy</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- EXAM TIPS -->
+<section>
+  <div class="section-header"><span class="sec-num">11 / Exam Prep</span><div class="sec-line"></div></div>
+  <h2 class="ga">Exam Tips & Tricks</h2>
+  <div class="grid2">
+    <div class="tip tip-blue"><div class="tip-icon">💡</div><div class="tip-body"><h4 class="ta">Honeypot has zero value by design</h4><p>Any traffic to a honeypot is inherently suspicious — there's no legitimate reason to touch it.</p></div></div>
+    <div class="tip tip-green"><div class="tip-icon">✅</div><div class="tip-body"><h4 class="td">Three honeypot classification axes</h4><p>Interaction level (low/medium/high/pure), deployment strategy (production/research), and deception technology (malware/database/spam/email/spider/honeynet) — three separate ways to categorize the same honeypot.</p></div></div>
+    <div class="tip tip-yellow"><div class="tip-icon">⭐</div><div class="tip-body"><h4 class="tf">Research honeypots are always high-interaction</h4><p>Don't confuse the deployment-strategy axis with the interaction-level axis — research honeypots specifically use high-interaction to gather deep intel.</p></div></div>
+    <div class="tip tip-warn"><div class="tip-icon">⚠️</div><div class="tip-body"><h4 class="te">Proxy failure ≠ packet filter failure</h4><p>Proxy down = all comms cease. Packet filter down = traffic may still pass. Classic contrast question.</p></div></div>
+    <div class="tip tip-blue"><div class="tip-icon">💡</div><div class="tip-body"><h4 class="ta">Transparent proxy still needs client config</h4><p>"Invisible" refers to the connection process, not to setup — clients must still be configured manually per the slides.</p></div></div>
+    <div class="tip tip-green"><div class="tip-icon">✅</div><div class="tip-body"><h4 class="td">Reverse proxy sits near the server</h4><p>All other proxy types sit near the client. Reverse proxy is the odd one out — it protects the server, not the requester.</p></div></div>
+  </div>
+</section>
+
+<!-- QUICK REFERENCE -->
+<section>
+  <div class="section-header"><span class="sec-num">12 / Cheat Sheet</span><div class="sec-line"></div></div>
+  <h2 class="gc">Quick Reference — Everything at a Glance</h2>
+  <div class="tbl-wrap">
+    <table class="tbl">
+      <thead><tr><th>Topic</th><th>Key Point</th></tr></thead>
+      <tbody>
+        <tr><td>Honeypot</td><td>Decoy system with no production value, set up to attract/trap attackers and log their activity.</td></tr>
+        <tr><td>Low-Interaction Honeypot</td><td>Simulates a limited number of services/apps.</td></tr>
+        <tr><td>Medium-Interaction Honeypot</td><td>Simulates a real OS, applications, and services.</td></tr>
+        <tr><td>High-Interaction Honeypot</td><td>Simulates ALL services/applications of a target network.</td></tr>
+        <tr><td>Pure Honeypot</td><td>Emulates the entire real production network of the organization.</td></tr>
+        <tr><td>Production Honeypot</td><td>Deployed inside the production network; helps find internal flaws/attackers.</td></tr>
+        <tr><td>Research Honeypot</td><td>High-interaction; used by research/government/military to study intruders.</td></tr>
+        <tr><td>Malware Honeypot</td><td>Traps malware campaigns/attempts.</td></tr>
+        <tr><td>Database Honeypot</td><td>Fake vulnerable DB attracting SQLi/enumeration attacks.</td></tr>
+        <tr><td>Spam Honeypot</td><td>Targets spammers abusing open mail relays/proxies.</td></tr>
+        <tr><td>Email Honeypot</td><td>Fake email addresses attracting malicious emails.</td></tr>
+        <tr><td>Spider Honeypot</td><td>Traps web crawlers/spiders.</td></tr>
+        <tr><td>Honeynet</td><td>Network of honeypots; reveals full adversary capabilities.</td></tr>
+        <tr><td>Honeypot Tools</td><td>HoneyBOT, KFSensor, MongoDB-HoneyProxy, Modern Honey Network, ESPot, HoneyPy.</td></tr>
+        <tr><td>Proxy Server</td><td>Sits between client and server; sentinel that hides real servers from the outside world.</td></tr>
+        <tr><td>Proxy Benefits</td><td>Security, privacy, speed (caching), logging, access control, IP hiding, cookie protection, authentication.</td></tr>
+        <tr><td>Proxy Functioning</td><td>Request enters proxy → inspected vs rule base → repackaged with new source IP → sent onward → reply re-checked → delivered to client.</td></tr>
+        <tr><td>Proxy vs Packet Filter</td><td>Proxy reads full payload & fails closed; packet filter reads headers only & fails open.</td></tr>
+        <tr><td>Transparent Proxy</td><td>Client connects without knowing; invisible to user; still requires manual client configuration.</td></tr>
+        <tr><td>Non-Transparent Proxy</td><td>Client software must be configured; client is aware; harder to set up per-program.</td></tr>
+        <tr><td>SOCKS Proxy</td><td>IETF standard; no caching; hides client info from external components; includes server, client program, client library.</td></tr>
+        <tr><td>Anonymous Proxy</td><td>Hides user's IP/surfing interests; pro: privacy/censorship bypass; con: slower, sometimes illegal.</td></tr>
+        <tr><td>Reverse Proxy</td><td>Sits near the server; returns limited resources; can compress content; client unaware of its presence.</td></tr>
+        <tr><td>Configuring Proxy (Windows 10)</td><td>Settings → Network & Internet → Proxy → automatic (PAC script) or manual (address+port, exemptions) → Save.</td></tr>
+        <tr><td>Proxy Limitations</td><td>Single point of failure, added workload, breaks if defaults changed, slower page loads, may block page elements.</td></tr>
+        <tr><td>Squid Proxy</td><td>Caching proxy supporting HTTP/HTTPS/FTP; reduces bandwidth via caching frequently requested pages.</td></tr>
+        <tr><td>Proxy Tools</td><td>Whonix, Proxify, ProxyCap, Psiphon, Guardster, CCProxy, FoxyProxy, Fiddler, JonDo, ProxySite, Artica Proxy, and more.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="footer-name">Made by Shoug Alomran</div>
+  <div class="footer-sub">CYS406 · Chapter 14: Honeypots and Proxy Servers · Study Guide</div>
+</footer>
+
+<script>
+(function() {
+  const _stored = localStorage.getItem('shoug-theme');
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const theme = _stored === 'dark' ? 'dark' : _stored === 'light' ? 'light' : (prefersDark ? 'dark' : 'light');
+  document.documentElement.setAttribute('data-theme', theme);
+  updateToggle(theme);
+})();
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+  if (localStorage.getItem('shoug-theme')) return;
+  const theme = e.matches ? 'dark' : 'light';
+  document.documentElement.setAttribute('data-theme', theme);
+  updateToggle(theme);
+});
+function toggleTheme() {
+  const current = document.documentElement.getAttribute('data-theme');
+  const next = current === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+      try { localStorage.setItem('shoug-theme', document.documentElement.getAttribute('data-theme')); } catch(e) {}
+  updateToggle(next);
+}
+function updateToggle(theme) {
+  const icon  = document.getElementById('toggle-icon');
+  const label = document.getElementById('toggle-label');
+  if (theme === 'dark') {
+    icon.textContent  = '☀️';
+    label.textContent = 'Light Mode';
+  } else {
+    icon.textContent  = '🌙';
+    label.textContent = 'Dark Mode';
+  }
+}
+</script>
+
+</body>
+</html>

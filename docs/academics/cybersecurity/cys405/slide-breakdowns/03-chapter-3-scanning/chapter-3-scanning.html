@@ -1,0 +1,1824 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+  <link rel="icon" type="image/png" href="/assets/favicon.png?v=2">
+  <link rel="shortcut icon" href="/assets/favicon.png?v=2">
+  <link rel="apple-touch-icon" href="/assets/favicon.png?v=2">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CYS405 - Chapter 3: Scanning</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Playfair+Display:wght@700;800&display=swap"
+    rel="stylesheet">
+  <style>
+    /* ============================================================
+   THEME VARIABLES
+   ============================================================ */
+    :root {
+      --a: #6ee7f7;
+      /* cyan accent */
+      --b: #f472b6;
+      /* pink accent */
+      --c: #a78bfa;
+      /* violet accent */
+      --d: #34d399;
+      /* emerald accent */
+      --e: #fb923c;
+      /* orange accent */
+      --f: #facc15;
+      /* yellow accent */
+    }
+
+    [data-theme="dark"] {
+      --bg: #080c14;
+      --bg2: #0e1422;
+      --bg3: #141c2e;
+      --surface: rgba(255, 255, 255, 0.04);
+      --surface2: rgba(255, 255, 255, 0.07);
+      --border: rgba(255, 255, 255, 0.08);
+      --border2: rgba(255, 255, 255, 0.13);
+      --text: #e2e8f0;
+      --text2: #94a3b8;
+      --text3: #64748b;
+      --heading: #f8fafc;
+      --code-bg: rgba(255, 255, 255, 0.06);
+      --shadow: rgba(0, 0, 0, 0.5);
+      --toggle-bg: rgba(255, 255, 255, 0.08);
+    }
+
+    [data-theme="light"] {
+      --bg: #f0f4ff;
+      --bg2: #e8eef9;
+      --bg3: #dde5f5;
+      --surface: rgba(255, 255, 255, 0.75);
+      --surface2: rgba(255, 255, 255, 0.95);
+      --border: rgba(80, 100, 160, 0.12);
+      --border2: rgba(80, 100, 160, 0.2);
+      --text: #1e2a45;
+      --text2: #475569;
+      --text3: #94a3b8;
+      --heading: #0f172a;
+      --code-bg: rgba(80, 100, 160, 0.08);
+      --shadow: rgba(100, 120, 200, 0.15);
+      --toggle-bg: rgba(80, 100, 160, 0.12);
+    }
+
+    /* ============================================================
+   RESET & BASE
+   ============================================================ */
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Space Grotesk', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      overflow-x: hidden;
+      transition: background 0.4s ease, color 0.4s ease;
+    }
+
+    /* ============================================================
+   THEME TOGGLE
+   ============================================================ */
+    .theme-toggle {
+      position: fixed;
+      top: 1.25rem;
+      right: 1.5rem;
+      z-index: 1000;
+      background: var(--toggle-bg);
+      border: 1px solid var(--border2);
+      border-radius: 100px;
+      padding: 0.45rem 1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text2);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      transition: all 0.3s ease;
+      user-select: none;
+    }
+
+    .theme-toggle:hover {
+      border-color: var(--a);
+      color: var(--a);
+      transform: scale(1.04);
+    }
+
+    .toggle-icon {
+      font-size: 1rem;
+      transition: transform 0.4s ease;
+    }
+
+    /* ============================================================
+   HERO
+   ============================================================ */
+    .hero {
+      min-height: 60vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      position: relative;
+      padding: 5rem 2rem 4rem;
+      overflow: hidden;
+    }
+
+    [data-theme="dark"] .hero {
+      background:
+        radial-gradient(ellipse 70% 50% at 20% 20%, rgba(110, 231, 247, 0.12) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 80% 80%, rgba(167, 139, 250, 0.12) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 40% at 50% 60%, rgba(244, 114, 182, 0.08) 0%, transparent 60%),
+        var(--bg);
+    }
+
+    [data-theme="light"] .hero {
+      background:
+        radial-gradient(ellipse 70% 50% at 20% 20%, rgba(110, 231, 247, 0.18) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 80% 80%, rgba(167, 139, 250, 0.15) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 40% at 50% 60%, rgba(244, 114, 182, 0.12) 0%, transparent 60%),
+        var(--bg);
+    }
+
+    .hero-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(var(--border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 50px 50px;
+      opacity: 0.7;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-radius: 100px;
+      padding: 0.4rem 1.1rem;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--a);
+      margin-bottom: 1.75rem;
+      position: relative;
+      z-index: 1;
+      animation: fadeUp 0.7s ease both;
+    }
+
+    .badge-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--a);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1
+      }
+
+      50% {
+        opacity: 0.4
+      }
+    }
+
+    .hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.4rem, 5.5vw, 4.6rem);
+      font-weight: 800;
+      line-height: 1.15;
+      color: var(--heading);
+      position: relative;
+      z-index: 1;
+      animation: fadeUp 0.85s ease both;
+    }
+
+    .hero h1 .gradient-word {
+      background: linear-gradient(135deg, var(--a), var(--c), var(--b));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-sub {
+      font-size: 1.05rem;
+      color: var(--text2);
+      margin-top: 1.25rem;
+      max-width: 560px;
+      position: relative;
+      z-index: 1;
+      animation: fadeUp 1s ease both;
+    }
+
+    .hero-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      justify-content: center;
+      max-width: 720px;
+      margin-top: 2rem;
+      position: relative;
+      z-index: 1;
+      animation: fadeUp 1.1s ease both;
+    }
+
+    .chip {
+      padding: 0.3rem 0.85rem;
+      border-radius: 100px;
+      font-size: 0.76rem;
+      font-weight: 600;
+      border: 1px solid;
+      transition: transform 0.2s;
+    }
+
+    .chip:hover {
+      transform: translateY(-2px);
+    }
+
+    .chip-a {
+      color: var(--a);
+      border-color: rgba(110, 231, 247, 0.35);
+      background: rgba(110, 231, 247, 0.08);
+    }
+
+    .chip-b {
+      color: var(--b);
+      border-color: rgba(244, 114, 182, 0.35);
+      background: rgba(244, 114, 182, 0.08);
+    }
+
+    .chip-c {
+      color: var(--c);
+      border-color: rgba(167, 139, 250, 0.35);
+      background: rgba(167, 139, 250, 0.08);
+    }
+
+    .chip-d {
+      color: var(--d);
+      border-color: rgba(52, 211, 153, 0.35);
+      background: rgba(52, 211, 153, 0.08);
+    }
+
+    .chip-e {
+      color: var(--e);
+      border-color: rgba(251, 146, 60, 0.35);
+      background: rgba(251, 146, 60, 0.08);
+    }
+
+    .chip-f {
+      color: var(--f);
+      border-color: rgba(250, 204, 21, 0.35);
+      background: rgba(250, 204, 21, 0.08);
+    }
+
+    .scroll-hint {
+      position: absolute;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      color: var(--text3);
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.4rem;
+      animation: bounce 2.5s infinite;
+      z-index: 1;
+    }
+
+    @keyframes bounce {
+
+      0%,
+      100% {
+        transform: translateX(-50%) translateY(0)
+      }
+
+      50% {
+        transform: translateX(-50%) translateY(8px)
+      }
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(24px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    /* ============================================================
+   LAYOUT
+   ============================================================ */
+    main {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 4rem 2rem;
+    }
+
+    section {
+      margin-bottom: 5.5rem;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .sec-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text3);
+      white-space: nowrap;
+    }
+
+    .sec-line {
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, var(--border2), transparent);
+    }
+
+    h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.6rem, 3vw, 2.3rem);
+      font-weight: 800;
+      color: var(--heading);
+      margin-bottom: 0.4rem;
+    }
+
+    h3 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 1.05rem;
+      margin-bottom: 0.6rem;
+      color: var(--heading);
+    }
+
+    p {
+      font-size: 0.94rem;
+      color: var(--text2);
+      margin-bottom: 0.7rem;
+    }
+
+    strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    /* ============================================================
+   GRADIENT TEXT HELPERS
+   ============================================================ */
+    .ga {
+      background: linear-gradient(135deg, var(--a), var(--d));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .gb {
+      background: linear-gradient(135deg, var(--b), var(--c));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .gc {
+      background: linear-gradient(135deg, var(--e), var(--b));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .gd {
+      background: linear-gradient(135deg, var(--c), var(--a));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* ============================================================
+   CARDS
+   ============================================================ */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.6rem;
+      transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
+    }
+
+    .card:hover {
+      border-color: var(--border2);
+      transform: translateY(-3px);
+      box-shadow: 0 12px 30px var(--shadow);
+    }
+
+    .grid2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1rem;
+    }
+
+    .grid3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1rem;
+    }
+
+    .grid4 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 1rem;
+    }
+
+    .bl-a {
+      border-left: 3px solid var(--a);
+    }
+
+    .bl-b {
+      border-left: 3px solid var(--b);
+    }
+
+    .bl-c {
+      border-left: 3px solid var(--c);
+    }
+
+    .bl-d {
+      border-left: 3px solid var(--d);
+    }
+
+    .bl-e {
+      border-left: 3px solid var(--e);
+    }
+
+    .bl-f {
+      border-left: 3px solid var(--f);
+    }
+
+    .ta {
+      color: var(--a);
+    }
+
+    .tb {
+      color: var(--b);
+    }
+
+    .tc {
+      color: var(--c);
+    }
+
+    .td {
+      color: var(--d);
+    }
+
+    .te {
+      color: var(--e);
+    }
+
+    .tf {
+      color: var(--f);
+    }
+
+    /* ============================================================
+   DEFINITION CARDS
+   ============================================================ */
+    .def-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 0.75rem;
+    }
+
+    .def-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.2rem;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s;
+    }
+
+    .def-card:hover {
+      transform: translateY(-2px);
+    }
+
+    .def-top {
+      height: 2px;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+    }
+
+    .def-term {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .def-desc {
+      font-size: 0.87rem;
+      color: var(--text2);
+    }
+
+    /* ============================================================
+   MONO / CODE STYLE
+   ============================================================ */
+    .mono {
+      font-family: 'JetBrains Mono', monospace;
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      font-size: 0.85rem;
+      color: var(--a);
+      margin-top: 0.75rem;
+      overflow-x: auto;
+      white-space: pre;
+    }
+
+    .mono span.comment {
+      color: var(--text3);
+    }
+
+    .mono span.key {
+      color: var(--b);
+    }
+
+    .mono span.val {
+      color: var(--d);
+    }
+
+    /* ============================================================
+   EXAMPLE BOXES
+   ============================================================ */
+    .ex {
+      border-radius: 14px;
+      padding: 1.4rem;
+      border: 1px solid;
+      margin-top: 1.25rem;
+    }
+
+    .ex-a {
+      background: rgba(110, 231, 247, 0.06);
+      border-color: rgba(110, 231, 247, 0.25);
+    }
+
+    .ex-b {
+      background: rgba(244, 114, 182, 0.06);
+      border-color: rgba(244, 114, 182, 0.25);
+    }
+
+    .ex-c {
+      background: rgba(167, 139, 250, 0.06);
+      border-color: rgba(167, 139, 250, 0.25);
+    }
+
+    .ex-d {
+      background: rgba(52, 211, 153, 0.06);
+      border-color: rgba(52, 211, 153, 0.25);
+    }
+
+    .ex-e {
+      background: rgba(251, 146, 60, 0.06);
+      border-color: rgba(251, 146, 60, 0.25);
+    }
+
+    .ex-f {
+      background: rgba(250, 204, 21, 0.06);
+      border-color: rgba(250, 204, 21, 0.25);
+    }
+
+    .ex-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .ex-label::before {
+      content: '';
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    /* ============================================================
+   TIP BOXES
+   ============================================================ */
+    .tip {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      padding: 1.1rem 1.25rem;
+      border-radius: 12px;
+      margin-top: 1rem;
+    }
+
+    .tip-green {
+      background: rgba(52, 211, 153, 0.08);
+      border: 1px solid rgba(52, 211, 153, 0.25);
+    }
+
+    .tip-blue {
+      background: rgba(110, 231, 247, 0.08);
+      border: 1px solid rgba(110, 231, 247, 0.25);
+    }
+
+    .tip-warn {
+      background: rgba(251, 146, 60, 0.08);
+      border: 1px solid rgba(251, 146, 60, 0.25);
+    }
+
+    .tip-yellow {
+      background: rgba(250, 204, 21, 0.08);
+      border: 1px solid rgba(250, 204, 21, 0.25);
+    }
+
+    .tip-icon {
+      font-size: 1.2rem;
+      flex-shrink: 0;
+      margin-top: 0.1rem;
+    }
+
+    .tip-body h4 {
+      font-size: 0.84rem;
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+    }
+
+    .tip-body p {
+      font-size: 0.86rem;
+      color: var(--text2);
+      margin: 0;
+    }
+
+    /* ============================================================
+   MNEMONIC BOXES  (memory aids - distinct brain/purple styling)
+   ============================================================ */
+    .mnemonic {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      padding: 1.25rem 1.4rem;
+      border-radius: 14px;
+      margin-top: 1.25rem;
+      background: linear-gradient(135deg, rgba(167, 139, 250, 0.10), rgba(244, 114, 182, 0.07));
+      border: 1px solid rgba(167, 139, 250, 0.35);
+      position: relative;
+    }
+
+    .mnemonic-icon {
+      font-size: 1.3rem;
+      flex-shrink: 0;
+    }
+
+    .mnemonic-body h4 {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--c);
+      margin-bottom: 0.4rem;
+    }
+
+    .mnemonic-body p {
+      font-size: 0.92rem;
+      color: var(--text);
+      margin: 0;
+    }
+
+    .mnemonic-body .mnem-key {
+      color: var(--b);
+      font-weight: 700;
+    }
+
+    /* ============================================================
+   TABLES
+   ============================================================ */
+    .tbl {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.87rem;
+    }
+
+    .tbl th {
+      text-align: left;
+      padding: 0.65rem 0.9rem;
+      background: var(--surface2);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text3);
+      border-bottom: 1px solid var(--border2);
+    }
+
+    .tbl td {
+      padding: 0.7rem 0.9rem;
+      border-bottom: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .tbl tr:last-child td {
+      border-bottom: none;
+    }
+
+    .tbl tr:hover td {
+      background: var(--surface2);
+    }
+
+    .tbl-wrap {
+      overflow-x: auto;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+
+    /* ============================================================
+   VS (COMPARISON) CARDS
+   ============================================================ */
+    .vs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    @media(max-width:640px) {
+      .vs {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* ============================================================
+   FLOW DIAGRAM
+   ============================================================ */
+    .flow {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      flex-wrap: wrap;
+      margin: 1.5rem 0;
+    }
+
+    .flow-box {
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-radius: 10px;
+      padding: 0.75rem 1rem;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--heading);
+      text-align: center;
+      flex: 1;
+      min-width: 80px;
+    }
+
+    .flow-box.accent {
+      background: rgba(110, 231, 247, 0.12);
+      border-color: rgba(110, 231, 247, 0.4);
+      color: var(--a);
+    }
+
+    .flow-box.accent2 {
+      background: rgba(167, 139, 250, 0.12);
+      border-color: rgba(167, 139, 250, 0.4);
+      color: var(--c);
+    }
+
+    .flow-box.accent3 {
+      background: rgba(52, 211, 153, 0.12);
+      border-color: rgba(52, 211, 153, 0.4);
+      color: var(--d);
+    }
+
+    .flow-arrow {
+      font-size: 1.2rem;
+      color: var(--text3);
+      padding: 0 0.35rem;
+      flex-shrink: 0;
+    }
+
+    /* ============================================================
+   STEPS
+   ============================================================ */
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .step {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      padding: 1rem 1.25rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      transition: all 0.3s;
+    }
+
+    .step:hover {
+      border-color: var(--border2);
+    }
+
+    .step-num {
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      font-size: 0.8rem;
+      flex-shrink: 0;
+      color: #000;
+      background: linear-gradient(135deg, var(--a), var(--c));
+    }
+
+    .step-body h4 {
+      font-weight: 700;
+      font-size: 0.9rem;
+      margin-bottom: 0.2rem;
+    }
+
+    .step-body p {
+      font-size: 0.86rem;
+      color: var(--text2);
+      margin: 0;
+    }
+
+    /* ============================================================
+   BADGES
+   ============================================================ */
+    .badge {
+      display: inline-block;
+      padding: 0.2rem 0.55rem;
+      border-radius: 100px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      border: 1px solid;
+    }
+
+    .badge-a {
+      color: var(--a);
+      border-color: rgba(110, 231, 247, 0.4);
+      background: rgba(110, 231, 247, 0.1);
+    }
+
+    .badge-b {
+      color: var(--b);
+      border-color: rgba(244, 114, 182, 0.4);
+      background: rgba(244, 114, 182, 0.1);
+    }
+
+    .badge-c {
+      color: var(--c);
+      border-color: rgba(167, 139, 250, 0.4);
+      background: rgba(167, 139, 250, 0.1);
+    }
+
+    .badge-e {
+      color: var(--e);
+      border-color: rgba(251, 146, 60, 0.4);
+      background: rgba(251, 146, 60, 0.1);
+    }
+
+    .row-highlight td {
+      background: rgba(52, 211, 153, 0.06) !important;
+    }
+
+    .row-warn td {
+      background: rgba(244, 114, 182, 0.06) !important;
+    }
+
+    /* ============================================================
+   FOOTER
+   ============================================================ */
+    footer {
+      text-align: center;
+      padding: 3rem 2rem 4rem;
+      position: relative;
+    }
+
+    footer::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 10%;
+      right: 10%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border2), transparent);
+    }
+
+    .footer-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--a), var(--c), var(--b));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .footer-sub {
+      font-size: 0.78rem;
+      color: var(--text3);
+      margin-top: 0.3rem;
+    }
+
+    /* UL RESET */
+    ul {
+      list-style: none;
+    }
+
+    ul li {
+      padding: 0.32rem 0;
+      padding-left: 1rem;
+      position: relative;
+      font-size: 0.9rem;
+      color: var(--text2);
+    }
+
+    ul li::before {
+      content: '▸';
+      position: absolute;
+      left: 0;
+      color: var(--c);
+      font-size: 0.65rem;
+      top: 0.44rem;
+    }
+
+    .divider {
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border), transparent);
+      margin: 4rem 0;
+    }
+
+    @media(max-width:600px) {
+      .grid4 {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .flow {
+        justify-content: center;
+      }
+
+      .flow-box {
+        min-width: 70px;
+        font-size: 0.75rem;
+      }
+    }
+  </style>
+  <script src="/javascripts/standalone-theme.js"></script>
+  <script src="/javascripts/html-theme-sync.js"></script>
+
+  <meta name="description"
+    content="A comprehensive study guide to CYS405 Chapter 3: Scanning — covering port, network, and vulnerability scanning, TCP flags, the six major scanning techniques, Nmap syntax and output, banner grabbing, and network mapping tools.">
+  <link rel="canonical"
+    href="https://shoug-tech.com/academics/cybersecurity/cys405/slide-breakdowns/03-chapter-3-scanning/chapter-3-scanning.html">
+  <meta property="og:title" content="CYS405 - Chapter 3: Scanning">
+  <meta property="og:description"
+    content="A comprehensive study guide to CYS405 Chapter 3: Scanning — covering port, network, and vulnerability scanning, TCP flags, the six major scanning techniques, Nmap syntax and output, banner grabbing, and network mapping tools.">
+  <meta property="og:url"
+    content="https://shoug-tech.com/academics/cybersecurity/cys405/slide-breakdowns/03-chapter-3-scanning/chapter-3-scanning.html">
+  <meta property="og:type" content="article">
+  <meta property="og:image" content="https://shoug-tech.com/assets/og-banner.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="CYS405 - Chapter 3: Scanning">
+  <meta name="twitter:description"
+    content="A comprehensive study guide to CYS405 Chapter 3: Scanning — covering port, network, and vulnerability scanning, TCP flags, the six major scanning techniques, Nmap syntax and output, banner grabbing, and network mapping tools.">
+  <meta name="twitter:image" content="https://shoug-tech.com/assets/og-banner.png">
+</head>
+
+<body>
+
+
+  <!-- THEME TOGGLE -->
+  <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+    <span class="toggle-icon" id="toggle-icon">☀️</span>
+    <span id="toggle-label">Light Mode</span>
+  </button>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-grid"></div>
+
+    <div class="hero-badge">
+      <span class="badge-dot"></span>
+      CYS405 · Chapter 3
+    </div>
+
+    <h1>
+      Knocking on Every Door:<br>
+      <span class="gradient-word">The Art of Scanning</span>
+    </h1>
+    <p class="hero-sub">From live-host discovery to open ports and known weaknesses — how attackers and pentesters map a
+      target's network before deciding where to strike.</p>
+
+    <div class="hero-chips">
+      <span class="chip chip-a">Port Scanning</span>
+      <span class="chip chip-b">TCP Flags</span>
+      <span class="chip chip-c">Stealth &amp; Xmas Scans</span>
+      <span class="chip chip-d">Nmap</span>
+      <span class="chip chip-e">Banner Grabbing</span>
+      <span class="chip chip-f">Network Mapping</span>
+    </div>
+
+    <div class="scroll-hint">
+      scroll ↓
+    </div>
+  </div>
+
+  <main>
+
+    <!-- SECTION 01: OVERVIEW -->
+    <section>
+      <div class="section-header"><span class="sec-num">01 / Overview</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="ga">Overview of Network Scanning</h2>
+      <p><strong>Scanning</strong> is the process of gathering additional, detailed information about a target by using
+        highly complex and aggressive reconnaissance techniques — it is the natural next step after footprinting. Where
+        footprinting answers "what does this organization look like from the outside," scanning answers "what is
+        actually alive and listening on the network right now."</p>
+      <p><strong>Network scanning</strong> refers to the set of procedures used to identify hosts, ports, and services
+        in a network. It is one of the most important phases of intelligence gathering for an attacker, because it lets
+        them build a working profile of the target organization's infrastructure.</p>
+      <p>The purpose of scanning is to:</p>
+      <ul>
+        <li>Discover exploitable communication channels on the target</li>
+        <li>Probe as many "listeners" (open ports/services) as possible</li>
+        <li>Keep track of which ones are responsive or useful to the attacker's specific goals</li>
+      </ul>
+      <p>During this phase, the attacker tries to find various ways to intrude into the target system and also looks for
+        configuration lapses. Everything discovered during scanning then feeds directly into the attacker's overall
+        <strong>attack strategy</strong> — scanning is the bridge between "recon" and "exploitation."</p>
+
+      <div class="tip tip-blue">
+        <div class="tip-icon">💡</div>
+        <div class="tip-body">
+          <h4 class="ta">Why this phase matters</h4>
+          <p>The more information an attacker has about a target, the greater the chance of finding a security loophole
+            and gaining unauthorized access. Scanning is where footprinting's "big picture" turns into concrete,
+            attackable details: specific IPs, specific ports, specific services.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 02: TYPES AND OBJECTIVES -->
+    <section>
+      <div class="section-header"><span class="sec-num">02 / Categories</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gb">Types and Objectives of Scanning</h2>
+      <p>There are three broad categories of scanning, each answering a different question about the target.</p>
+
+      <div class="def-grid">
+        <div class="def-card">
+          <div class="def-top" style="background:var(--a)"></div>
+          <div class="def-term ta">Port Scanning</div>
+          <div class="def-desc">Lists the open ports and services on a target by connecting to / probing TCP and UDP
+            ports to see if a service is running or listening. Reveals the OS/architecture (OS fingerprinting), the
+            running/listening services, and the specific application or version of a service.</div>
+        </div>
+        <div class="def-card">
+          <div class="def-top" style="background:var(--c)"></div>
+          <div class="def-term tc">Network Scanning</div>
+          <div class="def-desc">Lists the live hosts, IP addresses, and open ports on a network. Discovers which
+            machines are actually "up," so the attacker knows the best means of entry into the system.</div>
+        </div>
+        <div class="def-card">
+          <div class="def-top" style="background:var(--d)"></div>
+          <div class="def-term td">Vulnerability Scanning</div>
+          <div class="def-desc">Shows the presence of known weaknesses. A vulnerability scanner = a scanning engine + a
+            catalog of known-vulnerable files/exploits for a range of servers (e.g. looking for exposed backup files or
+            directory-traversal exploits).</div>
+        </div>
+      </div>
+
+      <div class="mnemonic">
+        <div class="mnemonic-icon">🧠</div>
+        <div class="mnemonic-body">
+          <h4>Mnemonic — the 3 scan types</h4>
+          <p><span class="mnem-key">P-N-V</span> = <strong>P</strong>ort (which doors are open),
+            <strong>N</strong>etwork (which houses are occupied), <strong>V</strong>ulnerability (which doors have
+            broken locks). Think of scanning a street: first find which houses have people home (Network), then check
+            each house's doors (Port), then check which doors have faulty locks (Vulnerability).</p>
+        </div>
+      </div>
+
+      <div class="tip tip-warn">
+        <div class="tip-icon">⚠️</div>
+        <div class="tip-body">
+          <h4 class="te">On OS fingerprinting</h4>
+          <p>Port scanning doesn't just show "open" vs "closed" — the pattern of open ports and how the stack responds
+            to crafted packets lets an attacker fingerprint the operating system itself, which then narrows down which
+            known OS vulnerabilities to try.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 03: TCP COMMUNICATION FLAGS -->
+    <section>
+      <div class="section-header"><span class="sec-num">03 / Protocol</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gc">TCP Communication Flags</h2>
+      <p>The TCP header contains control flags that manage transmission of data across a TCP connection. There are
+        <strong>six TCP flags</strong> total, and each one is exactly <strong>1 bit</strong> — so the whole "Flags"
+        section of the TCP header is 6 bits wide. When a flag's bit is set to "1," that flag is considered "on"/active.
+      </p>
+      <p>The six flags split into two functional groups:</p>
+
+      <div class="vs">
+        <div class="ex ex-d">
+          <div class="ex-label td">Connection control (4 flags)</div>
+          <p><strong>SYN</strong> — synchronize, initiates a connection.<br><strong>ACK</strong> — acknowledges receipt
+            of data/a segment.<br><strong>FIN</strong> — finish, gracefully terminates a
+            connection.<br><strong>RST</strong> — reset, abruptly tears down a connection (often sent when a port is
+            closed).</p>
+        </div>
+        <div class="ex ex-b">
+          <div class="ex-label tb">Instruction flags (2 flags)</div>
+          <p><strong>PSH</strong> — push, tells the receiving stack to pass buffered data to the application immediately
+            rather than waiting to fill the buffer.<br><strong>URG</strong> — urgent, marks the data in the segment as
+            urgent and to be processed ahead of other queued data.</p>
+        </div>
+      </div>
+
+      <div class="mnemonic">
+        <div class="mnemonic-icon">🧠</div>
+        <div class="mnemonic-body">
+          <h4>Mnemonic — the 6 TCP flags</h4>
+          <p><span class="mnem-key">"Sam Always Fixes Routers, Please Urgently"</span> = <strong>S</strong>YN,
+            <strong>A</strong>CK, <strong>F</strong>IN, <strong>R</strong>ST (the 4 connection-lifecycle flags), then
+            <strong>P</strong>SH, <strong>U</strong>RG (the 2 instruction flags). Note it's 6 flags = 6 bits, one bit
+            each.</p>
+        </div>
+      </div>
+
+      <h3 class="ta">The TCP 3-way handshake</h3>
+      <p>Normal TCP connection establishment (implied by "TCP/IP Communication" and used constantly by scanners like
+        Nmap) uses SYN and ACK together:</p>
+      <div class="flow">
+        <div class="flow-box accent">Client sends SYN</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box accent2">Server replies SYN/ACK</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box accent3">Client sends ACK</div>
+      </div>
+      <p>Once all three segments have been exchanged, the connection is fully "established" (open). Scanners exploit
+        this handshake directly: a <strong>full connect scan</strong> completes it, while a <strong>stealth/half-open
+          scan</strong> deliberately stops after the SYN/ACK to avoid completing (and logging) a full connection.
+        Crafting a packet with a specific, non-standard combination of these six flags set is exactly what the "Creating
+        a Custom Packet Using TCP Flags" technique refers to — it's the basis for the more exotic scans below (Xmas,
+        Inverse TCP, ACK-probe, etc.).</p>
+    </section>
+
+    <!-- SECTION 04: SCANNING TECHNIQUES -->
+    <section>
+      <div class="section-header"><span class="sec-num">04 / Techniques</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gd">Scanning Techniques</h2>
+      <p>Scanning is the process of gathering information about systems that are "alive" and responding on the network.
+        Port scanning techniques help an attacker identify open ports on a target host; administrators use the same
+        techniques defensively to verify their own security policies. The first step is always to check for live systems
+        — only once live hosts are found does it make sense to hunt for open ports on them (since unnecessary open ports
+        are exactly what attackers exploit to get in).</p>
+
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>Technique</th>
+              <th>How it works</th>
+              <th>Stealth level</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>ICMP Scanning</strong></td>
+              <td>Sends ICMP echo requests (pings) to check which hosts on the network are alive/responding before doing
+                any port-level work.</td>
+              <td><span class="badge badge-e">Low</span> — easily logged/blocked by firewalls</td>
+            </tr>
+            <tr>
+              <td><strong>Ping Sweep</strong></td>
+              <td>Automates ICMP scanning across an entire range of IP addresses at once to build a list of live hosts
+                (using ping-sweep tools such as Angry IP Scanner, SolarWinds, or nmap's <span
+                  style="font-family:'JetBrains Mono',monospace">-sn</span>).</td>
+              <td><span class="badge badge-e">Low</span></td>
+            </tr>
+            <tr>
+              <td><strong>TCP Connect / Full Open Scan</strong></td>
+              <td>Completes the full 3-way handshake (SYN → SYN/ACK → ACK) with every target port. If it succeeds, the
+                port is open.</td>
+              <td><span class="badge badge-e">Low</span> — creates a full, logged connection</td>
+            </tr>
+            <tr>
+              <td><strong>Stealth Scan (Half-open Scan)</strong></td>
+              <td>Sends a SYN, and if a SYN/ACK comes back, immediately sends an RST instead of completing with ACK. The
+                port is confirmed open but no full connection (and usually no log entry) is created.</td>
+              <td><span class="badge badge-a">High</span></td>
+            </tr>
+            <tr>
+              <td><strong>Inverse TCP Flag Scanning</strong></td>
+              <td>Sends probe packets with certain flags set (e.g. FIN, URG, PSH) and no response means the port is
+                likely open; an RST response means closed. Relies on RFC 793 TCP behavior rather than a handshake.</td>
+              <td><span class="badge badge-a">High</span></td>
+            </tr>
+            <tr>
+              <td><strong>Xmas Scan</strong></td>
+              <td>Sets the FIN, PSH, and URG flags all at once ("lit up like a Christmas tree"). Closed ports reply RST;
+                open/filtered ports typically stay silent.</td>
+              <td><span class="badge badge-a">High</span> — but easily fingerprinted by modern IDS as anomalous</td>
+            </tr>
+            <tr>
+              <td><strong>ACK Flag Probe Scanning</strong></td>
+              <td>Sends packets with only the ACK flag set. Doesn't reveal open vs closed directly — instead it's used
+                to map firewall rulesets: an RST reply means the port is "unfiltered," no reply (or ICMP unreachable)
+                means "filtered."</td>
+              <td><span class="badge badge-c">Medium</span> — used mainly for firewall/rule mapping</td>
+            </tr>
+            <tr>
+              <td><strong>IDLE / IPID Header Scan</strong></td>
+              <td>Uses a third, idle "zombie" host's predictable IP ID (IPID) sequence numbers to indirectly infer port
+                states on the real target, without ever sending a packet from the attacker's own IP.</td>
+              <td><span class="badge badge-a">Very High</span> — attacker's identity stays hidden behind the zombie</td>
+            </tr>
+            <tr>
+              <td><strong>UDP Scanning</strong></td>
+              <td>Sends UDP packets to target ports. Since UDP is connectionless, an ICMP "port unreachable" reply means
+                closed; no response (UDP has no RST equivalent) usually means open or filtered — making UDP scans slower
+                and less reliable to interpret.</td>
+              <td><span class="badge badge-c">Medium</span> — slow and ambiguous, but often overlooked by defenders</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="mnemonic">
+        <div class="mnemonic-icon">🧠</div>
+        <div class="mnemonic-body">
+          <h4>Mnemonic — remembering the technique list</h4>
+          <p><span class="mnem-key">"I Ping The Server, X-raying ACKs Idly, Under-cover"</span> ≈ <strong>I</strong>CMP
+            → <strong>P</strong>ing Sweep → <strong>T</strong>CP Connect → <strong>S</strong>tealth/Inverse-TCP →
+            <strong>X</strong>mas → <strong>ACK</strong> probe → <strong>I</strong>DLE/IPID → <strong>U</strong>DP. The
+            scans get progressively stealthier and weirder as you go down the list — from "loud ping" to "hide behind a
+            zombie host."</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 05: COUNTERMEASURES, BANNER GRABBING, DIAGRAMS -->
+    <section>
+      <div class="section-header"><span class="sec-num">05 / Defense &amp; Recon</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="ga">Countermeasures, Banner Grabbing &amp; Network Diagrams</h2>
+
+      <div class="card bl-d">
+        <h3 class="td">Port Scanning Countermeasures</h3>
+        <p>Defenders reduce their exposure to scanning by:</p>
+        <ul>
+          <li>Deploying properly configured <strong>firewalls</strong> to filter/drop unsolicited probe traffic</li>
+          <li>Running <strong>IDS/IPS</strong> to detect and block scan signatures (e.g. Xmas or NULL scans)</li>
+          <li>Disabling or removing <strong>unnecessary services and ports</strong> so there's nothing to find</li>
+          <li>Actively <strong>monitoring</strong> network traffic and logs for scanning patterns</li>
+          <li>Configuring hosts to return misleading or generic banners so OS/service fingerprinting fails</li>
+          <li>Segmenting networks so a scan of one segment doesn't reveal the whole environment</li>
+        </ul>
+      </div>
+
+      <div class="card bl-b" style="margin-top:1rem;">
+        <h3 class="tb">Banner Grabbing &amp; OS Fingerprinting</h3>
+        <p><strong>Banner grabbing</strong> is the technique of connecting to an open service (e.g. via telnet or netcat
+          to an FTP/HTTP/SMTP port) and reading the greeting text the service sends back — this banner often reveals the
+          exact software name and version running.</p>
+        <p><strong>Identifying the target system's OS</strong> (OS fingerprinting) combines banner text with subtler
+          clues: how the TCP/IP stack responds to unusual flag combinations, default TTL values, window sizes, and which
+          ports are open by default. Together these let an attacker (or a tool like Nmap with <span
+            style="font-family:'JetBrains Mono',monospace">-O</span>) guess the target's operating system and version
+          with high confidence.</p>
+      </div>
+
+      <div class="card bl-c" style="margin-top:1rem;">
+        <h3 class="tc">Drawing Network Diagrams</h3>
+        <p>Once live hosts, open ports, and services are known, the results are assembled into a <strong>network
+            diagram</strong> — a visual map of the target infrastructure. This turns a pile of scan output into an
+          at-a-glance picture of the attack surface: which hosts talk to which, where the perimeter is, and which
+          devices look most vulnerable or valuable.</p>
+      </div>
+    </section>
+
+    <!-- SECTION 06: SCANNING PEN TESTING -->
+    <section>
+      <div class="section-header"><span class="sec-num">06 / Workflow</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gb">Scanning Pen Testing</h2>
+      <p>Scanning pen testing applies the standard penetration-testing methodology specifically to the scanning phase:
+        it isn't just "run a tool," it's a structured process of checking live systems, enumerating ports/services,
+        fingerprinting the OS, identifying vulnerabilities, and documenting everything found — always within the
+        authorized scope of the engagement.</p>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <h4>Check for live systems</h4>
+            <p>Confirm which hosts in the target range actually respond (ICMP/ping sweep or TCP-based host discovery).
+            </p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <h4>Check for open ports</h4>
+            <p>Run port scans against each live host to enumerate open, closed, and filtered ports.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <h4>Fingerprint services and OS</h4>
+            <p>Grab banners and analyze stack responses to identify exact service versions and the operating system.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <h4>Scan for vulnerabilities</h4>
+            <p>Match discovered services/versions against known vulnerability catalogs.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">5</div>
+          <div class="step-body">
+            <h4>Draw the network diagram &amp; document</h4>
+            <p>Compile findings into a network map and a report to hand off to the exploitation phase (or the client, in
+              a legitimate pentest).</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 07: NMAP -->
+    <section>
+      <div class="section-header"><span class="sec-num">07 / Tooling</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gc">Nmap — Network Mapper</h2>
+      <p><strong>Nmap</strong> is one of the most widely used security tools in existence. It's a port scanner capable
+        of performing many different scan types (TCP connect, SYN stealth, UDP, Xmas, ACK, and more — all the techniques
+        covered above can be invoked as Nmap flags). It runs on Windows, Linux, macOS, and other platforms, and is
+        available both as a command-line application and through its graphical front-end, <strong>Zenmap</strong>.</p>
+
+      <div class="mono">nmap &lt;IP address&gt; &lt;options&gt;</div>
+
+      <div class="ex ex-a">
+        <div class="ex-label ta">📘 Real Slide Example</div>
+        <p>Command: <strong>nmap –sT 192.168.123.254</strong> (the <span
+            style="font-family:'JetBrains Mono',monospace">-sT</span> flag runs a TCP Connect / full open scan)</p>
+        <div class="mono">Starting Nmap 7.60 (http://nmap.org) at 2017-10-17 10:37 Central Daylight Time
+          Interesting ports on 192.168.123.254:
+          Not shown: 1711 filtered ports
+          PORT STATE SERVICE
+          21/tcp open ftp
+          80/tcp open http
+          2601/tcp open zebra
+          2602/tcp open ripd
+          MAC Address: 00:16:01:D1:3D:5C (Linksys)
+          Nmap done: 1 IP address (1 host up) scanned in 113.750 seconds</div>
+      </div>
+
+      <h3 class="tc" style="margin-top:1.75rem;">Using Nmap: the three port states</h3>
+      <p>Every port Nmap probes is reported in exactly one of three states:</p>
+      <div class="def-grid">
+        <div class="def-card">
+          <div class="def-top" style="background:var(--d)"></div>
+          <div class="def-term td">Open</div>
+          <div class="def-desc">The target device is actively accepting connections on this port — a service is
+            listening.</div>
+        </div>
+        <div class="def-card">
+          <div class="def-top" style="background:var(--e)"></div>
+          <div class="def-term te">Closed</div>
+          <div class="def-desc">The port is reachable but is not listening or accepting connections — no service is
+            bound to it.</div>
+        </div>
+        <div class="def-card">
+          <div class="def-top" style="background:var(--b)"></div>
+          <div class="def-term tb">Filtered</div>
+          <div class="def-desc">A firewall, filter, or other network device is monitoring the port and preventing Nmap
+            from fully determining its true status.</div>
+        </div>
+      </div>
+
+      <div class="mnemonic">
+        <div class="mnemonic-icon">🧠</div>
+        <div class="mnemonic-body">
+          <h4>Mnemonic — the 3 port states</h4>
+          <p><span class="mnem-key">"Open door, Closed door, Locked-and-guarded door"</span> = Open (walk right in),
+            Closed (door exists but nobody answers), Filtered (a guard/firewall blocks you from even knowing if anyone's
+            home).</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 08: OTHER SCANNING TOOLS -->
+    <section>
+      <div class="section-header"><span class="sec-num">08 / Tooling</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gd">Other Scanning Tools</h2>
+      <div class="grid3">
+        <div class="card bl-a">
+          <h3 class="ta">SuperScan</h3>
+          <p>A Windows-based port scanner designed to scan TCP and UDP ports, perform ping scans, run Whois queries, and
+            use Traceroute — an all-in-one GUI recon tool.</p>
+        </div>
+        <div class="card bl-c">
+          <h3 class="tc">Scanrand</h3>
+          <p>Scans a single host or very large networks. Uses <strong>stateless scanning</strong> to scan ports in
+            parallel, making it extremely fast when huge numbers of IP addresses need to be scanned quickly.</p>
+        </div>
+        <div class="card bl-e">
+          <h3 class="te">THC-Amap</h3>
+          <p>"The Hacker's Choice — Another Mapper." Stores a library of normal protocol responses to elicit replies
+            from encrypted/obfuscated services, letting it find services that have been moved off their standard ports.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 09: MAPPING THE NETWORK -->
+    <section>
+      <div class="section-header"><span class="sec-num">09 / Mapping</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="ga">Mapping the Network</h2>
+      <p>The end goal of scanning is a network diagram that shows vulnerable or potentially vulnerable devices on the
+        target network. This can be done with automated tools or the old-fashioned way.</p>
+      <div class="vs">
+        <div class="ex ex-d">
+          <div class="ex-label td">Automated tools</div>
+          <p>SolarWinds, Auvik, Open-AudIT, The Dude, Angry IP Scanner, Spiceworks Map IT, and Network Notepad — these
+            auto-discover devices and render a visual topology.</p>
+        </div>
+        <div class="ex ex-b">
+          <div class="ex-label tb">Manual maps</div>
+          <p>Recording discovered info by hand in a notebook or spreadsheet — slower, but useful when tooling isn't
+            available or a lightweight record is enough.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 10: ANALYZING THE RESULTS -->
+    <section>
+      <div class="section-header"><span class="sec-num">10 / Wrap-up</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gb">Analyzing the Results</h2>
+      <p>Raw scan output is only useful once it's interpreted. The slides describe a simple 3-step analysis process:</p>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <h4>Analyze the revealed services</h4>
+            <p>Look at exactly which services were found running on each live host.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <h4>Explore vulnerabilities per service/system</h4>
+            <p>For each service and system version identified, check for known weaknesses.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <h4>Research and locate potential exploits</h4>
+            <p>Often done via a search engine — searching the OS and service/version to find public exploits that could
+              be used against the system.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 11: EXAM TIPS -->
+    <section>
+      <div class="section-header"><span class="sec-num">11 / Exam Prep</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gc">Exam Tips &amp; Tricks</h2>
+      <div class="grid2">
+        <div class="tip tip-blue">
+          <div class="tip-icon">📌</div>
+          <div class="tip-body">
+            <h4 class="ta">3 scan types</h4>
+            <p>Port (open ports/services), Network (live hosts/IPs), Vulnerability (known weaknesses) — know which
+              question each one answers.</p>
+          </div>
+        </div>
+        <div class="tip tip-green">
+          <div class="tip-icon">📌</div>
+          <div class="tip-body">
+            <h4 class="td">6 TCP flags, 6 bits</h4>
+            <p>SYN, ACK, FIN, RST (connection lifecycle) + PSH, URG (instructions). Each flag = 1 bit; the whole flags
+              field = 6 bits.</p>
+          </div>
+        </div>
+        <div class="tip tip-yellow">
+          <div class="tip-icon">📌</div>
+          <div class="tip-body">
+            <h4 class="tf">3-way handshake</h4>
+            <p>SYN → SYN/ACK → ACK. Full connect scan completes it; stealth (half-open) scan deliberately stops after
+              SYN/ACK.</p>
+          </div>
+        </div>
+        <div class="tip tip-warn">
+          <div class="tip-icon">📌</div>
+          <div class="tip-body">
+            <h4 class="te">Xmas scan flags</h4>
+            <p>Sets FIN + PSH + URG together ("lit up like a Christmas tree") — remember exactly these three flags, not
+              all six.</p>
+          </div>
+        </div>
+        <div class="tip tip-blue">
+          <div class="tip-icon">📌</div>
+          <div class="tip-body">
+            <h4 class="ta">Nmap example command</h4>
+            <p>Know the exact syntax from the slides: <span style="font-family:'JetBrains Mono',monospace">nmap –sT
+                192.168.123.254</span> is a TCP Connect scan (-sT flag).</p>
+          </div>
+        </div>
+        <div class="tip tip-green">
+          <div class="tip-icon">📌</div>
+          <div class="tip-body">
+            <h4 class="td">3 port states</h4>
+            <p>Open (accepting connections), Closed (not listening), Filtered (firewall/filter blocking full
+              determination).</p>
+          </div>
+        </div>
+        <div class="tip tip-yellow">
+          <div class="tip-icon">📌</div>
+          <div class="tip-body">
+            <h4 class="tf">IDLE scan = stealthiest</h4>
+            <p>Uses a third "zombie" host's IPID sequence to hide the attacker's own IP completely from the target.</p>
+          </div>
+        </div>
+        <div class="tip tip-warn">
+          <div class="tip-icon">📌</div>
+          <div class="tip-body">
+            <h4 class="te">Tool name matchups</h4>
+            <p>SuperScan = Windows GUI (TCP/UDP/ping/Whois/Traceroute); Scanrand = stateless, fast, large networks;
+              THC-Amap = finds services moved off standard ports.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 12: QUICK REFERENCE -->
+    <section>
+      <div class="section-header"><span class="sec-num">12 / Cheat Sheet</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gd">Quick Reference — Everything at a Glance</h2>
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>Topic</th>
+              <th>Key Point</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Scanning (definition)</td>
+              <td>Gathering detailed info about a target via aggressive recon techniques; bridges footprinting and
+                exploitation.</td>
+            </tr>
+            <tr>
+              <td>Port Scanning</td>
+              <td>Lists open ports/services; enables OS fingerprinting and service/version identification.</td>
+            </tr>
+            <tr>
+              <td>Network Scanning</td>
+              <td>Lists live hosts, IP addresses, and open ports across the network.</td>
+            </tr>
+            <tr>
+              <td>Vulnerability Scanning</td>
+              <td>Scanning engine + catalog of known vulnerable files/exploits; finds known weaknesses.</td>
+            </tr>
+            <tr>
+              <td>TCP Flags (count)</td>
+              <td>6 flags total, 1 bit each, 6-bit field: SYN, ACK, FIN, RST, PSH, URG.</td>
+            </tr>
+            <tr>
+              <td>Connection-lifecycle flags</td>
+              <td>SYN, ACK, FIN, RST — establish, maintain, and terminate connections.</td>
+            </tr>
+            <tr>
+              <td>Instruction flags</td>
+              <td>PSH (push data now), URG (mark data urgent).</td>
+            </tr>
+            <tr>
+              <td>3-Way Handshake</td>
+              <td>SYN → SYN/ACK → ACK establishes a TCP connection.</td>
+            </tr>
+            <tr>
+              <td>ICMP Scanning</td>
+              <td>Pings hosts to check who's alive before port scanning.</td>
+            </tr>
+            <tr>
+              <td>Ping Sweep</td>
+              <td>Automated ICMP scan across an IP range; tools: Angry IP Scanner, SolarWinds, etc.</td>
+            </tr>
+            <tr>
+              <td>TCP Connect / Full Open Scan</td>
+              <td>Completes full 3-way handshake; reliable but loud/logged.</td>
+            </tr>
+            <tr>
+              <td>Stealth Scan (Half-open)</td>
+              <td>Sends SYN, gets SYN/ACK, replies RST instead of ACK — avoids full connection/logging.</td>
+            </tr>
+            <tr>
+              <td>Inverse TCP Flag Scanning</td>
+              <td>Uses flags like FIN/URG/PSH; no response often = open, RST = closed.</td>
+            </tr>
+            <tr>
+              <td>Xmas Scan</td>
+              <td>Sets FIN+PSH+URG together; closed ports send RST.</td>
+            </tr>
+            <tr>
+              <td>ACK Flag Probe Scanning</td>
+              <td>Maps firewall rules: RST = unfiltered, no reply = filtered (not open/closed).</td>
+            </tr>
+            <tr>
+              <td>IDLE/IPID Header Scan</td>
+              <td>Uses a "zombie" host's IPID sequence to scan without revealing attacker's IP.</td>
+            </tr>
+            <tr>
+              <td>UDP Scanning</td>
+              <td>ICMP "port unreachable" = closed; no reply = open|filtered (ambiguous, slow).</td>
+            </tr>
+            <tr>
+              <td>Port Scanning Countermeasures</td>
+              <td>Firewalls, IDS/IPS, disabling unneeded services, monitoring, misleading banners, segmentation.</td>
+            </tr>
+            <tr>
+              <td>Banner Grabbing</td>
+              <td>Reading a service's greeting text to learn its exact software/version.</td>
+            </tr>
+            <tr>
+              <td>OS Fingerprinting</td>
+              <td>Combines banners + stack-response quirks (TTL, window size, flag handling) to identify the OS.</td>
+            </tr>
+            <tr>
+              <td>Network Diagrams</td>
+              <td>Visual maps of discovered hosts/ports/services showing the attack surface.</td>
+            </tr>
+            <tr>
+              <td>Scanning Pen Testing</td>
+              <td>Structured workflow: live hosts → open ports → fingerprint → vulnerabilities → diagram/report.</td>
+            </tr>
+            <tr>
+              <td>Nmap</td>
+              <td>Network Mapper; widely used port scanner; CLI + Zenmap GUI; Windows/Linux/macOS.</td>
+            </tr>
+            <tr>
+              <td>Nmap syntax</td>
+              <td><span style="font-family:'JetBrains Mono',monospace">nmap &lt;IP address&gt; &lt;options&gt;</span>;
+                example <span style="font-family:'JetBrains Mono',monospace">nmap –sT 192.168.123.254</span> (TCP
+                connect scan).</td>
+            </tr>
+            <tr>
+              <td>Port states</td>
+              <td>Open (accepting), Closed (not listening), Filtered (firewall blocking determination).</td>
+            </tr>
+            <tr>
+              <td>SuperScan</td>
+              <td>Windows GUI: TCP/UDP scans, ping scans, Whois, Traceroute.</td>
+            </tr>
+            <tr>
+              <td>Scanrand</td>
+              <td>Stateless, parallel scanning; fast across huge IP ranges.</td>
+            </tr>
+            <tr>
+              <td>THC-Amap</td>
+              <td>Finds services redirected off their standard ports via signature matching.</td>
+            </tr>
+            <tr>
+              <td>Mapping tools</td>
+              <td>SolarWinds, Auvik, Open-AudIT, The Dude, Angry IP Scanner, Spiceworks Map IT, Network Notepad.</td>
+            </tr>
+            <tr>
+              <td>Manual maps</td>
+              <td>Recording scan data in a notebook or spreadsheet.</td>
+            </tr>
+            <tr>
+              <td>Analyzing results (3 steps)</td>
+              <td>Analyze revealed services → explore vulnerabilities → research/locate exploits (often via search
+                engine).</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="footer-name">Made by Shoug Alomran</div>
+    <div class="footer-sub">CYS405 · Chapter 3: Scanning · Study Guide</div>
+  </footer>
+
+  <script>
+    // Auto-detect system preference on load
+    (function () {
+      const _stored = localStorage.getItem('shoug-theme');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const theme = _stored === 'dark' ? 'dark' : _stored === 'light' ? 'light' : (prefersDark ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', theme);
+      updateToggle(theme);
+    })();
+
+    // Listen for system changes
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+      if (localStorage.getItem('shoug-theme')) return;
+      const theme = e.matches ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', theme);
+      updateToggle(theme);
+    });
+
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme');
+      const next = current === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      try { localStorage.setItem('shoug-theme', document.documentElement.getAttribute('data-theme')); } catch (e) { }
+      updateToggle(next);
+    }
+
+    function updateToggle(theme) {
+      const icon = document.getElementById('toggle-icon');
+      const label = document.getElementById('toggle-label');
+      if (theme === 'dark') {
+        icon.textContent = '☀️';
+        label.textContent = 'Light Mode';
+      } else {
+        icon.textContent = '🌙';
+        label.textContent = 'Dark Mode';
+      }
+    }
+  </script>
+
+</body>
+
+</html>

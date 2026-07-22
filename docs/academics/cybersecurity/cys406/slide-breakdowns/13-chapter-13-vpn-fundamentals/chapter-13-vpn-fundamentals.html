@@ -1,0 +1,2044 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+  <link rel="icon" type="image/png" href="/assets/favicon.png?v=2">
+  <link rel="shortcut icon" href="/assets/favicon.png?v=2">
+  <link rel="apple-touch-icon" href="/assets/favicon.png?v=2">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CYS406 - Chapter 13: VPN Fundamentals</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Playfair+Display:wght@700;800&display=swap"
+    rel="stylesheet">
+  <style>
+    /* ============================================================
+   THEME VARIABLES
+   ============================================================ */
+    :root {
+      --a: #6ee7f7;
+      /* cyan accent */
+      --b: #f472b6;
+      /* pink accent */
+      --c: #a78bfa;
+      /* violet accent */
+      --d: #34d399;
+      /* emerald accent */
+      --e: #fb923c;
+      /* orange accent */
+      --f: #facc15;
+      /* yellow accent */
+    }
+
+    [data-theme="dark"] {
+      --bg: #080c14;
+      --bg2: #0e1422;
+      --bg3: #141c2e;
+      --surface: rgba(255, 255, 255, 0.04);
+      --surface2: rgba(255, 255, 255, 0.07);
+      --border: rgba(255, 255, 255, 0.08);
+      --border2: rgba(255, 255, 255, 0.13);
+      --text: #e2e8f0;
+      --text2: #94a3b8;
+      --text3: #64748b;
+      --heading: #f8fafc;
+      --code-bg: rgba(255, 255, 255, 0.06);
+      --shadow: rgba(0, 0, 0, 0.5);
+      --toggle-bg: rgba(255, 255, 255, 0.08);
+    }
+
+    [data-theme="light"] {
+      --bg: #f0f4ff;
+      --bg2: #e8eef9;
+      --bg3: #dde5f5;
+      --surface: rgba(255, 255, 255, 0.75);
+      --surface2: rgba(255, 255, 255, 0.95);
+      --border: rgba(80, 100, 160, 0.12);
+      --border2: rgba(80, 100, 160, 0.2);
+      --text: #1e2a45;
+      --text2: #475569;
+      --text3: #94a3b8;
+      --heading: #0f172a;
+      --code-bg: rgba(80, 100, 160, 0.08);
+      --shadow: rgba(100, 120, 200, 0.15);
+      --toggle-bg: rgba(80, 100, 160, 0.12);
+    }
+
+    /* ============================================================
+   RESET & BASE
+   ============================================================ */
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Space Grotesk', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      overflow-x: hidden;
+      transition: background 0.4s ease, color 0.4s ease;
+    }
+
+    /* ============================================================
+   THEME TOGGLE
+   ============================================================ */
+    .theme-toggle {
+      position: fixed;
+      top: 1.25rem;
+      right: 1.5rem;
+      z-index: 1000;
+      background: var(--toggle-bg);
+      border: 1px solid var(--border2);
+      border-radius: 100px;
+      padding: 0.45rem 1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text2);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      transition: all 0.3s ease;
+      user-select: none;
+    }
+
+    .theme-toggle:hover {
+      border-color: var(--a);
+      color: var(--a);
+      transform: scale(1.04);
+    }
+
+    .toggle-icon {
+      font-size: 1rem;
+      transition: transform 0.4s ease;
+    }
+
+    /* ============================================================
+   HERO
+   ============================================================ */
+    .hero {
+      min-height: 60vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      position: relative;
+      padding: 5rem 2rem 4rem;
+      overflow: hidden;
+    }
+
+    [data-theme="dark"] .hero {
+      background:
+        radial-gradient(ellipse 70% 50% at 20% 20%, rgba(110, 231, 247, 0.12) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 80% 80%, rgba(167, 139, 250, 0.12) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 40% at 50% 60%, rgba(244, 114, 182, 0.08) 0%, transparent 60%),
+        var(--bg);
+    }
+
+    [data-theme="light"] .hero {
+      background:
+        radial-gradient(ellipse 70% 50% at 20% 20%, rgba(110, 231, 247, 0.18) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 80% 80%, rgba(167, 139, 250, 0.15) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 40% at 50% 60%, rgba(244, 114, 182, 0.12) 0%, transparent 60%),
+        var(--bg);
+    }
+
+    .hero-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(var(--border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 50px 50px;
+      opacity: 0.7;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-radius: 100px;
+      padding: 0.4rem 1.1rem;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--a);
+      margin-bottom: 1.75rem;
+      position: relative;
+      z-index: 1;
+      animation: fadeUp 0.7s ease both;
+    }
+
+    .badge-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--a);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1
+      }
+
+      50% {
+        opacity: 0.4
+      }
+    }
+
+    .hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.4rem, 5.5vw, 4.6rem);
+      font-weight: 800;
+      line-height: 1.15;
+      color: var(--heading);
+      position: relative;
+      z-index: 1;
+      animation: fadeUp 0.85s ease both;
+    }
+
+    .hero h1 .gradient-word {
+      background: linear-gradient(135deg, var(--a), var(--c), var(--b));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-sub {
+      font-size: 1.05rem;
+      color: var(--text2);
+      margin-top: 1.25rem;
+      max-width: 560px;
+      position: relative;
+      z-index: 1;
+      animation: fadeUp 1s ease both;
+    }
+
+    .hero-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      justify-content: center;
+      max-width: 720px;
+      margin-top: 2rem;
+      position: relative;
+      z-index: 1;
+      animation: fadeUp 1.1s ease both;
+    }
+
+    .chip {
+      padding: 0.3rem 0.85rem;
+      border-radius: 100px;
+      font-size: 0.76rem;
+      font-weight: 600;
+      border: 1px solid;
+      transition: transform 0.2s;
+    }
+
+    .chip:hover {
+      transform: translateY(-2px);
+    }
+
+    .chip-a {
+      color: var(--a);
+      border-color: rgba(110, 231, 247, 0.35);
+      background: rgba(110, 231, 247, 0.08);
+    }
+
+    .chip-b {
+      color: var(--b);
+      border-color: rgba(244, 114, 182, 0.35);
+      background: rgba(244, 114, 182, 0.08);
+    }
+
+    .chip-c {
+      color: var(--c);
+      border-color: rgba(167, 139, 250, 0.35);
+      background: rgba(167, 139, 250, 0.08);
+    }
+
+    .chip-d {
+      color: var(--d);
+      border-color: rgba(52, 211, 153, 0.35);
+      background: rgba(52, 211, 153, 0.08);
+    }
+
+    .chip-e {
+      color: var(--e);
+      border-color: rgba(251, 146, 60, 0.35);
+      background: rgba(251, 146, 60, 0.08);
+    }
+
+    .chip-f {
+      color: var(--f);
+      border-color: rgba(250, 204, 21, 0.35);
+      background: rgba(250, 204, 21, 0.08);
+    }
+
+    .scroll-hint {
+      position: absolute;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      color: var(--text3);
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.4rem;
+      animation: bounce 2.5s infinite;
+      z-index: 1;
+    }
+
+    @keyframes bounce {
+
+      0%,
+      100% {
+        transform: translateX(-50%) translateY(0)
+      }
+
+      50% {
+        transform: translateX(-50%) translateY(8px)
+      }
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(24px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    /* ============================================================
+   LAYOUT
+   ============================================================ */
+    main {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 4rem 2rem;
+    }
+
+    section {
+      margin-bottom: 5.5rem;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .sec-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text3);
+      white-space: nowrap;
+    }
+
+    .sec-line {
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, var(--border2), transparent);
+    }
+
+    h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.6rem, 3vw, 2.3rem);
+      font-weight: 800;
+      color: var(--heading);
+      margin-bottom: 0.4rem;
+    }
+
+    h3 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 1.05rem;
+      margin-bottom: 0.6rem;
+      color: var(--heading);
+    }
+
+    p {
+      font-size: 0.94rem;
+      color: var(--text2);
+      margin-bottom: 0.7rem;
+    }
+
+    strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    /* ============================================================
+   GRADIENT TEXT HELPERS
+   ============================================================ */
+    .ga {
+      background: linear-gradient(135deg, var(--a), var(--d));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .gb {
+      background: linear-gradient(135deg, var(--b), var(--c));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .gc {
+      background: linear-gradient(135deg, var(--e), var(--b));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .gd {
+      background: linear-gradient(135deg, var(--c), var(--a));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* ============================================================
+   CARDS
+   ============================================================ */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.6rem;
+      transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
+    }
+
+    .card:hover {
+      border-color: var(--border2);
+      transform: translateY(-3px);
+      box-shadow: 0 12px 30px var(--shadow);
+    }
+
+    .grid2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1rem;
+    }
+
+    .grid3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1rem;
+    }
+
+    .grid4 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 1rem;
+    }
+
+    .bl-a {
+      border-left: 3px solid var(--a);
+    }
+
+    .bl-b {
+      border-left: 3px solid var(--b);
+    }
+
+    .bl-c {
+      border-left: 3px solid var(--c);
+    }
+
+    .bl-d {
+      border-left: 3px solid var(--d);
+    }
+
+    .bl-e {
+      border-left: 3px solid var(--e);
+    }
+
+    .bl-f {
+      border-left: 3px solid var(--f);
+    }
+
+    .ta {
+      color: var(--a);
+    }
+
+    .tb {
+      color: var(--b);
+    }
+
+    .tc {
+      color: var(--c);
+    }
+
+    .td {
+      color: var(--d);
+    }
+
+    .te {
+      color: var(--e);
+    }
+
+    .tf {
+      color: var(--f);
+    }
+
+    /* ============================================================
+   DEFINITION CARDS
+   ============================================================ */
+    .def-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 0.75rem;
+    }
+
+    .def-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.2rem;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s;
+    }
+
+    .def-card:hover {
+      transform: translateY(-2px);
+    }
+
+    .def-top {
+      height: 2px;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+    }
+
+    .def-term {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .def-desc {
+      font-size: 0.87rem;
+      color: var(--text2);
+    }
+
+    /* ============================================================
+   MONO / CODE STYLE
+   ============================================================ */
+    .mono {
+      font-family: 'JetBrains Mono', monospace;
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      font-size: 0.85rem;
+      color: var(--a);
+      margin-top: 0.75rem;
+      overflow-x: auto;
+      white-space: pre;
+    }
+
+    .mono span.comment {
+      color: var(--text3);
+    }
+
+    .mono span.key {
+      color: var(--b);
+    }
+
+    .mono span.val {
+      color: var(--d);
+    }
+
+    /* ============================================================
+   EXAMPLE BOXES
+   ============================================================ */
+    .ex {
+      border-radius: 14px;
+      padding: 1.4rem;
+      border: 1px solid;
+      margin-top: 1.25rem;
+    }
+
+    .ex-a {
+      background: rgba(110, 231, 247, 0.06);
+      border-color: rgba(110, 231, 247, 0.25);
+    }
+
+    .ex-b {
+      background: rgba(244, 114, 182, 0.06);
+      border-color: rgba(244, 114, 182, 0.25);
+    }
+
+    .ex-c {
+      background: rgba(167, 139, 250, 0.06);
+      border-color: rgba(167, 139, 250, 0.25);
+    }
+
+    .ex-d {
+      background: rgba(52, 211, 153, 0.06);
+      border-color: rgba(52, 211, 153, 0.25);
+    }
+
+    .ex-e {
+      background: rgba(251, 146, 60, 0.06);
+      border-color: rgba(251, 146, 60, 0.25);
+    }
+
+    .ex-f {
+      background: rgba(250, 204, 21, 0.06);
+      border-color: rgba(250, 204, 21, 0.25);
+    }
+
+    .ex-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .ex-label::before {
+      content: '';
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    /* ============================================================
+   TIP BOXES
+   ============================================================ */
+    .tip {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      padding: 1.1rem 1.25rem;
+      border-radius: 12px;
+      margin-top: 1rem;
+    }
+
+    .tip-green {
+      background: rgba(52, 211, 153, 0.08);
+      border: 1px solid rgba(52, 211, 153, 0.25);
+    }
+
+    .tip-blue {
+      background: rgba(110, 231, 247, 0.08);
+      border: 1px solid rgba(110, 231, 247, 0.25);
+    }
+
+    .tip-warn {
+      background: rgba(251, 146, 60, 0.08);
+      border: 1px solid rgba(251, 146, 60, 0.25);
+    }
+
+    .tip-yellow {
+      background: rgba(250, 204, 21, 0.08);
+      border: 1px solid rgba(250, 204, 21, 0.25);
+    }
+
+    .tip-icon {
+      font-size: 1.2rem;
+      flex-shrink: 0;
+      margin-top: 0.1rem;
+    }
+
+    .tip-body h4 {
+      font-size: 0.84rem;
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+    }
+
+    .tip-body p {
+      font-size: 0.86rem;
+      color: var(--text2);
+      margin: 0;
+    }
+
+    /* ============================================================
+   MNEMONIC BOXES  (memory aids - distinct brain/purple styling)
+   ============================================================ */
+    .mnemonic {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      padding: 1.25rem 1.4rem;
+      border-radius: 14px;
+      margin-top: 1.25rem;
+      background: linear-gradient(135deg, rgba(167, 139, 250, 0.10), rgba(244, 114, 182, 0.07));
+      border: 1px solid rgba(167, 139, 250, 0.35);
+      position: relative;
+    }
+
+    .mnemonic-icon {
+      font-size: 1.3rem;
+      flex-shrink: 0;
+    }
+
+    .mnemonic-body h4 {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--c);
+      margin-bottom: 0.4rem;
+    }
+
+    .mnemonic-body p {
+      font-size: 0.92rem;
+      color: var(--text);
+      margin: 0;
+    }
+
+    .mnemonic-body .mnem-key {
+      color: var(--b);
+      font-weight: 700;
+    }
+
+    /* ============================================================
+   TABLES
+   ============================================================ */
+    .tbl {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.87rem;
+    }
+
+    .tbl th {
+      text-align: left;
+      padding: 0.65rem 0.9rem;
+      background: var(--surface2);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text3);
+      border-bottom: 1px solid var(--border2);
+    }
+
+    .tbl td {
+      padding: 0.7rem 0.9rem;
+      border-bottom: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .tbl tr:last-child td {
+      border-bottom: none;
+    }
+
+    .tbl tr:hover td {
+      background: var(--surface2);
+    }
+
+    .tbl-wrap {
+      overflow-x: auto;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+
+    /* ============================================================
+   VS (COMPARISON) CARDS
+   ============================================================ */
+    .vs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    @media(max-width:640px) {
+      .vs {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* ============================================================
+   FLOW DIAGRAM
+   ============================================================ */
+    .flow {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      flex-wrap: wrap;
+      margin: 1.5rem 0;
+    }
+
+    .flow-box {
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-radius: 10px;
+      padding: 0.75rem 1rem;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--heading);
+      text-align: center;
+      flex: 1;
+      min-width: 80px;
+    }
+
+    .flow-box.accent {
+      background: rgba(110, 231, 247, 0.12);
+      border-color: rgba(110, 231, 247, 0.4);
+      color: var(--a);
+    }
+
+    .flow-box.accent2 {
+      background: rgba(167, 139, 250, 0.12);
+      border-color: rgba(167, 139, 250, 0.4);
+      color: var(--c);
+    }
+
+    .flow-box.accent3 {
+      background: rgba(52, 211, 153, 0.12);
+      border-color: rgba(52, 211, 153, 0.4);
+      color: var(--d);
+    }
+
+    .flow-arrow {
+      font-size: 1.2rem;
+      color: var(--text3);
+      padding: 0 0.35rem;
+      flex-shrink: 0;
+    }
+
+    /* ============================================================
+   STEPS
+   ============================================================ */
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .step {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      padding: 1rem 1.25rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      transition: all 0.3s;
+    }
+
+    .step:hover {
+      border-color: var(--border2);
+    }
+
+    .step-num {
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      font-size: 0.8rem;
+      flex-shrink: 0;
+      color: #000;
+      background: linear-gradient(135deg, var(--a), var(--c));
+    }
+
+    .step-body h4 {
+      font-weight: 700;
+      font-size: 0.9rem;
+      margin-bottom: 0.2rem;
+    }
+
+    .step-body p {
+      font-size: 0.86rem;
+      color: var(--text2);
+      margin: 0;
+    }
+
+    /* ============================================================
+   BADGES
+   ============================================================ */
+    .badge {
+      display: inline-block;
+      padding: 0.2rem 0.55rem;
+      border-radius: 100px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      border: 1px solid;
+    }
+
+    .badge-a {
+      color: var(--a);
+      border-color: rgba(110, 231, 247, 0.4);
+      background: rgba(110, 231, 247, 0.1);
+    }
+
+    .badge-b {
+      color: var(--b);
+      border-color: rgba(244, 114, 182, 0.4);
+      background: rgba(244, 114, 182, 0.1);
+    }
+
+    .badge-c {
+      color: var(--c);
+      border-color: rgba(167, 139, 250, 0.4);
+      background: rgba(167, 139, 250, 0.1);
+    }
+
+    .badge-e {
+      color: var(--e);
+      border-color: rgba(251, 146, 60, 0.4);
+      background: rgba(251, 146, 60, 0.1);
+    }
+
+    .row-highlight td {
+      background: rgba(52, 211, 153, 0.06) !important;
+    }
+
+    .row-warn td {
+      background: rgba(244, 114, 182, 0.06) !important;
+    }
+
+    /* ============================================================
+   FOOTER
+   ============================================================ */
+    footer {
+      text-align: center;
+      padding: 3rem 2rem 4rem;
+      position: relative;
+    }
+
+    footer::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 10%;
+      right: 10%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border2), transparent);
+    }
+
+    .footer-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--a), var(--c), var(--b));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .footer-sub {
+      font-size: 0.78rem;
+      color: var(--text3);
+      margin-top: 0.3rem;
+    }
+
+    /* UL RESET */
+    ul {
+      list-style: none;
+    }
+
+    ul li {
+      padding: 0.32rem 0;
+      padding-left: 1rem;
+      position: relative;
+      font-size: 0.9rem;
+      color: var(--text2);
+    }
+
+    ul li::before {
+      content: '▸';
+      position: absolute;
+      left: 0;
+      color: var(--c);
+      font-size: 0.65rem;
+      top: 0.44rem;
+    }
+
+    .divider {
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border), transparent);
+      margin: 4rem 0;
+    }
+
+    @media(max-width:600px) {
+      .grid4 {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .flow {
+        justify-content: center;
+      }
+
+      .flow-box {
+        min-width: 70px;
+        font-size: 0.75rem;
+      }
+    }
+  </style>
+  <script src="/javascripts/standalone-theme.js"></script>
+  <script src="/javascripts/html-theme-sync.js"></script>
+
+  <meta name="description"
+    content="Complete CYS406 study guide to VPN fundamentals: architecture, components, concentrators, encapsulation, encryption, authentication, topologies, security risks, and RADIUS/AAA — with mnemonics and exam tips.">
+  <link rel="canonical"
+    href="https://shoug-tech.com/academics/cybersecurity/cys406/slide-breakdowns/13-chapter-13-vpn-fundamentals/chapter-13-vpn-fundamentals.html">
+  <meta property="og:title" content="CYS406 - Chapter 13: VPN Fundamentals">
+  <meta property="og:description"
+    content="Complete CYS406 study guide to VPN fundamentals: architecture, components, concentrators, encapsulation, encryption, authentication, topologies, security risks, and RADIUS/AAA — with mnemonics and exam tips.">
+  <meta property="og:url"
+    content="https://shoug-tech.com/academics/cybersecurity/cys406/slide-breakdowns/13-chapter-13-vpn-fundamentals/chapter-13-vpn-fundamentals.html">
+  <meta property="og:type" content="article">
+  <meta property="og:image" content="https://shoug-tech.com/assets/og-banner.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="CYS406 - Chapter 13: VPN Fundamentals">
+  <meta name="twitter:description"
+    content="Complete CYS406 study guide to VPN fundamentals: architecture, components, concentrators, encapsulation, encryption, authentication, topologies, security risks, and RADIUS/AAA — with mnemonics and exam tips.">
+  <meta name="twitter:image" content="https://shoug-tech.com/assets/og-banner.png">
+</head>
+
+<body>
+
+
+  <!-- THEME TOGGLE -->
+  <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+    <span class="toggle-icon" id="toggle-icon">☀️</span>
+    <span id="toggle-label">Light Mode</span>
+  </button>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-grid"></div>
+
+    <div class="hero-badge">
+      <span class="badge-dot"></span>
+      CYS406 · Chapter 13
+    </div>
+
+    <h1>
+      The Secret Tunnel:<br>
+      <span class="gradient-word">VPN Fundamentals</span>
+    </h1>
+    <p class="hero-sub">How a Virtual Private Network turns the wide-open internet into a private, encrypted corridor
+      between a user and a company network — architecture, components, protocols, topologies, and the risks that can
+      blow the tunnel wide open.</p>
+
+    <div class="hero-chips">
+      <span class="chip chip-a">VPN Architecture</span>
+      <span class="chip chip-b">Concentrators</span>
+      <span class="chip chip-c">Site-to-Site vs Remote-Access</span>
+      <span class="chip chip-d">Encapsulation & Encryption</span>
+      <span class="chip chip-e">Topologies</span>
+      <span class="chip chip-f">RADIUS / AAA</span>
+    </div>
+
+    <div class="scroll-hint">
+      scroll ↓
+    </div>
+  </div>
+
+  <main>
+
+    <!-- SECTION 01: What is a VPN -->
+    <section>
+      <div class="section-header"><span class="sec-num">01 / Foundations</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="ga">What Is a VPN?</h2>
+      <p>A <strong>Virtual Private Network (VPN)</strong> creates a private, encrypted "tunnel" through a public,
+        insecure network (usually the internet) so that two endpoints — a remote user and a company network, or two
+        company sites — can communicate as if they were on the same local, trusted network.</p>
+
+      <div class="def-grid">
+        <div class="def-card">
+          <div class="def-top" style="background:var(--a)"></div>
+          <div class="def-term ta">Why it exists</div>
+          <div class="def-desc">VPNs let organizations securely communicate with distant offices or users over an
+            inherently insecure channel — the public internet — without leasing expensive dedicated lines.</div>
+        </div>
+        <div class="def-card">
+          <div class="def-top" style="background:var(--b)"></div>
+          <div class="def-term tb">Core promise</div>
+          <div class="def-desc">Confidentiality and integrity of data in transit, plus authenticated access, even though
+            the underlying network (the internet) is not trusted.</div>
+        </div>
+        <div class="def-card">
+          <div class="def-top" style="background:var(--c)"></div>
+          <div class="def-term tc">Typical users</div>
+          <div class="def-desc">Telecommuters, traveling staff on laptops with a VPN client, and branch offices
+            connecting back to a head office.</div>
+        </div>
+      </div>
+
+      <div class="card bl-a" style="margin-top:1.25rem;">
+        <h3 class="ta">VPN Architecture — the moving parts</h3>
+        <p>A typical VPN deployment links a <strong>Head Office</strong>, one or more <strong>Branch/Home
+            Offices</strong>, and <strong>telecommuters/traveling staff</strong>. Each end has a piece of VPN hardware
+          or software:</p>
+        <ul>
+          <li>Head office: a <strong>VPN concentrator</strong> and a <strong>router with a VPN module</strong></li>
+          <li>Branch office: a router with a VPN module / its own concentrator</li>
+          <li>Home office: a PC with VPN client software</li>
+          <li>Telecommuter/traveler: a laptop with VPN client, often connecting via 3G/CDMA/HSDPA mobile broadband or a
+            broadband modem</li>
+        </ul>
+        <p>All of these talk to each other <strong>across the Internet</strong>, which acts as the (untrusted) transport
+          medium.</p>
+      </div>
+
+      <div class="flow">
+        <div class="flow-box">Laptop / PC + VPN Client</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box accent">Broadband / Mobile Link</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box accent2">Internet</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box accent3">VPN Concentrator / Router with VPN Module</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box">Head / Branch Office Network</div>
+      </div>
+
+      <div class="mnemonic">
+        <div class="mnemonic-icon">🧠</div>
+        <div class="mnemonic-body">
+          <h4>Mnemonic — Why Build a VPN?</h4>
+          <p><span class="mnem-key">"EXTRA GLOBAL SIMPLE PRODUCTIVE SAVINGS"</span> → the six official benefits:
+            <strong>E</strong>xtend geographic connectivity, reduce operational costs vs traditional WANs
+            (<strong>S</strong>avings), reduce transit/travel time (<strong>P</strong>roductive for remote users),
+            <strong>I</strong>mprove productivity, <strong>S</strong>implify network topology, provide
+            <strong>G</strong>lobal networking opportunities. Picture a business traveler saving money and time by
+            tunneling in instead of flying to head office.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 02: How VPN Works -->
+    <section>
+      <div class="section-header"><span class="sec-num">02 / Mechanics</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gb">How a VPN Works</h2>
+      <p>Establishing a VPN connection is a sequence: connect to the internet, authenticate, then tunnel securely.</p>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <h4>Client connects to the Internet</h4>
+            <p>The client willing to reach the company's network first gets basic internet connectivity (ISP, Wi-Fi,
+              mobile data, etc.).</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <h4>Client initiates a VPN connection</h4>
+            <p>The client reaches out to the company's VPN server (often sitting behind, or integrated with, a
+              firewall).</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <h4>Endpoints authenticate</h4>
+            <p>Before the tunnel opens, both ends must be authenticated — via passwords, biometrics, personal data, or a
+              combination.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <h4>Secure access is granted</h4>
+            <p>Once authenticated, the client can securely access resources on the company's internal network as if
+              physically present.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="ex ex-a">
+        <div class="ex-label ta">📘 What an unauthorized host sees</div>
+        <p>An <strong>authorized host</strong> runs VPN client software that handles authorization and encryption
+          transparently. An <strong>unauthorized host</strong> attempting the same connection is stopped — usually at a
+          firewall with VPN capability guarding the internal network — because it can't complete authentication or
+          doesn't hold the right encryption material.</p>
+      </div>
+    </section>
+
+    <!-- SECTION 03: VPN Components -->
+    <section>
+      <div class="section-header"><span class="sec-num">03 / Building Blocks</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gc">VPN Components</h2>
+      <p>Four core pieces make up any VPN deployment:</p>
+
+      <div class="def-grid">
+        <div class="def-card">
+          <div class="def-top" style="background:var(--a)"></div>
+          <div class="def-term ta">VPN Client</div>
+          <div class="def-desc">Software (or hardware) on the user's end that initiates and manages the encrypted tunnel
+            to the remote network.</div>
+        </div>
+        <div class="def-card">
+          <div class="def-top" style="background:var(--b)"></div>
+          <div class="def-term tb">Network Access Server (NAS)</div>
+          <div class="def-desc">Also called a media/remote-access server — it's the entry point that accepts dial-in /
+            remote connections (often via PSTN/ISP) before handing off to the VPN.</div>
+        </div>
+        <div class="def-card">
+          <div class="def-top" style="background:var(--c)"></div>
+          <div class="def-term tc">Tunnel Terminating Device (VPN server)</div>
+          <div class="def-desc">The device on the corporate side that terminates the tunnel — decapsulating and
+            delivering traffic to the corporate network.</div>
+        </div>
+        <div class="def-card">
+          <div class="def-top" style="background:var(--d)"></div>
+          <div class="def-term td">VPN Protocol</div>
+          <div class="def-desc">The Layer-3 tunneling/encryption protocol both ends agree to use to move data securely
+            through the tunnel.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 04: VPN Concentrators -->
+    <section>
+      <div class="section-header"><span class="sec-num">04 / Hardware</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gd">VPN Concentrators</h2>
+      <p>A <strong>VPN Concentrator</strong> is a dedicated network device that creates and manages secure VPN
+        connections — essentially a specialized VPN router. It's typically deployed to support remote-access or
+        site-to-site VPNs at scale (e.g., the classic Cisco VPN 3000 series).</p>
+
+      <div class="card bl-c">
+        <h3 class="tc">What it does with tunnels</h3>
+        <p>It uses tunneling protocols to negotiate security parameters, create and manage tunnels, encapsulate and
+          transmit/receive packets through the tunnel, and de-encapsulate them on arrival. Functionally, it's a
+          <strong>bi-directional tunnel endpoint</strong>.
+        </p>
+      </div>
+
+      <div class="tbl-wrap" style="margin-top:1.25rem;">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Function of a VPN Concentrator</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>01</td>
+              <td>Encrypts and decrypts data</td>
+            </tr>
+            <tr>
+              <td>02</td>
+              <td>Authenticates users</td>
+            </tr>
+            <tr>
+              <td>03</td>
+              <td>Manages data transfer across the tunnel</td>
+            </tr>
+            <tr>
+              <td>04</td>
+              <td>Negotiates tunnel parameters</td>
+            </tr>
+            <tr>
+              <td>05</td>
+              <td>Manages security keys</td>
+            </tr>
+            <tr>
+              <td>06</td>
+              <td>Establishes tunnels</td>
+            </tr>
+            <tr>
+              <td>07</td>
+              <td>Assigns user addresses</td>
+            </tr>
+            <tr>
+              <td>08</td>
+              <td>Manages inbound/outbound data transfers as a tunnel endpoint or router</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="tip tip-blue">
+        <div class="tip-icon">💡</div>
+        <div class="tip-body">
+          <h4 class="ta">Where it sits</h4>
+          <p>In a typical network diagram, the concentrator sits between the Internet-facing router/firewall
+            (public/untrusted segment) and the private, trusted segment holding file servers, mail servers, intranet
+            servers, and the authentication server.</p>
+        </div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- SECTION 05: VPN Types and Categories -->
+    <section>
+      <div class="section-header"><span class="sec-num">05 / Categories</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="ga">VPN Types & Categories</h2>
+      <p>The two headline categories students must distinguish: <strong>Client-to-Site (Remote-Access)</strong> and
+        <strong>Site-to-Site</strong> VPNs.
+      </p>
+
+      <div class="vs">
+        <div class="ex ex-d">
+          <div class="ex-label td">Remote-Access (Client-to-Site) VPN</div>
+          <p>Lets individual hosts — telecommuters, mobile users — establish a secure connection to a company network
+            over the internet. Each host runs VPN client software (or a web-based client). The VPN encrypts packets sent
+            to the VPN gateway at the network edge. The gateway receives packets and closes the VPN connection once the
+            transfer completes.</p>
+        </div>
+        <div class="ex ex-b">
+          <div class="ex-label tb">Site-to-Site VPN</div>
+          <p>Extends a company's network so different physical locations can access shared resources — it connects a
+            branch/remote office network to headquarters. Also called <strong>LAN-to-LAN</strong> or <strong>L2L
+              VPN</strong>. Split into two sub-types: <strong>Intranet-based</strong> (between sites of one
+            organization) and <strong>Extranet-based</strong> (between different organizations, e.g., business
+            partners/clients).</p>
+        </div>
+      </div>
+
+      <div class="mnemonic">
+        <div class="mnemonic-icon">🧠</div>
+        <div class="mnemonic-body">
+          <h4>Mnemonic — Remote-Access vs Site-to-Site</h4>
+          <p><span class="mnem-key">"ONE PERSON vs TWO PLACES"</span> — Remote-Access = <strong>one person's
+              device</strong> reaching into the network (traveler, telecommuter). Site-to-Site = <strong>two whole
+              networks</strong> talking to each other permanently (branch ↔ HQ), like two houses connected by a
+            permanent secret hallway instead of one visitor using a doorbell.</p>
+        </div>
+      </div>
+
+      <h3 class="tc" style="margin-top:2rem;">Hardware VPNs vs Software VPNs</h3>
+      <div class="vs">
+        <div class="ex ex-c">
+          <div class="ex-label tc">Hardware VPNs</div>
+          <p>A dedicated hardware VPN appliance connects routers/gateways to communicate securely over an insecure
+            channel. Designed purely as a VPN endpoint and can link multiple LANs. Products: Cisco VPN 3000 series
+            concentrators / 3002 hardware clients / 7600 routers, SonicWALL PRO series, Juniper NetScreen, WatchGuard
+            Firebox X.</p>
+        </div>
+        <div class="ex ex-e">
+          <div class="ex-label te">Software VPNs</div>
+          <p>VPN software installed/configured on routers, servers, firewalls, or as a gateway.
+            <strong>Advantages:</strong> no extra devices, low-cost, easy to deploy, doesn't change the target network.
+            <strong>Disadvantages:</strong> extra processing burden on the host device, generally less secure and more
+            attack-prone. Products: CheckPoint VPN-1, NETGEAR ProSafe VPN, Cisco AnyConnect.
+          </p>
+        </div>
+      </div>
+
+      <div class="card bl-f" style="margin-top:1.25rem;">
+        <h3 class="tf">Selecting an Appropriate VPN</h3>
+        <p>Choose a VPN solution by weighing: <strong>Compatibility</strong>, <strong>Vendor Support</strong>,
+          <strong>Scalability and Capacity</strong>, organizational <strong>Need</strong>, <strong>Security</strong>
+          requirements, and <strong>Cost</strong>.
+        </p>
+      </div>
+    </section>
+
+    <!-- SECTION 06: Core Functionality -->
+    <section>
+      <div class="section-header"><span class="sec-num">06 / Core Mechanics</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gb">VPN Core Functionality</h2>
+      <p>Three functions make a VPN a VPN: <strong>encapsulation</strong>, <strong>encryption</strong>, and
+        <strong>authentication</strong>.
+      </p>
+
+      <div class="card bl-a">
+        <h3 class="ta">1. Encapsulation</h3>
+        <p>Packets sent over a VPN are wrapped ("encapsulated") inside another packet carrying a different
+          source/destination IP. This hides the original source and destination, protecting data integrity. Common
+          encapsulation protocols:</p>
+        <ul>
+          <li>Point-to-Point Tunneling Protocol (PPTP)</li>
+          <li>Layer 2 Tunneling Protocol (L2TP)</li>
+          <li>Secure Shell (SSH)</li>
+          <li>Socket Secure (SOCKS)</li>
+        </ul>
+        <div class="ex ex-a">
+          <div class="ex-label ta">📘 Example</div>
+          <p>Originating computer 10.0.50.3 sends a packet. The VPN router encapsulates it, giving the outer packet its
+            own address (192.168.50.1). Anyone sniffing the internal LAN sees only the router's IP as the encapsulated
+            packet's source — the true origin (10.0.50.3) is concealed inside.</p>
+        </div>
+      </div>
+
+      <div class="card bl-b" style="margin-top:1rem;">
+        <h3 class="tb">2. Encryption</h3>
+        <p>Packets are encrypted to preserve confidentiality; only the holder of the correct decryption key can read
+          them. Certificates, managed by a Certificate Authority (CA)/certificate server, are commonly used to
+          distribute keys to VPN users at branch/home offices.</p>
+        <p><strong>Common VPN encryption technologies:</strong></p>
+        <ul>
+          <li>Triple Data Encryption Standard (3DES)</li>
+          <li>Secure Sockets Layer (SSL)</li>
+          <li>OpenVPN</li>
+        </ul>
+      </div>
+
+      <div class="card bl-c" style="margin-top:1rem;">
+        <h3 class="tc">3. Authentication</h3>
+        <p>Users must authenticate before accessing VPN resources; digital certificates are a common mechanism. Common
+          authentication techniques: <strong>IPSec</strong>, <strong>MS-CHAP</strong>, <strong>Kerberos</strong>.</p>
+        <div class="steps">
+          <div class="step">
+            <div class="step-num">1</div>
+            <div class="step-body">
+              <h4>Packet sent unencrypted</h4>
+              <p>From the source network toward the destination VPN router.</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">2</div>
+            <div class="step-body">
+              <h4>Packet encrypted & encapsulated</h4>
+              <p>The originating VPN router wraps and secures it before sending over the internet.</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">3</div>
+            <div class="step-body">
+              <h4>Authorization requested</h4>
+              <p>The receiving VPN router requests authorization for the incoming tunnel/session.</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">4</div>
+            <div class="step-body">
+              <h4>Database check decides success</h4>
+              <p>If successful, the packet is delivered to Network 2. If not, it's refused and an error is returned to
+                the sender.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mnemonic">
+        <div class="mnemonic-icon">🧠</div>
+        <div class="mnemonic-body">
+          <h4>Mnemonic — The 3 Core VPN Functions</h4>
+          <p><span class="mnem-key">"WRAP IT, LOCK IT, PROVE IT"</span> — <strong>Wrap it</strong> = Encapsulation (hide
+            the real source/destination inside another packet). <strong>Lock it</strong> = Encryption (scramble contents
+            so only the key-holder can read it). <strong>Prove it</strong> = Authentication (confirm you're really who
+            you say you are before you're let in).</p>
+        </div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- SECTION 07: VPN Technologies (Trust Model) -->
+    <section>
+      <div class="section-header"><span class="sec-num">07 / Trust Models</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gc">VPN Technologies: Trusted, Secure, Hybrid</h2>
+      <p>This is a different axis of classification — not by architecture, but by <strong>how trust and encryption are
+          handled</strong>.</p>
+
+      <div class="vs">
+        <div class="ex ex-a">
+          <div class="ex-label ta">Trusted VPNs</div>
+          <p>Predate the universal internet. Companies leased dedicated circuits from a communications provider and used
+            them just like private physical cables. The organization knows and controls the transmission pathway. The
+            provider maintains integrity/security of the path — but there is <strong>no encryption</strong>. Built using
+            ATM circuits, frame-relay circuits, or MPLS.</p>
+        </div>
+        <div class="ex ex-d">
+          <div class="ex-label td">Secure VPNs</div>
+          <p>Emerged once the internet became the standard corporate communications medium. A vendor protocol encrypts
+            traffic at the origin and decrypts at the destination. Even if an attacker intercepts the traffic, they
+            cannot read it. Secure VPNs protect confidentiality/integrity of data, but — unlike trusted VPNs — they do
+            <strong>not</strong> guarantee/control the transmission path.
+          </p>
+        </div>
+      </div>
+
+      <div class="card bl-e" style="margin-top:1.25rem;">
+        <h3 class="te">Hybrid VPNs</h3>
+        <p>A <strong>Secure VPN</strong> is run as a segment inside a larger <strong>Trusted VPN</strong>, forming a
+          Hybrid VPN. The secure portion can be administered either by the customer or by the provider that supplies the
+          trusted portion. Think of it as "encrypted island inside a leased-line ocean."</p>
+      </div>
+
+      <div class="mnemonic">
+        <div class="mnemonic-icon">🧠</div>
+        <div class="mnemonic-body">
+          <h4>Mnemonic — Trusted vs Secure</h4>
+          <p><span class="mnem-key">"TRUSTED = PATH, SECURE = PACKET"</span> — Trusted VPN cares about controlling the
+            <strong>path</strong> (leased circuit, no encryption). Secure VPN cares about protecting the
+            <strong>packet</strong> itself (encryption, but no control over the path it travels). Hybrid = both
+            combined.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 08: Topologies -->
+    <section>
+      <div class="section-header"><span class="sec-num">08 / Topologies</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gd">VPN Topologies</h2>
+      <p>A VPN topology defines <strong>how peers/networks within the VPN connect</strong> to one another. Four
+        topologies appear in the slides: Hub-and-Spoke, Point-to-Point, Full Mesh, and Star.</p>
+
+      <div class="def-grid">
+        <div class="def-card">
+          <div class="def-top" style="background:var(--a)"></div>
+          <div class="def-term ta">Hub-and-Spoke</div>
+          <div class="def-desc">Each branch office (spoke) has its own secure tunnel to a central device (hub) at the
+            main office. A persistent connection links main office and branches via the internet/third-party network.
+            Optional secondary hubs add resilience.</div>
+        </div>
+        <div class="def-card">
+          <div class="def-top" style="background:var(--b)"></div>
+          <div class="def-term tb">Point-to-Point</div>
+          <div class="def-desc">Two endpoints (Site 1, Site 2) act as peer devices and can communicate directly, without
+            IPsec failover concerns of hub-and-spoke. Only regular IPsec or IPsec/GRE is assigned to the tunnel — either
+            peer can initiate.</div>
+        </div>
+        <div class="def-card">
+          <div class="def-top" style="background:var(--c)"></div>
+          <div class="def-term tc">Full Mesh</div>
+          <div class="def-desc">Suitable for complex networks where every peer talks to every other peer, each pairing
+            over its own unique IPsec tunnel. Avoids bottlenecking at a single VPN gateway; reliable with built-in
+            redundancy, at the cost of more tunnels to manage.</div>
+        </div>
+        <div class="def-card">
+          <div class="def-top" style="background:var(--d)"></div>
+          <div class="def-term td">Star</div>
+          <div class="def-desc">Remote branches securely reach corporate HQ, but branches cannot talk directly to each
+            other. Commonly used in banking so one compromised branch can't reach another — an attacker must first
+            breach the central network. Easy to add new sites, but if the central site fails, all connections go down.
+          </div>
+        </div>
+      </div>
+
+      <div class="mnemonic">
+        <div class="mnemonic-icon">🧠</div>
+        <div class="mnemonic-body">
+          <h4>Mnemonic — Four Topologies</h4>
+          <p><span class="mnem-key">"HUB, POINT, MESH, STAR"</span> → think of a bicycle wheel
+            (<strong>Hub</strong>-and-spoke: everything to the center), two friends texting directly
+            (<strong>Point</strong>-to-point: peer to peer), a spider web (<strong>Mesh</strong>: everyone to everyone),
+            and bank branches that can't gossip with each other (<strong>Star</strong>: only to HQ, never sideways).</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 09: VPN Security Risks -->
+    <section>
+      <div class="section-header"><span class="sec-num">09 / Risks</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="ga">VPN Security Risks</h2>
+      <p>Even a well-designed VPN can be undermined by these eight weaknesses:</p>
+
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Risk</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>01</td>
+              <td>VPN Fingerprinting</td>
+            </tr>
+            <tr>
+              <td>02</td>
+              <td>Insecure Storage of Authentication Credentials</td>
+            </tr>
+            <tr>
+              <td>03</td>
+              <td>Username Enumeration Vulnerabilities</td>
+            </tr>
+            <tr>
+              <td>04</td>
+              <td>Offline Password Cracking</td>
+            </tr>
+            <tr>
+              <td>05</td>
+              <td>Man-in-the-Middle Attacks</td>
+            </tr>
+            <tr>
+              <td>06</td>
+              <td>Lack of Account Lockout</td>
+            </tr>
+            <tr>
+              <td>07</td>
+              <td>Poor Default Configurations</td>
+            </tr>
+            <tr>
+              <td>08</td>
+              <td>Poor Guidance and Documentation</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="tip tip-warn">
+        <div class="tip-icon">⚠️</div>
+        <div class="tip-body">
+          <h4 class="te">Exam angle</h4>
+          <p>Notice these risks are mostly about <strong>authentication weaknesses</strong> (storage, enumeration,
+            cracking, lockout) rather than the tunnel's cryptography itself — attackers usually go after the login, not
+            the encrypted pipe.</p>
+        </div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- SECTION 10: VPN Security Infrastructure -->
+    <section>
+      <div class="section-header"><span class="sec-num">10 / Hardening</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gb">Securing the VPN: Firewalls, IPsec, AAA, RADIUS</h2>
+
+      <div class="card bl-a">
+        <h3 class="ta">Firewalls</h3>
+        <p>Firewalls establish a protective barrier between the VPN and the internet. Before deploying a VPN, a good
+          firewall must already be in place. It should be configured to restrict open ports and the types of
+          packets/protocols allowed to reach the VPN.</p>
+      </div>
+
+      <div class="card bl-b" style="margin-top:1rem;">
+        <h3 class="tb">IPsec Server — Tunnel vs Transport Mode</h3>
+        <p>The IPsec server strengthens VPN security via strong encryption and authentication algorithms. It supports
+          two encryption modes:</p>
+        <div class="vs">
+          <div class="ex ex-b">
+            <div class="ex-label tb">Tunnel Mode</div>
+            <p>Both the header and payload of each packet are encrypted. Used site-to-site, protects the whole original
+              packet.</p>
+          </div>
+          <div class="ex ex-c">
+            <div class="ex-label tc">Transport Mode</div>
+            <p>Only the payload of each packet is encrypted; the header stays visible. Typically used end-to-end between
+              two hosts.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card bl-c" style="margin-top:1rem;">
+        <h3 class="tc">AAA Server</h3>
+        <p>The AAA server establishes secure access in a remote-access VPN environment and performs three checks:</p>
+        <div class="grid3">
+          <div class="def-card">
+            <div class="def-top" style="background:var(--a)"></div>
+            <div class="def-term ta">Authentication</div>
+            <div class="def-desc">"Who are you?"</div>
+          </div>
+          <div class="def-card">
+            <div class="def-top" style="background:var(--b)"></div>
+            <div class="def-term tb">Authorization</div>
+            <div class="def-desc">"What are you allowed to do?"</div>
+          </div>
+          <div class="def-card">
+            <div class="def-top" style="background:var(--c)"></div>
+            <div class="def-term tc">Accounting</div>
+            <div class="def-desc">"What did you actually do?"</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mnemonic">
+        <div class="mnemonic-icon">🧠</div>
+        <div class="mnemonic-body">
+          <h4>Mnemonic — AAA</h4>
+          <p><span class="mnem-key">"WHO, WHAT, DID"</span> — Authentication = <strong>Who</strong> are you.
+            Authorization = <strong>What</strong> can you do. Accounting = what you <strong>Did</strong>. Same order as
+            a security guard checking your ID, checking your clearance level, then logging your visit in the book.</p>
+        </div>
+      </div>
+
+      <h3 class="td" style="margin-top:2rem;">RADIUS (Remote Access Dial-In User Service)</h3>
+      <p>RADIUS is the simplest way to centralize authentication in VPNs. It's a software application running on a
+        server with access to all users in the domain. In a VPN environment, RADIUS manages both authentication
+        <em>and</em> authorization, cutting total cost of ownership by managing credentials from one central location.
+      </p>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <h4>User attempts VPN connection</h4>
+            <p>The VPN server contacts the RADIUS server.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <h4>RADIUS authenticates via a Windows domain</h4>
+            <p>Using both a username and password, typically checked against a Windows domain controller.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <h4>Dial-in access is checked</h4>
+            <p>If credentials are correct and dial-in access is granted, the user is allowed onto the VPN.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <h4>VPN equipment verifies conditions</h4>
+            <p>The VPN gear must securely talk to the RADIUS server and confirm the user meets any additional conditions
+              before granting network access.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="ex ex-d">
+        <div class="ex-label td">📘 Example architecture</div>
+        <p>VPN Client → Internet → VPN Gateway → DualShield RADIUS Server + DualShield Authentication Server → Corporate
+          Network (Active Directory, HTTP resources).</p>
+      </div>
+    </section>
+
+    <!-- SECTION 11: VPN Connection Protocols -->
+    <section>
+      <div class="section-header"><span class="sec-num">11 / Connection Protocols</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gc">Connecting to a VPN: SSH+PPP, SSL+PPP, and Concentrators</h2>
+
+      <div class="card bl-a">
+        <h3 class="ta">SSH and PPP</h3>
+        <p>PPP and SSH are integrated into kernels that use VPNs, and both work well with dynamic IP addresses. While
+          configuring multiple tunnels to a computer, every tunnel's IP address must be unique. Client and server
+          maintain PPP processes to communicate, and PPP processes exchange data over the SSH connection.</p>
+      </div>
+
+      <div class="card bl-b" style="margin-top:1rem;">
+        <h3 class="tb">SSL and PPP</h3>
+        <p>PPP running over an SSL connection. SSL provides built-in support for host authentication via digital
+          certificates. Establishing the connection involves an initial handshake for secure communication: "Hello"
+          messages establish SSL version, supported cipher suites, and some random data; the key is determined
+          separately from the handshake; then data is transferred over the link.</p>
+      </div>
+
+      <div class="card bl-c" style="margin-top:1rem;">
+        <h3 class="tc">Connecting via a Concentrator</h3>
+        <p>The concentrator is an expert mechanism that allows connections from VPN peers, validates its clients, and
+          insists on the VPN's security policies. It reduces the operating cost of VPN administration and encryption
+          from gateways/local hosts.</p>
+        <p><strong>Configuring the connection:</strong> configure the concentrator, set up the client software, and
+          require the client to use that software to use the VPN.</p>
+      </div>
+    </section>
+
+    <!-- EXAM TIPS -->
+    <section>
+      <div class="section-header"><span class="sec-num">12 / Exam Prep</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="ga">Exam Tips & Tricks</h2>
+      <div class="grid2">
+        <div class="tip tip-blue">
+          <div class="tip-icon">💡</div>
+          <div class="tip-body">
+            <h4 class="ta">Site-to-Site = LAN-to-LAN / L2L</h4>
+            <p>Remember these are all the same thing — an exam question might use any of the three names.</p>
+          </div>
+        </div>
+        <div class="tip tip-green">
+          <div class="tip-icon">✅</div>
+          <div class="tip-body">
+            <h4 class="td">Tunnel mode encrypts everything</h4>
+            <p>Tunnel mode = header + payload encrypted. Transport mode = payload only. Tunnel mode is the "fuller"
+              protection.</p>
+          </div>
+        </div>
+        <div class="tip tip-yellow">
+          <div class="tip-icon">⭐</div>
+          <div class="tip-body">
+            <h4 class="tf">Trusted VPN ≠ encrypted</h4>
+            <p>A classic trick question: Trusted VPNs (leased circuits, MPLS, ATM, frame-relay) do NOT inherently
+              encrypt data — that's the Secure VPN's job.</p>
+          </div>
+        </div>
+        <div class="tip tip-warn">
+          <div class="tip-icon">⚠️</div>
+          <div class="tip-body">
+            <h4 class="te">Star topology's single point of failure</h4>
+            <p>Star topology stops lateral attacks between branches, but if the central hub goes down, ALL branches lose
+              connectivity — a classic trade-off question.</p>
+          </div>
+        </div>
+        <div class="tip tip-blue">
+          <div class="tip-icon">💡</div>
+          <div class="tip-body">
+            <h4 class="ta">RADIUS handles both AA</h4>
+            <p>RADIUS in a VPN context does Authentication AND Authorization — remember it's not just a password
+              checker.</p>
+          </div>
+        </div>
+        <div class="tip tip-green">
+          <div class="tip-icon">✅</div>
+          <div class="tip-body">
+            <h4 class="td">VPN's 3 core functions</h4>
+            <p>If asked "what makes a VPN a VPN" — the answer is always Encapsulation + Encryption + Authentication, not
+              just encryption alone.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- QUICK REFERENCE -->
+    <section>
+      <div class="section-header"><span class="sec-num">13 / Cheat Sheet</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gb">Quick Reference — Everything at a Glance</h2>
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>Topic</th>
+              <th>Key Point</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>VPN</td>
+              <td>Encrypted tunnel over an insecure network (internet) linking hosts/networks securely.</td>
+            </tr>
+            <tr>
+              <td>VPN Architecture</td>
+              <td>Head office concentrator/router ↔ Internet ↔ branch/home office router or PC/laptop with VPN client.
+              </td>
+            </tr>
+            <tr>
+              <td>How VPN Works</td>
+              <td>Connect to internet → initiate VPN → authenticate endpoints → gain secure access.</td>
+            </tr>
+            <tr>
+              <td>Why build a VPN</td>
+              <td>Extend geographic reach, cut WAN costs, reduce travel time, boost productivity, simplify topology,
+                enable global networking.</td>
+            </tr>
+            <tr>
+              <td>VPN Components</td>
+              <td>VPN client, Network Access Server (NAS), Tunnel Terminating Device/VPN server, VPN protocol.</td>
+            </tr>
+            <tr>
+              <td>VPN Concentrator</td>
+              <td>Dedicated device/bi-directional tunnel endpoint; encrypts/decrypts, authenticates, manages
+                keys/tunnels/addresses.</td>
+            </tr>
+            <tr>
+              <td>Remote-Access (Client-to-Site) VPN</td>
+              <td>Individual hosts (telecommuters) connect to the company network via client software and a VPN gateway.
+              </td>
+            </tr>
+            <tr>
+              <td>Site-to-Site VPN</td>
+              <td>Connects whole networks (branch ↔ HQ); AKA LAN-to-LAN/L2L; Intranet-based or Extranet-based.</td>
+            </tr>
+            <tr>
+              <td>Hardware VPN</td>
+              <td>Dedicated appliance endpoint connecting multiple LANs (Cisco, SonicWALL, Juniper, WatchGuard).</td>
+            </tr>
+            <tr>
+              <td>Software VPN</td>
+              <td>Installed on routers/servers/firewalls; cheap & easy but adds processing load and is less secure.</td>
+            </tr>
+            <tr>
+              <td>Selecting a VPN</td>
+              <td>Base decision on compatibility, vendor support, scalability/capacity, need, security, cost.</td>
+            </tr>
+            <tr>
+              <td>Encapsulation</td>
+              <td>Wraps the original packet in a new one with a different IP to hide source/destination (PPTP, L2TP,
+                SSH, SOCKS).</td>
+            </tr>
+            <tr>
+              <td>Encryption</td>
+              <td>Scrambles packet contents for confidentiality (3DES, SSL, OpenVPN); keys distributed via
+                CA/certificate server.</td>
+            </tr>
+            <tr>
+              <td>Authentication</td>
+              <td>Confirms identity before granting access (IPSec, MS-CHAP, Kerberos); failed auth = packet refused +
+                error to sender.</td>
+            </tr>
+            <tr>
+              <td>Trusted VPN</td>
+              <td>Leased circuits (ATM/frame-relay/MPLS); controls the path, but not encrypted.</td>
+            </tr>
+            <tr>
+              <td>Secure VPN</td>
+              <td>Encrypts traffic end-to-end; protects confidentiality/integrity but doesn't control the transmission
+                path.</td>
+            </tr>
+            <tr>
+              <td>Hybrid VPN</td>
+              <td>A Secure VPN segment running inside a larger Trusted VPN.</td>
+            </tr>
+            <tr>
+              <td>Hub-and-Spoke Topology</td>
+              <td>Each spoke (branch) tunnels to a central hub (main office); optional secondary hubs for resilience.
+              </td>
+            </tr>
+            <tr>
+              <td>Point-to-Point Topology</td>
+              <td>Two peer sites connect directly; only IPsec or IPsec/GRE; either peer can initiate.</td>
+            </tr>
+            <tr>
+              <td>Full Mesh Topology</td>
+              <td>Every peer has a unique tunnel to every other peer; redundant, no single bottleneck.</td>
+            </tr>
+            <tr>
+              <td>Star Topology</td>
+              <td>Branches connect only to HQ, never to each other; contains breaches but HQ is a single point of
+                failure.</td>
+            </tr>
+            <tr>
+              <td>VPN Security Risks</td>
+              <td>Fingerprinting, insecure credential storage, username enumeration, offline cracking, MITM, no account
+                lockout, poor defaults, poor documentation.</td>
+            </tr>
+            <tr>
+              <td>Firewalls + VPN</td>
+              <td>Firewall sits between VPN and internet, restricting ports/protocols before implementing a VPN.</td>
+            </tr>
+            <tr>
+              <td>IPsec Tunnel Mode</td>
+              <td>Encrypts header + payload (whole packet).</td>
+            </tr>
+            <tr>
+              <td>IPsec Transport Mode</td>
+              <td>Encrypts payload only, header stays visible.</td>
+            </tr>
+            <tr>
+              <td>AAA Server</td>
+              <td>Authentication (who), Authorization (what allowed), Accounting (what done) — used in remote-access
+                VPNs.</td>
+            </tr>
+            <tr>
+              <td>RADIUS</td>
+              <td>Centralized VPN authentication + authorization; VPN server queries RADIUS, which checks against a
+                domain controller/AD.</td>
+            </tr>
+            <tr>
+              <td>SSH + PPP</td>
+              <td>PPP processes communicate over an SSH connection; works well with dynamic IPs; each tunnel needs a
+                unique IP.</td>
+            </tr>
+            <tr>
+              <td>SSL + PPP</td>
+              <td>PPP over SSL; handshake negotiates version/cipher suite; certificate-based host authentication.</td>
+            </tr>
+            <tr>
+              <td>Concentrator connection</td>
+              <td>Configure the concentrator + set up matching client software on the user's machine.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="footer-name">Made by Shoug Alomran</div>
+    <div class="footer-sub">CYS406 · Chapter 13: VPN Fundamentals · Study Guide</div>
+  </footer>
+
+  <script>
+    // Auto-detect system preference on load
+    (function () {
+      const _stored = localStorage.getItem('shoug-theme');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const theme = _stored === 'dark' ? 'dark' : _stored === 'light' ? 'light' : (prefersDark ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', theme);
+      updateToggle(theme);
+    })();
+
+    // Listen for system changes
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+      if (localStorage.getItem('shoug-theme')) return;
+      const theme = e.matches ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', theme);
+      updateToggle(theme);
+    });
+
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme');
+      const next = current === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      try { localStorage.setItem('shoug-theme', document.documentElement.getAttribute('data-theme')); } catch (e) { }
+      updateToggle(next);
+    }
+
+    function updateToggle(theme) {
+      const icon = document.getElementById('toggle-icon');
+      const label = document.getElementById('toggle-label');
+      if (theme === 'dark') {
+        icon.textContent = '☀️';
+        label.textContent = 'Light Mode';
+      } else {
+        icon.textContent = '🌙';
+        label.textContent = 'Dark Mode';
+      }
+    }
+  </script>
+
+</body>
+
+</html>
