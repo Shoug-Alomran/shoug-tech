@@ -1,0 +1,2309 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+  <link rel="icon" type="image/png" href="/assets/favicon.png?v=2">
+  <link rel="shortcut icon" href="/assets/favicon.png?v=2">
+  <link rel="apple-touch-icon" href="/assets/favicon.png?v=2">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CYS406 - Hash Functions</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Playfair+Display:wght@700;800&display=swap"
+    rel="stylesheet">
+  <style>
+    /* ============================================================
+   THEME VARIABLES
+   ============================================================ */
+    :root {
+      --a: #6ee7f7;
+      /* cyan accent */
+      --b: #f472b6;
+      /* pink accent */
+      --c: #a78bfa;
+      /* violet accent */
+      --d: #34d399;
+      /* emerald accent */
+      --e: #fb923c;
+      /* orange accent */
+      --f: #facc15;
+      /* yellow accent */
+    }
+
+    [data-theme="dark"] {
+      --bg: #080c14;
+      --bg2: #0e1422;
+      --bg3: #141c2e;
+      --surface: rgba(255, 255, 255, 0.04);
+      --surface2: rgba(255, 255, 255, 0.07);
+      --border: rgba(255, 255, 255, 0.08);
+      --border2: rgba(255, 255, 255, 0.13);
+      --text: #e2e8f0;
+      --text2: #94a3b8;
+      --text3: #64748b;
+      --heading: #f8fafc;
+      --code-bg: rgba(255, 255, 255, 0.06);
+      --shadow: rgba(0, 0, 0, 0.5);
+      --toggle-bg: rgba(255, 255, 255, 0.08);
+    }
+
+    [data-theme="light"] {
+      --bg: #f0f4ff;
+      --bg2: #e8eef9;
+      --bg3: #dde5f5;
+      --surface: rgba(255, 255, 255, 0.75);
+      --surface2: rgba(255, 255, 255, 0.95);
+      --border: rgba(80, 100, 160, 0.12);
+      --border2: rgba(80, 100, 160, 0.2);
+      --text: #1e2a45;
+      --text2: #475569;
+      --text3: #94a3b8;
+      --heading: #0f172a;
+      --code-bg: rgba(80, 100, 160, 0.08);
+      --shadow: rgba(100, 120, 200, 0.15);
+      --toggle-bg: rgba(80, 100, 160, 0.12);
+    }
+
+    /* ============================================================
+   RESET & BASE
+   ============================================================ */
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Space Grotesk', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      overflow-x: hidden;
+      transition: background 0.4s ease, color 0.4s ease;
+    }
+
+    /* ============================================================
+   THEME TOGGLE
+   ============================================================ */
+    .theme-toggle {
+      position: fixed;
+      top: 1.25rem;
+      right: 1.5rem;
+      z-index: 1000;
+      background: var(--toggle-bg);
+      border: 1px solid var(--border2);
+      border-radius: 100px;
+      padding: 0.45rem 1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text2);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      transition: all 0.3s ease;
+      user-select: none;
+    }
+
+    .theme-toggle:hover {
+      border-color: var(--a);
+      color: var(--a);
+      transform: scale(1.04);
+    }
+
+    .toggle-icon {
+      font-size: 1rem;
+      transition: transform 0.4s ease;
+    }
+
+    /* ============================================================
+   HERO
+   ============================================================ */
+    .hero {
+      min-height: 60vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      position: relative;
+      padding: 5rem 2rem 4rem;
+      overflow: hidden;
+    }
+
+    [data-theme="dark"] .hero {
+      background:
+        radial-gradient(ellipse 70% 50% at 20% 20%, rgba(110, 231, 247, 0.12) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 80% 80%, rgba(167, 139, 250, 0.12) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 40% at 50% 60%, rgba(244, 114, 182, 0.08) 0%, transparent 60%),
+        var(--bg);
+    }
+
+    [data-theme="light"] .hero {
+      background:
+        radial-gradient(ellipse 70% 50% at 20% 20%, rgba(110, 231, 247, 0.18) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 80% 80%, rgba(167, 139, 250, 0.15) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 40% at 50% 60%, rgba(244, 114, 182, 0.12) 0%, transparent 60%),
+        var(--bg);
+    }
+
+    .hero-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(var(--border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 50px 50px;
+      opacity: 0.7;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-radius: 100px;
+      padding: 0.4rem 1.1rem;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--a);
+      margin-bottom: 1.75rem;
+      position: relative;
+      z-index: 1;
+      animation: fadeUp 0.7s ease both;
+    }
+
+    .badge-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--a);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1
+      }
+
+      50% {
+        opacity: 0.4
+      }
+    }
+
+    .hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.4rem, 5.5vw, 4.6rem);
+      font-weight: 800;
+      line-height: 1.15;
+      color: var(--heading);
+      position: relative;
+      z-index: 1;
+      animation: fadeUp 0.85s ease both;
+    }
+
+    .hero h1 .gradient-word {
+      background: linear-gradient(135deg, var(--a), var(--c), var(--b));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-sub {
+      font-size: 1.05rem;
+      color: var(--text2);
+      margin-top: 1.25rem;
+      max-width: 560px;
+      position: relative;
+      z-index: 1;
+      animation: fadeUp 1s ease both;
+    }
+
+    .hero-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      justify-content: center;
+      max-width: 720px;
+      margin-top: 2rem;
+      position: relative;
+      z-index: 1;
+      animation: fadeUp 1.1s ease both;
+    }
+
+    .chip {
+      padding: 0.3rem 0.85rem;
+      border-radius: 100px;
+      font-size: 0.76rem;
+      font-weight: 600;
+      border: 1px solid;
+      transition: transform 0.2s;
+    }
+
+    .chip:hover {
+      transform: translateY(-2px);
+    }
+
+    .chip-a {
+      color: var(--a);
+      border-color: rgba(110, 231, 247, 0.35);
+      background: rgba(110, 231, 247, 0.08);
+    }
+
+    .chip-b {
+      color: var(--b);
+      border-color: rgba(244, 114, 182, 0.35);
+      background: rgba(244, 114, 182, 0.08);
+    }
+
+    .chip-c {
+      color: var(--c);
+      border-color: rgba(167, 139, 250, 0.35);
+      background: rgba(167, 139, 250, 0.08);
+    }
+
+    .chip-d {
+      color: var(--d);
+      border-color: rgba(52, 211, 153, 0.35);
+      background: rgba(52, 211, 153, 0.08);
+    }
+
+    .chip-e {
+      color: var(--e);
+      border-color: rgba(251, 146, 60, 0.35);
+      background: rgba(251, 146, 60, 0.08);
+    }
+
+    .chip-f {
+      color: var(--f);
+      border-color: rgba(250, 204, 21, 0.35);
+      background: rgba(250, 204, 21, 0.08);
+    }
+
+    .scroll-hint {
+      position: absolute;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      color: var(--text3);
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.4rem;
+      animation: bounce 2.5s infinite;
+      z-index: 1;
+    }
+
+    @keyframes bounce {
+
+      0%,
+      100% {
+        transform: translateX(-50%) translateY(0)
+      }
+
+      50% {
+        transform: translateX(-50%) translateY(8px)
+      }
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(24px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    /* ============================================================
+   LAYOUT
+   ============================================================ */
+    main {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 4rem 2rem;
+    }
+
+    section {
+      margin-bottom: 5.5rem;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .sec-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text3);
+      white-space: nowrap;
+    }
+
+    .sec-line {
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, var(--border2), transparent);
+    }
+
+    h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.6rem, 3vw, 2.3rem);
+      font-weight: 800;
+      color: var(--heading);
+      margin-bottom: 0.4rem;
+    }
+
+    h3 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 1.05rem;
+      margin-bottom: 0.6rem;
+      color: var(--heading);
+    }
+
+    p {
+      font-size: 0.94rem;
+      color: var(--text2);
+      margin-bottom: 0.7rem;
+    }
+
+    strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    /* ============================================================
+   GRADIENT TEXT HELPERS
+   ============================================================ */
+    .ga {
+      background: linear-gradient(135deg, var(--a), var(--d));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .gb {
+      background: linear-gradient(135deg, var(--b), var(--c));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .gc {
+      background: linear-gradient(135deg, var(--e), var(--b));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .gd {
+      background: linear-gradient(135deg, var(--c), var(--a));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* ============================================================
+   CARDS
+   ============================================================ */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.6rem;
+      transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
+    }
+
+    .card:hover {
+      border-color: var(--border2);
+      transform: translateY(-3px);
+      box-shadow: 0 12px 30px var(--shadow);
+    }
+
+    .grid2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1rem;
+    }
+
+    .grid3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1rem;
+    }
+
+    .grid4 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 1rem;
+    }
+
+    .bl-a {
+      border-left: 3px solid var(--a);
+    }
+
+    .bl-b {
+      border-left: 3px solid var(--b);
+    }
+
+    .bl-c {
+      border-left: 3px solid var(--c);
+    }
+
+    .bl-d {
+      border-left: 3px solid var(--d);
+    }
+
+    .bl-e {
+      border-left: 3px solid var(--e);
+    }
+
+    .bl-f {
+      border-left: 3px solid var(--f);
+    }
+
+    .ta {
+      color: var(--a);
+    }
+
+    .tb {
+      color: var(--b);
+    }
+
+    .tc {
+      color: var(--c);
+    }
+
+    .td {
+      color: var(--d);
+    }
+
+    .te {
+      color: var(--e);
+    }
+
+    .tf {
+      color: var(--f);
+    }
+
+    /* ============================================================
+   DEFINITION CARDS
+   ============================================================ */
+    .def-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 0.75rem;
+    }
+
+    .def-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.2rem;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s;
+    }
+
+    .def-card:hover {
+      transform: translateY(-2px);
+    }
+
+    .def-top {
+      height: 2px;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+    }
+
+    .def-term {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .def-desc {
+      font-size: 0.87rem;
+      color: var(--text2);
+    }
+
+    /* ============================================================
+   MONO / CODE STYLE
+   ============================================================ */
+    .mono {
+      font-family: 'JetBrains Mono', monospace;
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      font-size: 0.85rem;
+      color: var(--a);
+      margin-top: 0.75rem;
+      overflow-x: auto;
+      white-space: pre;
+    }
+
+    .mono span.comment {
+      color: var(--text3);
+    }
+
+    .mono span.key {
+      color: var(--b);
+    }
+
+    .mono span.val {
+      color: var(--d);
+    }
+
+    /* ============================================================
+   EXAMPLE BOXES
+   ============================================================ */
+    .ex {
+      border-radius: 14px;
+      padding: 1.4rem;
+      border: 1px solid;
+      margin-top: 1.25rem;
+    }
+
+    .ex-a {
+      background: rgba(110, 231, 247, 0.06);
+      border-color: rgba(110, 231, 247, 0.25);
+    }
+
+    .ex-b {
+      background: rgba(244, 114, 182, 0.06);
+      border-color: rgba(244, 114, 182, 0.25);
+    }
+
+    .ex-c {
+      background: rgba(167, 139, 250, 0.06);
+      border-color: rgba(167, 139, 250, 0.25);
+    }
+
+    .ex-d {
+      background: rgba(52, 211, 153, 0.06);
+      border-color: rgba(52, 211, 153, 0.25);
+    }
+
+    .ex-e {
+      background: rgba(251, 146, 60, 0.06);
+      border-color: rgba(251, 146, 60, 0.25);
+    }
+
+    .ex-f {
+      background: rgba(250, 204, 21, 0.06);
+      border-color: rgba(250, 204, 21, 0.25);
+    }
+
+    .ex-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .ex-label::before {
+      content: '';
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    /* ============================================================
+   TIP BOXES
+   ============================================================ */
+    .tip {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      padding: 1.1rem 1.25rem;
+      border-radius: 12px;
+      margin-top: 1rem;
+    }
+
+    .tip-green {
+      background: rgba(52, 211, 153, 0.08);
+      border: 1px solid rgba(52, 211, 153, 0.25);
+    }
+
+    .tip-blue {
+      background: rgba(110, 231, 247, 0.08);
+      border: 1px solid rgba(110, 231, 247, 0.25);
+    }
+
+    .tip-warn {
+      background: rgba(251, 146, 60, 0.08);
+      border: 1px solid rgba(251, 146, 60, 0.25);
+    }
+
+    .tip-yellow {
+      background: rgba(250, 204, 21, 0.08);
+      border: 1px solid rgba(250, 204, 21, 0.25);
+    }
+
+    .tip-icon {
+      font-size: 1.2rem;
+      flex-shrink: 0;
+      margin-top: 0.1rem;
+    }
+
+    .tip-body h4 {
+      font-size: 0.84rem;
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+    }
+
+    .tip-body p {
+      font-size: 0.86rem;
+      color: var(--text2);
+      margin: 0;
+    }
+
+    /* ============================================================
+   MNEMONIC BOXES  (memory aids - distinct brain/purple styling)
+   ============================================================ */
+    .mnemonic {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      padding: 1.25rem 1.4rem;
+      border-radius: 14px;
+      margin-top: 1.25rem;
+      background: linear-gradient(135deg, rgba(167, 139, 250, 0.10), rgba(244, 114, 182, 0.07));
+      border: 1px solid rgba(167, 139, 250, 0.35);
+      position: relative;
+    }
+
+    .mnemonic-icon {
+      font-size: 1.3rem;
+      flex-shrink: 0;
+    }
+
+    .mnemonic-body h4 {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--c);
+      margin-bottom: 0.4rem;
+    }
+
+    .mnemonic-body p {
+      font-size: 0.92rem;
+      color: var(--text);
+      margin: 0;
+    }
+
+    .mnemonic-body .mnem-key {
+      color: var(--b);
+      font-weight: 700;
+    }
+
+    /* ============================================================
+   TABLES
+   ============================================================ */
+    .tbl {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.87rem;
+    }
+
+    .tbl th {
+      text-align: left;
+      padding: 0.65rem 0.9rem;
+      background: var(--surface2);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text3);
+      border-bottom: 1px solid var(--border2);
+    }
+
+    .tbl td {
+      padding: 0.7rem 0.9rem;
+      border-bottom: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .tbl tr:last-child td {
+      border-bottom: none;
+    }
+
+    .tbl tr:hover td {
+      background: var(--surface2);
+    }
+
+    .tbl-wrap {
+      overflow-x: auto;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+
+    /* ============================================================
+   VS (COMPARISON) CARDS
+   ============================================================ */
+    .vs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    @media(max-width:640px) {
+      .vs {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* ============================================================
+   FLOW DIAGRAM
+   ============================================================ */
+    .flow {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      flex-wrap: wrap;
+      margin: 1.5rem 0;
+    }
+
+    .flow-box {
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-radius: 10px;
+      padding: 0.75rem 1rem;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--heading);
+      text-align: center;
+      flex: 1;
+      min-width: 80px;
+    }
+
+    .flow-box.accent {
+      background: rgba(110, 231, 247, 0.12);
+      border-color: rgba(110, 231, 247, 0.4);
+      color: var(--a);
+    }
+
+    .flow-box.accent2 {
+      background: rgba(167, 139, 250, 0.12);
+      border-color: rgba(167, 139, 250, 0.4);
+      color: var(--c);
+    }
+
+    .flow-box.accent3 {
+      background: rgba(52, 211, 153, 0.12);
+      border-color: rgba(52, 211, 153, 0.4);
+      color: var(--d);
+    }
+
+    .flow-arrow {
+      font-size: 1.2rem;
+      color: var(--text3);
+      padding: 0 0.35rem;
+      flex-shrink: 0;
+    }
+
+    /* ============================================================
+   STEPS
+   ============================================================ */
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .step {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      padding: 1rem 1.25rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      transition: all 0.3s;
+    }
+
+    .step:hover {
+      border-color: var(--border2);
+    }
+
+    .step-num {
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      font-size: 0.8rem;
+      flex-shrink: 0;
+      color: #000;
+      background: linear-gradient(135deg, var(--a), var(--c));
+    }
+
+    .step-body h4 {
+      font-weight: 700;
+      font-size: 0.9rem;
+      margin-bottom: 0.2rem;
+    }
+
+    .step-body p {
+      font-size: 0.86rem;
+      color: var(--text2);
+      margin: 0;
+    }
+
+    /* ============================================================
+   BADGES
+   ============================================================ */
+    .badge {
+      display: inline-block;
+      padding: 0.2rem 0.55rem;
+      border-radius: 100px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      border: 1px solid;
+    }
+
+    .badge-a {
+      color: var(--a);
+      border-color: rgba(110, 231, 247, 0.4);
+      background: rgba(110, 231, 247, 0.1);
+    }
+
+    .badge-b {
+      color: var(--b);
+      border-color: rgba(244, 114, 182, 0.4);
+      background: rgba(244, 114, 182, 0.1);
+    }
+
+    .badge-c {
+      color: var(--c);
+      border-color: rgba(167, 139, 250, 0.4);
+      background: rgba(167, 139, 250, 0.1);
+    }
+
+    .badge-e {
+      color: var(--e);
+      border-color: rgba(251, 146, 60, 0.4);
+      background: rgba(251, 146, 60, 0.1);
+    }
+
+    .row-highlight td {
+      background: rgba(52, 211, 153, 0.06) !important;
+    }
+
+    .row-warn td {
+      background: rgba(244, 114, 182, 0.06) !important;
+    }
+
+    /* ============================================================
+   FOOTER
+   ============================================================ */
+    footer {
+      text-align: center;
+      padding: 3rem 2rem 4rem;
+      position: relative;
+    }
+
+    footer::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 10%;
+      right: 10%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border2), transparent);
+    }
+
+    .footer-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--a), var(--c), var(--b));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .footer-sub {
+      font-size: 0.78rem;
+      color: var(--text3);
+      margin-top: 0.3rem;
+    }
+
+    /* UL RESET */
+    ul {
+      list-style: none;
+    }
+
+    ul li {
+      padding: 0.32rem 0;
+      padding-left: 1rem;
+      position: relative;
+      font-size: 0.9rem;
+      color: var(--text2);
+    }
+
+    ul li::before {
+      content: '▸';
+      position: absolute;
+      left: 0;
+      color: var(--c);
+      font-size: 0.65rem;
+      top: 0.44rem;
+    }
+
+    .divider {
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border), transparent);
+      margin: 4rem 0;
+    }
+
+    @media(max-width:600px) {
+      .grid4 {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .flow {
+        justify-content: center;
+      }
+
+      .flow-box {
+        min-width: 70px;
+        font-size: 0.75rem;
+      }
+    }
+  </style>
+  <script src="/javascripts/standalone-theme.js"></script>
+  <script src="/javascripts/html-theme-sync.js"></script>
+
+  <meta name="description"
+    content="Complete study guide for CYS406 Chapter 7: Hash Functions — MACs vs hash functions, HMAC, the required properties of a secure hash function, preimage/second-preimage/collision resistance, the birthday attack, UNIX password salting, and the MD5/SHA-1/SHA-2 family compared. With mnemonics.">
+  <link rel="canonical"
+    href="https://shoug-tech.com/academics/cybersecurity/cys406/slide-breakdowns/07-chapter-7-hash-functions/chapter-7-hash-functions.html">
+  <meta property="og:title" content="CYS406 - Hash Functions">
+  <meta property="og:description"
+    content="Complete study guide for CYS406 Chapter 7: Hash Functions — MACs vs hash functions, HMAC, the required properties of a secure hash function, preimage/second-preimage/collision resistance, the birthday attack, UNIX password salting, and the MD5/SHA-1/SHA-2 family compared. With mnemonics.">
+  <meta property="og:url"
+    content="https://shoug-tech.com/academics/cybersecurity/cys406/slide-breakdowns/07-chapter-7-hash-functions/chapter-7-hash-functions.html">
+  <meta property="og:type" content="article">
+  <meta property="og:image" content="https://shoug-tech.com/assets/og-banner.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="CYS406 - Hash Functions">
+  <meta name="twitter:description"
+    content="Complete study guide for CYS406 Chapter 7: Hash Functions — MACs vs hash functions, HMAC, the required properties of a secure hash function, preimage/second-preimage/collision resistance, the birthday attack, UNIX password salting, and the MD5/SHA-1/SHA-2 family compared. With mnemonics.">
+  <meta name="twitter:image" content="https://shoug-tech.com/assets/og-banner.png">
+</head>
+
+<body>
+
+
+  <!-- THEME TOGGLE -->
+  <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+    <span class="toggle-icon" id="toggle-icon">☀️</span>
+    <span id="toggle-label">Light Mode</span>
+  </button>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-grid"></div>
+
+    <div class="hero-badge">
+      <span class="badge-dot"></span>
+      CYS406 · Chapter 7
+    </div>
+
+    <h1>
+      Hash Functions<br>
+      <span class="gradient-word">Digital Fingerprints</span>
+    </h1>
+    <p class="hero-sub">Squeezing a message of any length down to a small, fixed-size fingerprint — MACs vs. plain
+      hashing, HMAC, the properties a "good" hash must have, the birthday attack on collisions, password salting, and
+      the MD5 / SHA-1 / SHA-2 family in detail.</p>
+
+    <div class="hero-chips">
+      <span class="chip chip-a">MAC vs Hash</span>
+      <span class="chip chip-b">HMAC</span>
+      <span class="chip chip-c">One-Way &amp; Collision-Free</span>
+      <span class="chip chip-d">Birthday Attack</span>
+      <span class="chip chip-e">Salting Passwords</span>
+      <span class="chip chip-f">MD5 · SHA-1 · SHA-2</span>
+    </div>
+
+    <div class="scroll-hint">
+      scroll ↓
+    </div>
+  </div>
+
+  <main>
+
+    <!-- SECTION 1: MESSAGE AUTHENTICATION & MACs -->
+    <section>
+      <div class="section-header"><span class="sec-num">01 / Foundations</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="ga">Message Authentication &amp; MACs</h2>
+      <p><strong>Encryption</strong> protects a message against <strong>passive</strong> attacks (eavesdropping),
+        while <strong>message authentication</strong> protects against <strong>active</strong> attacks — an attacker
+        who modifies traffic, replays it, changes its order/timing, or forges its origin. Message authentication is
+        concerned with three things:</p>
+
+      <div class="def-grid">
+        <div class="def-card">
+          <div class="def-top" style="background:var(--a)"></div>
+          <div class="def-term ta">Integrity</div>
+          <div class="def-desc">Protecting the message from being altered in transit.</div>
+        </div>
+        <div class="def-card">
+          <div class="def-top" style="background:var(--b)"></div>
+          <div class="def-term tb">Origin Validation</div>
+          <div class="def-desc">Confirming the identity of whoever actually sent the message.</div>
+        </div>
+        <div class="def-card">
+          <div class="def-top" style="background:var(--c)"></div>
+          <div class="def-term tc">Non-Repudiation</div>
+          <div class="def-desc">Dispute resolution — the sender can't later deny having sent it.</div>
+        </div>
+      </div>
+
+      <h3 class="tb" style="margin-top:2rem;">What Message Security Must Defend Against</h3>
+      <div class="vs">
+        <div class="ex ex-a">
+          <div class="ex-label ta">🔒 Disclosure — Message Encryption</div>
+          <p>Traffic analysis and disclosure attacks (a passive attacker simply reading or profiling traffic) are
+            countered by <strong>message encryption</strong>.</p>
+        </div>
+        <div class="ex ex-b">
+          <div class="ex-label tb">🛡️ Active Tampering — Authentication &amp; Signatures</div>
+          <p>Masquerade, content modification, sequence modification, timing modification, and repudiation (of origin
+            or destination) are countered by <strong>message authentication / integrity</strong> and
+            <strong>digital signatures</strong>.
+          </p>
+        </div>
+      </div>
+
+      <h3 class="tc" style="margin-top:2rem;">Three Approaches to Message Authentication</h3>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <h4>Conventional (Symmetric) Encryption</h4>
+            <p>Authentication using symmetric encryption — if the ciphertext decrypts to something sensible with the
+              shared key, it's assumed to be authentic.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <h4>Public Key Encryption</h4>
+            <p>Authentication using asymmetric (public-key) encryption.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <h4>Message Authentication Without Encryption</h4>
+            <p>The message itself is <strong>not always encrypted</strong> — instead an authentication tag (a MAC) is
+              generated and appended to it. Authentication and confidentiality can also be combined into one
+              algorithm by encrypting the message plus its authentication tag.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <h3 class="td">Message Authentication Code (MAC)</h3>
+      <p>A MAC is a <strong>small, fixed-size block of data</strong> generated from the message plus a secret key:
+        <strong>MAC = C(K, M)</strong>. It is appended to the message when sent. Unlike encryption, a MAC algorithm
+        need not be reversible — the receiver simply re-computes the MAC over the received message using the same key
+        and checks that it matches.
+      </p>
+
+      <div class="flow">
+        <div class="flow-box">Message M</div>
+        <div class="flow-arrow">+</div>
+        <div class="flow-box accent">Secret Key K</div>
+        <div class="flow-arrow">→ C(K,M) →</div>
+        <div class="flow-box accent3">MAC (appended to M)</div>
+      </div>
+
+      <p>If the recomputed MAC matches, the message is <strong>authenticated</strong>, which guarantees:</p>
+      <ul>
+        <li>The message has <strong>not been altered</strong></li>
+        <li>The message is <strong>coming from the alleged sender</strong> (they hold the shared key)</li>
+        <li>If the message carries a sequence number (as with TCP), <strong>ordering is guaranteed</strong></li>
+      </ul>
+
+      <div class="ex ex-d">
+        <div class="ex-label td">📘 How MACs Are Generated in Practice</div>
+        <p>NIST recommends using <strong>DES</strong> to produce an encrypted version of the message, then taking the
+          <strong>last 16 or 32 bits</strong> of that ciphertext as the code. The authentication algorithm does not
+          need to be reversible — only "hard to forge."
+        </p>
+      </div>
+
+      <div class="tip tip-blue">
+        <div class="tip-icon">💡</div>
+        <div class="tip-body">
+          <h4 class="ta">A MAC can add secrecy too — but keep the keys separate</h4>
+          <p>A MAC provides authentication; encryption can be layered on for secrecy. Generally use
+            <strong>separate keys</strong> for each. The MAC can be computed before or after encryption — computing
+            it <strong>before</strong> encryption is generally regarded as the better order.
+          </p>
+        </div>
+      </div>
+
+      <h3 class="te" style="margin-top:2rem;">Why Use a MAC?</h3>
+      <ul>
+        <li>Sometimes only authentication is needed — no secrecy required</li>
+        <li>Sometimes authentication needs to persist <strong>longer</strong> than the encryption (e.g. archival
+          use — the data may be decrypted eventually, but you still want to verify it wasn't tampered with)</li>
+      </ul>
+      <div class="tip tip-warn">
+        <div class="tip-icon">⚠️</div>
+        <div class="tip-body">
+          <h4 class="te">A MAC is NOT a digital signature</h4>
+          <p>A MAC uses a shared secret key known to both parties, so either party could have generated it — it
+            cannot prove authorship to a third party the way a digital signature (built on asymmetric keys) can.</p>
+        </div>
+      </div>
+
+      <h3 class="ta" style="margin-top:2rem;">Requirements for MACs</h3>
+      <p>Taking the possible attacks into account, a MAC algorithm must satisfy:</p>
+      <div class="grid3">
+        <div class="card bl-a">
+          <p><strong>1.</strong> Given a message and its MAC, it is <strong>infeasible</strong> to find another
+            message with the same MAC.</p>
+        </div>
+        <div class="card bl-b">
+          <p><strong>2.</strong> MAC values should be <strong>uniformly distributed</strong> (no bias, no
+            shortcuts).</p>
+        </div>
+        <div class="card bl-c">
+          <p><strong>3.</strong> The MAC should depend <strong>equally on all bits</strong> of the message (no bit
+            should matter more than another).</p>
+        </div>
+      </div>
+
+      <div class="mnemonic">
+        <div class="mnemonic-icon">🧠</div>
+        <div class="mnemonic-body">
+          <h4>Mnemonic — "F.U.D." for MAC Requirements</h4>
+          <p><span class="mnem-key">"Forge-proof, Uniform, Dependent-on-everything"</span> → can't
+            <strong>F</strong>orge a second message with the same MAC, output is <strong>U</strong>niformly
+            distributed, and the MAC is <strong>D</strong>ependent equally on every bit of the input. Three
+            requirements, three F.U.D. words.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 2: HMAC -->
+    <section>
+      <div class="section-header"><span class="sec-num">02 / HMAC</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gb">HMAC — Keyed-Hash Message Authentication</h2>
+      <p>HMAC builds a MAC <strong>out of a hash function</strong> instead of a block cipher. It's specified as
+        Internet standard <strong>RFC 2104</strong>.</p>
+
+      <h3 class="tc">HMAC Design Objectives</h3>
+      <div class="def-grid">
+        <div class="def-card">
+          <div class="def-top" style="background:var(--a)"></div>
+          <div class="def-term ta">Reuse Hash Functions</div>
+          <div class="def-desc">Use existing hash functions without modification.</div>
+        </div>
+        <div class="def-card">
+          <div class="def-top" style="background:var(--b)"></div>
+          <div class="def-term tb">Easy Replaceability</div>
+          <div class="def-desc">Allow the embedded hash function to be swapped out easily.</div>
+        </div>
+        <div class="def-card">
+          <div class="def-top" style="background:var(--c)"></div>
+          <div class="def-term tc">Preserve Performance</div>
+          <div class="def-desc">No significant performance degradation vs. the raw hash function.</div>
+        </div>
+        <div class="def-card">
+          <div class="def-top" style="background:var(--d)"></div>
+          <div class="def-term td">Simple Key Handling</div>
+          <div class="def-desc">Use and handle keys in a simple way.</div>
+        </div>
+        <div class="def-card">
+          <div class="def-top" style="background:var(--e)"></div>
+          <div class="def-term te">Analyzable Strength</div>
+          <div class="def-desc">Have a well-understood cryptographic analysis of the authentication mechanism's
+            strength.</div>
+        </div>
+      </div>
+
+      <h3 class="td" style="margin-top:2rem;">The HMAC Formula</h3>
+      <div class="mono">HMAC<span class="key">_K</span>(M) = Hash[ (K<span class="comment">+</span> XOR opad) || Hash[
+        (K<span class="comment">+</span> XOR ipad) || M ] ]</div>
+      <p style="margin-top:0.9rem;">Where:</p>
+      <ul>
+        <li><strong>K⁺</strong> is the secret key, padded out to the hash function's block size</li>
+        <li><strong>ipad</strong> and <strong>opad</strong> are two fixed, specified padding constants (inner pad /
+          outer pad)</li>
+        <li>The message is first hashed together with the inner-padded key, then that result is hashed again together
+          with the outer-padded key</li>
+      </ul>
+
+      <div class="tip tip-green">
+        <div class="tip-icon">✅</div>
+        <div class="tip-body">
+          <h4 class="td">Cheap overhead, any hash function works</h4>
+          <p>The overhead of HMAC is just <strong>3 extra hash computations</strong> beyond what hashing the message
+            alone would need. Any hash function can be plugged in — e.g. <strong>MD5, SHA-1, RIPEMD-160,
+              Whirlpool</strong>.</p>
+        </div>
+      </div>
+
+      <h3 class="te" style="margin-top:2rem;">HMAC Security</h3>
+      <p>The proven security of HMAC is tied directly to the security of its underlying hash algorithm. Attacking
+        HMAC requires either:</p>
+      <div class="vs">
+        <div class="ex ex-e">
+          <div class="ex-label te">Brute-Force on the Key</div>
+          <p>Simply try to guess/search the secret key K used in the construction.</p>
+        </div>
+        <div class="ex ex-f">
+          <div class="ex-label tf">Birthday Attack</div>
+          <p>Because HMAC is <strong>keyed</strong>, this would require observing a <strong>very large number</strong>
+            of messages generated under the same key — far harder than an unkeyed birthday attack on a bare hash
+            function.</p>
+        </div>
+      </div>
+      <p>The choice of underlying hash function is a trade-off between <strong>speed</strong> and <strong>security
+          constraints</strong>.</p>
+
+      <div class="mnemonic">
+        <div class="mnemonic-icon">🧠</div>
+        <div class="mnemonic-body">
+          <h4>Mnemonic — "Hash the Hash, In then Out"</h4>
+          <p><span class="mnem-key">"Inner first, Outer last"</span> — HMAC hashes the message with the
+            <strong>i</strong>nner pad first (produces an inner digest), then hashes <em>that</em> result with the
+            <strong>o</strong>uter pad. Remember the order alphabetically: <strong>i</strong>pad before
+            <strong>o</strong>pad, inside before outside — matching the nesting of the formula itself.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 3: HASH FUNCTIONS DEFINITION & PROPERTIES -->
+    <section>
+      <div class="section-header"><span class="sec-num">03 / Hash Functions</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gc">Hash Functions — Definition &amp; Properties</h2>
+      <p>A <strong>one-way hash function</strong> is an alternative to a MAC: it accepts a variable-size message M as
+        input and produces a fixed-size <strong>message digest H(M)</strong>. Unlike a MAC, a hash function does
+        <strong>not</strong> take a secret key as input — to authenticate a message with a hash function, the digest
+        is simply sent alongside the message (often itself protected some other way, e.g. signed or encrypted).
+      </p>
+
+      <div class="mono">H : {0,1}<span class="comment">*</span> → {0,1}<span class="key">n</span> <span
+          class="comment">// arbitrary-length input, fixed-length n-bit output</span></div>
+      <p style="margin-top:0.9rem;">The output size <strong>n</strong> is a property of the specific function.
+        Common values are <strong>128, 160, and 256</strong> bits. Well-known hash functions include
+        <strong>MD5, SHA, and SHA-1</strong>.
+      </p>
+
+      <h3 class="ta" style="margin-top:2rem;">Hash Functions Are Versatile</h3>
+      <div class="grid3">
+        <div class="card bl-a">
+          <p>Message &amp; file integrity checks</p>
+        </div>
+        <div class="card bl-b">
+          <p>Secure login (password storage)</p>
+        </div>
+        <div class="card bl-c">
+          <p>Fingerprints of keys</p>
+        </div>
+        <div class="card bl-d">
+          <p>Authentication</p>
+        </div>
+        <div class="card bl-e">
+          <p>Digital signatures</p>
+        </div>
+      </div>
+      <p style="margin-top:1rem;">A hash function computes a fixed-length value from a variable-length source —
+        similar in spirit to checksums in communication protocols, or an index in a database. It is far more
+        convenient to handle a small hash of a document than the document itself. This chapter deals specifically
+        with <strong>cryptographically secure</strong> hash functions.</p>
+
+      <div class="divider"></div>
+
+      <h3 class="tb">The Two Core Security Properties</h3>
+      <div class="vs">
+        <div class="ex ex-a">
+          <div class="ex-label ta">🔒 One-Way</div>
+          <p>Given a hash output x, it is <strong>unfeasible to compute</strong> a value v such that H(v) = x. You
+            can't reverse a digest back into a message.</p>
+        </div>
+        <div class="ex ex-b">
+          <div class="ex-label tb">🚫 Collision-Free</div>
+          <p>It is <strong>unfeasible to find</strong> x1 and x2 such that H(x1) = H(x2) with x1 ≠ x2 — two
+            different inputs that hash to the same output.</p>
+        </div>
+      </div>
+
+      <h3 class="tc" style="margin-top:2rem;">The Four Desirable Properties of a Hash Function</h3>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <h4>Efficient to Compute</h4>
+            <p>It should be possible to efficiently compute the hash value z = H(m) for any message m.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <h4>One-Way (Preimage Resistance)</h4>
+            <p>Given a hash value z = H(m), it should be computationally infeasible to find m. A function with this
+              property is called a <strong>one-way function</strong>.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <h4>Weak Collision Resistance</h4>
+            <p>Given a message m, it should be infeasible to find another message m′ such that H(m) = H(m′). This is
+              a <strong>second-preimage</strong> attack.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <h4>Strong Collision Resistance</h4>
+            <p>It should be infeasible to find <strong>any</strong> two messages m and m′ (attacker's choice of
+              both) such that H(m) = H(m′).</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="tip tip-yellow">
+        <div class="tip-icon">📌</div>
+        <div class="tip-body">
+          <h4 class="tf">Naming note</h4>
+          <p>Property 3 (fixed message, find a second one with the same hash) is <strong>weak collision
+              resistance</strong>. Property 4 (find any two colliding messages at all) is <strong>strong collision
+              resistance</strong>. Strong collision resistance is the harder property to guarantee — that's exactly
+            what the birthday attack exploits (see Section 04).</p>
+        </div>
+      </div>
+
+      <div class="mnemonic">
+        <div class="mnemonic-icon">🧠</div>
+        <div class="mnemonic-body">
+          <h4>Mnemonic — "E-O-W-S": Efficient, One-way, Weak, Strong</h4>
+          <p><span class="mnem-key">"Every Old Wizard Solves"</span> → <strong>E</strong>fficient to compute →
+            <strong>O</strong>ne-way (can't invert) → <strong>W</strong>eak collision resistance (can't find a second
+            match for a GIVEN message) → <strong>S</strong>trong collision resistance (can't find ANY matching pair).
+            Notice the properties get progressively <em>harder</em> to guarantee as you go down the list.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 4: ATTACKS ON HASH FUNCTIONS & BIRTHDAY PARADOX -->
+    <section>
+      <div class="section-header"><span class="sec-num">04 / Security</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gd">Attacks on Hash Functions &amp; the Birthday Paradox</h2>
+      <p>Hash functions face two broad categories of attack: <strong>brute-force attacks</strong> (which exploit the
+        general structure — applicable to any hash function of a given digest size) and
+        <strong>cryptanalytic attacks</strong> (which exploit a weakness in the specific algorithm's internal design,
+        so they succeed faster than exhaustive search).
+      </p>
+
+      <div class="grid3">
+        <div class="card bl-a">
+          <h3 class="ta">Preimage Attack</h3>
+          <p>Given a hash value, find <strong>any</strong> y such that H(y) equals that given hash value. Breaks
+            one-wayness.</p>
+        </div>
+        <div class="card bl-b">
+          <h3 class="tb">Second Preimage Attack</h3>
+          <p>Given a specific message x, find a <strong>different</strong> message y with H(x) = H(y). Breaks weak
+            collision resistance.</p>
+        </div>
+        <div class="card bl-c">
+          <h3 class="tc">Collision Attack</h3>
+          <p>Find <strong>any</strong> two messages x and y (attacker picks both) such that H(x) = H(y). Breaks
+            strong collision resistance.</p>
+        </div>
+      </div>
+
+      <div class="mnemonic">
+        <div class="mnemonic-icon">🧠</div>
+        <div class="mnemonic-body">
+          <h4>Mnemonic — Fixed vs Free</h4>
+          <p><span class="mnem-key">"Pre = you're given one, Collision = you pick both"</span> — in a
+            <strong>(second) preimage</strong> attack, one message is fixed/given and you hunt for its match. In a
+            <strong>collision</strong> attack, both messages are free — you get to choose both, which is why
+            collisions are found dramatically faster (birthday paradox, below).
+          </p>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <h3 class="td">The Birthday Paradox — Why Collisions Are "Easy"</h3>
+      <p>Classic worked example from the slides: suppose a hash function H produces <strong>n</strong>-bit values.</p>
+      <div class="ex ex-d">
+        <div class="ex-label td">📘 Worked Example — Nice Treaty vs. Evil Treaty</div>
+        <p>Compose a document, "nice treaty," and generate about <strong>2^(n/2)+1</strong> semantically-equivalent
+          versions of it (reworded, but meaning the same thing). Similarly compose an "evil treaty" and generate
+          about <strong>2^(n/2)+1</strong> semantically-equivalent versions of that. With probability
+          <strong>½ or more</strong>, there will exist a version of the nice treaty and a version of the evil treaty
+          that share the <strong>same hash value</strong> — a collision an attacker can exploit (e.g. getting someone
+          to sign the "nice" version, then swapping in the identically-hashed "evil" one).
+        </p>
+      </div>
+
+      <div class="tip tip-warn">
+        <div class="tip-icon">⚠️</div>
+        <div class="tip-body">
+          <h4 class="te">Why this matters: √ (square-root) cost, not full brute force</h4>
+          <p>Because of the birthday effect, finding a collision only costs on the order of <strong>2^(n/2)</strong>
+            attempts rather than 2^n — this is why digest sizes need to be roughly <strong>double</strong> the
+            security level you actually want against collisions.</p>
+        </div>
+      </div>
+
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>Real-World Collision Costs (from slides)</th>
+              <th>Effort</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Collisions in SHA-1 (160-bit)</td>
+              <td>Found by ~2⁶³ attempts</td>
+            </tr>
+            <tr>
+              <td>Collisions in MD5 (128-bit)</td>
+              <td>Found in ~8 hours on a notebook PC</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="mnemonic">
+        <div class="mnemonic-icon">🧠</div>
+        <div class="mnemonic-body">
+          <h4>Mnemonic — "Half the Bits, Not All the Bits"</h4>
+          <p><span class="mnem-key">"Birthday = square-root shortcut"</span> — just like it only takes ~23 people in
+            a room for a 50% chance two share a birthday (not 183, half of 365), it only takes ~2^(n/2) hash attempts
+            to find a collision (not 2^n). That's why MD5's 128-bit digest gives only ~2^64 collision security, not
+            2^128 — and why it's now considered broken.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 5: PASSWORD HASHING & SALTING -->
+    <section>
+      <div class="section-header"><span class="sec-num">05 / Passwords</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="ga">UNIX Password Hashing &amp; Salting</h2>
+      <p>Classic UNIX systems used a modified form of <strong>DES</strong> as if it were a hash function to store
+        passwords: <strong>encrypt a NULL string using the password itself as the DES key</strong> (rather than
+        encrypting the password). This scheme historically <strong>truncated passwords to 8 characters</strong>, and
+        applied an <strong>artificial slowdown</strong> by running DES <strong>25 times</strong> in a row. Modern
+        UNIX systems can instead be configured to use the <strong>MD5</strong> hash function.</p>
+
+      <div class="tip tip-warn">
+        <div class="tip-icon">⚠️</div>
+        <div class="tip-body">
+          <h4 class="te">The core problem: passwords aren't random</h4>
+          <p>With 52 upper/lowercase letters, 10 digits, and 32 punctuation symbols, there are
+            <strong>94⁸ ≈ 6 quadrillion</strong> possible 8-character passwords — but humans overwhelmingly reuse
+            dictionary words, names, and pet names, shrinking the practical space to roughly
+            <strong>1 million</strong> common passwords.
+          </p>
+        </div>
+      </div>
+
+      <h3 class="tb" style="margin-top:2rem;">crypt(3) — How the Classic Scheme Works</h3>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <h4>Choose a Salt</h4>
+            <p>A random salt is chosen when the password is first set.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <h4>Salt Disrupts the DES E-box</h4>
+            <p>The salt introduces disorder into DES in one of <strong>16,777,216 (2²⁴)</strong> or
+              <strong>4,096 (2¹²)</strong> possible ways — i.e. using 24 or 12 bits of salt: if bit i of the salt is
+              set, bits i and i+24 are swapped in the DES E-box output.
+            </p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <h4>Encrypt a Constant, Repeatedly</h4>
+            <p>The DES key (derived from the password) is used to encrypt a 64-bit constant, iterated
+              <strong>count</strong> times. crypt(pwd, salt) is basically <strong>DES on a NULL plaintext</strong>.
+            </p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <h4>Output the Encoded String</h4>
+            <p>Returns a null-terminated string, <strong>20 or 13 bytes</strong> (plus null) in length: the salt
+              "setting" followed by the encoded 64-bit encryption.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="ex ex-c" style="margin-top:1.25rem;">
+        <div class="ex-label tc">📘 The 13-Character Encrypted Password</div>
+        <p>The classic UNIX password field format is a <strong>13-character</strong> Base64-encoded (6 bits/char)
+          string = 78 bits total, made up of <strong>12 bits of salt</strong> and a <strong>64-bit hashed
+            value</strong> — shown as <span class="mono"
+            style="display:inline;padding:0.15rem 0.5rem;margin:0;">sX5/Fhl9yCMNK</span>
+          (2-char salt + 11-char hash).</p>
+      </div>
+
+      <div class="tip tip-green">
+        <div class="tip-icon">✅</div>
+        <div class="tip-body">
+          <h4 class="td">What salting actually buys you</h4>
+          <p>Users with the <strong>same password</strong> end up with <strong>different</strong> entries in the
+            password file (since each gets a different random salt), which defeats a single precomputed lookup table
+            covering all users at once. But a <strong>dictionary attack targeted at one salt</strong> is still fully
+            possible.</p>
+        </div>
+      </div>
+
+      <h3 class="tc" style="margin-top:2rem;">Handling Longer Passwords</h3>
+      <p>Later modifications to crypt(3) allowed longer passwords by splitting them into groups of 8 characters:
+        the first key is generated from the first 8-character group, then keys for subsequent groups are XOR'd into
+        the DES encryption of the current key, using itself as the key.</p>
+
+      <div class="divider"></div>
+
+      <h3 class="te">Dictionary Attacks</h3>
+      <p>The <code>/etc/passwd</code> file is <strong>world-readable</strong> (it also holds user/group IDs needed by
+        many system programs), which is exactly what makes offline dictionary attacks feasible: an attacker computes
+        H(word) for every word in a dictionary and checks whether the result appears in the password file.</p>
+
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>Scenario</th>
+              <th>Numbers from the Slides</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Typical password dictionary size</td>
+              <td>~1,000,000 common entries (names, pet names, words)</td>
+            </tr>
+            <tr>
+              <td>Online guessing rate</td>
+              <td>~10 guesses/second (reasonable for a live website)</td>
+            </tr>
+            <tr>
+              <td>Full dictionary attack time</td>
+              <td>At most ~100,000 sec (28 hrs); ~50,000 sec (14 hrs) average</td>
+            </tr>
+            <tr>
+              <td>Offline attack</td>
+              <td>Much faster than online — this estimate is conservative</td>
+            </tr>
+            <tr>
+              <td>If passwords were truly random (6 chars, 94-symbol alphabet)</td>
+              <td>~689,869,781,056 combinations → ~1,093 years to exhaust on average</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="mnemonic">
+        <div class="mnemonic-icon">🧠</div>
+        <div class="mnemonic-body">
+          <h4>Mnemonic — "Salt Stops Reuse, Not Guessing"</h4>
+          <p><span class="mnem-key">"Salt = spice, not a lock"</span> — salting stops an attacker from reusing one
+            precomputed table (like a rainbow table) across every account, because each hash is seasoned differently.
+            It does <strong>nothing</strong> to slow a targeted dictionary attack against one specific user's salt —
+            that's why humans choosing weak, guessable passwords remains the real vulnerability.</p>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <h3 class="ta">Combining Hashing with Encryption</h3>
+      <p>To simultaneously protect confidentiality <strong>and</strong> authenticity, four combination approaches
+        exist (often required together, but usually implemented as separate mechanisms):</p>
+      <div class="grid2">
+        <div class="card bl-a">
+          <p><strong>Hash-then-encrypt:</strong> E(K, (M || H(M)))</p>
+        </div>
+        <div class="card bl-b">
+          <p><strong>MAC-then-encrypt:</strong> E(K2, (M || MAC(K1, M)))</p>
+        </div>
+        <div class="card bl-c">
+          <p><strong>Encrypt-then-MAC:</strong> C = E(K2, M), T = MAC(K1, C)</p>
+        </div>
+        <div class="card bl-d">
+          <p><strong>Encrypt-and-MAC:</strong> C = E(K2, M), T = MAC(K1, M)</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 6: HASH ALGORITHMS - MD5, SHA-1, SHA-2 -->
+    <section>
+      <div class="section-header"><span class="sec-num">06 / Algorithms</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gb">Hash Algorithms — MD5, SHA-1 &amp; the SHA-2 Family</h2>
+      <p>The three named algorithm families from the slides:</p>
+      <div class="def-grid">
+        <div class="def-card">
+          <div class="def-top" style="background:var(--a)"></div>
+          <div class="def-term ta">MD5</div>
+          <div class="def-desc">By Ron Rivest — 128-bit hash values.</div>
+        </div>
+        <div class="def-card">
+          <div class="def-top" style="background:var(--b)"></div>
+          <div class="def-term tb">SHA-1</div>
+          <div class="def-desc">Developed by NSA, standardized by NIST — 160-bit hash, encoded in 5 × 32-bit words.
+          </div>
+        </div>
+        <div class="def-card">
+          <div class="def-top" style="background:var(--c)"></div>
+          <div class="def-term tc">SHA-256/384/512</div>
+          <div class="def-desc">Designed to pair with AES; part of the NIST Cryptographic Toolkit.</div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <h3 class="td">MD5 Message Digest Algorithm</h3>
+      <p>Developed by <strong>Ron Rivest at MIT</strong>. Takes a message of arbitrary length and compresses it into
+        a <strong>128-bit</strong> hash, processed using 32-bit words and <strong>512-bit blocks</strong>. It's the
+        "son of MD2 and MD4" — direct successor in the MD line.</p>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <h4>Append Padding Bits</h4>
+            <p>Pad so the bit length ≡ <strong>448 mod 512</strong> (i.e. 64 bits short of a multiple of 512).
+              Padding is <strong>always</strong> added, even if the message is already the right length. Padding
+              bits are a single <strong>1</strong> followed by as many <strong>0</strong>s as needed.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <h4>Append Length</h4>
+            <p>A <strong>64-bit</strong> field is appended containing the length of the <em>original</em> message
+              modulo 2⁶⁴, bringing the total to an exact multiple of 512 bits. The expanded message can be viewed as
+              N 32-bit words, N = L × 16 for L 512-bit blocks.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <h4>Process Block by Block</h4>
+            <p>The hashing runs block-by-block; at the end of four rounds per block, the round output is added to
+              the running values of the buffer <strong>A, B, C, D</strong>.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="tip tip-warn">
+        <div class="tip-icon">⚠️</div>
+        <div class="tip-body">
+          <h4 class="te">MD5 is broken — don't use it for security</h4>
+          <p>Full details are in <strong>RFC 1321</strong>. Hans Dobbertin showed MD5 is <strong>not collision
+              resistant</strong>, so it's not advisable to rely on it. It remains in legacy use in protocols like
+            IPSec, but for new work it should be avoided.</p>
+        </div>
+      </div>
+
+      <h3 class="tf" style="margin-top:2rem;">MD4 — MD5's Precursor</h3>
+      <p>MD4's design goals — carried over into MD5 — were: <strong>security, speed, simplicity/compactness,</strong>
+        and favoring a <strong>little-endian</strong> architecture. MD5 improved on MD4 in six specific ways:</p>
+      <ul>
+        <li>A <strong>fourth round</strong> was added</li>
+        <li>Each step got a <strong>unique additive constant</strong></li>
+        <li>The round-2 function g changed from (bc ∨ bd ∨ cd) to (bd ∨ c d′) — made less symmetric</li>
+        <li>Each step now adds in the result of the <strong>previous step</strong>, for a faster avalanche effect</li>
+        <li>The input-word access order in rounds 2 and 3 was changed to look less like one another</li>
+        <li>Shift amounts per round were re-optimized and made <strong>distinct per round</strong>, for a faster
+          avalanche effect</li>
+      </ul>
+
+      <div class="divider"></div>
+
+      <h3 class="ta">Secure Hash Algorithm (SHA / SHA-1)</h3>
+      <p>Originally designed by <strong>NIST &amp; NSA in 1993</strong>, revised in <strong>1995 as SHA-1</strong>.
+        It's the US standard for use with the DSA signature scheme (standard FIPS 180-1 1995 / Internet RFC 3174 —
+        note: the <em>algorithm</em> is "SHA," the <em>standard</em> is "SHS"). Based on the design of MD4, with key
+        differences; produces <strong>160-bit</strong> hash values. 2005 cryptanalysis results raised real concerns
+        about SHA-1's future use.</p>
+
+      <div class="def-grid">
+        <div class="def-card">
+          <div class="def-top" style="background:var(--a)"></div>
+          <div class="def-term ta">Input</div>
+          <div class="def-desc">Message up to just under 2⁶⁴ bits.</div>
+        </div>
+        <div class="def-card">
+          <div class="def-top" style="background:var(--b)"></div>
+          <div class="def-term tb">Output</div>
+          <div class="def-desc">160-bit message digest.</div>
+        </div>
+        <div class="def-card">
+          <div class="def-top" style="background:var(--c)"></div>
+          <div class="def-term tc">Structure</div>
+          <div class="def-desc">32-bit words, 512-bit blocks, 4 rounds × 20 steps per block = 80 steps.</div>
+        </div>
+        <div class="def-card">
+          <div class="def-top" style="background:var(--d)"></div>
+          <div class="def-term td">Lineage</div>
+          <div class="def-desc">Closely models MD4; slower but stronger than MD5.</div>
+        </div>
+      </div>
+
+      <h3 class="tb" style="margin-top:2rem;">SHA-1 Logic — Steps</h3>
+      <p>Overall structure mirrors MD5:</p>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <h4>Append Padding Bits</h4>
+            <p>Same idea as MD5's padding step.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <h4>Append Length</h4>
+            <p>Same idea as MD5's length step.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <h4>Initialize the MD Buffer</h4>
+            <p>A <strong>160-bit</strong> buffer of five 32-bit registers <strong>A, B, C, D, E</strong> holds
+              intermediate and final results. A/B/C/D initialize the same as in MD5; <strong>E = C3D2E1F0</strong>.
+              Stored <strong>big-endian</strong> (most significant byte at the low address).</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <h4>Process 512-bit Blocks — the Compression Function</h4>
+            <p>The heart of the algorithm: <strong>4 rounds of 20 steps each</strong> (80 steps total). Each round
+              uses a different primitive logical function (f1–f4), and each round consumes the current 512-bit block
+              plus the 160-bit ABCDE buffer, updating it. Only <strong>4 distinct additive constants</strong>
+              (Kt) are used across all 80 steps, each based on the integer part of 2³⁰ × a square root:</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="tbl-wrap" style="margin-top:1rem;">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>Step Range</th>
+              <th>Constant K<sub>t</sub></th>
+              <th>Derived From</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>0 ≤ t ≤ 19</td>
+              <td>5A827999</td>
+              <td>[2³⁰ × √2]</td>
+            </tr>
+            <tr>
+              <td>20 ≤ t ≤ 39</td>
+              <td>6ED9EBA1</td>
+              <td>[2³⁰ × √3]</td>
+            </tr>
+            <tr>
+              <td>40 ≤ t ≤ 59</td>
+              <td>8F1BBCDC</td>
+              <td>[2³⁰ × √5]</td>
+            </tr>
+            <tr>
+              <td>60 ≤ t ≤ 79</td>
+              <td>CA62C1D6</td>
+              <td>[2³⁰ × √10]</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="margin-top:0.75rem;">The output of the 4th round (80th step) is added to the previous chaining value
+        CV<sub>q</sub> to produce CV<sub>q+1</sub> — carried into the next 512-bit block.</p>
+
+      <div class="divider"></div>
+
+      <h3 class="tc">Revised Secure Hash Standard (SHA-2 Family)</h3>
+      <p>NIST issued the revision <strong>FIPS 180-2 in 2002</strong>, adding three additional versions —
+        <strong>SHA-256, SHA-384, SHA-512</strong> — designed for compatibility with the increased security level
+        offered by AES. Structure and detail closely resemble SHA-1, so analysis techniques should transfer, but
+        security levels are considerably higher.
+      </p>
+
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>Property</th>
+              <th>SHA-1</th>
+              <th>SHA-224</th>
+              <th>SHA-256</th>
+              <th>SHA-384</th>
+              <th>SHA-512</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Message digest size</td>
+              <td>160</td>
+              <td>224</td>
+              <td>256</td>
+              <td>384</td>
+              <td>512</td>
+            </tr>
+            <tr>
+              <td>Max message size</td>
+              <td>&lt; 2⁶⁴</td>
+              <td>&lt; 2⁶⁴</td>
+              <td>&lt; 2⁶⁴</td>
+              <td>&lt; 2¹²⁸</td>
+              <td>&lt; 2¹²⁸</td>
+            </tr>
+            <tr>
+              <td>Block size</td>
+              <td>512</td>
+              <td>512</td>
+              <td>512</td>
+              <td>1024</td>
+              <td>1024</td>
+            </tr>
+            <tr>
+              <td>Word size</td>
+              <td>32</td>
+              <td>32</td>
+              <td>32</td>
+              <td>64</td>
+              <td>64</td>
+            </tr>
+            <tr>
+              <td>Number of steps</td>
+              <td>80</td>
+              <td>64</td>
+              <td>64</td>
+              <td>80</td>
+              <td>80</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 class="td" style="margin-top:2rem;">SHA-512 Compression Function</h3>
+      <p>The heart of SHA-512: it processes the message in <strong>1024-bit</strong> blocks across
+        <strong>80 rounds</strong>, each round updating a <strong>512-bit</strong> buffer using a 64-bit value
+        W<sub>t</sub> derived from the current message block, plus a round constant based on the
+        <strong>cube root of the first 80 prime numbers</strong>.
+      </p>
+
+      <div class="mnemonic">
+        <div class="mnemonic-icon">🧠</div>
+        <div class="mnemonic-body">
+          <h4>Mnemonic — "128, 160, then Double Every Time"</h4>
+          <p><span class="mnem-key">"MD-5-and-a-2-8, SHA-1-6-oh, then 2-2-4-2-5-6-3-8-4-5-1-2"</span> — simpler:
+            <strong>MD5 = 128</strong> bits, <strong>SHA-1 = 160</strong> bits, and the SHA-2 family digest sizes are
+            literally baked into their <strong>names</strong>: SHA-<strong>224</strong>, SHA-<strong>256</strong>,
+            SHA-<strong>384</strong>, SHA-<strong>512</strong>. If you remember the algorithm's number, you already
+            know its digest size.
+          </p>
+        </div>
+      </div>
+
+      <div class="mnemonic">
+        <div class="mnemonic-icon">🧠</div>
+        <div class="mnemonic-body">
+          <h4>Mnemonic — "512 Block, Except the Big Two"</h4>
+          <p><span class="mnem-key">"384 and 512 go big on blocks"</span> — every hash in this family uses a
+            <strong>512-bit block / 32-bit word</strong> setup, <em>except</em> SHA-384 and SHA-512, which switch to
+            a <strong>1024-bit block / 64-bit word</strong> setup. The two "big number" algorithms use the two "big
+            number" internals.
+          </p>
+        </div>
+      </div>
+
+      <div class="tip tip-blue">
+        <div class="tip-icon">💡</div>
+        <div class="tip-body">
+          <h4 class="ta">Hash vs. encryption — the core distinction</h4>
+          <p><strong>Encryption</strong> is reversible (given the key) and typically uses a key; a
+            <strong>cryptographic hash</strong> is deterministic, has no key, produces a fixed-size digest regardless
+            of input size, and is designed to be <strong>practically irreversible</strong>. Encryption protects
+            confidentiality; a hash function protects integrity/fingerprinting (unless wrapped into a MAC/HMAC, which
+            adds authentication).
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- EXAM TIPS -->
+    <section>
+      <div class="section-header"><span class="sec-num">07 / Exam Prep</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gc">Exam Tips &amp; Tricks</h2>
+      <div class="grid2">
+        <div class="tip tip-blue">
+          <div class="tip-icon">💡</div>
+          <div class="tip-body">
+            <h4 class="ta">MAC needs a key, hash function doesn't</h4>
+            <p>MAC = C(K, M) — always requires a shared secret key. A plain hash function H(M) never takes a key;
+              that's the single biggest distinguishing fact examiners test.</p>
+          </div>
+        </div>
+        <div class="tip tip-green">
+          <div class="tip-icon">✅</div>
+          <div class="tip-body">
+            <h4 class="td">Weak = fixed message, Strong = both free</h4>
+            <p>Weak collision resistance (2nd preimage): attacker is given one message and must find a match. Strong
+              collision resistance: attacker can pick both colliding messages — much easier via the birthday attack.</p>
+          </div>
+        </div>
+        <div class="tip tip-warn">
+          <div class="tip-icon">⚠️</div>
+          <div class="tip-body">
+            <h4 class="te">MD5 and SHA-1 are both considered broken for collisions</h4>
+            <p>MD5 collisions: ~8 hours on a notebook. SHA-1 collisions: found by ~2⁶³ attempts. Neither should be
+              used where collision resistance matters (e.g. certificates, digital signatures) — prefer SHA-2 or SHA-3.
+            </p>
+          </div>
+        </div>
+        <div class="tip tip-yellow">
+          <div class="tip-icon">🔑</div>
+          <div class="tip-body">
+            <h4 class="tf">Digest size ≈ 2× your intended collision-security bits</h4>
+            <p>Because of the birthday attack, collision resistance is only ~n/2 bits of security for an n-bit
+              digest. A 128-bit digest (MD5) gives only ~64-bit collision security — that's why it's weak today.</p>
+          </div>
+        </div>
+        <div class="tip tip-blue">
+          <div class="tip-icon">📋</div>
+          <div class="tip-body">
+            <h4 class="ta">Salt defeats precomputation, not guessing</h4>
+            <p>A salt makes identical passwords hash differently across users, defeating one shared rainbow
+              table/lookup. It does NOT slow down a dictionary attack aimed at one specific salted hash.</p>
+          </div>
+        </div>
+        <div class="tip tip-green">
+          <div class="tip-icon">🌐</div>
+          <div class="tip-body">
+            <h4 class="td">HMAC security ties to the underlying hash</h4>
+            <p>HMAC is only as strong as its embedded hash function. Attacking it needs either brute-forcing the key
+              or a birthday attack that (because it's keyed) needs a huge number of messages under the same key.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- QUICK REFERENCE -->
+    <section>
+      <div class="section-header"><span class="sec-num">08 / Cheat Sheet</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gd">Quick Reference — Everything at a Glance</h2>
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>Topic</th>
+              <th>Key Point</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Encryption vs. authentication</td>
+              <td>Encryption defends against passive attacks; message authentication defends against active attacks</td>
+            </tr>
+            <tr>
+              <td>Message authentication covers</td>
+              <td>Integrity, origin validation, non-repudiation</td>
+            </tr>
+            <tr>
+              <td>3 approaches to authentication</td>
+              <td>Symmetric encryption, public-key encryption, MAC (no encryption needed)</td>
+            </tr>
+            <tr>
+              <td>MAC definition</td>
+              <td>Small fixed-size block: MAC = C(K, M); needs a shared secret key</td>
+            </tr>
+            <tr>
+              <td>NIST MAC method (classic)</td>
+              <td>Encrypt with DES, take last 16 or 32 bits of ciphertext as the code</td>
+            </tr>
+            <tr>
+              <td>MAC requirements</td>
+              <td>Can't forge a 2nd message w/ same MAC; uniformly distributed; depends on all bits equally</td>
+            </tr>
+            <tr>
+              <td>MAC vs digital signature</td>
+              <td>MAC uses a shared key (either party could forge it) — not proof of authorship like a signature</td>
+            </tr>
+            <tr>
+              <td>MAC-then-encrypt order</td>
+              <td>Generally regarded as better to compute the MAC BEFORE encrypting</td>
+            </tr>
+            <tr>
+              <td>HMAC formula</td>
+              <td>HMAC_K(M) = Hash[(K⁺ XOR opad) || Hash[(K⁺ XOR ipad) || M]]</td>
+            </tr>
+            <tr>
+              <td>HMAC standard</td>
+              <td>RFC 2104; overhead = 3 extra hash computations; works with any hash (MD5, SHA-1, RIPEMD-160,
+                Whirlpool)</td>
+            </tr>
+            <tr>
+              <td>HMAC attacks</td>
+              <td>Brute-force the key, or a (much harder, keyed) birthday attack</td>
+            </tr>
+            <tr>
+              <td>Hash function definition</td>
+              <td>H: {0,1}* → {0,1}ⁿ — arbitrary length in, fixed n-bit digest out, no key</td>
+            </tr>
+            <tr>
+              <td>Common digest sizes</td>
+              <td>128, 160, 256 bits</td>
+            </tr>
+            <tr>
+              <td>Hash function uses</td>
+              <td>Integrity, secure login, key fingerprints, authentication, digital signatures</td>
+            </tr>
+            <tr>
+              <td>One-way property</td>
+              <td>Given H(v)=x, infeasible to find v (preimage resistance)</td>
+            </tr>
+            <tr>
+              <td>Collision-free property</td>
+              <td>Infeasible to find x1 ≠ x2 with H(x1) = H(x2)</td>
+            </tr>
+            <tr>
+              <td>Weak collision resistance</td>
+              <td>Given message m, infeasible to find different m′ with same hash (2nd preimage)</td>
+            </tr>
+            <tr>
+              <td>Strong collision resistance</td>
+              <td>Infeasible to find ANY two messages m, m′ with the same hash</td>
+            </tr>
+            <tr>
+              <td>Preimage attack</td>
+              <td>Find y such that H(y) equals a given hash value</td>
+            </tr>
+            <tr>
+              <td>Collision attack cost</td>
+              <td>~2^(n/2) via birthday paradox, far less than brute-force 2^n</td>
+            </tr>
+            <tr>
+              <td>SHA-1 collision cost</td>
+              <td>~2⁶³ attempts (2005 results raised concerns)</td>
+            </tr>
+            <tr>
+              <td>MD5 collision cost</td>
+              <td>~8 hours on a notebook PC — considered broken</td>
+            </tr>
+            <tr>
+              <td>UNIX password scheme (classic)</td>
+              <td>Encrypts NULL string using password as DES key; truncated to 8 chars; DES run 25× for slowdown</td>
+            </tr>
+            <tr>
+              <td>Modern UNIX alternative</td>
+              <td>Can be configured to use MD5 hash instead</td>
+            </tr>
+            <tr>
+              <td>Salt purpose</td>
+              <td>Same password → different stored hash per user; defeats shared precomputed tables, not targeted
+                dictionary attacks</td>
+            </tr>
+            <tr>
+              <td>Salt size / crypt(3) output</td>
+              <td>12 bits of salt + 64-bit hashed value = 13-character (78-bit) Base64 string</td>
+            </tr>
+            <tr>
+              <td>Dictionary attack numbers</td>
+              <td>~1M word dictionary, 10 guesses/sec → ~14 hrs avg online; offline much faster</td>
+            </tr>
+            <tr>
+              <td>Random password strength</td>
+              <td>6-char, 94-symbol alphabet → ~690 billion combos → ~1,093 yrs to brute-force on average</td>
+            </tr>
+            <tr>
+              <td>Combining hash + encryption</td>
+              <td>Hash-then-encrypt, MAC-then-encrypt, Encrypt-then-MAC, Encrypt-and-MAC</td>
+            </tr>
+            <tr>
+              <td>MD5</td>
+              <td>Ron Rivest; 128-bit digest; 512-bit blocks; 32-bit words; RFC 1321; broken (not collision resistant)
+              </td>
+            </tr>
+            <tr>
+              <td>MD5 padding</td>
+              <td>Pad to length ≡ 448 mod 512, then append 64-bit original length field</td>
+            </tr>
+            <tr>
+              <td>MD4 → MD5 changes</td>
+              <td>+1 round, unique constants per step, less-symmetric g function, faster avalanche, reordered word
+                access, distinct shift amounts</td>
+            </tr>
+            <tr>
+              <td>SHA-1</td>
+              <td>NIST/NSA, 1993, revised 1995; 160-bit digest; 512-bit blocks; 4 rounds × 20 steps = 80 steps</td>
+            </tr>
+            <tr>
+              <td>SHA-1 buffer</td>
+              <td>160-bit buffer: registers A,B,C,D,E; E = C3D2E1F0; stored big-endian</td>
+            </tr>
+            <tr>
+              <td>SHA-1 constants</td>
+              <td>Only 4 distinct Kt values across 80 steps, based on 2³⁰×√(2,3,5,10)</td>
+            </tr>
+            <tr>
+              <td>SHA-2 family</td>
+              <td>FIPS 180-2 (2002): SHA-256, SHA-384, SHA-512 added; designed to pair with AES</td>
+            </tr>
+            <tr>
+              <td>SHA-2 digest sizes</td>
+              <td>224 / 256 / 384 / 512 bits — the number IS the digest size</td>
+            </tr>
+            <tr>
+              <td>SHA-2 block/word sizes</td>
+              <td>SHA-1/224/256: 512-bit blocks, 32-bit words. SHA-384/512: 1024-bit blocks, 64-bit words</td>
+            </tr>
+            <tr>
+              <td>SHA-2 step counts</td>
+              <td>SHA-1/384/512: 80 steps. SHA-224/256: 64 steps</td>
+            </tr>
+            <tr>
+              <td>SHA-512 compression</td>
+              <td>1024-bit blocks, 80 rounds, 512-bit buffer, Wt per round, constants from cube roots of first 80 primes
+              </td>
+            </tr>
+            <tr>
+              <td>Hash vs encryption</td>
+              <td>Hash = no key, one-way, fixed digest, integrity/fingerprint. Encryption = uses a key, reversible,
+                confidentiality</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="footer-name">Made by Shoug Alomran</div>
+    <div class="footer-sub">CYS406 · Chapter 7: Hash Functions · Study Guide</div>
+  </footer>
+
+  <script>
+    // Auto-detect system preference on load
+    (function () {
+      const _stored = localStorage.getItem('shoug-theme');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const theme = _stored === 'dark' ? 'dark' : _stored === 'light' ? 'light' : (prefersDark ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', theme);
+      updateToggle(theme);
+    })();
+
+    // Listen for system changes
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+      if (localStorage.getItem('shoug-theme')) return;
+      const theme = e.matches ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', theme);
+      updateToggle(theme);
+    });
+
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme');
+      const next = current === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      try { localStorage.setItem('shoug-theme', document.documentElement.getAttribute('data-theme')); } catch (e) { }
+      updateToggle(next);
+    }
+
+    function updateToggle(theme) {
+      const icon = document.getElementById('toggle-icon');
+      const label = document.getElementById('toggle-label');
+      if (theme === 'dark') {
+        icon.textContent = '☀️';
+        label.textContent = 'Light Mode';
+      } else {
+        icon.textContent = '🌙';
+        label.textContent = 'Dark Mode';
+      }
+    }
+  </script>
+
+</body>
+
+</html>

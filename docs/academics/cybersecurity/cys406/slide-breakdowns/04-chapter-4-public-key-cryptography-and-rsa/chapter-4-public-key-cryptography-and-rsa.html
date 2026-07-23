@@ -1,0 +1,2104 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+  <link rel="icon" type="image/png" href="/assets/favicon.png?v=2">
+  <link rel="shortcut icon" href="/assets/favicon.png?v=2">
+  <link rel="apple-touch-icon" href="/assets/favicon.png?v=2">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CYS406 - Public-Key Cryptography and RSA</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Playfair+Display:wght@700;800&display=swap"
+    rel="stylesheet">
+  <style>
+    /* ============================================================
+   THEME VARIABLES
+   ============================================================ */
+    :root {
+      --a: #6ee7f7;
+      /* cyan accent */
+      --b: #f472b6;
+      /* pink accent */
+      --c: #a78bfa;
+      /* violet accent */
+      --d: #34d399;
+      /* emerald accent */
+      --e: #fb923c;
+      /* orange accent */
+      --f: #facc15;
+      /* yellow accent */
+    }
+
+    [data-theme="dark"] {
+      --bg: #080c14;
+      --bg2: #0e1422;
+      --bg3: #141c2e;
+      --surface: rgba(255, 255, 255, 0.04);
+      --surface2: rgba(255, 255, 255, 0.07);
+      --border: rgba(255, 255, 255, 0.08);
+      --border2: rgba(255, 255, 255, 0.13);
+      --text: #e2e8f0;
+      --text2: #94a3b8;
+      --text3: #64748b;
+      --heading: #f8fafc;
+      --code-bg: rgba(255, 255, 255, 0.06);
+      --shadow: rgba(0, 0, 0, 0.5);
+      --toggle-bg: rgba(255, 255, 255, 0.08);
+    }
+
+    [data-theme="light"] {
+      --bg: #f0f4ff;
+      --bg2: #e8eef9;
+      --bg3: #dde5f5;
+      --surface: rgba(255, 255, 255, 0.75);
+      --surface2: rgba(255, 255, 255, 0.95);
+      --border: rgba(80, 100, 160, 0.12);
+      --border2: rgba(80, 100, 160, 0.2);
+      --text: #1e2a45;
+      --text2: #475569;
+      --text3: #94a3b8;
+      --heading: #0f172a;
+      --code-bg: rgba(80, 100, 160, 0.08);
+      --shadow: rgba(100, 120, 200, 0.15);
+      --toggle-bg: rgba(80, 100, 160, 0.12);
+    }
+
+    /* ============================================================
+   RESET & BASE
+   ============================================================ */
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Space Grotesk', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      overflow-x: hidden;
+      transition: background 0.4s ease, color 0.4s ease;
+    }
+
+    /* ============================================================
+   THEME TOGGLE
+   ============================================================ */
+    .theme-toggle {
+      position: fixed;
+      top: 1.25rem;
+      right: 1.5rem;
+      z-index: 1000;
+      background: var(--toggle-bg);
+      border: 1px solid var(--border2);
+      border-radius: 100px;
+      padding: 0.45rem 1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text2);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      transition: all 0.3s ease;
+      user-select: none;
+    }
+
+    .theme-toggle:hover {
+      border-color: var(--a);
+      color: var(--a);
+      transform: scale(1.04);
+    }
+
+    .toggle-icon {
+      font-size: 1rem;
+      transition: transform 0.4s ease;
+    }
+
+    /* ============================================================
+   HERO
+   ============================================================ */
+    .hero {
+      min-height: 60vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      position: relative;
+      padding: 5rem 2rem 4rem;
+      overflow: hidden;
+    }
+
+    [data-theme="dark"] .hero {
+      background:
+        radial-gradient(ellipse 70% 50% at 20% 20%, rgba(110, 231, 247, 0.12) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 80% 80%, rgba(167, 139, 250, 0.12) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 40% at 50% 60%, rgba(244, 114, 182, 0.08) 0%, transparent 60%),
+        var(--bg);
+    }
+
+    [data-theme="light"] .hero {
+      background:
+        radial-gradient(ellipse 70% 50% at 20% 20%, rgba(110, 231, 247, 0.18) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 80% 80%, rgba(167, 139, 250, 0.15) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 40% at 50% 60%, rgba(244, 114, 182, 0.12) 0%, transparent 60%),
+        var(--bg);
+    }
+
+    .hero-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(var(--border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 50px 50px;
+      opacity: 0.7;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-radius: 100px;
+      padding: 0.4rem 1.1rem;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--a);
+      margin-bottom: 1.75rem;
+      position: relative;
+      z-index: 1;
+      animation: fadeUp 0.7s ease both;
+    }
+
+    .badge-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--a);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1
+      }
+
+      50% {
+        opacity: 0.4
+      }
+    }
+
+    .hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.4rem, 5.5vw, 4.6rem);
+      font-weight: 800;
+      line-height: 1.15;
+      color: var(--heading);
+      position: relative;
+      z-index: 1;
+      animation: fadeUp 0.85s ease both;
+    }
+
+    .hero h1 .gradient-word {
+      background: linear-gradient(135deg, var(--a), var(--c), var(--b));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-sub {
+      font-size: 1.05rem;
+      color: var(--text2);
+      margin-top: 1.25rem;
+      max-width: 560px;
+      position: relative;
+      z-index: 1;
+      animation: fadeUp 1s ease both;
+    }
+
+    .hero-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      justify-content: center;
+      max-width: 720px;
+      margin-top: 2rem;
+      position: relative;
+      z-index: 1;
+      animation: fadeUp 1.1s ease both;
+    }
+
+    .chip {
+      padding: 0.3rem 0.85rem;
+      border-radius: 100px;
+      font-size: 0.76rem;
+      font-weight: 600;
+      border: 1px solid;
+      transition: transform 0.2s;
+    }
+
+    .chip:hover {
+      transform: translateY(-2px);
+    }
+
+    .chip-a {
+      color: var(--a);
+      border-color: rgba(110, 231, 247, 0.35);
+      background: rgba(110, 231, 247, 0.08);
+    }
+
+    .chip-b {
+      color: var(--b);
+      border-color: rgba(244, 114, 182, 0.35);
+      background: rgba(244, 114, 182, 0.08);
+    }
+
+    .chip-c {
+      color: var(--c);
+      border-color: rgba(167, 139, 250, 0.35);
+      background: rgba(167, 139, 250, 0.08);
+    }
+
+    .chip-d {
+      color: var(--d);
+      border-color: rgba(52, 211, 153, 0.35);
+      background: rgba(52, 211, 153, 0.08);
+    }
+
+    .chip-e {
+      color: var(--e);
+      border-color: rgba(251, 146, 60, 0.35);
+      background: rgba(251, 146, 60, 0.08);
+    }
+
+    .chip-f {
+      color: var(--f);
+      border-color: rgba(250, 204, 21, 0.35);
+      background: rgba(250, 204, 21, 0.08);
+    }
+
+    .scroll-hint {
+      position: absolute;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      color: var(--text3);
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.4rem;
+      animation: bounce 2.5s infinite;
+      z-index: 1;
+    }
+
+    @keyframes bounce {
+
+      0%,
+      100% {
+        transform: translateX(-50%) translateY(0)
+      }
+
+      50% {
+        transform: translateX(-50%) translateY(8px)
+      }
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(24px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    /* ============================================================
+   LAYOUT
+   ============================================================ */
+    main {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 4rem 2rem;
+    }
+
+    section {
+      margin-bottom: 5.5rem;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .sec-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text3);
+      white-space: nowrap;
+    }
+
+    .sec-line {
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, var(--border2), transparent);
+    }
+
+    h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.6rem, 3vw, 2.3rem);
+      font-weight: 800;
+      color: var(--heading);
+      margin-bottom: 0.4rem;
+    }
+
+    h3 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 1.05rem;
+      margin-bottom: 0.6rem;
+      color: var(--heading);
+    }
+
+    p {
+      font-size: 0.94rem;
+      color: var(--text2);
+      margin-bottom: 0.7rem;
+    }
+
+    strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    /* ============================================================
+   GRADIENT TEXT HELPERS
+   ============================================================ */
+    .ga {
+      background: linear-gradient(135deg, var(--a), var(--d));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .gb {
+      background: linear-gradient(135deg, var(--b), var(--c));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .gc {
+      background: linear-gradient(135deg, var(--e), var(--b));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .gd {
+      background: linear-gradient(135deg, var(--c), var(--a));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* ============================================================
+   CARDS
+   ============================================================ */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.6rem;
+      transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
+    }
+
+    .card:hover {
+      border-color: var(--border2);
+      transform: translateY(-3px);
+      box-shadow: 0 12px 30px var(--shadow);
+    }
+
+    .grid2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1rem;
+    }
+
+    .grid3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1rem;
+    }
+
+    .grid4 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 1rem;
+    }
+
+    .bl-a {
+      border-left: 3px solid var(--a);
+    }
+
+    .bl-b {
+      border-left: 3px solid var(--b);
+    }
+
+    .bl-c {
+      border-left: 3px solid var(--c);
+    }
+
+    .bl-d {
+      border-left: 3px solid var(--d);
+    }
+
+    .bl-e {
+      border-left: 3px solid var(--e);
+    }
+
+    .bl-f {
+      border-left: 3px solid var(--f);
+    }
+
+    .ta {
+      color: var(--a);
+    }
+
+    .tb {
+      color: var(--b);
+    }
+
+    .tc {
+      color: var(--c);
+    }
+
+    .td {
+      color: var(--d);
+    }
+
+    .te {
+      color: var(--e);
+    }
+
+    .tf {
+      color: var(--f);
+    }
+
+    /* ============================================================
+   DEFINITION CARDS
+   ============================================================ */
+    .def-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 0.75rem;
+    }
+
+    .def-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.2rem;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s;
+    }
+
+    .def-card:hover {
+      transform: translateY(-2px);
+    }
+
+    .def-top {
+      height: 2px;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+    }
+
+    .def-term {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .def-desc {
+      font-size: 0.87rem;
+      color: var(--text2);
+    }
+
+    /* ============================================================
+   MONO / CODE STYLE
+   ============================================================ */
+    .mono {
+      font-family: 'JetBrains Mono', monospace;
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      font-size: 0.85rem;
+      color: var(--a);
+      margin-top: 0.75rem;
+      overflow-x: auto;
+      white-space: pre;
+    }
+
+    .mono span.comment {
+      color: var(--text3);
+    }
+
+    .mono span.key {
+      color: var(--b);
+    }
+
+    .mono span.val {
+      color: var(--d);
+    }
+
+    /* ============================================================
+   EXAMPLE BOXES
+   ============================================================ */
+    .ex {
+      border-radius: 14px;
+      padding: 1.4rem;
+      border: 1px solid;
+      margin-top: 1.25rem;
+    }
+
+    .ex-a {
+      background: rgba(110, 231, 247, 0.06);
+      border-color: rgba(110, 231, 247, 0.25);
+    }
+
+    .ex-b {
+      background: rgba(244, 114, 182, 0.06);
+      border-color: rgba(244, 114, 182, 0.25);
+    }
+
+    .ex-c {
+      background: rgba(167, 139, 250, 0.06);
+      border-color: rgba(167, 139, 250, 0.25);
+    }
+
+    .ex-d {
+      background: rgba(52, 211, 153, 0.06);
+      border-color: rgba(52, 211, 153, 0.25);
+    }
+
+    .ex-e {
+      background: rgba(251, 146, 60, 0.06);
+      border-color: rgba(251, 146, 60, 0.25);
+    }
+
+    .ex-f {
+      background: rgba(250, 204, 21, 0.06);
+      border-color: rgba(250, 204, 21, 0.25);
+    }
+
+    .ex-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .ex-label::before {
+      content: '';
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    /* ============================================================
+   TIP BOXES
+   ============================================================ */
+    .tip {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      padding: 1.1rem 1.25rem;
+      border-radius: 12px;
+      margin-top: 1rem;
+    }
+
+    .tip-green {
+      background: rgba(52, 211, 153, 0.08);
+      border: 1px solid rgba(52, 211, 153, 0.25);
+    }
+
+    .tip-blue {
+      background: rgba(110, 231, 247, 0.08);
+      border: 1px solid rgba(110, 231, 247, 0.25);
+    }
+
+    .tip-warn {
+      background: rgba(251, 146, 60, 0.08);
+      border: 1px solid rgba(251, 146, 60, 0.25);
+    }
+
+    .tip-yellow {
+      background: rgba(250, 204, 21, 0.08);
+      border: 1px solid rgba(250, 204, 21, 0.25);
+    }
+
+    .tip-icon {
+      font-size: 1.2rem;
+      flex-shrink: 0;
+      margin-top: 0.1rem;
+    }
+
+    .tip-body h4 {
+      font-size: 0.84rem;
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+    }
+
+    .tip-body p {
+      font-size: 0.86rem;
+      color: var(--text2);
+      margin: 0;
+    }
+
+    /* ============================================================
+   MNEMONIC BOXES  (memory aids - distinct brain/purple styling)
+   ============================================================ */
+    .mnemonic {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      padding: 1.25rem 1.4rem;
+      border-radius: 14px;
+      margin-top: 1.25rem;
+      background: linear-gradient(135deg, rgba(167, 139, 250, 0.10), rgba(244, 114, 182, 0.07));
+      border: 1px solid rgba(167, 139, 250, 0.35);
+      position: relative;
+    }
+
+    .mnemonic-icon {
+      font-size: 1.3rem;
+      flex-shrink: 0;
+    }
+
+    .mnemonic-body h4 {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--c);
+      margin-bottom: 0.4rem;
+    }
+
+    .mnemonic-body p {
+      font-size: 0.92rem;
+      color: var(--text);
+      margin: 0;
+    }
+
+    .mnemonic-body .mnem-key {
+      color: var(--b);
+      font-weight: 700;
+    }
+
+    /* ============================================================
+   TABLES
+   ============================================================ */
+    .tbl {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.87rem;
+    }
+
+    .tbl th {
+      text-align: left;
+      padding: 0.65rem 0.9rem;
+      background: var(--surface2);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text3);
+      border-bottom: 1px solid var(--border2);
+    }
+
+    .tbl td {
+      padding: 0.7rem 0.9rem;
+      border-bottom: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .tbl tr:last-child td {
+      border-bottom: none;
+    }
+
+    .tbl tr:hover td {
+      background: var(--surface2);
+    }
+
+    .tbl-wrap {
+      overflow-x: auto;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+
+    /* ============================================================
+   VS (COMPARISON) CARDS
+   ============================================================ */
+    .vs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    @media(max-width:640px) {
+      .vs {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* ============================================================
+   FLOW DIAGRAM
+   ============================================================ */
+    .flow {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      flex-wrap: wrap;
+      margin: 1.5rem 0;
+    }
+
+    .flow-box {
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-radius: 10px;
+      padding: 0.75rem 1rem;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--heading);
+      text-align: center;
+      flex: 1;
+      min-width: 80px;
+    }
+
+    .flow-box.accent {
+      background: rgba(110, 231, 247, 0.12);
+      border-color: rgba(110, 231, 247, 0.4);
+      color: var(--a);
+    }
+
+    .flow-box.accent2 {
+      background: rgba(167, 139, 250, 0.12);
+      border-color: rgba(167, 139, 250, 0.4);
+      color: var(--c);
+    }
+
+    .flow-box.accent3 {
+      background: rgba(52, 211, 153, 0.12);
+      border-color: rgba(52, 211, 153, 0.4);
+      color: var(--d);
+    }
+
+    .flow-arrow {
+      font-size: 1.2rem;
+      color: var(--text3);
+      padding: 0 0.35rem;
+      flex-shrink: 0;
+    }
+
+    /* ============================================================
+   STEPS
+   ============================================================ */
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .step {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      padding: 1rem 1.25rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      transition: all 0.3s;
+    }
+
+    .step:hover {
+      border-color: var(--border2);
+    }
+
+    .step-num {
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      font-size: 0.8rem;
+      flex-shrink: 0;
+      color: #000;
+      background: linear-gradient(135deg, var(--a), var(--c));
+    }
+
+    .step-body h4 {
+      font-weight: 700;
+      font-size: 0.9rem;
+      margin-bottom: 0.2rem;
+    }
+
+    .step-body p {
+      font-size: 0.86rem;
+      color: var(--text2);
+      margin: 0;
+    }
+
+    /* ============================================================
+   BADGES
+   ============================================================ */
+    .badge {
+      display: inline-block;
+      padding: 0.2rem 0.55rem;
+      border-radius: 100px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      border: 1px solid;
+    }
+
+    .badge-a {
+      color: var(--a);
+      border-color: rgba(110, 231, 247, 0.4);
+      background: rgba(110, 231, 247, 0.1);
+    }
+
+    .badge-b {
+      color: var(--b);
+      border-color: rgba(244, 114, 182, 0.4);
+      background: rgba(244, 114, 182, 0.1);
+    }
+
+    .badge-c {
+      color: var(--c);
+      border-color: rgba(167, 139, 250, 0.4);
+      background: rgba(167, 139, 250, 0.1);
+    }
+
+    .badge-e {
+      color: var(--e);
+      border-color: rgba(251, 146, 60, 0.4);
+      background: rgba(251, 146, 60, 0.1);
+    }
+
+    .row-highlight td {
+      background: rgba(52, 211, 153, 0.06) !important;
+    }
+
+    .row-warn td {
+      background: rgba(244, 114, 182, 0.06) !important;
+    }
+
+    /* ============================================================
+   FOOTER
+   ============================================================ */
+    footer {
+      text-align: center;
+      padding: 3rem 2rem 4rem;
+      position: relative;
+    }
+
+    footer::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 10%;
+      right: 10%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border2), transparent);
+    }
+
+    .footer-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--a), var(--c), var(--b));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .footer-sub {
+      font-size: 0.78rem;
+      color: var(--text3);
+      margin-top: 0.3rem;
+    }
+
+    /* UL RESET */
+    ul {
+      list-style: none;
+    }
+
+    ul li {
+      padding: 0.32rem 0;
+      padding-left: 1rem;
+      position: relative;
+      font-size: 0.9rem;
+      color: var(--text2);
+    }
+
+    ul li::before {
+      content: '▸';
+      position: absolute;
+      left: 0;
+      color: var(--c);
+      font-size: 0.65rem;
+      top: 0.44rem;
+    }
+
+    .divider {
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border), transparent);
+      margin: 4rem 0;
+    }
+
+    @media(max-width:600px) {
+      .grid4 {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .flow {
+        justify-content: center;
+      }
+
+      .flow-box {
+        min-width: 70px;
+        font-size: 0.75rem;
+      }
+    }
+  </style>
+  <script src="/javascripts/standalone-theme.js"></script>
+  <script src="/javascripts/html-theme-sync.js"></script>
+
+  <meta name="description"
+    content="Complete study guide for CYS406 Chapter 4: Public-Key Cryptography and RSA — why asymmetric crypto exists, trapdoor one-way functions, the RSA key-generation and encryption/decryption formulas, a full worked numeric example (p=17, q=11), square-and-multiply exponentiation, and RSA security/attacks. With mnemonics.">
+  <link rel="canonical"
+    href="https://shoug-tech.com/academics/cybersecurity/cys406/slide-breakdowns/04-chapter-4-public-key-cryptography-and-rsa/chapter-4-public-key-cryptography-and-rsa.html">
+  <meta property="og:title" content="CYS406 - Public-Key Cryptography and RSA">
+  <meta property="og:description"
+    content="Complete study guide for CYS406 Chapter 4: Public-Key Cryptography and RSA — why asymmetric crypto exists, trapdoor one-way functions, the RSA key-generation and encryption/decryption formulas, a full worked numeric example (p=17, q=11), square-and-multiply exponentiation, and RSA security/attacks. With mnemonics.">
+  <meta property="og:url"
+    content="https://shoug-tech.com/academics/cybersecurity/cys406/slide-breakdowns/04-chapter-4-public-key-cryptography-and-rsa/chapter-4-public-key-cryptography-and-rsa.html">
+  <meta property="og:type" content="article">
+  <meta property="og:image" content="https://shoug-tech.com/assets/og-banner.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="CYS406 - Public-Key Cryptography and RSA">
+  <meta name="twitter:description"
+    content="Complete study guide for CYS406 Chapter 4: Public-Key Cryptography and RSA — why asymmetric crypto exists, trapdoor one-way functions, the RSA key-generation and encryption/decryption formulas, a full worked numeric example (p=17, q=11), square-and-multiply exponentiation, and RSA security/attacks. With mnemonics.">
+  <meta name="twitter:image" content="https://shoug-tech.com/assets/og-banner.png">
+</head>
+
+<body>
+
+
+  <!-- THEME TOGGLE -->
+  <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+    <span class="toggle-icon" id="toggle-icon">☀️</span>
+    <span id="toggle-label">Light Mode</span>
+  </button>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-grid"></div>
+
+    <div class="hero-badge">
+      <span class="badge-dot"></span>
+      CYS406 · Chapter 4
+    </div>
+
+    <h1>
+      Public-Key Cryptography<br>
+      <span class="gradient-word">& RSA</span>
+    </h1>
+    <p class="hero-sub">Two keys instead of one — how asymmetric cryptography solves the key-distribution problem,
+      how RSA turns number theory into a trapdoor, and a full worked example you can redo by hand.</p>
+
+    <div class="hero-chips">
+      <span class="chip chip-a">Symmetric vs Asymmetric</span>
+      <span class="chip chip-b">Trapdoor One-Way Function</span>
+      <span class="chip chip-c">RSA Key Generation</span>
+      <span class="chip chip-d">Worked Example</span>
+      <span class="chip chip-e">Square &amp; Multiply</span>
+      <span class="chip chip-f">RSA Attacks</span>
+    </div>
+
+    <div class="scroll-hint">
+      scroll ↓
+    </div>
+  </div>
+
+  <main>
+
+    <!-- SECTION 1: PRIVATE KEY RECAP & THE PROBLEM -->
+    <section>
+      <div class="section-header"><span class="sec-num">01 / The Problem</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="ga">Why Private-Key Crypto Isn't Enough</h2>
+      <p>Traditional <strong>private/secret/single-key</strong> cryptography (everything in Chapter 3 — DES, AES) uses
+        <strong>one key</strong>, shared by both the sender and the receiver. It is <strong>symmetric</strong> —
+        both parties are equal. That equality is exactly its weak point: if the key is disclosed, all communications
+        using it are compromised, and because both sides hold the identical key, the scheme cannot stop the receiver
+        from forging a message and claiming it came from the sender (or vice versa).
+      </p>
+
+      <h3 class="tb" style="margin-top:1.5rem;">Challenges To Be Considered</h3>
+      <p>Imagine Bob wants to send secret <strong>Message A</strong> to Alice, while an eavesdropper/attacker named
+        <strong>Darth</strong> sits on the channel in between. A secure system needs to answer:
+      </p>
+      <div class="grid2">
+        <div class="card bl-a">
+          <p>How to keep message A a secret <strong>from Darth</strong>?</p>
+        </div>
+        <div class="card bl-b">
+          <p>How does Alice know the message was <strong>not modified</strong> in transit?</p>
+        </div>
+        <div class="card bl-c">
+          <p>How does Alice know the message really <strong>comes from Bob</strong>?</p>
+        </div>
+        <div class="card bl-d">
+          <p>How can Bob ensure Alice <strong>cannot deny</strong> receiving the message?</p>
+        </div>
+        <div class="card bl-e">
+          <p>How to avoid a <strong>replay attack</strong> (Darth resending an old, valid message)?</p>
+        </div>
+        <div class="card bl-f">
+          <p>How to keep the message <strong>fresh</strong> (and more…)?</p>
+        </div>
+      </div>
+
+      <h3 class="tc" style="margin-top:2rem;">Symmetric Cipher: The Confidentiality Cost</h3>
+      <p>With a shared secret key, <strong>2 users</strong> need only <strong>1 key</strong> between them. But scale
+        that up to <strong>n users</strong> who all want to talk securely to each other, and the number of keys needed
+        explodes:</p>
+      <div class="ex ex-c">
+        <div class="ex-label tc">📐 Key Count Formula</div>
+        <p>Number of keys required for n users = <strong>0 + 1 + 2 + … + (n-1) = n(n-1)/2</strong>. The real
+          challenge: how do you securely <em>distribute</em> that many keys in the first place?</p>
+      </div>
+
+      <h3 class="td" style="margin-top:2rem;">Symmetric Cipher: The Authentication Problem</h3>
+      <p>One fix for authentication is to create a <strong>signature</strong> for the message — but doing this with
+        symmetric keys depends on a trusted third party, e.g. a <strong>Key Distribution Center (KDC)</strong>. Even
+        then, it still does not protect the sender from the receiver forging a message and falsely claiming it was
+        sent by the sender, since both sides hold the same key.</p>
+
+      <div class="mnemonic">
+        <div class="mnemonic-icon">🧠</div>
+        <div class="mnemonic-body">
+          <h4>Mnemonic — "Same Key, Same Blame"</h4>
+          <p><span class="mnem-key">"If you both hold the same key, neither can prove who's to blame."</span> —
+            symmetric crypto's core weakness in one line: because sender and receiver share an identical key, either
+            one could have created any given message, so you can never definitively pin authorship on one party
+            (no nonrepudiation) without bringing in a trusted third party like a KDC.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 2: PUBLIC KEY CRYPTOGRAPHY INTRO -->
+    <section>
+      <div class="section-header"><span class="sec-num">02 / The Idea</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gb">Public-Key Cryptography</h2>
+      <p>Public-key cryptography is arguably the <strong>most significant advance in the 3,000-year history of
+          cryptography</strong>. It uses <strong>two keys</strong> — a public key and a private key — and is called
+        <strong>asymmetric</strong> because the two parties are <em>not</em> equal: what one key does, only the other
+        key can undo. It relies on a clever application of <strong>number-theoretic concepts</strong>, and it
+        <strong>complements</strong> — rather than replaces — private-key cryptography (both are still used together
+        in practice, e.g. RSA to exchange a symmetric session key, then AES to encrypt the bulk data).
+      </p>
+
+      <h3 class="tc" style="margin-top:1.5rem;">Why Public-Key Cryptography Was Developed</h3>
+      <p>It was developed specifically to address two problems symmetric crypto struggles with:</p>
+      <div class="vs">
+        <div class="ex ex-a">
+          <div class="ex-label ta">🔑 Key Distribution</div>
+          <p>How can two parties have secure communications <strong>without having to trust a KDC</strong> with their
+            key? Public-key crypto lets Alice publish a public key that anyone can use — no shared secret needs to be
+            pre-arranged or held by a third party.</p>
+        </div>
+        <div class="ex ex-b">
+          <div class="ex-label tb">✍️ Digital Signatures</div>
+          <p>How do you verify that a message comes <strong>intact from the claimed sender</strong>? A private key
+            can "sign" a message in a way only the matching public key can verify — something symmetric keys cannot
+            do cleanly.</p>
+        </div>
+      </div>
+
+      <h3 class="td" style="margin-top:2rem;">A Bit of History</h3>
+      <p>Public invention of public-key cryptography is credited to <strong>Whitfield Diffie &amp; Martin
+          Hellman</strong>
+        at Stanford University in <strong>1976</strong>. It was later revealed in 1997 that <strong>James H. Ellis,
+          Clifford Cocks, and Malcolm J. Williamson</strong> of GCHQ (the British signals intelligence agency) had
+        secretly discovered the same idea back in <strong>1969</strong> — but it stayed classified for decades.</p>
+
+      <div class="mnemonic">
+        <div class="mnemonic-icon">🧠</div>
+        <div class="mnemonic-body">
+          <h4>Mnemonic — "Diffie-Hellman Went Public, GCHQ Went Quiet"</h4>
+          <p><span class="mnem-key">"'76 told the world, '69 kept the secret."</span> Diffie &amp; Hellman
+            <strong>published</strong> the idea in 19<strong>76</strong>. GCHQ's Ellis, Cocks &amp; Williamson had it
+            first in 19<strong>69</strong> but stayed classified until 1997 — remember it as "69 before 76,
+            but 76 got the credit" (public discovery order vs. actual discovery order don't match — a classic exam
+            trick question).
+          </p>
+        </div>
+      </div>
+
+      <h3 class="ta" style="margin-top:2rem;">How Public-Key Cryptography Works</h3>
+      <p>Public-key / two-key / asymmetric cryptography involves two keys:</p>
+      <div class="def-grid">
+        <div class="def-card">
+          <div class="def-top" style="background:var(--a)"></div>
+          <div class="def-term ta">Public Key</div>
+          <div class="def-desc">May be known by anybody. Used to encrypt messages and verify signatures.</div>
+        </div>
+        <div class="def-card">
+          <div class="def-top" style="background:var(--b)"></div>
+          <div class="def-term tb">Private Key</div>
+          <div class="def-desc">Known only to the recipient. Used to decrypt messages and sign (create) signatures.
+          </div>
+        </div>
+      </div>
+      <p style="margin-top:0.9rem;">It is <strong>infeasible</strong> to determine the private key from the public
+        key. The system is asymmetric because whoever encrypts messages or verifies signatures <strong>cannot</strong>
+        decrypt messages or create signatures — those abilities belong exclusively to the private-key holder.</p>
+
+      <div class="flow">
+        <div class="flow-box">Plaintext</div>
+        <div class="flow-arrow">→ Encrypt with Public Key →</div>
+        <div class="flow-box accent">Ciphertext</div>
+        <div class="flow-arrow">→ Decrypt with Private Key →</div>
+        <div class="flow-box accent3">Plaintext</div>
+      </div>
+
+      <div class="mnemonic">
+        <div class="mnemonic-icon">🧠</div>
+        <div class="mnemonic-body">
+          <h4>Mnemonic — "Public Locks, Private Unlocks"</h4>
+          <p><span class="mnem-key">"Anyone can lock the box (public key encrypts), only the owner can unlock it
+              (private key decrypts)."</span> Think of the public key as an open padlock anyone can snap shut, but
+            only the person holding the matching private key can open it. This is the single most tested direction
+            fact in this chapter.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 3: REQUIREMENTS & APPLICATIONS -->
+    <section>
+      <div class="section-header"><span class="sec-num">03 / Foundations</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gc">Requirements, Applications &amp; Security Basis</h2>
+
+      <h3 class="ta">Public-Key Applications — 3 Categories</h3>
+      <p>Public-key algorithms can be classified into three broad uses. Some algorithms are suitable for all three;
+        others are specific to just one.</p>
+      <div class="grid3">
+        <div class="card bl-a">
+          <h3 class="ta">Encryption / Decryption</h3>
+          <p>Provides <strong>secrecy</strong> — hides the content of a message from anyone but the intended
+            recipient.</p>
+        </div>
+        <div class="card bl-b">
+          <h3 class="tb">Digital Signatures</h3>
+          <p>Provides <strong>authentication</strong> — proves who created/sent a message and that it wasn't
+            altered.</p>
+        </div>
+        <div class="card bl-c">
+          <h3 class="tc">Key Exchange</h3>
+          <p>Used to securely exchange a <strong>session key</strong> that will then be used for fast symmetric
+            encryption of the actual bulk data.</p>
+        </div>
+      </div>
+
+      <div class="mnemonic">
+        <div class="mnemonic-icon">🧠</div>
+        <div class="mnemonic-body">
+          <h4>Mnemonic — "E-D-K" (Encrypt, Digitally-sign, Key-swap)</h4>
+          <p><span class="mnem-key">"EDK: Envelope, Doodle, Key."</span> <strong>E</strong>ncryption/decryption =
+            sealing an <strong>envelope</strong> (secrecy). <strong>D</strong>igital signatures = your unique
+            <strong>doodle</strong>/signature (authentication). <strong>K</strong>ey exchange = handing over a
+            <strong>key</strong> to a lockbox (session-key setup) so you can switch to faster symmetric crypto.
+          </p>
+        </div>
+      </div>
+
+      <h3 class="td" style="margin-top:2rem;">Public-Key Requirements</h3>
+      <p>Public-key algorithms rely on two keys where:</p>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <h4>Infeasible to derive the decryption key</h4>
+            <p>It is computationally infeasible to find the decryption key knowing only the algorithm and the
+              encryption key.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <h4>Easy to encrypt / decrypt when key is known</h4>
+            <p>It is computationally easy to encrypt or decrypt messages when the relevant (encrypt/decrypt) key is
+              known.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <h4>Either key can play either role (for some algorithms)</h4>
+            <p>Either of the two related keys can be used for encryption, with the other used for decryption.</p>
+          </div>
+        </div>
+      </div>
+      <p style="margin-top:0.75rem;">These are formidable requirements which only a <strong>few algorithms</strong>
+        have ever satisfied (RSA being the most famous).</p>
+
+      <h3 class="te" style="margin-top:2rem;">The Trapdoor One-Way Function</h3>
+      <p>The mathematical engine underneath all of this is a <strong>trapdoor one-way function</strong>.</p>
+      <div class="vs">
+        <div class="ex ex-e">
+          <div class="ex-label te">One-Way Function</div>
+          <p><strong>Y = f(X)</strong> is easy to compute.<br><strong>X = f⁻¹(Y)</strong> is infeasible to compute
+            (you can't easily go backwards).</p>
+        </div>
+        <div class="ex ex-f">
+          <div class="ex-label tf">Trapdoor One-Way Function</div>
+          <p><strong>Y = fₖ(X)</strong> is easy, if k and X are known.<br><strong>X = fₖ⁻¹(Y)</strong> is easy, if
+            k and Y are known.<br><strong>X = fₖ⁻¹(Y)</strong> is infeasible, if Y is known but k is not.</p>
+        </div>
+      </div>
+      <p style="margin-top:0.9rem;">A practical public-key scheme depends on finding a suitable trapdoor one-way
+        function — for RSA, that function is built from <strong>modular exponentiation</strong>, and the "trapdoor"
+        (the secret k) is knowledge of the prime factors of n.</p>
+
+      <div class="mnemonic">
+        <div class="mnemonic-icon">🧠</div>
+        <div class="mnemonic-body">
+          <h4>Mnemonic — "Trapdoor = Secret Shortcut"</h4>
+          <p><span class="mnem-key">"A trapdoor function is a one-way street — unless you know the secret alley."</span>
+            Forward is always easy. Backward is impossible for a stranger, but trivial for whoever holds the
+            secret key k (the "trapdoor"). For RSA, that secret is the pair of prime factors p and q.</p>
+        </div>
+      </div>
+
+      <h3 class="tb" style="margin-top:2rem;">Security of Public-Key Schemes</h3>
+      <ul>
+        <li>Like private-key schemes, a brute-force exhaustive key search is always <strong>theoretically</strong>
+          possible</li>
+        <li>But the keys used are far too large (<strong>&gt; 512 bits</strong>, typically 1024–2048+ today) for
+          brute force to be practical</li>
+        <li>Security relies on a large enough gap in difficulty between the <strong>easy</strong> problem
+          (encrypt/decrypt with the right key) and the <strong>hard</strong> problem (cryptanalyze without it)</li>
+        <li>More generally, the hard problem is publicly known — it's just made hard enough to be impractical to
+          break with current computing power</li>
+        <li>Requires the use of <strong>very large numbers</strong>, which is why public-key crypto is <strong>slow
+            compared to private-key schemes</strong></li>
+      </ul>
+    </section>
+
+    <!-- SECTION 4: RSA INTRO -->
+    <section>
+      <div class="section-header"><span class="sec-num">04 / RSA Overview</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gd">RSA — The Best-Known Public-Key Scheme</h2>
+      <p>RSA was designed by <strong>Ron Rivest, Adi Shamir, and Leonard Adleman</strong> of MIT in
+        <strong>1977</strong>
+        — the initials of their surnames give the algorithm its name. It is the <strong>best-known and most widely
+          used</strong> public-key scheme in the world.</p>
+
+      <div class="def-grid">
+        <div class="def-card">
+          <div class="def-top" style="background:var(--a)"></div>
+          <div class="def-term ta">Mathematical Basis</div>
+          <div class="def-desc">Exponentiation in a finite (Galois) field over integers modulo a prime.</div>
+        </div>
+        <div class="def-card">
+          <div class="def-top" style="background:var(--b)"></div>
+          <div class="def-term tb">Speed of Exponentiation</div>
+          <div class="def-desc">Exponentiation takes O((log n)³) operations — easy / fast.</div>
+        </div>
+        <div class="def-card">
+          <div class="def-top" style="background:var(--c)"></div>
+          <div class="def-term tc">Key Size</div>
+          <div class="def-desc">Uses large integers, e.g. 1024 bits, in practical deployments.</div>
+        </div>
+        <div class="def-card">
+          <div class="def-top" style="background:var(--d)"></div>
+          <div class="def-term td">Security Basis</div>
+          <div class="def-desc">Cost of factoring large numbers — takes O(e^(log n · log log n)) operations, i.e.
+            hard.</div>
+        </div>
+      </div>
+
+      <div class="tip tip-blue">
+        <div class="tip-icon">💡</div>
+        <div class="tip-body">
+          <h4 class="ta">Easy forward, hard backward — the whole point</h4>
+          <p>Multiplying two primes together (p × q = n) is fast even for huge numbers. Factoring that product n
+            back into p and q, without already knowing them, is what's believed to be computationally infeasible for
+            large enough n. That asymmetry in difficulty <em>is</em> RSA's trapdoor.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 5: RSA EN/DECRYPTION & KEY SETUP -->
+    <section>
+      <div class="section-header"><span class="sec-num">05 / The Formulas</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="ga">RSA Encryption, Decryption &amp; Key Setup</h2>
+
+      <h3 class="tb">RSA Encryption / Decryption</h3>
+      <p>To encrypt a message M, the sender:</p>
+      <ul>
+        <li>Obtains the recipient's public key PU = {e, n}</li>
+        <li>Computes: <strong>C = Mᵉ mod n</strong>, where 0 ≤ M &lt; n</li>
+      </ul>
+      <p>To decrypt the ciphertext C, the owner:</p>
+      <ul>
+        <li>Uses their private key PR = {d, n}</li>
+        <li>Computes: <strong>M = C^d mod n</strong></li>
+      </ul>
+      <p>Note: the message M must be <strong>smaller than the modulus n</strong> — if the real message is bigger, it
+        must be broken into blocks first.</p>
+
+      <div class="mnemonic">
+        <div class="mnemonic-icon">🧠</div>
+        <div class="mnemonic-body">
+          <h4>Mnemonic — "C Comes from e, M comes back with d"</h4>
+          <p><span class="mnem-key">"e for Encrypt (public), d for Decrypt (private)."</span>
+            <strong>C = Mᵉ mod n</strong> — raise message to the <strong>e</strong>xponent from the public key.
+            <strong>M = C^d mod n</strong> — raise ciphertext to the <strong>d</strong>ecryption exponent from the
+            private key. Same shape, different exponent, same modulus n both times.
+          </p>
+        </div>
+      </div>
+
+      <h3 class="tc" style="margin-top:2rem;">RSA Key Setup — The Full Recipe</h3>
+      <p>Each user generates their public/private key pair as follows:</p>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <h4>Select two large primes at random: p, q</h4>
+            <p>Kept secret — never published.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <h4>Compute the modulus n = p · q</h4>
+            <p>n becomes part of both the public and private key.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <h4>Compute Euler's totient φ(n) = (p − 1)(q − 1)</h4>
+            <p>Counts integers less than n that are coprime to n. Kept secret.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <h4>Select e at random: 1 &lt; e &lt; φ(n), gcd(e, φ(n)) = 1</h4>
+            <p>e must share no common factors with φ(n) — this is the public encryption exponent.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">5</div>
+          <div class="step-body">
+            <h4>Solve for d: e · d ≡ 1 (mod φ(n)), 0 ≤ d ≤ n</h4>
+            <p>d is the modular multiplicative inverse of e mod φ(n) — the private decryption exponent.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">6</div>
+          <div class="step-body">
+            <h4>Publish the public key PU = {e, n}</h4>
+            <p>Anyone can use this to encrypt a message to you.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">7</div>
+          <div class="step-body">
+            <h4>Keep secret the private key PR = {d, n}</h4>
+            <p>Only you can decrypt messages sent to you, using this.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="mnemonic">
+        <div class="mnemonic-icon">🧠</div>
+        <div class="mnemonic-body">
+          <h4>Mnemonic — "P-Q-N-Phi-E-D-Publish" (the 7-Step Ladder)</h4>
+          <p><span class="mnem-key">"Pick Primes, Multiply for N, Phi it, pick E, Derive D, then
+              Publish/Protect."</span>
+            <strong>P</strong>ick two primes p, q → compute <strong>N</strong> = pq → compute <strong>Phi</strong>(n)
+            = (p-1)(q-1) → choose <strong>E</strong> coprime to φ(n) → <strong>D</strong>erive d as e's inverse mod
+            φ(n) → <strong>Publish</strong> {e,n}, <strong>Protect</strong> {d,n}. Seven words for seven steps, in
+            order.
+          </p>
+        </div>
+      </div>
+
+      <h3 class="td" style="margin-top:2rem;">Why RSA Works — Euler's Theorem</h3>
+      <p>The mathematics behind why decryption correctly recovers the original message rests on <strong>Euler's
+          Theorem</strong>:</p>
+      <div class="mono">a<span class="key">^φ(n)</span> mod n = <span class="val">1</span> where gcd(a,n)=1</div>
+      <p style="margin-top:0.9rem;">In RSA we have n = p·q, φ(n) = (p−1)(q−1), and e &amp; d are carefully chosen to
+        be inverses mod φ(n) — so e·d = 1 + k·φ(n) for some integer k. This means:</p>
+      <div class="mono">C<span class="key">^d</span> = M<span class="key">^(e·d)</span> = M<span class="key">^(1 +
+          k·φ(n))</span>
+        = M<span class="key">^1</span> · (M<span class="key">^φ(n)</span>)<span class="key">^k</span>
+        = M · (1)<span class="key">^k</span> = M <span class="comment">mod n</span></div>
+      <p style="margin-top:0.9rem;">In other words: because e and d were built to "cancel out" mod φ(n), raising a
+        message to the e-th power and then to the d-th power lands you right back where you started.</p>
+    </section>
+
+    <!-- SECTION 6: WORKED EXAMPLE -->
+    <section>
+      <div class="section-header"><span class="sec-num">06 / Worked Example</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gb">RSA By Hand — A Small Numeric Example</h2>
+      <p>This is the classic textbook toy example (Alice/Bob/Darth scenario) — small enough to compute by hand,
+        just to see every step of the RSA machinery in action. <strong>Never use numbers this small in real
+          life</strong> — real RSA uses 1024+ bit primes.</p>
+
+      <h3 class="ta">Step-by-Step Key Setup</h3>
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>Step</th>
+              <th>Action</th>
+              <th>Result</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>Select primes p, q</td>
+              <td>p = 17, q = 11</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>Calculate n = p · q</td>
+              <td>n = 17 × 11 = <strong>187</strong></td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>Calculate φ(n) = (p−1)(q−1)</td>
+              <td>φ(n) = 16 × 10 = <strong>160</strong></td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td>Select e: gcd(e, 160) = 1</td>
+              <td>choose e = <strong>7</strong></td>
+            </tr>
+            <tr>
+              <td>5</td>
+              <td>Determine d: d·e ≡ 1 mod 160, d &lt; 160</td>
+              <td>d = <strong>23</strong>, since 23×7 = 161 = 1×160 + 1</td>
+            </tr>
+            <tr class="row-highlight">
+              <td>6</td>
+              <td>Publish public key</td>
+              <td>PU = {7, 187}</td>
+            </tr>
+            <tr class="row-warn">
+              <td>7</td>
+              <td>Keep secret private key</td>
+              <td>PR = {23, 187}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 class="tc" style="margin-top:2rem;">The Scenario</h3>
+      <p>Alice generates the key pair above and publishes PU = {7, 187} — anyone, including an eavesdropper Darth,
+        can see this public key. Alice keeps PR = {23, 187} secret. Bob wants to send Alice the message M = 88 (note
+        88 &lt; 187, satisfying the requirement that M &lt; n).</p>
+
+      <h3 class="td" style="margin-top:1.5rem;">Encryption (Bob → Alice)</h3>
+      <div class="ex ex-d">
+        <div class="ex-label td">📘 Bob computes C = Mᵉ mod n</div>
+        <p>C = 88⁷ mod 187 = <strong>11</strong></p>
+        <p>Bob sends the ciphertext <strong>x = 11</strong> across the channel instead of the plaintext 88. Even if
+          Darth intercepts x = 11, without the private key d = 23, Darth cannot recover 88.</p>
+      </div>
+
+      <h3 class="te" style="margin-top:1.5rem;">Decryption (Alice recovers M)</h3>
+      <div class="ex ex-e">
+        <div class="ex-label te">📘 Alice computes M = C^d mod n</div>
+        <p>M = 11²³ mod 187 = <strong>88</strong></p>
+        <p>Alice uses her private key d = 23 (known only to her) to recover the original message — 88, exactly what
+          Bob sent.</p>
+      </div>
+
+      <div class="flow">
+        <div class="flow-box accent2">M = 88</div>
+        <div class="flow-arrow">→ 88⁷ mod 187 →</div>
+        <div class="flow-box accent">C = 11</div>
+        <div class="flow-arrow">→ 11²³ mod 187 →</div>
+        <div class="flow-box accent3">M = 88</div>
+      </div>
+
+      <div class="mnemonic">
+        <div class="mnemonic-icon">🧠</div>
+        <div class="mnemonic-body">
+          <h4>Mnemonic — "17 & 11 make 187, 7 & 23 make 161"</h4>
+          <p><span class="mnem-key">"Small primes, small e, and de is one more than a multiple of φ(n)."</span>
+            Remember the check: d·e mod φ(n) must equal 1. Here 23 × 7 = 161, and 161 = (1 × 160) + 1 — one more
+            than exactly one φ(n). That "+1 leftover" pattern is how you verify any (e,d) pair by hand.</p>
+        </div>
+      </div>
+
+      <div class="tip tip-warn">
+        <div class="tip-icon">⚠️</div>
+        <div class="tip-body">
+          <h4 class="te">Why this example is toy-sized only</h4>
+          <p>n = 187 = 17 × 11 can be factored by trial division in seconds. Real RSA keys use primes hundreds of
+            digits long specifically so factoring n back into p and q is computationally infeasible — that gap
+            between "toy" and "real" security is entirely about the size of p and q.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 7: EXPONENTIATION -->
+    <section>
+      <div class="section-header"><span class="sec-num">07 / Computing Power</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gc">Efficient Exponentiation — Square &amp; Multiply</h2>
+      <p>Computing something like 88²³ mod 187 by literally multiplying 88 by itself 23 times would be wasteful.
+        RSA instead uses the <strong>Square and Multiply Algorithm</strong> — a fast, efficient method for modular
+        exponentiation.</p>
+
+      <div class="def-grid">
+        <div class="def-card">
+          <div class="def-top" style="background:var(--a)"></div>
+          <div class="def-term ta">Core Idea</div>
+          <div class="def-desc">Repeatedly square the base, and multiply in the terms needed, based on the binary
+            representation of the exponent.</div>
+        </div>
+        <div class="def-card">
+          <div class="def-top" style="background:var(--b)"></div>
+          <div class="def-term tb">Efficiency</div>
+          <div class="def-desc">Only takes O(log₂ n) multiplications for exponent n — dramatically faster than naive
+            repeated multiplication.</div>
+        </div>
+      </div>
+
+      <div class="ex ex-a" style="margin-top:1.25rem;">
+        <div class="ex-label ta">📘 Small Examples</div>
+        <p>7⁵ = 7⁴ · 7¹ = 3 · 7 = 10 mod 11</p>
+        <p style="margin-bottom:0;">3¹²⁹ = 3¹²⁸ · 3¹ = 5 · 3 = 4 mod 11</p>
+      </div>
+
+      <h3 class="tc" style="margin-top:2rem;">The Algorithm for Computing aᵇ mod n</h3>
+      <p>The integer exponent b is expressed in binary as bₖbₖ₋₁…b₀:</p>
+      <div class="mono"><span class="comment">c = 0; f = 1</span>
+        <span class="key">for</span> i = k downto 0:
+        c = 2 × c
+        f = (f × f) mod n
+        <span class="key">if</span> bi == 1:
+        c = c + 1
+        f = (f × a) mod n
+        <span class="key">return</span> f
+      </div>
+
+      <div class="ex ex-b" style="margin-top:1.25rem;">
+        <div class="ex-label tb">📘 Worked: aᵇ mod n with a=7, b=560, n=561</div>
+        <p>560 in binary = 1000110000. Starting c=0, f=1, the algorithm walks bit by bit, squaring f (mod n) every
+          step, and multiplying in an extra factor of a whenever the current bit is 1:</p>
+        <p style="margin-bottom:0;">f = 1 → f = 1×7 mod 561 = 7 → f = 7×7 mod 561 = 49 → f = 49×49 mod 561 = … and so
+          on until all bits of b are consumed.</p>
+      </div>
+
+      <div class="mnemonic">
+        <div class="mnemonic-icon">🧠</div>
+        <div class="mnemonic-body">
+          <h4>Mnemonic — "Square Every Step, Multiply on a 1-Bit"</h4>
+          <p><span class="mnem-key">"Always square. Only multiply when you see a 1."</span> Walk the exponent's
+            binary digits left to right. Every single bit: square your running result. Whenever that bit is a 1:
+            also multiply in one more copy of the base. That's the entire algorithm — no bit ever skips the square
+            step, only some bits trigger the extra multiply.</p>
+        </div>
+      </div>
+
+      <h3 class="td" style="margin-top:2rem;">Efficient Encryption — Choosing e</h3>
+      <p>Encryption uses exponentiation to the power <strong>e</strong>, so a small e makes encryption faster.
+        Common choices:</p>
+      <ul>
+        <li>Often choose <strong>e = 65537</strong> (which is 2¹⁶ + 1) — small enough to be fast, large enough to be
+          safe</li>
+        <li>Also sometimes see e = 3 or e = 17</li>
+        <li>But if e is <strong>too small</strong> (e.g. e = 3), the scheme can be attacked using the <strong>Chinese
+            Remainder Theorem</strong> combined with 3 messages sent under different moduli</li>
+        <li>If e is fixed, must always ensure gcd(e, φ(n)) = 1 — i.e. reject any candidate p or q that isn't relatively
+          prime to e</li>
+      </ul>
+
+      <h3 class="te" style="margin-top:2rem;">Efficient Decryption — Using the CRT</h3>
+      <p>Decryption uses exponentiation to the power <strong>d</strong>, which is typically large — this makes naive
+        decryption slow (and, done carelessly, insecure). Instead, decryption can use the <strong>Chinese Remainder
+          Theorem (CRT)</strong> to compute the result modulo p and modulo q <strong>separately</strong>, then
+        combine the two partial results — this is roughly <strong>4× faster</strong> than computing C^d mod n
+        directly. Only the owner of the private key, who knows the values of p and q, can use this speed-up.</p>
+
+      <div class="tip tip-yellow">
+        <div class="tip-icon">🔑</div>
+        <div class="tip-body">
+          <h4 class="tf">RSA Key Generation — the practical checklist</h4>
+          <p>Users of RSA must: (1) determine two random primes p, q that are large enough that n = p·q cannot be
+            feasibly factored, and typically found via a probabilistic primality test (guess-and-check); (2) select
+            either e or d and compute the other, since e and d are modular inverses of each other mod φ(n) — an
+            inverse-computing algorithm derives whichever one wasn't chosen.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 8: RSA SECURITY & ATTACKS -->
+    <section>
+      <div class="section-header"><span class="sec-num">08 / Security</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gd">RSA Security — Attacks &amp; Countermeasures</h2>
+      <p>There are four broad classes of possible attack against RSA:</p>
+
+      <div class="grid2">
+        <div class="card bl-a">
+          <h3 class="ta">Brute Force Key Search</h3>
+          <p>Infeasible given the size of the numbers involved — trying every possible private key is impractical
+            for keys of 1024+ bits.</p>
+        </div>
+        <div class="card bl-b">
+          <h3 class="tb">Mathematical Attacks</h3>
+          <p>Based on the difficulty of computing φ(n) by <strong>factoring the modulus n</strong>. This is the
+            headline attack — see the Factoring Problem below.</p>
+        </div>
+        <div class="card bl-c">
+          <h3 class="tc">Timing Attacks</h3>
+          <p>Attacks based on how long the decryption operation takes to run — timing can leak information about
+            the private key.</p>
+        </div>
+        <div class="card bl-d">
+          <h3 class="td">Chosen Ciphertext Attacks (CCA)</h3>
+          <p>Exploits mathematical properties of the RSA algorithm itself, using specially chosen ciphertexts.</p>
+        </div>
+      </div>
+
+      <h3 class="te" style="margin-top:2rem;">The Factoring Problem</h3>
+      <p>The mathematical approach to breaking RSA takes three equivalent forms:</p>
+      <ul>
+        <li>Factor n = p·q directly, hence compute φ(n) and then d</li>
+        <li>Determine φ(n) directly and compute d from it</li>
+        <li>Find d directly, without going through φ(n) or factoring at all</li>
+      </ul>
+      <p>Currently, all three are believed to be roughly <strong>equivalent in difficulty</strong> to factoring.
+        There have been slow improvements in factoring algorithms over the years (as of May 2005, the best result
+        was a 200-decimal-digit / 663-bit number, factored using the Lattice Sieve). The biggest jumps in progress
+        have come from <strong>improved algorithms</strong> (going from QS, the Quadratic Sieve, to GNFS, the
+        General Number Field Sieve, to LS, the Lattice Sieve) rather than raw hardware speed. Current guidance
+        assumes <strong>1024–2048 bit RSA</strong> is secure, provided p and q are chosen to be of similar size and
+        satisfy the other standard constraints.</p>
+
+      <div class="tip tip-blue">
+        <div class="tip-icon">📈</div>
+        <div class="tip-body">
+          <h4 class="ta">Progress in factoring</h4>
+          <p>Factoring records are measured in "MIPS-years" — the number of instructions executed during one year of
+            computing at one million instructions per second. Progress has been steady but slow, driven mostly by
+            smarter algorithms, not just faster computers — which is why doubling key sizes (rather than waiting for
+            hardware to catch up) keeps RSA ahead of factoring advances.</p>
+        </div>
+      </div>
+
+      <h3 class="tc" style="margin-top:2rem;">Timing Attacks</h3>
+      <p>Developed by <strong>Paul Kocher</strong> in the mid-1990s. These exploit small timing variations in
+        operations — e.g. multiplying by a small number vs. a large number, or conditional branches (IF statements)
+        that execute different instructions depending on secret bits. By carefully measuring how long an operation
+        takes, an attacker can infer operand size and, bit by bit, reconstruct the private key. RSA is vulnerable
+        because the time taken during exponentiation can vary with the exponent's bits.</p>
+      <div class="ex ex-c">
+        <div class="ex-label tc">🛡️ Countermeasures</div>
+        <ul>
+          <li>Use <strong>constant exponentiation time</strong>, regardless of the key bits</li>
+          <li>Add <strong>random delays</strong> to obscure timing patterns</li>
+          <li><strong>Blind</strong> the values used in calculations so the attacker can't correlate timing with the
+            real private data</li>
+        </ul>
+      </div>
+
+      <h3 class="td" style="margin-top:2rem;">Chosen Ciphertext Attacks (CCA)</h3>
+      <p>RSA is vulnerable to a chosen ciphertext attack: the attacker <strong>chooses</strong> ciphertexts and gets
+        the corresponding decrypted plaintext back (e.g. tricking a system into decrypting things for them), then
+        chooses the ciphertext specifically to exploit mathematical properties of RSA and leak information useful
+        for cryptanalysis.</p>
+      <div class="ex ex-d">
+        <div class="ex-label td">🛡️ Countermeasures</div>
+        <p>Counter with a <strong>random pad</strong> added to the plaintext before encryption, or use a formal
+          padding scheme such as <strong>Optimal Asymmetric Encryption Padding (OAEP)</strong>.</p>
+      </div>
+
+      <div class="mnemonic">
+        <div class="mnemonic-icon">🧠</div>
+        <div class="mnemonic-body">
+          <h4>Mnemonic — "B-M-T-C" (Brute, Math, Timing, Chosen)</h4>
+          <p><span class="mnem-key">"Break it Brute-force (fails), break it with Math (factoring — the real threat),
+              break it with Time (side channel), break it by Choosing ciphertexts (protocol abuse)."</span> Four
+            attack families, four very different defenses: bigger keys defeat brute force, bigger keys + good primes
+            defeat math attacks, constant-time code + blinding defeats timing attacks, and padding schemes (OAEP)
+            defeat chosen-ciphertext attacks.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- EXAM TIPS -->
+    <section>
+      <div class="section-header"><span class="sec-num">09 / Exam Prep</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gc">Exam Tips &amp; Tricks</h2>
+      <div class="grid2">
+        <div class="tip tip-blue">
+          <div class="tip-icon">💡</div>
+          <div class="tip-body">
+            <h4 class="ta">Remember the formulas both ways</h4>
+            <p>Encrypt: C = Mᵉ mod n (public key). Decrypt: M = C^d mod n (private key). Same n both times — only
+              the exponent changes.</p>
+          </div>
+        </div>
+        <div class="tip tip-green">
+          <div class="tip-icon">✅</div>
+          <div class="tip-body">
+            <h4 class="td">Public encrypts, private decrypts — never the reverse</h4>
+            <p>This directionality is the single most commonly tested fact about asymmetric crypto. Public key = for
+              everyone, encrypts. Private key = for the owner only, decrypts.</p>
+          </div>
+        </div>
+        <div class="tip tip-warn">
+          <div class="tip-icon">⚠️</div>
+          <div class="tip-body">
+            <h4 class="te">φ(n) uses (p−1)(q−1), NOT p·q</h4>
+            <p>A very common mix-up: n = p·q, but φ(n) = (p−1)(q−1). Don't confuse the modulus with the totient.</p>
+          </div>
+        </div>
+        <div class="tip tip-yellow">
+          <div class="tip-icon">🔑</div>
+          <div class="tip-body">
+            <h4 class="tf">e·d ≡ 1 mod φ(n) — the inverse check</h4>
+            <p>To verify any (e,d) pair, multiply them and check the result is exactly one more than a multiple of
+              φ(n): e·d = 1 + k·φ(n).</p>
+          </div>
+        </div>
+        <div class="tip tip-blue">
+          <div class="tip-icon">📋</div>
+          <div class="tip-body">
+            <h4 class="ta">RSA security = factoring hardness, not key secrecy tricks</h4>
+            <p>RSA's entire security rests on: multiplying two large primes is easy, but factoring the product back
+              apart is (believed) infeasible for large enough numbers.</p>
+          </div>
+        </div>
+        <div class="tip tip-green">
+          <div class="tip-icon">🌐</div>
+          <div class="tip-body">
+            <h4 class="td">Know the 3 public-key use categories</h4>
+            <p>Encryption/decryption (secrecy), digital signatures (authentication), key exchange (session keys) —
+              not every algorithm supports all three.</p>
+          </div>
+        </div>
+        <div class="tip tip-warn">
+          <div class="tip-icon">🕵️</div>
+          <div class="tip-body">
+            <h4 class="te">Know all 4 RSA attack types</h4>
+            <p>Brute force (infeasible), mathematical/factoring (the real long-term threat), timing (Kocher,
+              mid-90s), chosen ciphertext (countered with OAEP padding).</p>
+          </div>
+        </div>
+        <div class="tip tip-yellow">
+          <div class="tip-icon">🧮</div>
+          <div class="tip-body">
+            <h4 class="tf">Square and Multiply = O(log₂ n), not O(n)</h4>
+            <p>Never multiply out an exponent step by step — the algorithm only needs a number of steps proportional
+              to the number of bits in the exponent.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- QUICK REFERENCE -->
+    <section>
+      <div class="section-header"><span class="sec-num">10 / Cheat Sheet</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gd">Quick Reference — Everything at a Glance</h2>
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>Topic</th>
+              <th>Key Point</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Private-key crypto weakness</td>
+              <td>Single shared key; symmetric so can't stop receiver forging a message & claiming sender sent it</td>
+            </tr>
+            <tr>
+              <td>Key distribution problem</td>
+              <td>n users need n(n-1)/2 keys total — securely distributing them is hard</td>
+            </tr>
+            <tr>
+              <td>Public-key crypto significance</td>
+              <td>"Most significant advance in the 3000-year history of cryptography"</td>
+            </tr>
+            <tr>
+              <td>Symmetric vs asymmetric</td>
+              <td>Symmetric: 1 shared key, parties equal. Asymmetric: 2 keys (public/private), parties unequal</td>
+            </tr>
+            <tr>
+              <td>Public-key invented by</td>
+              <td>Diffie & Hellman, Stanford, 1976 (publicly); Ellis/Cocks/Williamson at GCHQ discovered it in 1969
+                (classified, revealed 1997)</td>
+            </tr>
+            <tr>
+              <td>Two problems public-key crypto solves</td>
+              <td>Key distribution (no KDC needed) and digital signatures (verify sender)</td>
+            </tr>
+            <tr>
+              <td>Public key role</td>
+              <td>Known by anybody; encrypts messages, verifies signatures</td>
+            </tr>
+            <tr>
+              <td>Private key role</td>
+              <td>Known only to recipient; decrypts messages, creates/signs signatures</td>
+            </tr>
+            <tr>
+              <td>3 public-key application categories</td>
+              <td>Encryption/decryption (secrecy), digital signatures (authentication), key exchange (session keys)
+              </td>
+            </tr>
+            <tr>
+              <td>Public-key requirements</td>
+              <td>Infeasible to derive decrypt key from encrypt key; easy en/decrypt when key known; either key can
+                encrypt (some algorithms)</td>
+            </tr>
+            <tr>
+              <td>One-way function</td>
+              <td>Y=f(X) easy; X=f⁻¹(Y) infeasible</td>
+            </tr>
+            <tr>
+              <td>Trapdoor one-way function</td>
+              <td>Y=fk(X) easy if k,X known; X=fk⁻¹(Y) easy if k,Y known; infeasible if only Y known</td>
+            </tr>
+            <tr>
+              <td>Public-key scheme security</td>
+              <td>Relies on gap between easy (en/decrypt) and hard (cryptanalyze) problems; keys > 512 bits; slower
+                than private-key crypto</td>
+            </tr>
+            <tr>
+              <td>RSA creators</td>
+              <td>Rivest, Shamir, Adleman — MIT, 1977</td>
+            </tr>
+            <tr>
+              <td>RSA mathematical basis</td>
+              <td>Exponentiation in a finite (Galois) field over integers modulo a prime</td>
+            </tr>
+            <tr>
+              <td>RSA key size in practice</td>
+              <td>Large integers, e.g. 1024 bits (1024–2048 bit range considered secure today)</td>
+            </tr>
+            <tr>
+              <td>RSA security basis</td>
+              <td>Cost of factoring large numbers (factoring is hard: O(e^(log n·log log n)); exponentiation is easy:
+                O((log n)³))</td>
+            </tr>
+            <tr>
+              <td>RSA encryption formula</td>
+              <td>C = Mᵉ mod n, using public key PU={e,n}, 0≤M&lt;n</td>
+            </tr>
+            <tr>
+              <td>RSA decryption formula</td>
+              <td>M = C^d mod n, using private key PR={d,n}</td>
+            </tr>
+            <tr>
+              <td>RSA key setup steps</td>
+              <td>Pick p,q → n=pq → φ(n)=(p-1)(q-1) → choose e (gcd(e,φ(n))=1) → find d (e·d≡1 mod φ(n)) → publish
+                {e,n}, keep {d,n} secret</td>
+            </tr>
+            <tr>
+              <td>Why RSA works</td>
+              <td>Euler's Theorem: a^φ(n) mod n = 1 when gcd(a,n)=1; e,d chosen as inverses mod φ(n) so C^d = M mod n
+              </td>
+            </tr>
+            <tr>
+              <td>Worked example primes</td>
+              <td>p=17, q=11 → n=187 → φ(n)=160 → e=7 → d=23 (23×7=161=1×160+1)</td>
+            </tr>
+            <tr>
+              <td>Worked example keys</td>
+              <td>PU={7,187} (public), PR={23,187} (private)</td>
+            </tr>
+            <tr>
+              <td>Worked example encryption</td>
+              <td>M=88 → C = 88⁷ mod 187 = 11</td>
+            </tr>
+            <tr>
+              <td>Worked example decryption</td>
+              <td>C=11 → M = 11²³ mod 187 = 88 (recovers original message)</td>
+            </tr>
+            <tr>
+              <td>Square and Multiply algorithm</td>
+              <td>Computes aᵇ mod n by squaring at every bit of b and multiplying in a on 1-bits; O(log₂ n) steps</td>
+            </tr>
+            <tr>
+              <td>Efficient encryption (choice of e)</td>
+              <td>Small e = faster; common choice e=65537 (2¹⁶+1); e=3 or 17 also seen but e=3 riskier (CRT attack
+                with 3 messages)</td>
+            </tr>
+            <tr>
+              <td>Efficient decryption</td>
+              <td>Chinese Remainder Theorem (CRT) computes mod p & mod q separately then combines — ~4× faster;
+                requires knowing p,q</td>
+            </tr>
+            <tr>
+              <td>RSA key generation practicalities</td>
+              <td>p,q found via probabilistic primality testing (guess & check); e,d are inverses — compute one from
+                the other</td>
+            </tr>
+            <tr>
+              <td>RSA attack #1 — Brute force</td>
+              <td>Infeasible given key sizes used</td>
+            </tr>
+            <tr>
+              <td>RSA attack #2 — Mathematical</td>
+              <td>Based on difficulty of computing φ(n) by factoring n; 3 equivalent approaches: factor n, find φ(n)
+                directly, or find d directly</td>
+            </tr>
+            <tr>
+              <td>RSA attack #3 — Timing</td>
+              <td>Paul Kocher, mid-1990s; exploits timing variation in exponentiation; countered with constant time,
+                random delays, blinding</td>
+            </tr>
+            <tr>
+              <td>RSA attack #4 — Chosen ciphertext (CCA)</td>
+              <td>Attacker chooses ciphertexts to exploit RSA math properties; countered with random padding or OAEP
+              </td>
+            </tr>
+            <tr>
+              <td>Factoring progress</td>
+              <td>As of May 2005, best result ~200 decimal digits (663 bits) via Lattice Sieve; biggest gains from
+                better algorithms (QS → GNFS → LS), not just faster hardware</td>
+            </tr>
+            <tr>
+              <td>Currently assumed secure</td>
+              <td>1024–2048 bit RSA, with p and q of similar size and meeting standard constraints</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="footer-name">Made by Shoug Alomran</div>
+    <div class="footer-sub">CYS406 · Chapter 4: Public-Key Cryptography and RSA · Study Guide</div>
+  </footer>
+
+  <script>
+    // Auto-detect system preference on load
+    (function () {
+      const _stored = localStorage.getItem('shoug-theme');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const theme = _stored === 'dark' ? 'dark' : _stored === 'light' ? 'light' : (prefersDark ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', theme);
+      updateToggle(theme);
+    })();
+
+    // Listen for system changes
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+      if (localStorage.getItem('shoug-theme')) return;
+      const theme = e.matches ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', theme);
+      updateToggle(theme);
+    });
+
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme');
+      const next = current === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      try { localStorage.setItem('shoug-theme', document.documentElement.getAttribute('data-theme')); } catch (e) { }
+      updateToggle(next);
+    }
+
+    function updateToggle(theme) {
+      const icon = document.getElementById('toggle-icon');
+      const label = document.getElementById('toggle-label');
+      if (theme === 'dark') {
+        icon.textContent = '☀️';
+        label.textContent = 'Light Mode';
+      } else {
+        icon.textContent = '🌙';
+        label.textContent = 'Dark Mode';
+      }
+    }
+  </script>
+
+</body>
+
+</html>

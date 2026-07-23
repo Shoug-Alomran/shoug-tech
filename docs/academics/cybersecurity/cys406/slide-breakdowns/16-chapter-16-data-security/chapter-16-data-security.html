@@ -1,0 +1,2451 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+  <link rel="icon" type="image/png" href="/assets/favicon.png?v=2">
+  <link rel="shortcut icon" href="/assets/favicon.png?v=2">
+  <link rel="apple-touch-icon" href="/assets/favicon.png?v=2">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CYS406 - Chapter 16 - Data Security</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Playfair+Display:wght@700;800&display=swap"
+    rel="stylesheet">
+  <style>
+    /* ============================================================
+   THEME VARIABLES
+   ============================================================ */
+    :root {
+      --a: #6ee7f7;
+      /* cyan accent */
+      --b: #f472b6;
+      /* pink accent */
+      --c: #a78bfa;
+      /* violet accent */
+      --d: #34d399;
+      /* emerald accent */
+      --e: #fb923c;
+      /* orange accent */
+      --f: #facc15;
+      /* yellow accent */
+    }
+
+    [data-theme="dark"] {
+      --bg: #080c14;
+      --bg2: #0e1422;
+      --bg3: #141c2e;
+      --surface: rgba(255, 255, 255, 0.04);
+      --surface2: rgba(255, 255, 255, 0.07);
+      --border: rgba(255, 255, 255, 0.08);
+      --border2: rgba(255, 255, 255, 0.13);
+      --text: #e2e8f0;
+      --text2: #94a3b8;
+      --text3: #64748b;
+      --heading: #f8fafc;
+      --code-bg: rgba(255, 255, 255, 0.06);
+      --shadow: rgba(0, 0, 0, 0.5);
+      --toggle-bg: rgba(255, 255, 255, 0.08);
+    }
+
+    [data-theme="light"] {
+      --bg: #f0f4ff;
+      --bg2: #e8eef9;
+      --bg3: #dde5f5;
+      --surface: rgba(255, 255, 255, 0.75);
+      --surface2: rgba(255, 255, 255, 0.95);
+      --border: rgba(80, 100, 160, 0.12);
+      --border2: rgba(80, 100, 160, 0.2);
+      --text: #1e2a45;
+      --text2: #475569;
+      --text3: #94a3b8;
+      --heading: #0f172a;
+      --code-bg: rgba(80, 100, 160, 0.08);
+      --shadow: rgba(100, 120, 200, 0.15);
+      --toggle-bg: rgba(80, 100, 160, 0.12);
+    }
+
+    /* ============================================================
+   RESET & BASE
+   ============================================================ */
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Space Grotesk', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      overflow-x: hidden;
+      transition: background 0.4s ease, color 0.4s ease;
+    }
+
+    /* ============================================================
+   THEME TOGGLE
+   ============================================================ */
+    .theme-toggle {
+      position: fixed;
+      top: 1.25rem;
+      right: 1.5rem;
+      z-index: 1000;
+      background: var(--toggle-bg);
+      border: 1px solid var(--border2);
+      border-radius: 100px;
+      padding: 0.45rem 1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text2);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      transition: all 0.3s ease;
+      user-select: none;
+    }
+
+    .theme-toggle:hover {
+      border-color: var(--a);
+      color: var(--a);
+      transform: scale(1.04);
+    }
+
+    .toggle-icon {
+      font-size: 1rem;
+      transition: transform 0.4s ease;
+    }
+
+    /* ============================================================
+   HERO
+   ============================================================ */
+    .hero {
+      min-height: 60vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      position: relative;
+      padding: 5rem 2rem 4rem;
+      overflow: hidden;
+    }
+
+    [data-theme="dark"] .hero {
+      background:
+        radial-gradient(ellipse 70% 50% at 20% 20%, rgba(110, 231, 247, 0.12) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 80% 80%, rgba(167, 139, 250, 0.12) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 40% at 50% 60%, rgba(244, 114, 182, 0.08) 0%, transparent 60%),
+        var(--bg);
+    }
+
+    [data-theme="light"] .hero {
+      background:
+        radial-gradient(ellipse 70% 50% at 20% 20%, rgba(110, 231, 247, 0.18) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 80% 80%, rgba(167, 139, 250, 0.15) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 40% at 50% 60%, rgba(244, 114, 182, 0.12) 0%, transparent 60%),
+        var(--bg);
+    }
+
+    .hero-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(var(--border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 50px 50px;
+      opacity: 0.7;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-radius: 100px;
+      padding: 0.4rem 1.1rem;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--a);
+      margin-bottom: 1.75rem;
+      position: relative;
+      z-index: 1;
+      animation: fadeUp 0.7s ease both;
+    }
+
+    .badge-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--a);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1
+      }
+
+      50% {
+        opacity: 0.4
+      }
+    }
+
+    .hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.4rem, 5.5vw, 4.6rem);
+      font-weight: 800;
+      line-height: 1.15;
+      color: var(--heading);
+      position: relative;
+      z-index: 1;
+      animation: fadeUp 0.85s ease both;
+    }
+
+    .hero h1 .gradient-word {
+      background: linear-gradient(135deg, var(--a), var(--c), var(--b));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-sub {
+      font-size: 1.05rem;
+      color: var(--text2);
+      margin-top: 1.25rem;
+      max-width: 560px;
+      position: relative;
+      z-index: 1;
+      animation: fadeUp 1s ease both;
+    }
+
+    .hero-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      justify-content: center;
+      max-width: 720px;
+      margin-top: 2rem;
+      position: relative;
+      z-index: 1;
+      animation: fadeUp 1.1s ease both;
+    }
+
+    .chip {
+      padding: 0.3rem 0.85rem;
+      border-radius: 100px;
+      font-size: 0.76rem;
+      font-weight: 600;
+      border: 1px solid;
+      transition: transform 0.2s;
+    }
+
+    .chip:hover {
+      transform: translateY(-2px);
+    }
+
+    .chip-a {
+      color: var(--a);
+      border-color: rgba(110, 231, 247, 0.35);
+      background: rgba(110, 231, 247, 0.08);
+    }
+
+    .chip-b {
+      color: var(--b);
+      border-color: rgba(244, 114, 182, 0.35);
+      background: rgba(244, 114, 182, 0.08);
+    }
+
+    .chip-c {
+      color: var(--c);
+      border-color: rgba(167, 139, 250, 0.35);
+      background: rgba(167, 139, 250, 0.08);
+    }
+
+    .chip-d {
+      color: var(--d);
+      border-color: rgba(52, 211, 153, 0.35);
+      background: rgba(52, 211, 153, 0.08);
+    }
+
+    .chip-e {
+      color: var(--e);
+      border-color: rgba(251, 146, 60, 0.35);
+      background: rgba(251, 146, 60, 0.08);
+    }
+
+    .chip-f {
+      color: var(--f);
+      border-color: rgba(250, 204, 21, 0.35);
+      background: rgba(250, 204, 21, 0.08);
+    }
+
+    .scroll-hint {
+      position: absolute;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      color: var(--text3);
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.4rem;
+      animation: bounce 2.5s infinite;
+      z-index: 1;
+    }
+
+    @keyframes bounce {
+
+      0%,
+      100% {
+        transform: translateX(-50%) translateY(0)
+      }
+
+      50% {
+        transform: translateX(-50%) translateY(8px)
+      }
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(24px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    /* ============================================================
+   LAYOUT
+   ============================================================ */
+    main {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 4rem 2rem;
+    }
+
+    section {
+      margin-bottom: 5.5rem;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .sec-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text3);
+      white-space: nowrap;
+    }
+
+    .sec-line {
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, var(--border2), transparent);
+    }
+
+    h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.6rem, 3vw, 2.3rem);
+      font-weight: 800;
+      color: var(--heading);
+      margin-bottom: 0.4rem;
+    }
+
+    h3 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 1.05rem;
+      margin-bottom: 0.6rem;
+      color: var(--heading);
+    }
+
+    p {
+      font-size: 0.94rem;
+      color: var(--text2);
+      margin-bottom: 0.7rem;
+    }
+
+    strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    /* ============================================================
+   GRADIENT TEXT HELPERS
+   ============================================================ */
+    .ga {
+      background: linear-gradient(135deg, var(--a), var(--d));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .gb {
+      background: linear-gradient(135deg, var(--b), var(--c));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .gc {
+      background: linear-gradient(135deg, var(--e), var(--b));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .gd {
+      background: linear-gradient(135deg, var(--c), var(--a));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* ============================================================
+   CARDS
+   ============================================================ */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.6rem;
+      transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
+    }
+
+    .card:hover {
+      border-color: var(--border2);
+      transform: translateY(-3px);
+      box-shadow: 0 12px 30px var(--shadow);
+    }
+
+    .grid2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1rem;
+    }
+
+    .grid3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1rem;
+    }
+
+    .grid4 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 1rem;
+    }
+
+    .bl-a {
+      border-left: 3px solid var(--a);
+    }
+
+    .bl-b {
+      border-left: 3px solid var(--b);
+    }
+
+    .bl-c {
+      border-left: 3px solid var(--c);
+    }
+
+    .bl-d {
+      border-left: 3px solid var(--d);
+    }
+
+    .bl-e {
+      border-left: 3px solid var(--e);
+    }
+
+    .bl-f {
+      border-left: 3px solid var(--f);
+    }
+
+    .ta {
+      color: var(--a);
+    }
+
+    .tb {
+      color: var(--b);
+    }
+
+    .tc {
+      color: var(--c);
+    }
+
+    .td {
+      color: var(--d);
+    }
+
+    .te {
+      color: var(--e);
+    }
+
+    .tf {
+      color: var(--f);
+    }
+
+    /* ============================================================
+   DEFINITION CARDS
+   ============================================================ */
+    .def-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 0.75rem;
+    }
+
+    .def-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.2rem;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s;
+    }
+
+    .def-card:hover {
+      transform: translateY(-2px);
+    }
+
+    .def-top {
+      height: 2px;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+    }
+
+    .def-term {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .def-desc {
+      font-size: 0.87rem;
+      color: var(--text2);
+    }
+
+    /* ============================================================
+   MONO / CODE STYLE
+   ============================================================ */
+    .mono {
+      font-family: 'JetBrains Mono', monospace;
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      font-size: 0.85rem;
+      color: var(--a);
+      margin-top: 0.75rem;
+      overflow-x: auto;
+      white-space: pre;
+    }
+
+    .mono span.comment {
+      color: var(--text3);
+    }
+
+    .mono span.key {
+      color: var(--b);
+    }
+
+    .mono span.val {
+      color: var(--d);
+    }
+
+    /* ============================================================
+   EXAMPLE BOXES
+   ============================================================ */
+    .ex {
+      border-radius: 14px;
+      padding: 1.4rem;
+      border: 1px solid;
+      margin-top: 1.25rem;
+    }
+
+    .ex-a {
+      background: rgba(110, 231, 247, 0.06);
+      border-color: rgba(110, 231, 247, 0.25);
+    }
+
+    .ex-b {
+      background: rgba(244, 114, 182, 0.06);
+      border-color: rgba(244, 114, 182, 0.25);
+    }
+
+    .ex-c {
+      background: rgba(167, 139, 250, 0.06);
+      border-color: rgba(167, 139, 250, 0.25);
+    }
+
+    .ex-d {
+      background: rgba(52, 211, 153, 0.06);
+      border-color: rgba(52, 211, 153, 0.25);
+    }
+
+    .ex-e {
+      background: rgba(251, 146, 60, 0.06);
+      border-color: rgba(251, 146, 60, 0.25);
+    }
+
+    .ex-f {
+      background: rgba(250, 204, 21, 0.06);
+      border-color: rgba(250, 204, 21, 0.25);
+    }
+
+    .ex-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .ex-label::before {
+      content: '';
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    /* ============================================================
+   TIP BOXES
+   ============================================================ */
+    .tip {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      padding: 1.1rem 1.25rem;
+      border-radius: 12px;
+      margin-top: 1rem;
+    }
+
+    .tip-green {
+      background: rgba(52, 211, 153, 0.08);
+      border: 1px solid rgba(52, 211, 153, 0.25);
+    }
+
+    .tip-blue {
+      background: rgba(110, 231, 247, 0.08);
+      border: 1px solid rgba(110, 231, 247, 0.25);
+    }
+
+    .tip-warn {
+      background: rgba(251, 146, 60, 0.08);
+      border: 1px solid rgba(251, 146, 60, 0.25);
+    }
+
+    .tip-yellow {
+      background: rgba(250, 204, 21, 0.08);
+      border: 1px solid rgba(250, 204, 21, 0.25);
+    }
+
+    .tip-icon {
+      font-size: 1.2rem;
+      flex-shrink: 0;
+      margin-top: 0.1rem;
+    }
+
+    .tip-body h4 {
+      font-size: 0.84rem;
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+    }
+
+    .tip-body p {
+      font-size: 0.86rem;
+      color: var(--text2);
+      margin: 0;
+    }
+
+    /* ============================================================
+   MNEMONIC BOXES  (memory aids - distinct brain/purple styling)
+   ============================================================ */
+    .mnemonic {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      padding: 1.25rem 1.4rem;
+      border-radius: 14px;
+      margin-top: 1.25rem;
+      background: linear-gradient(135deg, rgba(167, 139, 250, 0.10), rgba(244, 114, 182, 0.07));
+      border: 1px solid rgba(167, 139, 250, 0.35);
+      position: relative;
+    }
+
+    .mnemonic-icon {
+      font-size: 1.3rem;
+      flex-shrink: 0;
+    }
+
+    .mnemonic-body h4 {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--c);
+      margin-bottom: 0.4rem;
+    }
+
+    .mnemonic-body p {
+      font-size: 0.92rem;
+      color: var(--text);
+      margin: 0;
+    }
+
+    .mnemonic-body .mnem-key {
+      color: var(--b);
+      font-weight: 700;
+    }
+
+    /* ============================================================
+   TABLES
+   ============================================================ */
+    .tbl {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.87rem;
+    }
+
+    .tbl th {
+      text-align: left;
+      padding: 0.65rem 0.9rem;
+      background: var(--surface2);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text3);
+      border-bottom: 1px solid var(--border2);
+    }
+
+    .tbl td {
+      padding: 0.7rem 0.9rem;
+      border-bottom: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .tbl tr:last-child td {
+      border-bottom: none;
+    }
+
+    .tbl tr:hover td {
+      background: var(--surface2);
+    }
+
+    .tbl-wrap {
+      overflow-x: auto;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+
+    /* ============================================================
+   VS (COMPARISON) CARDS
+   ============================================================ */
+    .vs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    @media(max-width:640px) {
+      .vs {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* ============================================================
+   FLOW DIAGRAM
+   ============================================================ */
+    .flow {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      flex-wrap: wrap;
+      margin: 1.5rem 0;
+    }
+
+    .flow-box {
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-radius: 10px;
+      padding: 0.75rem 1rem;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--heading);
+      text-align: center;
+      flex: 1;
+      min-width: 80px;
+    }
+
+    .flow-box.accent {
+      background: rgba(110, 231, 247, 0.12);
+      border-color: rgba(110, 231, 247, 0.4);
+      color: var(--a);
+    }
+
+    .flow-box.accent2 {
+      background: rgba(167, 139, 250, 0.12);
+      border-color: rgba(167, 139, 250, 0.4);
+      color: var(--c);
+    }
+
+    .flow-box.accent3 {
+      background: rgba(52, 211, 153, 0.12);
+      border-color: rgba(52, 211, 153, 0.4);
+      color: var(--d);
+    }
+
+    .flow-arrow {
+      font-size: 1.2rem;
+      color: var(--text3);
+      padding: 0 0.35rem;
+      flex-shrink: 0;
+    }
+
+    /* ============================================================
+   STEPS
+   ============================================================ */
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .step {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      padding: 1rem 1.25rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      transition: all 0.3s;
+    }
+
+    .step:hover {
+      border-color: var(--border2);
+    }
+
+    .step-num {
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      font-size: 0.8rem;
+      flex-shrink: 0;
+      color: #000;
+      background: linear-gradient(135deg, var(--a), var(--c));
+    }
+
+    .step-body h4 {
+      font-weight: 700;
+      font-size: 0.9rem;
+      margin-bottom: 0.2rem;
+    }
+
+    .step-body p {
+      font-size: 0.86rem;
+      color: var(--text2);
+      margin: 0;
+    }
+
+    /* ============================================================
+   BADGES
+   ============================================================ */
+    .badge {
+      display: inline-block;
+      padding: 0.2rem 0.55rem;
+      border-radius: 100px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      border: 1px solid;
+    }
+
+    .badge-a {
+      color: var(--a);
+      border-color: rgba(110, 231, 247, 0.4);
+      background: rgba(110, 231, 247, 0.1);
+    }
+
+    .badge-b {
+      color: var(--b);
+      border-color: rgba(244, 114, 182, 0.4);
+      background: rgba(244, 114, 182, 0.1);
+    }
+
+    .badge-c {
+      color: var(--c);
+      border-color: rgba(167, 139, 250, 0.4);
+      background: rgba(167, 139, 250, 0.1);
+    }
+
+    .badge-e {
+      color: var(--e);
+      border-color: rgba(251, 146, 60, 0.4);
+      background: rgba(251, 146, 60, 0.1);
+    }
+
+    .row-highlight td {
+      background: rgba(52, 211, 153, 0.06) !important;
+    }
+
+    .row-warn td {
+      background: rgba(244, 114, 182, 0.06) !important;
+    }
+
+    /* ============================================================
+   FOOTER
+   ============================================================ */
+    footer {
+      text-align: center;
+      padding: 3rem 2rem 4rem;
+      position: relative;
+    }
+
+    footer::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 10%;
+      right: 10%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border2), transparent);
+    }
+
+    .footer-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--a), var(--c), var(--b));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .footer-sub {
+      font-size: 0.78rem;
+      color: var(--text3);
+      margin-top: 0.3rem;
+    }
+
+    /* UL RESET */
+    ul {
+      list-style: none;
+    }
+
+    ul li {
+      padding: 0.32rem 0;
+      padding-left: 1rem;
+      position: relative;
+      font-size: 0.9rem;
+      color: var(--text2);
+    }
+
+    ul li::before {
+      content: '▸';
+      position: absolute;
+      left: 0;
+      color: var(--c);
+      font-size: 0.65rem;
+      top: 0.44rem;
+    }
+
+    .divider {
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border), transparent);
+      margin: 4rem 0;
+    }
+
+    @media(max-width:600px) {
+      .grid4 {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .flow {
+        justify-content: center;
+      }
+
+      .flow-box {
+        min-width: 70px;
+        font-size: 0.75rem;
+      }
+    }
+  </style>
+  <script src="/javascripts/standalone-theme.js"></script>
+  <script src="/javascripts/html-theme-sync.js"></script>
+
+  <meta name="description"
+    content="Complete study guide for CYS406 Chapter 16: Data Security — data states (at rest, in use, in transit), data security technologies, disk/file/removable-media encryption, RAID levels, backup strategies and retention, SAN vs NAS, and DLP concepts. With mnemonics.">
+  <link rel="canonical"
+    href="https://shoug-tech.com/academics/cybersecurity/cys406/slide-breakdowns/16-chapter-16-data-security/chapter-16-data-security.html">
+  <meta property="og:title" content="CYS406 - Chapter 16 - Data Security">
+  <meta property="og:description"
+    content="Complete study guide for CYS406 Chapter 16: Data Security — data states (at rest, in use, in transit), data security technologies, disk/file/removable-media encryption, RAID levels, backup strategies and retention, SAN vs NAS, and DLP concepts. With mnemonics.">
+  <meta property="og:url"
+    content="https://shoug-tech.com/academics/cybersecurity/cys406/slide-breakdowns/16-chapter-16-data-security/chapter-16-data-security.html">
+  <meta property="og:type" content="article">
+  <meta property="og:image" content="https://shoug-tech.com/assets/og-banner.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="CYS406 - Chapter 16 - Data Security">
+  <meta name="twitter:description"
+    content="Complete study guide for CYS406 Chapter 16: Data Security — data states (at rest, in use, in transit), data security technologies, disk/file/removable-media encryption, RAID levels, backup strategies and retention, SAN vs NAS, and DLP concepts. With mnemonics.">
+  <meta name="twitter:image" content="https://shoug-tech.com/assets/og-banner.png">
+</head>
+
+<body>
+
+
+  <!-- THEME TOGGLE -->
+  <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+    <span class="toggle-icon" id="toggle-icon">☀️</span>
+    <span id="toggle-label">Light Mode</span>
+  </button>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-grid"></div>
+
+    <div class="hero-badge">
+      <span class="badge-dot"></span>
+      CYS406 · Chapter 16
+    </div>
+
+    <h1>
+      Data Security<br>
+      <span class="gradient-word">At Rest, In Use, In Transit</span>
+    </h1>
+    <p class="hero-sub">The final chapter — why data is an organization's ultimate asset, the three states data can
+      live in, how to encrypt disks/files/removable media, backup &amp; RAID strategy, and how Data Loss Prevention
+      (DLP) stops it from walking out the door.</p>
+
+    <div class="hero-chips">
+      <span class="chip chip-a">Data States</span>
+      <span class="chip chip-b">Data Security Technologies</span>
+      <span class="chip chip-c">Disk / File / Media Encryption</span>
+      <span class="chip chip-d">Backup &amp; RAID</span>
+      <span class="chip chip-e">SAN vs NAS</span>
+      <span class="chip chip-f">DLP</span>
+    </div>
+
+    <div class="scroll-hint">
+      scroll ↓
+    </div>
+  </div>
+
+  <main>
+
+    <!-- SECTION 1: WHY DATA SECURITY MATTERS -->
+    <section>
+      <div class="section-header"><span class="sec-num">01 / Foundations</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="ga">Why Data Security Matters</h2>
+      <p>Data is the heart of any organization. <strong>Critical (business-critical) data</strong> is information that
+        is important for business operations — identifying and classifying it is the first step in securing an
+        organization's data.</p>
+
+      <h3 class="tb">Examples of Critical Data</h3>
+      <div class="def-grid">
+        <div class="def-card">
+          <div class="def-top" style="background:var(--a)"></div>
+          <div class="def-term ta">Accounting files</div>
+          <div class="def-desc">Core financial records of the organization.</div>
+        </div>
+        <div class="def-card">
+          <div class="def-top" style="background:var(--b)"></div>
+          <div class="def-term tb">Databases / business data</div>
+          <div class="def-desc">Any business-related data held in databases.</div>
+        </div>
+        <div class="def-card">
+          <div class="def-top" style="background:var(--c)"></div>
+          <div class="def-term tc">OS files &amp; purchased software</div>
+          <div class="def-desc">OS files that came with a computer, CDs, purchased software, etc.</div>
+        </div>
+        <div class="def-card">
+          <div class="def-top" style="background:var(--d)"></div>
+          <div class="def-term td">Office documents</div>
+          <div class="def-desc">Important office documents, spreadsheets, etc.</div>
+        </div>
+        <div class="def-card">
+          <div class="def-top" style="background:var(--e)"></div>
+          <div class="def-term te">Downloaded software</div>
+          <div class="def-desc">Software downloaded (purchased) from the Internet.</div>
+        </div>
+        <div class="def-card">
+          <div class="def-top" style="background:var(--f)"></div>
+          <div class="def-term tf">Contact information</div>
+          <div class="def-desc">Email address books and similar contact data.</div>
+        </div>
+      </div>
+
+      <h3 class="tc" style="margin-top:2rem;">Need for Data Security</h3>
+      <p>Data is an organization's ultimate asset, and attackers are interested in it. If an organization's data is
+        exposed or lost by any means, it can severely damage business and reputation.</p>
+
+      <div class="vs">
+        <div class="ex ex-a">
+          <div class="ex-label ta">⚠️ Causes of Data Loss</div>
+          <ul>
+            <li>Loss/theft of laptops and mobile devices</li>
+            <li>Unauthorized data transfer to USB devices</li>
+            <li>Improper sensitive data categorization</li>
+            <li>Data theft by employees / external parties</li>
+          </ul>
+        </div>
+        <div class="ex ex-b">
+          <div class="ex-label tb">💥 Business Effects</div>
+          <ul>
+            <li>Brand damage and reputation loss</li>
+            <li>Competitive advantage loss / loss of customers</li>
+            <li>Market share loss / shareholder value erosion</li>
+            <li>Fines and civil penalties</li>
+          </ul>
+        </div>
+      </div>
+
+      <p style="margin-top:1rem;">The data at risk spans an organization's whole data landscape: <strong>Corporate
+          Data, R&amp;D, Customer Service/Customer Data, Sales, Contractor Data, Personally Identifiable Data
+          (PII), HR/Legal, Finance, and Transaction Data</strong> — all of it moves across the network and needs to be
+        protected wherever it lives.</p>
+
+      <div class="mnemonic">
+        <div class="mnemonic-icon">🧠</div>
+        <div class="mnemonic-body">
+          <h4>Mnemonic — "LUID" causes data loss</h4>
+          <p><span class="mnem-key">"Lost Laptops, Unauthorized USBs, Improper labels, Data theft"</span> → the four
+            classic causes of data loss risk: <strong>L</strong>oss/theft of devices, <strong>U</strong>nauthorized
+            transfer to USB, <strong>I</strong>mproper sensitive-data categorization, <strong>D</strong>ata theft by
+            insiders/outsiders.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 2: THREE STATES OF DATA -->
+    <section>
+      <div class="section-header"><span class="sec-num">02 / Data States</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gb">The Three Critical States of Data</h2>
+      <p><strong>Data security</strong> involves applying various data security controls to prevent any intentional
+        or unintentional act of data misuse, data destruction, and data modification. Every piece of data an
+        organization holds is, at any moment, in exactly one of three states.</p>
+
+      <div class="flow">
+        <div class="flow-box accent">Data at Rest</div>
+        <div class="flow-arrow">↔</div>
+        <div class="flow-box accent2">Data in Use</div>
+        <div class="flow-arrow">↔</div>
+        <div class="flow-box accent3">Data in Transit</div>
+      </div>
+
+      <div class="mnemonic">
+        <div class="mnemonic-icon">🧠</div>
+        <div class="mnemonic-body">
+          <h4>Mnemonic — RUT: Rest, Use, Transit</h4>
+          <p><span class="mnem-key">"Don't get stuck in a RUT"</span> → <strong>R</strong>est (stored/inactive),
+            <strong>U</strong>se (loaded in memory/RAM, actively being processed), <strong>T</strong>ransit (moving
+            across a network). Every byte of organizational data is always in one of these three states — that's the
+            whole "three critical states of data" concept in one word.
+          </p>
+        </div>
+      </div>
+
+      <h3 class="tc" style="margin-top:2rem;">Data at Rest vs Data in Use vs Data in Transit</h3>
+      <p>Proper implementation of data security measures is required in <em>each</em> state to proactively enhance
+        data security — a control that protects data at rest (like disk encryption) does nothing to protect the same
+        data once it's in transit.</p>
+
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>State</th>
+              <th>Description</th>
+              <th>Example</th>
+              <th>Security Controls</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="ta"><strong>Data at Rest</strong></td>
+              <td>Inactive data stored digitally at a physical location</td>
+              <td>Customer bank balance stored in a database</td>
+              <td>Data encryption, password protection, tokenization, data federation</td>
+            </tr>
+            <tr>
+              <td class="tb"><strong>Data in Use</strong></td>
+              <td>Data stored in memory, actively being processed</td>
+              <td>Data stored in RAM</td>
+              <td>Authentication techniques, tight access control, full memory encryption, strong identity
+                management</td>
+            </tr>
+            <tr>
+              <td class="tc"><strong>Data in Transit</strong></td>
+              <td>Data traversing some means of communication</td>
+              <td>An email being sent</td>
+              <td>SSL and TLS, email encryption tools (PGP, S/MIME), firewall controls</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p style="margin-top:1rem;">In an organization's network, examples map onto real infrastructure:
+        <strong>Data at Rest</strong> lives on workstations, laptops, and databases/repositories; <strong>Data in
+          Use</strong> lives on the workstations and laptops actively processing it; <strong>Data in Transit</strong>
+        moves through the firewall out to the Internet.
+      </p>
+
+      <div class="tip tip-blue">
+        <div class="tip-icon">💡</div>
+        <div class="tip-body">
+          <h4 class="ta">One control does not cover all three states</h4>
+          <p>Full disk encryption protects data at rest but is useless once that data is decrypted into RAM (in use)
+            or sent over email (in transit). Always ask "which state is this data in right now?" before picking a
+            control.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 3: DATA SECURITY TECHNOLOGIES -->
+    <section>
+      <div class="section-header"><span class="sec-num">03 / Technologies</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gc">Data Security Technologies</h2>
+      <p>Six core technology categories work together to secure data across its lifecycle and states.</p>
+
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>Technology</th>
+              <th>What It Does</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="ta"><strong>Data Access Control</strong></td>
+              <td>Authenticates and authorizes users to access data</td>
+            </tr>
+            <tr>
+              <td class="tb"><strong>Data Encryption</strong></td>
+              <td>Protects information by transforming it so it cannot be read by an unauthorized party</td>
+            </tr>
+            <tr>
+              <td class="tc"><strong>Data Masking</strong></td>
+              <td>Protects information by obscuring specific areas of data with random characters or codes</td>
+            </tr>
+            <tr>
+              <td class="td"><strong>Data Resilience and Backup</strong></td>
+              <td>Duplicates critical data for restore/recovery when a primary copy is lost or corrupted
+                (accidentally or on purpose)</td>
+            </tr>
+            <tr>
+              <td class="te"><strong>Data Destruction</strong></td>
+              <td>Destroys data so it cannot be recovered and used for wrong motives</td>
+            </tr>
+            <tr>
+              <td class="tf"><strong>Data Retention</strong></td>
+              <td>Stores data securely for compliance or business requirements</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="mnemonic">
+        <div class="mnemonic-icon">🧠</div>
+        <div class="mnemonic-body">
+          <h4>Mnemonic — "A MEDy Retention" (AMEDR)</h4>
+          <p><span class="mnem-key">"Access, Masking, Encryption, Destruction, Resilience, Retention"</span> →
+            <strong>A</strong>ccess control, <strong>M</strong>asking, <strong>E</strong>ncryption,
+            <strong>D</strong>estruction, <strong>R</strong>esilience/backup, and <strong>R</strong>etention — the six
+            data security technologies. Think of it as the full lifecycle: control who gets in, hide what they
+            shouldn't see, scramble it, back it up, retain it as long as required, then destroy it securely when
+            done.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 4: ENCRYPTION TECHNIQUES -->
+    <section>
+      <div class="section-header"><span class="sec-num">04 / Encryption</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gd">Data Encryption Techniques</h2>
+      <p>Data encryption for data at rest breaks down into three layers, from broadest to narrowest scope.</p>
+
+      <div class="grid3">
+        <div class="card bl-a">
+          <h3 class="ta">Disk Encryption</h3>
+          <p>Full disk encryption is the encryption of <strong>all</strong> data in a disk except the master boot
+            record (MBR).</p>
+        </div>
+        <div class="card bl-b">
+          <h3 class="tb">File-level Encryption</h3>
+          <p>Encryption occurs at a filesystem level; combined with a cryptographic algorithm, the encrypted data is
+            extremely secure.</p>
+        </div>
+        <div class="card bl-c">
+          <h3 class="tc">Removable Media Encryption</h3>
+          <p>Prevents removable media devices — USB flash drives, portable hard disks, digital cameras, smartphones,
+            tablets, etc. — from unauthorized access.</p>
+        </div>
+      </div>
+
+      <div class="mnemonic">
+        <div class="mnemonic-icon">🧠</div>
+        <div class="mnemonic-body">
+          <h4>Mnemonic — Whole → Part → Portable</h4>
+          <p>Think of it as zooming in: <strong>Disk</strong> encryption locks the <em>whole drive</em>,
+            <strong>File</strong> encryption locks <em>one file at a time</em>, and <strong>Removable Media</strong>
+            encryption locks whatever data <em>walks out the door</em> on a USB stick or phone.
+          </p>
+        </div>
+      </div>
+
+      <h3 class="ta" style="margin-top:2rem;">Implementing Built-in Disk Encryption on Windows</h3>
+      <div class="vs">
+        <div class="ex ex-a">
+          <div class="ex-label ta">1. Enabling Device Encryption</div>
+          <p>Start → Settings → Update &amp; Security → Device Encryption → turn on the Device Encryption option.</p>
+        </div>
+        <div class="ex ex-b">
+          <div class="ex-label tb">2. Enabling Standard BitLocker Encryption</div>
+          <p>Sign in as Administrator → Start → Control Panel → System and Security → BitLocker Drive Encryption →
+            Manage BitLocker → Turn on BitLocker.</p>
+        </div>
+      </div>
+
+      <h3 class="tc" style="margin-top:2rem;">Disk Encryption Tools</h3>
+      <div class="ex ex-c">
+        <div class="ex-label tc">🔧 VeraCrypt</div>
+        <p>Software for establishing and maintaining an on-the-fly-encrypted volume (data storage device).
+          <strong>On-the-fly encryption</strong> means data is automatically encrypted immediately before it's saved
+          and decrypted immediately after it's loaded — without any user intervention.
+        </p>
+      </div>
+      <p style="margin-top:0.75rem;">Other tools mentioned: <strong>BitLocker Drive Encryption</strong> (Microsoft),
+        <strong>FinalCrypt</strong>, <strong>Seqrite Encryption Manager</strong>, <strong>FileVault</strong> (Apple),
+        <strong>Gilisoft Full Disk Encryption</strong>.
+      </p>
+
+      <h3 class="td" style="margin-top:2rem;">File-level Encryption</h3>
+      <p>Windows provides the <strong>Encrypting File System (EFS)</strong> for built-in file system-level encryption.
+      </p>
+      <p><strong>File encryption tools:</strong> Advanced Encryption Package (file encryption software for Windows
+        10/8/7 using strong, proven algorithms), AxCrypt, idoo File Encryption, Cryptomator, Encrypto, AES Crypt.</p>
+
+      <h3 class="te" style="margin-top:2rem;">Removable Media Encryption</h3>
+      <p><strong>To implement in Windows:</strong> Plug the removable media device into a USB port, then go to Start →
+        Control Panel → System and Security → BitLocker Drive Encryption (Manage BitLocker).</p>
+      <div class="ex ex-e">
+        <div class="ex-label te">🔧 GiliSoft USB Encryption</div>
+        <p>A solution for USB security that supports encrypting portable storage devices (external drives), and can
+          divide an external drive into two parts after encryption: a <strong>secure area</strong> and a
+          <strong>public area</strong>.
+        </p>
+      </div>
+      <p style="margin-top:0.75rem;">Other tools mentioned: idoo USB Encryption, Kakasoft USB Security, Rohos Mini
+        Drive, McAfee File &amp; Removable Media Protection, MFG's Removable Media Encryption.</p>
+    </section>
+
+    <!-- SECTION 5: BACKUP -->
+    <section>
+      <div class="section-header"><span class="sec-num">05 / Backup</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="ga">Data Backup</h2>
+      <p><strong>Data backup</strong> is the process of making a duplicate copy of critical data, such as physical
+        (paper) and computer records. It's mainly used for two purposes: to <strong>reinstate a system</strong> to its
+        normal working state after damage, or to <strong>recover data</strong> and information following data loss or
+        corruption. A successful data backup strategy is necessary to avoid severe damage to an organization's
+        assets.</p>
+
+      <h3 class="tb" style="margin-top:1.5rem;">Data Backup Strategy/Plan — 8 Steps</h3>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <h4>Identify the critical business data</h4>
+            <p>Know what actually needs backing up before choosing how.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <h4>Select the backup media</h4>
+            <p>Optical disks, portable hard drives/USB, or tape drives.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <h4>Select a backup technology</h4>
+            <p>e.g. SAN, NAS, cloud, local.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <h4>Select the appropriate RAID levels</h4>
+            <p>RAID 0, 1, 3, 5, 10, or 50 based on redundancy/performance needs.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">5</div>
+          <div class="step-body">
+            <h4>Select an appropriate backup method</h4>
+            <p>Hot (online), cold (offline), or warm (nearline).</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">6</div>
+          <div class="step-body">
+            <h4>Select the backup types</h4>
+            <p>Full, differential, or incremental.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">7</div>
+          <div class="step-body">
+            <h4>Choose the right backup solution</h4>
+            <p>Pick a tool/vendor that fits the plan.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">8</div>
+          <div class="step-body">
+            <h4>Conduct a recovery drill test</h4>
+            <p>A backup you've never tested restoring is not a real backup.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="mnemonic">
+        <div class="mnemonic-icon">🧠</div>
+        <div class="mnemonic-body">
+          <h4>Mnemonic — "I Must See RAID's Best Choice, Drilled" (8 steps)</h4>
+          <p><span class="mnem-key">Identify → Media → See(lect tech) → RAID levels → Backup method → Types →
+              Choice(solution) → Drill</span> — 8 words for 8 steps: Identify critical data, select Media, select
+            technology, select RAID levels, select backup method, select backup Types, choose the right solution, and
+            conduct a recovery Drill test.</p>
+        </div>
+      </div>
+
+      <h3 class="tc" style="margin-top:2rem;">Selecting the Backup Media</h3>
+      <p>Data backups consume large amounts of storage space, so choose the backup media that best meets the
+        organization's requirements — factors include capacity, cost, and <strong>speed</strong>.</p>
+
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>Media</th>
+              <th>Capacity</th>
+              <th>Advantages</th>
+              <th>Disadvantages</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="ta"><strong>Optical disks (CD, DVD, Blu-ray)</strong></td>
+              <td>~200 GB</td>
+              <td>Affordable, easy to store and transport</td>
+              <td>Several manual disk swaps needed (limited capacity); recording/verifying backup is slow</td>
+            </tr>
+            <tr>
+              <td class="tb"><strong>Portable hard drives / USB flash drives</strong></td>
+              <td>No limit</td>
+              <td>Higher storage capacity than optical; ideal for home/small offices; faster recording</td>
+              <td>More expensive than DVD backups; less recommended for small backups</td>
+            </tr>
+            <tr>
+              <td class="tc"><strong>Tape drives</strong></td>
+              <td>No limit</td>
+              <td>Media for enterprise-level backups; easy to store and transport</td>
+              <td>Expensive</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- SECTION 6: RAID -->
+    <section>
+      <div class="section-header"><span class="sec-num">06 / RAID</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gb">RAID — Redundant Array of Independent Disks</h2>
+      <p>RAID is a method of combining multiple hard drives into a single unit and writing data across several disk
+        drives, offering <strong>fault tolerance</strong> — if one drive fails, the system can continue operating.
+        Placing data on RAID disks enables a balanced overlap of I/O operations, improving system performance,
+        simplifying storage management, and protecting against data loss. RAID represents a portion of computer
+        storage that can divide and replicate data among several drives, working as secondary storage.</p>
+
+      <p>RAID has six levels — <strong>RAID 0, 1, 3, 5, 10, and 50</strong> — and all levels depend on three
+        underlying storage techniques: <strong>Striping, Parity, and Mirroring</strong>.</p>
+
+      <div class="mnemonic">
+        <div class="mnemonic-icon">🧠</div>
+        <div class="mnemonic-body">
+          <h4>Mnemonic — "013510 50" and "SPM"</h4>
+          <p>The six RAID levels in slide order: <span class="mnem-key">0, 1, 3, 5, 10, 50</span> — notice they're the
+            same digits (0,1,3,5) then two combos (10 = 1+0, 50 = 5+0). The three building-block techniques spell
+            <strong>SPM</strong>: <strong>S</strong>triping (split data across disks), <strong>P</strong>arity
+            (error-correcting redundancy data), <strong>M</strong>irroring (exact duplicate copies).
+          </p>
+        </div>
+      </div>
+
+      <div class="vs" style="margin-top:1.5rem;">
+        <div class="ex ex-d">
+          <div class="ex-label td">✅ Advantages of RAID</div>
+          <ul>
+            <li>Hot-swapping/hot plugging — replace a failed drive without affecting network functionality</li>
+            <li>Disk striping improves read/write performance</li>
+            <li>Increased RAID parity check prevents a system crash or data loss</li>
+          </ul>
+        </div>
+        <div class="ex ex-e">
+          <div class="ex-label te">⚠️ Disadvantages of RAID</div>
+          <ul>
+            <li>Not compatible with some hardware/software (e.g. system imaging programs)</li>
+            <li>Data lost if key drives fail one after another (e.g. RAID 5's parity drive can't recreate a first
+              drive if a second drive also fails)</li>
+            <li>Cannot protect data and boost performance for <em>all</em> applications</li>
+          </ul>
+        </div>
+      </div>
+
+      <h3 class="tc" style="margin-top:2rem;">RAID Levels Compared</h3>
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>Level</th>
+              <th>Technique</th>
+              <th>Min. Drives</th>
+              <th>Redundancy?</th>
+              <th>Key Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="ta"><strong>RAID 0</strong> — Disk Striping</td>
+              <td>Striping only</td>
+              <td>2</td>
+              <td>❌ None</td>
+              <td>Splits data into blocks written evenly across drives; improves I/O by spreading load; data
+                recovery is <strong>not possible</strong> if a drive fails</td>
+            </tr>
+            <tr>
+              <td class="tb"><strong>RAID 1</strong> — Disk Mirroring</td>
+              <td>Mirroring only</td>
+              <td>2</td>
+              <td>✅ Yes</td>
+              <td>Multiple copies written to multiple drives simultaneously; if one drive fails, data recovery is
+                possible</td>
+            </tr>
+            <tr>
+              <td class="tc"><strong>RAID 3</strong> — Striping with Parity</td>
+              <td>Byte-level striping + 1 dedicated parity drive</td>
+              <td>3+ (parity drive extra)</td>
+              <td>✅ Yes</td>
+              <td>Data striped at byte level across drives; one drive per set holds parity; if a drive fails, data
+                recovery/error correction uses the parity drive</td>
+            </tr>
+            <tr>
+              <td class="td"><strong>RAID 5</strong> — Block-Interleaved Distributed Parity</td>
+              <td>Byte-level striping + distributed parity</td>
+              <td>3</td>
+              <td>✅ Yes</td>
+              <td>Data striped at byte level; parity distributed among all member drives (not one dedicated drive);
+                writing is slow</td>
+            </tr>
+            <tr>
+              <td class="te"><strong>RAID 10</strong> — Striped &amp; Mirrored (RAID 1+0)</td>
+              <td>Striping (RAID 0) + Mirroring (RAID 1)</td>
+              <td>4</td>
+              <td>✅ Yes</td>
+              <td>Combines RAID 0 and RAID 1; same fault tolerance as RAID 1, same mirroring overhead as RAID 0;
+                stripes data across mirrored pairs for max performance</td>
+            </tr>
+            <tr>
+              <td class="tf"><strong>RAID 50</strong> — Mirroring &amp; Striping across RAID levels (RAID 5+0)</td>
+              <td>Striping (RAID 0) + distributed parity (RAID 5)</td>
+              <td>6</td>
+              <td>✅ Yes (more fault-tolerant than RAID 5)</td>
+              <td>More fault tolerant than RAID 5 but uses twice the parity overhead; a drive from each segment can
+                fail and the array recovers — but &gt;1 failure in a segment stops the array; offers the best reads/
+                writes and highest redundancy/performance of the group</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 class="ta" style="margin-top:2rem;">RAID Storage Architecture — Core Components</h3>
+      <div class="grid2">
+        <div class="card bl-a">
+          <h3 class="ta">RAID Controller</h3>
+          <p>Manages an array of physical disk drives and presents them to the computer as logical units.</p>
+        </div>
+        <div class="card bl-b">
+          <h3 class="tb">IDE, SATA, or SCSI Interface</h3>
+          <p>Internal drives connect via these interfaces; connection to the server is also through one of these.</p>
+        </div>
+        <div class="card bl-c">
+          <h3 class="tc">Multiport Memory Controller</h3>
+          <p>Provides access to a memory bank and helps achieve high efficiency with random address accesses.</p>
+        </div>
+        <div class="card bl-d">
+          <h3 class="td">SDRAM</h3>
+          <p>Dynamic RAM synchronized with the CPU clock speed.</p>
+        </div>
+        <div class="card bl-e">
+          <h3 class="te">Primary RAID Memory Cache</h3>
+          <p>Used to write data in transition — a RAID system uses a cache to speed up I/O performance on the
+            storage system.</p>
+        </div>
+        <div class="card bl-f">
+          <h3 class="tf">nvSRAM / NAND Flash / Disk</h3>
+          <p>nvSRAM is the fastest nonvolatile RAM (≈20 ns read/write); NAND Flash gives nonvolatile storage for the
+            primary cache; the hardware presents the whole RAID to the host system as one single, large disk.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 7: SAN / NAS -->
+    <section>
+      <div class="section-header"><span class="sec-num">07 / Storage Networks</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gc">SAN vs NAS</h2>
+      <p>Beyond a single machine's RAID array, organizations connect storage across the network using either a SAN or
+        a NAS.</p>
+
+      <div class="vs">
+        <div class="ex ex-a">
+          <div class="ex-label ta">🖧 Storage Area Network (SAN)</div>
+          <p>A specialized, dedicated, discrete high-speed network that connects storage devices (disks, disk arrays,
+            tapes, servers, etc.) with a high-speed I/O interconnect (Fiber Channel, SAS, Ethernet, etc.). Preferred
+            in large enterprises for reliable data transfer and flexible scalability. Supports data archival, backup,
+            restore, transfer, retrieval, migration, and mirroring between storage devices.</p>
+          <p><strong>Three layers:</strong> the <em>Communication Infrastructure Layer</em> (physical connections to
+            network devices), the <em>Management Layer</em> (organizes connections, storage elements, computer
+            systems), and the <em>Storage Layer</em> (hosts the storage devices).</p>
+        </div>
+        <div class="ex ex-b">
+          <div class="ex-label tb">📁 Network Attached Storage (NAS)</div>
+          <p>A file-based data storage service and dedicated computer appliance shared over the network — a
+            high-performance file server optimized for storing, retrieving, and serving files. NAS servers run
+            proprietary or open-source OSes optimized for file serving.</p>
+        </div>
+      </div>
+
+      <h3 class="tc" style="margin-top:2rem;">Advantages of SAN</h3>
+      <div class="grid4">
+        <div class="card bl-c">
+          <p>Storage consolidation</p>
+        </div>
+        <div class="card bl-c">
+          <p>LAN-free and server-free data movement</p>
+        </div>
+        <div class="card bl-c">
+          <p>Ease of data sharing</p>
+        </div>
+        <div class="card bl-c">
+          <p>LAN-free and server-free backup</p>
+        </div>
+        <div class="card bl-c">
+          <p>Improved backup and recovery</p>
+        </div>
+        <div class="card bl-c">
+          <p>Highly available server clustering</p>
+        </div>
+        <div class="card bl-c">
+          <p>Reliable, secure centralized data storage</p>
+        </div>
+        <div class="card bl-c">
+          <p>Data integrity, decreased LAN load</p>
+        </div>
+        <div class="card bl-c">
+          <p>High performance, low latency</p>
+        </div>
+        <div class="card bl-c">
+          <p>Disaster tolerance</p>
+        </div>
+      </div>
+
+      <h3 class="td" style="margin-top:2rem;">NAS — Advantages &amp; Disadvantages</h3>
+      <div class="vs">
+        <div class="ex ex-d">
+          <div class="ex-label td">✅ Advantages</div>
+          <ul>
+            <li>Users with different OSes can share files with no compatibility issues</li>
+            <li>A NAS can be connected to a LAN using plug-and-play</li>
+            <li>Minimal administration required, unlike Unix/NT file servers</li>
+          </ul>
+        </div>
+        <div class="ex ex-e">
+          <div class="ex-label te">⚠️ Disadvantages</div>
+          <ul>
+            <li>Bandwidth-heavy applications significantly reduce network performance</li>
+            <li>Data transfer is inefficient — uses TCP/IP instead of a specialized data transfer protocol</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="mnemonic">
+        <div class="mnemonic-icon">🧠</div>
+        <div class="mnemonic-body">
+          <h4>Mnemonic — SAN = block, NAS = file</h4>
+          <p><span class="mnem-key">"SAN is a Storage-Area Network of raw disks; NAS is Network-Attached
+              Storage of files."</span> SAN feels like a private dedicated highway just for storage traffic (Fiber
+            Channel); NAS is a file server plugged straight into your everyday LAN.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 8: BACKUP METHODS, LOCATIONS, TYPES -->
+    <section>
+      <div class="section-header"><span class="sec-num">08 / Backup Methods</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gd">Backup Methods, Locations &amp; Types</h2>
+
+      <h3 class="ta">Selecting an Appropriate Backup Method</h3>
+      <p>Select a backup method based on cost and ability, according to the organization's requirements.</p>
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>Method</th>
+              <th>Description</th>
+              <th>Advantage</th>
+              <th>Disadvantage</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="ta"><strong>Hot Backup (Online)</strong></td>
+              <td>Backup while the application/database/system is running and available to users; used when
+                downtime is not allowed</td>
+              <td>Immediate data backup switch-over is possible</td>
+              <td>Very expensive</td>
+            </tr>
+            <tr>
+              <td class="tb"><strong>Cold Backup (Offline)</strong></td>
+              <td>Backup while the application/database/system is shut down and unavailable; used when downtime is
+                allowed and a full backup is required</td>
+              <td>Least expensive</td>
+              <td>Switching over the data backup requires additional time</td>
+            </tr>
+            <tr>
+              <td class="tc"><strong>Warm Backup (Nearline)</strong></td>
+              <td>A combination of both hot and cold backups</td>
+              <td>Less expensive than hot; switch-over faster than cold but slower than hot</td>
+              <td>Less accessible than hot backup</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="mnemonic">
+        <div class="mnemonic-icon">🧠</div>
+        <div class="mnemonic-body">
+          <h4>Mnemonic — Hot/Warm/Cold = Available/Between/Off</h4>
+          <p><span class="mnem-key">"Hot = running, Cold = off, Warm = in between"</span> — exactly like food:
+            <strong>hot</strong> backup happens while the system is live (expensive, instant switch-over),
+            <strong>cold</strong> happens while it's shut down (cheap, slow switch-over), <strong>warm</strong> splits
+            the difference.
+          </p>
+        </div>
+      </div>
+
+      <h3 class="tc" style="margin-top:2rem;">Choosing the Backup Location</h3>
+      <div class="grid3">
+        <div class="card bl-a">
+          <h3 class="ta">Onsite Data Backup</h3>
+          <p>Storing backup data at onsite data storage only.<br><strong>Advantage:</strong> easily accessed and
+            restored; less expensive.<br><strong>Disadvantage:</strong> greater data loss risk.</p>
+        </div>
+        <div class="card bl-b">
+          <h3 class="tb">Offsite Data Backup</h3>
+          <p>Storing backup data in remote locations in fire-proof, indestructible safes.<br><strong>Advantage:</strong>
+            secured from physical threats (fire, floods, etc.).<br><strong>Disadvantage:</strong> problems with a
+            regular backup schedule.</p>
+        </div>
+        <div class="card bl-c">
+          <h3 class="tc">Cloud Data Backup</h3>
+          <p>Storing backup data on storage provided by an online backup provider.<br><strong>Advantages:</strong>
+            encrypted and free from physical threats; accessible from anywhere.<br><strong>Disadvantages:</strong> no
+            direct control of the backup data; more time to back up.</p>
+        </div>
+      </div>
+
+      <h3 class="td" style="margin-top:2rem;">Types of Backup</h3>
+      <div class="grid3">
+        <div class="card bl-d">
+          <h3 class="td">Full / Normal Data Backup</h3>
+          <p>All system data is copied to the backup media.</p>
+        </div>
+        <div class="card bl-e">
+          <h3 class="te">Differential Data Backup</h3>
+          <p>All data changed since the <strong>last full backup</strong> is copied to the backup media.</p>
+        </div>
+        <div class="card bl-f">
+          <h3 class="tf">Incremental Data Backup</h3>
+          <p>Only files changed or created <strong>after the last backup</strong> (of any type) are copied.</p>
+        </div>
+      </div>
+
+      <div class="ex ex-a" style="margin-top:1rem;">
+        <div class="ex-label ta">📘 Worked Example — a week of backups</div>
+        <p><strong>Full backup:</strong> Sunday → 10GB baseline.<br>
+          <strong>Differential path</strong> (each measured against Sunday's full backup): Monday 100MB, Tuesday
+          200MB, Wednesday 500MB — the differential backup keeps growing because it always captures everything
+          changed since Sunday.<br>
+          <strong>Incremental path</strong> (each measured against the previous backup): Monday 100MB, Tuesday
+          100MB, Wednesday 300MB — each incremental only captures what's new since <em>yesterday's</em> backup, so
+          the size resets each day.
+        </p>
+      </div>
+
+      <div class="tbl-wrap" style="margin-top:1rem;">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>Type</th>
+              <th>Advantages</th>
+              <th>Disadvantages</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="td"><strong>Full Backup</strong></td>
+              <td>Restoration is fast</td>
+              <td>Backup process is slow; high storage requirements</td>
+            </tr>
+            <tr>
+              <td class="te"><strong>Differential Backup</strong></td>
+              <td>Faster than a full backup; restoration faster than incremental; reduced storage vs full</td>
+              <td>Restoring is slower than full; slower than incremental</td>
+            </tr>
+            <tr>
+              <td class="tf"><strong>Incremental Backup</strong></td>
+              <td>Fastest backup method; least storage space of the three</td>
+              <td>Slowest restore speed of the three</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="mnemonic">
+        <div class="mnemonic-icon">🧠</div>
+        <div class="mnemonic-body">
+          <h4>Mnemonic — Full/Diff/Incr trade-off is a see-saw</h4>
+          <p><span class="mnem-key">"Full = slow to back up, fast to restore. Incremental = fast to back up, slow
+              to restore. Differential = the middle ground."</span> Backup speed and restore speed are always
+            opposite ends of the same see-saw across the three types.</p>
+        </div>
+      </div>
+
+      <h3 class="ta" style="margin-top:2rem;">Data Backup Tools</h3>
+      <p><strong>File History</strong> is a built-in Windows backup tool — it regularly backs up important folders
+        like Desktop, Documents, Downloads, Music, Pictures, Videos, and parts of the AppData folder.</p>
+      <p>Other tools: Genie Backup Manager Pro, BullGuard Backup, NTI Backup Now EZ, Power2Go 13, Backup4all.</p>
+
+      <h3 class="tb" style="margin-top:1.5rem;">Data Recovery Tools</h3>
+      <p><strong>EaseUS Data Recovery Wizard</strong> can quickly retrieve lost files after deletion or emptying the
+        recycle bin. Others: Recuva, Puran File Recovery, Glary Undelete, SoftPerfect File Recovery, Wise Data
+        Recovery.</p>
+    </section>
+
+    <!-- SECTION 9: DATA RETENTION -->
+    <section>
+      <div class="section-header"><span class="sec-num">09 / Retention</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="ga">Data Backup Retention</h2>
+
+      <div class="def-grid">
+        <div class="def-card">
+          <div class="def-top" style="background:var(--a)"></div>
+          <div class="def-term ta">Data Retention</div>
+          <div class="def-desc">The process of storing and maintaining important information to meet compliance
+            and business data archival requirements.</div>
+        </div>
+        <div class="def-card">
+          <div class="def-top" style="background:var(--b)"></div>
+          <div class="def-term tb">Data Retention Policy</div>
+          <div class="def-desc">A set of rules for preserving and maintaining data for operational or regulatory
+            compliance requirements. Defines required retention periods per data type, and sets minimum standards
+            for destroying certain information.</div>
+        </div>
+      </div>
+
+      <h3 class="tc" style="margin-top:1.5rem;">Steps for Developing a Data Retention Policy</h3>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <h4>Build a data retention policy development team</h4>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <h4>Understand applicable legal requirements</h4>
+            <p>Determine the organization's applicable legal requirements.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <h4>Identify and classify the data</h4>
+            <p>Determine what data is to be included in the retention policy.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <h4>Develop the data retention policy</h4>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">5</div>
+          <div class="step-body">
+            <h4>Ensure all employees understand it</h4>
+            <p>Make sure every employee understands the organization's data retention policy.</p>
+          </div>
+        </div>
+      </div>
+
+      <h3 class="td" style="margin-top:2rem;">Data Retention Policy Best Practices (8)</h3>
+      <div class="grid4">
+        <div class="card bl-a">
+          <p>Create a policy that fulfils legal and business requirements</p>
+        </div>
+        <div class="card bl-b">
+          <p>Justify the reasons behind the policy details</p>
+        </div>
+        <div class="card bl-c">
+          <p>Start with minimal requirements, add new ones as needed</p>
+        </div>
+        <div class="card bl-d">
+          <p>Create a simple policy that's easy for employees to implement</p>
+        </div>
+        <div class="card bl-e">
+          <p>Create different policies for different data types, per their legal/business
+            impact</p>
+        </div>
+        <div class="card bl-f">
+          <p>Retain customer/subscriber/user info only as long as necessary</p>
+        </div>
+        <div class="card bl-a">
+          <p>Implement software to manage the data retention tasks</p>
+        </div>
+        <div class="card bl-b">
+          <p>Classify data and decide if it should be archived or deleted</p>
+        </div>
+      </div>
+
+      <div class="mnemonic">
+        <div class="mnemonic-icon">🧠</div>
+        <div class="mnemonic-body">
+          <h4>Mnemonic — "Justify, Minimal, Simple, Split, Necessary, Software, Sorted" + Legal</h4>
+          <p><span class="mnem-key">"Legal first, Justify it, keep it Minimal & Simple, Split by type, keep data
+              only while Necessary, use Software, and get it Sorted (archive/delete)"</span> — a retention policy
+            must (1) meet Legal/business needs, (2) be Justified, (3) start Minimal, (4) stay Simple, (5) be Split
+            per data type, (6) hold user data only while Necessary, (7) be run by Software tooling, and (8) end with
+            data Sorted into archive-or-delete.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 10: DLP -->
+    <section>
+      <div class="section-header"><span class="sec-num">10 / DLP</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gb">Data Loss Prevention (DLP)</h2>
+      <p><strong>Data Loss Prevention (DLP)</strong> includes a set of software products and processes that do not
+        allow users to send confidential corporate data outside the organization.</p>
+
+      <h3 class="tc">Organizations use DLP to:</h3>
+      <ul>
+        <li>Discover sources of data leaks</li>
+        <li>Monitor the sources of data leakage</li>
+        <li>Protect organization assets and resources</li>
+        <li>Prevent accidental disclosure of sensitive information to unintended parties</li>
+        <li>Manage resources with business rules, security policies, and software</li>
+      </ul>
+
+      <div class="mnemonic">
+        <div class="mnemonic-icon">🧠</div>
+        <div class="mnemonic-body">
+          <h4>Mnemonic — DLP's 5 jobs: "DMP-PM"</h4>
+          <p><span class="mnem-key">"Discover, Monitor, Protect, Prevent, Manage"</span> → <strong>D</strong>iscover
+            leak sources → <strong>M</strong>onitor those sources → <strong>P</strong>rotect assets/resources →
+            <strong>P</strong>revent accidental disclosure → <strong>M</strong>anage resources with policy. Five
+            verbs, five DLP jobs.
+          </p>
+        </div>
+      </div>
+
+      <h3 class="td" style="margin-top:2rem;">Types of DLP Solutions — By Data State</h3>
+      <p>Notice how the three DLP solution types map exactly onto the three data states from Section 2.</p>
+      <div class="vs">
+        <div class="ex ex-d">
+          <div class="ex-label td">💻 Endpoint DLP</div>
+          <p>Monitors and protects PC-based systems such as tablets and laptops. Used for preventing data leakage
+            through clipboards, removable devices, and sharing applications. <em>(Protects data on the device — a
+              blend of "at rest" and "in use.")</em></p>
+        </div>
+        <div class="ex ex-e">
+          <div class="ex-label te">🌐 Network DLP</div>
+          <p>Monitors, protects, and reports all <strong>data in transit</strong>. Installed at the "perimeter" of an
+            organization's network; helps security professionals scan all data moving through ports and protocols
+            within the organization.</p>
+        </div>
+      </div>
+      <div class="ex ex-f" style="margin-top:1rem;">
+        <div class="ex-label tf">🗄️ Storage DLP</div>
+        <p>Monitors and protects <strong>data at rest</strong> — data stored in an organization's data center
+          infrastructure such as file servers, SharePoint, and databases. Identifies where sensitive information is
+          stored and helps users determine whether it's stored securely.</p>
+      </div>
+
+      <div class="mnemonic">
+        <div class="mnemonic-icon">🧠</div>
+        <div class="mnemonic-body">
+          <h4>Mnemonic — "END-NET-STORE" ties DLP to data states</h4>
+          <p><span class="mnem-key">Endpoint DLP ≈ In Use, Network DLP = In Transit, Storage DLP = At Rest.</span>
+            The three DLP flavors are just the three data states wearing different hats — remembering "RUT" (Rest,
+            Use, Transit) from earlier instantly gives you all three DLP types too.</p>
+        </div>
+      </div>
+
+      <h3 class="ta" style="margin-top:2rem;">DLP Solutions — Examples</h3>
+      <div class="ex ex-a">
+        <div class="ex-label ta">🔧 Windows Information Protection (WIP)</div>
+        <p>Has an endpoint DLP capability that helps protect local data at rest on endpoint devices. WIP can be
+          configured to store business data only on approved devices / within approved applications.</p>
+      </div>
+      <div class="ex ex-b" style="margin-top:1rem;">
+        <div class="ex-label tb">🔧 MyDLP</div>
+        <p>Allows the user to monitor, inspect, and prevent all outgoing confidential data without any hassle.</p>
+      </div>
+      <p style="margin-top:0.75rem;">Other DLP vendors: Symantec Data Loss Prevention, SecureTrust Data Loss
+        Prevention, McAfee Total Protection, Check Point Data Loss Prevention, Digital Guardian Endpoint DLP.</p>
+
+      <h3 class="tc" style="margin-top:2rem;">Best Practices for a Successful DLP Implementation</h3>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <h4>Identify the main objective of DLP</h4>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <h4>Identify sensitive data for protection</h4>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <h4>Evaluate available DLP vendors</h4>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <h4>Ensure product compatibility</h4>
+            <p>The selected DLP product must be compatible and support the required data types and data stores.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">5</div>
+          <div class="step-body">
+            <h4>Identify roles and responsibilities</h4>
+            <p>For individuals implementing the DLP solution.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">6</div>
+          <div class="step-body">
+            <h4>Implement with a minimal base</h4>
+            <p>Reduce false positives, then gradually enhance the base by identifying sensitive data.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">7</div>
+          <div class="step-body">
+            <h4>Enhance the DLP policies</h4>
+            <p>Support effective DLP operations and eliminate false positives.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- EXAM TIPS -->
+    <section>
+      <div class="section-header"><span class="sec-num">11 / Exam Prep</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gc">Exam Tips &amp; Tricks</h2>
+      <div class="grid2">
+        <div class="tip tip-blue">
+          <div class="tip-icon">💡</div>
+          <div class="tip-body">
+            <h4 class="ta">Three data states = RUT</h4>
+            <p>Data at Rest (stored), Data in Use (in memory/RAM), Data in Transit (moving over the network). Every
+              control question is really asking "which state, and which control fits it?"</p>
+          </div>
+        </div>
+        <div class="tip tip-green">
+          <div class="tip-icon">✅</div>
+          <div class="tip-body">
+            <h4 class="td">Encryption controls per state</h4>
+            <p>At Rest → data encryption, tokenization. In Use → memory encryption, strong identity management. In
+              Transit → SSL/TLS, PGP/S/MIME, firewalls.</p>
+          </div>
+        </div>
+        <div class="tip tip-warn">
+          <div class="tip-icon">⚠️</div>
+          <div class="tip-body">
+            <h4 class="te">RAID 0 has NO redundancy</h4>
+            <p>RAID 0 is striping only — it boosts speed but a single drive failure loses everything. Don't confuse
+              it with RAID 1 (mirroring = redundancy).</p>
+          </div>
+        </div>
+        <div class="tip tip-yellow">
+          <div class="tip-icon">🔑</div>
+          <div class="tip-body">
+            <h4 class="tf">Differential vs Incremental — always vs last full</h4>
+            <p>Differential always backs up everything changed since the <em>last full</em> backup (grows daily).
+              Incremental only backs up what changed since the <em>last backup of any type</em> (resets daily,
+              fastest to back up, slowest to restore).</p>
+          </div>
+        </div>
+        <div class="tip tip-blue">
+          <div class="tip-icon">📋</div>
+          <div class="tip-body">
+            <h4 class="ta">DLP types mirror data states</h4>
+            <p>Endpoint DLP (device-level), Network DLP (in transit / perimeter), Storage DLP (at rest / data
+              center). Same "Rest/Use/Transit" logic reused for DLP.</p>
+          </div>
+        </div>
+        <div class="tip tip-green">
+          <div class="tip-icon">🌐</div>
+          <div class="tip-body">
+            <h4 class="td">SAN = block storage network, NAS = file server on the LAN</h4>
+            <p>SAN uses Fiber Channel/SAS for high-speed dedicated storage traffic; NAS is a plug-and-play file
+              server that rides on ordinary TCP/IP.</p>
+          </div>
+        </div>
+        <div class="tip tip-warn">
+          <div class="tip-icon">🗂️</div>
+          <div class="tip-body">
+            <h4 class="te">RAID minimum drive counts</h4>
+            <p>RAID 0/1 need 2 drives, RAID 5 needs 3, RAID 10 needs 4, RAID 50 needs 6 — these numbers are a classic
+              exam trap.</p>
+          </div>
+        </div>
+        <div class="tip tip-yellow">
+          <div class="tip-icon">🔥</div>
+          <div class="tip-body">
+            <h4 class="tf">Hot/Warm/Cold backup = system state, not temperature</h4>
+            <p>Hot = system running (expensive, instant), Cold = system shut down (cheap, slow switch-over), Warm =
+              mix of both.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- QUICK REFERENCE -->
+    <section>
+      <div class="section-header"><span class="sec-num">12 / Cheat Sheet</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gd">Quick Reference — Everything at a Glance</h2>
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>Topic</th>
+              <th>Key Point</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Business-critical data</td>
+              <td>Info important for business ops — accounting files, databases, OS files, office docs, downloaded
+                software, contact info</td>
+            </tr>
+            <tr>
+              <td>Causes of data loss</td>
+              <td>Lost/stolen laptops, unauthorized USB transfer, improper categorization, insider/external theft</td>
+            </tr>
+            <tr>
+              <td>Effects of data loss</td>
+              <td>Brand/reputation damage, lost competitive advantage/customers, market share loss, fines/penalties</td>
+            </tr>
+            <tr>
+              <td>Data security</td>
+              <td>Applying controls to prevent misuse, destruction, and modification of data</td>
+            </tr>
+            <tr>
+              <td>Three critical states of data</td>
+              <td>Data at Rest, Data in Use, Data in Transit ("RUT")</td>
+            </tr>
+            <tr>
+              <td>Data at Rest example / controls</td>
+              <td>Bank balance in a database / encryption, password protection, tokenization, data federation</td>
+            </tr>
+            <tr>
+              <td>Data in Use example / controls</td>
+              <td>Data in RAM / authentication, tight access control, full memory encryption, strong identity mgmt</td>
+            </tr>
+            <tr>
+              <td>Data in Transit example / controls</td>
+              <td>An email being sent / SSL &amp; TLS, PGP or S/MIME, firewall controls</td>
+            </tr>
+            <tr>
+              <td>Data security technologies (6)</td>
+              <td>Access Control, Encryption, Masking, Resilience &amp; Backup, Destruction, Retention</td>
+            </tr>
+            <tr>
+              <td>Disk encryption</td>
+              <td>Encrypts all data on a disk except the MBR (e.g. BitLocker, VeraCrypt, FileVault)</td>
+            </tr>
+            <tr>
+              <td>File-level encryption</td>
+              <td>Encrypts at the filesystem level (Windows EFS; AxCrypt, AES Crypt, Cryptomator)</td>
+            </tr>
+            <tr>
+              <td>Removable media encryption</td>
+              <td>Protects USB drives, portable HDDs, phones, tablets, etc. (BitLocker, GiliSoft USB Encryption)</td>
+            </tr>
+            <tr>
+              <td>On-the-fly encryption (VeraCrypt)</td>
+              <td>Auto-encrypts before save, auto-decrypts after load — no user intervention</td>
+            </tr>
+            <tr>
+              <td>Data backup — purpose</td>
+              <td>Reinstate a damaged system, or recover lost/corrupted data</td>
+            </tr>
+            <tr>
+              <td>8-step backup strategy</td>
+              <td>Identify data → media → technology → RAID level → method → type → solution → recovery drill test</td>
+            </tr>
+            <tr>
+              <td>Backup media types</td>
+              <td>Optical disks (~200GB, cheap, slow), Portable HDD/USB (no limit, faster, pricier), Tape (no limit,
+                enterprise, expensive)</td>
+            </tr>
+            <tr>
+              <td>RAID definition</td>
+              <td>Combines multiple drives into one unit; offers fault tolerance if a drive fails</td>
+            </tr>
+            <tr>
+              <td>RAID storage techniques</td>
+              <td>Striping, Parity, Mirroring</td>
+            </tr>
+            <tr>
+              <td>RAID 0</td>
+              <td>Striping only, 2 drives min, NO redundancy, no recovery if a drive fails</td>
+            </tr>
+            <tr>
+              <td>RAID 1</td>
+              <td>Mirroring, 2 drives min, redundant — recovery possible if one drive fails</td>
+            </tr>
+            <tr>
+              <td>RAID 3</td>
+              <td>Byte-level striping + 1 dedicated parity drive</td>
+            </tr>
+            <tr>
+              <td>RAID 5</td>
+              <td>Byte-level striping + parity distributed across all drives, 3 drives min, slower writes</td>
+            </tr>
+            <tr>
+              <td>RAID 10 (1+0)</td>
+              <td>Striping + mirroring, 4 drives min, RAID 1 fault tolerance + RAID 0 performance</td>
+            </tr>
+            <tr>
+              <td>RAID 50 (5+0)</td>
+              <td>Striping + distributed parity across RAID 5 sets, 6 drives min, most fault-tolerant/best perf of
+                the six</td>
+            </tr>
+            <tr>
+              <td>RAID advantages</td>
+              <td>Hot-swapping, improved read/write via striping, parity check prevents crash/data loss</td>
+            </tr>
+            <tr>
+              <td>RAID disadvantages</td>
+              <td>Hardware/software incompatibility risk, cascading drive failures lose data, doesn't help every app
+              </td>
+            </tr>
+            <tr>
+              <td>SAN</td>
+              <td>Dedicated high-speed network of storage devices (Fiber Channel/SAS); block-level; large-enterprise
+                scale</td>
+            </tr>
+            <tr>
+              <td>NAS</td>
+              <td>File-based storage appliance on the LAN; plug-and-play; uses TCP/IP (less efficient than SAN)</td>
+            </tr>
+            <tr>
+              <td>Hot / Cold / Warm backup</td>
+              <td>Hot = system running (expensive, instant); Cold = system off (cheap, slow); Warm = combo of both</td>
+            </tr>
+            <tr>
+              <td>Onsite / Offsite / Cloud backup location</td>
+              <td>Onsite = fast access, higher loss risk; Offsite = fire/flood-safe, scheduling issues; Cloud =
+                encrypted &amp; anywhere access, no direct control</td>
+            </tr>
+            <tr>
+              <td>Full backup</td>
+              <td>Copies all data; fast restore, slow/large backup</td>
+            </tr>
+            <tr>
+              <td>Differential backup</td>
+              <td>Copies everything changed since the last FULL backup; grows over time</td>
+            </tr>
+            <tr>
+              <td>Incremental backup</td>
+              <td>Copies only what changed since the last backup (any type); fastest backup, slowest restore</td>
+            </tr>
+            <tr>
+              <td>Data retention</td>
+              <td>Storing/maintaining info for compliance and business archival requirements</td>
+            </tr>
+            <tr>
+              <td>Data retention policy</td>
+              <td>Rules for preserving data; defines retention periods and destruction standards per data type</td>
+            </tr>
+            <tr>
+              <td>Data Loss Prevention (DLP)</td>
+              <td>Software/processes stopping confidential data from leaving the organization</td>
+            </tr>
+            <tr>
+              <td>DLP goals</td>
+              <td>Discover leaks, Monitor sources, Protect assets, Prevent accidental disclosure, Manage resources</td>
+            </tr>
+            <tr>
+              <td>Endpoint DLP</td>
+              <td>Protects PC-based systems (laptops, tablets); blocks leakage via clipboard, removable devices,
+                sharing apps</td>
+            </tr>
+            <tr>
+              <td>Network DLP</td>
+              <td>Protects data in transit at the network perimeter; scans ports/protocols</td>
+            </tr>
+            <tr>
+              <td>Storage DLP</td>
+              <td>Protects data at rest in file servers, SharePoint, databases</td>
+            </tr>
+            <tr>
+              <td>Windows Information Protection (WIP)</td>
+              <td>Endpoint DLP that restricts business data to approved devices/apps</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="footer-name">Made by Shoug Alomran</div>
+    <div class="footer-sub">CYS406 · Chapter 16: Data Security · Study Guide</div>
+  </footer>
+
+  <script>
+    // Auto-detect system preference on load
+    (function () {
+      const _stored = localStorage.getItem('shoug-theme');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const theme = _stored === 'dark' ? 'dark' : _stored === 'light' ? 'light' : (prefersDark ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', theme);
+      updateToggle(theme);
+    })();
+
+    // Listen for system changes
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+      if (localStorage.getItem('shoug-theme')) return;
+      const theme = e.matches ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', theme);
+      updateToggle(theme);
+    });
+
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme');
+      const next = current === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      try { localStorage.setItem('shoug-theme', document.documentElement.getAttribute('data-theme')); } catch (e) { }
+      updateToggle(next);
+    }
+
+    function updateToggle(theme) {
+      const icon = document.getElementById('toggle-icon');
+      const label = document.getElementById('toggle-label');
+      if (theme === 'dark') {
+        icon.textContent = '☀️';
+        label.textContent = 'Light Mode';
+      } else {
+        icon.textContent = '🌙';
+        label.textContent = 'Dark Mode';
+      }
+    }
+  </script>
+
+</body>
+
+</html>

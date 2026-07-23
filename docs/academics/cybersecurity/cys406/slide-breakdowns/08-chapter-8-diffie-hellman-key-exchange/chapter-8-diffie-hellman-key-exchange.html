@@ -1,0 +1,1855 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+  <link rel="icon" type="image/png" href="/assets/favicon.png?v=2">
+  <link rel="shortcut icon" href="/assets/favicon.png?v=2">
+  <link rel="apple-touch-icon" href="/assets/favicon.png?v=2">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CYS406 - Diffie-Hellman Key Exchange</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Playfair+Display:wght@700;800&display=swap"
+    rel="stylesheet">
+  <style>
+    /* ============================================================
+   THEME VARIABLES
+   ============================================================ */
+    :root {
+      --a: #6ee7f7;
+      /* cyan accent */
+      --b: #f472b6;
+      /* pink accent */
+      --c: #a78bfa;
+      /* violet accent */
+      --d: #34d399;
+      /* emerald accent */
+      --e: #fb923c;
+      /* orange accent */
+      --f: #facc15;
+      /* yellow accent */
+    }
+
+    [data-theme="dark"] {
+      --bg: #080c14;
+      --bg2: #0e1422;
+      --bg3: #141c2e;
+      --surface: rgba(255, 255, 255, 0.04);
+      --surface2: rgba(255, 255, 255, 0.07);
+      --border: rgba(255, 255, 255, 0.08);
+      --border2: rgba(255, 255, 255, 0.13);
+      --text: #e2e8f0;
+      --text2: #94a3b8;
+      --text3: #64748b;
+      --heading: #f8fafc;
+      --code-bg: rgba(255, 255, 255, 0.06);
+      --shadow: rgba(0, 0, 0, 0.5);
+      --toggle-bg: rgba(255, 255, 255, 0.08);
+    }
+
+    [data-theme="light"] {
+      --bg: #f0f4ff;
+      --bg2: #e8eef9;
+      --bg3: #dde5f5;
+      --surface: rgba(255, 255, 255, 0.75);
+      --surface2: rgba(255, 255, 255, 0.95);
+      --border: rgba(80, 100, 160, 0.12);
+      --border2: rgba(80, 100, 160, 0.2);
+      --text: #1e2a45;
+      --text2: #475569;
+      --text3: #94a3b8;
+      --heading: #0f172a;
+      --code-bg: rgba(80, 100, 160, 0.08);
+      --shadow: rgba(100, 120, 200, 0.15);
+      --toggle-bg: rgba(80, 100, 160, 0.12);
+    }
+
+    /* ============================================================
+   RESET & BASE
+   ============================================================ */
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Space Grotesk', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      overflow-x: hidden;
+      transition: background 0.4s ease, color 0.4s ease;
+    }
+
+    /* ============================================================
+   THEME TOGGLE
+   ============================================================ */
+    .theme-toggle {
+      position: fixed;
+      top: 1.25rem;
+      right: 1.5rem;
+      z-index: 1000;
+      background: var(--toggle-bg);
+      border: 1px solid var(--border2);
+      border-radius: 100px;
+      padding: 0.45rem 1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text2);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      transition: all 0.3s ease;
+      user-select: none;
+    }
+
+    .theme-toggle:hover {
+      border-color: var(--a);
+      color: var(--a);
+      transform: scale(1.04);
+    }
+
+    .toggle-icon {
+      font-size: 1rem;
+      transition: transform 0.4s ease;
+    }
+
+    /* ============================================================
+   HERO
+   ============================================================ */
+    .hero {
+      min-height: 60vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      position: relative;
+      padding: 5rem 2rem 4rem;
+      overflow: hidden;
+    }
+
+    [data-theme="dark"] .hero {
+      background:
+        radial-gradient(ellipse 70% 50% at 20% 20%, rgba(110, 231, 247, 0.12) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 80% 80%, rgba(167, 139, 250, 0.12) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 40% at 50% 60%, rgba(244, 114, 182, 0.08) 0%, transparent 60%),
+        var(--bg);
+    }
+
+    [data-theme="light"] .hero {
+      background:
+        radial-gradient(ellipse 70% 50% at 20% 20%, rgba(110, 231, 247, 0.18) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 80% 80%, rgba(167, 139, 250, 0.15) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 40% at 50% 60%, rgba(244, 114, 182, 0.12) 0%, transparent 60%),
+        var(--bg);
+    }
+
+    .hero-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(var(--border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 50px 50px;
+      opacity: 0.7;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-radius: 100px;
+      padding: 0.4rem 1.1rem;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--a);
+      margin-bottom: 1.75rem;
+      position: relative;
+      z-index: 1;
+      animation: fadeUp 0.7s ease both;
+    }
+
+    .badge-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--a);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1
+      }
+
+      50% {
+        opacity: 0.4
+      }
+    }
+
+    .hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.4rem, 5.5vw, 4.6rem);
+      font-weight: 800;
+      line-height: 1.15;
+      color: var(--heading);
+      position: relative;
+      z-index: 1;
+      animation: fadeUp 0.85s ease both;
+    }
+
+    .hero h1 .gradient-word {
+      background: linear-gradient(135deg, var(--a), var(--c), var(--b));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-sub {
+      font-size: 1.05rem;
+      color: var(--text2);
+      margin-top: 1.25rem;
+      max-width: 560px;
+      position: relative;
+      z-index: 1;
+      animation: fadeUp 1s ease both;
+    }
+
+    .hero-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      justify-content: center;
+      max-width: 720px;
+      margin-top: 2rem;
+      position: relative;
+      z-index: 1;
+      animation: fadeUp 1.1s ease both;
+    }
+
+    .chip {
+      padding: 0.3rem 0.85rem;
+      border-radius: 100px;
+      font-size: 0.76rem;
+      font-weight: 600;
+      border: 1px solid;
+      transition: transform 0.2s;
+    }
+
+    .chip:hover {
+      transform: translateY(-2px);
+    }
+
+    .chip-a {
+      color: var(--a);
+      border-color: rgba(110, 231, 247, 0.35);
+      background: rgba(110, 231, 247, 0.08);
+    }
+
+    .chip-b {
+      color: var(--b);
+      border-color: rgba(244, 114, 182, 0.35);
+      background: rgba(244, 114, 182, 0.08);
+    }
+
+    .chip-c {
+      color: var(--c);
+      border-color: rgba(167, 139, 250, 0.35);
+      background: rgba(167, 139, 250, 0.08);
+    }
+
+    .chip-d {
+      color: var(--d);
+      border-color: rgba(52, 211, 153, 0.35);
+      background: rgba(52, 211, 153, 0.08);
+    }
+
+    .chip-e {
+      color: var(--e);
+      border-color: rgba(251, 146, 60, 0.35);
+      background: rgba(251, 146, 60, 0.08);
+    }
+
+    .chip-f {
+      color: var(--f);
+      border-color: rgba(250, 204, 21, 0.35);
+      background: rgba(250, 204, 21, 0.08);
+    }
+
+    .scroll-hint {
+      position: absolute;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      color: var(--text3);
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.4rem;
+      animation: bounce 2.5s infinite;
+      z-index: 1;
+    }
+
+    @keyframes bounce {
+
+      0%,
+      100% {
+        transform: translateX(-50%) translateY(0)
+      }
+
+      50% {
+        transform: translateX(-50%) translateY(8px)
+      }
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(24px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    /* ============================================================
+   LAYOUT
+   ============================================================ */
+    main {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 4rem 2rem;
+    }
+
+    section {
+      margin-bottom: 5.5rem;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .sec-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text3);
+      white-space: nowrap;
+    }
+
+    .sec-line {
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, var(--border2), transparent);
+    }
+
+    h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.6rem, 3vw, 2.3rem);
+      font-weight: 800;
+      color: var(--heading);
+      margin-bottom: 0.4rem;
+    }
+
+    h3 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 1.05rem;
+      margin-bottom: 0.6rem;
+      color: var(--heading);
+    }
+
+    p {
+      font-size: 0.94rem;
+      color: var(--text2);
+      margin-bottom: 0.7rem;
+    }
+
+    strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    /* ============================================================
+   GRADIENT TEXT HELPERS
+   ============================================================ */
+    .ga {
+      background: linear-gradient(135deg, var(--a), var(--d));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .gb {
+      background: linear-gradient(135deg, var(--b), var(--c));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .gc {
+      background: linear-gradient(135deg, var(--e), var(--b));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .gd {
+      background: linear-gradient(135deg, var(--c), var(--a));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* ============================================================
+   CARDS
+   ============================================================ */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.6rem;
+      transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
+    }
+
+    .card:hover {
+      border-color: var(--border2);
+      transform: translateY(-3px);
+      box-shadow: 0 12px 30px var(--shadow);
+    }
+
+    .grid2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1rem;
+    }
+
+    .grid3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1rem;
+    }
+
+    .grid4 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 1rem;
+    }
+
+    .bl-a {
+      border-left: 3px solid var(--a);
+    }
+
+    .bl-b {
+      border-left: 3px solid var(--b);
+    }
+
+    .bl-c {
+      border-left: 3px solid var(--c);
+    }
+
+    .bl-d {
+      border-left: 3px solid var(--d);
+    }
+
+    .bl-e {
+      border-left: 3px solid var(--e);
+    }
+
+    .bl-f {
+      border-left: 3px solid var(--f);
+    }
+
+    .ta {
+      color: var(--a);
+    }
+
+    .tb {
+      color: var(--b);
+    }
+
+    .tc {
+      color: var(--c);
+    }
+
+    .td {
+      color: var(--d);
+    }
+
+    .te {
+      color: var(--e);
+    }
+
+    .tf {
+      color: var(--f);
+    }
+
+    /* ============================================================
+   DEFINITION CARDS
+   ============================================================ */
+    .def-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 0.75rem;
+    }
+
+    .def-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.2rem;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s;
+    }
+
+    .def-card:hover {
+      transform: translateY(-2px);
+    }
+
+    .def-top {
+      height: 2px;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+    }
+
+    .def-term {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .def-desc {
+      font-size: 0.87rem;
+      color: var(--text2);
+    }
+
+    /* ============================================================
+   MONO / CODE STYLE
+   ============================================================ */
+    .mono {
+      font-family: 'JetBrains Mono', monospace;
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      font-size: 0.85rem;
+      color: var(--a);
+      margin-top: 0.75rem;
+      overflow-x: auto;
+      white-space: pre;
+    }
+
+    .mono span.comment {
+      color: var(--text3);
+    }
+
+    .mono span.key {
+      color: var(--b);
+    }
+
+    .mono span.val {
+      color: var(--d);
+    }
+
+    /* ============================================================
+   EXAMPLE BOXES
+   ============================================================ */
+    .ex {
+      border-radius: 14px;
+      padding: 1.4rem;
+      border: 1px solid;
+      margin-top: 1.25rem;
+    }
+
+    .ex-a {
+      background: rgba(110, 231, 247, 0.06);
+      border-color: rgba(110, 231, 247, 0.25);
+    }
+
+    .ex-b {
+      background: rgba(244, 114, 182, 0.06);
+      border-color: rgba(244, 114, 182, 0.25);
+    }
+
+    .ex-c {
+      background: rgba(167, 139, 250, 0.06);
+      border-color: rgba(167, 139, 250, 0.25);
+    }
+
+    .ex-d {
+      background: rgba(52, 211, 153, 0.06);
+      border-color: rgba(52, 211, 153, 0.25);
+    }
+
+    .ex-e {
+      background: rgba(251, 146, 60, 0.06);
+      border-color: rgba(251, 146, 60, 0.25);
+    }
+
+    .ex-f {
+      background: rgba(250, 204, 21, 0.06);
+      border-color: rgba(250, 204, 21, 0.25);
+    }
+
+    .ex-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .ex-label::before {
+      content: '';
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    /* ============================================================
+   TIP BOXES
+   ============================================================ */
+    .tip {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      padding: 1.1rem 1.25rem;
+      border-radius: 12px;
+      margin-top: 1rem;
+    }
+
+    .tip-green {
+      background: rgba(52, 211, 153, 0.08);
+      border: 1px solid rgba(52, 211, 153, 0.25);
+    }
+
+    .tip-blue {
+      background: rgba(110, 231, 247, 0.08);
+      border: 1px solid rgba(110, 231, 247, 0.25);
+    }
+
+    .tip-warn {
+      background: rgba(251, 146, 60, 0.08);
+      border: 1px solid rgba(251, 146, 60, 0.25);
+    }
+
+    .tip-yellow {
+      background: rgba(250, 204, 21, 0.08);
+      border: 1px solid rgba(250, 204, 21, 0.25);
+    }
+
+    .tip-icon {
+      font-size: 1.2rem;
+      flex-shrink: 0;
+      margin-top: 0.1rem;
+    }
+
+    .tip-body h4 {
+      font-size: 0.84rem;
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+    }
+
+    .tip-body p {
+      font-size: 0.86rem;
+      color: var(--text2);
+      margin: 0;
+    }
+
+    /* ============================================================
+   MNEMONIC BOXES  (memory aids - distinct brain/purple styling)
+   ============================================================ */
+    .mnemonic {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      padding: 1.25rem 1.4rem;
+      border-radius: 14px;
+      margin-top: 1.25rem;
+      background: linear-gradient(135deg, rgba(167, 139, 250, 0.10), rgba(244, 114, 182, 0.07));
+      border: 1px solid rgba(167, 139, 250, 0.35);
+      position: relative;
+    }
+
+    .mnemonic-icon {
+      font-size: 1.3rem;
+      flex-shrink: 0;
+    }
+
+    .mnemonic-body h4 {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--c);
+      margin-bottom: 0.4rem;
+    }
+
+    .mnemonic-body p {
+      font-size: 0.92rem;
+      color: var(--text);
+      margin: 0;
+    }
+
+    .mnemonic-body .mnem-key {
+      color: var(--b);
+      font-weight: 700;
+    }
+
+    /* ============================================================
+   TABLES
+   ============================================================ */
+    .tbl {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.87rem;
+    }
+
+    .tbl th {
+      text-align: left;
+      padding: 0.65rem 0.9rem;
+      background: var(--surface2);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text3);
+      border-bottom: 1px solid var(--border2);
+    }
+
+    .tbl td {
+      padding: 0.7rem 0.9rem;
+      border-bottom: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .tbl tr:last-child td {
+      border-bottom: none;
+    }
+
+    .tbl tr:hover td {
+      background: var(--surface2);
+    }
+
+    .tbl-wrap {
+      overflow-x: auto;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+
+    /* ============================================================
+   VS (COMPARISON) CARDS
+   ============================================================ */
+    .vs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    @media(max-width:640px) {
+      .vs {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* ============================================================
+   FLOW DIAGRAM
+   ============================================================ */
+    .flow {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      flex-wrap: wrap;
+      margin: 1.5rem 0;
+    }
+
+    .flow-box {
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-radius: 10px;
+      padding: 0.75rem 1rem;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--heading);
+      text-align: center;
+      flex: 1;
+      min-width: 80px;
+    }
+
+    .flow-box.accent {
+      background: rgba(110, 231, 247, 0.12);
+      border-color: rgba(110, 231, 247, 0.4);
+      color: var(--a);
+    }
+
+    .flow-box.accent2 {
+      background: rgba(167, 139, 250, 0.12);
+      border-color: rgba(167, 139, 250, 0.4);
+      color: var(--c);
+    }
+
+    .flow-box.accent3 {
+      background: rgba(52, 211, 153, 0.12);
+      border-color: rgba(52, 211, 153, 0.4);
+      color: var(--d);
+    }
+
+    .flow-arrow {
+      font-size: 1.2rem;
+      color: var(--text3);
+      padding: 0 0.35rem;
+      flex-shrink: 0;
+    }
+
+    /* ============================================================
+   STEPS
+   ============================================================ */
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .step {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      padding: 1rem 1.25rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      transition: all 0.3s;
+    }
+
+    .step:hover {
+      border-color: var(--border2);
+    }
+
+    .step-num {
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      font-size: 0.8rem;
+      flex-shrink: 0;
+      color: #000;
+      background: linear-gradient(135deg, var(--a), var(--c));
+    }
+
+    .step-body h4 {
+      font-weight: 700;
+      font-size: 0.9rem;
+      margin-bottom: 0.2rem;
+    }
+
+    .step-body p {
+      font-size: 0.86rem;
+      color: var(--text2);
+      margin: 0;
+    }
+
+    /* ============================================================
+   BADGES
+   ============================================================ */
+    .badge {
+      display: inline-block;
+      padding: 0.2rem 0.55rem;
+      border-radius: 100px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      border: 1px solid;
+    }
+
+    .badge-a {
+      color: var(--a);
+      border-color: rgba(110, 231, 247, 0.4);
+      background: rgba(110, 231, 247, 0.1);
+    }
+
+    .badge-b {
+      color: var(--b);
+      border-color: rgba(244, 114, 182, 0.4);
+      background: rgba(244, 114, 182, 0.1);
+    }
+
+    .badge-c {
+      color: var(--c);
+      border-color: rgba(167, 139, 250, 0.4);
+      background: rgba(167, 139, 250, 0.1);
+    }
+
+    .badge-e {
+      color: var(--e);
+      border-color: rgba(251, 146, 60, 0.4);
+      background: rgba(251, 146, 60, 0.1);
+    }
+
+    .row-highlight td {
+      background: rgba(52, 211, 153, 0.06) !important;
+    }
+
+    .row-warn td {
+      background: rgba(244, 114, 182, 0.06) !important;
+    }
+
+    /* ============================================================
+   FOOTER
+   ============================================================ */
+    footer {
+      text-align: center;
+      padding: 3rem 2rem 4rem;
+      position: relative;
+    }
+
+    footer::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 10%;
+      right: 10%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border2), transparent);
+    }
+
+    .footer-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--a), var(--c), var(--b));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .footer-sub {
+      font-size: 0.78rem;
+      color: var(--text3);
+      margin-top: 0.3rem;
+    }
+
+    /* UL RESET */
+    ul {
+      list-style: none;
+    }
+
+    ul li {
+      padding: 0.32rem 0;
+      padding-left: 1rem;
+      position: relative;
+      font-size: 0.9rem;
+      color: var(--text2);
+    }
+
+    ul li::before {
+      content: '▸';
+      position: absolute;
+      left: 0;
+      color: var(--c);
+      font-size: 0.65rem;
+      top: 0.44rem;
+    }
+
+    .divider {
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border), transparent);
+      margin: 4rem 0;
+    }
+
+    @media(max-width:600px) {
+      .grid4 {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .flow {
+        justify-content: center;
+      }
+
+      .flow-box {
+        min-width: 70px;
+        font-size: 0.75rem;
+      }
+    }
+  </style>
+  <script src="/javascripts/standalone-theme.js"></script>
+  <script src="/javascripts/html-theme-sync.js"></script>
+
+  <meta name="description"
+    content="Complete study guide for CYS406 Chapter 8: Diffie-Hellman Key Exchange — the key-exchange problem, public prime and primitive root setup, private/public value math, shared secret derivation, discrete logarithm hardness, a full worked numeric example, and the man-in-the-middle attack. With mnemonics.">
+  <link rel="canonical"
+    href="https://shoug-tech.com/academics/cybersecurity/cys406/slide-breakdowns/08-chapter-8-diffie-hellman-key-exchange/chapter-8-diffie-hellman-key-exchange.html">
+  <meta property="og:title" content="CYS406 - Diffie-Hellman Key Exchange">
+  <meta property="og:description"
+    content="Complete study guide for CYS406 Chapter 8: Diffie-Hellman Key Exchange — the key-exchange problem, public prime and primitive root setup, private/public value math, shared secret derivation, discrete logarithm hardness, a full worked numeric example, and the man-in-the-middle attack. With mnemonics.">
+  <meta property="og:url"
+    content="https://shoug-tech.com/academics/cybersecurity/cys406/slide-breakdowns/08-chapter-8-diffie-hellman-key-exchange/chapter-8-diffie-hellman-key-exchange.html">
+  <meta property="og:type" content="article">
+  <meta property="og:image" content="https://shoug-tech.com/assets/og-banner.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="CYS406 - Diffie-Hellman Key Exchange">
+  <meta name="twitter:description"
+    content="Complete study guide for CYS406 Chapter 8: Diffie-Hellman Key Exchange — the key-exchange problem, public prime and primitive root setup, private/public value math, shared secret derivation, discrete logarithm hardness, a full worked numeric example, and the man-in-the-middle attack. With mnemonics.">
+  <meta name="twitter:image" content="https://shoug-tech.com/assets/og-banner.png">
+</head>
+
+<body>
+
+
+  <!-- THEME TOGGLE -->
+  <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+    <span class="toggle-icon" id="toggle-icon">☀️</span>
+    <span id="toggle-label">Light Mode</span>
+  </button>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-grid"></div>
+
+    <div class="hero-badge">
+      <span class="badge-dot"></span>
+      CYS406 · Chapter 8
+    </div>
+
+    <h1>
+      Diffie-Hellman<br>
+      <span class="gradient-word">Key Exchange</span>
+    </h1>
+    <p class="hero-sub">How two strangers who have never met can agree on a secret number over a channel a whole room
+      full of eavesdroppers can read — the first public-key idea ever published, and still the backbone of TLS and
+      IPsec today.</p>
+
+    <div class="hero-chips">
+      <span class="chip chip-a">Key Exchange, Not Encryption</span>
+      <span class="chip chip-b">Primitive Root</span>
+      <span class="chip chip-c">Discrete Logarithm Problem</span>
+      <span class="chip chip-d">Worked Numeric Example</span>
+      <span class="chip chip-e">Man-in-the-Middle</span>
+      <span class="chip chip-f">Ephemeral DH</span>
+    </div>
+
+    <div class="scroll-hint">
+      scroll ↓
+    </div>
+  </div>
+
+  <main>
+
+    <!-- SECTION 1: THE PROBLEM -->
+    <section>
+      <div class="section-header"><span class="sec-num">01 / The Problem</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="ga">The Key Exchange Problem</h2>
+      <p>Symmetric encryption (Chapter 3's DES/AES) needs both parties to share the same secret key before they can
+        talk securely. But how do you agree on a secret number with someone over a line that anyone can listen to —
+        without ever meeting them in person to hand over a key? That is the problem Diffie-Hellman solves.</p>
+
+      <div class="def-grid">
+        <div class="def-card">
+          <div class="def-top" style="background:var(--a)"></div>
+          <div class="def-term ta">Who</div>
+          <div class="def-desc">Proposed by Whitfield Diffie &amp; Martin Hellman in 1976, alongside the first public
+            exposition of public-key concepts.</div>
+        </div>
+        <div class="def-card">
+          <div class="def-top" style="background:var(--b)"></div>
+          <div class="def-term tb">First of Its Kind</div>
+          <div class="def-desc">The first public-key type scheme ever proposed publicly.</div>
+        </div>
+        <div class="def-card">
+          <div class="def-top" style="background:var(--c)"></div>
+          <div class="def-term tc">Secret Prior Art</div>
+          <div class="def-desc">Malcolm Williamson of the UK's CESG secretly proposed the same concept back in 1970 —
+            but it stayed classified, so Diffie &amp; Hellman get public credit.</div>
+        </div>
+        <div class="def-card">
+          <div class="def-top" style="background:var(--d)"></div>
+          <div class="def-term td">Purpose</div>
+          <div class="def-desc">A practical method for the public exchange of a secret key, now used in numerous
+            commercial products.</div>
+        </div>
+      </div>
+
+      <div class="mnemonic">
+        <div class="mnemonic-icon">🧠</div>
+        <div class="mnemonic-body">
+          <h4>Mnemonic — "76 for the Win, 70 in the Dark"</h4>
+          <p><span class="mnem-key">"Diffie & Hellman '76 went public; Williamson '70 stayed secret."</span> If asked
+            "who invented DH and when," the safe textbook answer is Diffie &amp; Hellman, 1976 — Williamson is the
+            trivia footnote for "who actually thought of it first but couldn't publish."</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 2: WHAT DH IS AND ISN'T -->
+    <section>
+      <div class="section-header"><span class="sec-num">02 / What It Actually Does</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gb">A Key-Distribution Scheme, Not a Cipher</h2>
+      <p>It is critical to understand what Diffie-Hellman is <em>for</em>. It does not encrypt or send messages at
+        all — it only helps two parties land on the same shared number.</p>
+
+      <div class="vs">
+        <div class="ex ex-a">
+          <div class="ex-label ta">✅ What DH Does</div>
+          <p>It is a <strong>public-key distribution scheme</strong>. It lets two participants establish a
+            <strong>common key</strong>, known only to the two of them. The value of that key depends on both
+            participants' private and public key information.
+          </p>
+        </div>
+        <div class="ex ex-b">
+          <div class="ex-label tb">🚫 What DH Cannot Do</div>
+          <p>It <strong>cannot be used to exchange an arbitrary message</strong> — you can't just "Diffie-Hellman" a
+            sentence to someone. It only ever produces a shared secret <em>number</em>, which is then typically fed
+            into a symmetric cipher like AES as the session key.</p>
+        </div>
+      </div>
+
+      <div class="tip tip-blue">
+        <div class="tip-icon">💡</div>
+        <div class="tip-body">
+          <h4 class="ta">Easy one way, hard the other</h4>
+          <p>DH is based on exponentiation in a finite (Galois) field — modulo a prime, or a polynomial — which is
+            computationally <strong>easy</strong>. Its security instead relies on the difficulty of computing
+            <strong>discrete logarithms</strong> (a problem similar in spirit to factoring), which is
+            <strong>hard</strong>. The whole scheme is a "one-way street": easy forward, hard in reverse.
+          </p>
+        </div>
+      </div>
+
+      <div class="mnemonic">
+        <div class="mnemonic-icon">🧠</div>
+        <div class="mnemonic-body">
+          <h4>Mnemonic — "Distribute, Don't Deliver"</h4>
+          <p><span class="mnem-key">"DH ships a key, not a letter."</span> If an exam question describes sending an
+            actual message through Diffie-Hellman, it's testing whether you know that's <em>not</em> what it's for —
+            DH only ever distributes/establishes a shared key.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 3: PRIMITIVE ROOTS -->
+    <section>
+      <div class="section-header"><span class="sec-num">03 / Math Foundation</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gc">Primitive Roots</h2>
+      <p>Before the exchange can happen, everyone must agree on two public numbers: a prime <strong>q</strong> and a
+        <strong>primitive root</strong> of that prime, called <strong>a</strong>.
+      </p>
+
+      <div class="ex ex-c">
+        <div class="ex-label tc">📘 Definition — Primitive Root</div>
+        <p>A <strong>primitive root a</strong> of a number q is a value whose successive powers (a¹, a², a³, … mod q)
+          generate <strong>all</strong> the nonzero elements 1 through q−1, in some order, before repeating. In other
+          words, raising a to powers "cycles through everything" mod q, except 0.</p>
+      </div>
+
+      <div class="tip tip-yellow">
+        <div class="tip-icon">🔑</div>
+        <div class="tip-body">
+          <h4 class="tf">Why it matters</h4>
+          <p>Using a primitive root as the generator guarantees the public values yA and yB can take on the full
+            range of possible outputs, which is what makes brute-forcing or guessing the private exponent hard — the
+            output space is as large and unpredictable as possible.</p>
+        </div>
+      </div>
+
+      <div class="mnemonic">
+        <div class="mnemonic-icon">🧠</div>
+        <div class="mnemonic-body">
+          <h4>Mnemonic — "Root That Reaches Everywhere"</h4>
+          <p><span class="mnem-key">"Primitive = touches every number."</span> A primitive root's powers "walk" to
+            every nonzero residue mod q before looping back — like a generator that can reach every seat in the
+            room, not just some of them.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 4: SETUP -->
+    <section>
+      <div class="section-header"><span class="sec-num">04 / Setup</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gd">Diffie-Hellman Setup</h2>
+      <p>The protocol has two phases: agreeing on public global parameters, then each user privately generating
+        their own key pair.</p>
+
+      <h3 class="ta" style="margin-top:1.5rem;">Step 1 — Agree on Global (Public) Parameters</h3>
+      <div class="def-grid">
+        <div class="def-card">
+          <div class="def-top" style="background:var(--a)"></div>
+          <div class="def-term ta">q</div>
+          <div class="def-desc">A large prime integer (or, in the polynomial variant, an irreducible polynomial) —
+            <strong>public</strong>, known to everyone including attackers.
+          </div>
+        </div>
+        <div class="def-card">
+          <div class="def-top" style="background:var(--b)"></div>
+          <div class="def-term tb">a</div>
+          <div class="def-desc">A primitive root mod q — also <strong>public</strong>, agreed on by all users ahead
+            of time.</div>
+        </div>
+      </div>
+
+      <h3 class="tb" style="margin-top:2rem;">Step 2 — Each User Generates Their Own Key</h3>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <h4>Choose a secret key</h4>
+            <p>User A picks a secret number xA where xA &lt; q. This exponent is <strong>never transmitted</strong>
+              — it stays private forever.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <h4>Compute the public key</h4>
+            <p>User A computes yA = a<sup>xA</sup> mod q. This result <strong>is</strong> sent out publicly.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <h4>Publish it</h4>
+            <p>Each user makes their public key yA available to the other party (and, implicitly, to anyone
+              listening on the wire).</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="mnemonic">
+        <div class="mnemonic-icon">🧠</div>
+        <div class="mnemonic-body">
+          <h4>Mnemonic — "PPP: Public Prime, Public root, Private exponent"</h4>
+          <p><span class="mnem-key">"Two things are public before you even start (q and a); one thing is private and
+              yours alone (x); the fourth (y) becomes public once you compute it."</span> If you remember which
+            letters are public (q, a, yA, yB) vs. private (xA, xB), the rest of the math falls into place.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 5: EXCHANGE & SHARED SECRET -->
+    <section>
+      <div class="section-header"><span class="sec-num">05 / The Exchange</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="ga">Computing the Shared Secret</h2>
+      <p>Once A and B have swapped their public values yA and yB, each side can independently compute the
+        <strong>same</strong> shared session key KAB — without ever transmitting their private exponent, and without
+        the other side's private exponent either.
+      </p>
+
+      <div class="ex ex-a">
+        <div class="ex-label ta">📘 The Core Identity</div>
+        <p style="font-family:'JetBrains Mono',monospace;color:var(--heading);font-size:0.95rem;">
+          K<sub>AB</sub> = a<sup>xA·xB</sup> mod q<br>
+          &nbsp;&nbsp;&nbsp;= y<sub>A</sub><sup>xB</sup> mod q &nbsp;(computed by B)<br>
+          &nbsp;&nbsp;&nbsp;= y<sub>B</sub><sup>xA</sup> mod q &nbsp;(computed by A)
+        </p>
+        <p>Both computations land on the exact same number, because exponents combine multiplicatively:
+          (a<sup>xA</sup>)<sup>xB</sup> = (a<sup>xB</sup>)<sup>xA</sup> = a<sup>xA·xB</sup>, all mod q. Neither side
+          ever needed to know the other's private exponent — each only ever raised the <em>other side's public
+            value</em> to their <em>own private exponent</em>.</p>
+      </div>
+
+      <div class="flow">
+        <div class="flow-box accent">A picks xA, computes yA</div>
+        <div class="flow-arrow">↔</div>
+        <div class="flow-box accent2">Exchange yA, yB publicly</div>
+        <div class="flow-arrow">↔</div>
+        <div class="flow-box accent3">B picks xB, computes yB</div>
+      </div>
+      <div class="flow">
+        <div class="flow-box">A computes yB<sup>xA</sup> mod q</div>
+        <div class="flow-arrow">=</div>
+        <div class="flow-box accent">Shared secret K<sub>AB</sub></div>
+        <div class="flow-arrow">=</div>
+        <div class="flow-box">B computes yA<sup>xB</sup> mod q</div>
+      </div>
+
+      <div class="grid2">
+        <div class="tip tip-green">
+          <div class="tip-icon">✅</div>
+          <div class="tip-body">
+            <h4 class="td">Session key use</h4>
+            <p>K<sub>AB</sub> becomes the shared session key used inside a symmetric-key encryption scheme (like AES)
+              between Alice and Bob — DH itself doesn't encrypt anything.</p>
+          </div>
+        </div>
+        <div class="tip tip-blue">
+          <div class="tip-icon">🔁</div>
+          <div class="tip-body">
+            <h4 class="ta">Consistency across sessions</h4>
+            <p>If Alice and Bob communicate again later, they'll re-derive the <strong>same</strong> key — unless one
+              of them chooses new public keys, which produces a fresh shared secret.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="tip tip-warn">
+        <div class="tip-icon">⚠️</div>
+        <div class="tip-body">
+          <h4 class="te">Why an attacker is stuck</h4>
+          <p>An eavesdropper sees q, a, yA, and yB — all public. To recover xA (or xB) and thus compute KAB, the
+            attacker must solve yA = a<sup>xA</sup> mod q for xA. That's the <strong>discrete logarithm
+              problem</strong> — computationally hard for large q, which is exactly what keeps DH secure.</p>
+        </div>
+      </div>
+
+      <div class="mnemonic">
+        <div class="mnemonic-icon">🧠</div>
+        <div class="mnemonic-body">
+          <h4>Mnemonic — "Swap Public, Raise to Your Own Private"</h4>
+          <p><span class="mnem-key">"Take THEIR public number, raise it to YOUR private number."</span> A takes yB
+            (Bob's public value) and raises it to xA (Alice's own private exponent). B takes yA (Alice's public
+            value) and raises it to xB (Bob's own private exponent). Cross the public, keep the private — that's the
+            whole trick.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 6: WORKED EXAMPLE -->
+    <section>
+      <div class="section-header"><span class="sec-num">06 / Worked Example</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gb">Diffie-Hellman Example — Full Walkthrough</h2>
+      <p>This is the exact numeric example from the slides — small numbers, so it's easy to follow the arithmetic by
+        hand (or on a calculator with modular exponentiation).</p>
+
+      <h3 class="tc" style="margin-top:1.5rem;">Step 1 — Agree on Public Parameters</h3>
+      <div class="ex ex-c">
+        <div class="ex-label tc">📘 Public, Known to Everyone</div>
+        <p>Alice &amp; Bob agree on prime <strong>q = 353</strong> and primitive root <strong>a = 3</strong>.</p>
+      </div>
+
+      <h3 class="td" style="margin-top:2rem;">Step 2 — Each Selects a Secret Key</h3>
+      <div class="vs">
+        <div class="ex ex-d">
+          <div class="ex-label td">Alice (private)</div>
+          <p>x<sub>A</sub> = 97</p>
+        </div>
+        <div class="ex ex-e">
+          <div class="ex-label te">Bob (private)</div>
+          <p>x<sub>B</sub> = 233</p>
+        </div>
+      </div>
+
+      <h3 class="ta" style="margin-top:2rem;">Step 3 — Compute Public Keys</h3>
+      <div class="vs">
+        <div class="ex ex-a">
+          <div class="ex-label ta">Alice publishes</div>
+          <p>y<sub>A</sub> = 3<sup>97</sup> mod 353 = <strong>40</strong></p>
+        </div>
+        <div class="ex ex-b">
+          <div class="ex-label tb">Bob publishes</div>
+          <p>y<sub>B</sub> = 3<sup>233</sup> mod 353 = <strong>248</strong></p>
+        </div>
+      </div>
+
+      <h3 class="tb" style="margin-top:2rem;">Step 4 — Compute the Shared Session Key</h3>
+      <div class="vs">
+        <div class="ex ex-c">
+          <div class="ex-label tc">Alice computes</div>
+          <p>K<sub>AB</sub> = y<sub>B</sub><sup>xA</sup> mod 353 = 248<sup>97</sup> mod 353 = <strong>160</strong></p>
+        </div>
+        <div class="ex ex-d">
+          <div class="ex-label td">Bob computes</div>
+          <p>K<sub>AB</sub> = y<sub>A</sub><sup>xB</sup> mod 353 = 40<sup>233</sup> mod 353 = <strong>160</strong></p>
+        </div>
+      </div>
+
+      <div class="tip tip-green">
+        <div class="tip-icon">✅</div>
+        <div class="tip-body">
+          <h4 class="td">Both land on 160</h4>
+          <p>Alice and Bob independently arrive at the same shared secret, <strong>K<sub>AB</sub> = 160</strong>,
+            without either one ever transmitting their private exponent (97 or 233) over the wire. Only q, a, yA
+            (40), and yB (248) ever crossed the insecure channel.</p>
+        </div>
+      </div>
+
+      <div class="tbl-wrap" style="margin-top:1.5rem;">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>Quantity</th>
+              <th>Value</th>
+              <th>Public or Private?</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>q (prime modulus)</td>
+              <td>353</td>
+              <td>Public</td>
+            </tr>
+            <tr>
+              <td>a (primitive root)</td>
+              <td>3</td>
+              <td>Public</td>
+            </tr>
+            <tr>
+              <td>x<sub>A</sub> (Alice's secret)</td>
+              <td>97</td>
+              <td>Private — never sent</td>
+            </tr>
+            <tr>
+              <td>x<sub>B</sub> (Bob's secret)</td>
+              <td>233</td>
+              <td>Private — never sent</td>
+            </tr>
+            <tr>
+              <td>y<sub>A</sub> = 3<sup>97</sup> mod 353</td>
+              <td>40</td>
+              <td>Public — transmitted</td>
+            </tr>
+            <tr>
+              <td>y<sub>B</sub> = 3<sup>233</sup> mod 353</td>
+              <td>248</td>
+              <td>Public — transmitted</td>
+            </tr>
+            <tr class="row-highlight">
+              <td>K<sub>AB</sub> (shared session key)</td>
+              <td>160</td>
+              <td>Never transmitted — derived independently</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="mnemonic">
+        <div class="mnemonic-icon">🧠</div>
+        <div class="mnemonic-body">
+          <h4>Mnemonic — "353-3-97-233-40-248-160"</h4>
+          <p><span class="mnem-key">"Small prime, small root, big secrets, matching answer."</span> You don't need
+            to memorize these exact digits for an exam — but do remember the <em>pattern</em>: 2 public setup
+            numbers (q, a) → 2 private secrets (xA, xB) → 2 public keys (yA, yB) → 1 matching shared secret
+            (KAB) that both sides compute separately and always agree on.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 7: MITM -->
+    <section>
+      <div class="section-header"><span class="sec-num">07 / Attacks</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gc">Key Exchange Protocols &amp; the Man-in-the-Middle Attack</h2>
+      <p>Two common ways to use DH in practice, and why both are vulnerable without extra protection:</p>
+
+      <div class="vs">
+        <div class="ex ex-a">
+          <div class="ex-label ta">Ad-hoc (per-session) keys</div>
+          <p>Users create a random private/public DH key pair fresh <strong>each time</strong> they communicate.
+            Good for forward secrecy, but nothing proves who you're really talking to.</p>
+        </div>
+        <div class="ex ex-b">
+          <div class="ex-label tb">Static (published) keys</div>
+          <p>Users create a known private/public DH key and publish it in a directory; others consult the directory
+            and use it to securely communicate. Convenient, but also nothing proves the directory entry is genuine.
+          </p>
+        </div>
+      </div>
+
+      <div class="tip tip-warn">
+        <div class="tip-icon">⚠️</div>
+        <div class="tip-body">
+          <h4 class="te">The core weakness</h4>
+          <p><strong>Both approaches are vulnerable to a Man-in-the-Middle (MITM) attack.</strong> Plain DH provides
+            secrecy of the resulting key, but it provides <strong>no authentication</strong> of who you're exchanging
+            keys with — nothing proves that the public value you received really came from Alice or Bob and not an
+            impostor.</p>
+        </div>
+      </div>
+
+      <h3 class="tc" style="margin-top:2rem;">Man-in-the-Middle — Step by Step (Darth intercepts Alice &amp; Bob)</h3>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <h4>Darth prepares</h4>
+            <p>Darth creates <strong>two</strong> separate private/public DH key pairs ahead of time — one to use
+              toward Alice, one to use toward Bob.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <h4>Alice transmits her public key</h4>
+            <p>Alice sends her public key, intending it for Bob.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <h4>Darth intercepts and substitutes</h4>
+            <p>Darth intercepts Alice's public key. He transmits <strong>his own first public key</strong> to Bob
+              instead, and calculates a shared key with Alice using her real public key.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <h4>Bob unknowingly shares a key with Darth</h4>
+            <p>Bob receives what he thinks is Alice's public key (really Darth's) and computes a shared key — but
+              it's shared with Darth, not Alice.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">5</div>
+          <div class="step-body">
+            <h4>Bob transmits his public key</h4>
+            <p>Bob sends his public key back, intending it for Alice.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">6</div>
+          <div class="step-body">
+            <h4>Darth intercepts again</h4>
+            <p>Darth intercepts Bob's public key, transmits <strong>his second public key</strong> to Alice instead,
+              and calculates a shared key with Bob using Bob's real public key.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">7</div>
+          <div class="step-body">
+            <h4>Alice unknowingly shares a key with Darth</h4>
+            <p>Alice receives what she thinks is Bob's public key (really Darth's second key) and computes a shared
+              key — shared with Darth, not Bob.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="ex ex-e" style="margin-top:1.25rem;">
+        <div class="ex-label te">📘 The Payoff for Darth</div>
+        <p>Darth now shares one key with Alice and a <strong>different</strong> key with Bob. Every message Alice
+          sends, Darth can decrypt (with the Alice-key), read or modify, re-encrypt (with the Bob-key), and forward
+          to Bob — and vice versa. Neither Alice nor Bob notices anything is wrong, because each one's traffic still
+          decrypts correctly on their end.</p>
+      </div>
+
+      <div class="mnemonic">
+        <div class="mnemonic-icon">🧠</div>
+        <div class="mnemonic-body">
+          <h4>Mnemonic — "Darth Wears Two Masks"</h4>
+          <p><span class="mnem-key">"One key for Alice's face, one key for Bob's face."</span> Darth needs
+            <strong>two</strong> separate key pairs — never one — because he must independently fool each side into
+            thinking he's the other person. The fix in real life is <strong>authentication</strong>: signed public
+            keys (certificates) or a pre-shared authentication step so Alice and Bob can verify whose public value
+            they actually received.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 8: REAL-WORLD USE -->
+    <section>
+      <div class="section-header"><span class="sec-num">08 / Real-World Use</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gd">Where Diffie-Hellman Shows Up Today</h2>
+      <p>Because plain DH has no authentication, real-world protocols pair it with a separate authentication
+        mechanism (certificates, signatures, or a pre-shared secret) rather than using it naked.</p>
+
+      <div class="grid3">
+        <div class="card bl-a">
+          <h3 class="ta">TLS / HTTPS</h3>
+          <p>Modern TLS handshakes commonly use <strong>Ephemeral Diffie-Hellman (DHE / ECDHE)</strong> to establish
+            a fresh session key for every connection, then rely on the server's certificate (signed by a trusted CA)
+            to authenticate the exchange and defeat MITM.</p>
+        </div>
+        <div class="card bl-b">
+          <h3 class="tb">IPsec</h3>
+          <p>The IKE (Internet Key Exchange) protocol inside IPsec uses DH to negotiate shared keying material
+            between two endpoints, combined with authentication (pre-shared keys or certificates).</p>
+        </div>
+        <div class="card bl-c">
+          <h3 class="tc">Ephemeral DH (Forward Secrecy)</h3>
+          <p>Generating a brand-new DH key pair for every session means that even if a long-term key is later
+            compromised, past session keys can't be recovered — this property is called <strong>forward
+              secrecy</strong>.</p>
+        </div>
+      </div>
+
+      <div class="mnemonic">
+        <div class="mnemonic-icon">🧠</div>
+        <div class="mnemonic-body">
+          <h4>Mnemonic — "Ephemeral = Everyday-Fresh"</h4>
+          <p><span class="mnem-key">"Ephemeral DH = a brand new secret every single session."</span> Think of it like
+            a one-time visitor badge instead of a permanent keycard — even if someone later steals today's badge
+            design, it can't unlock yesterday's door.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- EXAM TIPS -->
+    <section>
+      <div class="section-header"><span class="sec-num">09 / Exam Prep</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gc">Exam Tips &amp; Tricks</h2>
+      <div class="grid2">
+        <div class="tip tip-blue">
+          <div class="tip-icon">💡</div>
+          <div class="tip-body">
+            <h4 class="ta">DH exchanges a key, not a message</h4>
+            <p>If a question implies DH sends an actual encrypted message, that's the wrong framing — DH only
+              establishes a shared secret key, which is then used with a symmetric cipher.</p>
+          </div>
+        </div>
+        <div class="tip tip-green">
+          <div class="tip-icon">✅</div>
+          <div class="tip-body">
+            <h4 class="td">Easy forward, hard backward</h4>
+            <p>Modular exponentiation (computing yA = a^xA mod q) is easy. Reversing it — recovering xA from yA — is
+              the hard discrete logarithm problem. That asymmetry is the entire basis of DH's security.</p>
+          </div>
+        </div>
+        <div class="tip tip-warn">
+          <div class="tip-icon">⚠️</div>
+          <div class="tip-body">
+            <h4 class="te">DH alone has no authentication</h4>
+            <p>Plain, unauthenticated DH is vulnerable to man-in-the-middle. Remember: the fix is authentication
+              (certificates/signatures), not a "stronger" DH — the math itself is fine.</p>
+          </div>
+        </div>
+        <div class="tip tip-yellow">
+          <div class="tip-icon">🔑</div>
+          <div class="tip-body">
+            <h4 class="tf">Public vs private, know your letters</h4>
+            <p>q and a are public and agreed on in advance. xA/xB are private and never transmitted. yA/yB are public
+              and are what actually crosses the wire. KAB is never transmitted at all — it's derived independently
+              on each side.</p>
+          </div>
+        </div>
+        <div class="tip tip-blue">
+          <div class="tip-icon">📋</div>
+          <div class="tip-body">
+            <h4 class="ta">Cross public, raise to own private</h4>
+            <p>The shared secret formula is easy to botch under exam pressure — remember each side takes the
+              <em>other</em> party's public value and raises it to their <em>own</em> private exponent.
+            </p>
+          </div>
+        </div>
+        <div class="tip tip-green">
+          <div class="tip-icon">🌐</div>
+          <div class="tip-body">
+            <h4 class="td">Darth needs two key pairs, not one</h4>
+            <p>A common trick question: how many key pairs does the MITM attacker need? Answer: two — one shared
+              secret with Alice, a separate one with Bob.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- QUICK REFERENCE -->
+    <section>
+      <div class="section-header"><span class="sec-num">10 / Cheat Sheet</span>
+        <div class="sec-line"></div>
+      </div>
+      <h2 class="gd">Quick Reference — Everything at a Glance</h2>
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>Topic</th>
+              <th>Key Point</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Inventors</td>
+              <td>Diffie &amp; Hellman, 1976 — first public public-key scheme (Williamson/UK CESG secretly proposed
+                it in 1970)</td>
+            </tr>
+            <tr>
+              <td>What DH is</td>
+              <td>A public-key <em>distribution</em> scheme — establishes a shared secret key, cannot exchange an
+                arbitrary message</td>
+            </tr>
+            <tr>
+              <td>Underlying math</td>
+              <td>Exponentiation in a finite (Galois) field, modulo a prime or polynomial</td>
+            </tr>
+            <tr>
+              <td>Security basis</td>
+              <td>Difficulty of the discrete logarithm problem (similar in difficulty to factoring)</td>
+            </tr>
+            <tr>
+              <td>Primitive root</td>
+              <td>A number a whose powers mod q generate every nonzero element mod q</td>
+            </tr>
+            <tr>
+              <td>Global (public) parameters</td>
+              <td>Prime q and primitive root a — agreed on by all users in advance</td>
+            </tr>
+            <tr>
+              <td>Private key</td>
+              <td>x<sub>A</sub> &lt; q, chosen secretly by each user, never transmitted</td>
+            </tr>
+            <tr>
+              <td>Public key formula</td>
+              <td>y<sub>A</sub> = a<sup>x<sub>A</sub></sup> mod q</td>
+            </tr>
+            <tr>
+              <td>Shared session key formula</td>
+              <td>K<sub>AB</sub> = a<sup>x<sub>A</sub>·x<sub>B</sub></sup> mod q = y<sub>B</sub><sup>x<sub>A</sub></sup>
+                mod q = y<sub>A</sub><sup>x<sub>B</sub></sup> mod q</td>
+            </tr>
+            <tr>
+              <td>Worked example parameters</td>
+              <td>q = 353, a = 3, x<sub>A</sub> = 97, x<sub>B</sub> = 233</td>
+            </tr>
+            <tr>
+              <td>Worked example public keys</td>
+              <td>y<sub>A</sub> = 40, y<sub>B</sub> = 248</td>
+            </tr>
+            <tr class="row-highlight">
+              <td>Worked example shared secret</td>
+              <td>K<sub>AB</sub> = 160 (computed identically by both Alice and Bob)</td>
+            </tr>
+            <tr>
+              <td>Attacker's task</td>
+              <td>Must solve a discrete logarithm to recover a private exponent from a public value — computationally
+                hard</td>
+            </tr>
+            <tr>
+              <td>Ad-hoc key protocol</td>
+              <td>Random private/public DH keys generated fresh each communication session</td>
+            </tr>
+            <tr>
+              <td>Static key protocol</td>
+              <td>Known private/public DH key published in a directory, reused across sessions</td>
+            </tr>
+            <tr>
+              <td>Shared weakness</td>
+              <td>Both ad-hoc and static approaches are vulnerable to man-in-the-middle attack without
+                authentication</td>
+            </tr>
+            <tr>
+              <td>MITM attacker (Darth) needs</td>
+              <td>Two separate private/public key pairs — one for the Alice-facing side, one for the Bob-facing side
+              </td>
+            </tr>
+            <tr>
+              <td>MITM outcome</td>
+              <td>Darth shares a distinct key with each victim and can decrypt, read/modify, and re-encrypt all
+                traffic between them</td>
+            </tr>
+            <tr>
+              <td>Fix for MITM</td>
+              <td>Authentication of the exchanged keys (e.g., digital certificates/signatures)</td>
+            </tr>
+            <tr>
+              <td>Ephemeral DH (DHE/ECDHE)</td>
+              <td>Fresh DH key pair generated per session; used in TLS to provide forward secrecy</td>
+            </tr>
+            <tr>
+              <td>Forward secrecy</td>
+              <td>Compromise of a long-term key does not expose past session keys</td>
+            </tr>
+            <tr>
+              <td>Real-world usage</td>
+              <td>TLS/HTTPS handshakes (DHE/ECDHE) and IPsec's IKE protocol, always paired with authentication</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="footer-name">Made by Shoug Alomran</div>
+    <div class="footer-sub">CYS406 · Chapter 8: Diffie-Hellman Key Exchange · Study Guide</div>
+  </footer>
+
+  <script>
+    // Auto-detect system preference on load
+    (function () {
+      const _stored = localStorage.getItem('shoug-theme');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const theme = _stored === 'dark' ? 'dark' : _stored === 'light' ? 'light' : (prefersDark ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', theme);
+      updateToggle(theme);
+    })();
+
+    // Listen for system changes
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+      if (localStorage.getItem('shoug-theme')) return;
+      const theme = e.matches ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', theme);
+      updateToggle(theme);
+    });
+
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme');
+      const next = current === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      try { localStorage.setItem('shoug-theme', document.documentElement.getAttribute('data-theme')); } catch (e) { }
+      updateToggle(next);
+    }
+
+    function updateToggle(theme) {
+      const icon = document.getElementById('toggle-icon');
+      const label = document.getElementById('toggle-label');
+      if (theme === 'dark') {
+        icon.textContent = '☀️';
+        label.textContent = 'Light Mode';
+      } else {
+        icon.textContent = '🌙';
+        label.textContent = 'Dark Mode';
+      }
+    }
+  </script>
+
+</body>
+
+</html>
