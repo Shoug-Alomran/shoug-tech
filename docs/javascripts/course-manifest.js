@@ -3485,6 +3485,33 @@ var COURSE_PAGES = [
     "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
   },
   {
+    "url": "/academics/other-courses/ethcs303/quizzes/18-quiz-1-section-81/",
+    "title": "ETHCS303 | Quiz 1 (Section 81) — Answer Key",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "quizzes",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
+    "url": "/academics/other-courses/ethcs303/quizzes/major-1-exam-practice/",
+    "title": "ETHCS303 | Major 1 — Exam Practice",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "quizzes",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
+    "url": "/academics/other-courses/ethcs303/quizzes/major-2-exam-practice/",
+    "title": "ETHCS303 | Major 2 — Exam Practice",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "quizzes",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
     "url": "/academics/other-courses/ethcs303/slide-breakdowns/01-moral-systems-ethical-concepts-and-theories/",
     "title": "ETHCS303 | Breakdown: Moral Systems, Ethical Concepts, and Theories",
     "track": "other-courses",
@@ -5983,7 +6010,7 @@ var COURSE_MANIFEST = {
   "com201": 24,
   "eng101": 37,
   "eng103": 7,
-  "ethcs303": 83,
+  "ethcs303": 86,
   "isc113": 23,
   "math221": 39,
   "phy105": 17,
@@ -6010,7 +6037,7 @@ var COURSE_MANIFEST_BY_TRACK = {
   "other-courses/com201": 24,
   "other-courses/eng101": 37,
   "other-courses/eng103": 7,
-  "other-courses/ethcs303": 83,
+  "other-courses/ethcs303": 86,
   "other-courses/isc113": 23,
   "other-courses/math221": 39,
   "other-courses/phy105": 17,
