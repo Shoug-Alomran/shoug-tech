@@ -104,6 +104,28 @@
   }
 })();
 
+// Keep the copyright notice present on every page that uses the shared footer.
+(function () {
+  var footer = document.querySelector(".shoug-site-footer");
+  var noticeText = "© 2026 Shoug Alomran. All rights reserved.";
+  if (!footer || footer.textContent.indexOf(noticeText) !== -1) return;
+
+  var systemColumn = Array.from(footer.querySelectorAll(".shoug-footer-label"))
+    .find(function (label) {
+      return label.textContent.trim().toLowerCase() === "system";
+    });
+  if (!systemColumn) return;
+
+  var column = systemColumn.parentElement;
+  var notice = document.createElement("span");
+  notice.className = "shoug-footer-meta";
+  notice.setAttribute("data-ar-text", "© 2026 شوق العمران. جميع الحقوق محفوظة.");
+  notice.textContent = noticeText;
+
+  var firstLink = column.querySelector(".shoug-footer-link");
+  column.insertBefore(notice, firstLink || null);
+})();
+
 // Load search on every page
 (function () {
   var s = document.createElement("script");

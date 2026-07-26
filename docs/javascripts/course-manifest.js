@@ -1910,6 +1910,492 @@ var COURSE_PAGES = [
     "courseTitle": "CYS401 // Fundamentals of Cybersecurity"
   },
   {
+    "url": "/academics/cybersecurity/cys405/slide-breakdowns/01-chapter-1-introduction-to-ethical-hacking-and-penetration-testing/",
+    "title": "CYS405 | Breakdown: Chapter 1 Introduction to Ethical Hacking and Penetration Testing",
+    "track": "cybersecurity",
+    "course": "cys405",
+    "section": "slide-breakdowns",
+    "courseUrl": "/academics/cybersecurity/cys405/",
+    "courseTitle": "CYS405 // Penetration Testing and Ethical Hacking"
+  },
+  {
+    "url": "/academics/cybersecurity/cys405/slide-breakdowns/02-chapter-2-information-gathering-footprinting-and-reconnaissance/",
+    "title": "CYS405 | Breakdown: Chapter 2 Information Gathering, Footprinting and Reconnaissance",
+    "track": "cybersecurity",
+    "course": "cys405",
+    "section": "slide-breakdowns",
+    "courseUrl": "/academics/cybersecurity/cys405/",
+    "courseTitle": "CYS405 // Penetration Testing and Ethical Hacking"
+  },
+  {
+    "url": "/academics/cybersecurity/cys405/slide-breakdowns/03-chapter-3-scanning/",
+    "title": "CYS405 | Breakdown: Chapter 3 Scanning",
+    "track": "cybersecurity",
+    "course": "cys405",
+    "section": "slide-breakdowns",
+    "courseUrl": "/academics/cybersecurity/cys405/",
+    "courseTitle": "CYS405 // Penetration Testing and Ethical Hacking"
+  },
+  {
+    "url": "/academics/cybersecurity/cys405/slide-breakdowns/04-chapter-4-enumeration/",
+    "title": "CYS405 | Breakdown: Chapter 4 Enumeration",
+    "track": "cybersecurity",
+    "course": "cys405",
+    "section": "slide-breakdowns",
+    "courseUrl": "/academics/cybersecurity/cys405/",
+    "courseTitle": "CYS405 // Penetration Testing and Ethical Hacking"
+  },
+  {
+    "url": "/academics/cybersecurity/cys405/slide-breakdowns/05-chapter-5-vulnerability-analysis/",
+    "title": "CYS405 | Breakdown: Chapter 5 Vulnerability Analysis",
+    "track": "cybersecurity",
+    "course": "cys405",
+    "section": "slide-breakdowns",
+    "courseUrl": "/academics/cybersecurity/cys405/",
+    "courseTitle": "CYS405 // Penetration Testing and Ethical Hacking"
+  },
+  {
+    "url": "/academics/cybersecurity/cys405/slide-breakdowns/06-chapter-6-system-hacking/",
+    "title": "CYS405 | Breakdown: Chapter 6 System Hacking",
+    "track": "cybersecurity",
+    "course": "cys405",
+    "section": "slide-breakdowns",
+    "courseUrl": "/academics/cybersecurity/cys405/",
+    "courseTitle": "CYS405 // Penetration Testing and Ethical Hacking"
+  },
+  {
+    "url": "/academics/cybersecurity/cys405/slide-breakdowns/07-chapter-7-malware/",
+    "title": "CYS405 | Breakdown: Chapter 7 Malware",
+    "track": "cybersecurity",
+    "course": "cys405",
+    "section": "slide-breakdowns",
+    "courseUrl": "/academics/cybersecurity/cys405/",
+    "courseTitle": "CYS405 // Penetration Testing and Ethical Hacking"
+  },
+  {
+    "url": "/academics/cybersecurity/cys405/slide-breakdowns/08-chapter-8-web-and-database-hacking/",
+    "title": "CYS405 | Breakdown: Chapter 8 Web and Database Hacking",
+    "track": "cybersecurity",
+    "course": "cys405",
+    "section": "slide-breakdowns",
+    "courseUrl": "/academics/cybersecurity/cys405/",
+    "courseTitle": "CYS405 // Penetration Testing and Ethical Hacking"
+  },
+  {
+    "url": "/academics/cybersecurity/cys405/slide-breakdowns/09-chapter-9-social-engineering/",
+    "title": "CYS405 | Breakdown: Chapter 9 Social Engineering",
+    "track": "cybersecurity",
+    "course": "cys405",
+    "section": "slide-breakdowns",
+    "courseUrl": "/academics/cybersecurity/cys405/",
+    "courseTitle": "CYS405 // Penetration Testing and Ethical Hacking"
+  },
+  {
+    "url": "/academics/cybersecurity/cys405/slide-breakdowns/10-chapter-10-sniffing-and-dos-attacks/",
+    "title": "CYS405 | Breakdown: Chapter 10 Sniffing and Dos Attacks",
+    "track": "cybersecurity",
+    "course": "cys405",
+    "section": "slide-breakdowns",
+    "courseUrl": "/academics/cybersecurity/cys405/",
+    "courseTitle": "CYS405 // Penetration Testing and Ethical Hacking"
+  },
+  {
+    "url": "/academics/cybersecurity/cys405/slide-breakdowns/11-chapter-11-wireless-network-hacking/",
+    "title": "CYS405 | Breakdown: Chapter 11 Wireless Network Hacking",
+    "track": "cybersecurity",
+    "course": "cys405",
+    "section": "slide-breakdowns",
+    "courseUrl": "/academics/cybersecurity/cys405/",
+    "courseTitle": "CYS405 // Penetration Testing and Ethical Hacking"
+  },
+  {
+    "url": "/academics/cybersecurity/cys405/slides/chapter-1-introduction-to-ethical-hacking-and-penetration-testing/",
+    "title": "CYS405 | Chapter 1 Introduction To Ethical Hacking And Penetration Testing",
+    "track": "cybersecurity",
+    "course": "cys405",
+    "section": "slides",
+    "courseUrl": "/academics/cybersecurity/cys405/",
+    "courseTitle": "CYS405 // Penetration Testing and Ethical Hacking"
+  },
+  {
+    "url": "/academics/cybersecurity/cys405/slides/chapter-10-sniffing-and-dos-attacks/",
+    "title": "CYS405 | Chapter 10 Sniffing And Dos Attacks",
+    "track": "cybersecurity",
+    "course": "cys405",
+    "section": "slides",
+    "courseUrl": "/academics/cybersecurity/cys405/",
+    "courseTitle": "CYS405 // Penetration Testing and Ethical Hacking"
+  },
+  {
+    "url": "/academics/cybersecurity/cys405/slides/chapter-11-wireless-network-hacking/",
+    "title": "CYS405 | Chapter 11 Wireless Network Hacking",
+    "track": "cybersecurity",
+    "course": "cys405",
+    "section": "slides",
+    "courseUrl": "/academics/cybersecurity/cys405/",
+    "courseTitle": "CYS405 // Penetration Testing and Ethical Hacking"
+  },
+  {
+    "url": "/academics/cybersecurity/cys405/slides/chapter-2-information-gathering-footprinting-and-reconnaissance/",
+    "title": "CYS405 | Chapter 2 Information Gathering, Footprinting And Reconnaissance",
+    "track": "cybersecurity",
+    "course": "cys405",
+    "section": "slides",
+    "courseUrl": "/academics/cybersecurity/cys405/",
+    "courseTitle": "CYS405 // Penetration Testing and Ethical Hacking"
+  },
+  {
+    "url": "/academics/cybersecurity/cys405/slides/chapter-3-scanning/",
+    "title": "CYS405 | Chapter 3 Scanning",
+    "track": "cybersecurity",
+    "course": "cys405",
+    "section": "slides",
+    "courseUrl": "/academics/cybersecurity/cys405/",
+    "courseTitle": "CYS405 // Penetration Testing and Ethical Hacking"
+  },
+  {
+    "url": "/academics/cybersecurity/cys405/slides/chapter-4-enumeration/",
+    "title": "CYS405 | Chapter 4 Enumeration",
+    "track": "cybersecurity",
+    "course": "cys405",
+    "section": "slides",
+    "courseUrl": "/academics/cybersecurity/cys405/",
+    "courseTitle": "CYS405 // Penetration Testing and Ethical Hacking"
+  },
+  {
+    "url": "/academics/cybersecurity/cys405/slides/chapter-5-vulnerability-analysis/",
+    "title": "CYS405 | Chapter 5 Vulnerability Analysis",
+    "track": "cybersecurity",
+    "course": "cys405",
+    "section": "slides",
+    "courseUrl": "/academics/cybersecurity/cys405/",
+    "courseTitle": "CYS405 // Penetration Testing and Ethical Hacking"
+  },
+  {
+    "url": "/academics/cybersecurity/cys405/slides/chapter-6-system-hacking/",
+    "title": "CYS405 | Chapter 6 System Hacking",
+    "track": "cybersecurity",
+    "course": "cys405",
+    "section": "slides",
+    "courseUrl": "/academics/cybersecurity/cys405/",
+    "courseTitle": "CYS405 // Penetration Testing and Ethical Hacking"
+  },
+  {
+    "url": "/academics/cybersecurity/cys405/slides/chapter-7-malware/",
+    "title": "CYS405 | Chapter 7 Malware",
+    "track": "cybersecurity",
+    "course": "cys405",
+    "section": "slides",
+    "courseUrl": "/academics/cybersecurity/cys405/",
+    "courseTitle": "CYS405 // Penetration Testing and Ethical Hacking"
+  },
+  {
+    "url": "/academics/cybersecurity/cys405/slides/chapter-8-web-and-database-hacking/",
+    "title": "CYS405 | Chapter 8 Web And Database Hacking",
+    "track": "cybersecurity",
+    "course": "cys405",
+    "section": "slides",
+    "courseUrl": "/academics/cybersecurity/cys405/",
+    "courseTitle": "CYS405 // Penetration Testing and Ethical Hacking"
+  },
+  {
+    "url": "/academics/cybersecurity/cys405/slides/chapter-9-social-engineering/",
+    "title": "CYS405 | Chapter 9 Social Engineering",
+    "track": "cybersecurity",
+    "course": "cys405",
+    "section": "slides",
+    "courseUrl": "/academics/cybersecurity/cys405/",
+    "courseTitle": "CYS405 // Penetration Testing and Ethical Hacking"
+  },
+  {
+    "url": "/academics/cybersecurity/cys406/slide-breakdowns/01-chapter-1-network-security-fundamentals/",
+    "title": "CYS406 | Breakdown: Chapter 1 Network Security Fundamentals",
+    "track": "cybersecurity",
+    "course": "cys406",
+    "section": "slide-breakdowns",
+    "courseUrl": "/academics/cybersecurity/cys406/",
+    "courseTitle": "CYS406 // Data and Network Security"
+  },
+  {
+    "url": "/academics/cybersecurity/cys406/slide-breakdowns/02-chapter-2-identification-authentication-and-authorization/",
+    "title": "CYS406 | Breakdown: Chapter 2 Identification, Authentication and Authorization",
+    "track": "cybersecurity",
+    "course": "cys406",
+    "section": "slide-breakdowns",
+    "courseUrl": "/academics/cybersecurity/cys406/",
+    "courseTitle": "CYS406 // Data and Network Security"
+  },
+  {
+    "url": "/academics/cybersecurity/cys406/slide-breakdowns/03-chapter-3-cryptography-basics-des-and-aes/",
+    "title": "CYS406 | Breakdown: Chapter 3 Cryptography Basics - Des and Aes",
+    "track": "cybersecurity",
+    "course": "cys406",
+    "section": "slide-breakdowns",
+    "courseUrl": "/academics/cybersecurity/cys406/",
+    "courseTitle": "CYS406 // Data and Network Security"
+  },
+  {
+    "url": "/academics/cybersecurity/cys406/slide-breakdowns/04-chapter-4-public-key-cryptography-and-rsa/",
+    "title": "CYS406 | Breakdown: Chapter 4 Public-Key Cryptography and Rsa",
+    "track": "cybersecurity",
+    "course": "cys406",
+    "section": "slide-breakdowns",
+    "courseUrl": "/academics/cybersecurity/cys406/",
+    "courseTitle": "CYS406 // Data and Network Security"
+  },
+  {
+    "url": "/academics/cybersecurity/cys406/slide-breakdowns/05-chapter-5-elliptic-curve-cryptography/",
+    "title": "CYS406 | Breakdown: Chapter 5 Elliptic Curve Cryptography",
+    "track": "cybersecurity",
+    "course": "cys406",
+    "section": "slide-breakdowns",
+    "courseUrl": "/academics/cybersecurity/cys406/",
+    "courseTitle": "CYS406 // Data and Network Security"
+  },
+  {
+    "url": "/academics/cybersecurity/cys406/slide-breakdowns/06-chapter-6-rc4-and-modes-of-operation/",
+    "title": "CYS406 | Breakdown: Chapter 6 Rc4 and Modes of Operation",
+    "track": "cybersecurity",
+    "course": "cys406",
+    "section": "slide-breakdowns",
+    "courseUrl": "/academics/cybersecurity/cys406/",
+    "courseTitle": "CYS406 // Data and Network Security"
+  },
+  {
+    "url": "/academics/cybersecurity/cys406/slide-breakdowns/07-chapter-7-hash-functions/",
+    "title": "CYS406 | Breakdown: Chapter 7 Hash Functions",
+    "track": "cybersecurity",
+    "course": "cys406",
+    "section": "slide-breakdowns",
+    "courseUrl": "/academics/cybersecurity/cys406/",
+    "courseTitle": "CYS406 // Data and Network Security"
+  },
+  {
+    "url": "/academics/cybersecurity/cys406/slide-breakdowns/08-chapter-8-diffie-hellman-key-exchange/",
+    "title": "CYS406 | Breakdown: Chapter 8 Diffie-Hellman Key Exchange",
+    "track": "cybersecurity",
+    "course": "cys406",
+    "section": "slide-breakdowns",
+    "courseUrl": "/academics/cybersecurity/cys406/",
+    "courseTitle": "CYS406 // Data and Network Security"
+  },
+  {
+    "url": "/academics/cybersecurity/cys406/slide-breakdowns/09-chapter-9-key-distribution-and-management/",
+    "title": "CYS406 | Breakdown: Chapter 9 Key Distribution and Management",
+    "track": "cybersecurity",
+    "course": "cys406",
+    "section": "slide-breakdowns",
+    "courseUrl": "/academics/cybersecurity/cys406/",
+    "courseTitle": "CYS406 // Data and Network Security"
+  },
+  {
+    "url": "/academics/cybersecurity/cys406/slide-breakdowns/10-chapter-10-network-security-protocols/",
+    "title": "CYS406 | Breakdown: Chapter 10 Network Security Protocols",
+    "track": "cybersecurity",
+    "course": "cys406",
+    "section": "slide-breakdowns",
+    "courseUrl": "/academics/cybersecurity/cys406/",
+    "courseTitle": "CYS406 // Data and Network Security"
+  },
+  {
+    "url": "/academics/cybersecurity/cys406/slide-breakdowns/11-chapter-11-network-segmentation-and-firewalls/",
+    "title": "CYS406 | Breakdown: Chapter 11 Network Segmentation and Firewalls",
+    "track": "cybersecurity",
+    "course": "cys406",
+    "section": "slide-breakdowns",
+    "courseUrl": "/academics/cybersecurity/cys406/",
+    "courseTitle": "CYS406 // Data and Network Security"
+  },
+  {
+    "url": "/academics/cybersecurity/cys406/slide-breakdowns/12-chapter-12-ids-and-ips/",
+    "title": "CYS406 | Breakdown: Chapter 12 Ids and Ips",
+    "track": "cybersecurity",
+    "course": "cys406",
+    "section": "slide-breakdowns",
+    "courseUrl": "/academics/cybersecurity/cys406/",
+    "courseTitle": "CYS406 // Data and Network Security"
+  },
+  {
+    "url": "/academics/cybersecurity/cys406/slide-breakdowns/13-chapter-13-vpn-fundamentals/",
+    "title": "CYS406 | Breakdown: Chapter 13 Vpn Fundamentals",
+    "track": "cybersecurity",
+    "course": "cys406",
+    "section": "slide-breakdowns",
+    "courseUrl": "/academics/cybersecurity/cys406/",
+    "courseTitle": "CYS406 // Data and Network Security"
+  },
+  {
+    "url": "/academics/cybersecurity/cys406/slide-breakdowns/14-chapter-14-honeypots-and-proxy-servers/",
+    "title": "CYS406 | Breakdown: Chapter 14 Honeypots and Proxy Servers",
+    "track": "cybersecurity",
+    "course": "cys406",
+    "section": "slide-breakdowns",
+    "courseUrl": "/academics/cybersecurity/cys406/",
+    "courseTitle": "CYS406 // Data and Network Security"
+  },
+  {
+    "url": "/academics/cybersecurity/cys406/slide-breakdowns/15-chapter-15-siem-and-uba/",
+    "title": "CYS406 | Breakdown: Chapter 15 Siem and Uba",
+    "track": "cybersecurity",
+    "course": "cys406",
+    "section": "slide-breakdowns",
+    "courseUrl": "/academics/cybersecurity/cys406/",
+    "courseTitle": "CYS406 // Data and Network Security"
+  },
+  {
+    "url": "/academics/cybersecurity/cys406/slide-breakdowns/16-chapter-16-data-security/",
+    "title": "CYS406 | Breakdown: Chapter 16 Data Security",
+    "track": "cybersecurity",
+    "course": "cys406",
+    "section": "slide-breakdowns",
+    "courseUrl": "/academics/cybersecurity/cys406/",
+    "courseTitle": "CYS406 // Data and Network Security"
+  },
+  {
+    "url": "/academics/cybersecurity/cys406/slides/chapter-1-network-security-fundamentals/",
+    "title": "CYS406 | Chapter 1 Network Security Fundamentals",
+    "track": "cybersecurity",
+    "course": "cys406",
+    "section": "slides",
+    "courseUrl": "/academics/cybersecurity/cys406/",
+    "courseTitle": "CYS406 // Data and Network Security"
+  },
+  {
+    "url": "/academics/cybersecurity/cys406/slides/chapter-10-network-security-protocols/",
+    "title": "CYS406 | Chapter 10 Network Security Protocols",
+    "track": "cybersecurity",
+    "course": "cys406",
+    "section": "slides",
+    "courseUrl": "/academics/cybersecurity/cys406/",
+    "courseTitle": "CYS406 // Data and Network Security"
+  },
+  {
+    "url": "/academics/cybersecurity/cys406/slides/chapter-11-network-segmentation-and-firewalls/",
+    "title": "CYS406 | Chapter 11 Network Segmentation And Firewalls",
+    "track": "cybersecurity",
+    "course": "cys406",
+    "section": "slides",
+    "courseUrl": "/academics/cybersecurity/cys406/",
+    "courseTitle": "CYS406 // Data and Network Security"
+  },
+  {
+    "url": "/academics/cybersecurity/cys406/slides/chapter-12-ids-and-ips/",
+    "title": "CYS406 | Chapter 12 Ids And Ips",
+    "track": "cybersecurity",
+    "course": "cys406",
+    "section": "slides",
+    "courseUrl": "/academics/cybersecurity/cys406/",
+    "courseTitle": "CYS406 // Data and Network Security"
+  },
+  {
+    "url": "/academics/cybersecurity/cys406/slides/chapter-13-vpn-fundamentals/",
+    "title": "CYS406 | Chapter 13 Vpn Fundamentals",
+    "track": "cybersecurity",
+    "course": "cys406",
+    "section": "slides",
+    "courseUrl": "/academics/cybersecurity/cys406/",
+    "courseTitle": "CYS406 // Data and Network Security"
+  },
+  {
+    "url": "/academics/cybersecurity/cys406/slides/chapter-14-honeypots-and-proxy-servers/",
+    "title": "CYS406 | Chapter 14 Honeypots And Proxy Servers",
+    "track": "cybersecurity",
+    "course": "cys406",
+    "section": "slides",
+    "courseUrl": "/academics/cybersecurity/cys406/",
+    "courseTitle": "CYS406 // Data and Network Security"
+  },
+  {
+    "url": "/academics/cybersecurity/cys406/slides/chapter-15-siem-and-uba/",
+    "title": "CYS406 | Chapter 15 Siem And Uba",
+    "track": "cybersecurity",
+    "course": "cys406",
+    "section": "slides",
+    "courseUrl": "/academics/cybersecurity/cys406/",
+    "courseTitle": "CYS406 // Data and Network Security"
+  },
+  {
+    "url": "/academics/cybersecurity/cys406/slides/chapter-16-data-security/",
+    "title": "CYS406 | Chapter 16 Data Security",
+    "track": "cybersecurity",
+    "course": "cys406",
+    "section": "slides",
+    "courseUrl": "/academics/cybersecurity/cys406/",
+    "courseTitle": "CYS406 // Data and Network Security"
+  },
+  {
+    "url": "/academics/cybersecurity/cys406/slides/chapter-2-identification-authentication-and-authorization/",
+    "title": "CYS406 | Chapter 2 Identification, Authentication And Authorization",
+    "track": "cybersecurity",
+    "course": "cys406",
+    "section": "slides",
+    "courseUrl": "/academics/cybersecurity/cys406/",
+    "courseTitle": "CYS406 // Data and Network Security"
+  },
+  {
+    "url": "/academics/cybersecurity/cys406/slides/chapter-3-cryptography-basics-des-and-aes/",
+    "title": "CYS406 | Chapter 3 Cryptography Basics - Des And Aes",
+    "track": "cybersecurity",
+    "course": "cys406",
+    "section": "slides",
+    "courseUrl": "/academics/cybersecurity/cys406/",
+    "courseTitle": "CYS406 // Data and Network Security"
+  },
+  {
+    "url": "/academics/cybersecurity/cys406/slides/chapter-4-public-key-cryptography-and-rsa/",
+    "title": "CYS406 | Chapter 4 Public-Key Cryptography And Rsa",
+    "track": "cybersecurity",
+    "course": "cys406",
+    "section": "slides",
+    "courseUrl": "/academics/cybersecurity/cys406/",
+    "courseTitle": "CYS406 // Data and Network Security"
+  },
+  {
+    "url": "/academics/cybersecurity/cys406/slides/chapter-5-elliptic-curve-cryptography/",
+    "title": "CYS406 | Chapter 5 Elliptic Curve Cryptography",
+    "track": "cybersecurity",
+    "course": "cys406",
+    "section": "slides",
+    "courseUrl": "/academics/cybersecurity/cys406/",
+    "courseTitle": "CYS406 // Data and Network Security"
+  },
+  {
+    "url": "/academics/cybersecurity/cys406/slides/chapter-6-rc4-and-modes-of-operation/",
+    "title": "CYS406 | Chapter 6 Rc4 And Modes Of Operation",
+    "track": "cybersecurity",
+    "course": "cys406",
+    "section": "slides",
+    "courseUrl": "/academics/cybersecurity/cys406/",
+    "courseTitle": "CYS406 // Data and Network Security"
+  },
+  {
+    "url": "/academics/cybersecurity/cys406/slides/chapter-7-hash-functions/",
+    "title": "CYS406 | Chapter 7 Hash Functions",
+    "track": "cybersecurity",
+    "course": "cys406",
+    "section": "slides",
+    "courseUrl": "/academics/cybersecurity/cys406/",
+    "courseTitle": "CYS406 // Data and Network Security"
+  },
+  {
+    "url": "/academics/cybersecurity/cys406/slides/chapter-8-diffie-hellman-key-exchange/",
+    "title": "CYS406 | Chapter 8 Diffie-Hellman Key Exchange",
+    "track": "cybersecurity",
+    "course": "cys406",
+    "section": "slides",
+    "courseUrl": "/academics/cybersecurity/cys406/",
+    "courseTitle": "CYS406 // Data and Network Security"
+  },
+  {
+    "url": "/academics/cybersecurity/cys406/slides/chapter-9-key-distribution-and-management/",
+    "title": "CYS406 | Chapter 9 Key Distribution And Management",
+    "track": "cybersecurity",
+    "course": "cys406",
+    "section": "slides",
+    "courseUrl": "/academics/cybersecurity/cys406/",
+    "courseTitle": "CYS406 // Data and Network Security"
+  },
+  {
     "url": "/academics/other-courses/com201/exams/examplify-practice-questions/part-1/",
     "title": "COM201 | Extensive Final Review — Part 1",
     "track": "other-courses",
@@ -2558,6 +3044,15 @@ var COURSE_PAGES = [
     "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
   },
   {
+    "url": "/academics/other-courses/ethcs303/extra-resources/chapter-10-summary/",
+    "title": "ETHCS303 | Chapter 10 Summarized",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "extra-resources",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
     "url": "/academics/other-courses/ethcs303/extra-resources/cheat-sheets/midterm-1-cheat-sheet/",
     "title": "ETHCS303 | Midterm 1 Cheat Sheet",
     "track": "other-courses",
@@ -2819,8 +3314,8 @@ var COURSE_PAGES = [
     "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
   },
   {
-    "url": "/academics/other-courses/ethcs303/extra-resources/project/",
-    "title": "ETHCS303 | Research Paper Project",
+    "url": "/academics/other-courses/ethcs303/extra-resources/project/research-paper-template/",
+    "title": "ETHCS303 | Research Paper Template",
     "track": "other-courses",
     "course": "ethcs303",
     "section": "extra-resources",
@@ -5483,10 +5978,12 @@ var COURSE_MANIFEST = {
   "cs331": 46,
   "cs340": 36,
   "cys401": 29,
+  "cys405": 22,
+  "cys406": 32,
   "com201": 24,
   "eng101": 37,
   "eng103": 7,
-  "ethcs303": 82,
+  "ethcs303": 83,
   "isc113": 23,
   "math221": 39,
   "phy105": 17,
@@ -5508,10 +6005,12 @@ var COURSE_MANIFEST_BY_TRACK = {
   "computer-science/cs331": 46,
   "computer-science/cs340": 36,
   "cybersecurity/cys401": 29,
+  "cybersecurity/cys405": 22,
+  "cybersecurity/cys406": 32,
   "other-courses/com201": 24,
   "other-courses/eng101": 37,
   "other-courses/eng103": 7,
-  "other-courses/ethcs303": 82,
+  "other-courses/ethcs303": 83,
   "other-courses/isc113": 23,
   "other-courses/math221": 39,
   "other-courses/phy105": 17,
