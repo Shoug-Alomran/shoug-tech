@@ -108,22 +108,17 @@
 (function () {
   var footer = document.querySelector(".shoug-site-footer");
   var noticeText = "© 2026 Shoug Alomran. All rights reserved.";
-  if (!footer || footer.textContent.indexOf(noticeText) !== -1) return;
+  if (!footer || footer.querySelector(".shoug-footer-copyright")) return;
 
-  var systemColumn = Array.from(footer.querySelectorAll(".shoug-footer-label"))
-    .find(function (label) {
-      return label.textContent.trim().toLowerCase() === "system";
-    });
-  if (!systemColumn) return;
+  var brandText = footer.querySelector(".shoug-footer-text");
+  if (!brandText || !brandText.parentElement) return;
 
-  var column = systemColumn.parentElement;
   var notice = document.createElement("span");
-  notice.className = "shoug-footer-meta";
+  notice.className = "shoug-footer-text shoug-footer-copyright";
   notice.setAttribute("data-ar-text", "© 2026 شوق العمران. جميع الحقوق محفوظة.");
   notice.textContent = noticeText;
 
-  var firstLink = column.querySelector(".shoug-footer-link");
-  column.insertBefore(notice, firstLink || null);
+  brandText.insertAdjacentElement("afterend", notice);
 })();
 
 // Load search on every page
@@ -134,10 +129,20 @@
   document.head.appendChild(s);
 })();
 
+// Load Arabic localization on every page that uses the shared shell.
+(function () {
+  if (window.__shougArabicLocalizationLoaded || document.getElementById("shoug-arabic-localization-script")) return;
+  var s = document.createElement("script");
+  s.id = "shoug-arabic-localization-script";
+  s.src = "/javascripts/arabic-localization.js?v=60";
+  s.defer = true;
+  document.head.appendChild(s);
+})();
+
 // Load Firebase auth + progress tracking on every page
 (function () {
   var s = document.createElement("script");
-  s.src = "/javascripts/firebase-auth.js?v=57";
+  s.src = "/javascripts/firebase-auth.js?v=59";
   s.async = true;
   document.head.appendChild(s);
 })();

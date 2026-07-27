@@ -1,5 +1,7 @@
 (function () {
   "use strict";
+  if (window.__shougArabicLocalizationLoaded) return;
+  window.__shougArabicLocalizationLoaded = true;
 
   var exact = {
     "SYSTEM_DIRECTORY": "دليل_النظام",
@@ -148,6 +150,90 @@
     ,"Tips": "النصائح"
     ,"Reflection": "التأمل"
     ,"Video": "الفيديو"
+    ,"Home": "الرئيسية"
+    ,"My Profile": "ملفي الشخصي"
+    ,"Calendar": "التقويم"
+    ,"Bookmarks": "المحفوظات"
+    ,"My Progress": "تقدمي"
+    ,"Community": "المجتمع"
+    ,"Today": "اليوم"
+    ,"Add Exam": "إضافة اختبار"
+    ,"Add Event": "إضافة حدث"
+    ,"Clear Items": "مسح العناصر"
+    ,"Export": "تصدير"
+    ,"Month View": "عرض الشهر"
+    ,"View Focus": "تركيز العرض"
+    ,"Hide calendar layers without deleting anything": "إخفاء طبقات التقويم بدون حذف أي شيء"
+    ,"Classes": "المحاضرات"
+    ,"Study": "الدراسة"
+    ,"Personal": "شخصي"
+    ,"PSU": "جامعة الأمير سلطان"
+    ,"Add Class Schedule": "إضافة جدول محاضرة"
+    ,"Repeats weekly until you remove it": "يتكرر أسبوعيا حتى تحذفيه"
+    ,"Class name": "اسم المقرر"
+    ,"Start": "البداية"
+    ,"End": "النهاية"
+    ,"Location": "الموقع"
+    ,"Online Meeting Link": "رابط المحاضرة الإلكترونية"
+    ,"Used for Tuesday online classes": "يستخدم لمحاضرات الثلاثاء الإلكترونية"
+    ,"Add Class": "إضافة محاضرة"
+    ,"Add Study Session": "إضافة جلسة مذاكرة"
+    ,"Block time before an exam": "حددي وقتا للمذاكرة قبل الاختبار"
+    ,"Exam": "الاختبار"
+    ,"Template": "النموذج"
+    ,"Focus": "التركيز"
+    ,"Date": "التاريخ"
+    ,"Choose study date": "اختاري تاريخ المذاكرة"
+    ,"Choose start date": "اختاري تاريخ البداية"
+    ,"Choose end date": "اختاري تاريخ النهاية"
+    ,"Travel, tutoring, appointments, anything": "سفر، دروس، مواعيد، أو أي شيء"
+    ,"Title": "العنوان"
+    ,"Starts": "يبدأ"
+    ,"Ends": "ينتهي"
+    ,"Type": "النوع"
+    ,"Travel": "سفر"
+    ,"Unavailable": "غير متاحة"
+    ,"Academic calendar": "التقويم الأكاديمي"
+    ,"Saved Items": "العناصر المحفوظة"
+    ,"Class schedules and custom events": "جداول المحاضرات والأحداث المخصصة"
+    ,"Absence Tracker": "متابعة الغياب"
+    ,"Skipped and cancelled class meetings": "محاضرات متغيبة أو ملغاة"
+    ,"Upcoming Exams": "الاختبارات القادمة"
+    ,"Loaded from your profile or added here": "تظهر من ملفك أو تضيفينها هنا"
+    ,"Edit": "تعديل"
+    ,"Delete Schedule": "حذف الجدول"
+    ,"Delete Event": "حذف الحدث"
+    ,"Edit Exam": "تعديل الاختبار"
+    ,"Save Exam": "حفظ الاختبار"
+    ,"Add an exam date without leaving the calendar": "أضيفي موعد اختبار بدون مغادرة التقويم"
+    ,"Update the course, type, date, time, and location": "حدثي المقرر والنوع والتاريخ والوقت والموقع"
+    ,"Course": "المقرر"
+    ,"Quiz": "اختبار قصير"
+    ,"Midterm": "اختبار نصفي"
+    ,"Final": "اختبار نهائي"
+    ,"Project": "مشروع"
+    ,"Room, building, or online": "قاعة، مبنى، أو إلكتروني"
+    ,"Save Event": "حفظ الحدث"
+    ,"Add travel, unavailable time, or a personal event": "أضيفي سفرا أو وقتا غير متاح أو حدثا شخصيا"
+    ,"Edit Class": "تعديل المحاضرة"
+    ,"Change this meeting or the recurring schedule.": "عدلي هذه المحاضرة أو الجدول المتكرر."
+    ,"Apply Change To": "تطبيق التعديل على"
+    ,"This date only": "هذا التاريخ فقط"
+    ,"Entire schedule": "الجدول كامل"
+    ,"Save Class": "حفظ المحاضرة"
+    ,"Remove Class": "إزالة المحاضرة"
+    ,"Tell the calendar what happened so your absence tracker stays useful.": "حددي ما حدث حتى يبقى تتبع الغياب مفيدا."
+    ,"I Skipped It": "تغيبت عنها"
+    ,"Completed Required Part": "أنهيت الجزء المطلوب"
+    ,"There Was An Exam": "كان هناك اختبار"
+    ,"It Was Cancelled": "كانت ملغاة"
+    ,"Nothing scheduled on this day.": "لا يوجد شيء مجدول في هذا اليوم."
+    ,"Sign in to view your calendar": "سجلي الدخول لعرض التقويم"
+    ,"Your calendar syncs with your saved exam dates and personal schedule.": "يتزامن التقويم مع مواعيد اختباراتك وجدولك الشخصي."
+    ,"Sign In": "تسجيل الدخول"
+    ,"Loading your calendar": "جار تحميل التقويم"
+    ,"Your exams appear from your profile, and you can add exam dates here too.": "تظهر اختباراتك من ملفك، ويمكنك إضافة مواعيد الاختبارات هنا أيضا."
+    ,"PSU semester dates, holidays, class endings, and finals are applied automatically.": "تضاف تواريخ الفصل والإجازات ونهاية المحاضرات والاختبارات النهائية تلقائيا."
   };
 
   var words = {
@@ -237,8 +323,26 @@
     ".quick-link-btn", ".dir-header span", ".dir-title", ".status-tag", ".ch-label",
     ".ch-title", ".action-buttons .btn", ".nav-strip .nav-link", ".hero-label",
     ".section-label", ".data-block-label", ".meta-key", ".coming-soon-title",
-    ".coming-soon-text"
+    ".coming-soon-text", ".title", ".sub", ".btn", ".panel-title", ".panel-sub",
+    ".field label", ".filter-toggle", ".item-title", ".item-meta", ".empty",
+    ".day-sheet-title", ".day-sheet-sub", ".day-card-title", ".day-card-meta",
+    ".exam-form-title", ".exam-conflict", ".today-card-title", ".today-card-meta",
+    ".legend-chip", ".event-title", ".event-meta", ".more", ".mini-date-trigger",
+    ".shoug-app-tab", "option"
   ].join(",");
+
+  var placeholderMap = {
+    "ETHCS303 lecture": "محاضرة ETHCS303",
+    "Review weak topics": "مراجعة المواضيع الصعبة",
+    "Library, home, online": "المكتبة، المنزل، إلكتروني",
+    "Travel day": "يوم سفر",
+    "Optional": "اختياري",
+    "Choose exam date": "اختاري تاريخ الاختبار",
+    "Travel": "سفر",
+    "Room, building, or online": "قاعة، مبنى، أو إلكتروني",
+    "Used for Tuesday online classes": "يستخدم لمحاضرات الثلاثاء الإلكترونية",
+    "Room or building for in-person days": "القاعة أو المبنى للمحاضرات الحضورية"
+  };
 
   function normalize(value) {
     return String(value || "").replace(/\s+/g, " ").trim();
@@ -315,6 +419,11 @@
         node.textContent = node.getAttribute('data-ar-text');
       }
     });
+    document.querySelectorAll("input[placeholder], textarea[placeholder]").forEach(function (node) {
+      if (!node.dataset.arPlaceholderOriginal) node.dataset.arPlaceholderOriginal = node.getAttribute("placeholder") || "";
+      var original = node.dataset.arPlaceholderOriginal;
+      node.setAttribute("placeholder", placeholderMap[original] || translate(original));
+    });
     document.querySelectorAll(".sys-time").forEach(function (node) {
       if (!node.dataset.arOriginal) node.dataset.arOriginal = node.textContent;
       node.textContent = node.textContent.replace("SYS_TIME", "وقت_النظام");
@@ -329,6 +438,9 @@
       } else {
         node.textContent = node.dataset.arOriginal;
       }
+    });
+    document.querySelectorAll("[data-ar-placeholder-original]").forEach(function (node) {
+      node.setAttribute("placeholder", node.dataset.arPlaceholderOriginal || "");
     });
   }
 
@@ -402,11 +514,40 @@
     syncToggleLabel();
   }
 
+  function applyLanguage(lang) {
+    try { localStorage.setItem("shoug-lang", lang); } catch (error) { }
+    setDocumentLanguage(lang);
+    sync();
+    window.dispatchEvent(new CustomEvent("shoug:language-change", { detail: { lang: lang } }));
+  }
+
+  function bindToggle() {
+    var toggle = ensureLanguageToggle();
+    if (!toggle || toggle.dataset.langBound === "true") return;
+    toggle.dataset.langBound = "true";
+    toggle.addEventListener("click", function () {
+      var isArabic = String(document.documentElement.lang || "").toLowerCase().indexOf("ar") === 0;
+      applyLanguage(isArabic ? "en" : "ar");
+    });
+    syncToggleLabel();
+  }
+
+  var syncTimer = null;
+  function scheduleSync() {
+    if (String(document.documentElement.lang || "").toLowerCase().indexOf("ar") !== 0) return;
+    clearTimeout(syncTimer);
+    syncTimer = setTimeout(sync, 60);
+  }
+
   setDocumentLanguage(requestedLanguage());
   sync();
   document.addEventListener("DOMContentLoaded", function () {
     setDocumentLanguage(requestedLanguage());
     sync();
+    bindToggle();
+    if (document.body) {
+      new MutationObserver(scheduleSync).observe(document.body, { childList: true, subtree: true });
+    }
   });
   window.addEventListener("storage", function (event) {
     if (event.key === "shoug-lang") {
@@ -417,8 +558,11 @@
   new MutationObserver(function (mutations) {
     if (mutations.some(function (mutation) { return mutation.attributeName === "lang"; })) {
       setTimeout(sync, 0);
+      setTimeout(bindToggle, 0);
     }
   }).observe(document.documentElement, { attributes: true, attributeFilter: ["lang"] });
+  setTimeout(bindToggle, 0);
+  window.__shougSetLanguage = applyLanguage;
   window.__shougTranslateArabic = translate;
   window.__shougArabicGlossary = { exact: exact, words: words };
   document.documentElement.setAttribute("data-ar-localization-ready", "true");

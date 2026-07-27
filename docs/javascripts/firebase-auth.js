@@ -298,7 +298,7 @@
       "#shoug-theme-toggle svg{width:15px;height:15px;display:block;}",
       "body.shoug-light-mode #shoug-theme-toggle{border-color:rgba(0,0,0,.12);background:transparent;color:#16111f;}",
       /* app-section tab bar */
-      "#shoug-app-nav{position:relative;width:100%;max-width:100vw;height:40px;z-index:1;background:rgba(5,5,8,.96);border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:stretch;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;}",
+      "#shoug-app-nav{position:sticky;top:0;left:0;right:0;width:100%;max-width:100vw;height:40px;z-index:1000;margin:0;background:rgba(5,5,8,.96);border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:stretch;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;}",
       "#shoug-app-nav::-webkit-scrollbar{display:none;}",
       ".shoug-app-tab{display:flex;align-items:center;flex-shrink:0;padding:0 20px;font-family:'JetBrains Mono',monospace;font-size:.58rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#4a4258;text-decoration:none;border-bottom:2px solid transparent;transition:color 150ms,border-color 150ms;white-space:nowrap;}",
       ".shoug-app-tab:hover{color:#b829ea;}",
@@ -306,11 +306,9 @@
       "body.shoug-light-mode #shoug-app-nav{background:rgba(255,255,255,.96);border-bottom-color:rgba(0,0,0,.08);}",
       "body.shoug-light-mode .shoug-app-tab.active{color:#b829ea;}",
       "@media(max-width:480px){#shoug-app-nav{height:38px;}.shoug-app-tab{padding:0 14px;font-size:.54rem;}#shoug-theme-toggle{margin-right:14px;}}",
-      /* shift the AR/EN language toggle so it doesn't overlap the theme toggle in the app nav */
-      "body:has(#shoug-app-nav) .shoug-lang-btn{top:3px;}",
-      "html:not([dir='rtl']) body:has(#shoug-app-nav) .shoug-lang-btn{inset-inline-end:62px;}",
-      "html[dir='rtl'] body:has(#shoug-app-nav) .shoug-lang-btn{inset-inline-end:42px;}",
-      "@media(max-width:480px){html:not([dir='rtl']) body:has(#shoug-app-nav) .shoug-lang-btn{inset-inline-end:56px;}}",
+      "#shoug-app-nav .shoug-lang-btn{position:static!important;z-index:auto!important;flex:0 0 34px;margin-inline-end:8px;align-self:center;width:34px;height:34px;display:inline-flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.02);color:#f8f7fb;font-family:'JetBrains Mono',monospace;font-size:.62rem;font-weight:900;letter-spacing:.08em;cursor:pointer;}",
+      "#shoug-app-nav .shoug-lang-btn:hover{color:#b829ea;border-color:rgba(184,41,234,.55);background:rgba(184,41,234,.08);}",
+      "body.shoug-light-mode #shoug-app-nav .shoug-lang-btn{border-color:rgba(0,0,0,.12);background:transparent;color:#16111f;}",
       /* forgot password / reset link */
       ".auth-forgot{background:transparent;border:none;color:#4a4258;font-family:'JetBrains Mono',monospace;font-size:.58rem;cursor:pointer;padding:0;text-align:left;letter-spacing:.04em;transition:color 120ms;}",
       ".auth-forgot:hover{color:#b829ea;}",
@@ -1264,7 +1262,8 @@
       if (parts.length === 1) { context = "community"; storageKey = "shoug-ob-community-v2"; }
       else { context = "community-profile"; storageKey = "shoug-ob-profile-v2"; }
     } else if (parts[0] === "account") {
-      context = "account"; storageKey = "shoug-ob-account-v2";
+      if (parts[1] === "calendar") { context = "account-calendar"; storageKey = "shoug-ob-calendar-v1"; }
+      else { context = "account"; storageKey = "shoug-ob-account-v2"; }
     } else if (parts[0] === "bookmarks") {
       context = "bookmarks"; storageKey = "shoug-ob-bookmarks-v2";
     } else if (parts[0] === "academic-plan-themes") {
@@ -1673,6 +1672,52 @@
         },
       ];
 
+    } else if (context === "account-calendar") {
+      steps = [
+        {
+          target: function(){ return document.getElementById("semester-scope"); },
+          position: "bottom",
+          tag: "Calendar · Semester",
+          title: "Filter by Semester",
+          body: "Use this when you want one term only. Choose <strong>All semesters</strong> to browse everything.",
+        },
+        {
+          target: function(){ return document.getElementById("today-dashboard"); },
+          position: "bottom",
+          tag: "Calendar · Today",
+          title: "Today at a Glance",
+          body: "These cards show today’s classes, exams, study sessions, and real exam conflicts.",
+        },
+        {
+          target: function(){ return document.getElementById("month-grid") || document.getElementById("calendar-month-panel"); },
+          position: "top",
+          tag: "Calendar · Month",
+          title: "Open Any Day",
+          body: "Click a day to see the hourly Apple-style view, edit exams, add events, or adjust a single class meeting.",
+        },
+        {
+          target: function(){ return document.getElementById("view-filters"); },
+          position: "left",
+          tag: "Calendar · Focus",
+          title: "Hide Layers Temporarily",
+          body: "Turn layers on or off without deleting anything. Useful when you only want to see exams or study sessions.",
+        },
+        {
+          target: function(){ return document.getElementById("class-title") || document.getElementById("calendar-class-panel"); },
+          position: "left",
+          tag: "Calendar · Classes",
+          title: "Add Class Schedules",
+          body: "Add a course once for the semester. PSU dates stop the course automatically when classes end.",
+        },
+        {
+          target: function(){ return document.getElementById("study-template") || document.getElementById("calendar-study-panel"); },
+          position: "left",
+          tag: "Calendar · Study",
+          title: "Schedule Study Blocks",
+          body: "Pick an exam and a template to quickly create a study session before the exam.",
+        },
+      ];
+
     } else if (context === "account") {
       steps = [
         {
@@ -1928,7 +1973,7 @@
         el.style.position = "relative";
         el.dataset.obPositioned = "1";
       }
-      el.style.zIndex = (CARD_Z + 1) + "";
+      el.style.zIndex = (CARD_Z - 1) + "";
       el.style.boxShadow = "0 0 0 2px #b829ea, 0 0 0 5px rgba(184,41,234,.22), 0 0 28px rgba(184,41,234,.4)";
       el.style.outline = "none";
       el.style.borderRadius = "3px";
@@ -1987,7 +2032,7 @@
 
           var canFitBelow = rect.bottom + GAP + ch <= vh - 12;
           var canFitAbove = rect.top - GAP - ch >= 8;
-          var placeBelow = canFitBelow || !canFitAbove;
+          var placeBelow = canFitBelow || (!canFitAbove && rect.top < (vh / 2));
           top  = rect.bottom + GAP;
           left = Math.min(Math.max(midX - cw / 2, 12), vw - cw - 12);
           if (!placeBelow) top = rect.top - GAP - ch;
@@ -2049,7 +2094,7 @@
         } else {
           var canFitAbove2 = rect.top - GAP - ch >= 8;
           var canFitBelow2 = rect.bottom + GAP + ch <= vh - 12;
-          var placeAbove = canFitAbove2 || !canFitBelow2;
+          var placeAbove = canFitAbove2 || (!canFitBelow2 && rect.top > (vh / 2));
           top  = rect.top - GAP - ch;
           left = Math.min(Math.max(midX - cw / 2, 12), vw - cw - 12);
           if (!placeAbove) top = rect.bottom + GAP;
@@ -2347,6 +2392,15 @@
   };
   var APP_NAV_KEYS = ["home", "profile", "calendar", "bookmarks", "progress", "community"];
 
+  function ensureArabicLocalization() {
+    if (window.__shougArabicLocalizationLoaded || document.getElementById("shoug-arabic-localization-script")) return;
+    var script = document.createElement("script");
+    script.id = "shoug-arabic-localization-script";
+    script.src = "/javascripts/arabic-localization.js?v=60";
+    script.defer = true;
+    document.head.appendChild(script);
+  }
+
   function updateAppNavLang() {
     var nav = document.getElementById("shoug-app-nav");
     if (!nav) return;
@@ -2390,6 +2444,29 @@
     document.body.insertBefore(nav, document.body.firstChild);
     // App pages have no fixed site header, so clear any pre-set padding-top
     document.body.style.paddingTop = "0";
+    document.body.style.margin = "0";
+
+    var langBtn = document.querySelector("[data-lang-toggle]");
+    if (!langBtn) {
+      langBtn = document.createElement("button");
+      langBtn.className = "shoug-lang-btn";
+      langBtn.type = "button";
+      langBtn.setAttribute("data-lang-toggle", "");
+      langBtn.setAttribute("aria-label", "Switch to Arabic");
+      langBtn.textContent = curNavLang() === "ar" ? "EN" : "AR";
+    }
+    var themeBtn = document.getElementById("shoug-theme-toggle");
+    if (langBtn && themeBtn) {
+      nav.insertBefore(langBtn, themeBtn);
+      if (window.__shougSetLanguage && langBtn.dataset.langBound !== "true") {
+        langBtn.dataset.langBound = "true";
+        langBtn.addEventListener("click", function () {
+          var isArabic = (document.documentElement.lang || "en").slice(0, 2) === "ar";
+          window.__shougSetLanguage(isArabic ? "en" : "ar");
+        });
+      }
+    }
+    ensureArabicLocalization();
 
     document.getElementById("shoug-theme-toggle").addEventListener("click", function() {
       var nowLight = document.body.classList.toggle("shoug-light-mode");
@@ -2519,7 +2596,16 @@
         ".table-col",
         ".table-body",
         ".term-input-row",
-        ".term-input"
+        ".term-input",
+        "#semester-scope",
+        "#today-dashboard",
+        "#month-grid",
+        "#view-filters",
+        "#class-title",
+        "#study-template",
+        "#exam-list",
+        ".today-card",
+        ".day[data-date]"
       ].join(",");
 
       function cleanup() {
