@@ -853,6 +853,7 @@
         '  </div>',
         '  <div class="shoug-drop-email" id="shoug-drop-email">' + escHtml(user.email || "") + "</div>",
         '  <a class="shoug-drop-link" href="/community/profile/?u=' + encodeURIComponent(user.uid) + '">My Profile</a>',
+        '  <a class="shoug-drop-link" href="/account/calendar/">Calendar</a>',
         '  <a class="shoug-drop-link" href="/bookmarks/">Bookmarks</a>',
         '  <a class="shoug-drop-link" href="/account/">My Progress</a>',
         '  <a class="shoug-drop-link" href="/community/">Community</a>',
@@ -2341,10 +2342,10 @@
   function curNavLang() { return (document.documentElement.lang||"en").slice(0,2)==="ar" ? "ar" : "en"; }
 
   var APP_NAV_LABELS = {
-    en: { home: "Home", profile: "My Profile", bookmarks: "Bookmarks", progress: "My Progress", community: "Community", theme: "Toggle dark and light mode" },
-    ar: { home: "الرئيسية", profile: "ملفي الشخصي", bookmarks: "المحفوظات", progress: "تقدمي", community: "المجتمع", theme: "تبديل الوضع الفاتح والداكن" },
+    en: { home: "Home", profile: "My Profile", calendar: "Calendar", bookmarks: "Bookmarks", progress: "My Progress", community: "Community", theme: "Toggle dark and light mode" },
+    ar: { home: "الرئيسية", profile: "ملفي الشخصي", calendar: "التقويم", bookmarks: "المحفوظات", progress: "تقدمي", community: "المجتمع", theme: "تبديل الوضع الفاتح والداكن" },
   };
-  var APP_NAV_KEYS = ["home", "profile", "bookmarks", "progress", "community"];
+  var APP_NAV_KEYS = ["home", "profile", "calendar", "bookmarks", "progress", "community"];
 
   function updateAppNavLang() {
     var nav = document.getElementById("shoug-app-nav");
@@ -2366,10 +2367,12 @@
         active: false },
       { key: "profile",     href: "/community/profile/?u=" + encodeURIComponent(user.uid),
         active: path.indexOf("/community/profile") === 0 },
+      { key: "calendar",    href: "/account/calendar/",
+        active: path.indexOf("/account/calendar") === 0 },
       { key: "bookmarks",   href: "/bookmarks/",
         active: path.indexOf("/bookmarks") === 0 },
       { key: "progress",    href: "/account/",
-        active: path.indexOf("/account") === 0 },
+        active: path === "/account/" || path === "/account" },
       { key: "community",   href: "/community/",
         active: path.indexOf("/community") === 0 && path.indexOf("/community/profile") !== 0 },
     ];
