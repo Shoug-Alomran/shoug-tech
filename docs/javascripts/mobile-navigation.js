@@ -132,17 +132,88 @@
 // Load Arabic localization on every page that uses the shared shell.
 (function () {
   if (window.__shougArabicLocalizationLoaded || document.getElementById("shoug-arabic-localization-script")) return;
-  var s = document.createElement("script");
-  s.id = "shoug-arabic-localization-script";
-  s.src = "/javascripts/arabic-localization.js?v=60";
-  s.defer = true;
-  document.head.appendChild(s);
+  var loading = false;
+  function loadArabicLocalization(callback) {
+    if (window.__shougArabicLocalizationLoaded) {
+      if (callback) callback();
+      return;
+    }
+    if (loading) return;
+    loading = true;
+    var s = document.createElement("script");
+    s.id = "shoug-arabic-localization-script";
+    s.src = "/javascripts/arabic-localization.js?v=61";
+    s.defer = true;
+    if (callback) s.addEventListener("load", callback, { once: true });
+    document.head.appendChild(s);
+  }
+
+  var storedArabic = false;
+  try { storedArabic = localStorage.getItem("shoug-lang") === "ar"; } catch (error) { }
+  if (storedArabic || document.documentElement.lang.indexOf("ar") === 0) {
+    loadArabicLocalization();
+    return;
+  }
+
+  var toggle = document.querySelector("[data-lang-toggle]");
+  if (toggle) {
+    toggle.addEventListener("click", function (event) {
+      if (window.__shougArabicLocalizationLoaded) return;
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      loadArabicLocalization(function () {
+        if (typeof window.__shougSetLanguage === "function") window.__shougSetLanguage("ar");
+      });
+    }, true);
+  }
 })();
 
-// Load Firebase auth + progress tracking on every page
+// Keep a lightweight account control visible on every shared-shell page, then
+// load Firebase on account intent (or shortly after the initial render).
 (function () {
-  var s = document.createElement("script");
-  s.src = "/javascripts/firebase-auth.js?v=59";
-  s.async = true;
-  document.head.appendChild(s);
+  var loaded = false;
+  var actions = document.querySelector(".shoug-header-actions");
+  if (!actions) return;
+
+  var style = document.getElementById("shoug-auth-placeholder-style");
+  if (!style) {
+    style = document.createElement("style");
+    style.id = "shoug-auth-placeholder-style";
+    style.textContent = ".shoug-auth-btn{height:34px;display:inline-flex;align-items:center;padding:0 14px;border:1px solid rgba(184,41,234,.5);background:transparent;color:#c940f5;font-family:'SFMono-Regular',Consolas,monospace;font-size:.65rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;cursor:pointer}";
+    document.head.appendChild(style);
+  }
+
+  var accountButton = document.getElementById("shoug-fb-user");
+  if (!accountButton) {
+    accountButton = document.createElement("button");
+    accountButton.id = "shoug-fb-user";
+    accountButton.className = "shoug-auth-btn";
+    accountButton.type = "button";
+    accountButton.textContent = "Sign In";
+    actions.insertBefore(accountButton, actions.firstChild);
+  }
+  accountButton.setAttribute("data-account-loader", "");
+
+  function loadFirebase(openWhenReady) {
+    if (loaded) return;
+    loaded = true;
+    if (openWhenReady) {
+      window.addEventListener("shoug:fb", function () {
+        setTimeout(function () {
+          var readyButton = document.getElementById("shoug-fb-user");
+          if (readyButton && !readyButton.hasAttribute("data-account-loader")) readyButton.click();
+        }, 0);
+      }, { once: true });
+    }
+    var s = document.createElement("script");
+    s.src = "/javascripts/firebase-auth.js?v=59";
+    s.async = true;
+    document.head.appendChild(s);
+  }
+
+  accountButton.addEventListener("click", function () { loadFirebase(true); }, { once: true });
+  actions.addEventListener("pointerover", function () { loadFirebase(false); }, { once: true, passive: true });
+  actions.addEventListener("focusin", function () { loadFirebase(false); }, { once: true });
+  window.addEventListener("shoug:load-account", function () { loadFirebase(false); }, { once: true });
+  setTimeout(function () { loadFirebase(false); }, 15000);
 })();

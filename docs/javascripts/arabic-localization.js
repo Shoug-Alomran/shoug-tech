@@ -234,6 +234,21 @@
     ,"Loading your calendar": "جار تحميل التقويم"
     ,"Your exams appear from your profile, and you can add exam dates here too.": "تظهر اختباراتك من ملفك، ويمكنك إضافة مواعيد الاختبارات هنا أيضا."
     ,"PSU semester dates, holidays, class endings, and finals are applied automatically.": "تضاف تواريخ الفصل والإجازات ونهاية المحاضرات والاختبارات النهائية تلقائيا."
+    ,"Software Engineering and Cybersecurity portfolio. Documenting projects, study systems, workshops, and technical resources.": "ملف أعمال في هندسة البرمجيات والأمن السيبراني، يوثق المشاريع والأنظمة الدراسية والورش والموارد التقنية."
+    ,"Navigate": "التنقل"
+    ,"Connect": "التواصل"
+    ,"System": "النظام"
+    ,"Projects": "المشاريع"
+    ,"Resources": "الموارد"
+    ,"Email": "البريد الإلكتروني"
+    ,"Blueprint Studio": "استوديو بلوبرنت"
+    ,"Status: Operational": "الحالة: يعمل"
+    ,"Protocol: HTTPS": "البروتوكول: HTTPS"
+    ,"Copyright & Policy": "حقوق النشر والسياسة"
+    ,"Academic Disclaimer": "إخلاء المسؤولية الأكاديمية"
+    ,"Privacy Notice": "إشعار الخصوصية"
+    ,"Made by": "من تنفيذ"
+    ,"Blueprint": "بلوبرنت"
   };
 
   var words = {
@@ -328,7 +343,9 @@
     ".day-sheet-title", ".day-sheet-sub", ".day-card-title", ".day-card-meta",
     ".exam-form-title", ".exam-conflict", ".today-card-title", ".today-card-meta",
     ".legend-chip", ".event-title", ".event-meta", ".more", ".mini-date-trigger",
-    ".shoug-app-tab", "option"
+    ".shoug-app-tab", ".shoug-footer-text", ".shoug-footer-label",
+    ".shoug-footer-link", ".shoug-footer-meta", "#shoug-blueprint-bar",
+    "#shoug-blueprint-bar a", "option"
   ].join(",");
 
   var placeholderMap = {
@@ -410,15 +427,28 @@
       }
     });
     document.querySelectorAll('[data-ar-text]').forEach(function (node) {
-      var textNode = node.children.length ? findTrailingTextNode(node) : null;
-      if (textNode) {
-        if (!node.dataset.arOriginal) node.dataset.arOriginal = textNode.textContent;
-        textNode.textContent = node.getAttribute('data-ar-text');
-      } else {
-        if (!node.dataset.arOriginal) node.dataset.arOriginal = node.textContent;
-        node.textContent = node.getAttribute('data-ar-text');
-      }
+      if (!node.dataset.arOriginalHtml) node.dataset.arOriginalHtml = node.innerHTML;
+      node.textContent = node.getAttribute('data-ar-text');
     });
+    var footerLabels = ["التنقل", "التواصل", "النظام"];
+    var footerLinks = ["الدراسة", "المشاريع", "الورش", "الموارد", "لينكدإن", "جيت هب", "البريد الإلكتروني", "استوديو بلوبرنت", "حقوق النشر والسياسة", "إخلاء المسؤولية الأكاديمية", "إشعار الخصوصية"];
+    document.querySelectorAll(".shoug-footer-label").forEach(function (node, index) {
+      if (footerLabels[index]) node.textContent = footerLabels[index];
+    });
+    document.querySelectorAll(".shoug-footer-link").forEach(function (node, index) {
+      if (footerLinks[index]) node.textContent = footerLinks[index];
+    });
+    var footerMeta = document.querySelectorAll(".shoug-footer-meta");
+    if (footerMeta[0]) footerMeta[0].textContent = "الحالة: يعمل";
+    if (footerMeta[1]) footerMeta[1].textContent = "البروتوكول: HTTPS";
+    var footerDescription = document.querySelector(".shoug-footer-text:not(.shoug-footer-copyright)");
+    if (footerDescription) footerDescription.textContent = "ملف أعمال في هندسة البرمجيات والأمن السيبراني، يوثق المشاريع والأنظمة الدراسية والورش والموارد التقنية.";
+    var blueprintBar = document.getElementById("shoug-blueprint-bar");
+    if (blueprintBar) {
+      var blueprintLink = blueprintBar.querySelector("a");
+      if (blueprintBar.firstChild && blueprintBar.firstChild.nodeType === 3) blueprintBar.firstChild.textContent = "من تنفيذ ";
+      if (blueprintLink) blueprintLink.textContent = "بلوبرنت";
+    }
     document.querySelectorAll("input[placeholder], textarea[placeholder]").forEach(function (node) {
       if (!node.dataset.arPlaceholderOriginal) node.dataset.arPlaceholderOriginal = node.getAttribute("placeholder") || "";
       var original = node.dataset.arPlaceholderOriginal;
@@ -431,7 +461,11 @@
   }
 
   function restoreEnglish() {
+    document.querySelectorAll("[data-ar-original-html]").forEach(function (node) {
+      node.innerHTML = node.dataset.arOriginalHtml;
+    });
     document.querySelectorAll("[data-ar-original]").forEach(function (node) {
+      if (node.dataset.arOriginalHtml) return;
       var textNode = node.children.length ? findTrailingTextNode(node) : null;
       if (textNode) {
         textNode.textContent = node.dataset.arOriginal;
@@ -476,26 +510,34 @@
 
   function showAiWarning() {
     if (!document.body) return;
+    try {
+      if (sessionStorage.getItem("shoug-ar-disclosure-dismissed") === "true") return;
+    } catch (error) { }
     var banner = document.getElementById("shoug-ar-ai-warning");
     if (!banner) {
       banner = document.createElement("div");
       banner.id = "shoug-ar-ai-warning";
       banner.setAttribute("dir", "rtl");
       banner.setAttribute("lang", "ar");
-      banner.textContent = "إنذار : تم ترجمة هذه الصفحة باستخدام الذكاء الاصطناعي.";
-      banner.title = "إخفاء";
+      banner.setAttribute("role", "status");
+      banner.innerHTML = '<span>تنبيه: تمت ترجمة هذه الصفحة باستخدام الذكاء الاصطناعي.</span><button type="button" aria-label="إغلاق تنبيه الترجمة">×</button>';
       banner.style.cssText = [
         "position:fixed", "bottom:16px", "right:16px", "z-index:99999",
         "background:#ff2e2e", "color:#fff", "font-family:'JetBrains Mono',monospace",
         "font-weight:700", "font-size:12px", "letter-spacing:0.01em", "line-height:1.6",
-        "padding:10px 16px", "border-radius:6px", "max-width:280px",
-        "box-shadow:0 8px 24px rgba(255,46,46,0.45)", "cursor:pointer",
-        "text-align:right"
+        "padding:10px 12px 10px 16px", "border-radius:6px", "max-width:320px",
+        "box-shadow:0 8px 24px rgba(255,46,46,0.45)", "display:flex",
+        "align-items:flex-start", "gap:12px", "text-align:right"
       ].join(";");
-      banner.addEventListener("click", function () { banner.style.display = "none"; });
+      var closeButton = banner.querySelector("button");
+      closeButton.style.cssText = "border:0;background:transparent;color:#fff;font:700 22px/1 sans-serif;padding:0 2px;cursor:pointer;flex:0 0 auto;";
+      closeButton.addEventListener("click", function () {
+        banner.style.display = "none";
+        try { sessionStorage.setItem("shoug-ar-disclosure-dismissed", "true"); } catch (error) { }
+      });
       document.body.appendChild(banner);
     }
-    banner.style.display = "block";
+    banner.style.display = "flex";
   }
 
   function hideAiWarning() {
@@ -524,6 +566,12 @@
   function bindToggle() {
     var toggle = ensureLanguageToggle();
     if (!toggle || toggle.dataset.langBound === "true") return;
+
+    // Generated pages may include a legacy inline click handler. Replace the
+    // button once so language changes have one owner instead of toggling twice.
+    var cleanToggle = toggle.cloneNode(true);
+    toggle.replaceWith(cleanToggle);
+    toggle = cleanToggle;
     toggle.dataset.langBound = "true";
     toggle.addEventListener("click", function () {
       var isArabic = String(document.documentElement.lang || "").toLowerCase().indexOf("ar") === 0;

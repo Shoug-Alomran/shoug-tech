@@ -319,8 +319,8 @@
       "body.shoug-light-mode #shoug-ue-box{background:#fff;}",
       /* Blueprint credit bar */
       ".shoug-site-footer:has(#shoug-blueprint-bar){padding-bottom:18px;}",
-      "#shoug-blueprint-bar{width:min(1440px,100%);margin:16px auto 0;padding:0;display:flex;align-items:center;justify-content:flex-end;border-top:0;font-family:'JetBrains Mono',monospace;font-size:.68rem;color:#5a5266;letter-spacing:.12em;box-sizing:border-box;}",
-      "#shoug-blueprint-bar a{color:#b829ea;text-decoration:none;font-weight:700;transition:color 120ms;}",
+      "#shoug-blueprint-bar{width:min(1440px,100%);margin:16px auto 0;padding:0;display:flex;align-items:center;justify-content:flex-end;border-top:0;font-family:'JetBrains Mono',monospace;font-size:.68rem;color:#9b92a8;letter-spacing:.12em;box-sizing:border-box;}",
+      "#shoug-blueprint-bar a{color:#c940f5;text-decoration:none;font-weight:700;transition:color 120ms;}",
       "#shoug-blueprint-bar a:hover{color:#c940f5;}",
       "body.shoug-light-mode #shoug-blueprint-bar{color:#8f8b9a;}",
       "@media(max-width:760px){.shoug-site-footer:has(#shoug-blueprint-bar){padding-bottom:22px;}#shoug-blueprint-bar{justify-content:flex-start;margin-top:20px;font-size:.66rem;}}",
