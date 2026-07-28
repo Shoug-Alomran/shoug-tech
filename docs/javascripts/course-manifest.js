@@ -3116,6 +3116,15 @@ var COURSE_PAGES = [
     "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
   },
   {
+    "url": "/academics/other-courses/ethcs303/extra-resources/final-exam-listing/",
+    "title": "ETHCS303 | Final Exam — The Listing Vault",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "extra-resources",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
     "url": "/academics/other-courses/ethcs303/extra-resources/ieee-code-of-conduct/",
     "title": "ETHCS303 | IEEE Code of Conduct",
     "track": "other-courses",
@@ -3478,6 +3487,15 @@ var COURSE_PAGES = [
   {
     "url": "/academics/other-courses/ethcs303/quizzes/17-cyber-laws-in-saudi-arabia-quiz/",
     "title": "ETHCS303 | Cyber Laws in Saudi Arabia Quiz",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "quizzes",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
+    "url": "/academics/other-courses/ethcs303/quizzes/17-intellectual-property-laws-quiz/",
+    "title": "ETHCS303 | Intellectual Property Laws Quiz",
     "track": "other-courses",
     "course": "ethcs303",
     "section": "quizzes",
@@ -6010,7 +6028,7 @@ var COURSE_MANIFEST = {
   "com201": 24,
   "eng101": 37,
   "eng103": 7,
-  "ethcs303": 86,
+  "ethcs303": 88,
   "isc113": 23,
   "math221": 39,
   "phy105": 17,
@@ -6037,7 +6055,7 @@ var COURSE_MANIFEST_BY_TRACK = {
   "other-courses/com201": 24,
   "other-courses/eng101": 37,
   "other-courses/eng103": 7,
-  "other-courses/ethcs303": 86,
+  "other-courses/ethcs303": 88,
   "other-courses/isc113": 23,
   "other-courses/math221": 39,
   "other-courses/phy105": 17,
