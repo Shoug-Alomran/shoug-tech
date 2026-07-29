@@ -180,6 +180,66 @@
             border-right: 0.5px solid var(--border);
             padding: 1.5rem 1rem;
             background: var(--bg);
+            transition: width .15s ease, min-width .15s ease, padding .15s ease;
+        }
+
+        .sidebar.collapsed {
+            width: 0;
+            min-width: 0;
+            padding-left: 0;
+            padding-right: 0;
+            overflow: hidden;
+            border-right: 0;
+        }
+
+        .sidebar-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: .5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .sidebar-collapse-btn {
+            background: none;
+            border: 0.5px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text3);
+            font-size: 12px;
+            line-height: 1;
+            padding: 3px 6px;
+            cursor: pointer;
+        }
+
+        .sidebar-collapse-btn:hover {
+            background: var(--bg2);
+            color: var(--text);
+        }
+
+        .sidebar-expand-btn {
+            position: sticky;
+            top: 65px;
+            display: none;
+            align-items: center;
+            gap: 4px;
+            background: var(--bg2);
+            border: 0.5px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text2);
+            font-size: 12px;
+            padding: 6px 8px;
+            margin: 1.5rem 0 0 .5rem;
+            cursor: pointer;
+            height: fit-content;
+        }
+
+        .sidebar-expand-btn:hover {
+            background: var(--bg3);
+            color: var(--text);
+        }
+
+        .sidebar-expand-btn.visible {
+            display: flex;
         }
 
         .sidebar h3 {
@@ -188,7 +248,7 @@
             letter-spacing: 0.08em;
             text-transform: uppercase;
             color: var(--text3);
-            margin-bottom: 0.75rem;
+            margin-bottom: 0;
         }
 
         .sidebar ul {
@@ -583,7 +643,9 @@
         html,
         body {
             max-width: 100%;
-            overflow-x: hidden;
+            /* A shared script (html-theme-sync.js) injects overflow-x:hidden here at
+               runtime, which breaks position:sticky on .sidebar. Force it back off. */
+            overflow-x: visible !important;
         }
 
         img,
@@ -611,18 +673,59 @@
         }
 
         .chapter-toc {
+            position: sticky;
+            top: 57px;
+            z-index: 90;
             width: min(1400px, 95vw);
             margin: 1rem auto 0;
-            padding: .85rem 1rem;
-            display: flex;
-            flex-wrap: wrap;
-            gap: .5rem;
             background: var(--bg2);
             border: .5px solid var(--border);
             border-radius: var(--radius);
+            overflow: hidden;
         }
 
-        .chapter-toc a {
+        .toc-toggle {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: .5rem;
+            padding: .65rem 1rem;
+            background: transparent;
+            border: none;
+            color: var(--text);
+            font-size: .8rem;
+            font-weight: 500;
+            cursor: pointer;
+            text-align: left;
+        }
+
+        .toc-toggle:hover {
+            background: var(--bg3);
+        }
+
+        .toc-toggle-icon {
+            transition: transform .15s ease;
+        }
+
+        .chapter-toc.collapsed .toc-toggle-icon {
+            transform: rotate(-90deg);
+        }
+
+        .toc-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: .5rem;
+            padding: 0 1rem .85rem;
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+
+        .chapter-toc.collapsed .toc-links {
+            display: none;
+        }
+
+        .toc-links a {
             display: inline-flex;
             align-items: center;
             padding: .35rem .7rem;
@@ -634,7 +737,7 @@
             text-decoration: none;
         }
 
-        .chapter-toc a:hover {
+        .toc-links a:hover {
             color: var(--accent-text);
             border-color: var(--accent);
             text-decoration: none;
@@ -776,9 +879,10 @@
 
             .chapter-toc {
                 margin-top: .75rem;
+                top: 105px;
             }
 
-            .chapter-toc a {
+            .toc-links a {
                 flex: 1 1 auto;
                 justify-content: center;
             }
@@ -857,17 +961,26 @@
             type="button">AR</button><button class="toggle-btn" id="themeBtn" onclick="toggleTheme()">🌙 Dark</button>
         <div class="header-search" data-page-search-host=""></div>
     </div>
-    <nav aria-label="Table of contents" class="chapter-toc"><a href="#overview">Information Security Overview</a><a
-            href="#terminology">Key Terminology</a><a href="#cia">CIA Triad</a><a href="#triangle">Security
-            Triangle</a><a href="#attack-components">Attack Components</a><a href="#threat-types">Modern Cyber
-            Threats</a><a href="#threat-categories">Threat Categories</a><a href="#exploit">Software Exploitation</a><a
-            href="#info-warfare">Information Warfare</a><a href="#mistakes">Common Mistakes</a><a
-            href="#quick-review">Quick Review</a></nav>
+    <nav aria-label="Table of contents" class="chapter-toc" id="chapterToc">
+        <button aria-controls="tocLinks" aria-expanded="true" class="toc-toggle" id="tocToggle" type="button">
+            <span>📑 Table of Contents</span><span class="toc-toggle-icon">▾</span>
+        </button>
+        <div class="toc-links" id="tocLinks"><a href="#overview">Information Security Overview</a><a
+                href="#terminology">Key Terminology</a><a href="#cia">CIA Triad</a><a href="#triangle">Security
+                Triangle</a><a href="#attack-components">Attack Components</a><a href="#threat-types">Modern Cyber
+                Threats</a><a href="#threat-categories">Threat Categories</a><a href="#exploit">Software
+                Exploitation</a><a href="#info-warfare">Information Warfare</a><a href="#mistakes">Common
+                Mistakes</a><a href="#quick-review">Quick Review</a></div>
+    </nav>
     <div class="translation-warning" dir="rtl" id="aiTranslationWarning" lang="ar">⚠️ تمت ترجمة هذه الصفحة باستخدام
         الذكاء الاصطناعي وقد توجد بعض الأخطاء البسيطة في الترجمة.</div>
     <div class="container">
-        <nav class="sidebar">
-            <h3>Table of Contents</h3>
+        <nav class="sidebar" id="pageSidebar">
+            <div class="sidebar-head">
+                <h3>Table of Contents</h3>
+                <button aria-controls="pageSidebar" aria-expanded="true" aria-label="Collapse table of contents"
+                    class="sidebar-collapse-btn" id="sidebarCollapseBtn" type="button">✕</button>
+            </div>
             <ul>
                 <li><a href="#overview">Information Security Overview</a></li>
                 <li><a href="#terminology">Key Terminology</a></li>
@@ -882,6 +995,8 @@
                 <li><a href="#quick-review">Quick Review</a></li>
             </ul>
         </nav>
+        <button aria-controls="pageSidebar" aria-expanded="false" aria-label="Show table of contents"
+            class="sidebar-expand-btn" id="sidebarExpandBtn" type="button">📑 Contents</button>
         <main class="main" id="mainContent">
             <!-- HERO -->
             <section id="overview">
@@ -1621,6 +1736,40 @@
                 document.querySelectorAll('section[id]').forEach(s => observer.observe(s));
             }
 
+            function bindSidebarToggle() {
+                const sidebar = document.getElementById('pageSidebar');
+                const collapseBtn = document.getElementById('sidebarCollapseBtn');
+                const expandBtn = document.getElementById('sidebarExpandBtn');
+                if (!sidebar || !collapseBtn || !expandBtn) return;
+                const setCollapsed = collapsed => {
+                    sidebar.classList.toggle('collapsed', collapsed);
+                    expandBtn.classList.toggle('visible', collapsed);
+                    collapseBtn.setAttribute('aria-expanded', String(!collapsed));
+                    expandBtn.setAttribute('aria-expanded', String(!collapsed));
+                    try { localStorage.setItem('shoug-sidebar-collapsed', collapsed ? '1' : '0'); } catch (e) { }
+                };
+                let saved = null;
+                try { saved = localStorage.getItem('shoug-sidebar-collapsed'); } catch (e) { }
+                setCollapsed(saved === '1');
+                collapseBtn.addEventListener('click', () => setCollapsed(true));
+                expandBtn.addEventListener('click', () => setCollapsed(false));
+            }
+
+            function bindTocToggle() {
+                const toc = document.getElementById('chapterToc');
+                const toggle = document.getElementById('tocToggle');
+                if (!toc || !toggle) return;
+                const setCollapsed = collapsed => {
+                    toc.classList.toggle('collapsed', collapsed);
+                    toggle.setAttribute('aria-expanded', String(!collapsed));
+                    try { localStorage.setItem('shoug-toc-collapsed', collapsed ? '1' : '0'); } catch (e) { }
+                };
+                let saved = null;
+                try { saved = localStorage.getItem('shoug-toc-collapsed'); } catch (e) { }
+                setCollapsed(saved === '1');
+                toggle.addEventListener('click', () => setCollapsed(!toc.classList.contains('collapsed')));
+            }
+
             document.addEventListener('DOMContentLoaded', function () {
                 const savedTheme = (() => { try { return localStorage.getItem('shoug-theme') || localStorage.getItem('theme'); } catch (e) { return null; } })();
                 const mode = savedTheme === 'light' ? 'light' : 'dark';
@@ -1633,6 +1782,8 @@
                 try { savedLang = localStorage.getItem('shoug-lang-ethical-hacking') || 'en'; } catch (e) { }
                 setLanguage(savedLang === 'ar' ? 'ar' : 'en');
                 bindSidebarObserver();
+                bindTocToggle();
+                bindSidebarToggle();
             });
         })();
     </script>
