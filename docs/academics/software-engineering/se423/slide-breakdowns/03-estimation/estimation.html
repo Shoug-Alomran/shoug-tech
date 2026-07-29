@@ -1,0 +1,2374 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sizing, Guessing &amp; COCOMO — The Estimation Playbook | SE423 Ch.3</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --radius-sm: 8px;
+            --radius-md: 14px;
+            --radius-lg: 22px;
+            --font-head: 'Space Grotesk', sans-serif;
+            --font-body: 'Inter', sans-serif;
+            --font-mono: 'IBM Plex Mono', monospace;
+            --maxw: 1180px;
+        }
+
+        html[data-theme="dark"] {
+            --bg: #171310;
+            --surface: #211b17;
+            --surface-2: #2a231d;
+            --ink: #f1e9df;
+            --ink-dim: #ad9f8f;
+            --line: #3a3128;
+            --accent: #e2984a;
+            --accent-2: #4fa6b0;
+            --danger: #e2694a;
+            --good: #62b06a;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        html[data-theme="light"] {
+            --bg: #f4efe7;
+            --surface: #ffffff;
+            --surface-2: #f6f0e6;
+            --ink: #241d15;
+            --ink-dim: #6c5f4f;
+            --line: #ddd0bd;
+            --accent: #b3702a;
+            --accent-2: #21777f;
+            --danger: #b8402a;
+            --good: #2f7a3a;
+            --shadow: 0 10px 26px rgba(40, 30, 15, 0.12);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            background:
+                radial-gradient(circle at 1px 1px, var(--line) 1px, transparent 1px) 0 0/26px 26px,
+                var(--bg);
+            color: var(--ink);
+            font-family: var(--font-body);
+            font-size: clamp(15px, 0.4vw + 14px, 17px);
+            line-height: 1.6;
+            transition: background-color .35s ease, color .35s ease;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4 {
+            font-family: var(--font-head);
+            margin: 0;
+            letter-spacing: -0.01em;
+        }
+
+        a {
+            color: inherit;
+        }
+
+        .mono {
+            font-family: var(--font-mono);
+        }
+
+        .wrap {
+            max-width: var(--maxw);
+            margin: 0 auto;
+            padding: 0 clamp(16px, 4vw, 40px);
+        }
+
+        header.top {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            backdrop-filter: blur(10px);
+            background: color-mix(in srgb, var(--bg) 78%, transparent);
+            border-bottom: 1px solid var(--line);
+        }
+
+        .top-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px clamp(16px, 4vw, 40px);
+            max-width: var(--maxw);
+            margin: 0 auto;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .brand .logo-mini {
+            width: 30px;
+            height: 30px;
+            flex: none;
+        }
+
+        .brand-text {
+            font-family: var(--font-head);
+            font-weight: 700;
+            font-size: 1.05rem;
+        }
+
+        .brand-text span {
+            color: var(--accent);
+        }
+
+        nav.pillnav {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        nav.pillnav a {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            text-decoration: none;
+            color: var(--ink-dim);
+            padding: 6px 9px;
+            border-radius: 999px;
+            border: 1px solid transparent;
+            white-space: nowrap;
+            transition: all .2s ease;
+        }
+
+        nav.pillnav a:hover {
+            color: var(--ink);
+            border-color: var(--line);
+            background: var(--surface);
+        }
+
+        .theme-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            color: var(--ink-dim);
+        }
+
+        .switch {
+            width: 46px;
+            height: 26px;
+            border-radius: 999px;
+            background: var(--surface-2);
+            border: 1px solid var(--line);
+            position: relative;
+            cursor: pointer;
+            flex: none;
+        }
+
+        .switch .knob {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--accent);
+            transition: left .25s ease, background .25s ease;
+        }
+
+        html[data-theme="light"] .switch .knob {
+            left: 22px;
+        }
+
+        .hero {
+            padding: clamp(40px, 7vw, 80px) 0 clamp(20px, 4vw, 40px);
+        }
+
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: clamp(20px, 4vw, 50px);
+            align-items: center;
+        }
+
+        @media (max-width:820px) {
+            .hero-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .eyebrow {
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--accent-2);
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .eyebrow::before {
+            content: '';
+            width: 26px;
+            height: 1px;
+            background: var(--accent-2);
+        }
+
+        h1.hero-title {
+            font-size: clamp(2.1rem, 5vw, 3.6rem);
+            line-height: 1.05;
+            font-weight: 700;
+        }
+
+        h1.hero-title em {
+            font-style: normal;
+            color: var(--accent);
+        }
+
+        .hero-sub {
+            margin-top: 18px;
+            color: var(--ink-dim);
+            max-width: 54ch;
+            font-size: 1.02rem;
+        }
+
+        .hero-badges {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 22px;
+        }
+
+        .badge {
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            padding: 6px 12px;
+            border-radius: 8px;
+            background: var(--surface);
+            border: 1px solid var(--line);
+            color: var(--ink-dim);
+        }
+
+        .gauge-wrap {
+            display: flex;
+            justify-content: center;
+        }
+
+        .gauge-wrap svg {
+            width: min(340px, 90%);
+            height: auto;
+        }
+
+        section {
+            padding: clamp(30px, 5vw, 60px) 0;
+            border-top: 1px solid var(--line);
+        }
+
+        section:first-of-type {
+            border-top: none;
+        }
+
+        .sec-head {
+            margin-bottom: clamp(20px, 3vw, 34px);
+            max-width: 74ch;
+        }
+
+        .sec-num {
+            font-family: var(--font-mono);
+            color: var(--accent);
+            font-size: 0.78rem;
+            letter-spacing: 0.1em;
+        }
+
+        .sec-title {
+            font-size: clamp(1.5rem, 3vw, 2.1rem);
+            margin-top: 6px;
+        }
+
+        .sec-desc {
+            color: var(--ink-dim);
+            margin-top: 10px;
+            font-size: 0.98rem;
+        }
+
+        .mnemonic {
+            background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 14%, transparent), transparent);
+            border: 1px dashed color-mix(in srgb, var(--accent) 55%, var(--line));
+            border-radius: var(--radius-md);
+            padding: 16px 20px;
+            display: flex;
+            gap: 14px;
+            align-items: flex-start;
+            margin: 18px 0;
+        }
+
+        .mnemonic .icon {
+            font-size: 1.4rem;
+            flex: none;
+            line-height: 1;
+        }
+
+        .mnemonic .label {
+            font-family: var(--font-mono);
+            font-size: 0.68rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--accent);
+        }
+
+        .mnemonic .phrase {
+            font-family: var(--font-head);
+            font-weight: 600;
+            font-size: 1.05rem;
+            margin-top: 3px;
+        }
+
+        .mnemonic .decode {
+            color: var(--ink-dim);
+            font-size: 0.86rem;
+            margin-top: 4px;
+        }
+
+        .stack-diagram {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 0;
+            margin-top: 20px;
+            border: 1px solid var(--line);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+        }
+
+        .stack-layer {
+            padding: 20px clamp(16px, 3vw, 28px);
+            position: relative;
+        }
+
+        .stack-layer.a {
+            background: color-mix(in srgb, var(--accent) 10%, var(--surface));
+            border-bottom: 1px dashed var(--line);
+        }
+
+        .stack-layer.b {
+            background: var(--surface);
+        }
+
+        .stack-layer .tag {
+            font-family: var(--font-mono);
+            font-size: 0.68rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--accent);
+        }
+
+        .stack-layer h4 {
+            font-size: 1.15rem;
+            margin-top: 6px;
+        }
+
+        .stack-layer p {
+            color: var(--ink-dim);
+            font-size: 0.9rem;
+            margin-top: 6px;
+            max-width: 70ch;
+        }
+
+        .stack-layer.b .tag {
+            color: var(--accent-2);
+        }
+
+        .grid5 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 14px;
+            margin-top: 20px;
+        }
+
+        .type-card {
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: var(--radius-md);
+            padding: 18px;
+            transition: transform .2s ease, box-shadow .2s ease;
+        }
+
+        .type-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow);
+        }
+
+        .type-card .icon {
+            font-size: 1.5rem;
+        }
+
+        .type-card h4 {
+            font-size: 1.0rem;
+            margin-top: 8px;
+        }
+
+        .type-card p {
+            color: var(--ink-dim);
+            font-size: 0.84rem;
+            margin: 8px 0 0;
+        }
+
+        .type-card .tag-row {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+
+        .adv-row {
+            display: flex;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        .adv-row .plus {
+            color: var(--good);
+            font-size: 0.78rem;
+        }
+
+        .adv-row .minus {
+            color: var(--danger);
+            font-size: 0.78rem;
+        }
+
+        .qa-deep {
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: var(--radius-lg);
+            padding: clamp(18px, 3vw, 30px);
+            margin-bottom: 26px;
+            position: relative;
+            border-left: 5px solid var(--accent);
+        }
+
+        .qa-deep-head {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+
+        .qa-deep h3 {
+            font-size: clamp(1.2rem, 2.2vw, 1.6rem);
+        }
+
+        .qa-tag {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            padding: 5px 11px;
+            border-radius: 999px;
+            background: var(--surface-2);
+            border: 1px solid var(--line);
+            color: var(--ink-dim);
+        }
+
+        .qa-def {
+            margin-top: 10px;
+            color: var(--ink);
+            font-size: 0.98rem;
+            max-width: 78ch;
+        }
+
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 22px;
+            margin-top: 20px;
+        }
+
+        @media (max-width:760px) {
+            .two-col {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .subhead {
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--accent-2);
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .pattern-chip-row {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 4px;
+        }
+
+        .pattern-chip {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            padding: 5px 12px;
+            border-radius: 999px;
+            background: color-mix(in srgb, var(--accent) 14%, var(--surface-2));
+            border: 1px solid var(--line);
+        }
+
+        .example-strip {
+            margin-top: 16px;
+            background: color-mix(in srgb, var(--accent-2) 10%, transparent);
+            border: 1px solid color-mix(in srgb, var(--accent-2) 35%, var(--line));
+            border-radius: var(--radius-sm);
+            padding: 12px 14px;
+            font-size: 0.86rem;
+        }
+
+        .example-strip b {
+            color: var(--accent-2);
+        }
+
+        .rule-box {
+            margin-top: 14px;
+            background: var(--surface-2);
+            border: 1px solid var(--line);
+            border-radius: var(--radius-sm);
+            padding: 12px 14px;
+            font-size: 0.84rem;
+            color: var(--ink-dim);
+        }
+
+        .rule-box b {
+            color: var(--ink);
+        }
+
+        .formula-box {
+            margin: 18px 0;
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: var(--radius-md);
+            padding: 22px clamp(16px, 3vw, 30px);
+            text-align: center;
+        }
+
+        .formula-box .formula {
+            font-family: var(--font-head);
+            font-size: clamp(1.3rem, 3vw, 2rem);
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        .formula-box .formula sup {
+            font-size: 0.6em;
+        }
+
+        .formula-box .legend {
+            margin-top: 12px;
+            font-size: 0.82rem;
+            color: var(--ink-dim);
+            text-align: left;
+            max-width: 60ch;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .formula-box .legend b {
+            color: var(--ink);
+        }
+
+        .cheat-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .cheat-table th,
+        .cheat-table td {
+            border: 1px solid var(--line);
+            padding: 12px 14px;
+            text-align: left;
+            font-size: 0.85rem;
+        }
+
+        .cheat-table th {
+            background: var(--surface-2);
+            font-family: var(--font-mono);
+            font-size: 0.68rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--accent-2);
+        }
+
+        .cheat-table tr:nth-child(even) td {
+            background: color-mix(in srgb, var(--surface-2) 55%, transparent);
+        }
+
+        .cheat-table td.num,
+        .cheat-table th.num {
+            text-align: right;
+            font-family: var(--font-mono);
+        }
+
+        .table-scroll {
+            overflow-x: auto;
+        }
+
+        .examroom {
+            background: repeating-linear-gradient(180deg, var(--surface) 0px, var(--surface) 27px, var(--surface-2) 28px);
+            border: 1px solid var(--line);
+            border-radius: var(--radius-lg);
+            padding: clamp(18px, 3vw, 28px);
+        }
+
+        .practice-q {
+            border: 1px solid var(--line);
+            border-radius: var(--radius-sm);
+            background: var(--surface);
+            padding: 14px 16px;
+            margin: 12px 0;
+            font-size: 0.92rem;
+        }
+
+        .practice-q .req {
+            color: var(--ink);
+        }
+
+        .practice-q .ans {
+            margin-top: 8px;
+            font-family: var(--font-mono);
+            font-size: 0.78rem;
+            color: var(--accent);
+        }
+
+        .practice-q .why {
+            margin-top: 6px;
+            color: var(--ink-dim);
+            font-size: 0.82rem;
+        }
+
+        .practice-q .calc {
+            margin-top: 8px;
+            background: var(--surface-2);
+            border-radius: var(--radius-sm);
+            padding: 10px 12px;
+            font-family: var(--font-mono);
+            font-size: 0.78rem;
+            color: var(--ink-dim);
+            white-space: pre-wrap;
+        }
+
+        .mistake-box {
+            border: 1px solid color-mix(in srgb, var(--danger) 45%, var(--line));
+            border-radius: var(--radius-md);
+            padding: 16px 18px;
+            margin: 16px 0;
+            background: color-mix(in srgb, var(--danger) 7%, var(--surface));
+        }
+
+        .mistake-box .m-title {
+            font-family: var(--font-head);
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 10px;
+        }
+
+        .mistake-row {
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+            margin-top: 8px;
+            font-size: 0.88rem;
+        }
+
+        .mistake-row .mk {
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            font-weight: 600;
+            flex: none;
+            padding: 3px 8px;
+            border-radius: 6px;
+            margin-top: 1px;
+        }
+
+        .mistake-row.wrong .mk {
+            color: var(--danger);
+            background: color-mix(in srgb, var(--danger) 16%, transparent);
+        }
+
+        .mistake-row.right .mk {
+            color: var(--good);
+            background: color-mix(in srgb, var(--good) 16%, transparent);
+        }
+
+        .quiz-list {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            margin-top: 20px;
+        }
+
+        .quiz-item {
+            border: 1px solid var(--line);
+            border-radius: var(--radius-md);
+            background: var(--surface);
+            padding: 16px 18px;
+        }
+
+        .quiz-q {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 14px;
+            cursor: pointer;
+        }
+
+        .quiz-q .qtext {
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        .quiz-q .qtype {
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            color: var(--ink-dim);
+            border: 1px solid var(--line);
+            padding: 3px 8px;
+            border-radius: 999px;
+            white-space: nowrap;
+        }
+
+        .quiz-reveal {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            background: var(--surface-2);
+            color: var(--accent);
+            border: 1px solid var(--line);
+            border-radius: 999px;
+            padding: 6px 14px;
+            cursor: pointer;
+            flex: none;
+        }
+
+        .quiz-reveal:hover {
+            background: color-mix(in srgb, var(--accent) 14%, var(--surface-2));
+        }
+
+        .quiz-answer {
+            display: none;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px dashed var(--line);
+            font-size: 0.88rem;
+            color: var(--ink-dim);
+        }
+
+        .quiz-answer.show {
+            display: block;
+        }
+
+        .quiz-answer b {
+            color: var(--accent);
+        }
+
+        .chunk-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .chunk-cell {
+            border: 1px solid var(--line);
+            border-radius: var(--radius-sm);
+            padding: 12px;
+            text-align: center;
+            background: var(--surface);
+        }
+
+        .chunk-cell .k {
+            font-family: var(--font-mono);
+            font-size: 1.1rem;
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .chunk-cell .v {
+            font-size: 0.76rem;
+            color: var(--ink-dim);
+            margin-top: 4px;
+        }
+
+        footer {
+            padding: 40px clamp(16px, 4vw, 40px) 60px;
+            text-align: center;
+            color: var(--ink-dim);
+            font-family: var(--font-mono);
+            font-size: 0.78rem;
+        }
+
+        footer .made {
+            color: var(--ink);
+            font-weight: 600;
+            margin-top: 6px;
+        }
+
+        footer .made span {
+            color: var(--accent);
+        }
+
+        .toc-hint {
+            margin-top: 26px;
+            color: var(--ink-dim);
+            font-size: 0.82rem;
+        }
+
+        ::selection {
+            background: var(--accent);
+            color: #fff;
+        }
+    </style>
+
+    <meta name="description"
+        content="Estimation is a guess you refine on purpose — expert judgment, three-point PERT math, and COCOMO's regression formulas, all worked step by step for SE423 Chapter 3.">
+    <link rel="canonical"
+        href="https://shoug-tech.com/academics/software-engineering/se423/slide-breakdowns/03-estimation/estimation.html">
+    <meta property="og:title" content="Sizing, Guessing &amp; COCOMO — The Estimation Playbook | SE423 Ch.3">
+    <meta property="og:description"
+        content="Estimation is a guess you refine on purpose — expert judgment, three-point PERT math, and COCOMO's regression formulas, all worked step by step for SE423 Chapter 3.">
+    <meta property="og:url"
+        content="https://shoug-tech.com/academics/software-engineering/se423/slide-breakdowns/03-estimation/estimation.html">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://shoug-tech.com/logo.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Sizing, Guessing &amp; COCOMO — The Estimation Playbook | SE423 Ch.3">
+    <meta name="twitter:description"
+        content="Estimation is a guess you refine on purpose — expert judgment, three-point PERT math, and COCOMO's regression formulas, all worked step by step for SE423 Chapter 3.">
+    <meta name="twitter:image" content="https://shoug-tech.com/logo.png">
+    <script
+        type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","url":"https://shoug-tech.com/academics/software-engineering/se423/slide-breakdowns/03-estimation/estimation.html","name":"Sizing, Guessing &amp; COCOMO — The Estimation Playbook | SE423 Ch.3","description":"Estimation is a guess you refine on purpose — expert judgment, three-point PERT math, and COCOMO's regression formulas, all worked step by step for SE423 Chapter 3.","isPartOf":{"@type":"WebSite","name":"Shoug's Digital Garden","url":"https://shoug-tech.com/"}}</script>
+
+    <link rel="alternate" hreflang="en"
+        href="https://shoug-tech.com/academics/software-engineering/se423/slide-breakdowns/03-estimation/estimation.html">
+    <link rel="alternate" hreflang="ar"
+        href="https://shoug-tech.com/ar/academics/software-engineering/se423/slide-breakdowns/03-estimation/estimation.html">
+    <link rel="alternate" hreflang="x-default"
+        href="https://shoug-tech.com/academics/software-engineering/se423/slide-breakdowns/03-estimation/estimation.html">
+</head>
+
+<body>
+
+    <header class="top">
+        <div class="top-inner">
+            <div class="brand">
+                <svg class="logo-mini" viewBox="0 0 40 40">
+                    <rect x="6" y="6" width="28" height="28" rx="6" fill="none" stroke="currentColor" stroke-width="2"
+                        opacity="0.35" />
+                    <path d="M13 27 L18 18 L23 22 L27 12" stroke="var(--accent)" stroke-width="2.2" fill="none"
+                        stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+                <div class="brand-text">Estimation<span>·</span>Playbook</div>
+            </div>
+            <nav class="pillnav">
+                <a href="#estimation">Estimation</a>
+                <a href="#uncertainty">Cone</a>
+                <a href="#methods">Methodologies</a>
+                <a href="#algorithmic">LOC &amp; FP</a>
+                <a href="#function-points">FP Process</a>
+                <a href="#duration">Effort vs Duration</a>
+                <a href="#three-point">Three-Point</a>
+                <a href="#cocomo">COCOMO</a>
+                <a href="#issues">Issues</a>
+                <a href="#final">Final Notes</a>
+                <a href="#cheat">Cheat Sheet</a>
+                <a href="#mistakes">Mistakes</a>
+                <a href="#quiz">Pop Quiz</a>
+                <a href="#lab">Practice Lab</a>
+            </nav>
+            <div class="theme-toggle">
+                <span id="theme-label">DARK</span>
+                <div class="switch" id="switch" role="button" aria-label="Toggle theme">
+                    <div class="knob"></div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+
+        <!-- HERO -->
+        <section class="hero">
+            <div class="wrap hero-grid">
+                <div>
+                    <div class="eyebrow">SE423 · Software Project Management · Chapter 03</div>
+                    <h1 class="hero-title">You can't schedule<br><em>what you can't size.</em></h1>
+                    <p class="hero-sub">Estimating a software project is like guessing how long your drive home
+                        will take: you can use experience ("I've done this before"), an average, or run the numbers.
+                        None of it is exact — <b>most software estimations are off by 25–100%</b> — but a good
+                        estimate is a disciplined, repeatable guess, not a shrug. This chapter walks the full chain:
+                        size → effort → schedule, the math behind three-point and COCOMO estimating, and the human
+                        politics of presenting a number nobody wants to hear.</p>
+                    <div class="hero-badges">
+                        <div class="badge">Size → Effort → Schedule</div>
+                        <div class="badge">Three-Point &amp; PERT math</div>
+                        <div class="badge">COCOMO worked examples</div>
+                        <div class="badge">Function Points</div>
+                    </div>
+                </div>
+                <div class="gauge-wrap">
+                    <svg viewBox="0 0 320 260">
+                        <path d="M40 210 A120 120 0 0 1 280 210" fill="none" stroke="var(--line)" stroke-width="18"
+                            stroke-linecap="round" />
+                        <path d="M40 210 A120 120 0 0 1 160 90" fill="none" stroke="var(--accent-2)" stroke-width="18"
+                            stroke-linecap="round" opacity="0.55" />
+                        <path d="M160 90 A120 120 0 0 1 280 210" fill="none" stroke="var(--accent)" stroke-width="18"
+                            stroke-linecap="round" opacity="0.85" />
+                        <line x1="160" y1="210" x2="205" y2="120" stroke="var(--ink)" stroke-width="4"
+                            stroke-linecap="round" />
+                        <circle cx="160" cy="210" r="10" fill="var(--ink)" />
+                        <g font-family="IBM Plex Mono" font-size="11" fill="var(--ink-dim)" text-anchor="middle">
+                            <text x="40" y="232">O</text>
+                            <text x="160" y="72">M</text>
+                            <text x="280" y="232">P</text>
+                        </g>
+                        <text x="160" y="250" text-anchor="middle" font-family="IBM Plex Mono" font-size="11"
+                            fill="var(--accent)">(O + 4M + P) / 6</text>
+                    </svg>
+                </div>
+            </div>
+        </section>
+
+        <!-- ESTIMATION BASICS -->
+        <section id="estimation">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 01 — WHAT IS ESTIMATION</div>
+                    <h2 class="sec-title">A disciplined guess, not a promise</h2>
+                    <p class="sec-desc">Estimation is difficult because of evolving requirements, technical
+                        unknowns, team skill/availability, and external dependencies. Remember: an "exact estimate"
+                        is not possible.</p>
+                </div>
+
+                <div class="mnemonic">
+                    <div class="icon">📏</div>
+                    <div>
+                        <div class="label">Memory hook</div>
+                        <div class="phrase">"See Every Schedule" — Size, Effort, Schedule.</div>
+                        <div class="decode">The basic estimation process, always in this order: 1) estimate the
+                            <b>size</b> of the product, 2) estimate the <b>effort</b> (person-months), 3) estimate the
+                            <b>schedule</b>. Note: not every project explicitly performs all three steps.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="two-col">
+                    <div>
+                        <span class="subhead">Where estimates get created or refined</span>
+                        <div class="rule-box">
+                            <b>Strategic planning</b> — aligns project goals with organizational
+                            capacity/timelines.<br><br>
+                            <b>Feasibility study / SOW</b> (Statement of Work — defines scope, deliverables, timelines,
+                            responsibilities) — determines whether the project is viable.<br><br>
+                            <b>Proposals</b> — justify cost, scope, timeline to stakeholders/clients.<br><br>
+                            <b>Vendor &amp; sub-contractor evaluation</b> — compares bids, assesses realism,
+                            negotiates.<br><br>
+                            <b>Project planning (iteratively)</b> — refines estimates as more information appears.
+                        </div>
+                    </div>
+                    <div>
+                        <span class="subhead">Target vs. Committed dates</span>
+                        <div class="rule-box">
+                            <b>Target date</b>: proposed by business or marketing. Do <b>not</b> commit to this too
+                            soon — learn to say no, and how to say it.<br><br>
+                            <b>Committed date</b>: what the team agrees to, based on actual planning, <i>after</i>
+                            a schedule has been developed.
+                        </div>
+                        <div class="example-strip"><b>Rule of thumb from class:</b> the "get home from class today"
+                            exercise — you estimate using experience and something like a historical "average," but
+                            for most software projects there is no such reliable average.</div>
+                    </div>
+                </div>
+
+                <div class="qa-deep" style="margin-top:26px; border-left-color: var(--accent-2);">
+                    <div class="qa-deep-head">
+                        <h3>As project size increases, so does uncertainty</h3><span class="qa-tag">post-requirements
+                            variance</span>
+                    </div>
+                    <p class="qa-def">Variance from post-requirements estimates grows sharply with size — measured
+                        in Function Points (FPs):</p>
+                    <div class="table-scroll">
+                        <table class="cheat-table">
+                            <tr>
+                                <th>Project size</th>
+                                <th>FP range</th>
+                                <th class="num">Typical variance</th>
+                            </tr>
+                            <tr>
+                                <td>Small</td>
+                                <td>10–99 FPs</td>
+                                <td class="num">7%</td>
+                            </tr>
+                            <tr>
+                                <td>Medium</td>
+                                <td>100–999 FPs</td>
+                                <td class="num">22%</td>
+                            </tr>
+                            <tr>
+                                <td>Large</td>
+                                <td>1,000–9,999 FPs</td>
+                                <td class="num">38%</td>
+                            </tr>
+                            <tr>
+                                <td>Very large</td>
+                                <td>&gt; 10,000 FPs</td>
+                                <td class="num">51%</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="rule-box" style="margin-top:14px;"><b>Takeaway:</b> push back on target dates, and
+                        understand that variance is normal — not a sign you did the estimate wrong.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CONE OF UNCERTAINTY -->
+        <section id="uncertainty">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 02 — THE CONE OF UNCERTAINTY</div>
+                    <h2 class="sec-title">Estimates converge as the project moves forward</h2>
+                </div>
+                <div class="two-col">
+                    <div>
+                        <p style="color:var(--ink-dim); font-size:0.92rem;">The <b>upper curve</b> is the maximum
+                            possible overestimation; the <b>lower curve</b> is the maximum possible underestimation.
+                            Early estimates (feasibility/proposal stage) can swing from <b>0.25x to 4x</b> the actual
+                            scope. As the project moves through requirements gathering, design, and development, the
+                            curves <b>converge toward 1x</b> — the estimate becomes more accurate and reliable.</p>
+                        <div class="example-strip"><b>Why this matters:</b> a number given at kickoff and a number
+                            given after requirements are locked are not the same kind of promise — treat them
+                            differently when communicating to stakeholders.</div>
+                    </div>
+                    <div>
+                        <svg viewBox="0 0 300 220" style="width:100%; height:auto;">
+                            <line x1="20" y1="200" x2="280" y2="200" stroke="var(--line)" stroke-width="1.5" />
+                            <line x1="20" y1="20" x2="20" y2="200" stroke="var(--line)" stroke-width="1.5" />
+                            <path d="M25 30 C 90 60, 160 100, 270 108" fill="none" stroke="var(--accent)"
+                                stroke-width="2.5" />
+                            <path d="M25 190 C 90 150, 160 115, 270 108" fill="none" stroke="var(--accent-2)"
+                                stroke-width="2.5" />
+                            <circle cx="270" cy="108" r="4" fill="var(--ink)" />
+                            <text x="30" y="24" font-family="IBM Plex Mono" font-size="10" fill="var(--accent)">4x
+                                overestimate</text>
+                            <text x="30" y="205" font-family="IBM Plex Mono" font-size="10" fill="var(--accent-2)">0.25x
+                                underestimate</text>
+                            <text x="220" y="100" font-family="IBM Plex Mono" font-size="10" fill="var(--ink-dim)">1x
+                                actual</text>
+                            <text x="150" y="216" text-anchor="middle" font-family="IBM Plex Mono" font-size="10"
+                                fill="var(--ink-dim)">Time / project progress →</text>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- METHODOLOGIES -->
+        <section id="methods">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 03 — ESTIMATION METHODOLOGIES</div>
+                    <h2 class="sec-title">Six ways to arrive at a number</h2>
+                </div>
+
+                <div class="mnemonic">
+                    <div class="icon">🧭</div>
+                    <div>
+                        <div class="label">Memory hook</div>
+                        <div class="phrase">"Every Team Builds Amazing Prices, Precisely."</div>
+                        <div class="decode"><b>E</b>xpert Judgment · <b>T</b>op-down · <b>B</b>ottom-up ·
+                            <b>A</b>nalogy · <b>P</b>riced to Win · <b>P</b>arametric/Algorithmic. Note: Analogy,
+                            Expert Judgment, and Algorithmic methods can all also be "types" of Top-down estimation.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid5">
+                    <div class="type-card">
+                        <div class="icon">🧠</div>
+                        <h4>Expert Judgment</h4>
+                        <p>Someone with recent experience on a similar project gives a "guesstimate." Accuracy
+                            depends on their real expertise, and the comparable application must be accurately
+                            chosen.</p>
+                    </div>
+                    <div class="type-card">
+                        <div class="icon">🔽</div>
+                        <h4>Top-down</h4>
+                        <p>Starts with an overall project estimate, then breaks it into components. Useful early,
+                            when only high-level scope is known.</p>
+                        <div class="adv-row"><span class="plus">✓ Fast, strategic, effective early</span></div>
+                        <div class="adv-row"><span class="minus">✗ May overlook task-level complexity</span></div>
+                    </div>
+                    <div class="type-card">
+                        <div class="icon">🔼</div>
+                        <h4>Bottom-up</h4>
+                        <p>Build a WBS (Work Breakdown Structure), identify individual tasks, then sum from the
+                            bottom up. Needs a well-defined scope.</p>
+                        <div class="adv-row"><span class="plus">✓ More accurate, granular</span></div>
+                        <div class="adv-row"><span class="minus">✗ Time-consuming; needs detail</span></div>
+                    </div>
+                    <div class="type-card">
+                        <div class="icon">🪞</div>
+                        <h4>Analogy</h4>
+                        <p>Compares the current project to a sufficiently similar past project (technology, type,
+                            organization) using comparable attributes like # of inputs/outputs.</p>
+                        <div class="adv-row"><span class="plus">✓ Based on real historical data</span></div>
+                        <div class="adv-row"><span class="minus">✗ Hard to "match" projects; no two are exact</span>
+                        </div>
+                    </div>
+                    <div class="type-card">
+                        <div class="icon">🏷️</div>
+                        <h4>Priced to Win</h4>
+                        <p>Estimation driven by competitive pricing or client budget (via an RFQ — Request for
+                            Quote). The quote may not reflect actual cost or effort required.</p>
+                        <div class="adv-row"><span class="plus">✓ Aligns with market expectations</span></div>
+                        <div class="adv-row"><span class="minus">✗ May undercut realistic effort → overruns</span></div>
+                    </div>
+                    <div class="type-card">
+                        <div class="icon">🧮</div>
+                        <h4>Parametric / Algorithmic</h4>
+                        <p>Uses mathematical models and historical data to generate estimates automatically —
+                            COCOMO, Function Point analysis, and similar.</p>
+                    </div>
+                </div>
+
+                <div class="qa-deep" style="margin-top:26px;">
+                    <div class="qa-deep-head">
+                        <h3>Priced to Win — the "priced to lose" trap</h3><span class="qa-tag">RFQ risk</span>
+                    </div>
+                    <p class="qa-def">Vendors need market intelligence (previous bids, client budget expectations —
+                        competitor pricing itself is not public) to price competitively. Some vendors intentionally
+                        <b>underbid</b> to win the contract, knowing they'll cut corners, request scope changes
+                        later, or absorb losses for strategic reasons (e.g. market entry). The purchaser must
+                        watch the trade-off: is the low price realistic, or will quality/scope suffer?
+                    </p>
+                </div>
+
+                <div class="qa-deep" style="border-left-color: var(--accent-2);">
+                    <div class="qa-deep-head">
+                        <h3>Wideband Delphi</h3><span class="qa-tag">group consensus</span>
+                    </div>
+                    <p class="qa-def">A group-consensus approach — Rand Corp. used the original Delphi method in the
+                        1940s to estimate future projects.</p>
+                    <div class="two-col">
+                        <div>
+                            <span class="subhead">The process</span>
+                            <p style="color:var(--ink-dim); font-size:0.88rem;">1. Present experts with a problem and
+                                response form — they fill out initial estimates <b>independently</b>.<br>
+                                2. Conduct group discussion, collect anonymous opinions, then share feedback — this
+                                surfaces hidden factors and clarifies misunderstandings.<br>
+                                3. Repeat discussion &amp; iterate until consensus.</p>
+                        </div>
+                        <div>
+                            <span class="subhead">Advantages / Disadvantages</span>
+                            <div class="rule-box">
+                                <b>+</b> Easy, inexpensive, uses expertise of several people; doesn't require
+                                historical data.<br><br>
+                                <b>−</b> Difficult to repeat; may fail to reach consensus, reach the wrong one, or
+                                everyone may share the same bias.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ALGORITHMIC MEASURES -->
+        <section id="algorithmic">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 04 — ALGORITHMIC MEASURES</div>
+                    <h2 class="sec-title">Lines of Code vs. Function Points</h2>
+                    <p class="sec-desc">LOC and Function Points are the two most common algorithmic size measures —
+                        though most projects actually use neither. Other possible measures: number of bubbles on a
+                        DFD, number of ERD entities, number of processes on a structure chart.</p>
+                </div>
+
+                <div class="two-col">
+                    <div class="qa-deep" style="margin:0;">
+                        <div class="qa-deep-head">
+                            <h3>Lines of Code (LOC)</h3><span class="qa-tag">code-based</span>
+                        </div>
+                        <span class="subhead" style="margin-top:14px;">Advantages</span>
+                        <div class="rule-box">Commonly understood, intuitive metric (no matter what language);
+                            permits specific comparison; actuals are easy to measure once code is written.</div>
+                        <span class="subhead" style="margin-top:14px;">Disadvantages</span>
+                        <div class="rule-box">Hard to estimate early (before requirements/design are clear); counts
+                            vary by language, reusable components, and programmer style (avg. productivity ≈ 3,000
+                            LOC/yr); ignores many costs (requirements, UI design, etc.); rewarding developers on LOC
+                            can incentivize bloated code; auto-generated/code-generator output inflates LOC without
+                            reflecting real effort.</div>
+                    </div>
+                    <div class="qa-deep" style="margin:0; border-left-color: var(--accent-2);">
+                        <div class="qa-deep-head">
+                            <h3>Function Points</h3><span class="qa-tag">functionality-based</span>
+                        </div>
+                        <p class="qa-def">Software size measured by the <b>number and complexity</b> of the
+                            functions it performs — more methodical than a raw LOC count. Language-independent,
+                            which is exactly what LOC is not. Variants include Feature Points and Object Points.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FUNCTION POINT PROCESS -->
+        <section id="function-points">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 05 — FUNCTION POINT PROCESS</div>
+                    <h2 class="sec-title">Four steps from function count to FP total</h2>
+                </div>
+
+                <div class="stack-diagram">
+                    <div class="stack-layer a">
+                        <span class="tag">Step 1</span>
+                        <h4>Count business functions per category</h4>
+                        <p>Categories: outputs, inputs, DB inquiries, files/data structures, and interfaces.</p>
+                    </div>
+                    <div class="stack-layer b">
+                        <span class="tag">Step 2</span>
+                        <h4>Apply a Complexity Factor to each</h4>
+                        <p>Rate each function Simple, Average, or Complex; apply a weighting multiplier (0–15). This
+                            produces the <b>"unadjusted function-point total."</b></p>
+                    </div>
+                    <div class="stack-layer a">
+                        <span class="tag">Step 3</span>
+                        <h4>Compute and apply an "influence multiplier"</h4>
+                        <p>Based on 14 factors rated 0–5 (performance requirements, data communications, transaction
+                            rates, reusability, etc.).</p>
+                    </div>
+                    <div class="stack-layer b">
+                        <span class="tag">Step 4</span>
+                        <h4>Result: the "function point total"</h4>
+                        <p>Used in comparative estimates.</p>
+                    </div>
+                </div>
+
+                <div class="qa-deep" style="margin-top:26px;">
+                    <div class="qa-deep-head">
+                        <h3>Complexity multiplier table</h3><span class="qa-tag">used in three-point FP example</span>
+                    </div>
+                    <div class="table-scroll">
+                        <table class="cheat-table">
+                            <tr>
+                                <th>Function type</th>
+                                <th class="num">Low</th>
+                                <th class="num">Average</th>
+                                <th class="num">High</th>
+                            </tr>
+                            <tr>
+                                <td>External inputs</td>
+                                <td class="num">×3</td>
+                                <td class="num">×4</td>
+                                <td class="num">×6</td>
+                            </tr>
+                            <tr>
+                                <td>External outputs</td>
+                                <td class="num">×4</td>
+                                <td class="num">×5</td>
+                                <td class="num">×7</td>
+                            </tr>
+                            <tr>
+                                <td>External queries</td>
+                                <td class="num">×3</td>
+                                <td class="num">×4</td>
+                                <td class="num">×6</td>
+                            </tr>
+                            <tr>
+                                <td>Internal logical files</td>
+                                <td class="num">×7</td>
+                                <td class="num">×10</td>
+                                <td class="num">×15</td>
+                            </tr>
+                            <tr>
+                                <td>External interface files</td>
+                                <td class="num">×5</td>
+                                <td class="num">×7</td>
+                                <td class="num">×10</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="rule-box" style="margin-top:14px;">Each function is placed into one of these five
+                        categories and multiplied by the appropriate weight for its Low/Average/High complexity —
+                        this is the mechanism behind Step 2's "unadjusted function-point total."</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- DURATION -->
+        <section id="duration">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 06 — EFFORT ESTIMATION &amp; DURATION</div>
+                    <h2 class="sec-title">Effort, duration, and the two clocks that never agree</h2>
+                    <p class="sec-desc">Once you know the "size" (FPs, LOC, etc.), determine the "effort" needed to
+                        build it, in person-months / staff-months. Models are Empirical (historical data), Mathematical
+                        (formulas/algorithms, e.g. Effort = a × Size<sup>b</sup>), or Subjective (expert judgment /
+                        team intuition, e.g. Wideband Delphi). Effort depends on the efficiency/productivity of
+                        people: motivation, ability of the team, application experience, range of personnel.</p>
+                </div>
+
+                <div class="mnemonic">
+                    <div class="icon">⏱️</div>
+                    <div>
+                        <div class="label">Memory hook</div>
+                        <div class="phrase">"Duration Divides, Effort multiplies."</div>
+                        <div class="decode">Duration is the elapsed time in <b>business working days</b> (excludes
+                            weekends, holidays, other nonworking days) — it is <b>not</b> the same as work effort.</div>
+                    </div>
+                </div>
+
+                <div class="formula-box">
+                    <div class="formula">Duration = Work Effort ÷ Number of People</div>
+                    <div class="legend"><b>→ more useful for scheduling.</b></div>
+                </div>
+                <div class="formula-box">
+                    <div class="formula">Work Effort = Duration × Number of People</div>
+                    <div class="legend"><b>→ more useful for cost estimation.</b> Work effort is the labor required
+                        to complete an activity. Example: five people reviewing a document — the <b>duration</b>
+                        may be 10 hours, but the <b>work effort</b> is 50 staff-hours.</div>
+                </div>
+
+                <div class="two-col">
+                    <div>
+                        <span class="subhead">Labor time vs. clock time</span>
+                        <div class="rule-box"><b>Labor time:</b> actual effort required (staff-hours).<br>
+                            <b>Clock time:</b> elapsed calendar time needed.<br><br>
+                            <b>Example:</b> a task needing 40 hours of labor typically needs <b>at least 50 business
+                                hours</b> of clock time. <i>Why?</i> Productivity is usually only 50–75% of a business
+                            day — a developer might get just 5–6 productive hours out of 8 office hours (meetings,
+                            email/communication, breaks, fatigue, task-switching/setup, etc.).
+                        </div>
+                    </div>
+                    <div>
+                        <span class="subhead">Causes of variation in actual activity duration</span>
+                        <div class="rule-box">
+                            <b>Varying skill levels</b> — estimate assumes an average-skilled engineer; actual
+                            assignment may differ.<br><br>
+                            <b>Unexpected events</b> — natural events, vendor delays, power failures, etc.<br><br>
+                            <b>Efficiency of work time</b> — every interruption costs extra time to regain the prior
+                            productivity level.<br><br>
+                            <b>Mistakes and misunderstandings</b> — rework impacts duration even in organizations
+                            with a documented process.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="example-strip" style="margin-top:20px;"><b>Useful rule of thumb:</b> keep all times in
+                    the same units — don't mix increments. Schedule everything in hours, then convert to days/fractions
+                    as a last step. (Most PM software enforces this via a uniform time unit and increment.)</div>
+            </div>
+        </section>
+
+        <!-- THREE POINT -->
+        <section id="three-point">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 07 — THREE-POINT ESTIMATING</div>
+                    <h2 class="sec-title">Turning three guesses into one number</h2>
+                    <p class="sec-desc">Used whenever there's potential variance in an estimate — because of
+                        uncertainties in Duration, Effort, and Size. Three-point techniques mathematically combine
+                        three estimates: <b>Most likely (M)</b>, <b>Optimistic (O)</b>, and <b>Pessimistic (P)</b>
+                        (i.e. best-case, worst-case, expected — gathered from experts).</p>
+                </div>
+
+                <div class="mnemonic">
+                    <div class="icon">🎯</div>
+                    <div>
+                        <div class="label">Memory hook</div>
+                        <div class="phrase">"One meeting, four likelies, one pessimist — divide by six."</div>
+                        <div class="decode">The weighted (PERT) formula gives the <b>Most Likely</b> value <b>4×</b>
+                            the weight of Optimistic or Pessimistic, then divides by the total of 6 "votes"
+                            (1 + 4 + 1). This assumes a <b>Gaussian (beta) distribution</b> of estimates.</div>
+                    </div>
+                </div>
+
+                <div class="two-col">
+                    <div class="formula-box" style="margin:0;">
+                        <div class="formula" style="font-size:clamp(1.1rem,2.4vw,1.5rem);">Estimate = (M + O + P) / 3
+                        </div>
+                        <div class="legend"><b>Basic three-point:</b> a plain average of the three estimations.</div>
+                    </div>
+                    <div class="formula-box"
+                        style="margin:0; border-color: color-mix(in srgb, var(--accent-2) 45%, var(--line));">
+                        <div class="formula" style="font-size:clamp(1.1rem,2.4vw,1.5rem); color: var(--accent-2);">
+                            Estimate = (O + 4M + P) / 6</div>
+                        <div class="legend"><b>PERT-weighted:</b> weights the Most Likely value 4×, per the Gaussian
+                            distribution assumption.</div>
+                    </div>
+                </div>
+
+                <div class="qa-deep" style="margin-top:26px;">
+                    <div class="qa-deep-head">
+                        <h3>Worked example — three-point LOC estimation of a CAD program</h3><span class="qa-tag">PERT
+                            formula</span>
+                    </div>
+                    <p class="qa-def">CAD program to represent mechanical parts. Estimated LOC = (Optimistic +
+                        4×Most Likely + Pessimistic) / 6, applied per major software function:</p>
+                    <div class="table-scroll">
+                        <table class="cheat-table">
+                            <tr>
+                                <th>Major software function</th>
+                                <th>ID</th>
+                                <th class="num">Optimistic</th>
+                                <th class="num">Most Likely</th>
+                                <th class="num">Pessimistic</th>
+                                <th class="num">Estimated LOC</th>
+                            </tr>
+                            <tr>
+                                <td>User interface and control facilities</td>
+                                <td>UICF</td>
+                                <td class="num">1,500</td>
+                                <td class="num">2,300</td>
+                                <td class="num">3,100</td>
+                                <td class="num">2,300</td>
+                            </tr>
+                            <tr>
+                                <td>Two-dimensional geometric analysis</td>
+                                <td>2DGA</td>
+                                <td class="num">3,800</td>
+                                <td class="num">5,200</td>
+                                <td class="num">7,200</td>
+                                <td class="num">5,300</td>
+                            </tr>
+                            <tr>
+                                <td>Three-dimensional geometric analysis</td>
+                                <td>3DGA</td>
+                                <td class="num">4,600</td>
+                                <td class="num">6,900</td>
+                                <td class="num">8,600</td>
+                                <td class="num">6,800</td>
+                            </tr>
+                            <tr>
+                                <td>Database management</td>
+                                <td>DBM</td>
+                                <td class="num">1,600</td>
+                                <td class="num">3,500</td>
+                                <td class="num">4,500</td>
+                                <td class="num">3,350</td>
+                            </tr>
+                            <tr>
+                                <td>Computer graphics display features</td>
+                                <td>CGDF</td>
+                                <td class="num">3,700</td>
+                                <td class="num">5,000</td>
+                                <td class="num">6,000</td>
+                                <td class="num">4,950</td>
+                            </tr>
+                            <tr>
+                                <td>Peripheral control</td>
+                                <td>PC</td>
+                                <td class="num">1,400</td>
+                                <td class="num">2,200</td>
+                                <td class="num">2,400</td>
+                                <td class="num">2,100</td>
+                            </tr>
+                            <tr>
+                                <td>Design analysis modules</td>
+                                <td>DAM</td>
+                                <td class="num">7,200</td>
+                                <td class="num">8,300</td>
+                                <td class="num">10,000</td>
+                                <td class="num">8,400</td>
+                            </tr>
+                            <tr style="font-weight:600;">
+                                <td colspan="2">Estimated lines of code</td>
+                                <td class="num">23,800</td>
+                                <td class="num">33,400</td>
+                                <td class="num">41,800</td>
+                                <td class="num">33,200</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="rule-box" style="margin-top:14px;"><b>Check the math for UICF:</b> (1,500 + 4×2,300
+                        + 3,100) / 6 = (1,500 + 9,200 + 3,100) / 6 = 13,800 / 6 = <b>2,300</b> ✓ — and the row totals
+                        sum to the same 33,200 as summing all seven per-function estimates.</div>
+                </div>
+
+                <div class="qa-deep" style="border-left-color: var(--accent-2);">
+                    <div class="qa-deep-head">
+                        <h3>Reserve analysis</h3><span class="qa-tag">contingency reserves</span>
+                    </div>
+                    <p class="qa-def">To improve schedule accuracy and resilience, contingency or time reserves can
+                        be added to allow for schedule risks (uncertainty). Contingency reserves may be used or
+                        adjusted as more precise project information becomes available — this is known as
+                        <b>buffer time</b>. Do not confuse it with slack time.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- COCOMO -->
+        <section id="cocomo">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 08 — COCOMO</div>
+                    <h2 class="sec-title">The COnstructive COst MOdel</h2>
+                    <p class="sec-desc">An algorithmic software cost estimation model. Uses a basic regression
+                        formula with parameters derived from historical project data and current project
+                        characteristics. Input: LOC. Output: person-months (effort).</p>
+                </div>
+
+                <div class="mnemonic">
+                    <div class="icon">🔤</div>
+                    <div>
+                        <div class="label">Acronym breakdown</div>
+                        <div class="phrase">CO-CO-MO</div>
+                        <div class="decode"><b>CO</b>nstructive <b>CO</b>st <b>MO</b>del — the "constructive" part
+                            refers to how the model incrementally builds the estimate up from size, mode, and
+                            (in the Intermediate version) cost drivers.</div>
+                    </div>
+                </div>
+
+                <div class="grid5" style="grid-template-columns: repeat(auto-fit, minmax(240px,1fr));">
+                    <div class="type-card">
+                        <div class="icon">🌱</div>
+                        <h4>Organic</h4>
+                        <p>Small, simple projects, experienced teams, flexible requirements. <b>2–50 KLOC</b>,
+                            stable, little innovation.</p>
+                    </div>
+                    <div class="type-card">
+                        <div class="icon">🔗</div>
+                        <h4>Semi-Detached</h4>
+                        <p>Medium complexity, mixed experience, some constraints. <b>50–300 KLOC</b>, average
+                            abilities, medium time constraints.</p>
+                    </div>
+                    <div class="type-card">
+                        <div class="icon">🛰️</div>
+                        <h4>Embedded</h4>
+                        <p>Complex, needs creativity, tightly coupled with strict requirements (e.g. real-time /
+                            safety-critical). <b>&gt;300 KLOC</b>, large team, severe constraints.</p>
+                    </div>
+                </div>
+
+                <div class="mnemonic" style="margin-top:20px;">
+                    <div class="icon">🧬</div>
+                    <div>
+                        <div class="label">Memory hook</div>
+                        <div class="phrase">"Old Systems Expand" — Organic → Semi-detached → Embedded.</div>
+                        <div class="decode">As you move O → S → E, both the coefficient <b>a</b> and the exponent
+                            <b>b</b> increase — bigger, more complex projects cost proportionally more effort per
+                            KLOC.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="qa-deep" style="margin-top:26px;">
+                    <div class="qa-deep-head">
+                        <h3>Basic COCOMO constants</h3><span class="qa-tag">a, b, c, d</span>
+                    </div>
+                    <div class="table-scroll">
+                        <table class="cheat-table">
+                            <tr>
+                                <th>Mode</th>
+                                <th class="num">a</th>
+                                <th class="num">b</th>
+                                <th class="num">c</th>
+                                <th class="num">d</th>
+                            </tr>
+                            <tr>
+                                <td>Organic</td>
+                                <td class="num">2.4</td>
+                                <td class="num">1.05</td>
+                                <td class="num">2.5</td>
+                                <td class="num">0.38</td>
+                            </tr>
+                            <tr>
+                                <td>Semi-Detached</td>
+                                <td class="num">3.0</td>
+                                <td class="num">1.12</td>
+                                <td class="num">2.5</td>
+                                <td class="num">0.35</td>
+                            </tr>
+                            <tr>
+                                <td>Embedded</td>
+                                <td class="num">3.6</td>
+                                <td class="num">1.20</td>
+                                <td class="num">2.5</td>
+                                <td class="num">0.32</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="chunk-grid">
+                        <div class="chunk-cell">
+                            <div class="k">a, b</div>
+                            <div class="v">used to calculate Effort from KLOC</div>
+                        </div>
+                        <div class="chunk-cell">
+                            <div class="k">c, d</div>
+                            <div class="v">used to calculate Time (TDEV) from Effort</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="formula-box">
+                    <div class="formula">E = a × (KLOC)<sup>b</sup></div>
+                    <div class="legend"><b>Basic COCOMO — Effort.</b> E is Effort in staff-months. a and b are
+                        coefficients determined by project mode. KLOC is thousands of lines of code.</div>
+                </div>
+                <div class="formula-box">
+                    <div class="formula">TDEV = c × (E)<sup>d</sup></div>
+                    <div class="legend"><b>Development time.</b> TDEV is time for development (months); c and d are
+                        constants (see table above); E is the effort just computed.</div>
+                </div>
+                <div class="formula-box">
+                    <div class="formula">SS = E ÷ TDEV</div>
+                    <div class="legend"><b>Average Staff Size.</b> SS = Effort Applied ÷ Development Time =
+                        staff-months ÷ months = staff. COCOMO's three primary outputs are Effort (E), Time to
+                        Develop (TDEV), and Staff Size (SS).</div>
+                </div>
+                <div class="formula-box">
+                    <div class="formula">P = Size ÷ E</div>
+                    <div class="legend"><b>Productivity.</b> P = [KLOC] ÷ [staff-months]. Once you have Size and
+                        Effort, Productivity tells you how efficiently your team is (or should be) working.</div>
+                </div>
+
+                <div class="qa-deep" style="margin-top:10px;">
+                    <div class="qa-deep-head">
+                        <h3>Worked example — 200 KLOC across all three modes</h3><span class="qa-tag">Effort only</span>
+                    </div>
+                    <div class="table-scroll">
+                        <table class="cheat-table">
+                            <tr>
+                                <th>Mode</th>
+                                <th>Calculation</th>
+                                <th class="num">Effort (staff-months)</th>
+                            </tr>
+                            <tr>
+                                <td>Organic</td>
+                                <td class="mono">2.4 × (200)<sup>1.05</sup></td>
+                                <td class="num">626</td>
+                            </tr>
+                            <tr>
+                                <td>Semi-Detached</td>
+                                <td class="mono">3.0 × (200)<sup>1.12</sup></td>
+                                <td class="num">1,133</td>
+                            </tr>
+                            <tr>
+                                <td>Embedded</td>
+                                <td class="mono">3.6 × (200)<sup>1.20</sup></td>
+                                <td class="num">2,077</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="rule-box" style="margin-top:14px;">Feeding each Effort value into
+                        <span class="mono">TDEV = 2.5 × (E)<sup>d</sup></span> with its mode's <span
+                            class="mono">d</span>
+                        (0.38 / 0.35 / 0.32 respectively) happens to converge on the <b>same ≈29 months</b> for all
+                        three modes here — a reminder that TDEV grows much more slowly than Effort as complexity
+                        rises.
+                    </div>
+                </div>
+
+                <div class="two-col">
+                    <div class="qa-deep" style="margin:0;">
+                        <div class="qa-deep-head">
+                            <h3>Complete example — Organic</h3><span class="qa-tag">7.5 KLOC</span>
+                        </div>
+                        <p class="qa-def">Suppose an organic project has 7.5 KLOC:</p>
+                        <div class="table-scroll">
+                            <table class="cheat-table">
+                                <tr>
+                                    <th>Item</th>
+                                    <th class="num">Organic</th>
+                                </tr>
+                                <tr>
+                                    <td>Effort (staff-months)</td>
+                                    <td class="num">2.4×(7.5)<sup>1.05</sup> = 20</td>
+                                </tr>
+                                <tr>
+                                    <td>Development Time</td>
+                                    <td class="num">2.5×(20)<sup>0.38</sup> = 8</td>
+                                </tr>
+                                <tr>
+                                    <td>Average Staff</td>
+                                    <td class="num">20 ÷ 8 = 2.5</td>
+                                </tr>
+                                <tr>
+                                    <td>Productivity</td>
+                                    <td class="num">7,500 ÷ 20 = 375 LOC/staff-mo</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="example-strip"><b>Conclusion:</b> target productivity is 375 lines of code
+                            monthly, on average, per staff member.</div>
+                    </div>
+                    <div class="qa-deep" style="margin:0; border-left-color: var(--accent-2);">
+                        <div class="qa-deep-head">
+                            <h3>Complete example — Embedded</h3><span class="qa-tag">50 KLOC</span>
+                        </div>
+                        <p class="qa-def">Suppose an embedded project has 50 KLOC:</p>
+                        <div class="table-scroll">
+                            <table class="cheat-table">
+                                <tr>
+                                    <th>Item</th>
+                                    <th class="num">Embedded</th>
+                                </tr>
+                                <tr>
+                                    <td>Effort (staff-months)</td>
+                                    <td class="num">3.6×(50)<sup>1.20</sup> = 394</td>
+                                </tr>
+                                <tr>
+                                    <td>Development Time</td>
+                                    <td class="num">2.5×(394)<sup>0.32</sup> = 17</td>
+                                </tr>
+                                <tr>
+                                    <td>Average Staff</td>
+                                    <td class="num">394 ÷ 17 = 23</td>
+                                </tr>
+                                <tr>
+                                    <td>Productivity</td>
+                                    <td class="num">50,000 ÷ 394 = 127 LOC/staff-mo</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="example-strip"><b>Compare:</b> the embedded project needs ~23 people instead of
+                            ~2.5, and each person produces roughly a third of the LOC/month — complexity, not just
+                            size, drives cost.</div>
+                    </div>
+                </div>
+
+                <div class="qa-deep" style="margin-top:10px;">
+                    <div class="qa-deep-head">
+                        <h3>Intermediate COCOMO — Cost Drivers</h3><span class="qa-tag">15 multipliers</span>
+                    </div>
+                    <p class="qa-def">Basic COCOMO assumes effort is purely a function of LOC and a couple of
+                        constants — unrealistic, since no system's effort/schedule can be calculated from LOC alone.
+                        Intermediate COCOMO adds <b>15 cost drivers</b>, each rated Very Low → Extra High, grouped
+                        into four attribute categories.</p>
+                    <div class="two-col">
+                        <div>
+                            <span class="subhead">Four cost-driver categories</span>
+                            <div class="pattern-chip-row">
+                                <span class="pattern-chip">Product attributes</span>
+                                <span class="pattern-chip">Hardware attributes</span>
+                                <span class="pattern-chip">Personnel attributes</span>
+                                <span class="pattern-chip">Project attributes</span>
+                            </div>
+                            <div class="rule-box" style="margin-top:12px;">Examples: required software reliability,
+                                size of application database, complexity of the product (Product); run-time
+                                performance constraints, memory constraints (Hardware); analyst capability,
+                                application experience, programming language experience (Personnel); use of software
+                                tools, required development schedule (Project).</div>
+                        </div>
+                        <div>
+                            <span class="subhead">Why cost drivers are used</span>
+                            <div class="rule-box">They're statistically significant to project cost, and they're
+                                <b>not correlated</b> to project size (KLOC) — so they capture what raw size can't.
+                                <br><br><b>To obtain the multiplier:</b> look up each driver's rating on the grid,
+                                then <b>multiply them all together</b> — the product is <span class="mono">C</span>,
+                                the effort adjustment factor.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="formula-box">
+                        <div class="formula">E = a × (KLOC)<sup>b</sup> × C</div>
+                        <div class="legend">Same a, b as Basic COCOMO; <b>C</b> is the effort-adjustment factor —
+                            the product of all 15 cost-driver ratings.</div>
+                    </div>
+                </div>
+
+                <div class="two-col">
+                    <div>
+                        <span class="subhead">COCOMO advantages</span>
+                        <div class="rule-box">Based on history; repeatable; unique adjustment factors; has different
+                            modes; works well on similar projects; highly calibrated; well-documented; easy to use.
+                        </div>
+                    </div>
+                    <div>
+                        <span class="subhead">COCOMO limitations</span>
+                        <div class="rule-box">Ignores requirements volatility, documentation, customer "skill,"
+                            software safety; oversimplifies security; ignores personnel turnover and many hardware
+                            issues; personnel experience ratings may go obsolete; <b>you must already know the cost
+                                drivers and be able to predict project size</b> — its single biggest weakness is needing
+                            a reliable LOC estimate as input.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ISSUES -->
+        <section id="issues">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 09 — ESTIMATION ISSUES</div>
+                    <h2 class="sec-title">The politics and pitfalls of a number</h2>
+                </div>
+                <div class="two-col">
+                    <div>
+                        <span class="subhead">Structural issues</span>
+                        <div class="rule-box">Quality estimates are needed early, when information is limited.
+                            Precise data is only available at the end — but is it "not needed anymore"? What about
+                            the next project? At project end you should determine just how accurate your original
+                            estimate was. Best estimates are based on past experience; for many software projects
+                            there is little or no data (technologies change, historical data unavailable, wide
+                            variance in project types, subjective nature of software estimation).</div>
+                        <div class="example-strip"><b>Politics of estimation:</b> you may anticipate a "cut" by
+                            upper management, so you add some contingency duration.</div>
+                    </div>
+                    <div>
+                        <span class="subhead">Over- vs. Under-estimation</span>
+                        <table class="cheat-table">
+                            <tr>
+                                <th>Over-estimation risks</th>
+                                <td>Project may not get funded (100%-success
+                                    conservative estimates push funding probability toward zero); Parkinson's Law (work
+                                    expands to fill time allowed); danger of feature/scope creep; "double-padding" —
+                                    both the project member <i>and</i> the business manager pad the number.</td>
+                            </tr>
+                            <tr>
+                                <th>Under-estimation risks</th>
+                                <td>Quality issues (key phases like testing get
+                                    shortened); inability to meet deadlines; morale and team motivation issues.</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FINAL NOTES -->
+        <section id="final">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 10 — FINAL NOTES</div>
+                    <h2 class="sec-title">Reuse, Agile, deadlines, and how you say the number</h2>
+                </div>
+
+                <div class="two-col">
+                    <div class="qa-deep" style="margin:0;">
+                        <div class="qa-deep-head">
+                            <h3>Code reuse &amp; estimation</h3><span class="qa-tag">New / Modified / Reused</span>
+                        </div>
+                        <p class="qa-def">Code reuse is not free — understanding, adapting, testing, and integrating
+                            reused code still consumes time and effort.</p>
+                        <div class="rule-box">If code is <b>more than 50% modified</b>, it's estimated as fully
+                            "new." Reuse factors have a wide range: <b>reused</b> code takes ~30% of the effort of
+                            new code; <b>modified</b> code takes ~60% of new. Integration effort with reused code is
+                            almost as expensive as with new code.</div>
+                    </div>
+                    <div class="qa-deep" style="margin:0; border-left-color: var(--accent-2);">
+                        <div class="qa-deep-head">
+                            <h3>Estimation for Agile</h3><span class="qa-tag">user stories</span>
+                        </div>
+                        <p class="qa-def">Agile estimation starts with <b>user stories/scenarios</b>, each treated
+                            as a mini-project.</p>
+                        <div class="rule-box">Decompose the scenario into engineering tasks (UI, backend, ...).
+                            Estimate each task separately (historical data, empirical model, or experience) —
+                            scenario volume can be estimated in LOC, FP, use-case count, etc. Sum task estimates for
+                            a total scenario estimate (translating volume to effort via historical data or COCOMO),
+                            then sum all scenario estimates in the increment for an increment estimate.</div>
+                    </div>
+                </div>
+
+                <div class="qa-deep" style="margin-top:26px;">
+                    <div class="qa-deep-head">
+                        <h3>Know your deadlines</h3><span class="qa-tag">real vs. artificial</span>
+                    </div>
+                    <div class="two-col">
+                        <div>
+                            <span class="subhead">Real deadlines</span>
+                            <div class="rule-box">Tied to an external event; must be met for the project to be a
+                                success. Ex: end of financial year, contractual deadline, Y2K.</div>
+                        </div>
+                        <div>
+                            <span class="subhead">Artificial deadlines</span>
+                            <div class="rule-box">Set by an arbitrary authority; may have some flexibility if
+                                pushed on.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="qa-deep" style="border-left-color: var(--accent-2);">
+                    <div class="qa-deep-head">
+                        <h3>Estimation presentation (communication)</h3><span class="qa-tag">how you say the
+                            number</span>
+                    </div>
+                    <p class="qa-def">How you present an estimate can have a huge impact. Techniques:</p>
+                    <div class="table-scroll">
+                        <table class="cheat-table">
+                            <tr>
+                                <th>Technique</th>
+                                <th>Example</th>
+                            </tr>
+                            <tr>
+                                <td>Plus-or-minus qualifiers</td>
+                                <td>"6 months ± 1 month" — communicates a central estimate with a buffer.</td>
+                            </tr>
+                            <tr>
+                                <td>Ranges</td>
+                                <td>"6–8 months."</td>
+                            </tr>
+                            <tr>
+                                <td>Risk quantification</td>
+                                <td>± with added info about uncertainty — e.g. "+1 month if new tool isn't working as
+                                    expected," "−2 weeks if hiring new developers happens sooner."</td>
+                            </tr>
+                            <tr>
+                                <td>Cases</td>
+                                <td>Scenario-based estimates: Best / Planned / Current / Worst case.</td>
+                            </tr>
+                            <tr>
+                                <td>Coarse dates</td>
+                                <td>Useful when finer estimates aren't feasible, e.g. "Q3 of 2026."</td>
+                            </tr>
+                            <tr>
+                                <td>Confidence factors</td>
+                                <td>"April 1 with 10% probability, July 1 with 50% probability," etc.</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="qa-deep">
+                    <div class="qa-deep-head">
+                        <h3>Final estimates — aggregation</h3><span class="qa-tag">Contingency vs. Management
+                            Reserves</span>
+                    </div>
+                    <p class="qa-def">For time/cost estimates: aggregate into larger units (Work Packages, Control
+                        Accounts, etc.), perform risk analysis to calculate <b>Contingency Reserves</b> (controlled
+                        by the PM), and add <b>Management Reserves</b> — set aside from total company funds to cover
+                        unforeseen risks/changes, which require Change Control activities to access.</p>
+                    <div class="stack-diagram" style="margin-top:16px;">
+                        <div class="stack-layer a"><span class="tag">Bottom</span>
+                            <h4>Activity + Activity + Activity</h4>
+                            <p>Individually estimated tasks.</p>
+                        </div>
+                        <div class="stack-layer b"><span class="tag">↑</span>
+                            <h4>Work Package + Work Package + Work Package</h4>
+                            <p>Activities roll up into work packages.</p>
+                        </div>
+                        <div class="stack-layer a"><span class="tag">↑</span>
+                            <h4>Control Account + Control Account + Control Account</h4>
+                            <p>Work packages roll up into control accounts.</p>
+                        </div>
+                        <div class="stack-layer b"><span class="tag">↑</span>
+                            <h4>Project Estimate + Contingency Reserves</h4>
+                            <p>Control accounts + PM-controlled contingency = the project estimate.</p>
+                        </div>
+                        <div class="stack-layer a"><span class="tag">↑</span>
+                            <h4>Cost Baseline + Management Reserves</h4>
+                            <p>Project estimate + contingency, plus company-level management reserves.</p>
+                        </div>
+                        <div class="stack-layer b"><span class="tag">Top</span>
+                            <h4>Cost Budget</h4>
+                            <p>The final, fully aggregated number.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="two-col">
+                    <div>
+                        <span class="subhead">Estimation guidelines</span>
+                        <div class="rule-box"><b>Estimate iteratively</b> — a process of gradual refinement. Make
+                            your best estimate at each planning stage, then refine estimates and adjust plans as you
+                            go. Balance too many revisions against too few.</div>
+                        <span class="subhead" style="margin-top:14px;">Other estimation factors</span>
+                        <div class="rule-box">Account for resource experience/skill (up to a point — often needed
+                            more on the "low" end, e.g. a new/junior person). Allow for "non-project" time and
+                            common tasks (meetings, phone calls, web surfing, sick days). Commercial estimation
+                            tools exist but typically require configuration from past data.</div>
+                    </div>
+                    <div>
+                        <span class="subhead">Human behavior around deadlines</span>
+                        <div class="mnemonic" style="margin:0;">
+                            <div class="icon">🌀</div>
+                            <div>
+                                <div class="phrase" style="font-size:0.95rem;">Parkinson's Law</div>
+                                <div class="decode">"Work expands to fill the time available." Give a task 3 weeks
+                                    instead of 1, and it will somehow take 3 weeks.</div>
+                            </div>
+                        </div>
+                        <div class="mnemonic" style="margin-top:12px;">
+                            <div class="icon">🎓</div>
+                            <div>
+                                <div class="phrase" style="font-size:0.95rem;">The Student Syndrome</div>
+                                <div class="decode">Procrastination until the last minute — "cramming" — regardless
+                                    of how much lead time was given.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CHEAT SHEET -->
+        <section id="cheat">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 11 — CHEAT SHEET</div>
+                    <h2 class="sec-title">Every formula and method, one scroll away</h2>
+                </div>
+
+                <div class="table-scroll">
+                    <table class="cheat-table">
+                        <tr>
+                            <th>Concept</th>
+                            <th>Formula / Rule</th>
+                        </tr>
+                        <tr>
+                            <td>Basic estimation process</td>
+                            <td>Size → Effort (person-months) → Schedule</td>
+                        </tr>
+                        <tr>
+                            <td>Duration</td>
+                            <td>Duration = Work Effort ÷ Number of People (scheduling)</td>
+                        </tr>
+                        <tr>
+                            <td>Work Effort</td>
+                            <td>Work Effort = Duration × Number of People (cost estimation)</td>
+                        </tr>
+                        <tr>
+                            <td>Three-point (Basic)</td>
+                            <td>Estimate = (M + O + P) / 3</td>
+                        </tr>
+                        <tr>
+                            <td>Three-point (PERT)</td>
+                            <td>Estimate = (O + 4M + P) / 6</td>
+                        </tr>
+                        <tr>
+                            <td>COCOMO — Effort (Basic)</td>
+                            <td>E = a(KLOC)<sup>b</sup></td>
+                        </tr>
+                        <tr>
+                            <td>COCOMO — Effort (Intermediate)</td>
+                            <td>E = a(KLOC)<sup>b</sup> × C, where C = product of 15 cost-driver ratings</td>
+                        </tr>
+                        <tr>
+                            <td>COCOMO — Development time</td>
+                            <td>TDEV = c(E)<sup>d</sup></td>
+                        </tr>
+                        <tr>
+                            <td>COCOMO — Average Staff Size</td>
+                            <td>SS = E ÷ TDEV</td>
+                        </tr>
+                        <tr>
+                            <td>COCOMO — Productivity</td>
+                            <td>P = Size (KLOC) ÷ E (staff-months)</td>
+                        </tr>
+                        <tr>
+                            <td>COCOMO modes</td>
+                            <td>Organic (2–50 KLOC) · Semi-Detached (50–300 KLOC) · Embedded (&gt;300 KLOC)</td>
+                        </tr>
+                        <tr>
+                            <td>Reserves</td>
+                            <td>Contingency reserves (PM-controlled, known risks) vs. Management reserves (company
+                                funds, unforeseen risks, need change control)</td>
+                        </tr>
+                        <tr>
+                            <td>Methodologies</td>
+                            <td>Expert Judgment · Top-down · Bottom-up · Analogy · Priced to Win ·
+                                Parametric/Algorithmic</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- COMMON MISTAKES -->
+        <section id="mistakes">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 12 — COMMON MISTAKES</div>
+                    <h2 class="sec-title">Where exam answers usually go wrong</h2>
+                    <p class="sec-desc">Eight places this chapter's terminology and formulas get tangled — drill
+                        these until the "right" side is automatic.</p>
+                </div>
+
+                <div class="mistake-box">
+                    <div class="m-title">1. Duration vs. Work Effort — dividing the wrong way</div>
+                    <div class="mistake-row wrong"><span class="mk">✗ WRONG</span><span>"Duration = Work Effort × Number
+                            of People" — students flip the operator under exam pressure.</span></div>
+                    <div class="mistake-row right"><span class="mk">✓ RIGHT</span><span>Duration = Work Effort ÷ Number
+                            of People (useful for scheduling). Work Effort = Duration × Number of People (useful for
+                            cost). More people shortens duration but doesn't change total effort.</span></div>
+                </div>
+
+                <div class="mistake-box">
+                    <div class="m-title">2. Basic three-point average vs. PERT-weighted</div>
+                    <div class="mistake-row wrong"><span class="mk">✗ WRONG</span><span>Always using (O + M + P) / 3
+                            because it's "the average," even when the question says "weighted" or "PERT."</span></div>
+                    <div class="mistake-row right"><span class="mk">✓ RIGHT</span><span>Basic = (M + O + P) / 3, a plain
+                            average. PERT/weighted = (O + 4M + P) / 6, which weights Most Likely 4× under the
+                            Gaussian-distribution assumption — the two give different numbers on the same inputs.</span>
+                    </div>
+                </div>
+
+                <div class="mistake-box">
+                    <div class="m-title">3. Target date vs. Committed date</div>
+                    <div class="mistake-row wrong"><span class="mk">✗ WRONG</span><span>Treating a marketing-proposed
+                            "target" date as something the team has already agreed to.</span></div>
+                    <div class="mistake-row right"><span class="mk">✓ RIGHT</span><span>A target date is proposed by
+                            business/marketing — do not commit to it too soon. A committed date only comes after the
+                            team has built an actual schedule.</span></div>
+                </div>
+
+                <div class="mistake-box">
+                    <div class="m-title">4. LOC vs. Function Points — which is language-independent?</div>
+                    <div class="mistake-row wrong"><span class="mk">✗ WRONG</span><span>Saying Function Points vary by
+                            programming language the way LOC does.</span></div>
+                    <div class="mistake-row right"><span class="mk">✓ RIGHT</span><span>LOC counts vary by language,
+                            reusable components, and programmer style. Function Points measure functionality, not code —
+                            they are far less language-dependent, which is the whole reason FP analysis exists.</span>
+                    </div>
+                </div>
+
+                <div class="mistake-box">
+                    <div class="m-title">5. Mixing up COCOMO's a/b/c/d coefficients across modes</div>
+                    <div class="mistake-row wrong"><span class="mk">✗ WRONG</span><span>Plugging Semi-Detached's a=3.0
+                            into an Embedded-mode problem, or forgetting that a and b (not c and d) compute
+                            Effort.</span></div>
+                    <div class="mistake-row right"><span class="mk">✓ RIGHT</span><span>a, b → Effort from KLOC. c, d →
+                            Time (TDEV) from Effort. Coefficients rise from Organic (2.4/1.05) → Semi-Detached
+                            (3.0/1.12) → Embedded (3.6/1.20) — always match the mode to the project description
+                            first.</span></div>
+                </div>
+
+                <div class="mistake-box">
+                    <div class="m-title">6. Contingency Reserves vs. Management Reserves</div>
+                    <div class="mistake-row wrong"><span class="mk">✗ WRONG</span><span>Calling both "the buffer" and
+                            treating them as interchangeable or PM-accessible at will.</span></div>
+                    <div class="mistake-row right"><span class="mk">✓ RIGHT</span><span>Contingency reserves cover
+                            known/identified risks and are controlled by the PM, added inside the project estimate.
+                            Management reserves cover unforeseen risks, are drawn from total company funds, and require
+                            formal Change Control to access.</span></div>
+                </div>
+
+                <div class="mistake-box">
+                    <div class="m-title">7. "40 hours of labor = 40 hours on the calendar"</div>
+                    <div class="mistake-row wrong"><span class="mk">✗ WRONG</span><span>Assuming labor time and
+                            clock/duration time are the same thing.</span></div>
+                    <div class="mistake-row right"><span class="mk">✓ RIGHT</span><span>Productivity is typically only
+                            50–75% of a business day, so 40 hours of labor needs roughly 50 business hours of clock time
+                            — meetings, communication, breaks, and task-switching all eat into the day.</span></div>
+                </div>
+
+                <div class="mistake-box">
+                    <div class="m-title">8. "A bigger estimate is always the safer choice"</div>
+                    <div class="mistake-row wrong"><span class="mk">✗ WRONG</span><span>Padding an estimate as much as
+                            possible to "guarantee" success.</span></div>
+                    <div class="mistake-row right"><span class="mk">✓ RIGHT</span><span>Over-estimation has its own
+                            risks: conservative estimates that guarantee 100% success may push funding probability
+                            toward zero, invite Parkinson's Law (work expands to fill the time), and encourage scope
+                            creep or "double-padding" by both the team member and the manager.</span></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- POP QUIZ -->
+        <section id="quiz">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 13 — POP QUIZ</div>
+                    <h2 class="sec-title">Click a question to reveal the answer</h2>
+                    <p class="sec-desc">No reload, no tracking — just click each question (or its "Reveal" button) to
+                        check yourself.</p>
+                </div>
+
+                <div class="quiz-list">
+                    <div class="quiz-item">
+                        <div class="quiz-q" onclick="this.nextElementSibling.classList.toggle('show')">
+                            <span class="qtext">1. What is the correct order of the basic estimation process?</span>
+                            <button class="quiz-reveal" type="button"
+                                onclick="event.stopPropagation(); this.closest('.quiz-item').querySelector('.quiz-answer').classList.toggle('show')">Reveal</button>
+                        </div>
+                        <div class="quiz-answer"><b>Size → Effort → Schedule.</b> You can't estimate the effort
+                            (person-months) until you know the size, and you can't build a schedule until you know
+                            the effort.</div>
+                    </div>
+
+                    <div class="quiz-item">
+                        <div class="quiz-q" onclick="this.nextElementSibling.classList.toggle('show')">
+                            <span class="qtext">2. A task needs 40 hours of labor. Why should you budget more than 40
+                                clock-hours to finish it in a normal business setting?</span>
+                            <button class="quiz-reveal" type="button"
+                                onclick="event.stopPropagation(); this.closest('.quiz-item').querySelector('.quiz-answer').classList.toggle('show')">Reveal</button>
+                        </div>
+                        <div class="quiz-answer">Because productivity is usually only <b>50–75%</b> of a business
+                            day — a developer might only get 5–6 productive hours out of 8 office hours due to
+                            meetings, communication, breaks, and task-switching. 40 labor-hours needs roughly
+                            <b>~50 business hours</b> of clock time.
+                        </div>
+                    </div>
+
+                    <div class="quiz-item">
+                        <div class="quiz-q" onclick="this.nextElementSibling.classList.toggle('show')">
+                            <span class="qtext">3. Which methodology carries the risk that a vendor deliberately
+                                underbids, planning to cut corners or request scope changes later?</span>
+                            <button class="quiz-reveal" type="button"
+                                onclick="event.stopPropagation(); this.closest('.quiz-item').querySelector('.quiz-answer').classList.toggle('show')">Reveal</button>
+                        </div>
+                        <div class="quiz-answer"><b>Priced to Win</b> (sometimes called "priced to lose" when a
+                            vendor knowingly underbids for strategic reasons, e.g. market entry).</div>
+                    </div>
+
+                    <div class="quiz-item">
+                        <div class="quiz-q" onclick="this.nextElementSibling.classList.toggle('show')">
+                            <span class="qtext">4. Using the PERT formula, compute the estimate for Optimistic = 10,
+                                Most Likely = 14, Pessimistic = 24.</span>
+                            <button class="quiz-reveal" type="button"
+                                onclick="event.stopPropagation(); this.closest('.quiz-item').querySelector('.quiz-answer').classList.toggle('show')">Reveal</button>
+                        </div>
+                        <div class="quiz-answer">(10 + 4×14 + 24) / 6 = (10 + 56 + 24) / 6 = 90 / 6 =
+                            <b>15</b>.
+                        </div>
+                    </div>
+
+                    <div class="quiz-item">
+                        <div class="quiz-q" onclick="this.nextElementSibling.classList.toggle('show')">
+                            <span class="qtext">5. A COCOMO project is classified "Embedded." Which best describes
+                                it?</span>
+                            <button class="quiz-reveal" type="button"
+                                onclick="event.stopPropagation(); this.closest('.quiz-item').querySelector('.quiz-answer').classList.toggle('show')">Reveal</button>
+                        </div>
+                        <div class="quiz-answer"><b>Complex, creativity-needed, tightly coupled systems with strict
+                                requirements</b> (e.g. real-time or safety-critical), typically &gt;300 KLOC — not the
+                            small/flexible "Organic" case or the medium "Semi-Detached" case.</div>
+                    </div>
+
+                    <div class="quiz-item">
+                        <div class="quiz-q" onclick="this.nextElementSibling.classList.toggle('show')">
+                            <span class="qtext">6. What's the difference between Contingency Reserves and Management
+                                Reserves?</span>
+                            <button class="quiz-reveal" type="button"
+                                onclick="event.stopPropagation(); this.closest('.quiz-item').querySelector('.quiz-answer').classList.toggle('show')">Reveal</button>
+                        </div>
+                        <div class="quiz-answer"><b>Contingency reserves</b> cover identified/known risks, are
+                            controlled by the PM, and sit inside the project estimate. <b>Management reserves</b>
+                            cover unforeseen risks, come from the company's total available funds, and require
+                            formal Change Control to access.</div>
+                    </div>
+
+                    <div class="quiz-item">
+                        <div class="quiz-q" onclick="this.nextElementSibling.classList.toggle('show')">
+                            <span class="qtext">7. A COCOMO project has Effort E = 100 staff-months and TDEV = 10
+                                months. What's the average staff size?</span>
+                            <button class="quiz-reveal" type="button"
+                                onclick="event.stopPropagation(); this.closest('.quiz-item').querySelector('.quiz-answer').classList.toggle('show')">Reveal</button>
+                        </div>
+                        <div class="quiz-answer">SS = E ÷ TDEV = 100 ÷ 10 = <b>10 staff</b>.</div>
+                    </div>
+
+                    <div class="quiz-item">
+                        <div class="quiz-q" onclick="this.nextElementSibling.classList.toggle('show')">
+                            <span class="qtext">8. Name the two behavioral phenomena from "Final Notes" that explain why
+                                people don't finish work early even with plenty of lead time.</span>
+                            <button class="quiz-reveal" type="button"
+                                onclick="event.stopPropagation(); this.closest('.quiz-item').querySelector('.quiz-answer').classList.toggle('show')">Reveal</button>
+                        </div>
+                        <div class="quiz-answer"><b>Parkinson's Law</b> ("work expands to fill the time available")
+                            and the <b>Student Syndrome</b> (procrastination/cramming until the last minute).</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PRACTICE LAB -->
+        <section id="lab">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 14 — PRACTICE LAB</div>
+                    <h2 class="sec-title">Full worked calculations, exam-style</h2>
+                    <p class="sec-desc">Grab a calculator. These use the exact formulas above on new numbers, worked
+                        step by step.</p>
+                </div>
+                <div class="examroom">
+                    <div class="practice-q">
+                        <div class="req">1. A project is sized at 15 KLOC and classified Organic (a=2.4, b=1.05).
+                            Calculate the Effort using Basic COCOMO.</div>
+                        <div class="calc">E = 2.4 × (15)^1.05
+                            ln(15) = 2.708 → 2.708 × 1.05 = 2.843
+                            e^2.843 ≈ 17.18
+                            E = 2.4 × 17.18 ≈ 41.2 staff-months</div>
+                        <div class="ans">→ E ≈ 41.2 staff-months</div>
+                        <div class="why">Why: plug KLOC and the Organic coefficients directly into E = a(KLOC)^b —
+                            no cost drivers needed since this is Basic, not Intermediate, COCOMO.</div>
+                    </div>
+                    <div class="practice-q">
+                        <div class="req">2. Using the Effort from Q1 (≈41.2 staff-months, Organic mode, c=2.5,
+                            d=0.38), calculate the development time (TDEV) and the average staff size (SS).</div>
+                        <div class="calc">TDEV = 2.5 × (41.2)^0.38
+                            ln(41.2) = 3.718 → 3.718 × 0.38 = 1.413
+                            e^1.413 ≈ 4.11
+                            TDEV = 2.5 × 4.11 ≈ 10.3 months
+
+                            SS = E ÷ TDEV = 41.2 ÷ 10.3 ≈ 4.0 staff</div>
+                        <div class="ans">→ TDEV ≈ 10.3 months, SS ≈ 4 staff</div>
+                        <div class="why">Why: TDEV always takes the just-computed E as its input (TDEV = c(E)^d);
+                            SS is simply Effort divided by that duration.</div>
+                    </div>
+                    <div class="practice-q">
+                        <div class="req">3. A vendor bids well below the estimated realistic cost for a government
+                            contract, planning to recover the loss later via change orders. Which estimation
+                            approach — and which specific risk within it — does this describe?</div>
+                        <div class="ans">→ Priced to Win, specifically the "priced to lose" risk</div>
+                        <div class="why">Why: the estimate is driven entirely by what will win the bid rather than
+                            actual cost/effort — exactly the disadvantage called out on the Priced-to-Win slide.</div>
+                    </div>
+                    <div class="practice-q">
+                        <div class="req">4. Three specialists estimate a task at Optimistic = 8 days, Most Likely =
+                            12 days, Pessimistic = 20 days. Compute both the Basic three-point average and the
+                            PERT-weighted estimate, and explain why they differ.</div>
+                        <div class="calc">Basic: (8 + 12 + 20) / 3 = 40 / 3 ≈ 13.3 days
+                            PERT: (8 + 4×12 + 20) / 6 = (8 + 48 + 20) / 6 = 76 / 6 ≈ 12.7 days</div>
+                        <div class="ans">→ Basic ≈ 13.3 days · PERT ≈ 12.7 days</div>
+                        <div class="why">Why: PERT weights the Most Likely value 4×, pulling the estimate toward
+                            the "expected" case and away from the Pessimistic outlier — so it lands lower than the
+                            flat average whenever Pessimistic is far from Most Likely.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <div>SE423 · Software Project Management · Chapter 03 — Estimation</div>
+        <div class="toc-hint">Built as a study aid from lecture slides — always verify against your instructor's exact
+            wording before an exam.</div>
+        <div class="made">Made by <span>Shoug Alomran</span></div>
+    </footer>
+
+    <script>
+        const root = document.documentElement;
+        const sw = document.getElementById('switch');
+        const label = document.getElementById('theme-label');
+
+        function applyTheme(t) {
+            root.setAttribute('data-theme', t);
+            label.textContent = t.toUpperCase();
+        }
+
+        const prefersLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
+        applyTheme(prefersLight ? 'light' : 'dark');
+
+        sw.addEventListener('click', () => {
+            const current = root.getAttribute('data-theme');
+            applyTheme(current === 'dark' ? 'light' : 'dark');
+        });
+    </script>
+
+</body>
+
+</html>

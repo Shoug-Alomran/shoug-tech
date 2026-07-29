@@ -1,0 +1,1569 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Black Box Testing Techniques — The Tester's Toolkit | SE401 Ch.2</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --radius-sm: 8px;
+            --radius-md: 14px;
+            --radius-lg: 22px;
+            --font-head: 'Sora', sans-serif;
+            --font-body: 'Inter', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+            --maxw: 1200px;
+        }
+
+        html[data-theme="dark"] {
+            --bg: #0d1117;
+            --surface: #141b24;
+            --surface-2: #1a2330;
+            --ink: #e9eef3;
+            --ink-dim: #94a3b5;
+            --line: #263241;
+            --accent: #4f8fef;
+            --accent-2: #e8a23d;
+            --danger: #ef5d6f;
+            --good: #4fbf8b;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        html[data-theme="light"] {
+            --bg: #eef1f4;
+            --surface: #ffffff;
+            --surface-2: #f3f5f8;
+            --ink: #12202e;
+            --ink-dim: #57697c;
+            --line: #d9dee4;
+            --accent: #275fc4;
+            --accent-2: #b06a12;
+            --danger: #c53850;
+            --good: #1f8f63;
+            --shadow: 0 10px 26px rgba(20, 30, 40, 0.12);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            background:
+                radial-gradient(circle at 1px 1px, var(--line) 1px, transparent 1px) 0 0/26px 26px,
+                var(--bg);
+            color: var(--ink);
+            font-family: var(--font-body);
+            font-size: clamp(15px, 0.4vw + 14px, 17px);
+            line-height: 1.6;
+            transition: background-color .35s ease, color .35s ease;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: var(--font-head);
+            margin: 0;
+            letter-spacing: -0.01em;
+        }
+
+        a { color: inherit; }
+        .mono { font-family: var(--font-mono); }
+
+        .wrap {
+            max-width: var(--maxw);
+            margin: 0 auto;
+            padding: 0 clamp(16px, 4vw, 40px);
+        }
+
+        header.top {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            backdrop-filter: blur(10px);
+            background: color-mix(in srgb, var(--bg) 78%, transparent);
+            border-bottom: 1px solid var(--line);
+        }
+
+        .top-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px clamp(16px, 4vw, 40px);
+            max-width: var(--maxw);
+            margin: 0 auto;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .brand { display: flex; align-items: center; gap: 10px; }
+        .brand .logo-mini { width: 30px; height: 30px; flex: none; }
+        .brand-text { font-family: var(--font-head); font-weight: 700; font-size: 1.05rem; }
+        .brand-text span { color: var(--accent); }
+
+        nav.pillnav { display: flex; gap: 5px; flex-wrap: wrap; max-width: 62vw; }
+
+        nav.pillnav a {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            text-decoration: none;
+            color: var(--ink-dim);
+            padding: 6px 9px;
+            border-radius: 999px;
+            border: 1px solid transparent;
+            white-space: nowrap;
+            transition: all .2s ease;
+        }
+
+        nav.pillnav a:hover { color: var(--ink); border-color: var(--line); background: var(--surface); }
+
+        .theme-toggle {
+            display: flex; align-items: center; gap: 8px;
+            font-family: var(--font-mono); font-size: 0.7rem; color: var(--ink-dim);
+        }
+
+        .switch {
+            width: 46px; height: 26px; border-radius: 999px;
+            background: var(--surface-2); border: 1px solid var(--line);
+            position: relative; cursor: pointer; flex: none;
+        }
+
+        .switch .knob {
+            position: absolute; top: 2px; left: 2px; width: 20px; height: 20px;
+            border-radius: 50%; background: var(--accent);
+            transition: left .25s ease, background .25s ease;
+        }
+
+        html[data-theme="light"] .switch .knob { left: 22px; }
+
+        /* HERO */
+        .hero { padding: clamp(40px, 7vw, 80px) 0 clamp(20px, 4vw, 40px); }
+        .hero-grid {
+            display: grid; grid-template-columns: 1.2fr 0.8fr;
+            gap: clamp(20px, 4vw, 50px); align-items: center;
+        }
+
+        @media (max-width:820px) { .hero-grid { grid-template-columns: 1fr; } }
+
+        .eyebrow {
+            font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.14em;
+            text-transform: uppercase; color: var(--accent-2); margin-bottom: 14px;
+            display: flex; align-items: center; gap: 10px;
+        }
+
+        .eyebrow::before { content: ''; width: 26px; height: 1px; background: var(--accent-2); }
+
+        h1.hero-title { font-size: clamp(2.1rem, 5vw, 3.5rem); line-height: 1.06; font-weight: 700; }
+        h1.hero-title em { font-style: normal; color: var(--accent); }
+        .hero-sub { margin-top: 18px; color: var(--ink-dim); max-width: 56ch; font-size: 1.02rem; }
+        .hero-badges { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 22px; }
+
+        .badge {
+            font-family: var(--font-mono); font-size: 0.72rem; padding: 6px 12px;
+            border-radius: 8px; background: var(--surface); border: 1px solid var(--line); color: var(--ink-dim);
+        }
+
+        .bb-wrap { display: flex; justify-content: center; }
+        .bb-wrap svg { width: min(340px, 90%); height: auto; }
+
+        section { padding: clamp(30px, 5vw, 60px) 0; border-top: 1px solid var(--line); }
+        section:first-of-type { border-top: none; }
+
+        .sec-head { margin-bottom: clamp(20px, 3vw, 34px); max-width: 76ch; }
+        .sec-num { font-family: var(--font-mono); color: var(--accent); font-size: 0.78rem; letter-spacing: 0.1em; }
+        .sec-title { font-size: clamp(1.5rem, 3vw, 2.1rem); margin-top: 6px; }
+        .sec-desc { color: var(--ink-dim); margin-top: 10px; font-size: 0.98rem; }
+
+        .mnemonic {
+            background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 14%, transparent), transparent);
+            border: 1px dashed color-mix(in srgb, var(--accent) 55%, var(--line));
+            border-radius: var(--radius-md); padding: 16px 20px; display: flex; gap: 14px;
+            align-items: flex-start; margin: 18px 0;
+        }
+
+        .mnemonic .icon { font-size: 1.4rem; flex: none; line-height: 1; }
+        .mnemonic .label { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); }
+        .mnemonic .phrase { font-family: var(--font-head); font-weight: 600; font-size: 1.05rem; margin-top: 3px; }
+        .mnemonic .decode { color: var(--ink-dim); font-size: 0.86rem; margin-top: 4px; }
+
+        /* timeline (used for Knight Capital + process) */
+        .timeline { position: relative; margin-top: 26px; padding-left: 28px; }
+        .timeline::before {
+            content: ''; position: absolute; left: 8px; top: 6px; bottom: 6px;
+            width: 2px; background: var(--line);
+        }
+        .tl-item { position: relative; padding-bottom: 26px; }
+        .tl-item:last-child { padding-bottom: 0; }
+        .tl-dot {
+            position: absolute; left: -28px; top: 2px; width: 18px; height: 18px;
+            border-radius: 50%; background: var(--surface); border: 2px solid var(--accent);
+        }
+        .tl-dot.danger { border-color: var(--danger); }
+        .tl-year { font-family: var(--font-mono); font-size: 0.78rem; color: var(--accent); }
+        .tl-item h4 { font-size: 1.05rem; margin-top: 4px; }
+        .tl-item p { color: var(--ink-dim); font-size: 0.88rem; margin-top: 6px; max-width: 70ch; }
+        .tl-item .tl-key { font-size: 0.82rem; margin-top: 6px; color: var(--ink); font-style: italic; }
+
+        /* classification grid */
+        .grid5 { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 14px; margin-top: 20px; }
+        .type-card {
+            background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-md);
+            padding: 18px; transition: transform .2s ease, box-shadow .2s ease;
+        }
+        .type-card:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
+        .type-card .icon { font-size: 1.6rem; }
+        .type-card h4 { font-size: 1.0rem; margin-top: 8px; }
+        .type-card p { color: var(--ink-dim); font-size: 0.84rem; margin: 8px 0 0; }
+
+        /* deep dive */
+        .qa-deep {
+            background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg);
+            padding: clamp(18px, 3vw, 30px); margin-bottom: 26px; position: relative; border-left: 5px solid var(--accent);
+        }
+        .qa-deep-head { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; justify-content: space-between; }
+        .qa-deep h3 { font-size: clamp(1.3rem, 2.4vw, 1.7rem); }
+        .qa-tag {
+            font-family: var(--font-mono); font-size: 0.7rem; padding: 5px 11px; border-radius: 999px;
+            background: var(--surface-2); border: 1px solid var(--line); color: var(--ink-dim);
+        }
+        .qa-def { margin-top: 10px; color: var(--ink); font-size: 0.98rem; max-width: 82ch; }
+
+        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; margin-top: 20px; }
+        @media (max-width:760px) { .two-col { grid-template-columns: 1fr; } }
+
+        .subhead {
+            font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase;
+            color: var(--accent-2); margin-bottom: 10px; display: block;
+        }
+
+        .pattern-chip-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
+        .pattern-chip {
+            font-family: var(--font-mono); font-size: 0.75rem; padding: 5px 12px; border-radius: 999px;
+            background: color-mix(in srgb, var(--accent) 14%, var(--surface-2)); border: 1px solid var(--line);
+        }
+
+        .example-strip {
+            margin-top: 16px; background: color-mix(in srgb, var(--accent-2) 10%, transparent);
+            border: 1px solid color-mix(in srgb, var(--accent-2) 35%, var(--line)); border-radius: var(--radius-sm);
+            padding: 12px 14px; font-size: 0.86rem;
+        }
+        .example-strip b { color: var(--accent-2); }
+
+        .rule-box {
+            margin-top: 14px; background: var(--surface-2); border: 1px solid var(--line); border-radius: var(--radius-sm);
+            padding: 12px 14px; font-size: 0.84rem; color: var(--ink-dim);
+        }
+        .rule-box b { color: var(--ink); }
+
+        /* cheat table */
+        .cheat-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        .cheat-table th, .cheat-table td { border: 1px solid var(--line); padding: 12px 14px; text-align: left; font-size: 0.86rem; }
+        .cheat-table th {
+            background: var(--surface-2); font-family: var(--font-mono); font-size: 0.7rem;
+            text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent-2);
+        }
+        .cheat-table tr:nth-child(even) td { background: color-mix(in srgb, var(--surface-2) 55%, transparent); }
+        .cheat-table td code, .cheat-table th code { font-family: var(--font-mono); }
+
+        .table-scroll { overflow-x: auto; }
+
+        /* decision tree / chunking aid */
+        .dtree { margin-top: 20px; display: flex; flex-direction: column; gap: 0; align-items: stretch; }
+        .dtree-node {
+            background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-sm);
+            padding: 12px 16px; font-size: 0.86rem;
+        }
+        .dtree-node .q { font-family: var(--font-mono); font-size: 0.72rem; color: var(--accent-2); text-transform: uppercase; letter-spacing: .05em; }
+        .dtree-node .a { margin-top: 4px; color: var(--ink); }
+        .dtree-arrow { text-align: center; color: var(--ink-dim); font-size: 0.9rem; padding: 4px 0; }
+        .dtree-branches { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 6px 0; }
+        @media (max-width:600px) { .dtree-branches { grid-template-columns: 1fr; } }
+        .dtree-branches .dtree-node.yes { border-left: 3px solid var(--good); }
+        .dtree-branches .dtree-node.no { border-left: 3px solid var(--danger); }
+
+        /* mistakes */
+        .mistake-box {
+            border: 1px solid color-mix(in srgb, var(--danger) 45%, var(--line));
+            background: color-mix(in srgb, var(--danger) 8%, var(--surface));
+            border-radius: var(--radius-md); padding: 16px 18px; margin: 16px 0;
+        }
+        .mistake-box h4 { font-size: 1.0rem; margin-bottom: 10px; }
+        .wr-row { display: flex; gap: 10px; align-items: flex-start; margin-top: 8px; font-size: 0.88rem; }
+        .wr-tag {
+            font-family: var(--font-mono); font-size: 0.68rem; font-weight: 700; padding: 3px 8px;
+            border-radius: 6px; flex: none; margin-top: 1px;
+        }
+        .wr-row.wrong .wr-tag { color: var(--danger); background: color-mix(in srgb, var(--danger) 18%, transparent); }
+        .wr-row.right .wr-tag { color: var(--good); background: color-mix(in srgb, var(--good) 18%, transparent); }
+        .mistake-box .why { margin-top: 10px; color: var(--ink-dim); font-size: 0.84rem; }
+
+        /* quiz */
+        .quiz-item {
+            border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--surface);
+            padding: 14px 18px; margin: 12px 0; cursor: pointer;
+        }
+        .quiz-item .quiz-q { display: flex; justify-content: space-between; align-items: center; gap: 12px; font-size: 0.94rem; }
+        .quiz-item .quiz-tag {
+            font-family: var(--font-mono); font-size: 0.65rem; color: var(--accent); border: 1px solid var(--line);
+            border-radius: 999px; padding: 2px 9px; flex: none;
+        }
+        .quiz-toggle {
+            font-family: var(--font-mono); font-size: 0.75rem; color: var(--accent-2); flex: none;
+            border: 1px solid var(--line); border-radius: 999px; padding: 4px 10px; background: var(--surface-2);
+        }
+        .quiz-answer {
+            display: none; margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--line);
+            font-size: 0.88rem; color: var(--ink);
+        }
+        .quiz-answer.show { display: block; }
+        .quiz-answer .final { color: var(--good); font-family: var(--font-mono); font-size: 0.82rem; margin-bottom: 6px; }
+
+        /* practice lab */
+        .examroom {
+            background: repeating-linear-gradient(180deg, var(--surface) 0px, var(--surface) 27px, var(--surface-2) 28px);
+            border: 1px solid var(--line); border-radius: var(--radius-lg); padding: clamp(18px, 3vw, 28px);
+        }
+        .practice-q { border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface); padding: 14px 16px; margin: 12px 0; font-size: 0.92rem; }
+        .practice-q .req { color: var(--ink); }
+        .practice-q .ans { margin-top: 8px; font-family: var(--font-mono); font-size: 0.78rem; color: var(--accent); }
+        .practice-q .why { margin-top: 6px; color: var(--ink-dim); font-size: 0.82rem; }
+
+        footer {
+            padding: 40px clamp(16px, 4vw, 40px) 60px; text-align: center; color: var(--ink-dim);
+            font-family: var(--font-mono); font-size: 0.78rem;
+        }
+        footer .made { color: var(--ink); font-weight: 600; margin-top: 6px; }
+        footer .made span { color: var(--accent); }
+        .toc-hint { margin-top: 26px; color: var(--ink-dim); font-size: 0.82rem; }
+
+        ul.tight { margin: 8px 0 0; padding-left: 20px; color: var(--ink-dim); font-size: 0.88rem; }
+        ul.tight li { margin: 4px 0; }
+        ul.tight b { color: var(--ink); }
+
+        ::selection { background: var(--accent); color: #fff; }
+    </style>
+
+    <meta name="description" content="A full study guide to black-box test design: equivalence partitioning, boundary value analysis, decision tables, state transition testing, use case testing, plus general and experience-based testing — from SE401 lecture slides.">
+    <link rel="canonical" href="https://shoug-tech.com/academics/software-engineering/se401/slide-breakdowns/02-black-box-testing-techniques/black-box-testing-techniques.html">
+    <meta property="og:title" content="Black Box Testing Techniques — The Tester's Toolkit | SE401 Ch.2">
+    <meta property="og:description" content="A full study guide to black-box test design: equivalence partitioning, boundary value analysis, decision tables, state transition testing, use case testing, plus general and experience-based testing — from SE401 lecture slides.">
+    <meta property="og:url" content="https://shoug-tech.com/academics/software-engineering/se401/slide-breakdowns/02-black-box-testing-techniques/black-box-testing-techniques.html">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://shoug-tech.com/logo.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Black Box Testing Techniques — The Tester's Toolkit | SE401 Ch.2">
+    <meta name="twitter:description" content="A full study guide to black-box test design: equivalence partitioning, boundary value analysis, decision tables, state transition testing, use case testing, plus general and experience-based testing — from SE401 lecture slides.">
+    <meta name="twitter:image" content="https://shoug-tech.com/logo.png">
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","url":"https://shoug-tech.com/academics/software-engineering/se401/slide-breakdowns/02-black-box-testing-techniques/black-box-testing-techniques.html","name":"Black Box Testing Techniques — The Tester's Toolkit | SE401 Ch.2","description":"A full study guide to black-box test design: equivalence partitioning, boundary value analysis, decision tables, state transition testing, use case testing, plus general and experience-based testing — from SE401 lecture slides.","isPartOf":{"@type":"WebSite","name":"Shoug's Digital Garden","url":"https://shoug-tech.com/"}}</script>
+
+    <link rel="alternate" hreflang="en" href="https://shoug-tech.com/academics/software-engineering/se401/slide-breakdowns/02-black-box-testing-techniques/black-box-testing-techniques.html">
+    <link rel="alternate" hreflang="ar" href="https://shoug-tech.com/ar/academics/software-engineering/se401/slide-breakdowns/02-black-box-testing-techniques/black-box-testing-techniques.html">
+    <link rel="alternate" hreflang="x-default" href="https://shoug-tech.com/academics/software-engineering/se401/slide-breakdowns/02-black-box-testing-techniques/black-box-testing-techniques.html">
+</head>
+
+<body>
+
+    <header class="top">
+        <div class="top-inner">
+            <div class="brand">
+                <svg class="logo-mini" viewBox="0 0 40 40">
+                    <rect x="6" y="6" width="28" height="28" rx="6" fill="none" stroke="currentColor" stroke-width="2" opacity="0.35" />
+                    <rect x="13" y="13" width="14" height="14" rx="3" fill="var(--accent)" />
+                </svg>
+                <div class="brand-text">Black<span>·</span>Box</div>
+            </div>
+            <nav class="pillnav">
+                <a href="#process">Process</a>
+                <a href="#case-study">Knight Capital</a>
+                <a href="#categories">Categories</a>
+                <a href="#black-box">Spec-Based</a>
+                <a href="#equivalence">Equivalence</a>
+                <a href="#boundary">Boundary</a>
+                <a href="#decision-tables">Decision Tables</a>
+                <a href="#state-transition">State Transition</a>
+                <a href="#use-case">Use Case</a>
+                <a href="#general-testing">General Testing</a>
+                <a href="#experience-based">Experience-Based</a>
+                <a href="#cheat">Cheat Sheet</a>
+                <a href="#mistakes">Mistakes</a>
+                <a href="#quiz">Pop Quiz</a>
+                <a href="#lab">Practice Lab</a>
+            </nav>
+            <div class="theme-toggle">
+                <span id="theme-label">DARK</span>
+                <div class="switch" id="switch" role="button" aria-label="Toggle theme">
+                    <div class="knob"></div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+
+        <!-- HERO -->
+        <section class="hero">
+            <div class="wrap hero-grid">
+                <div>
+                    <div class="eyebrow">SE401 · Software Quality Assurance and Testing · Chapter 02</div>
+                    <h1 class="hero-title">You can't open the box,<br><em>so you interrogate the outputs.</em></h1>
+                    <p class="hero-sub">Black-box testing throws away the source code and treats the system as a
+                        sealed unit: feed it inputs, watch the outputs, and derive test cases straight from the
+                        <i>specification</i>. Five systematic techniques — equivalence partitioning, boundary value
+                        analysis, decision tables, state transition testing, and use case testing — turn "try
+                        everything" into "try the few inputs that actually matter."</p>
+                    <div class="hero-badges">
+                        <div class="badge">5 core techniques</div>
+                        <div class="badge">Knight Capital: $460M in 45 min</div>
+                        <div class="badge">Static vs. Dynamic map</div>
+                        <div class="badge">Exam-tested</div>
+                    </div>
+                </div>
+                <div class="bb-wrap">
+                    <svg viewBox="0 0 320 320">
+                        <rect x="20" y="20" width="280" height="280" rx="18" fill="none" stroke="var(--line)" stroke-width="2" />
+                        <text x="160" y="46" text-anchor="middle" class="mono" font-family="JetBrains Mono" font-size="11" fill="var(--accent)">SYSTEM UNDER TEST</text>
+                        <rect x="45" y="62" width="230" height="230" rx="12" fill="none" stroke="var(--accent)" stroke-width="1.6" stroke-dasharray="5 5" />
+                        <rect x="122" y="150" width="76" height="54" rx="8" fill="black" opacity="0.85" />
+                        <text x="160" y="181" text-anchor="middle" class="mono" font-family="JetBrains Mono" font-size="10" fill="white">BLACK BOX</text>
+                        <line x1="80" y1="177" x2="122" y2="177" stroke="var(--accent)" stroke-width="2" marker-end="url(#arrow1)" />
+                        <text x="70" y="170" text-anchor="middle" class="mono" font-family="JetBrains Mono" font-size="9" fill="var(--accent)">IN</text>
+                        <line x1="198" y1="177" x2="240" y2="177" stroke="var(--accent-2)" stroke-width="2" marker-end="url(#arrow2)" />
+                        <text x="250" y="170" text-anchor="middle" class="mono" font-family="JetBrains Mono" font-size="9" fill="var(--accent-2)">OUT</text>
+                        <defs>
+                            <marker id="arrow1" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="var(--accent)" /></marker>
+                            <marker id="arrow2" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="var(--accent-2)" /></marker>
+                        </defs>
+                        <g font-family="JetBrains Mono" font-size="8.5" fill="var(--ink-dim)">
+                            <circle cx="160" cy="95" r="5" fill="var(--accent-2)" /><text x="160" y="86" text-anchor="middle">EQ.PART</text>
+                            <circle cx="230" cy="135" r="5" fill="var(--accent-2)" /><text x="255" y="130" text-anchor="middle">BOUND</text>
+                            <circle cx="230" cy="220" r="5" fill="var(--accent-2)" /><text x="256" y="225" text-anchor="middle">DEC.TBL</text>
+                            <circle cx="90" cy="220" r="5" fill="var(--accent-2)" /><text x="63" y="225" text-anchor="middle">STATE</text>
+                            <circle cx="90" cy="135" r="5" fill="var(--accent-2)" /><text x="60" y="130" text-anchor="middle">USE CASE</text>
+                        </g>
+                        <g stroke="var(--line)" stroke-width="1.3">
+                            <line x1="160" y1="150" x2="160" y2="100" />
+                            <line x1="196" y1="160" x2="226" y2="136" />
+                            <line x1="196" y1="196" x2="226" y2="219" />
+                            <line x1="124" y1="196" x2="94" y2="219" />
+                            <line x1="124" y1="160" x2="94" y2="136" />
+                        </g>
+                    </svg>
+                </div>
+            </div>
+        </section>
+
+        <!-- TEST DEVELOPMENT PROCESS -->
+        <section id="process">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 01 — BACKGROUND &amp; PROCESS</div>
+                    <h2 class="sec-title">From "what should we test?" to an executable test</h2>
+                    <p class="sec-desc">Before you can pick a technique, you need to know what you're testing, what
+                        the inputs are, and what results should come out. That's the job of the three-stage test
+                        development process.</p>
+                </div>
+
+                <div class="mnemonic">
+                    <div class="icon">🎯</div>
+                    <div>
+                        <div class="label">Memory hook</div>
+                        <div class="phrase">"Analyze, Design, Implement — in that order, every time."</div>
+                        <div class="decode">Test <b>analysis</b> finds the test conditions → test <b>design</b> turns
+                            them into concrete test cases → test <b>implementation</b> organizes them into runnable
+                            test procedures.</div>
+                    </div>
+                </div>
+
+                <div class="two-col">
+                    <div class="qa-deep" style="margin-bottom:0;">
+                        <div class="qa-deep-head"><h3 style="font-size:1.1rem;">1. Test Analysis</h3><span class="qa-tag">what to test</span></div>
+                        <p class="qa-def" style="font-size:0.9rem;">The test basis documentation is analyzed to
+                            <i>identify the test conditions</i>. A <b>test condition</b> is an item or event that
+                            could be verified by one or more test cases — a function, a transaction, a quality
+                            characteristic, or a structural element (e.g. a web page's menus).</p>
+                        <div class="example-strip"><b>"Throw a wide net!"</b> First identify as many test conditions
+                            as possible, then select which to develop in detail. We can't test everything (P2 — the
+                            second testing principle), so we pick a subset with a high probability of finding
+                            defects — guided by a suitable test design technique.</div>
+                    </div>
+                    <div class="qa-deep" style="margin-bottom:0;">
+                        <div class="qa-deep-head"><h3 style="font-size:1.1rem;">2. Test Design</h3><span class="qa-tag">test cases + data</span></div>
+                        <p class="qa-def" style="font-size:0.9rem;">A <b>test case</b> is specified as a set of:
+                            <code>Pre-conditions → Inputs → Expected results → Post-conditions</code>, developed to
+                            cover certain test condition(s).</p>
+                        <div class="rule-box"><b>Test oracle:</b> the source of truth for correct behavior. Expected
+                            results include outputs, changes to data/states, and any other consequence of the test.
+                            If expected results aren't defined up front, a plausible-but-wrong result can get
+                            mistaken for the correct one — so define them <i>before</i> execution.</div>
+                    </div>
+                </div>
+
+                <div class="qa-deep" style="margin-top:22px;">
+                    <div class="qa-deep-head"><h3 style="font-size:1.1rem;">3. Test Implementation</h3><span class="qa-tag">organize &amp; schedule</span></div>
+                    <p class="qa-def" style="font-size:0.9rem;">Test cases are <code>Developed → Implemented →
+                        Prioritized → Organized</code> into test procedures. A <b>manual test procedure</b> specifies
+                        the sequence of actions for executing a test; an <b>automated test procedure</b> (test
+                        script) does the same for a test execution tool.</p>
+                    <div class="two-col">
+                        <div>
+                            <span class="subhead">The execution schedule defines</span>
+                            <ul class="tight">
+                                <li>The <b>order</b> of execution of test procedures / scripts</li>
+                                <li><b>When</b> they will be executed</li>
+                                <li><b>By whom</b> they will be executed</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <span class="subhead">It accounts for</span>
+                            <ul class="tight">
+                                <li>Risks, regression tests, prioritization</li>
+                                <li>Technical and logical dependencies</li>
+                            </ul>
+                            <div class="rule-box"><b>Rule of thumb:</b> "Find the scary stuff first." What counts as
+                                'scary' depends on the business, system, and project risks.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CASE STUDY: KNIGHT CAPITAL -->
+        <section id="case-study">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 02 — CASE STUDY</div>
+                    <h2 class="sec-title">Knight Capital: what happens when nobody tested the deployment</h2>
+                    <p class="sec-desc">The motivating "why testing matters" story for this chapter — a real
+                        high-frequency-trading firm, one bad deployment, $460 million gone in 45 minutes.</p>
+                </div>
+
+                <div class="mnemonic">
+                    <div class="icon">🧟</div>
+                    <div>
+                        <div class="label">Memory hook</div>
+                        <div class="phrase">"Zombie code doesn't die — it just waits to be reactivated."</div>
+                        <div class="decode">Dead code left in a system is still a live risk. Testing (and deleting
+                            what you don't use) is how you make sure it stays dead.</div>
+                    </div>
+                </div>
+
+                <div class="timeline">
+                    <div class="tl-item">
+                        <div class="tl-dot"></div>
+                        <div class="tl-year">Background</div>
+                        <h4>Knight Capital Group — largest U.S. equities trader</h4>
+                        <p>An American global financial services firm whose high-frequency trading (HFT) algorithms
+                            gave it a 17.3% market share on NYSE and 16.9% on NASDAQ.</p>
+                    </div>
+                    <div class="tl-item">
+                        <div class="tl-dot danger"></div>
+                        <div class="tl-year">Aug 1, 2012 — the first 45 minutes</div>
+                        <h4>Trading Program Ran Amok, With No 'Off' Switch</h4>
+                        <p>Knight's computers executed a series of unusually large automatic orders — "spit out
+                            duplicate buy and sell orders, jamming the market with high volumes of trades that caused
+                            wild swings in stock prices."</p>
+                        <div class="tl-key">By end of day: $460 million loss. In two days, the company's market value
+                            plunged 75%.</div>
+                    </div>
+                    <div class="tl-item">
+                        <div class="tl-dot"></div>
+                        <div class="tl-year">What happened — "Zombie Software"</div>
+                        <h4>A dead function was inadvertently reactivated</h4>
+                        <p>A new algorithmic trading program was installed and began operation on Aug 1. A
+                            <b>dormant legacy program</b> was somehow "inadvertently reactivated," and once active it
+                            started multiplying stock trades by one thousand — sending <b>4 million orders</b> when
+                            attempting to fill just <b>212 customer orders</b>. Knight's staff looked through
+                            <i>eight</i> sets of software before determining what happened.</p>
+                    </div>
+                    <div class="tl-item">
+                        <div class="tl-dot"></div>
+                        <div class="tl-year">Nov 2012 — SEC investigation findings</div>
+                        <h4>Root causes traced back to 2005</h4>
+                        <ul class="tight" style="margin-top:6px;">
+                            <li>Code changes in 2005 introduced defects. The defective function was <b>not meant to be
+                                used</b> — but it was kept in the codebase.</li>
+                            <li>New code deployed in late July 2012 triggered the defective function under new rules;
+                                it was unable to recognize when orders had been filled.</li>
+                            <li>Knight <b>ignored</b> system-generated warning emails.</li>
+                            <li>Inadequate controls and procedures for code deployment and testing.</li>
+                        </ul>
+                        <div class="tl-key">Oct 2013: charges filed — Knight Capital settled for $12 million.</div>
+                    </div>
+                </div>
+                <div class="example-strip"><b>Why this opens the chapter:</b> every technique that follows exists to
+                    catch exactly this class of failure earlier — missing logic, unused-but-dangerous code paths, and
+                    inadequately tested deployments.</div>
+            </div>
+        </section>
+
+        <!-- CATEGORIES OF TEST DESIGN TECHNIQUES -->
+        <section id="categories">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 03 — THE MAP</div>
+                    <h2 class="sec-title">Static vs. Dynamic, and where black box fits</h2>
+                    <p class="sec-desc">Before zooming into black-box techniques, place them on the full map of test
+                        design techniques.</p>
+                </div>
+
+                <div class="qa-deep">
+                    <div class="qa-deep-head"><h3>Static vs. Dynamic testing</h3><span class="qa-tag">recall</span></div>
+                    <div class="two-col">
+                        <div>
+                            <span class="subhead">Static testing</span>
+                            <p style="color:var(--ink-dim); font-size:0.9rem;">Manual examination and automated
+                                analysis of code <b>without executing it</b> — informal reviews, walkthroughs,
+                                technical reviews, inspections; plus static analysis (data flow, control flow).</p>
+                        </div>
+                        <div>
+                            <span class="subhead">Dynamic testing</span>
+                            <p style="color:var(--ink-dim); font-size:0.9rem;">Code <b>is executed</b>. Splits into
+                                three families: <b>structure-based</b> (white box — statement, decision, condition,
+                                multiple condition), <b>specification-based</b> (black box — this chapter), and
+                                <b>experience-based</b> (error guessing, exploratory testing).</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mnemonic">
+                    <div class="icon">🗂️</div>
+                    <div>
+                        <div class="label">Memory hook — the three dynamic families</div>
+                        <div class="phrase">"See it, Spec it, Sense it."</div>
+                        <div class="decode"><b>See it</b> = structure-based (you see the code: statement/decision/
+                            condition coverage). <b>Spec it</b> = specification-based / black box (you read the
+                            spec, not the code — this chapter). <b>Sense it</b> = experience-based (you use tester
+                            intuition and experience).</div>
+                    </div>
+                </div>
+
+                <div class="grid5">
+                    <div class="type-card"><div class="icon">📄</div><h4>Static</h4><p>Reviews &amp; static analysis — no execution at all.</p></div>
+                    <div class="type-card"><div class="icon">🏗️</div><h4>Structure-based (white box)</h4><p>Statement, decision, condition, multiple condition coverage.</p></div>
+                    <div class="type-card" style="border-color: var(--accent);"><div class="icon">⬛</div><h4>Specification-based (black box)</h4><p>Equivalence partitioning, boundary value, decision tables, state transition, use case — <b>this chapter.</b></p></div>
+                    <div class="type-card"><div class="icon">🧠</div><h4>Experience-based</h4><p>Error guessing, exploratory testing.</p></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SPECIFICATION-BASED / BLACK BOX FUNDAMENTALS -->
+        <section id="black-box">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 04 — FUNDAMENTALS</div>
+                    <h2 class="sec-title">What "black box" actually means</h2>
+                    <p class="sec-desc">Also called functional testing or specification-based testing — three names
+                        for the same idea, each highlighting a different angle.</p>
+                </div>
+
+                <div class="mnemonic">
+                    <div class="icon">🔤</div>
+                    <div>
+                        <div class="label">Memory hook — three names, one technique</div>
+                        <div class="phrase">"Functional (what it's derived from) = Specification-based (where it
+                            comes from) = Black-box (what you can't see)."</div>
+                        <div class="decode">"Functional" refers to the <i>source of information</i> (the functional
+                            specification) — not to what is tested. It's not testing only "functions"; it's testing
+                            derived from a spec of intended behavior, formal or informal.</div>
+                    </div>
+                </div>
+
+                <div class="qa-deep">
+                    <div class="qa-deep-head"><h3>Black Box Testing</h3><span class="qa-tag">no view of the code</span></div>
+                    <p class="qa-def">Testing software against a specification of its external behavior, without
+                        knowledge of internal implementation details. Applies to software "units" (e.g. classes) or
+                        to entire programs, using API docs / functional specs / requirements specs as the source of
+                        truth. Because it purposely disregards control structure, attention focuses on the
+                        <b>information domain</b> — data that goes in, data that comes out. <b>Goal:</b> derive sets
+                        of input conditions (test cases) that fully exercise the external functionality.</p>
+
+                    <div class="two-col">
+                        <div>
+                            <span class="subhead">Black-box error categories</span>
+                            <ul class="tight">
+                                <li>Incorrect or missing functions</li>
+                                <li>Interface errors (usability problems, concurrency/timing errors)</li>
+                                <li>Errors in data structures or external database access</li>
+                                <li>Behavior or performance errors</li>
+                                <li>Initialization and termination errors</li>
+                            </ul>
+                            <div class="rule-box"><b>Note:</b> unlike white-box testing, black-box testing tends to be
+                                applied <i>later</i> in the development process.</div>
+                        </div>
+                        <div>
+                            <span class="subhead">Questions black-box testing answers</span>
+                            <ul class="tight">
+                                <li>How is functional validity tested?</li>
+                                <li>How are system behavior and performance tested?</li>
+                                <li>What classes of input will make good test cases?</li>
+                                <li>Is the system sensitive to certain input values?</li>
+                                <li>How are the boundary values of a data class isolated?</li>
+                                <li>What data rates/volume can the system tolerate?</li>
+                                <li>What effect will specific combinations of data have?</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="two-col">
+                    <div class="qa-deep" style="margin-bottom:0;">
+                        <div class="qa-deep-head"><h3 style="font-size:1.1rem;">The information domain</h3></div>
+                        <p class="qa-def" style="font-size:0.9rem;"><b>Inputs:</b> individual input values (try many
+                            different values per input), combinations of inputs (inputs aren't independent —
+                            programs process several together), and the <b>ordering &amp; timing</b> of inputs (which
+                            can also matter).</p>
+                        <div class="rule-box"><b>Defining the input domain:</b> Boolean (T/F) · numeric value in a
+                            range (e.g. <code>-99 &le; N &le; 99</code>, integer/float, non-negative) · one of a fixed
+                            enumerated set (<code>{Jan, Feb, Mar...}</code>, <code>{Visa, MasterCard, Discover...}</code>)
+                            · formatted strings (phone numbers, file names, URLs, credit-card numbers, regex).</div>
+                    </div>
+                    <div class="qa-deep" style="margin-bottom:0;">
+                        <div class="qa-deep-head"><h3 style="font-size:1.1rem;">Why black box?</h3></div>
+                        <ul class="tight">
+                            <li><b>Early</b> — can start before code is written; even incomplete/informal specs work
+                                (though precise, complete specs build better test suites). Side benefits: reveals
+                                ambiguities in the spec, assesses testability, and can even improve the spec itself
+                                (in the extreme, as in XP, test cases <i>are</i> the spec).</li>
+                            <li><b>Effective</b> — finds classes of defects like missing logic that structural
+                                (white-box) testing can never find, because it never focuses on code that isn't
+                                there.</li>
+                            <li><b>Widely applicable</b> — any description of behavior counts as a spec, at any
+                                granularity from module to system.</li>
+                            <li><b>Economical</b> — less expensive than structural testing. It's the
+                                <i>base-line technique</i> for designing test cases.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="qa-deep">
+                    <div class="qa-deep-head"><h3>Functional vs. Structural: applicability</h3></div>
+                    <table class="cheat-table">
+                        <tr><th>Functional (black box)</th><td>Applicable at <b>every</b> granularity: unit test (module interface spec), integration test (API/subsystem spec), system test (system requirements spec), regression test (requirements + bug history).</td></tr>
+                        <tr><th>Structural (white box)</th><td>Applicable mainly to relatively small parts of a system — chiefly <b>unit test</b>.</td></tr>
+                    </table>
+                    <div class="rule-box"><b>Single Defect Assumption:</b> failures are rarely the result of the
+                        simultaneous effects of two or more defects. This is why testing representative
+                        combinations — not every possible combination — is usually enough.</div>
+                </div>
+
+                <div class="qa-deep">
+                    <div class="qa-deep-head"><h3>From specification to test cases — 4 steps</h3></div>
+                    <ol style="margin:0; padding-left:20px; color:var(--ink-dim); font-size:0.92rem;">
+                        <li><b style="color:var(--ink);">Decompose the specification</b> — if it's large, break it
+                            into independently testable features.</li>
+                        <li><b style="color:var(--ink);">Select representatives</b> — representative values of each
+                            input, or representative behaviors of a model (often simple I/O transformations don't
+                            describe a whole system, so we use models in program spec, design, and test design).</li>
+                        <li><b style="color:var(--ink);">Form test specifications</b> — typically combinations of
+                            input values, or model behaviors.</li>
+                        <li><b style="color:var(--ink);">Produce and execute actual tests.</b></li>
+                    </ol>
+                    <div class="example-strip"><b>Worked example — ZIP Code Lookup (input: 5-digit US postal code,
+                        output: list of cities):</b> representative values include a <i>correct</i> zip code (with 0,
+                        1, or many cities) and a <i>malformed</i> zip code (empty; 1–4 characters; 6 characters; very
+                        long; non-digit characters; non-character data). Notice how often <b>boundary values</b>
+                        (0 cities, 6 characters) and error cases show up — a preview of the next section.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- EQUIVALENCE PARTITIONING -->
+        <section id="equivalence">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 05 — TECHNIQUE 1</div>
+                    <h2 class="sec-title">Equivalence Partitioning</h2>
+                    <p class="sec-desc">The universe of possible test cases is too large to try them all — equivalence
+                        partitioning tells you which small subset to actually run.</p>
+                </div>
+
+                <div class="mnemonic">
+                    <div class="icon">🧩</div>
+                    <div>
+                        <div class="label">Memory hook</div>
+                        <div class="phrase">"Same path, same test — pick one representative per group."</div>
+                        <div class="decode">Two test cases are <b>equivalent</b> if you expect the program to process
+                            them the same way (follow the same path). If you expect that, only test one of them —
+                            that's the entire idea.</div>
+                    </div>
+                </div>
+
+                <div class="qa-deep">
+                    <div class="qa-deep-head"><h3>Equivalence Classes</h3><span class="qa-tag">divide &amp; conquer the input domain</span></div>
+                    <p class="qa-def">A black-box method that <b>divides the input domain into classes</b> of data
+                        from which test cases are derived. An ideal test case single-handedly uncovers a
+                        <i>complete class</i> of errors, reducing the total number of test cases needed. From each
+                        equivalence class, test cases are selected so the largest number of attributes of that class
+                        are exercised at once. Partitions should not share common elements — but don't worry if
+                        classes overlap with each other (better redundant than incomplete); they will, however,
+                        easily overlap with boundary-value test cases.</p>
+
+                    <div class="two-col">
+                        <div>
+                            <span class="subhead">Guidelines for defining equivalence classes</span>
+                            <table class="cheat-table">
+                                <tr><th>Input condition specifies…</th><th>Classes defined</th></tr>
+                                <tr><td>A <b>range</b> (e.g. 1–10)</td><td>1 valid + 2 invalid: <code>{1..10}</code>, <code>{x&lt;1}</code>, <code>{x&gt;10}</code></td></tr>
+                                <tr><td>A <b>specific value</b> (e.g. 250)</td><td>1 valid + 2 invalid: <code>{250}</code>, <code>{x&lt;250}</code>, <code>{x&gt;250}</code></td></tr>
+                                <tr><td>A <b>member of a set</b> (e.g. {-2.5, 7.3, 8.4})</td><td>1 valid + 1 invalid: <code>{set}</code>, <code>{any other x}</code></td></tr>
+                                <tr><td>A <b>Boolean</b> value</td><td>1 valid + 1 invalid: <code>{true}</code>, <code>{false}</code></td></tr>
+                            </table>
+                        </div>
+                        <div>
+                            <span class="subhead">Determining equivalence classes — checklist</span>
+                            <ul class="tight">
+                                <li>Look for ranges of numbers or values</li>
+                                <li>Look for memberships in groups</li>
+                                <li>Some classes may be based on time</li>
+                                <li>Include invalid inputs</li>
+                                <li>Look for internal boundaries</li>
+                                <li>Test multiple values per class — you're often unsure the classes were defined
+                                    completely, so multiple values are more thorough than one</li>
+                            </ul>
+                            <div class="rule-box"><b>Different definitions of "equivalence" partition the same input
+                                space differently.</b> E.g. <code>int Add(n1, n2, n3, ...)</code> could be
+                                partitioned by number of inputs, by sign of operands, or by magnitude — all valid,
+                                all different.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="qa-deep">
+                    <div class="qa-deep-head"><h3>Worked example — integer &amp; phone number</h3></div>
+                    <div class="table-scroll">
+                        <table class="cheat-table">
+                            <tr><th>Input</th><th>Valid Equivalence Classes</th><th>Invalid Equivalence Classes</th></tr>
+                            <tr>
+                                <td>Integer N such that:<br><code>-99 &le; N &le; 99</code></td>
+                                <td><code>[-99,-10]</code>, <code>[-9,-1]</code>, <code>0</code>, <code>[1,9]</code>, <code>[10,99]</code></td>
+                                <td><code>&lt;-99</code>, <code>&gt;99</code>, malformed numbers (<code>12-</code>, <code>1-2-3</code>), non-numeric strings (<code>junk</code>, <code>1E2</code>, <code>$13</code>), empty value</td>
+                            </tr>
+                            <tr>
+                                <td>Phone number<br>Area code: [200,999]<br>Prefix: (200,999]<br>Suffix: any 4 digits</td>
+                                <td><code>555-5555</code>, <code>(555)555-5555</code>, <code>555-555-5555</code>, <code>200&le;Area&le;999</code>, <code>200&lt;Prefix&le;999</code></td>
+                                <td>Invalid formats (<code>5555555</code>, <code>(555)(555)5555</code>), area code &lt;200 or &gt;999, non-numeric characters in area code — similarly for prefix &amp; suffix</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="example-strip"><b>Real-world groupings (technique in one line):</b> inputs, outputs,
+                        and internal values are divided into groups expected to behave alike — e.g. People
+                        (woman/man), Students (bachelor/master), Tickets (children/youth/adults/older), Vehicles
+                        (gasoline/diesel/electric). Equivalence partitioning applies at <b>all</b> levels of testing
+                        and can be used to achieve both input <i>and</i> output coverage.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- BOUNDARY VALUE ANALYSIS -->
+        <section id="boundary">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 06 — TECHNIQUE 2</div>
+                    <h2 class="sec-title">Boundary Value Analysis</h2>
+                    <p class="sec-desc">A greater number of errors occur at the boundaries of the input domain than
+                        in the "center" — so that's exactly where you aim.</p>
+                </div>
+
+                <div class="mnemonic">
+                    <div class="icon">🎯</div>
+                    <div>
+                        <div class="label">Memory hook</div>
+                        <div class="phrase">"Kiss the edges, not just the middle."</div>
+                        <div class="decode">Errors cluster near extreme values (off-by-one is the classic example).
+                            Boundary value analysis <b>complements</b> equivalence partitioning — it doesn't replace
+                            it — by selecting test cases right at the edges of each class.</div>
+                    </div>
+                </div>
+
+                <div class="qa-deep">
+                    <div class="qa-deep-head"><h3>Boundary Value Analysis</h3><span class="qa-tag">extension of equivalence partitioning</span></div>
+                    <p class="qa-def">Selects test cases at the <b>edges</b> of a class, deriving them from both the
+                        input domain and the output domain. Use input values at their minimum, just above the
+                        minimum, at a nominal value, at the maximum, and just below the maximum.
+                        <b>Robustness:</b> how does the software react when boundaries are exceeded?</p>
+
+                    <div class="two-col">
+                        <div>
+                            <span class="subhead">Guidelines</span>
+                            <ol style="margin:0; padding-left:18px; color: var(--ink-dim); font-size:0.88rem;">
+                                <li>If an input condition specifies a <b>range</b> bounded by <i>a</i> and <i>b</i>,
+                                    design test cases at <i>a</i> and <i>b</i>, plus values just above and just below
+                                    each.</li>
+                                <li>If an input condition specifies a <b>number of values</b>, exercise the minimum
+                                    and maximum, plus values just above/below each.</li>
+                            </ol>
+                            <p style="color:var(--ink-dim); font-size:0.85rem; margin-top:8px;">Apply the same two
+                                guidelines to <b>output conditions</b> — produce output at the minimum, maximum, and
+                                just below/above each. If internal data structures have prescribed boundaries (e.g.
+                                an array), design a test to exercise them at their limits too.</p>
+                        </div>
+                        <div>
+                            <span class="subhead">The classic off-by-one bug</span>
+                            <div class="rule-box">
+                                <code>if (200 &lt; areaCode &amp;&amp; areaCode &lt; 999)</code> <b style="color:var(--danger);">— Wrong!</b><br>
+                                <code>if (200 &lt;= areaCode &amp;&amp; areaCode &lt;= 999)</code> <b style="color:var(--good);">— correct</b><br><br>
+                                Testing area codes <b>200</b> and <b>999</b> would catch this error; a center value
+                                like <b>770</b> would not. In addition to center values, always test values
+                                <i>right on</i> a boundary and <i>very close to</i> it on either side.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="qa-deep">
+                    <div class="qa-deep-head"><h3>Worked example — same inputs as before</h3></div>
+                    <div class="table-scroll">
+                        <table class="cheat-table">
+                            <tr><th>Input</th><th>Boundary Cases</th></tr>
+                            <tr><td>Integer N such that <code>-99 &le; N &le; 99</code></td><td><code>-100, -99, -98, -10, -9, -1, 0, 1, 9, 10, 98, 99, 100</code></td></tr>
+                            <tr><td>Phone number — Area code [200,999], Prefix [200,999], Suffix 4 digits</td><td>Area code: <code>199, 200, 201</code> and <code>998, 999, 1000</code> — Prefix: <code>200, 199, 198</code> and <code>998, 999, 1000</code> — Suffix: 3 digits, 5 digits</td></tr>
+                        </table>
+                    </div>
+                    <div class="example-strip"><b>Encoded-boundary example:</b> numeric input is often typed as a
+                        string, then converted with something like <code>int x = atoi(str);</code>, which must
+                        distinguish digits from non-digits. A real boundary case: will the program wrongly accept
+                        <code>/</code> (ASCII 47, one below <code>'0'</code>=48) or <code>:</code> (ASCII 58, one
+                        above <code>'9'</code>=57) as digits?</div>
+                    <div class="rule-box"><b>Rule of thumb (closed, valid partitions):</b> pick two boundary values
+                        (min and max), plus one value from the middle of the partition — and don't get so wrapped up
+                        in boundary cases that you neglect "normal" mainstream-usage input values users would
+                        actually type.</div>
+                </div>
+
+                <div class="two-col">
+                    <div class="qa-deep" style="margin-bottom:0;">
+                        <div class="qa-deep-head"><h3 style="font-size:1.05rem;">Limitations</h3></div>
+                        <ul class="tight">
+                            <li>Doesn't require much thought — easy to apply mechanically, easy to apply
+                                mindlessly</li>
+                            <li>May miss internal boundaries</li>
+                            <li>Usually assumes variables are independent</li>
+                            <li>Values right at the boundary may not have meaning in every domain</li>
+                        </ul>
+                    </div>
+                    <div class="qa-deep" style="margin-bottom:0;">
+                        <div class="qa-deep-head"><h3 style="font-size:1.05rem;">Notes</h3></div>
+                        <ul class="tight">
+                            <li>Applies at all test levels</li>
+                            <li>Relatively easy to apply, high defect-finding capability</li>
+                            <li>Detailed specifications help a lot</li>
+                            <li>Considered an <b>extension</b> of equivalence partitioning; boundary values are used
+                                for test data selection</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- DECISION TABLES -->
+        <section id="decision-tables">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 07 — TECHNIQUE 3</div>
+                    <h2 class="sec-title">Decision Table Testing</h2>
+                    <p class="sec-desc">When behavior depends on <i>combinations</i> of Boolean conditions, decision
+                        tables force you to consider every combination systematically — like a truth table for
+                        business rules.</p>
+                </div>
+
+                <div class="mnemonic">
+                    <div class="icon">📊</div>
+                    <div>
+                        <div class="label">Memory hook</div>
+                        <div class="phrase">"Every column is a contract: these conditions, that action."</div>
+                        <div class="decode">Recall truth tables from mathematical logic (<code>P &and; Q</code>): each
+                            row/column is one combination of T/F inputs mapped to one output. Decision tables do the
+                            same for business rules.</div>
+                    </div>
+                </div>
+
+                <div class="qa-deep">
+                    <div class="qa-deep-head"><h3>Decision Table testing</h3><span class="qa-tag">a.k.a. cause-effect table</span></div>
+                    <p class="qa-def">A good way to capture system requirements that contain logical conditions, to
+                        document internal system design, and to record complex business rules a system must
+                        implement. Useful whenever input conditions and actions can be stated as true/false
+                        (Boolean). The table contains the triggering <b>conditions</b> — all combinations of
+                        true/false for all input conditions — and the resulting <b>actions</b> for each combination.
+                        Its strength: it creates combinations of conditions that might not otherwise get exercised
+                        during testing, and it's effective at revealing faults hiding in the requirements
+                        themselves.</p>
+
+                    <div class="rule-box"><b>Coverage standard:</b> at least one test per column — which typically
+                        means covering all combinations of triggering conditions. With <i>n</i> Boolean conditions
+                        you get up to <code>2ⁿ</code> rules/columns, though many can be merged with "don't care"
+                        (<code>—</code>) dashes when a condition doesn't affect the outcome.</div>
+                </div>
+
+                <div class="qa-deep">
+                    <div class="qa-deep-head"><h3>Worked example — credit card sign-up discount</h3></div>
+                    <p class="qa-def" style="font-size:0.9rem;">Rules: new customers get 15% off; existing loyalty-card
+                        holders get 10% off; coupon holders get 20% off (but a coupon can't combine with the
+                        new-customer discount); discounts are added if applicable.</p>
+                    <div class="table-scroll">
+                        <table class="cheat-table">
+                            <tr><th>Conditions</th><th>R1</th><th>R2</th><th>R3</th><th>R4</th><th>R5</th><th>R6</th><th>R7</th><th>R8</th></tr>
+                            <tr><td>New customer (15%)</td><td>T</td><td>T</td><td>T</td><td>T</td><td>F</td><td>F</td><td>F</td><td>F</td></tr>
+                            <tr><td>Loyalty card (10%)</td><td>T</td><td>T</td><td>F</td><td>F</td><td>T</td><td>T</td><td>F</td><td>F</td></tr>
+                            <tr><td>Coupon (20%)</td><td>T</td><td>F</td><td>T</td><td>F</td><td>T</td><td>F</td><td>T</td><td>F</td></tr>
+                            <tr><th>Discount</th><td>×(invalid)</td><td>×(invalid)</td><td>20%</td><td>15%</td><td>30%</td><td>10%</td><td>20%</td><td>0%</td></tr>
+                        </table>
+                    </div>
+                    <div class="example-strip"><b>Simplified with "don't care" dashes:</b> Rules 1&amp;2 collapse to
+                        <code>New=T, Loyalty=T, Coupon=—</code> → invalid (new-customer discount can't combine with a
+                        loyalty card at all in this rule set), Rules 3&amp;7 collapse to <code>Coupon=T, New=—</code>
+                        → 20%, leaving six effective rules instead of eight raw combinations — this consolidation is
+                        exactly what makes decision tables powerful for reasoning about business rules.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- STATE TRANSITION -->
+        <section id="state-transition">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 08 — TECHNIQUE 4</div>
+                    <h2 class="sec-title">State Transition Testing</h2>
+                    <p class="sec-desc">For systems where the <i>same input</i> can produce different outputs
+                        depending on what happened before — the system's own history becomes part of the spec.</p>
+                </div>
+
+                <div class="mnemonic">
+                    <div class="icon">🔁</div>
+                    <div>
+                        <div class="label">Memory hook — the four elements (STEA)</div>
+                        <div class="phrase">"State Transition Events Act."</div>
+                        <div class="decode"><b>S</b>tates (what the software may occupy — open/closed,
+                            active/inactive) · <b>T</b>ransitions (from one state to another — not all are allowed)
+                            · <b>E</b>vents (cause a transition — closing a file, withdrawing money) · <b>A</b>ctions
+                            (result from a transition — an error message).</div>
+                    </div>
+                </div>
+
+                <div class="qa-deep">
+                    <div class="qa-deep-head"><h3>State Transition Testing</h3><span class="qa-tag">finite state machine</span></div>
+                    <p class="qa-def">A system can be in a finite number of different states — this can be described
+                        as a <b>finite state machine</b>, shown visually as a <b>state diagram</b>. Any system where
+                        you get a different output for the same input, depending on what happened before, is a
+                        finite-state system. Transitions from one state to another are determined by the rules of the
+                        "machine."</p>
+
+                    <div class="example-strip"><b>Worked example — ATM PIN entry.</b> States: S1 Start, S2 Wait for
+                        PIN, S3 1st try, S4 2nd try, S5 3rd try, S6 Access to account, S7 Eat card. Events: Card
+                        inserted, Enter PIN, PIN OK, PIN not OK. Flow: <code>Start →(card inserted)→ Wait for PIN
+                        →(enter PIN)→ 1st try →(PIN OK)→ Access to account</code>, or <code>1st try →(PIN not
+                        OK)→ 2nd try →(PIN not OK)→ 3rd try →(PIN not OK)→ Eat card</code>.</div>
+
+                    <div class="two-col">
+                        <div>
+                            <span class="subhead">State / event table (excerpt)</span>
+                            <div class="table-scroll">
+                                <table class="cheat-table" style="font-size:0.78rem;">
+                                    <tr><th></th><th>Card inserted</th><th>Enter PIN</th><th>PIN OK</th><th>PIN not OK</th></tr>
+                                    <tr><td>S1 Start</td><td>S2</td><td>—</td><td>—</td><td>—</td></tr>
+                                    <tr><td>S2 Wait for PIN</td><td>—</td><td>S3</td><td>—</td><td>—</td></tr>
+                                    <tr><td>S3 1st try</td><td>—</td><td>—</td><td>S6</td><td>S4</td></tr>
+                                    <tr><td>S4 2nd try</td><td>—</td><td>—</td><td>S6</td><td>S5</td></tr>
+                                    <tr><td>S5 3rd try</td><td>—</td><td>—</td><td>S6</td><td>S7</td></tr>
+                                    <tr><td>S6 Access to acct.</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+                                    <tr><td>S7 Eat card</td><td>S1</td><td>—</td><td>—</td><td>—</td></tr>
+                                </table>
+                            </div>
+                            <p style="color:var(--ink-dim); font-size:0.8rem; margin-top:6px;">Invalid or null
+                                transitions are the dashes (<code>—</code>) — e.g. you cannot go straight from
+                                "Start" to "PIN OK" without inserting a card first.</p>
+                        </div>
+                        <div>
+                            <span class="subhead">Why state transition testing?</span>
+                            <p style="color:var(--ink-dim); font-size:0.88rem;">Because a system may respond
+                                differently depending on current conditions or previous history. It lets the tester
+                                view the software in terms of: its states, transitions between states, the events
+                                that trigger transitions, and the actions that may result.</p>
+                            <span class="subhead" style="margin-top:14px;">Tests can be designed to</span>
+                            <ul class="tight">
+                                <li>Cover a typical sequence of states</li>
+                                <li>Exercise specific sequences of transitions</li>
+                                <li>Cover every state</li>
+                                <li>Exercise every transition</li>
+                                <li>Test invalid transitions</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="rule-box">Heavily used throughout the software industry and technical automation in
+                        general — anywhere a "mode" or "session" concept exists.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- USE CASE TESTING -->
+        <section id="use-case">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 09 — TECHNIQUE 5</div>
+                    <h2 class="sec-title">Use Case Testing</h2>
+                    <p class="sec-desc">Instead of testing one input at a time, walk a whole business transaction
+                        from start to finish, the way a real user would experience it.</p>
+                </div>
+
+                <div class="mnemonic">
+                    <div class="icon">🎭</div>
+                    <div>
+                        <div class="label">Memory hook</div>
+                        <div class="phrase">"Actors set the scene, extensions tell the rest of the story."</div>
+                        <div class="decode">A use case's <b>main success scenario</b> is the mainstream (most likely)
+                            path; its <b>extensions</b> are the alternative branches (errors, edge paths) that
+                            happen off that main path.</div>
+                    </div>
+                </div>
+
+                <div class="qa-deep">
+                    <div class="qa-deep-head"><h3>Use Case Testing</h3><span class="qa-tag">actor ↔ system interactions</span></div>
+                    <p class="qa-def">A use case describes interactions between actors (users and the system), which
+                        produce a result of value to a system user. Test cases are identified that exercise the
+                        <b>whole system</b> on a transaction-by-transaction basis, from start to finish, describing
+                        interactions between actor and system in the <i>language of the business</i> rather than
+                        technical terms — especially when the actor is a business user.</p>
+
+                    <div class="two-col">
+                        <div>
+                            <span class="subhead">Anatomy of a use case</span>
+                            <table class="cheat-table" style="font-size:0.82rem;">
+                                <tr><th>Use case name</th><td>&lt;name&gt;</td></tr>
+                                <tr><th>Actor(s)</th><td>&lt;actor1&gt;, ...</td></tr>
+                                <tr><th>Pre-conditions</th><td>must be met for the use case to work</td></tr>
+                                <tr><th>Main success scenario</th><td>numbered A: action / S: response steps</td></tr>
+                                <tr><th>Extensions</th><td>alternative branches: &lt;cause&gt; → S: &lt;response&gt;</td></tr>
+                                <tr><th>Post-conditions</th><td>observable results / final state after completion</td></tr>
+                            </table>
+                        </div>
+                        <div>
+                            <span class="subhead">Worked example — ATM card entry use case</span>
+                            <div class="table-scroll">
+                                <table class="cheat-table" style="font-size:0.8rem;">
+                                    <tr><th>Step</th><th>Description</th></tr>
+                                    <tr><td>1</td><td>A: Inserts card</td></tr>
+                                    <tr><td>2</td><td>S: Validates card and asks for PIN</td></tr>
+                                    <tr><td>3</td><td>A: Enters PIN</td></tr>
+                                    <tr><td>4</td><td>S: Validates PIN</td></tr>
+                                    <tr><td>5</td><td>S: Allows access to account</td></tr>
+                                    <tr><td>2a</td><td>Ext: Card not valid → S: Display message, reject card</td></tr>
+                                    <tr><td>4a</td><td>Ext: PIN not valid → S: Display message, ask retry (twice)</td></tr>
+                                    <tr><td>4b</td><td>Ext: PIN invalid 3× → S: Eat card and exit</td></tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="example-strip"><b>Another worked example — online training website:</b> actors are
+                        the Learner, the Instructor/Tutor, the Training Manager, and the Instructional Designer, each
+                        with different use cases (Register for a course, Launch self-paced course, Author content,
+                        Participate in discussions, Receive reports from the HR Management System).</div>
+
+                    <div class="rule-box">Very useful for designing <b>acceptance tests</b> with customer/user
+                        participation. Describes the "process flows" through a system based on its actual likely
+                        use, and is most useful for uncovering <b>integration defects</b> — defects caused by
+                        incorrect interaction between components that individual/unit testing would never see.
+                        Test cases from use cases can be combined with the other specification-based techniques
+                        above.</div>
+                </div>
+
+                <div class="mnemonic" style="margin-top:22px;">
+                    <div class="icon">📇</div>
+                    <div>
+                        <div class="label">Memory hook — the whole toolkit</div>
+                        <div class="phrase">"Every Bug Demands State Usage."</div>
+                        <div class="decode"><b>E</b>quivalence partitioning · <b>B</b>oundary value analysis ·
+                            <b>D</b>ecision tables · <b>S</b>tate transition · <b>U</b>se case testing — the five
+                            specification-based techniques, in the order this deck teaches them.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- GENERAL TESTING -->
+        <section id="general-testing">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 10 — GENERAL TESTING</div>
+                    <h2 class="sec-title">Beyond correctness: the "-ility" tests</h2>
+                    <p class="sec-desc">Functional black-box techniques ask "does it produce the right output?" This
+                        set of general testing types asks broader questions about how the system behaves under
+                        real-world conditions.</p>
+                </div>
+
+                <div class="grid5">
+                    <div class="type-card">
+                        <div class="icon">⏱️</div><h4>Race Conditions &amp; Timing</h4>
+                        <p>Many systems run concurrent activities (OS interrupts, servers with many clients,
+                            multi-action apps). Test concurrency scenarios that share resources and may conflict.
+                            "Race conditions" only appear when activities interleave in particular ways — hard to
+                            reproduce. Test on hardware of varying speeds.</p>
+                    </div>
+                    <div class="type-card">
+                        <div class="icon">📈</div><h4>Performance Testing</h4>
+                        <p>Measure running times of tasks, memory usage (incl. leaks), network usage (bandwidth,
+                            open connections), disk usage (footprint, temp-file cleanup), and process/thread
+                            priorities. Tools: IBM Rational Performance Tester, Apache JMeter, WebLOAD,
+                            LoadRunner.</p>
+                    </div>
+                    <div class="type-card">
+                        <div class="icon">🚧</div><h4>Limit Testing</h4>
+                        <p>Test the system at the limits of normal use — every documented limit (max concurrent
+                            users/connections, max open files, max request/file size). What happens just beyond
+                            the specified limit — graceful degradation, or a crash?</p>
+                    </div>
+                    <div class="type-card">
+                        <div class="icon">🔥</div><h4>Stress Testing</h4>
+                        <p>Test under extreme conditions, beyond normal-use limits: low memory, disk faults
+                            (read/write failures, full disk, corruption), network faults, unusually high request
+                            counts/sizes/data rates. An excellent way to find bugs even if the system never needs to
+                            run this way in production.</p>
+                    </div>
+                    <div class="type-card">
+                        <div class="icon">🔐</div><h4>Security Testing</h4>
+                        <p>Any system handling sensitive data/functions is a target. Ask: how feasible is it to
+                            break in? Learn hacker techniques, try attacks, or hire a security expert. If someone
+                            broke in — or an authorized user turned malicious — what damage could they do? Tools:
+                            Metasploit, W3af, Zed Attack Proxy (ZAP), Wapiti.</p>
+                    </div>
+                    <div class="type-card">
+                        <div class="icon">🖱️</div><h4>Usability Testing</h4>
+                        <p>Is the UI intuitive, organized, logical? Does it frustrate users? Are common tasks
+                            simple? Does it follow platform conventions? Get real users to perform tasks, watch for
+                            trouble, collect feedback, and log bugs. Tools: Crazy Egg, Optimizely, Usabilla.</p>
+                    </div>
+                    <div class="type-card">
+                        <div class="icon">♻️</div><h4>Recovery Testing</h4>
+                        <p>Crash the program (or cut power) at arbitrary points. Does it restart correctly? Was
+                            persistent data corrupted? Was data loss within acceptable limits? Can it recover from
+                            corrupted/deleted config files? Does it need to survive hardware failures?</p>
+                    </div>
+                    <div class="type-card">
+                        <div class="icon">🖥️</div><h4>Configuration Testing</h4>
+                        <p>Test on all required hardware configs (CPU, memory, disk, graphics, network card) and
+                            all required OS versions — virtualization (VMWare, Virtual PC) helps here. Test as many
+                            hardware/OS combinations as feasible, including installers.</p>
+                    </div>
+                    <div class="type-card">
+                        <div class="icon">🔄</div><h4>Compatibility Testing</h4>
+                        <p>Confirm the program works with the other programs it's supposed to interoperate with —
+                            e.g. can Word 12.0 load files from Word 11.0? Does "Save As…" really export to Word,
+                            WordPerfect, PDF, HTML, Plain Text? Test every stated compatibility requirement.</p>
+                    </div>
+                    <div class="type-card">
+                        <div class="icon">📚</div><h4>Documentation Testing</h4>
+                        <p>Test every instruction in the documentation for completeness and accuracy. "How To..."
+                            guides are notorious for drifting out of sync with UI changes. Test docs on real
+                            users to confirm they're clear and complete.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- EXPERIENCE-BASED TECHNIQUES -->
+        <section id="experience-based">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 11 — EXPERIENCE-BASED TESTING</div>
+                    <h2 class="sec-title">When the spec runs out, intuition takes over</h2>
+                    <p class="sec-desc">Tests derived from the tester's skill, intuition, and experience with
+                        similar applications and technologies — best used to <i>augment</i> systematic techniques,
+                        not replace them.</p>
+                </div>
+
+                <div class="mnemonic">
+                    <div class="icon">🕵️</div>
+                    <div>
+                        <div class="label">Memory hook</div>
+                        <div class="phrase">"Guess the error, explore the gaps."</div>
+                        <div class="decode"><b>Error guessing</b> anticipates specific defects from experience;
+                            <b>exploratory testing</b> is broader, unscripted investigation of a whole area
+                            (concurrent design + execution + logging + learning) guided by a test charter, run in
+                            time-boxes.</div>
+                    </div>
+                </div>
+
+                <div class="two-col">
+                    <div class="qa-deep" style="margin-bottom:0;">
+                        <div class="qa-deep-head"><h3 style="font-size:1.05rem;">Error Guessing</h3></div>
+                        <p class="qa-def" style="font-size:0.88rem;">The most commonly used experience-based
+                            technique. Testers generally anticipate defects based on experience. A structured
+                            approach — enumerate a list of possible errors and design tests that attack them — is
+                            called <b>fault attack</b>.</p>
+                        <div class="qa-deep-head" style="margin-top:14px;"><h3 style="font-size:1.05rem;">Exploratory Testing</h3></div>
+                        <p class="qa-def" style="font-size:0.88rem;">Concurrent test design, execution, logging, and
+                            learning, based on a test charter of objectives, carried out within time-boxes. Most
+                            useful where specs are few/inadequate, under severe time pressure, or to complement more
+                            formal testing — it can help ensure the most serious defects surface.</p>
+                    </div>
+                    <div class="qa-deep" style="margin-bottom:0;">
+                        <div class="qa-deep-head"><h3 style="font-size:1.05rem;">Special Value Testing</h3></div>
+                        <p class="qa-def" style="font-size:0.88rem;">The most widely practiced form of functional
+                            testing. The tester uses domain knowledge, experience, or intuition to probe areas of
+                            probable errors. Other names: "hacking," "out-of-box testing," "ad hoc testing," "seat
+                            of the pants testing," "guerilla testing."</p>
+                        <ul class="tight" style="margin-top:10px;">
+                            <li><b>Uses:</b> complex mathematical/algorithmic calculations, worst-case situations
+                                (similar to robustness), problematic situations from past experience, "second
+                                guessing" the likely implementation.</li>
+                            <li><b>Characteristics:</b> experience really helps, frequently done by the customer or
+                                user, defies measurement, highly intuitive, seldom repeatable — but often very
+                                effective.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="qa-deep">
+                    <div class="qa-deep-head"><h3>Choosing test techniques</h3></div>
+                    <p class="qa-def">There's no single "best" technique — the right choice depends on: type of
+                        system · time and budget · development life-cycle · regulatory standards · customer
+                        requirements · contractual requirements · test objectives · level of risk · type of risk ·
+                        documentation available · use case models · knowledge of the testers · previous experience
+                        with types of defects found.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- CHEAT SHEET -->
+        <section id="cheat">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 12 — CHEAT SHEET</div>
+                    <h2 class="sec-title">The five techniques, in one table</h2>
+                </div>
+                <div class="table-scroll">
+                    <table class="cheat-table">
+                        <tr><th>Technique</th><th>Core idea</th><th>Use when...</th><th>Worked example from the deck</th></tr>
+                        <tr><td>Equivalence Partitioning</td><td>Divide input domain into classes that behave the same; test one representative per class</td><td>Input is defined as ranges or discrete sets of values</td><td>Integer <code>-99..99</code>, phone number, ZIP code</td></tr>
+                        <tr><td>Boundary Value Analysis</td><td>Test min, just-above-min, nominal, just-below-max, max</td><td>Always — as a companion to equivalence partitioning</td><td>Area code boundary bug: <code>&lt;</code> vs <code>&le;</code></td></tr>
+                        <tr><td>Decision Table Testing</td><td>Truth-table every combination of Boolean conditions → resulting action</td><td>Business rules with several independent T/F conditions</td><td>Credit card discount rules (new/loyalty/coupon)</td></tr>
+                        <tr><td>State Transition Testing</td><td>Model the system as states + events + transitions + actions</td><td>Same input gives different output depending on history</td><td>ATM PIN entry (3 tries then eat card)</td></tr>
+                        <tr><td>Use Case Testing</td><td>Walk a full actor↔system transaction, main scenario + extensions</td><td>Testing end-to-end business workflows / acceptance testing</td><td>ATM card entry; online training website roles</td></tr>
+                    </table>
+                </div>
+
+                <div class="dtree">
+                    <div class="dtree-node"><div class="q">Start here</div><div class="a">What does the input/behavior look like?</div></div>
+                    <div class="dtree-arrow">↓</div>
+                    <div class="dtree-branches">
+                        <div class="dtree-node yes"><div class="q">A range, set, or formatted value?</div><div class="a">→ Equivalence Partitioning, then Boundary Value Analysis on its edges.</div></div>
+                        <div class="dtree-node no"><div class="q">Several independent Boolean conditions driving an outcome?</div><div class="a">→ Decision Table Testing.</div></div>
+                    </div>
+                    <div class="dtree-branches">
+                        <div class="dtree-node yes"><div class="q">Same input, different output depending on history?</div><div class="a">→ State Transition Testing (model states/events/transitions).</div></div>
+                        <div class="dtree-node no"><div class="q">A full business transaction end-to-end?</div><div class="a">→ Use Case Testing (main scenario + extensions).</div></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- COMMON MISTAKES -->
+        <section id="mistakes">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 13 — COMMON MISTAKES</div>
+                    <h2 class="sec-title">Where students actually lose marks</h2>
+                    <p class="sec-desc">Seven confusions that show up again and again on exams for this chapter.</p>
+                </div>
+
+                <div class="mistake-box">
+                    <h4>1. Treating equivalence partitioning and boundary value analysis as the same technique</h4>
+                    <div class="wr-row wrong"><span class="wr-tag">✗ WRONG</span><span>"I did equivalence partitioning, so I don't need boundary value analysis too."</span></div>
+                    <div class="wr-row right"><span class="wr-tag">✓ RIGHT</span><span>BVA is an <i>extension</i> of equivalence partitioning, not a substitute. EP picks one representative per class (often a "center" value); BVA specifically targets the edges of those same classes, because errors cluster at boundaries, not centers.</span></div>
+                </div>
+
+                <div class="mistake-box">
+                    <h4>2. Writing the boundary condition with the wrong comparison operator</h4>
+                    <div class="wr-row wrong"><span class="wr-tag">✗ WRONG</span><span><code>if (200 &lt; areaCode &amp;&amp; areaCode &lt; 999)</code> for a valid range of [200, 999]</span></div>
+                    <div class="wr-row right"><span class="wr-tag">✓ RIGHT</span><span><code>if (200 &lt;= areaCode &amp;&amp; areaCode &lt;= 999)</code> — using strict <code>&lt;</code> silently excludes the boundary values themselves. Testing exactly at 200 and 999 (not just a mid-range value like 770) is what catches this.</span></div>
+                </div>
+
+                <div class="mistake-box">
+                    <h4>3. Mixing up how many valid/invalid classes a condition produces</h4>
+                    <div class="wr-row wrong"><span class="wr-tag">✗ WRONG</span><span>Assuming every input condition always yields 1 valid class and 2 invalid classes.</span></div>
+                    <div class="wr-row right"><span class="wr-tag">✓ RIGHT</span><span>Ranges and specific values → 1 valid + <b>2</b> invalid (below and above). Sets and Booleans → 1 valid + <b>1</b> invalid (there's no "below" or "above" a set membership or a Boolean).</span></div>
+                </div>
+
+                <div class="mistake-box">
+                    <h4>4. Listing 2ⁿ raw decision-table rules instead of consolidating with "don't care"</h4>
+                    <div class="wr-row wrong"><span class="wr-tag">✗ WRONG</span><span>Treating every one of the 2ⁿ combinations as a distinct, meaningful, non-mergeable rule.</span></div>
+                    <div class="wr-row right"><span class="wr-tag">✓ RIGHT</span><span>When a condition doesn't affect the outcome for a given combination, mark it "—" (don't care) and merge rules — e.g. the credit-card example collapses Rule 1 &amp; 2 (both invalid regardless of the coupon flag) into one column.</span></div>
+                </div>
+
+                <div class="mistake-box">
+                    <h4>5. Reading a dash ("—") in a state/event table as a valid transition</h4>
+                    <div class="wr-row wrong"><span class="wr-tag">✗ WRONG</span><span>"There's a cell in the table for Start→PIN OK, so that transition is allowed."</span></div>
+                    <div class="wr-row right"><span class="wr-tag">✓ RIGHT</span><span>A dash marks an <i>invalid or null transition</i> — that event simply cannot fire from that state. Only cells containing a next-state label (S2, S3, S6...) are real, valid transitions, and testing invalid transitions on purpose is part of thorough state-transition testing.</span></div>
+                </div>
+
+                <div class="mistake-box">
+                    <h4>6. Calling black-box testing "random" or "guessing"</h4>
+                    <div class="wr-row wrong"><span class="wr-tag">✗ WRONG</span><span>"Black box testing just means throwing random inputs at the program since you can't see the code."</span></div>
+                    <div class="wr-row right"><span class="wr-tag">✓ RIGHT</span><span>Black-box testing is systematic: test cases are <i>derived from the specification</i> using techniques like equivalence partitioning and decision tables. Unscripted, intuition-driven testing is a separate category — <i>experience-based</i> testing (error guessing, exploratory testing, special value testing).</span></div>
+                </div>
+
+                <div class="mistake-box">
+                    <h4>7. Confusing use case testing with state transition testing</h4>
+                    <div class="wr-row wrong"><span class="wr-tag">✗ WRONG</span><span>"They're basically the same — both use diagrams with boxes and arrows."</span></div>
+                    <div class="wr-row right"><span class="wr-tag">✓ RIGHT</span><span>State transition testing models the <i>system's internal states</i> (open/closed, active/inactive) and what triggers moves between them. Use case testing models a <i>business-level interaction</i> between an actor and the system, expressed in business language, with a main success scenario and extensions — the two can absolutely be combined, but they answer different questions.</span></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- POP QUIZ -->
+        <section id="quiz">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 14 — POP QUIZ</div>
+                    <h2 class="sec-title">Quick self-check — click a question to reveal the answer</h2>
+                    <p class="sec-desc">No grading, no pressure. If you get one wrong, jump back to that section
+                        above before moving on.</p>
+                </div>
+
+                <div class="quiz-item" onclick="this.querySelector('.quiz-answer').classList.toggle('show')">
+                    <div class="quiz-q"><span>1. (MC) A test condition specifies an input range of 18–65 (age
+                        eligibility). How many valid and invalid equivalence classes does this produce?</span><span class="quiz-toggle">Reveal</span></div>
+                    <div class="quiz-answer"><div class="final">1 valid + 2 invalid</div>Valid: <code>[18,65]</code>. Invalid: <code>age &lt; 18</code> and <code>age &gt; 65</code> — a range always produces one valid class and two invalid classes (below and above).</div>
+                </div>
+
+                <div class="quiz-item" onclick="this.querySelector('.quiz-answer').classList.toggle('show')">
+                    <div class="quiz-q"><span>2. (Short answer) Why does boundary value analysis exist even though
+                        equivalence partitioning already picks representative values from every class?</span><span class="quiz-toggle">Reveal</span></div>
+                    <div class="quiz-answer"><div class="final">Because errors cluster at the edges, not the center</div>A greater number of errors occur at the boundaries of the input domain than in the "center." EP alone might pick a safe, central representative value (like 770 for a 200–999 range) that never triggers an off-by-one bug at 200 or 999.</div>
+                </div>
+
+                <div class="quiz-item" onclick="this.querySelector('.quiz-answer').classList.toggle('show')">
+                    <div class="quiz-q"><span>3. (MC) In a decision table with 3 Boolean conditions, what is the
+                        maximum number of rule columns before any consolidation?</span><span class="quiz-toggle">Reveal</span></div>
+                    <div class="quiz-answer"><div class="final">2³ = 8 rules</div>Each of the 3 conditions can independently be True or False, giving 2×2×2 = 8 raw combinations — matching the credit-card discount example (Rule 1 through Rule 8) before any dashes/merging.</div>
+                </div>
+
+                <div class="quiz-item" onclick="this.querySelector('.quiz-answer').classList.toggle('show')">
+                    <div class="quiz-q"><span>4. (Short answer) What's the difference between a "state" and an
+                        "event" in state transition testing?</span><span class="quiz-toggle">Reveal</span></div>
+                    <div class="quiz-answer"><div class="final">A state is a condition the software occupies; an event triggers a move between states</div>E.g. "Wait for PIN" is a state; "Enter PIN" is the event that transitions the system out of that state. Actions (like an error message) can result from a transition.</div>
+                </div>
+
+                <div class="quiz-item" onclick="this.querySelector('.quiz-answer').classList.toggle('show')">
+                    <div class="quiz-q"><span>5. (MC) Which technique is most useful for designing acceptance tests
+                        with customer/user participation, expressed in business rather than technical language?</span><span class="quiz-toggle">Reveal</span></div>
+                    <div class="quiz-answer"><div class="final">Use Case Testing</div>Use case testing describes actor↔system interactions using business terms, especially when the actor is a business user — and it's specifically called out as very useful for acceptance testing.</div>
+                </div>
+
+                <div class="quiz-item" onclick="this.querySelector('.quiz-answer').classList.toggle('show')">
+                    <div class="quiz-q"><span>6. (Short answer) What single root cause let the Knight Capital bug
+                        ship to production in 2012, even though it originated in 2005?</span><span class="quiz-toggle">Reveal</span></div>
+                    <div class="quiz-answer"><div class="final">A defective, unused function was left in the codebase instead of removed</div>The function was "not meant to be used" but was kept in; new code deployed in 2012 triggered it under new rules, and Knight also ignored the warning emails the system generated — a combination of dead code plus inadequate deployment/testing controls.</div>
+                </div>
+
+                <div class="quiz-item" onclick="this.querySelector('.quiz-answer').classList.toggle('show')">
+                    <div class="quiz-q"><span>7. (MC) A field accepts one of a fixed enumerated set, e.g. {Visa,
+                        MasterCard, Discover}. How many valid/invalid equivalence classes does that produce?</span><span class="quiz-toggle">Reveal</span></div>
+                    <div class="quiz-answer"><div class="final">1 valid + 1 invalid</div>A member-of-a-set condition (like a Boolean) produces exactly one valid class (the set itself) and one invalid class (any value not in the set) — unlike a range, which produces two invalid classes.</div>
+                </div>
+
+                <div class="quiz-item" onclick="this.querySelector('.quiz-answer').classList.toggle('show')">
+                    <div class="quiz-q"><span>8. (Short answer) Name the "Single Defect Assumption" and explain why
+                        it matters for functional testing.</span><span class="quiz-toggle">Reveal</span></div>
+                    <div class="quiz-answer"><div class="final">Failures are rarely caused by two or more defects acting at once</div>Because of this assumption, testing representative combinations of inputs (rather than every possible combination of every possible defect) is usually sufficient — it's part of why equivalence partitioning's "test one value per class" strategy is defensible rather than reckless.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PRACTICE LAB -->
+        <section id="lab">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 15 — PRACTICE LAB</div>
+                    <h2 class="sec-title">Apply the right technique to the requirement</h2>
+                    <p class="sec-desc">Realistic exam-style questions built from the exact examples used in this
+                        deck — drill these until picking the right technique becomes automatic.</p>
+                </div>
+                <div class="examroom">
+                    <div class="practice-q">
+                        <div class="req">1. A ZIP code lookup field accepts a 5-digit US postal code and returns a
+                            list of cities. Design representative test values for this field.</div>
+                        <div class="ans">→ Equivalence Partitioning (+ Boundary Value Analysis)</div>
+                        <div class="why">Why: the input is a formatted value with a defined length. Valid classes:
+                            correct zip code with 0, 1, or many matching cities. Invalid classes: empty, 1–4
+                            characters, 6 characters, very long, non-digit characters, non-character data — with
+                            boundary values (0 cities, 6 characters) layered on top.</div>
+                    </div>
+                    <div class="practice-q">
+                        <div class="req">2. A credit-card sign-up page gives 15% off for new customers, 10% off for
+                            loyalty-card holders, and 20% off for coupon holders (not combinable with the
+                            new-customer discount). Which technique models this, and why?</div>
+                        <div class="ans">→ Decision Table Testing</div>
+                        <div class="why">Why: three independent Boolean conditions (new customer? loyalty card?
+                            coupon?) combine to determine one output (the discount rate) — the textbook case for
+                            a cause-effect decision table.</div>
+                    </div>
+                    <div class="practice-q">
+                        <div class="req">3. An ATM locks the card after 3 consecutive incorrect PIN entries, but
+                            allows access immediately on a correct PIN at any of the 3 tries. What technique models
+                            this behavior, and why not just test "enter wrong PIN" and "enter right PIN" as two
+                            independent test cases?</div>
+                        <div class="ans">→ State Transition Testing</div>
+                        <div class="why">Why: the outcome of "enter PIN" depends on how many previous attempts
+                            failed — the same input (a PIN) produces different results (retry vs. lockout) depending
+                            on history. That's exactly the definition of a finite-state system.</div>
+                    </div>
+                    <div class="practice-q">
+                        <div class="req">4. An online banking acceptance test needs to verify the full flow of a
+                            customer logging in, transferring funds, and logging out, described in language the
+                            customer's business stakeholders can review and sign off on.</div>
+                        <div class="ans">→ Use Case Testing</div>
+                        <div class="why">Why: this is a full actor↔system transaction from start to finish,
+                            described for a business audience (not developers) — the definition of use case testing,
+                            and explicitly the technique recommended for acceptance testing with customer
+                            participation.</div>
+                    </div>
+                    <div class="practice-q">
+                        <div class="req">5. A phone number field requires area code in [200,999], prefix in
+                            (200,999], and a 4-digit suffix. List two boundary test values for the area code alone.</div>
+                        <div class="ans">→ 199, 200, 201, 998, 999, 1000 (any two)</div>
+                        <div class="why">Why: boundary value analysis tests values just below, at, and just above
+                            each edge of the valid range — here the edges are 200 and 999.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <div>SE401 · Software Quality Assurance and Testing · Chapter 02 — Black Box Testing Techniques</div>
+        <div class="toc-hint">Built as a study aid from lecture slides — always verify against your instructor's exact
+            wording before an exam.</div>
+        <div class="made">Made by <span>Shoug Alomran</span></div>
+    </footer>
+
+    <script>
+        const root = document.documentElement;
+        const sw = document.getElementById('switch');
+        const label = document.getElementById('theme-label');
+
+        function applyTheme(t) {
+            root.setAttribute('data-theme', t);
+            label.textContent = t.toUpperCase();
+        }
+
+        const prefersLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
+        applyTheme(prefersLight ? 'light' : 'dark');
+
+        sw.addEventListener('click', () => {
+            const current = root.getAttribute('data-theme');
+            applyTheme(current === 'dark' ? 'light' : 'dark');
+        });
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,1541 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Why We Test — Bugs, Defects &amp; Failures Explained | SE401 Ch.4</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --radius-sm: 8px;
+            --radius-md: 14px;
+            --radius-lg: 22px;
+            --font-head: 'Space Grotesk', sans-serif;
+            --font-body: 'Inter', sans-serif;
+            --font-mono: 'IBM Plex Mono', monospace;
+            --maxw: 1180px;
+        }
+
+        html[data-theme="dark"] {
+            --bg: #0f1417;
+            --surface: #171d21;
+            --surface-2: #1d252a;
+            --ink: #e9eef0;
+            --ink-dim: #93a0a6;
+            --line: #2a3338;
+            --accent: #e2823f;
+            --accent-2: #3fb8a4;
+            --danger: #e2593f;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+        }
+
+        html[data-theme="light"] {
+            --bg: #f2efe9;
+            --surface: #ffffff;
+            --surface-2: #f6f3ee;
+            --ink: #1a2023;
+            --ink-dim: #5c6a70;
+            --line: #dcd7cd;
+            --accent: #c4631f;
+            --accent-2: #1f8a78;
+            --danger: #c23b25;
+            --shadow: 0 10px 26px rgba(20, 20, 15, 0.10);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            background:
+                radial-gradient(circle at 1px 1px, var(--line) 1px, transparent 1px) 0 0/26px 26px,
+                var(--bg);
+            color: var(--ink);
+            font-family: var(--font-body);
+            font-size: clamp(15px, 0.4vw + 14px, 17px);
+            line-height: 1.6;
+            transition: background-color .35s ease, color .35s ease;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: var(--font-head);
+            margin: 0;
+            letter-spacing: -0.01em;
+        }
+
+        a { color: inherit; }
+        .mono { font-family: var(--font-mono); }
+
+        .wrap {
+            max-width: var(--maxw);
+            margin: 0 auto;
+            padding: 0 clamp(16px, 4vw, 40px);
+        }
+
+        header.top {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            backdrop-filter: blur(10px);
+            background: color-mix(in srgb, var(--bg) 78%, transparent);
+            border-bottom: 1px solid var(--line);
+        }
+
+        .top-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px clamp(16px, 4vw, 40px);
+            max-width: var(--maxw);
+            margin: 0 auto;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .brand { display: flex; align-items: center; gap: 10px; }
+        .brand .logo-mini { width: 30px; height: 30px; flex: none; }
+        .brand-text { font-family: var(--font-head); font-weight: 700; font-size: 1.05rem; }
+        .brand-text span { color: var(--accent); }
+
+        nav.pillnav { display: flex; gap: 5px; flex-wrap: wrap; }
+
+        nav.pillnav a {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            text-decoration: none;
+            color: var(--ink-dim);
+            padding: 6px 9px;
+            border-radius: 999px;
+            border: 1px solid transparent;
+            white-space: nowrap;
+            transition: all .2s ease;
+        }
+
+        nav.pillnav a:hover { color: var(--ink); border-color: var(--line); background: var(--surface); }
+
+        .theme-toggle { display: flex; align-items: center; gap: 8px; font-family: var(--font-mono); font-size: 0.7rem; color: var(--ink-dim); }
+
+        .switch {
+            width: 46px; height: 26px; border-radius: 999px;
+            background: var(--surface-2); border: 1px solid var(--line);
+            position: relative; cursor: pointer; flex: none;
+        }
+
+        .switch .knob {
+            position: absolute; top: 2px; left: 2px; width: 20px; height: 20px;
+            border-radius: 50%; background: var(--accent);
+            transition: left .25s ease, background .25s ease;
+        }
+
+        html[data-theme="light"] .switch .knob { left: 22px; }
+
+        /* HERO */
+        .hero { padding: clamp(40px, 7vw, 80px) 0 clamp(20px, 4vw, 40px); }
+
+        .hero-grid {
+            display: grid; grid-template-columns: 1.2fr 0.8fr;
+            gap: clamp(20px, 4vw, 50px); align-items: center;
+        }
+
+        @media (max-width:820px) { .hero-grid { grid-template-columns: 1fr; } }
+
+        .eyebrow {
+            font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.14em;
+            text-transform: uppercase; color: var(--accent-2); margin-bottom: 14px;
+            display: flex; align-items: center; gap: 10px;
+        }
+
+        .eyebrow::before { content: ''; width: 26px; height: 1px; background: var(--accent-2); }
+
+        h1.hero-title { font-size: clamp(2.1rem, 5vw, 3.6rem); line-height: 1.05; font-weight: 700; }
+        h1.hero-title em { font-style: normal; color: var(--accent); }
+
+        .hero-sub { margin-top: 18px; color: var(--ink-dim); max-width: 56ch; font-size: 1.02rem; }
+
+        .hero-badges { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 22px; }
+
+        .badge {
+            font-family: var(--font-mono); font-size: 0.72rem; padding: 6px 12px;
+            border-radius: 8px; background: var(--surface); border: 1px solid var(--line); color: var(--ink-dim);
+        }
+
+        .bug-wrap { display: flex; justify-content: center; }
+        .bug-wrap svg { width: min(340px, 90%); height: auto; }
+
+        /* sticky note (instructor margin annotations) */
+        .sticky-note {
+            background: color-mix(in srgb, var(--accent) 16%, var(--surface));
+            border: 1px solid color-mix(in srgb, var(--accent) 45%, var(--line));
+            border-radius: var(--radius-sm);
+            padding: 16px 18px;
+            font-family: var(--font-mono);
+            font-size: 0.82rem;
+            color: var(--ink);
+            transform: rotate(-0.6deg);
+            box-shadow: var(--shadow);
+            margin-top: 26px;
+        }
+
+        .sticky-note .st-label {
+            font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase;
+            color: var(--accent); display: block; margin-bottom: 8px;
+        }
+
+        .sticky-note ul { margin: 0; padding-left: 18px; }
+        .sticky-note li { margin-bottom: 6px; }
+
+        section { padding: clamp(30px, 5vw, 60px) 0; border-top: 1px solid var(--line); }
+        section:first-of-type { border-top: none; }
+
+        .sec-head { margin-bottom: clamp(20px, 3vw, 34px); max-width: 74ch; }
+        .sec-num { font-family: var(--font-mono); color: var(--accent); font-size: 0.78rem; letter-spacing: 0.1em; }
+        .sec-title { font-size: clamp(1.5rem, 3vw, 2.1rem); margin-top: 6px; }
+        .sec-desc { color: var(--ink-dim); margin-top: 10px; font-size: 0.98rem; }
+
+        .mnemonic {
+            background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 14%, transparent), transparent);
+            border: 1px dashed color-mix(in srgb, var(--accent) 55%, var(--line));
+            border-radius: var(--radius-md);
+            padding: 16px 20px; display: flex; gap: 14px; align-items: flex-start; margin: 18px 0;
+        }
+
+        .mnemonic .icon { font-size: 1.4rem; flex: none; line-height: 1; }
+        .mnemonic .label { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); }
+        .mnemonic .phrase { font-family: var(--font-head); font-weight: 600; font-size: 1.05rem; margin-top: 3px; }
+        .mnemonic .decode { color: var(--ink-dim); font-size: 0.86rem; margin-top: 4px; }
+
+        /* timeline (case studies / history) */
+        .timeline { position: relative; margin-top: 26px; padding-left: 28px; }
+        .timeline::before { content: ''; position: absolute; left: 8px; top: 6px; bottom: 6px; width: 2px; background: var(--line); }
+        .tl-item { position: relative; padding-bottom: 26px; }
+        .tl-item:last-child { padding-bottom: 0; }
+        .tl-dot { position: absolute; left: -28px; top: 2px; width: 18px; height: 18px; border-radius: 50%; background: var(--surface); border: 2px solid var(--accent); }
+        .tl-year { font-family: var(--font-mono); font-size: 0.78rem; color: var(--accent); }
+        .tl-item h4 { font-size: 1.05rem; margin-top: 4px; }
+        .tl-item p { color: var(--ink-dim); font-size: 0.88rem; margin-top: 6px; max-width: 70ch; }
+        .tl-item .tl-key { font-size: 0.82rem; margin-top: 6px; color: var(--ink); font-style: italic; }
+
+        /* stack diagram (error -> defect -> failure) */
+        .stack-diagram {
+            display: grid; grid-template-columns: 1fr; gap: 0; margin-top: 20px;
+            border: 1px solid var(--line); border-radius: var(--radius-lg); overflow: hidden;
+        }
+
+        .stack-layer { padding: 18px clamp(16px, 3vw, 26px); position: relative; border-bottom: 1px dashed var(--line); }
+        .stack-layer:last-child { border-bottom: none; }
+        .stack-layer.l1 { background: color-mix(in srgb, var(--accent) 10%, var(--surface)); }
+        .stack-layer.l2 { background: color-mix(in srgb, var(--accent) 5%, var(--surface)); }
+        .stack-layer.l3 { background: var(--surface); }
+        .stack-layer .tag { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); }
+        .stack-layer h4 { font-size: 1.1rem; margin-top: 6px; }
+        .stack-layer p { color: var(--ink-dim); font-size: 0.9rem; margin-top: 6px; max-width: 74ch; }
+        .stack-layer.l3 .tag { color: var(--accent-2); }
+
+        /* classification grid */
+        .grid5 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-top: 20px; }
+        .type-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-md); padding: 18px; transition: transform .2s ease, box-shadow .2s ease; }
+        .type-card:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
+        .type-card .icon { font-size: 1.5rem; }
+        .type-card h4 { font-size: 0.98rem; margin-top: 8px; }
+        .type-card p { color: var(--ink-dim); font-size: 0.83rem; margin: 8px 0 0; }
+
+        /* deep dive */
+        .qa-deep {
+            background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg);
+            padding: clamp(18px, 3vw, 30px); margin-bottom: 26px; position: relative; border-left: 5px solid var(--accent);
+        }
+
+        .qa-deep-head { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; justify-content: space-between; }
+        .qa-deep h3 { font-size: clamp(1.2rem, 2.2vw, 1.5rem); }
+        .qa-tag { font-family: var(--font-mono); font-size: 0.68rem; padding: 5px 11px; border-radius: 999px; background: var(--surface-2); border: 1px solid var(--line); color: var(--ink-dim); }
+        .qa-def { margin-top: 10px; color: var(--ink); font-size: 0.96rem; max-width: 80ch; }
+
+        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; margin-top: 20px; }
+        @media (max-width:760px) { .two-col { grid-template-columns: 1fr; } }
+
+        .subhead { font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent-2); margin-bottom: 10px; display: block; }
+
+        .pattern-chip-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
+        .pattern-chip { font-family: var(--font-mono); font-size: 0.75rem; padding: 5px 12px; border-radius: 999px; background: color-mix(in srgb, var(--accent) 14%, var(--surface-2)); border: 1px solid var(--line); }
+
+        .example-strip {
+            margin-top: 16px; background: color-mix(in srgb, var(--accent-2) 10%, transparent);
+            border: 1px solid color-mix(in srgb, var(--accent-2) 35%, var(--line));
+            border-radius: var(--radius-sm); padding: 12px 14px; font-size: 0.86rem;
+        }
+        .example-strip b { color: var(--accent-2); }
+
+        .rule-box { margin-top: 14px; background: var(--surface-2); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 12px 14px; font-size: 0.84rem; color: var(--ink-dim); }
+        .rule-box b { color: var(--ink); }
+
+        /* bar chart (cost to repair) */
+        .barchart { display: flex; align-items: flex-end; gap: clamp(10px, 2vw, 22px); margin-top: 26px; height: 200px; padding: 0 6px; }
+        .bar-col { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; flex: 1; height: 100%; }
+        .bar-fill {
+            width: 100%; max-width: 64px; border-radius: 6px 6px 0 0;
+            background: linear-gradient(180deg, var(--accent), color-mix(in srgb, var(--accent) 55%, var(--accent-2)));
+            display: flex; align-items: flex-start; justify-content: center; color: #fff; font-family: var(--font-mono); font-size: 0.72rem; padding-top: 6px;
+        }
+        .bar-label { margin-top: 10px; font-family: var(--font-mono); font-size: 0.72rem; color: var(--ink-dim); text-align: center; }
+
+        /* pyramid (test granularity) */
+        .pyramid { display: flex; flex-direction: column; align-items: center; gap: 3px; margin-top: 24px; }
+        .pyr-layer {
+            font-family: var(--font-mono); font-size: 0.82rem; color: var(--ink);
+            display: flex; align-items: center; justify-content: center;
+            padding: 14px; border-radius: 8px; text-align: center;
+            background: var(--surface); border: 1px solid var(--line);
+        }
+        .pyr-layer.l4 { width: 42%; background: color-mix(in srgb, var(--accent) 30%, var(--surface)); }
+        .pyr-layer.l3 { width: 58%; background: color-mix(in srgb, var(--accent) 22%, var(--surface)); }
+        .pyr-layer.l2 { width: 76%; background: color-mix(in srgb, var(--accent) 14%, var(--surface)); }
+        .pyr-layer.l1 { width: 94%; background: color-mix(in srgb, var(--accent) 7%, var(--surface)); }
+
+        /* venn */
+        .venn-wrap { display: flex; justify-content: center; margin-top: 24px; }
+        .venn-wrap svg { width: min(420px, 100%); height: auto; }
+
+        /* cheat table */
+        .cheat-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        .cheat-table th, .cheat-table td { border: 1px solid var(--line); padding: 12px 14px; text-align: left; font-size: 0.86rem; }
+        .cheat-table th { background: var(--surface-2); font-family: var(--font-mono); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent-2); }
+        .cheat-table tr:nth-child(even) td { background: color-mix(in srgb, var(--surface-2) 55%, transparent); }
+        .table-scroll { overflow-x: auto; }
+
+        /* chunking table */
+        .chunk-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        .chunk-table th { background: var(--surface-2); font-family: var(--font-mono); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent); padding: 10px 12px; border: 1px solid var(--line); text-align: left; }
+        .chunk-table td { border: 1px solid var(--line); padding: 10px 12px; font-size: 0.85rem; vertical-align: top; }
+        .chunk-table .term { font-family: var(--font-mono); font-weight: 600; color: var(--accent-2); white-space: nowrap; }
+
+        /* common mistakes */
+        .mistake-box {
+            border: 1px solid color-mix(in srgb, var(--danger) 40%, var(--line));
+            border-radius: var(--radius-md);
+            background: color-mix(in srgb, var(--danger) 6%, var(--surface));
+            padding: 16px 20px; margin: 16px 0;
+        }
+        .mistake-box h4 { font-size: 1rem; margin-bottom: 10px; }
+        .wrong-right { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        @media (max-width:760px) { .wrong-right { grid-template-columns: 1fr; } }
+        .wr-cell { border-radius: var(--radius-sm); padding: 10px 12px; font-size: 0.86rem; }
+        .wr-cell.wrong { background: color-mix(in srgb, var(--danger) 12%, transparent); border: 1px solid color-mix(in srgb, var(--danger) 40%, var(--line)); }
+        .wr-cell.right { background: color-mix(in srgb, var(--accent-2) 12%, transparent); border: 1px solid color-mix(in srgb, var(--accent-2) 40%, var(--line)); }
+        .wr-cell .tag-mark { font-family: var(--font-mono); font-weight: 700; font-size: 0.72rem; letter-spacing: 0.05em; display: block; margin-bottom: 4px; }
+        .wr-cell.wrong .tag-mark { color: var(--danger); }
+        .wr-cell.right .tag-mark { color: var(--accent-2); }
+
+        /* quiz */
+        .quiz-list { display: flex; flex-direction: column; gap: 14px; margin-top: 22px; }
+        .quiz-item { border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--surface); padding: 16px 18px; }
+        .quiz-q { display: flex; justify-content: space-between; align-items: center; gap: 12px; cursor: pointer; }
+        .quiz-q .q-text { font-size: 0.95rem; }
+        .quiz-q .q-num { font-family: var(--font-mono); color: var(--accent); font-size: 0.8rem; margin-right: 8px; }
+        .quiz-reveal {
+            font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.05em; text-transform: uppercase;
+            background: var(--surface-2); border: 1px solid var(--line); color: var(--ink-dim);
+            padding: 6px 12px; border-radius: 999px; cursor: pointer; flex: none;
+        }
+        .quiz-reveal:hover { color: var(--ink); border-color: var(--accent); }
+        .quiz-answer {
+            display: none; margin-top: 14px; padding-top: 14px; border-top: 1px dashed var(--line);
+            font-size: 0.88rem; color: var(--ink-dim);
+        }
+        .quiz-answer.open { display: block; }
+        .quiz-answer b { color: var(--accent-2); }
+
+        /* practice lab */
+        .examroom {
+            background: repeating-linear-gradient(180deg, var(--surface) 0px, var(--surface) 27px, var(--surface-2) 28px);
+            border: 1px solid var(--line); border-radius: var(--radius-lg); padding: clamp(18px, 3vw, 28px);
+        }
+        .practice-q { border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface); padding: 14px 16px; margin: 12px 0; font-size: 0.92rem; }
+        .practice-q .req { color: var(--ink); }
+        .practice-q .ans { margin-top: 8px; font-family: var(--font-mono); font-size: 0.78rem; color: var(--accent); }
+        .practice-q .why { margin-top: 6px; color: var(--ink-dim); font-size: 0.82rem; }
+
+        code { font-family: var(--font-mono); background: var(--surface-2); padding: 1px 6px; border-radius: 4px; font-size: 0.88em; }
+        .code-block {
+            font-family: var(--font-mono); font-size: 0.82rem; background: var(--surface-2);
+            border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 14px 16px;
+            margin-top: 12px; white-space: pre-wrap; line-height: 1.55;
+        }
+
+        footer { padding: 40px clamp(16px, 4vw, 40px) 60px; text-align: center; color: var(--ink-dim); font-family: var(--font-mono); font-size: 0.78rem; }
+        footer .made { color: var(--ink); font-weight: 600; margin-top: 6px; }
+        footer .made span { color: var(--accent); }
+        .toc-hint { margin-top: 26px; color: var(--ink-dim); font-size: 0.82rem; }
+
+        ::selection { background: var(--accent); color: #fff; }
+    </style>
+
+    <meta name="description" content="Why software testing exists, told through real disasters (Ariane 5, Therac-25, China Airlines) plus the exact ISTQB-style vocabulary — error, defect, failure, verdicts, principles, and process — SE401 needs cold.">
+    <link rel="canonical" href="https://shoug-tech.com/academics/software-engineering/se401/slide-breakdowns/04-introduction/introduction.html">
+    <meta property="og:title" content="Why We Test — Bugs, Defects &amp; Failures Explained | SE401 Ch.4">
+    <meta property="og:description" content="Why software testing exists, told through real disasters (Ariane 5, Therac-25, China Airlines) plus the exact vocabulary and principles SE401 needs cold.">
+    <meta property="og:url" content="https://shoug-tech.com/academics/software-engineering/se401/slide-breakdowns/04-introduction/introduction.html">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://shoug-tech.com/logo.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Why We Test — Bugs, Defects &amp; Failures Explained | SE401 Ch.4">
+    <meta name="twitter:description" content="Why software testing exists, told through real disasters (Ariane 5, Therac-25, China Airlines) plus the exact vocabulary and principles SE401 needs cold.">
+    <meta name="twitter:image" content="https://shoug-tech.com/logo.png">
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","url":"https://shoug-tech.com/academics/software-engineering/se401/slide-breakdowns/04-introduction/introduction.html","name":"Why We Test — Bugs, Defects &amp; Failures Explained | SE401 Ch.4","description":"Why software testing exists, told through real disasters (Ariane 5, Therac-25, China Airlines) plus the exact vocabulary and principles SE401 needs cold.","isPartOf":{"@type":"WebSite","name":"Shoug's Digital Garden","url":"https://shoug-tech.com/"}}</script>
+
+    <link rel="alternate" hreflang="en" href="https://shoug-tech.com/academics/software-engineering/se401/slide-breakdowns/04-introduction/introduction.html">
+    <link rel="alternate" hreflang="ar" href="https://shoug-tech.com/ar/academics/software-engineering/se401/slide-breakdowns/04-introduction/introduction.html">
+    <link rel="alternate" hreflang="x-default" href="https://shoug-tech.com/academics/software-engineering/se401/slide-breakdowns/04-introduction/introduction.html">
+</head>
+
+<body>
+
+    <header class="top">
+        <div class="top-inner">
+            <div class="brand">
+                <svg class="logo-mini" viewBox="0 0 40 40">
+                    <rect x="6" y="6" width="28" height="28" rx="6" fill="none" stroke="currentColor" stroke-width="2" opacity="0.35" />
+                    <circle cx="20" cy="20" r="7" fill="var(--accent)" />
+                </svg>
+                <div class="brand-text">Bug<span>·</span>Hunt Primer</div>
+            </div>
+            <nav class="pillnav">
+                <a href="#why">Why It Matters</a>
+                <a href="#what">What Is Testing</a>
+                <a href="#terms">Vocabulary</a>
+                <a href="#concepts">Toolkit</a>
+                <a href="#levels">Levels &amp; QA</a>
+                <a href="#principles">7 Principles</a>
+                <a href="#process">Process</a>
+                <a href="#psychology">Psychology</a>
+                <a href="#limits">Limits</a>
+                <a href="#mistakes">Mistakes</a>
+                <a href="#quiz">Pop Quiz</a>
+                <a href="#cheat">Cheat Sheet</a>
+                <a href="#lab">Practice Lab</a>
+            </nav>
+            <div class="theme-toggle">
+                <span id="theme-label">DARK</span>
+                <div class="switch" id="switch" role="button" aria-label="Toggle theme">
+                    <div class="knob"></div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+
+        <!-- HERO -->
+        <section class="hero">
+            <div class="wrap hero-grid">
+                <div>
+                    <div class="eyebrow">SE401 · Software Testing and Quality · Chapter 04</div>
+                    <h1 class="hero-title">Your code compiles.<br><em>That was never the hard part.</em></h1>
+                    <p class="hero-sub">Testing exists because "it runs" and "it's correct" are two completely
+                        different claims. This chapter is the foundation for the entire course: why bugs are
+                        expensive (sometimes fatal), the exact vocabulary that separates an <b>error</b> from a
+                        <b>defect</b> from a <b>failure</b>, the seven principles every tester internalizes, and the
+                        process that turns "let's test it" into something repeatable.</p>
+                    <div class="hero-badges">
+                        <div class="badge">5 real-world disasters</div>
+                        <div class="badge">Error → Defect → Failure</div>
+                        <div class="badge">7 test principles</div>
+                        <div class="badge">7-step test process</div>
+                    </div>
+                    <div class="sticky-note">
+                        <span class="st-label">📌 From the instructor's own margin notes</span>
+                        <ul>
+                            <li><b>Midterm:</b> listing-type questions are capped around 2 points — but you're
+                                expected to <b>understand everything</b>, not just list it.</li>
+                            <li>No hand-drawn diagrams needed in exam answers.</li>
+                            <li>Be ready to give a real example / case study on request (not just recite one).</li>
+                            <li>The whole chapter is really answering four questions: <i>Why are we doing testing?
+                                What happens if we didn't? What's a test plan? What's a test case?</i></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="bug-wrap">
+                    <svg viewBox="0 0 320 320">
+                        <rect x="20" y="20" width="280" height="280" rx="18" fill="none" stroke="var(--line)" stroke-width="2" />
+                        <text x="160" y="46" text-anchor="middle" class="mono" font-family="IBM Plex Mono" font-size="11" fill="var(--accent)">HUMAN ERROR</text>
+                        <circle cx="160" cy="95" r="26" fill="none" stroke="var(--accent)" stroke-width="2" />
+                        <text x="160" y="100" text-anchor="middle" class="mono" font-family="IBM Plex Mono" font-size="9" fill="var(--ink-dim)">mistake</text>
+                        <line x1="160" y1="121" x2="160" y2="150" stroke="var(--line)" stroke-width="2" marker-end="url(#arrow)" />
+                        <text x="160" y="168" text-anchor="middle" class="mono" font-family="IBM Plex Mono" font-size="11" fill="var(--accent)">DEFECT / BUG</text>
+                        <rect x="115" y="176" width="90" height="52" rx="8" fill="color-mix(in srgb, var(--accent) 18%, transparent)" stroke="var(--accent)" stroke-width="2" />
+                        <text x="160" y="207" text-anchor="middle" class="mono" font-family="IBM Plex Mono" font-size="9" fill="var(--ink-dim)">in the code</text>
+                        <line x1="160" y1="228" x2="160" y2="256" stroke="var(--line)" stroke-width="2" marker-end="url(#arrow)" />
+                        <text x="160" y="274" text-anchor="middle" class="mono" font-family="IBM Plex Mono" font-size="11" fill="var(--accent-2)">FAILURE</text>
+                        <circle cx="160" cy="290" r="0" />
+                        <g transform="translate(160,268)">
+                            <circle r="18" fill="color-mix(in srgb, var(--accent-2) 20%, transparent)" stroke="var(--accent-2)" stroke-width="2" />
+                            <text y="5" text-anchor="middle" class="mono" font-family="IBM Plex Mono" font-size="14" fill="var(--accent-2)">✕</text>
+                        </g>
+                        <defs>
+                            <marker id="arrow" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+                                <path d="M0,0 L8,4 L0,8 Z" fill="var(--line)" />
+                            </marker>
+                        </defs>
+                    </svg>
+                </div>
+            </div>
+        </section>
+
+        <!-- WHY IT MATTERS -->
+        <section id="why">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 01 — WHY TESTING IS NECESSARY</div>
+                    <h2 class="sec-title">Software is everywhere, and unfinished testing has a body count</h2>
+                    <p class="sec-desc">Software now runs phones, smart homes, satellites, trucks, farm equipment,
+                        and aircraft. When it fails, the failure isn't abstract.</p>
+                </div>
+
+                <div class="mnemonic">
+                    <div class="icon">💥</div>
+                    <div>
+                        <div class="label">Memory hook</div>
+                        <div class="phrase">"A bug you don't catch, a customer catches instead — and it costs 16×
+                            more by then."</div>
+                        <div class="decode">Every disaster below is the same story: a defect that testing could have
+                            caught, discovered instead in production, in the worst possible place.</div>
+                    </div>
+                </div>
+
+                <div class="timeline">
+                    <div class="tl-item">
+                        <div class="tl-dot"></div>
+                        <div class="tl-year">1985 — Therac-25 radiation therapy machine (Canada)</div>
+                        <h4>A software bug delivered lethal radiation doses</h4>
+                        <p>Malfunctioned due to a software bug, leaving <b>3 people dead</b> and critically injuring
+                            <b>3 others</b>.</p>
+                        <div class="tl-key">Medical device software — a bug is not an inconvenience, it's a
+                            casualty.</div>
+                    </div>
+                    <div class="tl-item">
+                        <div class="tl-dot"></div>
+                        <div class="tl-year">April 26, 1994 — China Airlines Airbus A300</div>
+                        <h4>Crashed due to a software bug</h4>
+                        <p>Killed <b>264</b> innocent lives.</p>
+                        <div class="tl-key">You may be asked to name or explain a case study like this on an exam —
+                            know at least one cold.</div>
+                    </div>
+                    <div class="tl-item">
+                        <div class="tl-dot"></div>
+                        <div class="tl-year">June 4, 1996 — Ariane 5 Flight 501 (maiden launch, 12:34pm)</div>
+                        <h4>Self-destructed 39 seconds after liftoff</h4>
+                        <p>Deep-dive case study below — this one gets its own section because the instructor spent
+                            real time on it.</p>
+                        <div class="tl-key">Cost: €500 million.</div>
+                    </div>
+                    <div class="tl-item">
+                        <div class="tl-dot"></div>
+                        <div class="tl-year">April 1999 — $1.2 billion military satellite launch</div>
+                        <h4>Failed because of a software bug</h4>
+                        <p>Called out in the deck as <b>the costliest accident in history</b>.</p>
+                    </div>
+                    <div class="tl-item">
+                        <div class="tl-dot"></div>
+                        <div class="tl-year">US bank accounts</div>
+                        <h4>A software bug credited 823 customers $920 million</h4>
+                        <p>Not every failure kills someone — some just quietly move a billion dollars that was never
+                            supposed to move.</p>
+                    </div>
+                </div>
+
+                <div class="qa-deep" style="margin-top:30px;">
+                    <div class="qa-deep-head">
+                        <h3>Deep dive — Ariane 5: what actually happened</h3><span class="qa-tag">the exam's favorite
+                            case study</span>
+                    </div>
+                    <p class="qa-def">European expendable launch system, built to carry double the payload of its
+                        predecessor Ariane 4 (which had 113 successful launches and 3 failures).</p>
+                    <div class="two-col">
+                        <div>
+                            <span class="subhead">Timeline of the failure</span>
+                            <div class="rule-box">
+                                <b>T0 → T0+36s:</b> normal flight.<br>
+                                <b>Inside SRI 2 (inertial reference system):</b> the value BH (Bias Horizontal)
+                                exceeds 2¹⁵. The routine <code>convert_double_to_int(BH)</code> fails — the value
+                                is too big to fit. An exception is thrown, crashing SRI 2, then SRI 1 too.<br>
+                                <b>Result:</b> the onboard computer (OBC) receives diagnostic data and misreads it as
+                                real flight data — the rocket becomes disoriented, swings past a 20° angle, hits huge
+                                aerodynamic stress, and the boosters start separating.<br>
+                                <b>T0+39s:</b> self-destruction. Cost: €500M.
+                            </div>
+                        </div>
+                        <div>
+                            <span class="subhead">Why it happened (root cause)</span>
+                            <div class="rule-box">
+                                <b>Not a programming error</b> — the unprotected conversion was a design decision
+                                from ~1980.<br><br>
+                                <b>Not a design error either</b> — it was justified against Ariane 4's flight
+                                trajectory and real-time constraints.<br><br>
+                                <b>A problem with integration testing</b> — theoretically detectable, but the test
+                                space was huge versus limited resources, and the SRI software was actually useless at
+                                that stage of flight anyway.<br><br>
+                                <b>Reuse of a component with a hidden constraint</b> — precondition was
+                                <code>abs(BH) &lt; 32768.0</code>, valid for Ariane 4's flight profile but no longer
+                                valid for the more powerful Ariane 5.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="example-strip"><b>Lessons learned (verbatim from the deck):</b> Test! Test! Test! —
+                        test even when the code is reused. When you reuse code, ensure the assumptions are still
+                        valid. When you write reusable code, document the assumptions. Write fail-safe code. Do not
+                        propagate errors.</div>
+                </div>
+
+                <div class="two-col">
+                    <div>
+                        <span class="subhead">The economic case</span>
+                        <p style="color:var(--ink-dim); font-size:0.92rem;">Per the <i>Cost of Poor Software Quality
+                            in the US, 2020</i> report (CISQ — Consortium for Information &amp; Software Quality):
+                            the total Cost of Poor Software Quality (CPSQ) in the US is <b>$2.08 trillion</b> —
+                            <b>$1.56 trillion</b> from operational failures and <b>$520 billion</b> from legacy
+                            systems. We want software systems to be reliable; testing is how, in most cases, we find
+                            out if they are.</p>
+                    </div>
+                    <div>
+                        <span class="subhead">Cost of Quality (CoQ) formula</span>
+                        <div class="rule-box">
+                            <b>CoQ = Cost of Conformance (CoC) + Cost of Non-Conformance (CoNC)</b><br><br>
+                            <b>CoC:</b> Prevention (quality planning, tools, training) + Appraisal (testing,
+                            inspection).<br>
+                            <b>CoNC:</b> Internal failures (rework) + External failures (liability, loss of
+                            property, loss of lives).<br><br>
+                            Testing adds to CoC — but it must directly reduce CoNC, or it wasn't worth doing.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sec-head" style="margin-top:38px;">
+                    <div class="sec-num">§ 01b — WHY PROGRAMS FAIL &amp; THE COST TO REPAIR</div>
+                    <h2 class="sec-title">A defect caught early is cheap. Caught late, it's 16× the price.</h2>
+                </div>
+                <p style="color:var(--ink-dim); font-size:0.94rem;">"Your code is complete. It compiles. It runs...
+                    your program fails. How can this be?" There's a defect in the code; when executed, it causes bad
+                    behavior that later becomes visible as a failure. Before a program can be debugged, it must be
+                    set up so it can be <i>tested</i> — executed with the intent to make it fail. The first step in
+                    debugging is to <i>reproduce</i> the problem: first to bring it under control so it can be
+                    observed, second to later verify the fix actually worked.</p>
+
+                <div class="barchart">
+                    <div class="bar-col"><div class="bar-fill" style="height:12%;">1×</div><div class="bar-label">Requirement</div></div>
+                    <div class="bar-col"><div class="bar-fill" style="height:22%;">2×</div><div class="bar-label">Design</div></div>
+                    <div class="bar-col"><div class="bar-fill" style="height:42%;">4×</div><div class="bar-label">Code / Unit Test</div></div>
+                    <div class="bar-col"><div class="bar-fill" style="height:70%;">8×</div><div class="bar-label">Independent Test</div></div>
+                    <div class="bar-col"><div class="bar-fill" style="height:100%;">16×</div><div class="bar-label">After Release</div></div>
+                </div>
+                <div class="example-strip"><b>Why it compounds — the four typical scenarios:</b> Business Analyst →
+                    System Architect → Programmer, each stage's work product is either correct or incorrect. If the
+                    requirement itself is wrong, every downstream stage (design, code) inherits that wrongness — an
+                    error made early silently poisons everything built on top of it, which is exactly why it gets
+                    exponentially more expensive to fix the later it's caught.</div>
+
+                <div class="two-col" style="margin-top:26px;">
+                    <div>
+                        <span class="subhead">Role of testing across the SW lifecycle</span>
+                        <p style="color:var(--ink-dim); font-size:0.9rem;">Testing has an important role in <b>all</b>
+                            stages of a product's life cycle: Planning, Development, Maintenance, Operations.</p>
+                        <div class="rule-box">Purpose: reduce the risk of problems occurring during operation; check
+                            the system meets legal requirements and industry-specific standards; and simply
+                            <i>learn more</i> about the system under test.</div>
+                    </div>
+                    <div>
+                        <span class="subhead">What testing gives you back</span>
+                        <div class="rule-box">
+                            <b>Measures quality</b> in terms of defects found — functional aspects and non-functional
+                            aspects (reliability, usability, portability).<br><br>
+                            <b>Creates confidence</b> in the software's quality, if properly tested with a minimum of
+                            defects found.<br><br>
+                            <b>Teaches lessons</b> for future projects — understanding root causes lets you improve
+                            process and prevent recurrence.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- WHAT IS TESTING -->
+        <section id="what">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 02 — WHAT IS TESTING?</div>
+                    <h2 class="sec-title">A systematic, destructive search for defects</h2>
+                    <p class="sec-desc">"Are we meeting the requirements?" is the plain-language version. The formal
+                        version is more precise — and more testable on an exam.</p>
+                </div>
+
+                <div class="qa-deep">
+                    <div class="qa-deep-head">
+                        <h3>Definition</h3><span class="qa-tag">know this verbatim</span>
+                    </div>
+                    <p class="qa-def">Software testing is <b>a systematic process</b> used to identify the
+                        <b>correctness</b>, <b>completeness</b>, and <b>quality</b> of developed software. It
+                        includes a set of activities conducted with the intent of <b>finding errors</b> so they can
+                        be corrected before the product reaches end users. In simple words: testing is an activity
+                        that ensures the software system is <b>defect free</b>. It can be done either
+                        <b>manually</b> or with <b>automated tools</b>.</p>
+                    <div class="two-col">
+                        <div>
+                            <span class="subhead">The formal (ISTQB-style) framing</span>
+                            <p style="color:var(--ink-dim); font-size:0.88rem;">The process of testing all SW
+                                life-cycle activities — <i>both static and dynamic</i> — concerned with
+                                <i>planning, preparation, and evaluation</i> of software products and related work
+                                products, to: determine they satisfy specified requirements, demonstrate they are fit
+                                for purpose, and detect defects.</p>
+                        </div>
+                        <div>
+                            <span class="subhead">Depending on objectives, testing can focus on</span>
+                            <p style="color:var(--ink-dim); font-size:0.86rem;">Confirming requirements are met ·
+                                Causing as many failures as possible · Checking no defects were introduced during
+                                changes · Assessing quality (with no intention of finding defects) · Finding defects
+                                (reduces the probability of undiscovered ones) · Creating confidence in the level of
+                                quality · Providing information for decision-making · Preventing defects.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sec-head">
+                    <div class="sec-num">MYTHBUSTERS: SOFTWARE TESTING EDITION</div>
+                    <h2 class="sec-title" style="font-size:1.4rem;">Four myths, busted with the exact fact from the
+                        slide</h2>
+                </div>
+                <div class="grid5">
+                    <div class="type-card">
+                        <div class="icon">🚫</div>
+                        <h4>Myth #1: BUSTED</h4>
+                        <p><b>"Testing shows there are no errors."</b> Fact: the main objective is to
+                            <i>discover</i> defects. Testing is a <b>destructive</b> activity — you're trying to
+                            break the system, not prove it's fine.</p>
+                    </div>
+                    <div class="type-card">
+                        <div class="icon">🚫</div>
+                        <h4>Myth #2: BUSTED</h4>
+                        <p><b>"Testing ensures the software does what it's supposed to."</b> Only partly true —
+                            testing must also ensure the software does <i>not</i> do what it's <i>not</i> supposed to
+                            do.</p>
+                    </div>
+                    <div class="type-card">
+                        <div class="icon">🚫</div>
+                        <h4>Myth #3: BUSTED</h4>
+                        <p><b>"Testing is easier than design/implementation."</b> Fact: you must consider every
+                            possible scenario, implied and unstated requirements and threats, and be imaginative and
+                            creative.</p>
+                    </div>
+                    <div class="type-card">
+                        <div class="icon">✅</div>
+                        <h4>Myth #4: CONFIRMED</h4>
+                        <p><b>"Testing is an extremely creative and intellectually challenging task."</b> This one's
+                            actually true.</p>
+                    </div>
+                </div>
+
+                <div class="sec-head" style="margin-top:34px;">
+                    <div class="sec-num">SELF-ASSESSMENT — TEST THE TRIANGLE PROGRAM</div>
+                    <h2 class="sec-title" style="font-size:1.4rem;">The exact exercise the deck uses to prove Myth #3
+                        wrong</h2>
+                    <p class="sec-desc">A program reads 3 integers representing triangle side lengths and prints
+                        whether it's <b>Equilateral</b> (all 3 equal), <b>Isosceles</b> (exactly 2 equal), or
+                        <b>Scalene</b> (all different). Write test cases that would adequately test it. How many are
+                        actually needed?</p>
+                </div>
+                <div class="table-scroll">
+                <table class="cheat-table">
+                    <tr><th>Category</th><th>Sample Input</th><th>Expected Result</th></tr>
+                    <tr><td>Enter no / 1 / 2 values</td><td><code>nil</code> · <code>12</code> · <code>12, 13</code></td><td>Error — 3 integers required</td></tr>
+                    <tr><td>Happy path</td><td><code>5,5,5</code> / <code>3,3,4</code> / <code>2,3,4</code></td><td>Equilateral / Isosceles / Scalene</td></tr>
+                    <tr><td>Wrong format / non-integers / spaces / other chars</td><td><code>2.5, 7.5, 8.7</code> · <code>a, %, Z</code></td><td>Error — 3 integers required</td></tr>
+                    <tr><td>Boundary — at least one is 0</td><td><code>0, 0, 0</code></td><td>Error — all values must be &gt; 0</td></tr>
+                    <tr><td>Boundary — at least one is &gt; max</td><td><code>27, 27, 27</code></td><td>Error — all values must be ≤ max</td></tr>
+                    <tr><td>Invalid triangle (fails triangle inequality)</td><td><code>2, 2, 5</code> · <code>2, 3, 25</code></td><td>Error — not a triangle</td></tr>
+                </table>
+                </div>
+                <div class="rule-box"><b>The real lesson (why Myth #3 is busted):</b> even a program this small
+                    needs no-input cases, format errors, boundary cases at 0 and at max, negative values, and
+                    triangle-inequality violations layered on top of just the three "happy path" answers — that's
+                    creative, systematic thinking, not something "easier than coding."</div>
+
+                <div class="sticky-note" style="margin-top:26px;">
+                    <span class="st-label">📌 Margin note — "How will you do it?"</span>
+                    <ul>
+                        <li><b>Smoke test</b> ("Hello World!"): test major functions first — if there are bugs, it's
+                            an early indication that everything else has bugs too.</li>
+                        <li>Check handling of inputs: illegal inputs (text instead of integers), impossible inputs
+                            (floating vs. integer), outrageous values (infinities, max/min), out-of-domain values
+                            (negatives, outside spec), input errors (mis-spellings).</li>
+                        <li><b>Stress test:</b> multiple inputs without restart, or run the program for long periods
+                            of time.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- TERMINOLOGY -->
+        <section id="terms">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 03 — SOFTWARE TESTING TERMINOLOGY</div>
+                    <h2 class="sec-title">Error, defect, failure — three words that are NOT synonyms</h2>
+                    <p class="sec-desc">This is the single most exam-tested distinction in the whole chapter.</p>
+                </div>
+
+                <div class="mnemonic">
+                    <div class="icon">🔗</div>
+                    <div>
+                        <div class="label">Memory hook</div>
+                        <div class="phrase">"Humans Err, Code gets a Defect, Systems Fail."</div>
+                        <div class="decode">Error (human mistake) → Defect/fault/bug (the flaw it leaves in the code)
+                            → Failure (what happens if that flaw actually executes and misbehaves).</div>
+                    </div>
+                </div>
+
+                <div class="stack-diagram">
+                    <div class="stack-layer l1">
+                        <span class="tag">Error (= mistake)</span>
+                        <h4>A human action</h4>
+                        <p>Human actions that result in a fault or defect in the system. Concerned with the
+                            <b>underlying cause</b> of the defect. Can occur in design, coding, requirements — even
+                            testing itself.</p>
+                    </div>
+                    <div class="stack-layer l2">
+                        <span class="tag">Defect (= fault, bug)</span>
+                        <h4>A flaw sitting in the system</h4>
+                        <p>Flaws in a system that <i>can cause</i> the system to fail to perform its required
+                            function — e.g. an incorrect condition or statement. Concerned with
+                            <b>specific parts/components</b> of the system. Can occur in requirements, design, or
+                            program code.</p>
+                    </div>
+                    <div class="stack-layer l3">
+                        <span class="tag">Failure</span>
+                        <h4>Observed bad behavior</h4>
+                        <p>Deviation of the <b>observed behavior</b> of a system from its specification (its
+                            expected behavior). Can only be determined <b>with respect to the specification</b>. If a
+                            defect in code is <i>executed</i>, a failure <i>may</i> occur — but not all defects cause
+                            failures all the time.</p>
+                    </div>
+                </div>
+
+                <div class="sticky-note">
+                    <span class="st-label">📌 Margin note — real question the instructor said she'd ask</span>
+                    <ul>
+                        <li>"Is <i>bug</i> the same as <i>defect</i>? — Yes. But <i>failure</i> is different."</li>
+                        <li>"Bugs and faults ≠ failures... but a bug/fault might <i>cause</i> a failure."</li>
+                    </ul>
+                </div>
+
+                <div class="two-col" style="margin-top:26px;">
+                    <div>
+                        <span class="subhead">Worked example — <code>square(int x)</code></span>
+                        <div class="code-block">int square(int x)
+{
+&nbsp;&nbsp;return x*2;   // should be x*x
+}</div>
+                        <div class="example-strip"><b>The defect:</b> the line <code>return x*2;</code> itself — it
+                            sits there whether or not you ever call the function.</div>
+                    </div>
+                    <div>
+                        <span class="subhead">Same defect, two different outcomes</span>
+                        <div class="rule-box">
+                            <code>square(3)</code> → returns <code>6</code>, expected <code>9</code>. <b>A
+                            failure</b> — the defect executed and produced observably wrong behavior.<br><br>
+                            <code>square(2)</code> → returns <code>4</code>, which is <i>also</i> what <code>2×2</code>
+                            equals. <b>Not a failure</b> — correct result by coincidence, even though the exact same
+                            defect is still sitting in the code, unexecuted-in-a-way-that-shows.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="example-strip" style="margin-top:20px;"><b>Causes of defects:</b> Human error — split
+                    into <i>internal</i> causes (fatigue, lack of training, lack of understanding, lack of interest)
+                    and <i>external</i> pressures (time pressure, complex code, many system interactions, changed
+                    technologies) — plus non-controllable events like environmental conditions (radiation,
+                    magnetism, pollution).</div>
+
+                <div class="rule-box" style="margin-top:14px;"><b>Historical trivia (also fair game):</b> the very
+                    first recorded software "bug" was a literal moth, found trapped between points at Relay #70,
+                    Panel F of the Mark II Aiken Relay Calculator, Harvard University, September 9, 1945. It's on
+                    display in the Smithsonian.</div>
+            </div>
+        </section>
+
+        <!-- CONCEPTS / TOOLKIT -->
+        <section id="concepts">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 04 — TESTING: CONCEPTS</div>
+                    <h2 class="sec-title">The vocabulary you need before you can write a real test suite</h2>
+                    <p class="sec-desc">Eight terms, chunked by what role they play — write it, run it, or judge
+                        it.</p>
+                </div>
+
+                <div class="mnemonic">
+                    <div class="icon">🧰</div>
+                    <div>
+                        <div class="label">Chunking aid — group by role, not alphabet</div>
+                        <div class="phrase">"What you WRITE, what you BUILD to run it, and how you JUDGE it's
+                            enough."</div>
+                        <div class="decode">Test Case + Oracle = what you write. Scaffolding + Fixture + Driver =
+                            what you build so it can run. Suite + Script = how it's organized. Adequacy = how you know
+                            when to stop.</div>
+                    </div>
+                </div>
+
+                <div class="table-scroll">
+                <table class="chunk-table">
+                    <tr><th>Group</th><th>Term</th><th>What it actually is</th></tr>
+                    <tr><td rowspan="2">✍️ What you write</td><td class="term">Test Case</td><td>An execution of the software with a given test input — includes input values, sometimes execution steps, and expected outputs. Consists of inputs, steps/actions, and a pass/fail criterion.</td></tr>
+                    <tr><td class="term">Test Oracle</td><td>The <i>expected outputs</i> of software for a given input — a part of every test case. Generating oracles automatically is considered the hardest problem in auto-testing.</td></tr>
+                    <tr><td rowspan="3">🔧 What you build to run it</td><td class="term">Test Scaffolding</td><td>Additional code needed to execute a unit or subsystem in isolation — replacements for parts of the program you're omitting from the test. Not useful in production code; needs to be removed.</td></tr>
+                    <tr><td class="term">Test Fixture</td><td>A fixed state of the software under test used as a baseline for running tests (aka the "test context") — e.g. loading a database with a known dataset, or preparing input data and mock/fake objects.</td></tr>
+                    <tr><td class="term">Test Driver</td><td>A software framework that loads a collection of test cases or a test suite; can also handle configuration and comparison between expected and actual outputs.</td></tr>
+                    <tr><td rowspan="2">📦 How it's organized</td><td class="term">Test Suite</td><td>A collection of test cases, usually sharing similar prerequisites and configuration, usually run together in sequence. Different suites exist for different purposes (certain platforms, certain features, performance...).</td></tr>
+                    <tr><td class="term">Test Script</td><td>A script that runs a sequence of test cases or a whole test suite automatically.</td></tr>
+                    <tr><td>🛑 When to stop</td><td class="term">Test Adequacy</td><td>We can't use every possible input — so which do we use, and when do we stop? An <b>adequacy criterion</b> is a rule that lets us judge the sufficiency of a set of test data. Example: <b>test coverage</b> (statement coverage, branch coverage...) — a measurement of what % of the code was exercised, e.g. via the Cobertura tool.</td></tr>
+                </table>
+                </div>
+
+                <div class="example-strip" style="margin-top:20px;"><b>Test case verdicts — the three possible
+                    outcomes of running one:</b>
+                    <br><b>Pass:</b> execution completed, and the function performed as expected.
+                    <br><b>Fail:</b> execution completed, but the function did <i>not</i> perform as expected.
+                    <br><b>Error:</b> execution was <i>not</i> completed at all, due to an unexpected event,
+                    exception, or improper setup of the test case.</div>
+
+                <div class="code-block" style="margin-top:16px;">// Example JUnit test case for testing sum(int a, int b)
+int actual_output = sum(1, 2);
+assertTrue(actual_output == 3);</div>
+                <p style="color:var(--ink-dim); font-size:0.85rem; margin-top:8px;">Here, <code>3</code> is the test
+                    oracle (the expected output) baked directly into the assertion.</p>
+            </div>
+        </section>
+
+        <!-- LEVELS & QA -->
+        <section id="levels">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 05 — GRANULARITY OF TESTING &amp; TESTING VS. QA</div>
+                    <h2 class="sec-title">Four zoom levels, and testing's place inside quality assurance</h2>
+                </div>
+
+                <div class="pyramid">
+                    <div class="pyr-layer l4">Acceptance Testing — validate against user requirements, by customers, without formal test cases</div>
+                    <div class="pyr-layer l3">System Testing — test the system as a whole, by developers</div>
+                    <div class="pyr-layer l2">Integration Testing — test the interaction between modules</div>
+                    <div class="pyr-layer l1">Unit Testing — test of each single module</div>
+                </div>
+
+                <div class="sec-head" style="margin-top:38px;">
+                    <div class="sec-num">TESTING PURPOSE</div>
+                    <h2 class="sec-title" style="font-size:1.4rem;">Two things testing is explicitly NOT</h2>
+                </div>
+                <p style="color:var(--ink-dim); font-size:0.94rem;">The purpose of testing is to find defects — to
+                    discover every conceivable weakness in a software product. The deck highlights this in a bright
+                    yellow callout box, verbatim:</p>
+                <div class="rule-box" style="border-color: var(--accent); font-size:0.95rem; color: var(--ink);">
+                    <b>1. Software testing ≠ Debugging.</b><br>
+                    <b>2. Software testing ≠ Quality assurance.</b>
+                </div>
+
+                <div class="two-col" style="margin-top:24px;">
+                    <div>
+                        <span class="subhead">Testing vs. Quality Assurance (QA)</span>
+                        <p style="color:var(--ink-dim); font-size:0.9rem;"><b>Software testing</b> is a planned
+                            process used to identify the correctness, completeness, security, and quality of
+                            software. <b>Quality Assurance (QA)</b> is a planned and systematic way to evaluate the
+                            <i>quality of the process</i> used to produce a quality product. QA's goal is to assure a
+                            product meets the customer's quality expectations.</p>
+                        <div class="rule-box">Testing is <b>necessary but not sufficient</b> for QA — testing
+                            contributes to quality by identifying problems. QA sets the standards for the whole
+                            team/organization to build better software.</div>
+                    </div>
+                    <div>
+                        <span class="subhead">The Venn picture from the deck</span>
+                        <div class="venn-wrap">
+                            <svg viewBox="0 0 320 200">
+                                <circle cx="130" cy="100" r="85" fill="color-mix(in srgb, var(--accent-2) 22%, transparent)" stroke="var(--accent-2)" stroke-width="2" />
+                                <circle cx="210" cy="100" r="85" fill="color-mix(in srgb, var(--accent) 22%, transparent)" stroke="var(--accent)" stroke-width="2" />
+                                <text x="95" y="55" class="mono" font-family="IBM Plex Mono" font-size="12" fill="var(--accent-2)" font-weight="600">QA</text>
+                                <text x="230" y="55" class="mono" font-family="IBM Plex Mono" font-size="12" fill="var(--accent)" font-weight="600">TESTING</text>
+                                <text x="70" y="95" class="mono" font-family="IBM Plex Mono" font-size="8.5" fill="var(--ink-dim)">improvement of</text>
+                                <text x="70" y="107" class="mono" font-family="IBM Plex Mono" font-size="8.5" fill="var(--ink-dim)">dev. process</text>
+                                <text x="70" y="135" class="mono" font-family="IBM Plex Mono" font-size="8.5" fill="var(--ink-dim)">prevention of</text>
+                                <text x="70" y="147" class="mono" font-family="IBM Plex Mono" font-size="8.5" fill="var(--ink-dim)">bugs appearing</text>
+                                <text x="238" y="95" class="mono" font-family="IBM Plex Mono" font-size="8.5" fill="var(--ink-dim)">finding bugs</text>
+                                <text x="230" y="120" class="mono" font-family="IBM Plex Mono" font-size="8.5" fill="var(--ink-dim)">uncovering bugs</text>
+                                <text x="230" y="132" class="mono" font-family="IBM Plex Mono" font-size="8.5" fill="var(--ink-dim)">before users find them</text>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SEVEN PRINCIPLES -->
+        <section id="principles">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 06 — THE SEVEN TEST PRINCIPLES</div>
+                    <h2 class="sec-title">P1 through P7 — starred by the instructor as "memorize? understand all"</h2>
+                    <p class="sec-desc">This is the one slide the instructor personally flagged with a star. Given
+                        the midterm note up top ("listing capped, but understand everything"), these seven are the
+                        highest-yield thing in the whole chapter.</p>
+                </div>
+
+                <div class="mnemonic">
+                    <div class="icon">🐘</div>
+                    <div>
+                        <div class="label">Memory hook — first letters, in order</div>
+                        <div class="phrase">"Pretty Eager Elephants Cannot Paint Cute Art"</div>
+                        <div class="decode"><b>P</b>retty=Presence(P1) · <b>E</b>ager=Exhaustive-impossible(P2) ·
+                            <b>E</b>lephants=Early(P3) · <b>C</b>annot=Clustering(P4) · <b>P</b>aint=Pesticide
+                            paradox(P5) · <b>C</b>ute=Context-dependent(P6) · <b>A</b>rt=Absence-of-errors
+                            fallacy(P7).</div>
+                    </div>
+                </div>
+
+                <div class="grid5">
+                    <div class="type-card">
+                        <div class="icon">🔍</div>
+                        <h4>P1 — Presence of defects</h4>
+                        <p>Testing can show defects <i>are</i> present, but cannot prove there are none. It reduces
+                            the probability of undiscovered defects — but even zero found is not proof of
+                            correctness.</p>
+                    </div>
+                    <div class="type-card">
+                        <div class="icon">♾️</div>
+                        <h4>P2 — Exhaustive testing is impossible</h4>
+                        <p>Testing every combination of input and precondition isn't feasible except in specific
+                            cases. We use risks and priorities to focus test effort.</p>
+                    </div>
+                    <div class="type-card">
+                        <div class="icon">⏱️</div>
+                        <h4>P3 — Early testing</h4>
+                        <p>Testing activities should start as early as possible in the development life cycle, and
+                            should be focused on defined objectives.</p>
+                    </div>
+                    <div class="type-card">
+                        <div class="icon">🎯</div>
+                        <h4>P4 — Defect clustering</h4>
+                        <p>A small number of modules contain most of the defects discovered during pre-release
+                            testing.</p>
+                    </div>
+                    <div class="type-card">
+                        <div class="icon">🐜</div>
+                        <h4>P5 — Pesticide paradox</h4>
+                        <p>If the same set of tests is repeated over and over, it will stop finding new bugs — the
+                            defects it can catch are already gone, just like pests develop resistance.</p>
+                    </div>
+                    <div class="type-card">
+                        <div class="icon">🏗️</div>
+                        <h4>P6 — Context dependent</h4>
+                        <p>Testing is done differently in different contexts — safety-critical software is tested
+                            very differently from an e-commerce site.</p>
+                    </div>
+                    <div class="type-card">
+                        <div class="icon">🙅</div>
+                        <h4>P7 — Absence-of-errors fallacy</h4>
+                        <p>Finding and fixing defects doesn't help if the software system is unusable or doesn't meet
+                            the user's expectations.</p>
+                    </div>
+                </div>
+
+                <div class="example-strip" style="margin-top:20px;"><b>P5 in practice:</b> to overcome the pesticide
+                    paradox, test cases need to be regularly reviewed and revised, and new, different tests need to be
+                    written to investigate different parts of the software.</div>
+            </div>
+        </section>
+
+        <!-- PROCESS -->
+        <section id="process">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 07 — FUNDAMENTAL TEST PROCESS</div>
+                    <h2 class="sec-title">Seven steps from "who/what/why/when/where" to a closed test cycle</h2>
+                </div>
+
+                <div class="two-col">
+                    <div>
+                        <span class="subhead">Test case vs. Test suite vs. Test plan</span>
+                        <div class="rule-box">
+                            <b>Test case:</b> inputs, steps/actions, and expected results — i.e., a pass-fail
+                            criterion.<br><br>
+                            <b>Test suite:</b> a group of test cases, usually organized around some principle (e.g. a
+                            smoke test suite).<br><br>
+                            <b>Test plan:</b> a document that specifies how a system will be tested, including
+                            criteria for success — the exit criteria.<br><br>
+                            <b>Testing process:</b> developing test plans, designing test cases, running the test
+                            cases, and evaluating the results.
+                        </div>
+                    </div>
+                    <div>
+                        <span class="subhead">The 7 fundamental test process steps</span>
+                        <div class="pattern-chip-row">
+                            <span class="pattern-chip">1. Test planning</span>
+                            <span class="pattern-chip">2. Monitoring &amp; control</span>
+                            <span class="pattern-chip">3. Test analysis</span>
+                            <span class="pattern-chip">4. Test design</span>
+                            <span class="pattern-chip">5. Implementation</span>
+                            <span class="pattern-chip">6. Execution</span>
+                            <span class="pattern-chip">7. Completion</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="qa-deep" style="margin-top:26px;">
+                    <div class="qa-deep-head"><h3>1–2. Planning, monitoring &amp; control</h3><span class="qa-tag">who / what / why / when / where</span></div>
+                    <p class="qa-def">A plan encompasses what, how, when, and by whom: scope, objectives, and risk
+                        analyses; the test levels and types to be applied; documentation to be produced; resources
+                        assigned to each test activity; and the schedule for implementation, execution, and
+                        evaluation. Control and adjust the plan to reflect new information and new project
+                        challenges.</p>
+                </div>
+
+                <div class="qa-deep">
+                    <div class="qa-deep-head"><h3>3–4. Analysis &amp; design</h3><span class="qa-tag">objectives → conditions → cases</span></div>
+                    <p class="qa-def">First, review the <b>test basis</b>: requirements, product architecture,
+                        product design, interfaces, and the risk analysis report.</p>
+                    <div class="two-col">
+                        <div><span class="subhead">Analysis</span><p style="color:var(--ink-dim); font-size:0.88rem;">General test objectives are transformed into concrete <b>test conditions</b>.</p></div>
+                        <div><span class="subhead">Design</span><p style="color:var(--ink-dim); font-size:0.88rem;">Produces <b>test cases</b>, <b>test environments</b>, <b>test data</b>, and creates <b>traceability</b> back to requirements.</p></div>
+                    </div>
+                </div>
+
+                <div class="qa-deep">
+                    <div class="qa-deep-head"><h3>5–6. Implementation &amp; execution</h3><span class="qa-tag">build it, then run it</span></div>
+                    <div class="two-col">
+                        <div>
+                            <span class="subhead">Implement</span>
+                            <p style="color:var(--ink-dim); font-size:0.88rem;">Group tests into scripts, prioritize
+                                the scripts, prepare test oracles, write automated test scenarios.</p>
+                        </div>
+                        <div>
+                            <span class="subhead">Execute</span>
+                            <p style="color:var(--ink-dim); font-size:0.88rem;">Run the tests and compare results with
+                                oracles, report incidents, repeat test activities for each corrected discrepancy, and
+                                log the outcome of test execution.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="qa-deep" style="margin-bottom:0;">
+                    <div class="qa-deep-head"><h3>7. Test completion</h3><span class="qa-tag">close the loop</span></div>
+                    <div class="two-col">
+                        <div>
+                            <span class="subhead">Evaluate</span>
+                            <p style="color:var(--ink-dim); font-size:0.88rem;">Assess test execution against the
+                                defined objectives. Check if more tests are needed, or if exit criteria should
+                                change.</p>
+                        </div>
+                        <div>
+                            <span class="subhead">Report &amp; close</span>
+                            <p style="color:var(--ink-dim); font-size:0.88rem;"><b>Report:</b> write or extract a test
+                                summary report for stakeholders. <b>Test closure activities:</b> the activities that
+                                make test assets available for later reuse.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PSYCHOLOGY -->
+        <section id="psychology">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 08 — THE PSYCHOLOGY OF TESTING</div>
+                    <h2 class="sec-title">Testers need a different mindset than developers</h2>
+                </div>
+
+                <div class="two-col">
+                    <div>
+                        <span class="subhead">A good tester needs</span>
+                        <div class="pattern-chip-row">
+                            <span class="pattern-chip">Curiosity</span>
+                            <span class="pattern-chip">Professional pessimism</span>
+                            <span class="pattern-chip">Attention to details</span>
+                            <span class="pattern-chip">Good communication skills</span>
+                            <span class="pattern-chip">Experience at error guessing</span>
+                        </div>
+                        <div class="rule-box">To communicate defects and failures constructively: keep reports and
+                            reviews of findings <b>fact-focused</b> — not accusatory.</div>
+                        <div class="rule-box" style="margin-top:10px;"><b>Tips &amp; tricks:</b> be clear and
+                            objective. Confirm that (1) you understood the requirements, and (2) the person who has
+                            to fix the bug has understood the problem.</div>
+                    </div>
+                    <div>
+                        <span class="subhead">Independence in testing</span>
+                        <p style="color:var(--ink-dim); font-size:0.9rem;">A certain degree of independence is often
+                            more effective at finding defects and failures. However, a developer can also very
+                            efficiently find bugs in their own code. The right level of independence depends on the
+                            objective of testing.</p>
+                        <div class="timeline" style="margin-top:20px;">
+                            <div class="tl-item">
+                                <div class="tl-dot"></div>
+                                <div class="tl-year">Level 1 — Lowest independence</div>
+                                <h4>Tests designed by the same person who wrote the code</h4>
+                            </div>
+                            <div class="tl-item">
+                                <div class="tl-dot"></div>
+                                <div class="tl-year">Level 2</div>
+                                <h4>Designed by another person, same team, same organization</h4>
+                            </div>
+                            <div class="tl-item">
+                                <div class="tl-dot"></div>
+                                <div class="tl-year">Level 3</div>
+                                <h4>Designed by a person from a separate testing team, same organization</h4>
+                            </div>
+                            <div class="tl-item">
+                                <div class="tl-dot"></div>
+                                <div class="tl-year">Level 4 — Highest independence</div>
+                                <h4>Designed by a person from an outside organization / company (outsourced)</h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- LIMITS -->
+        <section id="limits">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 09 — LIMITATIONS OF SOFTWARE TESTING</div>
+                    <h2 class="sec-title">What testing can never promise you</h2>
+                </div>
+
+                <div class="qa-deep">
+                    <div class="qa-deep-head"><h3>Testing vs. Verification vs. Debugging</h3><span class="qa-tag">three different jobs</span></div>
+                    <p class="qa-def">Both testing and verification attempt to exhibit <b>new</b> failures.
+                        <b>Debugging</b> is a separate, systematic process that finds and eliminates the defect that
+                        led to an observed failure. Programs without any <i>known</i> failures may still contain
+                        defects — either because they haven't been verified yet, or because they have been verified
+                        but the failure in question simply isn't covered by the specification.</p>
+                </div>
+
+                <div class="two-col">
+                    <div>
+                        <span class="subhead">Exhaustive testing is impossible — the math</span>
+                        <p style="color:var(--ink-dim); font-size:0.9rem;">Consider a simple program with a loop
+                            bounded at 20 iterations and a handful of branches: it has <b>10¹⁴ possible paths</b>. At
+                            one test per millisecond, testing every path would take <b>3,170 years</b>. Exhaustive
+                            testing is impossible — full stop.</p>
+                    </div>
+                    <div>
+                        <span class="subhead">Absence of defects ≠ correctness</span>
+                        <div class="rule-box">"Program testing can be used to show the presence of bugs, but never
+                            their absence." — <b>Dijkstra, 1969</b><br><br>
+                            Testing reduces the probability of undiscovered defects remaining in the software, but
+                            even if no defects are found, it is <b>not</b> proof of the absence of defects.</div>
+                    </div>
+                </div>
+
+                <div class="two-col" style="margin-top:20px;">
+                    <div>
+                        <span class="subhead">So how much testing is enough?</span>
+                        <p style="color:var(--ink-dim); font-size:0.9rem;">It depends on the <b>level of risk</b>
+                            (technical risks, business risks) and on <b>project constraints</b> (time, budget). It's
+                            impossible to test everything — testing should provide sufficient information for
+                            stakeholders to make informed decisions about releasing the software or planning next
+                            development steps.</p>
+                    </div>
+                    <div>
+                        <span class="subhead">When do you stop?</span>
+                        <p style="color:var(--ink-dim); font-size:0.9rem;">One of the hardest problems in testing is
+                            not knowing when to stop. You can use metrics as a guess — keep track of the defect rate,
+                            and when it trends toward zero, treat that as an indicator. But even if you do find the
+                            very last bug, <b>you'll never actually know it was the last one.</b></p>
+                    </div>
+                </div>
+
+                <div class="rule-box" style="margin-top:20px;"><b>Myth, busted here too:</b> "Principles are just for
+                    reference, I won't use them in practice." Fact: this is untrue — the seven principles help you
+                    build an effective test strategy and draft error-catching test cases. Experienced testers
+                    internalize them to the point of applying them without even thinking about it.</div>
+            </div>
+        </section>
+
+        <!-- COMMON MISTAKES -->
+        <section id="mistakes">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 10 — COMMON MISTAKES</div>
+                    <h2 class="sec-title">The wrong answers this chapter's exam questions are designed to catch</h2>
+                    <p class="sec-desc">Every one of these is a distinction the deck explicitly draws — which means
+                        it's fair game to mix up under exam pressure.</p>
+                </div>
+
+                <div class="mistake-box">
+                    <h4>1. "A defect is the same thing as a failure"</h4>
+                    <div class="wrong-right">
+                        <div class="wr-cell wrong"><span class="tag-mark">✗ WRONG</span>If the code has a defect, that IS a failure.</div>
+                        <div class="wr-cell right"><span class="tag-mark">✓ RIGHT</span>A defect is a flaw sitting in the code. It only becomes a failure if it's <i>executed</i> and produces observably wrong behavior — <code>square(2)</code> proves the same defect can run without failing.</div>
+                    </div>
+                </div>
+
+                <div class="mistake-box">
+                    <h4>2. "Testing and debugging are basically the same activity"</h4>
+                    <div class="wrong-right">
+                        <div class="wr-cell wrong"><span class="tag-mark">✗ WRONG</span>Testing finds AND fixes bugs.</div>
+                        <div class="wr-cell right"><span class="tag-mark">✓ RIGHT</span>Software testing ≠ Debugging (stated explicitly, in a highlighted box). Testing discovers/exhibits failures; debugging is the separate systematic process of finding and eliminating the defect that caused one.</div>
+                    </div>
+                </div>
+
+                <div class="mistake-box">
+                    <h4>3. "Testing and Quality Assurance are the same thing"</h4>
+                    <div class="wrong-right">
+                        <div class="wr-cell wrong"><span class="tag-mark">✗ WRONG</span>If you test enough, you have QA covered.</div>
+                        <div class="wr-cell right"><span class="tag-mark">✓ RIGHT</span>Software testing ≠ Quality assurance. Testing is necessary but NOT sufficient for QA — testing finds problems in the product; QA improves the process that produces the product.</div>
+                    </div>
+                </div>
+
+                <div class="mistake-box">
+                    <h4>4. "If testing finds zero defects, the software is bug-free"</h4>
+                    <div class="wrong-right">
+                        <div class="wr-cell wrong"><span class="tag-mark">✗ WRONG</span>No bugs found = correctness proven.</div>
+                        <div class="wr-cell right"><span class="tag-mark">✓ RIGHT</span>P1 + Dijkstra's quote: testing can show defects ARE present, never that they're absent. Zero-found only reduces the probability of undiscovered defects — it's not proof.</div>
+                    </div>
+                </div>
+
+                <div class="mistake-box">
+                    <h4>5. Mixing up test verdicts: Pass, Fail, and Error</h4>
+                    <div class="wrong-right">
+                        <div class="wr-cell wrong"><span class="tag-mark">✗ WRONG</span>Any test that doesn't pass is a "Fail."</div>
+                        <div class="wr-cell right"><span class="tag-mark">✓ RIGHT</span>Fail means execution <i>completed</i> but the result was wrong. Error means execution never even completed (crash, exception, bad setup) — you don't yet know if the function itself is right or wrong.</div>
+                    </div>
+                </div>
+
+                <div class="mistake-box">
+                    <h4>6. "A great regression suite keeps finding new bugs forever"</h4>
+                    <div class="wrong-right">
+                        <div class="wr-cell wrong"><span class="tag-mark">✗ WRONG</span>The same test suite, run repeatedly, will keep proving quality.</div>
+                        <div class="wr-cell right"><span class="tag-mark">✓ RIGHT</span>P5, the Pesticide Paradox: run the same tests over and over and they stop finding new bugs. You must regularly review, revise, and add new tests to probe different parts of the software.</div>
+                    </div>
+                </div>
+
+                <div class="mistake-box">
+                    <h4>7. Confusing P1 (Presence of Defects) with P7 (Absence-of-Errors Fallacy)</h4>
+                    <div class="wrong-right">
+                        <div class="wr-cell wrong"><span class="tag-mark">✗ WRONG</span>These are the same principle stated twice.</div>
+                        <div class="wr-cell right"><span class="tag-mark">✓ RIGHT</span>P1 is about what testing can prove (presence, not absence, of bugs). P7 is a different trap entirely: even a system with zero known defects is worthless if it doesn't meet the user's actual needs.</div>
+                    </div>
+                </div>
+
+                <div class="mistake-box">
+                    <h4>8. "Test scaffolding should ship with the production code"</h4>
+                    <div class="wrong-right">
+                        <div class="wr-cell wrong"><span class="tag-mark">✗ WRONG</span>Scaffolding is just extra helper code — keep it around, it can't hurt.</div>
+                        <div class="wr-cell right"><span class="tag-mark">✓ RIGHT</span>Test scaffolding is explicitly "not useful in production code" and "needs to be removed" — it exists only to let you exercise a unit in isolation during testing.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- POP QUIZ -->
+        <section id="quiz">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 11 — POP QUIZ</div>
+                    <h2 class="sec-title">Click a question to reveal the answer</h2>
+                    <p class="sec-desc">Separate from the Practice Lab below — these are quick recall checks, not
+                        full exam-style questions.</p>
+                </div>
+                <div class="quiz-list">
+                    <div class="quiz-item">
+                        <div class="quiz-q" onclick="this.nextElementSibling.classList.toggle('open')">
+                            <div class="q-text"><span class="q-num">Q1</span>Where and when was the very first recorded software "bug" found, and what was it, literally?</div>
+                            <button class="quiz-reveal" onclick="event.stopPropagation(); this.closest('.quiz-item').querySelector('.quiz-answer').classList.toggle('open')">Reveal</button>
+                        </div>
+                        <div class="quiz-answer"><b>Answer:</b> A moth trapped between points at Relay #70, Panel F of the Mark II Aiken Relay Calculator, at Harvard University, on September 9, 1945. It's now on display at the Smithsonian.</div>
+                    </div>
+                    <div class="quiz-item">
+                        <div class="quiz-q" onclick="this.nextElementSibling.classList.toggle('open')">
+                            <div class="q-text"><span class="q-num">Q2</span>What kind of software issue caused the Ariane 5 Flight 501 self-destruction, and was it a programming error?</div>
+                            <button class="quiz-reveal" onclick="event.stopPropagation(); this.closest('.quiz-item').querySelector('.quiz-answer').classList.toggle('open')">Reveal</button>
+                        </div>
+                        <div class="quiz-answer"><b>Answer:</b> No — not a programming error, and not a design error either. It was an unprotected data-type conversion (<code>convert_double_to_int</code>) throwing an exception because a reused Ariane 4 component's precondition (<code>abs(BH) &lt; 32768.0</code>) no longer held for the more powerful Ariane 5. Root cause: reuse of a component with a hidden constraint, combined with an integration-testing gap.</div>
+                    </div>
+                    <div class="quiz-item">
+                        <div class="quiz-q" onclick="this.nextElementSibling.classList.toggle('open')">
+                            <div class="q-text"><span class="q-num">Q3</span>Short answer: describe the Error → Defect → Failure chain in one sentence each.</div>
+                            <button class="quiz-reveal" onclick="event.stopPropagation(); this.closest('.quiz-item').querySelector('.quiz-answer').classList.toggle('open')">Reveal</button>
+                        </div>
+                        <div class="quiz-answer"><b>Answer:</b> A human makes an <b>error</b> (mistake) during design, coding, requirements, or even testing. That error can leave a <b>defect</b> (fault/bug) in the requirements, design, or code. If that defect is <i>executed</i>, a <b>failure</b> — a deviation from expected behavior — may occur, though not every execution of a defect causes one.</div>
+                    </div>
+                    <div class="quiz-item">
+                        <div class="quiz-q" onclick="this.nextElementSibling.classList.toggle('open')">
+                            <div class="q-text"><span class="q-num">Q4</span>MC: A test case's execution crashes with an unhandled exception before it can compare actual vs. expected output. Is that a Pass, Fail, or Error?</div>
+                            <button class="quiz-reveal" onclick="event.stopPropagation(); this.closest('.quiz-item').querySelector('.quiz-answer').classList.toggle('open')">Reveal</button>
+                        </div>
+                        <div class="quiz-answer"><b>Answer: Error.</b> Fail requires the test execution to have <i>completed</i>, just with the wrong result. Here execution never completed, so it's classified as Error, not Fail.</div>
+                    </div>
+                    <div class="quiz-item">
+                        <div class="quiz-q" onclick="this.nextElementSibling.classList.toggle('open')">
+                            <div class="q-text"><span class="q-num">Q5</span>True or False: "Software testing = Quality Assurance."</div>
+                            <button class="quiz-reveal" onclick="event.stopPropagation(); this.closest('.quiz-item').querySelector('.quiz-answer').classList.toggle('open')">Reveal</button>
+                        </div>
+                        <div class="quiz-answer"><b>Answer: False.</b> Testing is necessary but not sufficient for QA. Testing evaluates the product (finds defects); QA evaluates and improves the process used to build the product.</div>
+                    </div>
+                    <div class="quiz-item">
+                        <div class="quiz-q" onclick="this.nextElementSibling.classList.toggle('open')">
+                            <div class="q-text"><span class="q-num">Q6</span>Which of the 7 test principles explains why re-running the exact same regression suite stops catching new bugs?</div>
+                            <button class="quiz-reveal" onclick="event.stopPropagation(); this.closest('.quiz-item').querySelector('.quiz-answer').classList.toggle('open')">Reveal</button>
+                        </div>
+                        <div class="quiz-answer"><b>Answer: P5, the Pesticide Paradox.</b> Fix: regularly review and revise test cases, and write new, different tests to investigate different parts of the software.</div>
+                    </div>
+                    <div class="quiz-item">
+                        <div class="quiz-q" onclick="this.nextElementSibling.classList.toggle('open')">
+                            <div class="q-text"><span class="q-num">Q7</span>Short answer: list the four independence levels for who designs a test case, from least to most independent.</div>
+                            <button class="quiz-reveal" onclick="event.stopPropagation(); this.closest('.quiz-item').querySelector('.quiz-answer').classList.toggle('open')">Reveal</button>
+                        </div>
+                        <div class="quiz-answer"><b>Answer:</b> (1) Same person who wrote the code → (2) another person, same team/organization → (3) a separate testing team, same organization → (4) an outside organization/company (outsourced testing).</div>
+                    </div>
+                    <div class="quiz-item">
+                        <div class="quiz-q" onclick="this.nextElementSibling.classList.toggle('open')">
+                            <div class="q-text"><span class="q-num">Q8</span>Per the "cost to repair" chart, roughly how many times more expensive is fixing a defect found after release compared to during the requirements stage?</div>
+                            <button class="quiz-reveal" onclick="event.stopPropagation(); this.closest('.quiz-item').querySelector('.quiz-answer').classList.toggle('open')">Reveal</button>
+                        </div>
+                        <div class="quiz-answer"><b>Answer: 16× more expensive</b> (1× at Requirements → 2× Design → 4× Code/Unit Test → 8× Independent Test → 16× After Release).</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CHEAT SHEET -->
+        <section id="cheat">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 12 — CHEAT SHEET</div>
+                    <h2 class="sec-title">The whole chapter, one scannable table</h2>
+                </div>
+                <div class="table-scroll">
+                <table class="cheat-table">
+                    <tr><th>Concept</th><th>One-line definition</th></tr>
+                    <tr><td>Error (mistake)</td><td>A human action that leads to a defect.</td></tr>
+                    <tr><td>Defect (fault, bug)</td><td>A flaw in the system that CAN cause it to fail — a static property of the code.</td></tr>
+                    <tr><td>Failure</td><td>Observed deviation from the specification — only occurs if a defect is executed.</td></tr>
+                    <tr><td>Test case</td><td>Inputs + steps/actions + expected results (pass/fail criterion).</td></tr>
+                    <tr><td>Test oracle</td><td>The expected output for a given input.</td></tr>
+                    <tr><td>Test scaffolding</td><td>Temporary code that lets you run a unit in isolation; removed before production.</td></tr>
+                    <tr><td>Test fixture</td><td>A known baseline state for the software under test (data, mocks, DB setup).</td></tr>
+                    <tr><td>Test suite / script / driver</td><td>A grouped collection of test cases / a script that runs them automatically / the framework that loads and evaluates them.</td></tr>
+                    <tr><td>Test adequacy</td><td>A rule for judging when a set of test data is "enough" (e.g. code coverage %).</td></tr>
+                    <tr><td>Unit → Integration → System → Acceptance</td><td>Single module → interactions between modules → whole system by developers → validated by customers against requirements.</td></tr>
+                    <tr><td>Testing vs. QA vs. Debugging</td><td>Testing finds defects in the product · QA improves the process that builds the product · Debugging fixes the defect that caused an observed failure.</td></tr>
+                    <tr><td>P1–P7</td><td>Presence-not-absence · Exhaustive-impossible · Early · Clustering · Pesticide paradox · Context-dependent · Absence-of-errors fallacy.</td></tr>
+                    <tr><td>7-step test process</td><td>Planning → Monitoring &amp; control → Analysis → Design → Implementation → Execution → Completion.</td></tr>
+                    <tr><td>Verdicts</td><td>Pass (completed, correct) · Fail (completed, incorrect) · Error (didn't complete).</td></tr>
+                </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- PRACTICE LAB -->
+        <section id="lab">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 13 — PRACTICE LAB</div>
+                    <h2 class="sec-title">Apply the vocabulary to concrete scenarios</h2>
+                    <p class="sec-desc">Same shape of reasoning the instructor's own examples (square(), Ariane 5,
+                        the triangle program) use — worth drilling until automatic.</p>
+                </div>
+                <div class="examroom">
+                    <div class="practice-q">
+                        <div class="req">1. Given <code>int square(int x) { return x*2; }</code> (should be
+                            <code>x*x</code>): is the incorrect line itself a defect, a failure, both, or neither?
+                            What about calling <code>square(3)</code>?</div>
+                        <div class="ans">→ The line is a defect. Calling square(3) (which returns 6 instead of 9) is
+                            a failure.</div>
+                        <div class="why">Why: a defect is a static flaw in the code, present whether or not it's
+                            ever executed. It only becomes a failure once execution produces an observable deviation
+                            from the specification.</div>
+                    </div>
+                    <div class="practice-q">
+                        <div class="req">2. Same buggy <code>square()</code> function — is calling
+                            <code>square(2)</code> (which returns 4) a failure?</div>
+                        <div class="ans">→ No. Not a failure.</div>
+                        <div class="why">Why: <code>2*2</code> also equals 4, so the wrong formula happens to produce
+                            the correct result for this specific input. The defect is still there — it's just not
+                            "showing" this time. This is exactly why P1 says testing shows presence, not absence, of
+                            defects: you can run many inputs and see no failures while a defect still lurks.</div>
+                    </div>
+                    <div class="practice-q">
+                        <div class="req">3. A tester runs the same regression suite before every release for two
+                            years. Lately it hasn't found a single new bug, even though users keep reporting issues.
+                            Which principle explains this, and what should the team do?</div>
+                        <div class="ans">→ P5: the Pesticide Paradox.</div>
+                        <div class="why">Why: repeating identical tests only ever catches the same category of bugs.
+                            The fix is to regularly review and revise the test cases and add new, different tests
+                            that probe different parts of the software.</div>
+                    </div>
+                    <div class="practice-q">
+                        <div class="req">4. Classify the Ariane 5 root cause using the deck's own framing: was it a
+                            programming error, a design error, an integration-testing gap, or a reuse-without-
+                            revalidation problem — or some combination?</div>
+                        <div class="ans">→ An integration-testing gap AND a reuse-without-revalidation problem — explicitly NOT a programming error or a design error.</div>
+                        <div class="why">Why: the unprotected conversion was a deliberate ~1980 design decision,
+                            valid and justified for Ariane 4's flight profile. The failure was that this precondition
+                            (abs(BH) &lt; 32768.0) was never re-verified against Ariane 5's more powerful, different
+                            trajectory — theoretically catchable in integration testing, but the test space was huge
+                            versus the resources available.</div>
+                    </div>
+                    <div class="practice-q">
+                        <div class="req">5. A test case for the triangle-classifier program is run with input
+                            <code>0, 0, 0</code>, and the program correctly prints "Error: all values must be &gt;
+                            0." What test-design idea does this input specifically target?</div>
+                        <div class="ans">→ A boundary case — testing right at the edge of the valid domain (0 is just outside "must be &gt; 0").</div>
+                        <div class="why">Why: boundary values (like the minimum valid value, or one below it) are
+                            classic high-yield test inputs — bugs cluster at edges of valid ranges far more than in
+                            the middle of them.</div>
+                    </div>
+                    <div class="practice-q">
+                        <div class="req">6. A test executes to completion. The output matches the oracle exactly.
+                            What's the verdict — Pass, Fail, or Error?</div>
+                        <div class="ans">→ Pass.</div>
+                        <div class="why">Why: the execution completed AND the function performed as expected — both
+                            conditions required for a Pass verdict.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <div>SE401 · Software Testing and Quality Assurance · Chapter 04 — Introduction</div>
+        <div class="toc-hint">Built as a study aid from lecture slides — always verify against your instructor's
+            exact wording before an exam.</div>
+        <div class="made">Made by <span>Shoug Alomran</span></div>
+    </footer>
+
+    <script>
+        const root = document.documentElement;
+        const sw = document.getElementById('switch');
+        const label = document.getElementById('theme-label');
+
+        function applyTheme(t) {
+            root.setAttribute('data-theme', t);
+            label.textContent = t.toUpperCase();
+        }
+
+        const prefersLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
+        applyTheme(prefersLight ? 'light' : 'dark');
+
+        sw.addEventListener('click', () => {
+            const current = root.getAttribute('data-theme');
+            applyTheme(current === 'dark' ? 'light' : 'dark');
+        });
+    </script>
+
+</body>
+
+</html>

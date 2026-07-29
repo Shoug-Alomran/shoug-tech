@@ -174,6 +174,8 @@
   var loaded = false;
   var actions = document.querySelector(".shoug-header-actions");
   if (!actions) return;
+  var accountActivated = false;
+  try { accountActivated = localStorage.getItem("shoug-account-activated") === "true"; } catch (error) { }
 
   var style = document.getElementById("shoug-auth-placeholder-style");
   if (!style) {
@@ -197,6 +199,7 @@
   function loadFirebase(openWhenReady) {
     if (loaded) return;
     loaded = true;
+    try { localStorage.setItem("shoug-account-activated", "true"); } catch (error) { }
     if (openWhenReady) {
       window.addEventListener("shoug:fb", function () {
         setTimeout(function () {
@@ -215,5 +218,9 @@
   actions.addEventListener("pointerover", function () { loadFirebase(false); }, { once: true, passive: true });
   actions.addEventListener("focusin", function () { loadFirebase(false); }, { once: true });
   window.addEventListener("shoug:load-account", function () { loadFirebase(false); }, { once: true });
-  setTimeout(function () { loadFirebase(false); }, 15000);
+  if (accountActivated) {
+    loadFirebase(false);
+  } else {
+    setTimeout(function () { loadFirebase(false); }, 15000);
+  }
 })();

@@ -1,0 +1,1661 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Testing Metrics &amp; Tools — Measurement Field Guide | SE401 Ch.10</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --radius-sm: 8px;
+            --radius-md: 14px;
+            --radius-lg: 22px;
+            --font-head: 'Manrope', sans-serif;
+            --font-body: 'Inter', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+            --maxw: 1200px;
+        }
+
+        html[data-theme="dark"] {
+            --bg: #0b1615;
+            --surface: #101f1e;
+            --surface-2: #142826;
+            --ink: #e7f1ee;
+            --ink-dim: #8fa8a2;
+            --line: #1f3634;
+            --accent: #3fb6a8;
+            --accent-2: #e0a640;
+            --danger: #e2685f;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+        }
+
+        html[data-theme="light"] {
+            --bg: #eef2f0;
+            --surface: #ffffff;
+            --surface-2: #f2f6f4;
+            --ink: #10201d;
+            --ink-dim: #57706a;
+            --line: #d7e0dc;
+            --accent: #1f8f7f;
+            --accent-2: #b97c1c;
+            --danger: #c14a41;
+            --shadow: 0 10px 26px rgba(20, 40, 35, 0.10);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            background:
+                radial-gradient(circle at 1px 1px, var(--line) 1px, transparent 1px) 0 0/26px 26px,
+                var(--bg);
+            color: var(--ink);
+            font-family: var(--font-body);
+            font-size: clamp(15px, 0.4vw + 14px, 17px);
+            line-height: 1.6;
+            transition: background-color .35s ease, color .35s ease;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: var(--font-head);
+            margin: 0;
+            letter-spacing: -0.01em;
+        }
+
+        a { color: inherit; }
+        .mono { font-family: var(--font-mono); }
+
+        .wrap {
+            max-width: var(--maxw);
+            margin: 0 auto;
+            padding: 0 clamp(16px, 4vw, 40px);
+        }
+
+        header.top {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            backdrop-filter: blur(10px);
+            background: color-mix(in srgb, var(--bg) 78%, transparent);
+            border-bottom: 1px solid var(--line);
+        }
+
+        .top-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px clamp(16px, 4vw, 40px);
+            max-width: var(--maxw);
+            margin: 0 auto;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .brand { display: flex; align-items: center; gap: 10px; }
+        .brand .logo-mini { width: 30px; height: 30px; flex: none; }
+        .brand-text { font-family: var(--font-head); font-weight: 700; font-size: 1.02rem; }
+        .brand-text span { color: var(--accent); }
+
+        nav.pillnav { display: flex; gap: 5px; flex-wrap: wrap; }
+
+        nav.pillnav a {
+            font-family: var(--font-mono);
+            font-size: 0.68rem;
+            text-decoration: none;
+            color: var(--ink-dim);
+            padding: 6px 9px;
+            border-radius: 999px;
+            border: 1px solid transparent;
+            white-space: nowrap;
+            transition: all .2s ease;
+        }
+
+        nav.pillnav a:hover { color: var(--ink); border-color: var(--line); background: var(--surface); }
+
+        .theme-toggle { display: flex; align-items: center; gap: 8px; font-family: var(--font-mono); font-size: 0.7rem; color: var(--ink-dim); }
+
+        .switch {
+            width: 46px; height: 26px; border-radius: 999px;
+            background: var(--surface-2); border: 1px solid var(--line);
+            position: relative; cursor: pointer; flex: none;
+        }
+
+        .switch .knob {
+            position: absolute; top: 2px; left: 2px; width: 20px; height: 20px;
+            border-radius: 50%; background: var(--accent);
+            transition: left .25s ease, background .25s ease;
+        }
+
+        html[data-theme="light"] .switch .knob { left: 22px; }
+
+        /* HERO */
+        .hero { padding: clamp(40px, 7vw, 80px) 0 clamp(20px, 4vw, 40px); }
+        .hero-grid {
+            display: grid; grid-template-columns: 1.2fr 0.8fr;
+            gap: clamp(20px, 4vw, 50px); align-items: center;
+        }
+
+        @media (max-width:820px) { .hero-grid { grid-template-columns: 1fr; } }
+
+        .eyebrow {
+            font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.14em;
+            text-transform: uppercase; color: var(--accent-2); margin-bottom: 14px;
+            display: flex; align-items: center; gap: 10px;
+        }
+        .eyebrow::before { content: ''; width: 26px; height: 1px; background: var(--accent-2); }
+
+        h1.hero-title { font-size: clamp(2.05rem, 5vw, 3.5rem); line-height: 1.06; font-weight: 800; }
+        h1.hero-title em { font-style: normal; color: var(--accent); }
+        .hero-sub { margin-top: 18px; color: var(--ink-dim); max-width: 56ch; font-size: 1.02rem; }
+        .hero-badges { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 22px; }
+
+        .badge {
+            font-family: var(--font-mono); font-size: 0.72rem; padding: 6px 12px;
+            border-radius: 8px; background: var(--surface); border: 1px solid var(--line); color: var(--ink-dim);
+        }
+
+        .gauge-wrap { display: flex; justify-content: center; }
+        .gauge-wrap svg { width: min(320px, 90%); height: auto; }
+
+        section { padding: clamp(30px, 5vw, 60px) 0; border-top: 1px solid var(--line); }
+        section:first-of-type { border-top: none; }
+
+        .sec-head { margin-bottom: clamp(20px, 3vw, 34px); max-width: 74ch; }
+        .sec-num { font-family: var(--font-mono); color: var(--accent); font-size: 0.78rem; letter-spacing: 0.1em; }
+        .sec-title { font-size: clamp(1.45rem, 3vw, 2.05rem); margin-top: 6px; }
+        .sec-desc { color: var(--ink-dim); margin-top: 10px; font-size: 0.98rem; }
+
+        .mnemonic {
+            background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 14%, transparent), transparent);
+            border: 1px dashed color-mix(in srgb, var(--accent) 55%, var(--line));
+            border-radius: var(--radius-md); padding: 16px 20px;
+            display: flex; gap: 14px; align-items: flex-start; margin: 18px 0;
+        }
+        .mnemonic .icon { font-size: 1.4rem; flex: none; line-height: 1; }
+        .mnemonic .label { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); }
+        .mnemonic .phrase { font-family: var(--font-head); font-weight: 700; font-size: 1.05rem; margin-top: 3px; }
+        .mnemonic .decode { color: var(--ink-dim); font-size: 0.86rem; margin-top: 4px; }
+
+        /* stack diagram (base vs calculated) */
+        .stack-diagram {
+            display: grid; grid-template-columns: 1fr; gap: 0; margin-top: 20px;
+            border: 1px solid var(--line); border-radius: var(--radius-lg); overflow: hidden;
+        }
+        .stack-layer { padding: 20px clamp(16px, 3vw, 28px); position: relative; }
+        .stack-layer.style { background: color-mix(in srgb, var(--accent) 10%, var(--surface)); border-bottom: 1px dashed var(--line); }
+        .stack-layer.pattern { background: var(--surface); }
+        .stack-layer .tag { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); }
+        .stack-layer h4 { font-size: 1.1rem; margin-top: 6px; }
+        .stack-layer p { color: var(--ink-dim); font-size: 0.9rem; margin-top: 6px; max-width: 74ch; }
+        .stack-layer.pattern .tag { color: var(--accent-2); }
+
+        /* classification grid */
+        .grid5 { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 14px; margin-top: 20px; }
+        .type-card {
+            background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-md);
+            padding: 18px; transition: transform .2s ease, box-shadow .2s ease;
+        }
+        .type-card:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
+        .type-card .icon { font-size: 1.5rem; }
+        .type-card h4 { font-size: 0.98rem; margin-top: 8px; }
+        .type-card p { color: var(--ink-dim); font-size: 0.84rem; margin: 8px 0 0; }
+
+        /* deep dive */
+        .qa-deep {
+            background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg);
+            padding: clamp(18px, 3vw, 30px); margin-bottom: 26px; position: relative; border-left: 5px solid var(--accent);
+        }
+        .qa-deep-head { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; justify-content: space-between; }
+        .qa-deep h3 { font-size: clamp(1.25rem, 2.4vw, 1.6rem); }
+        .qa-tag { font-family: var(--font-mono); font-size: 0.7rem; padding: 5px 11px; border-radius: 999px; background: var(--surface-2); border: 1px solid var(--line); color: var(--ink-dim); }
+        .qa-def { margin-top: 10px; color: var(--ink); font-size: 0.98rem; max-width: 80ch; }
+
+        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; margin-top: 20px; }
+        @media (max-width:760px) { .two-col { grid-template-columns: 1fr; } }
+
+        .subhead { font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent-2); margin-bottom: 10px; display: block; }
+
+        .pattern-chip-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
+        .pattern-chip { font-family: var(--font-mono); font-size: 0.75rem; padding: 5px 12px; border-radius: 999px; background: color-mix(in srgb, var(--accent) 14%, var(--surface-2)); border: 1px solid var(--line); }
+
+        .example-strip { margin-top: 16px; background: color-mix(in srgb, var(--accent-2) 10%, transparent); border: 1px solid color-mix(in srgb, var(--accent-2) 35%, var(--line)); border-radius: var(--radius-sm); padding: 12px 14px; font-size: 0.86rem; }
+        .example-strip b { color: var(--accent-2); }
+
+        .rule-box { margin-top: 14px; background: var(--surface-2); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 12px 14px; font-size: 0.84rem; color: var(--ink-dim); }
+        .rule-box b { color: var(--ink); }
+
+        /* cheat table */
+        .cheat-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        .cheat-table th, .cheat-table td { border: 1px solid var(--line); padding: 12px 14px; text-align: left; font-size: 0.86rem; }
+        .cheat-table th { background: var(--surface-2); font-family: var(--font-mono); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent-2); }
+        .cheat-table tr:nth-child(even) td { background: color-mix(in srgb, var(--surface-2) 55%, transparent); }
+
+        /* formula cards */
+        .formula-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-top: 18px; }
+        .formula-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-md); padding: 16px 18px; }
+        .formula-card .f-id { font-family: var(--font-mono); font-size: 0.7rem; color: var(--accent); }
+        .formula-card .f-name { font-family: var(--font-head); font-weight: 700; font-size: 1rem; margin-top: 4px; }
+        .formula-card .f-eq { margin-top: 12px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-family: var(--font-mono); font-size: 0.82rem; }
+        .frac { display: inline-flex; flex-direction: column; align-items: center; text-align: center; }
+        .frac .num { padding: 0 4px 3px; border-bottom: 1px solid var(--ink); }
+        .frac .den { padding: 3px 4px 0; }
+        .formula-card .f-note { margin-top: 10px; color: var(--ink-dim); font-size: 0.82rem; }
+        .formula-card .f-ex { margin-top: 8px; font-size: 0.8rem; color: var(--accent-2); font-family: var(--font-mono); }
+
+        /* hexagon-ish tool map */
+        .hexmap { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-top: 22px; }
+        .hex-card {
+            background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-md);
+            padding: 18px; border-top: 3px solid var(--accent);
+        }
+        .hex-card:nth-child(3n+2) { border-top-color: var(--accent-2); }
+        .hex-card:nth-child(3n) { border-top-color: var(--danger); }
+        .hex-card h4 { font-size: 1rem; }
+        .hex-card ul { margin: 8px 0 0; padding-left: 18px; color: var(--ink-dim); font-size: 0.85rem; }
+        .hex-card ul li { margin-bottom: 2px; }
+
+        /* practice lab */
+        .examroom { background: repeating-linear-gradient(180deg, var(--surface) 0px, var(--surface) 27px, var(--surface-2) 28px); border: 1px solid var(--line); border-radius: var(--radius-lg); padding: clamp(18px, 3vw, 28px); }
+        .practice-q { border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface); padding: 14px 16px; margin: 12px 0; font-size: 0.92rem; }
+        .practice-q .req { color: var(--ink); }
+        .practice-q .ans { margin-top: 8px; font-family: var(--font-mono); font-size: 0.78rem; color: var(--accent); }
+        .practice-q .why { margin-top: 6px; color: var(--ink-dim); font-size: 0.82rem; }
+
+        /* mistakes */
+        .mistake-box {
+            border: 1px solid color-mix(in srgb, var(--danger) 45%, var(--line));
+            background: color-mix(in srgb, var(--danger) 8%, var(--surface));
+            border-radius: var(--radius-md); padding: 16px 20px; margin: 16px 0;
+        }
+        .mistake-box h4 { font-size: 0.98rem; margin-bottom: 8px; }
+        .mistake-line { display: flex; gap: 10px; align-items: flex-start; font-size: 0.88rem; margin: 6px 0; }
+        .mistake-line.wrong { color: var(--danger); }
+        .mistake-line.right { color: var(--accent); }
+        .mistake-line b { flex: none; font-family: var(--font-mono); font-size: 0.78rem; }
+        .mistake-line span.text { color: var(--ink); }
+        .mistake-why { margin-top: 8px; color: var(--ink-dim); font-size: 0.84rem; }
+
+        /* quiz */
+        .quiz-item { border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--surface); padding: 14px 18px; margin: 12px 0; }
+        .quiz-q { display: flex; justify-content: space-between; align-items: center; gap: 12px; cursor: pointer; }
+        .quiz-q span.qtext { font-size: 0.96rem; font-weight: 600; }
+        .quiz-reveal {
+            font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.06em; text-transform: uppercase;
+            background: var(--surface-2); border: 1px solid var(--line); color: var(--accent);
+            padding: 6px 12px; border-radius: 999px; cursor: pointer; flex: none;
+        }
+        .quiz-answer { display: none; margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--line); color: var(--ink-dim); font-size: 0.88rem; }
+        .quiz-answer.open { display: block; }
+        .quiz-answer b { color: var(--accent); }
+
+        /* acronym chunk table */
+        .chunk-table { width: 100%; border-collapse: collapse; margin-top: 16px; }
+        .chunk-table td { border: 1px solid var(--line); padding: 10px 12px; font-size: 0.85rem; vertical-align: top; }
+        .chunk-table td.letter { font-family: var(--font-mono); font-weight: 700; color: var(--accent); width: 3ch; text-align: center; background: var(--surface-2); }
+
+        footer { padding: 40px clamp(16px, 4vw, 40px) 60px; text-align: center; color: var(--ink-dim); font-family: var(--font-mono); font-size: 0.78rem; }
+        footer .made { color: var(--ink); font-weight: 600; margin-top: 6px; }
+        footer .made span { color: var(--accent); }
+        .toc-hint { margin-top: 26px; color: var(--ink-dim); font-size: 0.82rem; }
+
+        ::selection { background: var(--accent); color: #fff; }
+    </style>
+
+    <meta name="description" content="A field guide to software testing metrics — base vs. calculated metrics, coverage/effectiveness/effort/quality formulas — and the six families of testing tools, from static analysis to performance monitoring.">
+    <link rel="canonical" href="https://shoug-tech.com/academics/software-engineering/se401/slide-breakdowns/10-testing-metrics-and-tools/testing-metrics-and-tools.html">
+    <meta property="og:title" content="Testing Metrics &amp; Tools — Measurement Field Guide | SE401 Ch.10">
+    <meta property="og:description" content="A field guide to software testing metrics — base vs. calculated metrics, coverage/effectiveness/effort/quality formulas — and the six families of testing tools, from static analysis to performance monitoring.">
+    <meta property="og:url" content="https://shoug-tech.com/academics/software-engineering/se401/slide-breakdowns/10-testing-metrics-and-tools/testing-metrics-and-tools.html">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://shoug-tech.com/logo.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Testing Metrics &amp; Tools — Measurement Field Guide | SE401 Ch.10">
+    <meta name="twitter:description" content="A field guide to software testing metrics — base vs. calculated metrics, coverage/effectiveness/effort/quality formulas — and the six families of testing tools, from static analysis to performance monitoring.">
+    <meta name="twitter:image" content="https://shoug-tech.com/logo.png">
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","url":"https://shoug-tech.com/academics/software-engineering/se401/slide-breakdowns/10-testing-metrics-and-tools/testing-metrics-and-tools.html","name":"Testing Metrics &amp; Tools — Measurement Field Guide | SE401 Ch.10","description":"A field guide to software testing metrics — base vs. calculated metrics, coverage/effectiveness/effort/quality formulas — and the six families of testing tools, from static analysis to performance monitoring.","isPartOf":{"@type":"WebSite","name":"Shoug's Digital Garden","url":"https://shoug-tech.com/"}}</script>
+
+    <link rel="alternate" hreflang="en" href="https://shoug-tech.com/academics/software-engineering/se401/slide-breakdowns/10-testing-metrics-and-tools/testing-metrics-and-tools.html">
+    <link rel="alternate" hreflang="ar" href="https://shoug-tech.com/ar/academics/software-engineering/se401/slide-breakdowns/10-testing-metrics-and-tools/testing-metrics-and-tools.html">
+    <link rel="alternate" hreflang="x-default" href="https://shoug-tech.com/academics/software-engineering/se401/slide-breakdowns/10-testing-metrics-and-tools/testing-metrics-and-tools.html">
+</head>
+
+<body>
+
+    <header class="top">
+        <div class="top-inner">
+            <div class="brand">
+                <svg class="logo-mini" viewBox="0 0 40 40">
+                    <rect x="6" y="6" width="28" height="28" rx="6" fill="none" stroke="currentColor" stroke-width="2" opacity="0.35" />
+                    <path d="M12 26 L17 18 L22 22 L28 12" stroke="var(--accent)" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+                <div class="brand-text">Metrics<span>·</span>&amp; Tools</div>
+            </div>
+            <nav class="pillnav">
+                <a href="#foundations">Foundations</a>
+                <a href="#base">Base Metrics</a>
+                <a href="#calculated">Calculated Metrics</a>
+                <a href="#coverage">Coverage &amp; Quality</a>
+                <a href="#tools-map">Tool Landscape</a>
+                <a href="#management">Management</a>
+                <a href="#static">Static</a>
+                <a href="#design">Design/Spec</a>
+                <a href="#execution">Execution</a>
+                <a href="#performance">Performance</a>
+                <a href="#niche">Niche</a>
+                <a href="#risks">Risks</a>
+                <a href="#qa-vs-qc">QA/QC</a>
+                <a href="#ethics">Ethics</a>
+                <a href="#mistakes">Mistakes</a>
+                <a href="#cheat">Cheat Sheet</a>
+                <a href="#quiz">Pop Quiz</a>
+                <a href="#lab">Practice Lab</a>
+            </nav>
+            <div class="theme-toggle">
+                <span id="theme-label">DARK</span>
+                <div class="switch" id="switch" role="button" aria-label="Toggle theme">
+                    <div class="knob"></div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+
+        <!-- HERO -->
+        <section class="hero">
+            <div class="wrap hero-grid">
+                <div>
+                    <div class="eyebrow">SE401 · Software Quality Assurance and Testing · Chapter 10</div>
+                    <h1 class="hero-title">You can't fix<br><em>what you don't measure.</em></h1>
+                    <p class="hero-sub">Testing produces two kinds of output: bugs, and <b>numbers about the bugs</b>.
+                        This chapter is about the numbers — the base and calculated metrics that turn "I think testing
+                        went okay" into "87% requirement coverage, 4.2% critical defect rate" — and the tools that
+                        collect, generate, and report those numbers so nobody has to do it by hand.</p>
+                    <div class="hero-badges">
+                        <div class="badge">12 base metrics</div>
+                        <div class="badge">5 calculated-metric families</div>
+                        <div class="badge">6 testing-tool categories</div>
+                        <div class="badge">Interview-ready Q&amp;A</div>
+                    </div>
+                </div>
+                <div class="gauge-wrap">
+                    <svg viewBox="0 0 320 320">
+                        <rect x="20" y="20" width="280" height="280" rx="18" fill="none" stroke="var(--line)" stroke-width="2" />
+                        <text x="160" y="46" text-anchor="middle" class="mono" font-family="JetBrains Mono" font-size="11" fill="var(--accent)">TEST METRICS</text>
+                        <path d="M 90 210 A 70 70 0 1 1 230 210" fill="none" stroke="var(--line)" stroke-width="14" stroke-linecap="round" />
+                        <path d="M 90 210 A 70 70 0 0 1 205 145" fill="none" stroke="var(--accent)" stroke-width="14" stroke-linecap="round" />
+                        <line x1="160" y1="210" x2="205" y2="155" stroke="var(--accent-2)" stroke-width="3" stroke-linecap="round" />
+                        <circle cx="160" cy="210" r="7" fill="var(--accent-2)" />
+                        <text x="160" y="250" text-anchor="middle" class="mono" font-family="JetBrains Mono" font-size="10" fill="var(--ink-dim)">coverage · effort · effectiveness</text>
+                        <text x="160" y="270" text-anchor="middle" class="mono" font-family="JetBrains Mono" font-size="10" fill="var(--ink-dim)">quality · efficiency</text>
+                    </svg>
+                </div>
+            </div>
+        </section>
+
+        <!-- FOUNDATIONS -->
+        <section id="foundations">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 01 — FOUNDATIONS</div>
+                    <h2 class="sec-title">What is a test metric, and why bother?</h2>
+                    <p class="sec-desc">Get the vocabulary locked in first — everything else in this chapter builds on
+                        it.</p>
+                </div>
+
+                <div class="mnemonic">
+                    <div class="icon">📏</div>
+                    <div>
+                        <div class="label">Memory hook</div>
+                        <div class="phrase">"We cannot improve what we cannot measure."</div>
+                        <div class="decode">A <b>metric</b> is a "standard of measurement" — a unit for describing an
+                            attribute. <b>Test metrics</b> are the means by which software quality can be measured:
+                            they give visibility into how ready the product is, and how complete and how good the
+                            testing was.</div>
+                    </div>
+                </div>
+
+                <p><b>Software testing metrics</b> (a.k.a. software test measurement) are the quantitative indication
+                    of extent, capacity, dimension, amount, or size of some attribute of a process or product — e.g.
+                    the total number of defects. The goal: improve the efficiency and effectiveness of the testing
+                    process, and support better decisions with reliable data.</p>
+
+                <div class="two-col">
+                    <div>
+                        <span class="subhead">Why we need metrics</span>
+                        <div class="rule-box">
+                            <b>You cannot improve what you cannot measure. You cannot control what you cannot
+                                measure.</b><br><br>
+                            Without measurement it's impossible to tell whether a process is improving. Metrics help
+                            you decide the next phase of activities, understand what kind of improvement is needed,
+                            and decide on process or technology change.
+                        </div>
+                    </div>
+                    <div>
+                        <span class="subhead">Questions test metrics answer</span>
+                        <div class="example-strip">How long/how much will testing take? How bad are the bugs? How
+                            many bugs found were fixed, reopened, closed, deferred? How many bugs did the test team
+                            miss? How much of the software was tested? Will testing finish on time? Were we running
+                            low-value test cases? Could we have fit more testing into this release?</div>
+                    </div>
+                </div>
+
+                <div class="qa-deep" style="margin-top:26px;">
+                    <div class="qa-deep-head">
+                        <h3>Three types of testing metrics</h3><span class="qa-tag">process · product · project</span>
+                    </div>
+                    <div class="grid5">
+                        <div class="type-card">
+                            <div class="icon">⚙️</div>
+                            <h4>Process Metrics</h4>
+                            <p>Used to improve the process efficiency of the SDLC (Software Development Life
+                                Cycle).</p>
+                        </div>
+                        <div class="type-card">
+                            <div class="icon">📦</div>
+                            <h4>Product Metrics</h4>
+                            <p>Deals with the quality of the software product itself.</p>
+                        </div>
+                        <div class="type-card">
+                            <div class="icon">👥</div>
+                            <h4>Project Metrics</h4>
+                            <p>Measures the efficiency of a project team, or of any testing tools the team is
+                                using.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="rule-box">
+                    <b>Identifying the right metrics — a 4-step checklist:</b> (1) fix the target audience for the
+                    metric, (2) define the goal of the metric, (3) introduce all relevant metrics based on project
+                    needs, (4) analyze the cost-benefit of each metric and which project-lifecycle phase it gives
+                    the maximum output in.
+                </div>
+            </div>
+        </section>
+
+        <!-- BASE METRICS -->
+        <section id="base">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 02 — MANUAL TEST METRICS</div>
+                    <h2 class="sec-title">Base Metrics: the raw data everything else is built from</h2>
+                    <p class="sec-desc">Manual test metrics split into two classes — get this split right before the
+                        formulas, because every "calculated metric" later is just base metrics plugged into a
+                        ratio.</p>
+                </div>
+
+                <div class="mnemonic">
+                    <div class="icon">🧱</div>
+                    <div>
+                        <div class="label">Memory hook</div>
+                        <div class="phrase">"Base is what you count. Calculated is what you compute."</div>
+                        <div class="decode"><b>Base metrics</b> = raw data collected by the Test Analyst during test
+                            case development and execution (e.g. # of test cases executed, # of test cases).
+                            <b>Calculated metrics</b> = derived from base-metric data, usually followed by the test
+                            manager for reporting (e.g. % Complete, % Test Coverage).</div>
+                    </div>
+                </div>
+
+                <div class="stack-diagram">
+                    <div class="stack-layer style">
+                        <span class="tag">Base Metrics</span>
+                        <h4>Raw, collected counts</h4>
+                        <p>Gathered directly during testing — nobody has computed anything yet. A great starting
+                            point that later gets used to produce calculated metrics.</p>
+                    </div>
+                    <div class="stack-layer pattern">
+                        <span class="tag">Calculated Metrics</span>
+                        <h4>Ratios and percentages, computed from base metrics</h4>
+                        <p>What test managers actually report upward: coverage %, effectiveness %, pass/fail %, and
+                            more — every one of them is arithmetic on the base metrics to the left.</p>
+                    </div>
+                </div>
+
+                <div class="qa-deep" style="margin-top:26px;">
+                    <div class="qa-deep-head">
+                        <h3>The 12 Major Base Metrics</h3><span class="qa-tag">raw counts</span>
+                    </div>
+                    <table class="cheat-table">
+                        <tr><th>#</th><th>Base Metric</th><th>#</th><th>Base Metric</th></tr>
+                        <tr><td>1</td><td>Total number of test cases</td><td>7</td><td>Number of defects rejected</td></tr>
+                        <tr><td>2</td><td>Number of test cases passed</td><td>8</td><td>Number of defects deferred</td></tr>
+                        <tr><td>3</td><td>Number of test cases failed</td><td>9</td><td>Number of critical defects</td></tr>
+                        <tr><td>4</td><td>Number of test cases blocked</td><td>10</td><td>Number of planned test hours</td></tr>
+                        <tr><td>5</td><td>Number of defects found</td><td>11</td><td>Number of actual test hours</td></tr>
+                        <tr><td>6</td><td>Number of defects accepted</td><td>12</td><td>Number of bugs found after shipping</td></tr>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- CALCULATED METRICS -->
+        <section id="calculated">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 03 — CALCULATED METRICS</div>
+                    <h2 class="sec-title">Five formula families — and what each one is really asking</h2>
+                    <p class="sec-desc">Every calculated metric answers one plain-English question. Learn the
+                        question first; the formula follows naturally.</p>
+                </div>
+
+                <div class="mnemonic">
+                    <div class="icon">🧠</div>
+                    <div>
+                        <div class="label">Exam tip, straight from the slide annotations</div>
+                        <div class="phrase">"Know what you're calculating — and know what the number you got
+                            represents."</div>
+                        <div class="decode">Exams don't just ask you to plug numbers into a formula; they ask you to
+                            say what a 92% vs. a 40% <i>means</i>. Always finish a calculation by stating whether
+                            higher is better and why.</div>
+                    </div>
+                </div>
+
+                <h3 style="margin-top:10px; font-size:1.1rem;">1 · Test Coverage Metrics — "How much of the
+                    application was tested?"</h3>
+                <div class="formula-grid">
+                    <div class="formula-card">
+                        <div class="f-id">1.1</div>
+                        <div class="f-name">Test Execution Coverage %</div>
+                        <div class="f-eq"><div class="frac"><span class="num">Number of tests run</span><span class="den">Total number of tests to be run</span></div> × 100</div>
+                        <div class="f-note">Total tests executed compared to total tests planned to run. Presented as
+                            a percentage.</div>
+                    </div>
+                    <div class="formula-card">
+                        <div class="f-id">1.2</div>
+                        <div class="f-name">Requirements Coverage</div>
+                        <div class="f-eq"><div class="frac"><span class="num">Number of requirements covered</span><span class="den">Total number of requirements</span></div> × 100</div>
+                        <div class="f-note">The percentage of requirements that have been covered by testing,
+                            compared to total requirements.</div>
+                    </div>
+                </div>
+
+                <h3 style="margin-top:28px; font-size:1.1rem;">2 · Test Effectiveness Metrics — "How good were the
+                    tests? Are we running high-value test cases?"</h3>
+                <div class="formula-grid">
+                    <div class="formula-card">
+                        <div class="f-id">2.1</div>
+                        <div class="f-name">Test Effectiveness %</div>
+                        <div class="f-eq"><div class="frac"><span class="num">Bugs found in Test</span><span class="den">Total bugs found (in test + after shipping)</span></div> × 100</div>
+                        <div class="f-note">A measure of the bug-finding ability and quality of a test set — <i>not</i>
+                            the same thing as "efficiency."</div>
+                        <div class="f-ex">Example: 80% test effectiveness → 20% of defects got away from the test
+                            team.</div>
+                    </div>
+                </div>
+                <div class="rule-box">The higher the test effectiveness %, the better the test set — and the
+                    <b>lesser the test case maintenance effort will be</b> in the long term.</div>
+
+                <h3 style="margin-top:28px; font-size:1.1rem;">3 · Test Effort Metrics — "How long, how many, how
+                    much?"</h3>
+                <p class="sec-desc" style="margin-top:0;">Great for establishing baselines for future test
+                    planning.</p>
+                <div class="formula-grid">
+                    <div class="formula-card">
+                        <div class="f-id">3.1</div>
+                        <div class="f-name">Number of tests run per time period</div>
+                        <div class="f-eq"><div class="frac"><span class="num">Number of tests run</span><span class="den">Total time</span></div></div>
+                        <div class="f-note">E.g. 30 tests per one day. <b>Watch the unit given, and convert if
+                            needed.</b></div>
+                    </div>
+                    <div class="formula-card">
+                        <div class="f-id">3.2</div>
+                        <div class="f-name">Bug find rate (defects per test hour)</div>
+                        <div class="f-eq"><div class="frac"><span class="num">Total number of defects</span><span class="den">Total number of test hours</span></div></div>
+                        <div class="f-note">The rate of finding defects, shown as detected defects per test hour.</div>
+                    </div>
+                    <div class="formula-card">
+                        <div class="f-id">3.3</div>
+                        <div class="f-name">Number of bugs per test</div>
+                        <div class="f-eq"><div class="frac"><span class="num">Total number of defects</span><span class="den">Total number of tests</span></div></div>
+                        <div class="f-note">An estimate for the number of defects found in one test.</div>
+                    </div>
+                    <div class="formula-card">
+                        <div class="f-id">3.4</div>
+                        <div class="f-name">Average time to test a bug fix</div>
+                        <div class="f-eq"><div class="frac"><span class="num">Total time between defect fix &amp; retest, all defects</span><span class="den">Total number of defects</span></div></div>
+                        <div class="f-note">Worked example: D1 = 1 day, D2 = 1 day, D3 = 2 days → total = 4 days over
+                            3 defects = <b>4 / 3 ≈ 1.3</b> days per defect on average.</div>
+                    </div>
+                </div>
+
+                <h3 style="margin-top:28px; font-size:1.1rem;">4 · Test Tracking &amp; Quality Metrics — "What does
+                    the application's quality look like?"</h3>
+                <div class="formula-grid">
+                    <div class="formula-card">
+                        <div class="f-id">4.1</div>
+                        <div class="f-name">Passed Test Cases %</div>
+                        <div class="f-eq"><div class="frac"><span class="num">Number of Passed Tests</span><span class="den">Total number of tests executed</span></div> × 100</div>
+                        <div class="f-note">Indicates the quality of the tested application.</div>
+                    </div>
+                    <div class="formula-card">
+                        <div class="f-id">4.2</div>
+                        <div class="f-name">Failed Test Cases %</div>
+                        <div class="f-eq"><div class="frac"><span class="num">Number of Failed Tests</span><span class="den">Total number of tests executed</span></div> × 100</div>
+                        <div class="f-note">Also gives an indication of the effectiveness of the conducted tests.</div>
+                    </div>
+                    <div class="formula-card">
+                        <div class="f-id">4.3</div>
+                        <div class="f-name">Critical Defects %</div>
+                        <div class="f-eq"><div class="frac"><span class="num">Critical Defects</span><span class="den">Total defects reported</span></div> × 100</div>
+                        <div class="f-note">Tracks how severe the found defects are, relative to all reported
+                            defects.</div>
+                    </div>
+                    <div class="formula-card">
+                        <div class="f-id">4.4</div>
+                        <div class="f-name">Fixed Defects %</div>
+                        <div class="f-eq"><div class="frac"><span class="num">Defects Fixed</span><span class="den">Defects Reported</span></div> × 100</div>
+                        <div class="f-note">Gives an indication of the efficiency of testing/fixing.</div>
+                    </div>
+                </div>
+
+                <h3 style="margin-top:28px; font-size:1.1rem;">5 · Test Efficiency Metrics — "How efficient is
+                    repairing defects?"</h3>
+                <div class="formula-grid">
+                    <div class="formula-card">
+                        <div class="f-id">5.1</div>
+                        <div class="f-name">Average time to repair defects</div>
+                        <div class="f-eq"><div class="frac"><span class="num">Total time taken for bug fixes</span><span class="den">Number of bugs</span></div></div>
+                        <div class="f-note">The total time to fix all bugs, divided by the number of bugs — an
+                            indicator of how efficient the repair process is.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- COVERAGE & QUALITY -->
+        <section id="coverage">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 04 — COVERAGE &amp; QUALITY METRICS</div>
+                    <h2 class="sec-title">Two extra angles: code coverage, and overall product quality</h2>
+                </div>
+
+                <div class="qa-deep">
+                    <div class="qa-deep-head">
+                        <h3>Test Coverage Metrics (expanded)</h3><span class="qa-tag">how much of the code / features</span>
+                    </div>
+                    <div class="two-col">
+                        <div>
+                            <span class="subhead">Code Coverage — "How much of the code is being exercised?"</span>
+                            <div class="rule-box">
+                                <b>Segment coverage</b> (% of segments hit): every executable statement is in some
+                                segment; a segment corresponds to an edge in the program's directed graph. Especially
+                                useful during unit and integration testing, and it's cumulative. <b>A goal of 85% is
+                                    a practical value.</b><br><br>
+                                <b>Call-pair coverage</b> (% of call pairs hit): an interface whereby one module
+                                invokes another. <b>A goal of 100% is a practical value.</b>
+                            </div>
+                        </div>
+                        <div>
+                            <span class="subhead">Requirements Coverage — "Are all the product's features being
+                                tested?"</span>
+                            <p style="color:var(--ink-dim); font-size:0.9rem;">The percentage of requirements that
+                                are covered by at least one test.</p>
+                            <div class="example-strip"><b>Cumulative Test Time:</b> the total amount of time actually
+                                spent testing the product, measured in test hours. Provides an indication of product
+                                quality, and feeds into computing <i>software reliability growth</i> — the
+                                improvement in reliability that results from correcting faults.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="qa-deep">
+                    <div class="qa-deep-head">
+                        <h3>Quality Metrics</h3><span class="qa-tag">defect removal &amp; detection</span>
+                    </div>
+                    <div class="two-col">
+                        <div>
+                            <span class="subhead">Defect removal percentage</span>
+                            <div class="rule-box">"What percentage of known defects is fixed at release?"<br>
+                                <b class="mono">[Bugs fixed prior to release / Known bugs prior to release] × 100</b></div>
+                            <span class="subhead" style="margin-top:14px;">Defects reported in each baseline</span>
+                            <p style="color:var(--ink-dim); font-size:0.88rem;">Used to help decide on process
+                                improvements, additional regression testing, and the ultimate release of the
+                                software.</p>
+                        </div>
+                        <div>
+                            <span class="subhead">Defect detection efficiency</span>
+                            <div class="rule-box">"How well are we performing testing?"<br>
+                                <b class="mono">[Unique defects we find / (Unique defects we find + Unique defects
+                                    reported by customers)] × 100</b></div>
+                            <p style="color:var(--ink-dim); font-size:0.88rem; margin-top:10px;">Used to help decide
+                                on release of the final product, and how closely your testing resembles actual
+                                customer use.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TOOL LANDSCAPE -->
+        <section id="tools-map">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 05 — TESTING TOOLS</div>
+                    <h2 class="sec-title">Six families of tool support for testing</h2>
+                    <p class="sec-desc">A test tool can be used for one or more activities that support testing: used
+                        directly in testing, used to manage the testing process, used in exploration, or "any tool
+                        that aids in testing."</p>
+                </div>
+
+                <div class="mnemonic">
+                    <div class="icon">🗺️</div>
+                    <div>
+                        <div class="label">Memory hook</div>
+                        <div class="phrase">"My Team Executes, Performs, Specifies, Statically"</div>
+                        <div class="decode"><b>M</b>anagement · <b>T</b>est specification · <b>E</b>xecution &amp;
+                            logging · <b>P</b>erformance &amp; monitoring · <b>S</b>pecific application areas ·
+                            <b>S</b>tatic testing — the six hexagons around "Tool Support for Testing."</div>
+                    </div>
+                </div>
+
+                <div class="hexmap">
+                    <div class="hex-card">
+                        <h4>🗂️ Management</h4>
+                        <ul><li>Test</li><li>Requirement</li><li>Incident</li><li>Configuration</li></ul>
+                    </div>
+                    <div class="hex-card">
+                        <h4>📝 Test specification</h4>
+                        <ul><li>Test design</li><li>Test data preparation</li></ul>
+                    </div>
+                    <div class="hex-card">
+                        <h4>⚡ Performance &amp; monitoring</h4>
+                        <ul><li>Dynamic analysis</li><li>Monitoring</li><li>Performance / load / stress</li></ul>
+                    </div>
+                    <div class="hex-card">
+                        <h4>🎯 Specific application areas</h4>
+                        <ul><li>Localization, security, usability…</li><li>Tools tied to a needs area</li></ul>
+                    </div>
+                    <div class="hex-card">
+                        <h4>▶️ Execution &amp; logging</h4>
+                        <ul><li>Execution</li><li>Unit testing</li><li>Comparators</li><li>Coverage</li><li>Security</li></ul>
+                    </div>
+                    <div class="hex-card">
+                        <h4>🔍 Static testing</h4>
+                        <ul><li>Review</li><li>Static analysis</li><li>Modelling</li></ul>
+                    </div>
+                </div>
+
+                <div class="two-col" style="margin-top:26px;">
+                    <div>
+                        <span class="subhead">Purposes a tool can serve</span>
+                        <div class="rule-box">Improve efficiency (automate repetitive tasks) · automate activities
+                            requiring significant manual resources (e.g. static testing) · automate activities that
+                            <b>cannot</b> be done manually (e.g. large-scale performance testing) · increase
+                            reliability (automating large data comparisons or simulating complex behavior).</div>
+                    </div>
+                    <div>
+                        <span class="subhead">Classification, the probe effect &amp; "(D)"</span>
+                        <div class="rule-box">Tools are classified by the testing activity they support — one
+                            activity, or several (falling under the main activity). Some tools are <b>intrusive</b> —
+                            the tool itself can affect the test outcome (e.g. timing measurements differ depending on
+                            the performance tool used). This is called the <b>probe effect</b>. Tools marked
+                            <b>"(D)"</b> in this chapter offer support more appropriate for <b>developers</b>.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- MANAGEMENT TOOLS -->
+        <section id="management">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 06 — MANAGEMENT TOOLS</div>
+                    <h2 class="sec-title">Managing the testing process itself</h2>
+                </div>
+                <div class="qa-deep">
+                    <div class="qa-deep-head">
+                        <h3>Management of testing &amp; tests</h3><span class="qa-tag">traceability · reporting · metrics</span>
+                    </div>
+                    <p class="qa-def">Characteristics: support for managing tests and testing activities; support for
+                        traceability of tests, test results, and incidents back to source documents like requirements
+                        specifications; generation of progress reports; logging test results (monitoring); offering
+                        info on metrics related to the tests.</p>
+                    <div class="two-col">
+                        <div>
+                            <span class="subhead">The tool family</span>
+                            <div class="pattern-chip-row">
+                                <span class="pattern-chip">Test mgmt / ALM</span>
+                                <span class="pattern-chip">Requirements mgmt</span>
+                                <span class="pattern-chip">Defect mgmt</span>
+                                <span class="pattern-chip">Configuration mgmt</span>
+                                <span class="pattern-chip">Continuous integration (D)</span>
+                            </div>
+                        </div>
+                        <div>
+                            <span class="subhead">What each does</span>
+                            <div class="rule-box"><b>ALM:</b> application lifecycle management, umbrella for test
+                                management. <b>Requirements management tools:</b> store requirements, check
+                                consistency and find undefined (missing) requirements, allow prioritization, enable
+                                individual tests to be traceable to requirements. <b>Configuration management
+                                    tools:</b> necessary to track different versions/builds of software and tests —
+                                useful when developing on more than one HW/SW configuration.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- STATIC TESTING TOOLS -->
+        <section id="static">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 07 — STATIC TESTING TOOLS</div>
+                    <h2 class="sec-title">Improving the work product without executing it</h2>
+                </div>
+                <div class="qa-deep">
+                    <div class="qa-deep-head">
+                        <h3>Review, Static Analysis &amp; Modeling Tools</h3><span class="qa-tag">code untouched, quality up</span>
+                    </div>
+                    <p class="qa-def">Static testing tools aid in improving the code or work product <b>without
+                            executing it</b>. Three categories: Review Process Tools, Static Analysis Tools, Modeling
+                        Tools.</p>
+                    <div class="two-col">
+                        <div>
+                            <span class="subhead">Review process tools</span>
+                            <p style="color:var(--ink-dim); font-size:0.88rem;">A common reference for review
+                                processes, keeping track of all information from the review, storing/communicating
+                                review comments, and monitoring review status (passed / passed with corrections /
+                                requires re-review). Best suited to formal review processes and geographically
+                                dispersed teams.</p>
+                            <span class="subhead" style="margin-top:14px;">Static analysis tools (D)</span>
+                            <p style="color:var(--ink-dim); font-size:0.88rem;">Mostly used by developers for
+                                component (unit) testing — the tool is executed, the code under review is not. Source
+                                code is input data. An extension of compiler technology:
+                                <code>Source Code → Code Transition → Transformed Code → Code Analysis → Results</code>.
+                                Purpose: better understand the code and find ways to improve it. Common features:
+                                calculate metrics (complexity, nesting levels → identify risk areas), enforce coding
+                                standards, analyze code structures and dependencies.</p>
+                        </div>
+                        <div>
+                            <span class="subhead">Real tool examples (D)</span>
+                            <div class="rule-box">
+                                <b>SpotBugs</b> — looks for bugs in Java code; checks for 400+ bug patterns.<br><br>
+                                <b>SourceMonitor</b> — collects metrics from source code files; displays and prints
+                                them in tables and charts (including Kiviat diagrams).<br><br>
+                                <b>JDepend</b> — generates design-quality metrics for each Java package; measures
+                                design quality in terms of extensibility, reusability, and maintainability.
+                            </div>
+                            <span class="subhead" style="margin-top:14px;">Modeling tools (D)</span>
+                            <p style="color:var(--ink-dim); font-size:0.88rem;">Validate models of the system/software
+                                to better aid design: identify inconsistencies and defects within models, identify and
+                                prioritize risk areas, predict system response and behavior under various situations.
+                                Example: <b>StarUML</b> — a UML tool covering Class/Domain, Use Case, and Sequence
+                                diagrams.</p>
+                        </div>
+                    </div>
+                    <div class="example-strip"><b>Why this pays off:</b> the major benefit of static testing and
+                        modeling tools is the cost-effectiveness of finding more defects earlier in development — the
+                        process accelerates and improves because there's less rework.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- DESIGN & SPEC TOOLS -->
+        <section id="design">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 08 — TEST DESIGN &amp; SPECIFICATION TOOLS</div>
+                    <h2 class="sec-title">Generating the inputs — and the tests themselves</h2>
+                </div>
+                <div class="qa-deep">
+                    <div class="qa-deep-head">
+                        <h3>Design, Model-Based &amp; Data-Prep Tools</h3><span class="qa-tag">TDD · ATDD · BDD</span>
+                    </div>
+                    <div class="two-col">
+                        <div>
+                            <span class="subhead">Test design tools</span>
+                            <p style="color:var(--ink-dim); font-size:0.88rem;">Generate test input values from
+                                requirements, test conditions, design models (state, data, or object), code, or
+                                graphical user interfaces — and generate expected results too, if an oracle is
+                                available to the tool.</p>
+                            <span class="subhead" style="margin-top:14px;">Model-based testing</span>
+                            <p style="color:var(--ink-dim); font-size:0.88rem;">Generates test input values or test
+                                cases from stored information describing a model of the system, e.g. a state
+                                transition model.</p>
+                            <span class="subhead" style="margin-top:14px;">Test data preparation tools</span>
+                            <p style="color:var(--ink-dim); font-size:0.88rem;">Generate an extensive range or volume
+                                of data when needed, and manipulate databases or files to set up test data used
+                                during test execution.</p>
+                        </div>
+                        <div>
+                            <span class="subhead">TDD (D)</span>
+                            <div class="rule-box">Part of Extreme Programming; used in Agile development.</div>
+                            <span class="subhead" style="margin-top:14px;">ATDD &amp; BDD</span>
+                            <div class="rule-box">Acceptance test-driven development (ATDD) and behavior-driven
+                                development (BDD) use natural-language syntax:<br><br>
+                                <b class="mono">Given</b> &lt;some condition&gt;, <b class="mono">When</b> &lt;something
+                                is done&gt;, <b class="mono">Then</b> &lt;result should happen&gt;<br><br>
+                                As a &lt;role, e.g. customer&gt;<br>
+                                In order to &lt;achieve something, e.g. product&gt;<br>
+                                I want &lt;do something&gt;</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mnemonic">
+                    <div class="icon">🎬</div>
+                    <div>
+                        <div class="label">Chunking aid — GWT structure</div>
+                        <div class="phrase">Given / When / Then = Setup / Action / Outcome</div>
+                        <div class="decode">Read Given–When–Then like a mini story: <b>Given</b> sets the scene,
+                            <b>When</b> is the thing the user does, <b>Then</b> is what must be true afterward. It's
+                            the same three-beat structure whether you're writing ATDD or BDD scenarios.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- EXECUTION TOOLS -->
+        <section id="execution">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 09 — TEST EXECUTION &amp; LOGGING TOOLS</div>
+                    <h2 class="sec-title">Running the tests, and proving the result was checked</h2>
+                </div>
+                <div class="qa-deep">
+                    <div class="qa-deep-head">
+                        <h3>Execution, Coverage, Harnesses &amp; Comparators</h3><span class="qa-tag">drivers · stubs · comparators</span>
+                    </div>
+                    <div class="two-col">
+                        <div>
+                            <span class="subhead">Test execution tools</span>
+                            <p style="color:var(--ink-dim); font-size:0.88rem;">Enable tests to be executed
+                                automatically using stored inputs and expected results.</p>
+                            <span class="subhead" style="margin-top:14px;">Coverage tools</span>
+                            <p style="color:var(--ink-dim); font-size:0.88rem;">Identify coverage items
+                                (instrumenting the code), calculate the % of coverage items exercised by a test suite,
+                                report items not yet exercised, identify test inputs to exercise as-yet-uncovered
+                                items, and generate stubs and drivers if part of a unit test framework.</p>
+                            <span class="subhead" style="margin-top:14px;">Test comparators</span>
+                            <p style="color:var(--ink-dim); font-size:0.88rem;">Used when an executed test generates a
+                                lot of output — testing is more than providing inputs, you also need to check the
+                                software produces the correct result by comparing actual outcomes to expected
+                                results. Two ways to compare: <b>dynamic comparison</b> (done during test execution)
+                                vs. <b>post-execution comparison</b> (performed after the test finished, when the
+                                software under test is no longer running).</p>
+                        </div>
+                        <div>
+                            <span class="subhead">Test harnesses (D) &amp; unit test framework tools (D)</span>
+                            <p style="color:var(--ink-dim); font-size:0.88rem;">Similar to each other — both support
+                                testing individual components/units. Both: supply inputs to the software being
+                                tested, receive outputs generated by it, execute a set of tests, record pass/fail
+                                results, store tests, measure coverage at code level, and support debugging. A
+                                <b>harness</b> uses stubs and drivers (small programs that interact with the
+                                software); <b>unit test framework tools</b> add support for object-oriented software.
+                                Used during test execution and logging.</p>
+                            <div class="rule-box">
+                                <b>Driver:</b> calls the component being tested — "a component that calls the Tested
+                                Unit."<br><br>
+                                <b>Stub:</b> called from the component being tested — "a component the Tested Unit
+                                depends on." A partial implementation, returning fake values.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PERFORMANCE TOOLS -->
+        <section id="performance">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 10 — PERFORMANCE &amp; MONITORING TOOLS</div>
+                    <h2 class="sec-title">Watching the system under realistic load</h2>
+                </div>
+                <div class="qa-deep">
+                    <div class="qa-deep-head">
+                        <h3>Load Data, Monitoring &amp; Dynamic Analysis</h3><span class="qa-tag">real · load · maintenance</span>
+                    </div>
+                    <div class="two-col">
+                        <div>
+                            <span class="subhead">Test data for performance testing</span>
+                            <div class="rule-box">
+                                <b>Real:</b> test data obtained from actual users.<br>
+                                <b>Load:</b> large amounts of test data can be produced.<br>
+                                <b>Maintenance:</b> test data from the production environment.
+                            </div>
+                            <p style="color:var(--ink-dim); font-size:0.88rem; margin-top:10px;">Tests should reflect
+                                realistic scenarios — systems are often required to handle significant load and
+                                interactions, and inadequate/insufficient testing compromises system quality. Setting
+                                up this test data is significant effort (extensive range/volume needed, resource
+                                consuming to create), which is exactly what <b>test data preparation tools</b> help
+                                manage.</p>
+                        </div>
+                        <div>
+                            <span class="subhead">Monitoring tools</span>
+                            <p style="color:var(--ink-dim); font-size:0.88rem;">Identify problems and send an alert
+                                message to the administrator (e.g. network administrator): logging real-time and
+                                historical information, finding optimal settings, monitoring the number of users on a
+                                network, monitoring network traffic (real time, or over a period with analysis done
+                                afterward). Example: Windows <b>Performance Monitor</b>.</p>
+                            <span class="subhead" style="margin-top:14px;">Dynamic analysis tools (D)</span>
+                            <p style="color:var(--ink-dim); font-size:0.88rem;">Features/characteristics include
+                                support for detecting memory leaks, identifying pointer arithmetic errors such as
+                                null pointers, and identifying time dependencies. Example: Windows <b>Task
+                                    Manager</b> (process/memory/CPU inspection).</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- NICHE / SPECIFIC APPLICATION TOOLS -->
+        <section id="niche">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 11 — SPECIFIC APPLICATION AREAS</div>
+                    <h2 class="sec-title">Tools built for one job, and "hidden" testing tools</h2>
+                </div>
+                <div class="qa-deep">
+                    <div class="qa-deep-head">
+                        <h3>Niche tools &amp; the tools that don't look like testing tools</h3><span class="qa-tag">specialized</span>
+                    </div>
+                    <div class="two-col">
+                        <div>
+                            <span class="subhead">Specialized tool areas</span>
+                            <div class="pattern-chip-row">
+                                <span class="pattern-chip">Data quality assessment</span>
+                                <span class="pattern-chip">Data conversion &amp; migration</span>
+                                <span class="pattern-chip">Usability &amp; accessibility</span>
+                                <span class="pattern-chip">Localization</span>
+                                <span class="pattern-chip">Security</span>
+                                <span class="pattern-chip">Portability</span>
+                            </div>
+                            <div class="example-strip" style="margin-top:14px;"><b>Examples:</b> performance testing
+                                tools built specifically for web-based applications; dynamic analysis tools built
+                                specifically for testing security aspects. Targeted-area example: <b>embedded
+                                    systems</b>.</div>
+                        </div>
+                        <div>
+                            <span class="subhead">Tools you might not think of as "testing tools"</span>
+                            <p style="color:var(--ink-dim); font-size:0.88rem;">Testers may use a word processor or
+                                spreadsheet as a testing tool — often to store test designs, test scripts, and test
+                                data. Testers may also use SQL to set up and query databases containing test data.
+                                Tools developers use for debugging — to localize defects and check fixes — are also
+                                testing tools. <b>It's worth looking at any tool available to you for ways it could
+                                    support testing activities.</b></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- RISKS / EFFECTIVE USE -->
+        <section id="risks">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 12 — EFFECTIVE USE, BENEFITS &amp; RISKS</div>
+                    <h2 class="sec-title">Tools are not magic</h2>
+                    <p class="sec-desc">Simply purchasing or leasing a tool does not guarantee success with it — each
+                        type of tool requires additional effort to achieve real, lasting benefit.</p>
+                </div>
+
+                <div class="two-col">
+                    <div>
+                        <span class="subhead">Potential benefits</span>
+                        <div class="rule-box">
+                            <b>Reduce repetitive work</b> — running regression tests, re-entering the same test data,
+                            etc.<br><br>
+                            <b>Greater consistency &amp; repeatability</b> — people do the same task a little
+                            differently each time (distractions, multitasking, interruptions, fatigue, external
+                            pressure); a tool reproduces the exact same procedure every time.<br><br>
+                            <b>Objective assessment</b> — humans are prone to error and subjective, preconceived
+                            bias toward verification; tools give repeatable, consistently calculated results
+                            (cyclomatic complexity, nesting levels, coverage, system behavior, incident
+                            statistics).<br><br>
+                            <b>Ease of access to information</b> — charts and graphs are easier for the human mind to
+                            parse than a long list of numbers; special-purpose tools provide statistics, incident
+                            rates, and performance data directly.
+                        </div>
+                    </div>
+                    <div>
+                        <span class="subhead">Potential risks</span>
+                        <div class="rule-box">
+                            Unrealistic expectations for the tool's functionality and ease of use.<br><br>
+                            Underestimating the time, cost, and effort to introduce a tool (training, external
+                            expertise).<br><br>
+                            Underestimating the time/effort needed to achieve significant, continuing benefit.<br><br>
+                            Underestimating the effort required to maintain the test assets the tool generates.<br><br>
+                            <b>Over-reliance on the tool</b> — replacing testing where manual testing would actually
+                            be better.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="example-strip" style="margin-top:20px;"><b>Division of labor:</b> the tester
+                    concentrates on <i>what</i> should be tested, what the test cases should be, and how to
+                    prioritize testing. The tool user concentrates on how best to get the tool to do its job
+                    effectively, and how to get increasing benefit from tool use.</div>
+
+                <h3 style="margin-top:28px; font-size:1.1rem;">Special considerations by tool type</h3>
+                <div class="grid5" style="margin-top:16px;">
+                    <div class="type-card">
+                        <div class="icon">▶️</div>
+                        <h4>Test execution tools</h4>
+                        <p>Capture/replay (recording a manual tester) seems attractive but doesn't scale and can be
+                            unstable. <b>Data-driven</b>: separates test inputs from a generic script. <b>Keyword-driven</b>:
+                            a spreadsheet holds keywords/action words plus test data; testers define tests using the
+                            keywords.</p>
+                    </div>
+                    <div class="type-card">
+                        <div class="icon">⚡</div>
+                        <h4>Performance testing tools</h4>
+                        <p>Requires care around the design of the load to be generated, timing aspects / the probe
+                            effect, and how to interpret the gathered information. Needs a tester with performance
+                            testing expertise.</p>
+                    </div>
+                    <div class="type-card">
+                        <div class="icon">🔍</div>
+                        <h4>Static analysis tools</h4>
+                        <p>Risk that changes made to conform old code to a new standard introduce unexpected side
+                            effects; applying the tool to existing code may generate many messages. A gradual
+                            rollout with initial filters is more effective.</p>
+                    </div>
+                    <div class="type-card">
+                        <div class="icon">🗂️</div>
+                        <h4>Test management tools</h4>
+                        <p>Need to interface with other tools or spreadsheets, to produce information in the best
+                            format for the organization's current needs.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- QA VS QC -->
+        <section id="qa-vs-qc">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 13 — QA, QC &amp; CORE DEFINITIONS</div>
+                    <h2 class="sec-title">Interview-question territory</h2>
+                    <p class="sec-desc">These definitions get asked constantly in interviews and on exams — precise
+                        wording matters.</p>
+                </div>
+
+                <div class="mnemonic">
+                    <div class="icon">🎯</div>
+                    <div>
+                        <div class="label">Fundamental questions in testing</div>
+                        <div class="phrase">Stop? Test? Correct? How well? Who?</div>
+                        <div class="decode">"When can we stop testing?" → <b>test coverage</b>. "What should we
+                            test?" → <b>test generation</b>. "Is the observed output correct?" → <b>test oracle</b>.
+                            "How well did we do?" → <b>test efficiency</b>. "Who should test your program?" →
+                            <b>independent V&amp;V</b>.</div>
+                    </div>
+                </div>
+
+                <div class="two-col">
+                    <div>
+                        <span class="subhead">QA vs. QC vs. Software Testing</span>
+                        <table class="cheat-table">
+                            <tr><th>Term</th><th>What it is</th></tr>
+                            <tr><td>Quality Assurance (QA)</td><td>The planned, systematic way of monitoring the
+                                quality of the <i>process</i> used to produce a quality product. QA tracks outcomes
+                                and adjusts the process. QA is <b>not just testing</b>.</td></tr>
+                            <tr><td>Quality Control (QC)</td><td>Concerned with the quality of the <i>product</i>.
+                                Finds defects and suggests improvements. The process QA sets is implemented by QC —
+                                QC is the <b>tester's responsibility</b>.</td></tr>
+                            <tr><td>Software Testing</td><td>The process of ensuring a developed product meets user
+                                requirements — the motive is to find bugs and get them fixed.</td></tr>
+                        </table>
+                    </div>
+                    <div>
+                        <span class="subhead">Verification vs. Validation</span>
+                        <div class="rule-box">
+                            <b>Verification:</b> evaluating the work-products of a development phase to determine
+                            whether they meet the specified requirements <i>for that phase</i>.<br><br>
+                            <b>Validation:</b> evaluating the software during or at the end of development to
+                            determine whether it meets the specified requirements.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="two-col" style="margin-top:6px;">
+                    <div>
+                        <span class="subhead">Branch Coverage vs. Decision Coverage</span>
+                        <div class="rule-box">
+                            <b>Branch coverage:</b> testing that ensures every branch of the software is executed at
+                            least once (uses the Control Flow Graph).<br><br>
+                            <b>Decision coverage:</b> testing that ensures every decision-taking statement is
+                            executed at least once.<br><br>
+                            Both exist so the tester knows no branch or decision statement will lead to failure.<br>
+                            <b class="mono">Branch Coverage = Tested Decision Outcomes / Total Decision Outcomes</b>
+                        </div>
+                    </div>
+                    <div>
+                        <span class="subhead">What is Static Analysis?</span>
+                        <p style="color:var(--ink-dim); font-size:0.9rem;">A collection of algorithms and techniques
+                            used to analyze source code in order to automatically find bugs — similar in spirit to
+                            compiler warnings, but taken further to find bugs traditionally found via run-time
+                            debugging/testing. Static analysis bug-finding tools have evolved from basic syntactic
+                            checkers to tools that find deep bugs by reasoning about the semantics of the code.</p>
+                    </div>
+                </div>
+
+                <div class="qa-deep" style="margin-top:26px;">
+                    <div class="qa-deep-head">
+                        <h3>Defect Costs</h3><span class="qa-tag">rises exponentially by phase</span>
+                    </div>
+                    <p class="qa-def">The cost of fixing a defect rises exponentially by lifecycle phase — a defect
+                        caught in requirements is far cheaper to fix than the same defect caught after release.</p>
+                    <div class="rule-box">But this is simplistic — the real questions are: <b>when were the defects
+                            injected?</b> Are all defects treated the same? Do we reduce costs more by getting better
+                        at <i>fixing</i>, or at <i>preventing</i>?</div>
+                </div>
+
+                <div class="two-col">
+                    <div>
+                        <span class="subhead">"QA" &amp; Testing — the whole map in one glance</span>
+                        <div class="rule-box">
+                            <b>Testing "phases":</b> Unit → Integration → System → User Acceptance Testing.<br>
+                            <b>Testing types:</b> Black-box, White-box.<br>
+                            <b>Static vs. Dynamic Testing.</b><br>
+                            <b>Automated Testing:</b> has pros and cons.<br>
+                            <b>Integration, 2 types:</b> Top-down, Bottom-up.
+                        </div>
+                    </div>
+                    <div>
+                        <span class="subhead">QA &amp; SQA definitions</span>
+                        <div class="rule-box">
+                            <b>Quality Assurance (QA):</b> the process of verifying whether a product meets required
+                            specifications and customer expectations — process-driven, defines goals for design,
+                            development, and production; primary goal is tracking and resolving deficiencies prior to
+                            release. <i>The QA concept was popularized during World War II.</i><br><br>
+                            <b>Software Quality Assurance (SQA):</b> an ongoing process within the SDLC that
+                            routinely checks developed software meets desired quality measures. Breaks down into:
+                            quality of planning, formal technical reviews, testing, and training.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ETHICS -->
+        <section id="ethics">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 14 — PROFESSIONAL ETHICS</div>
+                    <h2 class="sec-title">What it means to be a professional tester</h2>
+                </div>
+
+                <div class="mnemonic">
+                    <div class="icon">⚖️</div>
+                    <div>
+                        <div class="label">Memory hook</div>
+                        <div class="phrase">"If you can't test it, don't build it."</div>
+                        <div class="decode">Put quality first — even if you lose the argument, you gain respect.
+                            Begin test activities early. <b>Decouple:</b> designs should be independent of language,
+                            programs independent of environment — couplings are weaknesses in the software. Don't
+                            take shortcuts: document your objections, vote with your feet, and don't be afraid to be
+                            right.</div>
+                    </div>
+                </div>
+
+                <div class="qa-deep">
+                    <div class="qa-deep-head">
+                        <h3>ACM &amp; IEEE Code of Ethics for Software Engineers</h3><span class="qa-tag">8 principles</span>
+                    </div>
+                    <table class="chunk-table">
+                        <tr><td class="letter">1</td><td><b>PUBLIC</b> — Software testers shall act consistently with
+                            the public interest.</td></tr>
+                        <tr><td class="letter">2</td><td><b>CLIENT AND EMPLOYER</b> — shall act in a manner that is
+                            in the best interests of their client and employer, consistent with the public
+                            interest.</td></tr>
+                        <tr><td class="letter">3</td><td><b>PRODUCT</b> — shall ensure that the deliverables they
+                            provide (on the products/systems they test) meet the highest professional standards
+                            possible.</td></tr>
+                        <tr><td class="letter">4</td><td><b>JUDGMENT</b> — shall maintain integrity and independence
+                            in their professional judgment.</td></tr>
+                        <tr><td class="letter">5</td><td><b>MANAGEMENT</b> — test managers and leaders shall
+                            subscribe to and promote an ethical approach to the management of software testing.</td></tr>
+                        <tr><td class="letter">6</td><td><b>PROFESSION</b> — shall advance the integrity and
+                            reputation of the profession, consistent with the public interest.</td></tr>
+                        <tr><td class="letter">7</td><td><b>COLLEAGUES</b> — shall be fair to and supportive of
+                            colleagues, and promote cooperation with software developers.</td></tr>
+                        <tr><td class="letter">8</td><td><b>SELF</b> — shall participate in lifelong learning
+                            regarding the practice of their profession, and shall promote an ethical approach to the
+                            practice of the profession.</td></tr>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- COMMON MISTAKES -->
+        <section id="mistakes">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 15 — COMMON MISTAKES</div>
+                    <h2 class="sec-title">Where students actually lose marks</h2>
+                    <p class="sec-desc">Every one of these is a real confusion this chapter sets up on purpose —
+                        drill them until the "wrong" option stops sounding reasonable.</p>
+                </div>
+
+                <div class="mistake-box">
+                    <h4>Test Effectiveness vs. Test Efficiency</h4>
+                    <div class="mistake-line wrong"><b>✗ WRONG</b><span class="text">"Effectiveness" and "efficiency"
+                        metrics are the same thing — both just mean "how good was testing."</span></div>
+                    <div class="mistake-line right"><b>✓ RIGHT</b><span class="text">Test <b>Effectiveness</b> asks
+                        "how good were the tests / bug-finding ability?" (Bugs found in test ÷ total bugs found).
+                        Test <b>Efficiency</b> is a specific different formula: average time to repair defects (Total
+                        time for bug fixes ÷ Number of bugs). One measures bug-catching power; the other measures
+                        repair speed.</span></div>
+                    <div class="mistake-why">The slide deck itself flags this with a handwritten note: "≠
+                        efficiency" — it's a deliberately placed trap.</div>
+                </div>
+
+                <div class="mistake-box">
+                    <h4>Base Metrics vs. Calculated Metrics</h4>
+                    <div class="mistake-line wrong"><b>✗ WRONG</b><span class="text">"Number of defects found" and
+                        "% Test Coverage" are both examples of the same category of metric.</span></div>
+                    <div class="mistake-line right"><b>✓ RIGHT</b><span class="text">"Number of defects found" is a
+                        <b>base metric</b> — raw, collected data. "% Test Coverage" is a <b>calculated metric</b> —
+                        derived by computing a ratio from base-metric data.</span></div>
+                    <div class="mistake-why">If a metric is a plain count with no division/percentage sign, it's
+                        base. If it involves a ratio or percentage, it's calculated.</div>
+                </div>
+
+                <div class="mistake-box">
+                    <h4>QA vs. QC vs. Testing</h4>
+                    <div class="mistake-line wrong"><b>✗ WRONG</b><span class="text">QA is just another word for
+                        testing.</span></div>
+                    <div class="mistake-line right"><b>✓ RIGHT</b><span class="text">QA is <b>process</b>-focused
+                        (planned, systematic monitoring of the process to produce a quality product) — and
+                        explicitly "not just testing." QC is <b>product</b>-focused (finds defects, is the tester's
+                        responsibility). Software testing is the specific activity of finding bugs against user
+                        requirements.</span></div>
+                    <div class="mistake-why">Remember the direction: QA sets/monitors the process → QC (testing)
+                        executes within that process and reports back.</div>
+                </div>
+
+                <div class="mistake-box">
+                    <h4>Branch Coverage vs. Decision Coverage</h4>
+                    <div class="mistake-line wrong"><b>✗ WRONG</b><span class="text">Branch coverage and decision
+                        coverage are unrelated concepts measuring completely different things.</span></div>
+                    <div class="mistake-line right"><b>✓ RIGHT</b><span class="text">They're closely related and
+                        often taught together: <b>branch coverage</b> ensures every branch (edge in the control-flow
+                        graph) executes at least once; <b>decision coverage</b> ensures every decision-taking
+                        statement executes at least once. Both exist for the same reason — proving no branch/decision
+                        leads to failure.</span></div>
+                    <div class="mistake-why">Know the formula cold: Branch Coverage = Tested Decision Outcomes /
+                        Total Decision Outcomes.</div>
+                </div>
+
+                <div class="mistake-box">
+                    <h4>Driver vs. Stub</h4>
+                    <div class="mistake-line wrong"><b>✗ WRONG</b><span class="text">A "driver" and a "stub" are
+                        interchangeable terms for the same helper component.</span></div>
+                    <div class="mistake-line right"><b>✓ RIGHT</b><span class="text">A <b>driver</b> calls the
+                        component being tested (a component that calls the Tested Unit). A <b>stub</b> is called
+                        <i>from</i> the component being tested (a component the Tested Unit depends on) and returns
+                        fake/partial values.</span></div>
+                    <div class="mistake-why">Picture the diagram: Driver → Tested Unit → Stub. The direction of the
+                        arrow tells you which is which.</div>
+                </div>
+
+                <div class="mistake-box">
+                    <h4>Verification vs. Validation</h4>
+                    <div class="mistake-line wrong"><b>✗ WRONG</b><span class="text">Verification and validation both
+                        mean "checking the final software works."</span></div>
+                    <div class="mistake-line right"><b>✓ RIGHT</b><span class="text"><b>Verification</b> checks a
+                        development phase's work-products against that phase's requirements ("did we build it
+                        right?"). <b>Validation</b> checks the software during/at the end of development against the
+                        overall specified requirements ("did we build the right thing?").</span></div>
+                    <div class="mistake-why">Verification is per-phase and internal; validation is end-to-end and
+                        requirements-facing.</div>
+                </div>
+
+                <div class="mistake-box">
+                    <h4>Static Analysis Tools vs. Dynamic Analysis Tools</h4>
+                    <div class="mistake-line wrong"><b>✗ WRONG</b><span class="text">Static analysis tools run the
+                        program to find bugs, the same as dynamic analysis tools.</span></div>
+                    <div class="mistake-line right"><b>✓ RIGHT</b><span class="text">Static analysis: <b>the tool is
+                        executed, the code is not</b> — source code is just input data (extension of compiler
+                        technology). Dynamic analysis tools (memory leaks, null pointers, time dependencies) require
+                        the program to actually run.</span></div>
+                    <div class="mistake-why">"Static" = without executing the code under review. Don't let the fact
+                        that the analysis tool itself runs confuse you.</div>
+                </div>
+
+                <div class="mistake-box">
+                    <h4>Segment Coverage Goal vs. Call-Pair Coverage Goal</h4>
+                    <div class="mistake-line wrong"><b>✗ WRONG</b><span class="text">Both segment coverage and
+                        call-pair coverage target 100% as the practical goal.</span></div>
+                    <div class="mistake-line right"><b>✓ RIGHT</b><span class="text">Segment coverage's practical
+                        goal is <b>85%</b>. Call-pair coverage's practical goal is <b>100%</b> — they are different
+                        numbers for different reasons (interfaces where one module invokes another are expected to
+                        be fully exercised).</span></div>
+                    <div class="mistake-why">This is a plain memorization trap — the deck states both numbers
+                        explicitly, and exams love swapping them.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CHEAT SHEET -->
+        <section id="cheat">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 16 — CHEAT SHEET</div>
+                    <h2 class="sec-title">The whole chapter, one scannable grid</h2>
+                </div>
+                <table class="cheat-table">
+                    <tr><th>Category</th><th>Answers the question</th><th>Key formula / fact</th></tr>
+                    <tr><td>Test Execution Coverage</td><td>How much did we run?</td><td>Tests run / Tests to be run × 100</td></tr>
+                    <tr><td>Requirements Coverage</td><td>How much did we cover?</td><td>Requirements covered / Total requirements × 100</td></tr>
+                    <tr><td>Test Effectiveness</td><td>How good were the tests?</td><td>Bugs found in test / Total bugs found × 100</td></tr>
+                    <tr><td>Test Effort — tests/time</td><td>How fast are we running tests?</td><td>Tests run / Total time</td></tr>
+                    <tr><td>Test Effort — bug find rate</td><td>How fast are we finding bugs?</td><td>Total defects / Total test hours</td></tr>
+                    <tr><td>Test Effort — bugs per test</td><td>How buggy is each test?</td><td>Total defects / Total tests</td></tr>
+                    <tr><td>Test Effort — avg fix-retest time</td><td>How long to verify a fix?</td><td>Total fix-to-retest time / Total defects</td></tr>
+                    <tr><td>Passed / Failed Test Cases %</td><td>What's overall quality?</td><td>Passed (or Failed) / Total executed × 100</td></tr>
+                    <tr><td>Critical Defects %</td><td>How severe are the bugs?</td><td>Critical defects / Total defects reported × 100</td></tr>
+                    <tr><td>Fixed Defects %</td><td>How efficient is fixing?</td><td>Defects fixed / Defects reported × 100</td></tr>
+                    <tr><td>Test Efficiency</td><td>How fast do we repair?</td><td>Total repair time / Number of bugs</td></tr>
+                    <tr><td>Defect Removal %</td><td>What % of known bugs got fixed?</td><td>Bugs fixed prior to release / Known bugs prior to release × 100</td></tr>
+                    <tr><td>Defect Detection Efficiency</td><td>Did we catch bugs before customers did?</td><td>Unique defects we find / (we find + customers report) × 100</td></tr>
+                    <tr><td>Segment Coverage</td><td>Code coverage (unit/integration)</td><td>Practical goal: 85%</td></tr>
+                    <tr><td>Call-Pair Coverage</td><td>Interfaces between modules covered</td><td>Practical goal: 100%</td></tr>
+                    <tr><td>Branch Coverage</td><td>Every branch executed?</td><td>Tested decision outcomes / Total decision outcomes</td></tr>
+                    <tr><td>Management tools</td><td>Traceability, reporting, metrics</td><td>Test/ALM, requirements, defect, config mgmt, CI</td></tr>
+                    <tr><td>Static testing tools</td><td>Improve code without running it</td><td>Review, static analysis (D), modeling (D)</td></tr>
+                    <tr><td>Design &amp; spec tools</td><td>Generate inputs / tests</td><td>Test design, model-based, data prep, TDD, ATDD/BDD</td></tr>
+                    <tr><td>Execution &amp; logging tools</td><td>Run tests, log results</td><td>Execution, coverage, harness/framework, comparators</td></tr>
+                    <tr><td>Performance &amp; monitoring</td><td>Load testing, watch the system</td><td>Test data (real/load/maintenance), monitoring, dynamic analysis (D)</td></tr>
+                    <tr><td>QA</td><td>Process quality, not just testing</td><td>Planned, systematic; popularized WWII</td></tr>
+                    <tr><td>QC</td><td>Product quality, finds defects</td><td>Tester's responsibility</td></tr>
+                </table>
+            </div>
+        </section>
+
+        <!-- POP QUIZ -->
+        <section id="quiz">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 17 — POP QUIZ</div>
+                    <h2 class="sec-title">Click a question to reveal the answer</h2>
+                    <p class="sec-desc">No page reload — just click to check yourself.</p>
+                </div>
+
+                <div class="quiz-item">
+                    <div class="quiz-q" onclick="this.nextElementSibling.classList.toggle('open')">
+                        <span class="qtext">1. Is "Number of test cases blocked" a base metric or a calculated
+                            metric?</span>
+                        <span class="quiz-reveal">Reveal</span>
+                    </div>
+                    <div class="quiz-answer"><b>Base metric.</b> It's a raw count collected directly by the Test
+                        Analyst during test execution — no ratio or percentage computed from it.</div>
+                </div>
+
+                <div class="quiz-item">
+                    <div class="quiz-q" onclick="this.nextElementSibling.classList.toggle('open')">
+                        <span class="qtext">2. A test set finds 80 bugs during testing, and 20 more are reported
+                            after shipping. What's the Test Effectiveness %, and what does it mean?</span>
+                        <span class="quiz-reveal">Reveal</span>
+                    </div>
+                    <div class="quiz-answer"><b>80%.</b> (80 / (80+20)) × 100 = 80%. It means 20% of the defects got
+                        away from the test team and reached customers — the same shape as the worked example in the
+                        deck.</div>
+                </div>
+
+                <div class="quiz-item">
+                    <div class="quiz-q" onclick="this.nextElementSibling.classList.toggle('open')">
+                        <span class="qtext">3. Multiple choice: which coverage type has a practical goal of 100%,
+                            not 85%? (a) Segment coverage (b) Call-pair coverage (c) Requirements coverage</span>
+                        <span class="quiz-reveal">Reveal</span>
+                    </div>
+                    <div class="quiz-answer"><b>(b) Call-pair coverage.</b> Segment coverage's practical goal is 85%;
+                        call-pair coverage (interfaces where one module invokes another) targets 100%.</div>
+                </div>
+
+                <div class="quiz-item">
+                    <div class="quiz-q" onclick="this.nextElementSibling.classList.toggle('open')">
+                        <span class="qtext">4. Short answer: what's the difference between a driver and a stub?</span>
+                        <span class="quiz-reveal">Reveal</span>
+                    </div>
+                    <div class="quiz-answer">A <b>driver</b> calls the component under test (it drives the Tested
+                        Unit). A <b>stub</b> is called FROM the component under test — it's a fake/partial
+                        implementation of something the Tested Unit depends on.</div>
+                </div>
+
+                <div class="quiz-item">
+                    <div class="quiz-q" onclick="this.nextElementSibling.classList.toggle('open')">
+                        <span class="qtext">5. Multiple choice: which tool type is "an extension of compiler
+                            technology" where the tool executes but the code doesn't? (a) Dynamic analysis tool (b)
+                            Static analysis tool (c) Monitoring tool</span>
+                        <span class="quiz-reveal">Reveal</span>
+                    </div>
+                    <div class="quiz-answer"><b>(b) Static analysis tool.</b> Source code is input data to the tool;
+                        the tool runs, the code under review does not.</div>
+                </div>
+
+                <div class="quiz-item">
+                    <div class="quiz-q" onclick="this.nextElementSibling.classList.toggle('open')">
+                        <span class="qtext">6. Short answer: name the three "test data for performance testing"
+                            categories from the slides.</span>
+                        <span class="quiz-reveal">Reveal</span>
+                    </div>
+                    <div class="quiz-answer"><b>Real</b> (data from actual users), <b>Load</b> (large volumes of test
+                        data), and <b>Maintenance</b> (data from the production environment).</div>
+                </div>
+
+                <div class="quiz-item">
+                    <div class="quiz-q" onclick="this.nextElementSibling.classList.toggle('open')">
+                        <span class="qtext">7. True or false: QA is essentially the same thing as software
+                            testing.</span>
+                        <span class="quiz-reveal">Reveal</span>
+                    </div>
+                    <div class="quiz-answer"><b>False.</b> The slides state this explicitly: "QA is not just
+                        testing." QA is the planned, systematic monitoring of the process used to produce a quality
+                        product; QC (which includes testing) is the tester's responsibility and is concerned with
+                        product quality.</div>
+                </div>
+
+                <div class="quiz-item">
+                    <div class="quiz-q" onclick="this.nextElementSibling.classList.toggle('open')">
+                        <span class="qtext">8. Short answer: what is the "probe effect"?</span>
+                        <span class="quiz-reveal">Reveal</span>
+                    </div>
+                    <div class="quiz-answer">The consequence of using an <b>intrusive</b> test tool — one where the
+                        tool itself affects the outcome of the test. Example given: timing measurements may come out
+                        different depending on which performance tool you use to measure them.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PRACTICE LAB -->
+        <section id="lab">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 18 — PRACTICE LAB</div>
+                    <h2 class="sec-title">Worked, exam-style problems</h2>
+                    <p class="sec-desc">Same shape as the calculations this chapter's slides worked through — drill
+                        these until the arithmetic and the interpretation are both automatic.</p>
+                </div>
+                <div class="examroom">
+                    <div class="practice-q">
+                        <div class="req">1. A team planned 250 test cases for a release and has executed 180 of
+                            them so far. What is the Test Execution Coverage percentage?</div>
+                        <div class="ans">→ 72%</div>
+                        <div class="why">Why: Test Execution Coverage = (Number of tests run / Total number of tests
+                            to be run) × 100 = (180 / 250) × 100 = 72%.</div>
+                    </div>
+                    <div class="practice-q">
+                        <div class="req">2. Three defects were fixed and retested: D1 took 2 days between fix and
+                            retest, D2 took 1 day, D3 took 3 days. What's the average time to test a bug fix?</div>
+                        <div class="ans">→ 2 days per defect</div>
+                        <div class="why">Why: Average = Total time between fix and retest / Total number of defects
+                            = (2 + 1 + 3) / 3 = 6 / 3 = 2 days — same structure as the deck's D1/D2/D3 example.</div>
+                    </div>
+                    <div class="practice-q">
+                        <div class="req">3. Of 400 defects reported this release, 36 were classified as critical.
+                            What is the Critical Defects percentage, and is a high or low value what you want?</div>
+                        <div class="ans">→ 9%; lower is generally better</div>
+                        <div class="why">Why: Critical Defects % = (Critical Defects / Total defects reported) × 100
+                            = (36 / 400) × 100 = 9%. Since this tracks the severity mix of reported bugs, a lower
+                            percentage means fewer of the found bugs are severe.</div>
+                    </div>
+                    <div class="practice-q">
+                        <div class="req">4. A code-review tool flags 400+ possible bug patterns in Java source but
+                            never actually runs the program. Which category of testing tool is this, and can you name
+                            an example from the slides?</div>
+                        <div class="ans">→ Static analysis tool (D) — e.g. SpotBugs</div>
+                        <div class="why">Why: the tool is executed, the code is not — it's an extension of compiler
+                            technology used mostly by developers for component (unit) testing. SpotBugs is the
+                            named example that checks 400+ bug patterns in Java code.</div>
+                    </div>
+                    <div class="practice-q">
+                        <div class="req">5. A team scripted their tests by recording a manual tester's clicks. It
+                            broke the first time the UI changed slightly. What alternative approach does the chapter
+                            recommend, and why?</div>
+                        <div class="ans">→ Data-driven or keyword-driven scripting</div>
+                        <div class="why">Why: capture/replay scripts don't scale to large numbers of automated tests
+                            and are unstable under unexpected events. A data-driven approach separates the test
+                            inputs from a generic, reusable script; a keyword-driven approach lets testers define
+                            tests from a spreadsheet of keywords/action words plus test data.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <div>SE401 · Software Quality Assurance and Testing · Chapter 10 — Testing Metrics and Tools</div>
+        <div class="toc-hint">Built as a study aid from lecture slides — always verify against your instructor's
+            exact wording before an exam.</div>
+        <div class="made">Made by <span>Shoug Alomran</span></div>
+    </footer>
+
+    <script>
+        const root = document.documentElement;
+        const sw = document.getElementById('switch');
+        const label = document.getElementById('theme-label');
+
+        function applyTheme(t) {
+            root.setAttribute('data-theme', t);
+            label.textContent = t.toUpperCase();
+        }
+
+        const prefersLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
+        applyTheme(prefersLight ? 'light' : 'dark');
+
+        sw.addEventListener('click', () => {
+            const current = root.getAttribute('data-theme');
+            applyTheme(current === 'dark' ? 'light' : 'dark');
+        });
+    </script>
+
+</body>
+
+</html>

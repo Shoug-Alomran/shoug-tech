@@ -1,0 +1,1625 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>White-Box Testing: Coverage, Complexity &amp; Control Flow | SE401 Ch.13</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --radius-sm: 8px;
+            --radius-md: 14px;
+            --radius-lg: 22px;
+            --font-head: 'Space Grotesk', sans-serif;
+            --font-body: 'Inter', sans-serif;
+            --font-mono: 'IBM Plex Mono', monospace;
+            --maxw: 1180px;
+        }
+
+        html[data-theme="dark"] {
+            --bg: #0b0f17;
+            --surface: #121926;
+            --surface-2: #182233;
+            --ink: #e6ecf5;
+            --ink-dim: #8ea0b8;
+            --line: #233047;
+            --accent: #5b9dff;
+            --accent-2: #f0b429;
+            --bad: #f2555a;
+            --good: #38c793;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        html[data-theme="light"] {
+            --bg: #f2f4f8;
+            --surface: #ffffff;
+            --surface-2: #eaeef5;
+            --ink: #141b26;
+            --ink-dim: #56637a;
+            --line: #dbe1ea;
+            --accent: #2f6fed;
+            --accent-2: #b9790a;
+            --bad: #c73a3f;
+            --good: #1f8f68;
+            --shadow: 0 10px 26px rgba(20, 30, 45, 0.10);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            background:
+                radial-gradient(circle at 1px 1px, var(--line) 1px, transparent 1px) 0 0/26px 26px,
+                var(--bg);
+            color: var(--ink);
+            font-family: var(--font-body);
+            font-size: clamp(15px, 0.4vw + 14px, 17px);
+            line-height: 1.6;
+            transition: background-color .35s ease, color .35s ease;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: var(--font-head);
+            margin: 0;
+            letter-spacing: -0.01em;
+        }
+
+        a { color: inherit; }
+        .mono { font-family: var(--font-mono); }
+
+        .wrap {
+            max-width: var(--maxw);
+            margin: 0 auto;
+            padding: 0 clamp(16px, 4vw, 40px);
+        }
+
+        header.top {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            backdrop-filter: blur(10px);
+            background: color-mix(in srgb, var(--bg) 78%, transparent);
+            border-bottom: 1px solid var(--line);
+        }
+
+        .top-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px clamp(16px, 4vw, 40px);
+            max-width: var(--maxw);
+            margin: 0 auto;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .brand { display: flex; align-items: center; gap: 10px; }
+        .brand .logo-mini { width: 30px; height: 30px; flex: none; }
+        .brand-text { font-family: var(--font-head); font-weight: 700; font-size: 1.05rem; }
+        .brand-text span { color: var(--accent); }
+
+        nav.pillnav { display: flex; gap: 6px; flex-wrap: wrap; }
+
+        nav.pillnav a {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            text-decoration: none;
+            color: var(--ink-dim);
+            padding: 6px 10px;
+            border-radius: 999px;
+            border: 1px solid transparent;
+            white-space: nowrap;
+            transition: all .2s ease;
+        }
+
+        nav.pillnav a:hover { color: var(--ink); border-color: var(--line); background: var(--surface); }
+
+        .theme-toggle {
+            display: flex; align-items: center; gap: 8px;
+            font-family: var(--font-mono); font-size: 0.7rem; color: var(--ink-dim);
+        }
+
+        .switch {
+            width: 46px; height: 26px; border-radius: 999px;
+            background: var(--surface-2); border: 1px solid var(--line);
+            position: relative; cursor: pointer; flex: none;
+        }
+
+        .switch .knob {
+            position: absolute; top: 2px; left: 2px; width: 20px; height: 20px;
+            border-radius: 50%; background: var(--accent);
+            transition: left .25s ease, background .25s ease;
+        }
+
+        html[data-theme="light"] .switch .knob { left: 22px; }
+
+        .hero { padding: clamp(40px, 7vw, 80px) 0 clamp(20px, 4vw, 40px); }
+
+        .hero-grid {
+            display: grid; grid-template-columns: 1.2fr 0.8fr;
+            gap: clamp(20px, 4vw, 50px); align-items: center;
+        }
+
+        @media (max-width:820px) { .hero-grid { grid-template-columns: 1fr; } }
+
+        .eyebrow {
+            font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.14em;
+            text-transform: uppercase; color: var(--accent-2); margin-bottom: 14px;
+            display: flex; align-items: center; gap: 10px;
+        }
+
+        .eyebrow::before { content: ''; width: 26px; height: 1px; background: var(--accent-2); }
+
+        h1.hero-title { font-size: clamp(2.0rem, 5vw, 3.4rem); line-height: 1.08; font-weight: 700; }
+        h1.hero-title em { font-style: normal; color: var(--accent); }
+        .hero-sub { margin-top: 18px; color: var(--ink-dim); max-width: 56ch; font-size: 1.02rem; }
+        .hero-badges { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 22px; }
+
+        .badge {
+            font-family: var(--font-mono); font-size: 0.72rem; padding: 6px 12px;
+            border-radius: 8px; background: var(--surface); border: 1px solid var(--line);
+            color: var(--ink-dim);
+        }
+
+        .blueprint-wrap { display: flex; justify-content: center; }
+        .blueprint-wrap svg { width: min(340px, 90%); height: auto; }
+
+        section { padding: clamp(30px, 5vw, 60px) 0; border-top: 1px solid var(--line); }
+        section:first-of-type { border-top: none; }
+
+        .sec-head { margin-bottom: clamp(20px, 3vw, 34px); max-width: 76ch; }
+        .sec-num { font-family: var(--font-mono); color: var(--accent); font-size: 0.78rem; letter-spacing: 0.1em; }
+        .sec-title { font-size: clamp(1.4rem, 3vw, 2.0rem); margin-top: 6px; }
+        .sec-desc { color: var(--ink-dim); margin-top: 10px; font-size: 0.98rem; }
+
+        .mnemonic {
+            background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 14%, transparent), transparent);
+            border: 1px dashed color-mix(in srgb, var(--accent) 55%, var(--line));
+            border-radius: var(--radius-md); padding: 16px 20px;
+            display: flex; gap: 14px; align-items: flex-start; margin: 18px 0;
+        }
+
+        .mnemonic .icon { font-size: 1.4rem; flex: none; line-height: 1; }
+        .mnemonic .label {
+            font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.1em;
+            text-transform: uppercase; color: var(--accent);
+        }
+        .mnemonic .phrase { font-family: var(--font-head); font-weight: 600; font-size: 1.05rem; margin-top: 3px; }
+        .mnemonic .decode { color: var(--ink-dim); font-size: 0.86rem; margin-top: 4px; }
+
+        /* V model diagram */
+        .v-model { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 18px; margin-top: 24px; }
+        .v-col { display: flex; flex-direction: column; gap: 10px; }
+        .v-step {
+            padding: 10px 14px; border: 1px solid var(--line); border-radius: 8px;
+            background: var(--surface); font-size: 0.84rem; font-weight: 600;
+        }
+        .v-col.left .v-step { text-align: left; }
+        .v-col.right .v-step { text-align: right; border-color: color-mix(in srgb, var(--accent-2) 45%, var(--line)); }
+        .v-bridge {
+            grid-column: 1 / -1; text-align: center; margin-top: 6px; font-family: var(--font-mono);
+            font-size: 0.72rem; color: var(--accent-2); letter-spacing: 0.08em; text-transform: uppercase;
+        }
+        @media (max-width:760px) {
+            .v-model { grid-template-columns: 1fr; }
+            .v-col.left .v-step, .v-col.right .v-step { text-align: left; margin: 0 !important; }
+        }
+
+        /* taxonomy branch cards */
+        .branch-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 22px; }
+        @media (max-width:760px) { .branch-grid { grid-template-columns: 1fr; } }
+        .branch-card {
+            background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg);
+            padding: clamp(16px, 3vw, 24px); border-top: 4px solid var(--accent);
+        }
+        .branch-card.alt { border-top-color: var(--accent-2); }
+        .branch-card h3 { font-size: 1.1rem; }
+        .branch-card .tag {
+            font-family: var(--font-mono); font-size: 0.68rem; text-transform: uppercase;
+            letter-spacing: 0.08em; color: var(--accent);
+        }
+        .branch-card.alt .tag { color: var(--accent-2); }
+        .chip-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+        .chip-list .chip {
+            font-family: var(--font-mono); font-size: 0.74rem; padding: 5px 11px;
+            border-radius: 999px; background: var(--surface-2); border: 1px solid var(--line);
+        }
+        .chip-list .chip.deep {
+            background: color-mix(in srgb, var(--accent) 14%, var(--surface-2));
+        }
+
+        .qa-deep {
+            background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg);
+            padding: clamp(18px, 3vw, 30px); margin-bottom: 26px; position: relative;
+            border-left: 5px solid var(--accent);
+        }
+        .qa-deep.alt { border-left-color: var(--accent-2); }
+        .qa-deep-head { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; justify-content: space-between; }
+        .qa-deep h3 { font-size: clamp(1.2rem, 2.2vw, 1.5rem); }
+        .qa-tag {
+            font-family: var(--font-mono); font-size: 0.7rem; padding: 5px 11px; border-radius: 999px;
+            background: var(--surface-2); border: 1px solid var(--line); color: var(--ink-dim);
+        }
+        .qa-def { margin-top: 10px; color: var(--ink); font-size: 0.98rem; max-width: 78ch; }
+
+        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; margin-top: 20px; }
+        @media (max-width:760px) { .two-col { grid-template-columns: 1fr; } }
+
+        .subhead {
+            font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.08em;
+            text-transform: uppercase; color: var(--accent-2); margin-bottom: 10px; display: block;
+        }
+
+        .pattern-chip-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
+        .pattern-chip {
+            font-family: var(--font-mono); font-size: 0.75rem; padding: 5px 12px; border-radius: 999px;
+            background: color-mix(in srgb, var(--accent) 14%, var(--surface-2)); border: 1px solid var(--line);
+        }
+
+        .example-strip {
+            margin-top: 16px; background: color-mix(in srgb, var(--accent-2) 10%, transparent);
+            border: 1px solid color-mix(in srgb, var(--accent-2) 35%, var(--line));
+            border-radius: var(--radius-sm); padding: 12px 14px; font-size: 0.86rem;
+        }
+        .example-strip b { color: var(--accent-2); }
+
+        .rule-box {
+            margin-top: 14px; background: var(--surface-2); border: 1px solid var(--line);
+            border-radius: var(--radius-sm); padding: 12px 14px; font-size: 0.84rem; color: var(--ink-dim);
+        }
+        .rule-box b { color: var(--ink); }
+
+        code {
+            font-family: var(--font-mono); font-size: 0.86em; background: var(--surface-2);
+            padding: 1px 6px; border-radius: 4px; border: 1px solid var(--line);
+        }
+
+        pre.code-block {
+            font-family: var(--font-mono); font-size: 0.82rem; background: var(--surface-2);
+            border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 14px 16px;
+            overflow-x: auto; margin-top: 14px; line-height: 1.55;
+        }
+
+        .cheat-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        .cheat-table th, .cheat-table td { border: 1px solid var(--line); padding: 12px 14px; text-align: left; font-size: 0.86rem; }
+        .cheat-table th {
+            background: var(--surface-2); font-family: var(--font-mono); font-size: 0.68rem;
+            text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent-2);
+        }
+        .cheat-table tr:nth-child(even) td { background: color-mix(in srgb, var(--surface-2) 55%, transparent); }
+        .table-wrap { overflow-x: auto; }
+
+        /* mistakes */
+        .mistake-box {
+            border: 1px solid color-mix(in srgb, var(--bad) 40%, var(--line));
+            border-radius: var(--radius-md); padding: 16px 18px; margin: 16px 0;
+            background: color-mix(in srgb, var(--bad) 6%, var(--surface));
+        }
+        .mistake-box h4 { font-size: 1rem; margin-bottom: 10px; }
+        .mistake-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 8px; }
+        @media (max-width:760px) { .mistake-pair { grid-template-columns: 1fr; } }
+        .m-wrong, .m-right {
+            border-radius: var(--radius-sm); padding: 10px 12px; font-size: 0.86rem;
+        }
+        .m-wrong { background: color-mix(in srgb, var(--bad) 14%, transparent); border: 1px solid color-mix(in srgb, var(--bad) 40%, var(--line)); }
+        .m-right { background: color-mix(in srgb, var(--good) 14%, transparent); border: 1px solid color-mix(in srgb, var(--good) 40%, var(--line)); }
+        .m-wrong b { color: var(--bad); }
+        .m-right b { color: var(--good); }
+
+        /* quiz */
+        .quiz-q {
+            border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--surface);
+            padding: 16px 18px; margin: 12px 0;
+        }
+        .quiz-q .q-label { font-family: var(--font-mono); font-size: 0.68rem; color: var(--accent); text-transform: uppercase; letter-spacing: 0.06em; }
+        .quiz-q .q-text { margin-top: 8px; font-weight: 600; font-size: 0.96rem; }
+        .quiz-reveal {
+            margin-top: 12px; font-family: var(--font-mono); font-size: 0.74rem; padding: 7px 14px;
+            border-radius: 999px; border: 1px solid var(--accent); background: transparent; color: var(--accent);
+            cursor: pointer; transition: all .2s ease;
+        }
+        .quiz-reveal:hover { background: color-mix(in srgb, var(--accent) 16%, transparent); }
+        .quiz-answer {
+            display: none; margin-top: 12px; padding: 12px 14px; border-radius: var(--radius-sm);
+            background: color-mix(in srgb, var(--good) 10%, var(--surface-2)); border: 1px solid color-mix(in srgb, var(--good) 35%, var(--line));
+            font-size: 0.88rem;
+        }
+        .quiz-answer.shown { display: block; }
+        .quiz-answer b { color: var(--good); }
+
+        /* ladder table */
+        .ladder-wrap { margin-top: 22px; }
+        .ladder-row {
+            display: grid; grid-template-columns: 160px 1fr; gap: 14px; align-items: stretch;
+            margin-bottom: 8px;
+        }
+        @media (max-width:600px) { .ladder-row { grid-template-columns: 1fr; } }
+        .ladder-name {
+            font-family: var(--font-mono); font-size: 0.78rem; display: flex; align-items: center;
+            padding: 10px 12px; border-radius: 8px; background: var(--surface-2); border: 1px solid var(--line);
+        }
+        .ladder-bar {
+            border-radius: 8px; padding: 10px 14px; font-size: 0.84rem; color: var(--ink-dim);
+            background: var(--surface); border: 1px solid var(--line); border-left: 6px solid var(--accent);
+        }
+        .ladder-bar b { color: var(--ink); }
+
+        /* practice lab */
+        .examroom {
+            background: repeating-linear-gradient(180deg, var(--surface) 0px, var(--surface) 27px, var(--surface-2) 28px);
+            border: 1px solid var(--line); border-radius: var(--radius-lg); padding: clamp(18px, 3vw, 28px);
+        }
+        .practice-q {
+            border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface);
+            padding: 14px 16px; margin: 12px 0; font-size: 0.92rem;
+        }
+        .practice-q .req { color: var(--ink); }
+        .practice-q .ans { margin-top: 8px; font-family: var(--font-mono); font-size: 0.78rem; color: var(--accent); }
+        .practice-q .why { margin-top: 6px; color: var(--ink-dim); font-size: 0.82rem; }
+
+        footer {
+            padding: 40px clamp(16px, 4vw, 40px) 60px; text-align: center; color: var(--ink-dim);
+            font-family: var(--font-mono); font-size: 0.78rem;
+        }
+        footer .made { color: var(--ink); font-weight: 600; margin-top: 6px; }
+        footer .made span { color: var(--accent); }
+        .toc-hint { margin-top: 26px; color: var(--ink-dim); font-size: 0.82rem; }
+
+        ::selection { background: var(--accent); color: #fff; }
+
+        .cfg-wrap { display: flex; justify-content: center; margin-top: 22px; }
+        .cfg-wrap svg { width: min(480px, 100%); height: auto; }
+        .cfg-caption { text-align: center; color: var(--ink-dim); font-size: 0.8rem; margin-top: 10px; font-family: var(--font-mono); }
+    </style>
+
+    <meta name="description" content="Statement, decision, condition, decision/condition, and multiple-condition coverage; cyclomatic complexity; Fagan inspections — the field guide for testing what the code actually does, not just what it's supposed to do.">
+    <link rel="canonical" href="https://shoug-tech.com/academics/software-engineering/se401/slide-breakdowns/13-white-box-testing/white-box-testing.html">
+    <meta property="og:title" content="White-Box Testing: Coverage, Complexity &amp; Control Flow | SE401 Ch.13">
+    <meta property="og:description" content="Statement, decision, condition, decision/condition, and multiple-condition coverage; cyclomatic complexity; Fagan inspections — the field guide for testing what the code actually does, not just what it's supposed to do.">
+    <meta property="og:url" content="https://shoug-tech.com/academics/software-engineering/se401/slide-breakdowns/13-white-box-testing/white-box-testing.html">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://shoug-tech.com/logo.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="White-Box Testing: Coverage, Complexity &amp; Control Flow | SE401 Ch.13">
+    <meta name="twitter:description" content="Statement, decision, condition, decision/condition, and multiple-condition coverage; cyclomatic complexity; Fagan inspections — the field guide for testing what the code actually does, not just what it's supposed to do.">
+    <meta name="twitter:image" content="https://shoug-tech.com/logo.png">
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","url":"https://shoug-tech.com/academics/software-engineering/se401/slide-breakdowns/13-white-box-testing/white-box-testing.html","name":"White-Box Testing: Coverage, Complexity &amp; Control Flow | SE401 Ch.13","description":"Statement, decision, condition, decision/condition, and multiple-condition coverage; cyclomatic complexity; Fagan inspections — the field guide for testing what the code actually does, not just what it's supposed to do.","isPartOf":{"@type":"WebSite","name":"Shoug's Digital Garden","url":"https://shoug-tech.com/"}}</script>
+
+    <link rel="alternate" hreflang="en" href="https://shoug-tech.com/academics/software-engineering/se401/slide-breakdowns/13-white-box-testing/white-box-testing.html">
+    <link rel="alternate" hreflang="ar" href="https://shoug-tech.com/ar/academics/software-engineering/se401/slide-breakdowns/13-white-box-testing/white-box-testing.html">
+    <link rel="alternate" hreflang="x-default" href="https://shoug-tech.com/academics/software-engineering/se401/slide-breakdowns/13-white-box-testing/white-box-testing.html">
+</head>
+
+<body>
+
+    <header class="top">
+        <div class="top-inner">
+            <div class="brand">
+                <svg class="logo-mini" viewBox="0 0 40 40">
+                    <rect x="6" y="6" width="28" height="28" rx="6" fill="none" stroke="currentColor" stroke-width="2" opacity="0.35" />
+                    <path d="M20 12 L28 18 L20 24 L12 18 Z" fill="var(--accent)" />
+                </svg>
+                <div class="brand-text">Coverage<span>·</span>Lab</div>
+            </div>
+            <nav class="pillnav">
+                <a href="#v-model">V-Model</a>
+                <a href="#taxonomy">Taxonomy</a>
+                <a href="#static">Static Testing</a>
+                <a href="#structural">Structural Testing</a>
+                <a href="#coverage">Coverage Types</a>
+                <a href="#techniques">Coverage Techniques</a>
+                <a href="#cyclomatic">Cyclomatic Complexity</a>
+                <a href="#challenges">Challenges</a>
+                <a href="#mistakes">Common Mistakes</a>
+                <a href="#cheat">Cheat Sheet</a>
+                <a href="#quiz">Pop Quiz</a>
+                <a href="#lab">Practice Lab</a>
+            </nav>
+            <div class="theme-toggle">
+                <span id="theme-label">DARK</span>
+                <div class="switch" id="switch" role="button" aria-label="Toggle theme">
+                    <div class="knob"></div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+
+        <!-- HERO -->
+        <section class="hero">
+            <div class="wrap hero-grid">
+                <div>
+                    <div class="eyebrow">SE401 · Software Testing and Quality · Chapter 13</div>
+                    <h1 class="hero-title">You wrote the code.<br><em>Now prove it does what it does.</em></h1>
+                    <p class="hero-sub">Black-box testing asks "does the output match the spec?" White-box testing pops
+                        the hood and asks "did we actually run every line, every branch, every condition inside it?"
+                        This chapter is the toolbox for that: code reviews that catch bugs before execution, coverage
+                        metrics that measure how much of the code your tests actually touched, and cyclomatic complexity
+                        — the number that tells you when a function has become untestable.</p>
+                    <div class="hero-badges">
+                        <div class="badge">Static vs. Structural Testing</div>
+                        <div class="badge">Fagan Inspections</div>
+                        <div class="badge">5 Coverage Criteria</div>
+                        <div class="badge">Cyclomatic Complexity</div>
+                    </div>
+                </div>
+                <div class="blueprint-wrap">
+                    <svg viewBox="0 0 320 320">
+                        <rect x="20" y="20" width="280" height="280" rx="18" fill="none" stroke="var(--line)" stroke-width="2" />
+                        <text x="160" y="46" text-anchor="middle" class="mono" font-family="IBM Plex Mono" font-size="10" fill="var(--accent)">CONTROL FLOW</text>
+                        <circle cx="160" cy="80" r="16" fill="none" stroke="var(--accent-2)" stroke-width="2" />
+                        <line x1="160" y1="96" x2="160" y2="118" stroke="var(--line)" stroke-width="1.5" />
+                        <polygon points="160,118 190,148 160,178 130,148" fill="color-mix(in srgb, var(--accent) 16%, transparent)" stroke="var(--accent)" stroke-width="1.6" />
+                        <text x="160" y="152" text-anchor="middle" class="mono" font-family="IBM Plex Mono" font-size="8" fill="var(--ink)">A&gt;1 AND B=0</text>
+                        <line x1="190" y1="148" x2="230" y2="148" stroke="var(--line)" stroke-width="1.5" />
+                        <rect x="230" y="132" width="52" height="32" rx="5" fill="var(--surface-2)" stroke="var(--accent-2)" stroke-width="1.5" />
+                        <text x="256" y="152" text-anchor="middle" class="mono" font-family="IBM Plex Mono" font-size="8" fill="var(--ink)">X=X/A</text>
+                        <line x1="130" y1="148" x2="100" y2="148" stroke="var(--line)" stroke-width="1.5" />
+                        <line x1="100" y1="148" x2="100" y2="200" stroke="var(--line)" stroke-width="1.5" />
+                        <line x1="256" y1="164" x2="256" y2="200" stroke="var(--line)" stroke-width="1.5" />
+                        <line x1="100" y1="200" x2="256" y2="200" stroke="var(--line)" stroke-width="1.5" />
+                        <circle cx="160" cy="200" r="4" fill="var(--accent)" />
+                        <line x1="160" y1="204" x2="160" y2="226" stroke="var(--line)" stroke-width="1.5" />
+                        <polygon points="160,226 190,256 160,286 130,256" fill="color-mix(in srgb, var(--accent-2) 16%, transparent)" stroke="var(--accent-2)" stroke-width="1.6" />
+                        <text x="160" y="260" text-anchor="middle" class="mono" font-family="IBM Plex Mono" font-size="8" fill="var(--ink)">A=2 OR X&gt;1</text>
+                    </svg>
+                </div>
+            </div>
+        </section>
+
+        <!-- V MODEL -->
+        <section id="v-model">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 01 — WHERE WHITE-BOX TESTING FITS</div>
+                    <h2 class="sec-title">Bending the waterfall into a V</h2>
+                    <p class="sec-desc">Every development phase has a matching testing mindset. The V-Model just draws
+                        that pairing explicitly.</p>
+                </div>
+
+                <div class="mnemonic">
+                    <div class="icon">🧭</div>
+                    <div>
+                        <div class="label">Memory hook — the phase-to-test map</div>
+                        <div class="phrase">"Code → Unit. Low-design → Component. High-design → Integration. Software reqs → System. Business reqs → Acceptance."</div>
+                        <div class="decode">Each left-side development phase has a mirror-image right-side test level.
+                            The lower down the V, the more detailed and code-focused the testing gets.</div>
+                    </div>
+                </div>
+
+                <div class="v-model">
+                    <div class="v-col left">
+                        <div class="v-step" style="margin-left:0">Overall Business Requirements</div>
+                        <div class="v-step" style="margin-left:24px">Software Requirements</div>
+                        <div class="v-step" style="margin-left:48px">High-Level Design</div>
+                        <div class="v-step" style="margin-left:72px">Low-Level Design</div>
+                        <div class="v-step" style="margin-left:96px">Development</div>
+                    </div>
+                    <div class="v-col right">
+                        <div class="v-step" style="margin-right:0">Acceptance Test Design → Execution</div>
+                        <div class="v-step" style="margin-right:24px">System Test Design → Execution</div>
+                        <div class="v-step" style="margin-right:48px">Integration Test Design → Execution</div>
+                        <div class="v-step" style="margin-right:72px">Component Test Design → Execution</div>
+                        <div class="v-step" style="margin-right:96px">Unit Test Design → Execution</div>
+                    </div>
+                    <div class="v-bridge">↳ Testing sits at the bottom point of the V, bridging Development to Unit Test Execution ↲</div>
+                </div>
+
+                <div class="rule-box" style="margin-top:22px;"><b>The rule that makes the V work:</b> design the
+                    appropriate test for a phase <i>during</i> that phase, then execute it <i>after</i>. That's why
+                    the left side says "Test Design" and the right side says "Test Execution" — the design work
+                    happens early, in parallel with the corresponding development phase, not at the end.</div>
+
+                <div class="two-col" style="margin-top:10px;">
+                    <div>
+                        <span class="subhead">Principles of the V-Model</span>
+                        <ul style="color:var(--ink-dim); font-size:0.9rem; padding-left:20px;">
+                            <li>Do an early test <b>design</b>.</li>
+                            <li>Involve the right people in the design of the right type of tests.</li>
+                            <li>Make the tests reflect closely the steps on the left-hand side of the V.</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <span class="subhead">Unit Testing splits in two</span>
+                        <div class="example-strip"><b>White box testing</b> — the focus of this chapter (Ch.13).<br><b>Black
+                                box testing</b> — the focus of the next chapter. Unit testing is where white-box
+                            techniques live, because it's the level closest to the raw source code.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAXONOMY -->
+        <section id="taxonomy">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 02 — DEFINITION &amp; TAXONOMY</div>
+                    <h2 class="sec-title">White-box testing: two very different branches</h2>
+                </div>
+
+                <p style="color:var(--ink-dim); max-width:74ch;">White-box testing <b>requires access to code</b>. It
+                    looks at the program code and performs testing by <b>mapping program code to functionality</b>.
+                    It splits into two branches that are easy to conflate but test completely differently: one never
+                    runs the program, the other only runs the program.</p>
+
+                <div class="mnemonic">
+                    <div class="icon">🌳</div>
+                    <div>
+                        <div class="label">Memory hook</div>
+                        <div class="phrase">"Static Stares. Structural Sprints."</div>
+                        <div class="decode">Static testing <i>stares</i> at the source — humans or tools reading code
+                            without running it. Structural testing <i>sprints</i> the compiled executable against test
+                            cases to see what actually fires.</div>
+                    </div>
+                </div>
+
+                <div class="branch-grid">
+                    <div class="branch-card">
+                        <span class="tag">Never executes the program</span>
+                        <h3>Static Testing</h3>
+                        <p style="color:var(--ink-dim); font-size:0.9rem; margin-top:8px;">Involves only the source
+                            code, not executables or binaries. Humans go through it, or specialized tools do.</p>
+                        <div class="chip-list">
+                            <span class="chip deep">Desk checking</span>
+                            <span class="chip deep">Code walkthrough</span>
+                            <span class="chip deep">Code review</span>
+                            <span class="chip deep">Code inspection</span>
+                        </div>
+                    </div>
+                    <div class="branch-card alt">
+                        <span class="tag">Runs the executable</span>
+                        <h3>Structural Testing</h3>
+                        <p style="color:var(--ink-dim); font-size:0.9rem; margin-top:8px;">Runs the product against
+                            predefined test cases and compares actual results to expected results.</p>
+                        <div class="chip-list">
+                            <span class="chip deep">Unit / code functional testing</span>
+                            <span class="chip deep">Code coverage (statement · path · condition · function)</span>
+                            <span class="chip deep">Code complexity (cyclomatic complexity)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="qa-deep" style="margin-top:26px;">
+                    <div class="qa-deep-head"><h3>Why white-box testing at all?</h3><span class="qa-tag">motivation</span></div>
+                    <ul style="color:var(--ink-dim); font-size:0.92rem; padding-left:20px; margin-top:10px;">
+                        <li>The program code truly represents what the program <i>actually does</i> — not just what it
+                            is <i>intended</i> to do.</li>
+                        <li>It minimizes delay between defect injection and defect detection (doesn't postpone
+                            detection to someone else, downstream).</li>
+                        <li>It can catch "obvious" programming errors that don't necessarily map to common user
+                            scenarios — e.g. a divide-by-zero that only a black-box user story would never trigger.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- STATIC TESTING -->
+        <section id="static">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 03 — STATIC TESTING</div>
+                    <h2 class="sec-title">Reading code without running it</h2>
+                    <p class="sec-desc">Four flavors, arranged on a single spectrum: more people, more formalism, more
+                        complex defects caught.</p>
+                </div>
+
+                <p style="color:var(--ink-dim); max-width:74ch;">Static testing checks: whether the code works
+                    according to the functional requirement; whether it was written in accordance with the earlier
+                    design; whether it follows applicable standards; whether any functionality was missed; and whether
+                    the code handles errors properly. Humans can find errors computers can't, multiple humans bring
+                    multiple perspectives, and a human evaluation compares code against specs more thoroughly — it
+                    detects multiple defects at once and minimizes delay in identifying problems.</p>
+
+                <div class="mnemonic">
+                    <div class="icon">📈</div>
+                    <div>
+                        <div class="label">Memory hook — the four types, in ascending order</div>
+                        <div class="phrase">"Desk → Walk → Review → Inspect" = rising formalism</div>
+                        <div class="decode">As you move down this list, involvement of people increases, variety of
+                            perspectives increases, formalism increases, and the likelihood of catching complex defects
+                            increases. This is the "QA vs. QC" argument in miniature.</div>
+                    </div>
+                </div>
+
+                <div class="qa-deep">
+                    <div class="qa-deep-head"><h3>Desk Checking</h3><span class="qa-tag">solo · zero formalism</span></div>
+                    <p class="qa-def">The author informally checks their own code against the specifications and
+                        corrects defects found. No structured method or formalism ensures completeness. No log or
+                        checklist is maintained — it relies solely on the thoroughness of the author.</p>
+                    <div class="two-col">
+                        <div>
+                            <span class="subhead">Advantages</span>
+                            <ul style="color:var(--ink-dim); font-size:0.88rem; padding-left:18px;">
+                                <li>The programmer knows the code and language well — best suited to read the program.</li>
+                                <li>Less scheduling and logistics overhead.</li>
+                                <li>Reduces delay in defect detection and correction.</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <span class="subhead">Disadvantages</span>
+                            <ul style="color:var(--ink-dim); font-size:0.88rem; padding-left:18px;">
+                                <li>Person-dependent — not scalable or reproducible.</li>
+                                <li>Tunnel visioning of developers.</li>
+                                <li>Developers prefer writing new code, don't like testing.</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="rule-box">May suffice for "obvious" programming errors, but may <b>not</b> be
+                        effective for incomplete or misunderstood requirements — the author's own blind spot is exactly
+                        what caused the requirement to be misread in the first place.</div>
+                </div>
+
+                <div class="qa-deep">
+                    <div class="qa-deep-head"><h3>Code Walkthrough</h3><span class="qa-tag">group · informal</span></div>
+                    <p class="qa-def">Group-oriented, as against desk checking — brings in multiple perspectives. Less
+                        formal than inspection.</p>
+                </div>
+
+                <div class="qa-deep">
+                    <div class="qa-deep-head"><h3>Formal Inspection / Fagan Inspection</h3><span class="qa-tag">group · highly formal</span></div>
+                    <p class="qa-def">A group-oriented activity, highly formal and structured, with specific roles and
+                        requiring thorough preparation. Named after Michael Fagan (IBM).</p>
+
+                    <div class="two-col">
+                        <div>
+                            <span class="subhead">The four roles (mnemonic: A-M-I-S)</span>
+                            <ul style="color:var(--ink-dim); font-size:0.88rem; padding-left:18px;">
+                                <li><b style="color:var(--ink)">Author</b> — author of the work product, makes required
+                                    material available to reviewers, fixes reported defects.</li>
+                                <li><b style="color:var(--ink)">Moderator</b> — controls the meeting(s).</li>
+                                <li><b style="color:var(--ink)">Inspectors (reviewers)</b> — prepare by reading
+                                    required documents, take part in meetings and report defects.</li>
+                                <li><b style="color:var(--ink)">Scribe</b> — takes notes during the meeting, assigned in
+                                    advance by turns, documents minutes and circulates them.</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <span class="subhead">Documents typically circulated</span>
+                            <div class="pattern-chip-row">
+                                <span class="pattern-chip">Program code</span>
+                                <span class="pattern-chip">Design / program specs</span>
+                                <span class="pattern-chip">SRS (if needed)</span>
+                                <span class="pattern-chip">Applicable standards</span>
+                                <span class="pattern-chip">Checklists</span>
+                            </div>
+                            <div class="example-strip" style="margin-top:14px;"><b>"Never leave home without it!"</b> —
+                                the code review checklist aids organizational learning by indicating what to look for,
+                                and should be kept current as the team learns.</div>
+                        </div>
+                    </div>
+
+                    <span class="subhead" style="margin-top:20px; display:block;">The three meetings</span>
+                    <div class="two-col">
+                        <div class="rule-box" style="margin-top:0;"><b>Preliminary meeting (optional)</b><br>Author
+                            explains their perspective, makes available the necessary documents, and highlights
+                            concern areas for which review comments are sought.</div>
+                        <div class="rule-box" style="margin-top:0;"><b>Defect Logging Meeting</b><br>Everyone comes
+                            prepared. Moderator goes through the code sequentially; each reviewer raises comments.
+                            Comments are categorized: "defect" / "observation," "major" / "minor," "systemic" /
+                            "mis-execution." Scribe documents and circulates all findings.</div>
+                    </div>
+                    <div class="rule-box"><b>Follow-up meeting (optional)</b> — author fixes defects; if required, a
+                        follow-up meeting verifies completeness of the fixes.</div>
+
+                    <div class="two-col">
+                        <div>
+                            <span class="subhead">Advantages</span>
+                            <ul style="color:var(--ink-dim); font-size:0.88rem; padding-left:18px;">
+                                <li>Thorough, when prepared well.</li>
+                                <li>Brings in multiple perspectives.</li>
+                                <li>Found to be very effective.</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <span class="subhead">Disadvantages</span>
+                            <ul style="color:var(--ink-dim); font-size:0.88rem; padding-left:18px;">
+                                <li>Logistically difficult.</li>
+                                <li>Time consuming.</li>
+                                <li>May not be possible to exhaustively go through the entire code.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="qa-deep alt">
+                    <div class="qa-deep-head"><h3>Combining Methods &amp; Static Analysis Tools</h3><span class="qa-tag">practical mix</span></div>
+                    <div class="two-col">
+                        <div>
+                            <span class="subhead">Prioritizing programs</span>
+                            <p style="color:var(--ink-dim); font-size:0.9rem;">High priority / important code → formal
+                                inspection. Medium priority → walkthrough. Low priority → desk checking. Teams also
+                                decide between 100% coverage vs. partial coverage.</p>
+                        </div>
+                        <div>
+                            <span class="subhead">What static analysis tools catch</span>
+                            <ul style="color:var(--ink-dim); font-size:0.88rem; padding-left:18px; margin-top:0;">
+                                <li>Unreachable code (e.g. from <code>goto</code> misuse)</li>
+                                <li>Variables declared but not used</li>
+                                <li>Mismatch in definition vs. assignment of variables</li>
+                                <li>Illegal or error-prone type-casting</li>
+                                <li>Non-portable / architecture-dependent constructs</li>
+                                <li>Memory allocated with no matching free (leaks)</li>
+                                <li>Cyclomatic complexity calculation</li>
+                                <li>Extension of compilers — lint, compiler-flag-driven checking</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- STRUCTURAL TESTING -->
+        <section id="structural">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 04 — STRUCTURAL TESTING</div>
+                    <h2 class="sec-title">Running the executable against test data</h2>
+                </div>
+
+                <p style="color:var(--ink-dim); max-width:74ch;">Structural testing is done by running the executable
+                    on a machine: running the product against predefined test cases and comparing results against
+                    expected results, designing test cases and test data to <i>exercise</i> certain portions of code.
+                    It has three types: unit / code functional testing, code coverage testing, and code complexity
+                    testing.</p>
+
+                <div class="two-col">
+                    <div>
+                        <span class="subhead">Unit / Code Functional Testing</span>
+                        <p style="color:var(--ink-dim); font-size:0.9rem;">Initial quick checks by the developer.
+                            Removes "obvious" errors before more expensive checks. Involves building "debug versions"
+                            and running through an IDE. ("Debugging" or "testing"? Who cares!)</p>
+                    </div>
+                    <div>
+                        <span class="subhead">Code Coverage Testing</span>
+                        <p style="color:var(--ink-dim); font-size:0.9rem;">Exercises different parts of code and maps
+                            them to required functionality. Finds the percentage of code covered by
+                            <b>"instrumentation"</b> — a rebuild of the product, linked with special libraries
+                            ("plugged in"), that can monitor what parts of the code are covered. Helps identify
+                            critical portions of code executed often.</p>
+                    </div>
+                </div>
+
+                <div class="example-strip" style="margin-top:20px;"><b>Other uses of code coverage methods:</b>
+                    performance analysis and optimization · resource usage analysis · checking of critical sections ·
+                    identifying memory leaks · dynamically generated code (e.g. dynamic URL generation and security
+                    checking).</div>
+
+                <div class="mnemonic">
+                    <div class="icon">🧱</div>
+                    <div>
+                        <div class="label">Memory hook — programming constructs</div>
+                        <div class="phrase">"Programs are always written in sequential format."</div>
+                        <div class="decode">Every construct reduces to: sequential instructions → two-way decisions
+                            (if–then–else) → multi-way decisions (switch) → loops (while/do, for, repeat/until).</div>
+                    </div>
+                </div>
+
+                <div class="two-col">
+                    <div>
+                        <span class="subhead">Testing sequential instructions</span>
+                        <p style="color:var(--ink-dim); font-size:0.9rem;">Generate test data that makes the program
+                            enter the sequential block and go all the way through it (watch for multiple entry points
+                            in non-structured programming). Statement coverage as a metric:</p>
+                        <div class="rule-box"><b>Statement coverage = (# statements exercised) / (Total # statements)</b></div>
+                    </div>
+                    <div>
+                        <span class="subhead">Testing IF–THEN–ELSE</span>
+                        <p style="color:var(--ink-dim); font-size:0.9rem;">Have data to test the THEN part <i>and</i>
+                            data to test the ELSE part.</p>
+                        <pre class="code-block">Total = 0; /* set total to zero */
+if (code == "M") {
+    stmt1; stmt2; stmt3; stmt4;
+    stmt5; stmt6; stmt7;
+}
+else percent = value/Total*100; /* divide by zero */</pre>
+                        <div class="rule-box">If a test suite only ever enters the THEN branch, statement coverage
+                            looks fine — but the ELSE branch's divide-by-zero never gets exercised.</div>
+                    </div>
+                </div>
+
+                <span class="subhead" style="margin-top:20px; display:block;">Testing a Loop</span>
+                <p style="color:var(--ink-dim); font-size:0.9rem;">There should be test cases that: skip the loop
+                    completely; exercise the loop between once and the maximum number of times; try covering the loop
+                    around the "boundary" of n.</p>
+                <div class="rule-box" style="border-left: 4px solid var(--bad); font-weight:600; color:var(--ink);">
+                    Exhaustive coverage of all statements in a program is impossible for all practical purposes.
+                </div>
+            </div>
+        </section>
+
+        <!-- COVERAGE TYPES -->
+        <section id="coverage">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 05 — CODE COVERAGE TYPES</div>
+                    <h2 class="sec-title">Statement, path, condition, function</h2>
+                    <p class="sec-desc">One running example threads through the rest of this chapter — memorize its
+                        shape and every coverage criterion becomes a variation on the same question.</p>
+                </div>
+
+                <div class="qa-deep">
+                    <div class="qa-deep-head"><h3>The <code>foo()</code> function (Figure 4.1)</h3><span class="qa-tag">the running example</span></div>
+                    <pre class="code-block">void foo(int a, int b, int x)
+{
+    if (a&gt;1 &amp;&amp; b==0) {
+        x = x/a;
+    }
+    if (a==2 || x&gt;1) {
+        x = x+1;
+    }
+}</pre>
+                    <div class="cfg-wrap">
+                        <svg viewBox="0 0 420 460" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                                <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                                    <path d="M0,0 L10,5 L0,10 z" fill="var(--ink-dim)" />
+                                </marker>
+                            </defs>
+                            <!-- entry -->
+                            <text x="110" y="18" text-anchor="middle" class="mono" font-family="IBM Plex Mono" font-size="11" fill="var(--ink-dim)">a</text>
+                            <line x1="110" y1="22" x2="110" y2="55" stroke="var(--ink-dim)" stroke-width="1.5" marker-end="url(#arrow)" />
+                            <!-- diamond 1 -->
+                            <polygon points="110,55 175,105 110,155 45,105" fill="var(--surface)" stroke="var(--accent)" stroke-width="2" />
+                            <text x="110" y="100" text-anchor="middle" class="mono" font-family="IBM Plex Mono" font-size="10" fill="var(--ink)">A&gt;1 AND</text>
+                            <text x="110" y="114" text-anchor="middle" class="mono" font-family="IBM Plex Mono" font-size="10" fill="var(--ink)">B=0</text>
+                            <!-- True -> c -> rect1 -->
+                            <text x="240" y="80" text-anchor="middle" class="mono" font-family="IBM Plex Mono" font-size="10" fill="var(--accent-2)">Y  c</text>
+                            <line x1="175" y1="105" x2="330" y2="105" stroke="var(--ink-dim)" stroke-width="1.5" marker-end="url(#arrow)" />
+                            <rect x="330" y="88" width="60" height="34" rx="6" fill="var(--surface-2)" stroke="var(--accent-2)" stroke-width="1.6" />
+                            <text x="360" y="109" text-anchor="middle" class="mono" font-family="IBM Plex Mono" font-size="9" fill="var(--ink)">X=X/A</text>
+                            <!-- False -> b -> down -->
+                            <text x="90" y="185" text-anchor="middle" class="mono" font-family="IBM Plex Mono" font-size="10" fill="var(--ink-dim)">N  b</text>
+                            <line x1="110" y1="155" x2="110" y2="210" stroke="var(--ink-dim)" stroke-width="1.5" marker-end="url(#arrow)" />
+                            <!-- rect1 down to join -->
+                            <line x1="360" y1="122" x2="360" y2="210" stroke="var(--ink-dim)" stroke-width="1.5" />
+                            <line x1="360" y1="210" x2="110" y2="210" stroke="var(--ink-dim)" stroke-width="1.5" />
+                            <circle cx="110" cy="210" r="3.5" fill="var(--accent)" />
+                            <line x1="110" y1="213" x2="110" y2="245" stroke="var(--ink-dim)" stroke-width="1.5" marker-end="url(#arrow)" />
+                            <!-- diamond 2 -->
+                            <polygon points="110,245 175,295 110,345 45,295" fill="var(--surface)" stroke="var(--accent-2)" stroke-width="2" />
+                            <text x="110" y="290" text-anchor="middle" class="mono" font-family="IBM Plex Mono" font-size="10" fill="var(--ink)">A=2 OR</text>
+                            <text x="110" y="304" text-anchor="middle" class="mono" font-family="IBM Plex Mono" font-size="10" fill="var(--ink)">X&gt;1</text>
+                            <!-- True -> e -> rect2 -->
+                            <text x="240" y="270" text-anchor="middle" class="mono" font-family="IBM Plex Mono" font-size="10" fill="var(--accent-2)">Y  e</text>
+                            <line x1="175" y1="295" x2="330" y2="295" stroke="var(--ink-dim)" stroke-width="1.5" marker-end="url(#arrow)" />
+                            <rect x="330" y="278" width="60" height="34" rx="6" fill="var(--surface-2)" stroke="var(--accent-2)" stroke-width="1.6" />
+                            <text x="360" y="299" text-anchor="middle" class="mono" font-family="IBM Plex Mono" font-size="9" fill="var(--ink)">X=X+1</text>
+                            <!-- False -> d -> down -->
+                            <text x="90" y="375" text-anchor="middle" class="mono" font-family="IBM Plex Mono" font-size="10" fill="var(--ink-dim)">N  d</text>
+                            <line x1="110" y1="345" x2="110" y2="400" stroke="var(--ink-dim)" stroke-width="1.5" marker-end="url(#arrow)" />
+                            <line x1="360" y1="312" x2="360" y2="400" stroke="var(--ink-dim)" stroke-width="1.5" />
+                            <line x1="360" y1="400" x2="110" y2="400" stroke="var(--ink-dim)" stroke-width="1.5" />
+                            <circle cx="110" cy="400" r="3.5" fill="var(--accent-2)" />
+                            <line x1="110" y1="403" x2="110" y2="435" stroke="var(--ink-dim)" stroke-width="1.5" marker-end="url(#arrow)" />
+                            <text x="110" y="452" text-anchor="middle" class="mono" font-family="IBM Plex Mono" font-size="11" fill="var(--ink-dim)">exit</text>
+                        </svg>
+                    </div>
+                    <div class="cfg-caption">Edges labeled a·b·c·d·e — exactly as in the source flowchart</div>
+
+                    <div class="table-wrap">
+                        <table class="cheat-table" style="margin-top:18px;">
+                            <tr><th>Path</th><th>Input</th><th>Output</th></tr>
+                            <tr><td><code>ace</code></td><td>A=2, B=0, X=4</td><td>X=3</td></tr>
+                            <tr><td><code>abd</code></td><td>A=0, B=0, X=0</td><td>X=0</td></tr>
+                            <tr><td><code>acd</code></td><td>A=3, B=0, X=3</td><td>X=1</td></tr>
+                            <tr><td><code>abe</code></td><td>A=2, B=1, X=1</td><td>X=2</td></tr>
+                        </table>
+                    </div>
+                    <div class="rule-box">A path name is the sequence of decision <i>outcomes</i> taken (e.g.
+                        <code>abd</code> = false branch of decision 1, then false branch of decision 2) — not one
+                        fixed set of inputs. Many different input combinations can trigger the same path.</div>
+                </div>
+
+                <div class="qa-deep">
+                    <div class="qa-deep-head"><h3>Statement Coverage</h3><span class="qa-tag">weakest criterion</span></div>
+                    <p class="qa-def">A set of test cases that traverses every statement at least once. Statement
+                        coverage = (# statements exercised) / (Total # of statements).</p>
+                    <div class="example-strip"><b>Path <code>ace</code></b> alone provides full statement coverage of
+                        <code>foo()</code>: test case (A=2, B=0, X=4) → expected output X=3.</div>
+                    <div class="rule-box"><b>This criterion is poor.</b> Even a very high level of statement coverage
+                        does not mean the program is defect-free. Undetected errors with just <code>ace</code>:
+                        <ol style="margin:8px 0 0; padding-left:18px;">
+                            <li>Maybe the first condition should be an OR rather than an AND.</li>
+                            <li>Maybe the second condition should be <code>X&gt;0</code> rather than <code>X&gt;1</code>.</li>
+                            <li>Path <code>abd</code> (A=1, B=1, X=1) leaves X unchanged — if that's an error, statement
+                                coverage never caught it.</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <div class="qa-deep alt">
+                    <div class="qa-deep-head"><h3>Path Coverage</h3><span class="qa-tag">stronger representation</span></div>
+                    <p class="qa-def">Statement coverage may not indicate "true coverage." Path coverage provides a
+                        better representation. Path coverage = (# paths exercised) / (Total # of paths in the
+                        program).</p>
+                    <div class="cfg-wrap">
+                        <svg viewBox="0 0 560 330" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                                <marker id="arrow2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                                    <path d="M0,0 L10,5 L0,10 z" fill="var(--ink-dim)" />
+                                </marker>
+                            </defs>
+                            <polygon points="120,15 190,45 120,75 50,45" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.8" />
+                            <text x="120" y="42" text-anchor="middle" class="mono" font-family="IBM Plex Mono" font-size="8.5" fill="var(--ink)">mm&lt;1 ||</text>
+                            <text x="120" y="53" text-anchor="middle" class="mono" font-family="IBM Plex Mono" font-size="8.5" fill="var(--ink)">mm&gt;12</text>
+                            <text x="70" y="95" class="mono" font-family="IBM Plex Mono" font-size="9" fill="var(--accent-2)">A True</text>
+                            <line x1="120" y1="75" x2="120" y2="115" stroke="var(--ink-dim)" stroke-width="1.4" marker-end="url(#arrow2)" />
+                            <rect x="70" y="115" width="100" height="30" rx="6" fill="var(--surface-2)" stroke="var(--bad)" stroke-width="1.4" />
+                            <text x="120" y="134" text-anchor="middle" class="mono" font-family="IBM Plex Mono" font-size="9" fill="var(--ink)">Invalid Date</text>
+                            <text x="185" y="12" class="mono" font-family="IBM Plex Mono" font-size="9" fill="var(--ink-dim)">B False</text>
+                            <line x1="190" y1="45" x2="300" y2="45" stroke="var(--ink-dim)" stroke-width="1.4" marker-end="url(#arrow2)" />
+                            <polygon points="300,15 360,45 300,75 240,45" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.8" />
+                            <text x="300" y="49" text-anchor="middle" class="mono" font-family="IBM Plex Mono" font-size="8.5" fill="var(--ink)">mm==2</text>
+                            <text x="365" y="12" class="mono" font-family="IBM Plex Mono" font-size="9" fill="var(--ink-dim)">D False</text>
+                            <line x1="360" y1="45" x2="470" y2="45" stroke="var(--ink-dim)" stroke-width="1.4" />
+                            <line x1="470" y1="45" x2="470" y2="230" stroke="var(--ink-dim)" stroke-width="1.4" />
+                            <text x="310" y="95" class="mono" font-family="IBM Plex Mono" font-size="9" fill="var(--accent-2)">C True</text>
+                            <line x1="300" y1="75" x2="300" y2="115" stroke="var(--ink-dim)" stroke-width="1.4" marker-end="url(#arrow2)" />
+                            <polygon points="300,115 370,145 300,175 230,145" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.8" />
+                            <text x="300" y="141" text-anchor="middle" class="mono" font-family="IBM Plex Mono" font-size="8" fill="var(--ink)">leapyear</text>
+                            <text x="300" y="152" text-anchor="middle" class="mono" font-family="IBM Plex Mono" font-size="8" fill="var(--ink)">(yyyy)</text>
+                            <text x="220" y="185" class="mono" font-family="IBM Plex Mono" font-size="9" fill="var(--accent-2)">E True</text>
+                            <line x1="230" y1="145" x2="180" y2="190" stroke="var(--ink-dim)" stroke-width="1.4" marker-end="url(#arrow2)" />
+                            <rect x="130" y="190" width="110" height="30" rx="6" fill="var(--surface-2)" stroke="var(--line)" stroke-width="1.4" />
+                            <text x="185" y="209" text-anchor="middle" class="mono" font-family="IBM Plex Mono" font-size="8.5" fill="var(--ink)">Days[2]=29</text>
+                            <text x="365" y="185" class="mono" font-family="IBM Plex Mono" font-size="9" fill="var(--ink-dim)">F False</text>
+                            <line x1="370" y1="145" x2="410" y2="190" stroke="var(--ink-dim)" stroke-width="1.4" marker-end="url(#arrow2)" />
+                            <rect x="360" y="190" width="110" height="30" rx="6" fill="var(--surface-2)" stroke="var(--line)" stroke-width="1.4" />
+                            <text x="415" y="209" text-anchor="middle" class="mono" font-family="IBM Plex Mono" font-size="8.5" fill="var(--ink)">Days[2]=28</text>
+                            <line x1="185" y1="220" x2="300" y2="245" stroke="var(--ink-dim)" stroke-width="1.4" />
+                            <line x1="415" y1="220" x2="300" y2="245" stroke="var(--ink-dim)" stroke-width="1.4" />
+                            <circle cx="300" cy="245" r="3.5" fill="var(--accent)" />
+                            <line x1="300" y1="245" x2="300" y2="270" stroke="var(--ink-dim)" stroke-width="1.4" marker-end="url(#arrow2)" />
+                            <polygon points="300,270 380,300 300,330 220,300" fill="var(--surface)" stroke="var(--accent-2)" stroke-width="1.8" />
+                            <text x="300" y="296" text-anchor="middle" class="mono" font-family="IBM Plex Mono" font-size="7.5" fill="var(--ink)">dd&lt;Days[mm] ||</text>
+                            <text x="300" y="306" text-anchor="middle" class="mono" font-family="IBM Plex Mono" font-size="7.5" fill="var(--ink)">dd&gt;Days[mm]</text>
+                            <text x="240" y="322" class="mono" font-family="IBM Plex Mono" font-size="9" fill="var(--accent-2)">G True</text>
+                            <line x1="220" y1="300" x2="170" y2="300" stroke="var(--ink-dim)" stroke-width="1.4" marker-end="url(#arrow2)" />
+                            <rect x="70" y="285" width="100" height="30" rx="6" fill="var(--surface-2)" stroke="var(--bad)" stroke-width="1.4" />
+                            <text x="120" y="304" text-anchor="middle" class="mono" font-family="IBM Plex Mono" font-size="9" fill="var(--ink)">Invalid Date</text>
+                            <text x="390" y="322" class="mono" font-family="IBM Plex Mono" font-size="9" fill="var(--good)">H False</text>
+                            <line x1="380" y1="300" x2="470" y2="300" stroke="var(--ink-dim)" stroke-width="1.4" marker-end="url(#arrow2)" />
+                            <rect x="470" y="285" width="80" height="30" rx="6" fill="var(--surface-2)" stroke="var(--good)" stroke-width="1.4" />
+                            <text x="510" y="304" text-anchor="middle" class="mono" font-family="IBM Plex Mono" font-size="9" fill="var(--ink)">Valid Date</text>
+                        </svg>
+                    </div>
+                    <div class="cfg-caption">Date-validation flow graph — decision nodes labeled A–H, edges labeled Y/N</div>
+                    <div class="rule-box" style="margin-top:14px;">Each Y/N branch through this graph is a distinct
+                        <i>path</i>. Statement coverage could pass while entire combinations — e.g. February in a leap
+                        year that then fails the day-bound check — are never exercised together.</div>
+                </div>
+
+                <div class="two-col">
+                    <div class="qa-deep" style="margin:0;">
+                        <div class="qa-deep-head"><h3>Condition Coverage</h3><span class="qa-tag">refines path coverage</span></div>
+                        <p class="qa-def">A further refinement of path coverage. Makes sure each <i>constituent</i>
+                            condition in a boolean expression is covered — protects against compiler optimizations
+                            (e.g. short-circuit evaluation hiding an untested sub-condition).</p>
+                        <div class="rule-box"><b>Condition coverage = (# conditions covered) / (# conditions in the program)</b></div>
+                        <div class="example-strip"><b>Loop exercise:</b> <code>DO K=0 to 50 WHILE (J+K&lt;QUEST)</code>
+                            has two conditions — <code>K&lt;=50</code> and <code>J+K&lt;QUEST</code>. Condition
+                            coverage needs 4 test cases: K&lt;=50, K&gt;50, J+K&lt;QUEST, J+K&gt;=QUEST.</div>
+                    </div>
+                    <div class="qa-deep alt" style="margin:0;">
+                        <div class="qa-deep-head"><h3>Function Coverage</h3><span class="qa-tag">highest abstraction</span></div>
+                        <p class="qa-def">Finds how many functions are covered by test cases. A higher level of
+                            abstraction — hence it's possible to achieve 100% coverage. More "logical" than the other
+                            coverage types.</p>
+                        <ul style="color:var(--ink-dim); font-size:0.88rem; padding-left:18px;">
+                            <li>Can be derived from an RTM (Requirements Traceability Matrix).</li>
+                            <li>Easy to prioritize since based on requirements.</li>
+                            <li>Leads more naturally to black-box tests.</li>
+                            <li>Can also be a natural predecessor to performance testing.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- COVERAGE TECHNIQUES DEEP DIVE -->
+        <section id="techniques">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 06 — WHITE-BOX TESTING TECHNIQUES</div>
+                    <h2 class="sec-title">Five criteria, same code, five different guarantees</h2>
+                    <p class="sec-desc">Statement, decision, condition, decision/condition, and multiple-condition
+                        coverage — all applied to the same <code>foo()</code> function, each catching a bug the last
+                        one missed.</p>
+                </div>
+
+                <p style="color:var(--ink-dim); max-width:74ch;">White-box testing is concerned with the degree to
+                    which test cases exercise or cover the logic of the source code. The <i>ultimate</i> white-box
+                    test would execute every path — an unrealistic goal for any program with loops. Backing away from
+                    "every path," a more reasonable goal is to execute every statement at least once — which is exactly
+                    where the coverage ladder starts.</p>
+
+                <div class="ladder-wrap">
+                    <span class="subhead">Extra memorization aid — the coverage strength ladder</span>
+                    <div class="ladder-row">
+                        <div class="ladder-name">Statement</div>
+                        <div class="ladder-bar"><b>Weakest.</b> Every statement runs once. Misses untaken branches
+                            entirely (an ELSE that never fires).</div>
+                    </div>
+                    <div class="ladder-row">
+                        <div class="ladder-name">Decision (Branch)</div>
+                        <div class="ladder-bar"><b>Stronger.</b> Every decision hits both True and False. Usually
+                            implies statement coverage — but can still miss individual condition values inside a
+                            compound expression.</div>
+                    </div>
+                    <div class="ladder-row">
+                        <div class="ladder-name">Condition</div>
+                        <div class="ladder-bar"><b>Different, not strictly stronger.</b> Every individual condition
+                            takes True and False at least once — but does <b>not</b> guarantee every decision outcome
+                            is hit.</div>
+                    </div>
+                    <div class="ladder-row">
+                        <div class="ladder-name">Decision/Condition</div>
+                        <div class="ladder-bar"><b>Union of the two.</b> Every condition outcome <i>and</i> every
+                            decision outcome, guaranteed together.</div>
+                    </div>
+                    <div class="ladder-row">
+                        <div class="ladder-name">Multiple-Condition</div>
+                        <div class="ladder-bar"><b>Strongest of the five.</b> Every possible combination of condition
+                            outcomes per decision. Satisfies condition-, decision-, and decision/condition-coverage —
+                            but still does <b>not</b> guarantee full path coverage.</div>
+                    </div>
+                </div>
+
+                <div class="qa-deep" style="margin-top:26px;">
+                    <div class="qa-deep-head"><h3>Decision Coverage (Branch Coverage)</h3><span class="qa-tag">criterion 2</span></div>
+                    <p class="qa-def">A stronger logic-coverage criterion than statement coverage. Write enough test
+                        cases to cover each decision with both the true and false outcomes at least once. In case of
+                        multiple choices in a decision (e.g. a switch statement), cover all choices at least once.
+                        Some languages have multiple entry points for a module or program (e.g. PL/1) — the precise
+                        definition is to exercise every possible outcome of all decisions at least once <i>and</i>
+                        invoke each point of entry at least once.</p>
+                    <div class="rule-box">Decision coverage provides statement coverage in most circumstances — every
+                        statement must be executed if every branch direction is executed. <b>Exceptions:</b> programs
+                        with no decisions, and programs/subroutines with multiple entry points (a statement might
+                        execute only if the program is entered at a particular entry point).</div>
+                    <div class="table-wrap">
+                        <table class="cheat-table" style="margin-top:14px;">
+                            <tr><th>Set A (red)</th><th colspan="2"></th></tr>
+                            <tr><td><code>ace</code></td><td>A=2, B=0, X=4</td><td>X=3</td></tr>
+                            <tr><td><code>abd</code></td><td>A=1, B=1, X=1</td><td>X=1</td></tr>
+                            <tr><th>Set B (yellow)</th><th colspan="2"></th></tr>
+                            <tr><td><code>acd</code></td><td>A=3, B=0, X=3</td><td>X=1</td></tr>
+                            <tr><td><code>abe</code></td><td>A=2, B=1, X=1</td><td>X=2</td></tr>
+                        </table>
+                    </div>
+                    <div class="rule-box">Either set satisfies decision coverage. <b>Problem:</b> only Set A contains
+                        path <code>abd</code>, the only path that catches an "X must be changed" error — so there's
+                        only a 50% chance of picking the set that catches it. And if the second decision were wrong
+                        (should be <code>X&lt;1</code> instead of <code>X&gt;1</code>), Set B wouldn't detect the
+                        mistake at all. We need a better criterion.</div>
+                </div>
+
+                <div class="qa-deep alt">
+                    <div class="qa-deep-head"><h3>Condition Coverage — applied to <code>foo()</code></h3><span class="qa-tag">criterion 3</span></div>
+                    <p class="qa-def">Write enough test cases so each condition in each decision takes on all possible
+                        values at least once, and each point of entry is invoked at least once. A stronger
+                        logic-coverage test than decision coverage.</p>
+                    <div class="rule-box"><b>Four conditions in <code>foo()</code>:</b> A&gt;1, B==0 (B==0 in C/Java),
+                        A==2 (A==2 in C/Java), X&gt;1. Test cases must cover: A&gt;1 / A&lt;=1 — B==0 / B&lt;&gt;0 —
+                        A==2 / A&lt;&gt;2 — X&gt;1 / X&lt;=1.</div>
+                    <p style="color:var(--ink-dim); font-size:0.9rem;">When we pick a value for a variable, it may
+                        satisfy more than one condition requirement at once. Just two test cases can cover all eight
+                        requirements: <code>A=2, B=0, X=4</code> (path <code>ace</code>) and <code>A=1, B=1, X=1</code>
+                        (path <code>abd</code>).</p>
+                    <div class="mistake-box" style="margin-top:16px;">
+                        <h4>⚠ The trap: those same two test cases fail decision coverage of the OR</h4>
+                        <p style="color:var(--ink-dim); font-size:0.88rem;">Decomposing <code>A=2 OR X&gt;1</code>
+                            into simple predicates <code>IF(A=2)</code> then <code>IF(X&gt;1)</code> reveals: the
+                            <b>false</b> outcome of "B==0" and the <b>true</b> outcome of "X&gt;1" are both missed by
+                            <code>ace</code> + <code>abd</code>. Condition coverage on the whole expression does not
+                            guarantee condition coverage on each simple predicate once it's decomposed.</p>
+                    </div>
+                    <p style="color:var(--ink-dim); font-size:0.9rem; margin-top:14px;">A different pair — <code>A=2,
+                            B=4, X=4</code> (path <code>abe</code>) and <code>A=0, B=0, X=1</code> (path
+                        <code>abd</code>) — also covers all four conditions' true/false values, but path <code>c</code>
+                        (and the statement on it) is <b>never executed</b> by this set. So: <b>condition coverage does
+                            not guarantee decision coverage</b>, and therefore no guarantee of path or statement
+                        coverage either.</p>
+                </div>
+
+                <div class="qa-deep">
+                    <div class="qa-deep-head"><h3>Decision/Condition Coverage</h3><span class="qa-tag">criterion 4 — the fix</span></div>
+                    <p class="qa-def">The solution to condition coverage's gap: select test cases such that every
+                        condition outcome, every decision outcome, <i>and</i> every point of entry are exercised at
+                        least once.</p>
+                </div>
+
+                <div class="qa-deep alt">
+                    <div class="qa-deep-head"><h3>Multiple-Condition Coverage</h3><span class="qa-tag">criterion 5 — the strongest</span></div>
+                    <p class="qa-def">Write sufficient test cases so that all possible combinations of condition
+                        outcomes in each decision, and all points of entry, are exercised at least once. Multiple
+                        condition coverage satisfies condition-, decision-, and decision/condition-coverage criteria
+                        simultaneously.</p>
+                    <div class="table-wrap">
+                        <table class="cheat-table">
+                            <tr><th>#</th><th>Combination</th><th>#</th><th>Combination</th></tr>
+                            <tr><td>1</td><td>A&gt;1 and B=0</td><td>5</td><td>A=2 and X&gt;1</td></tr>
+                            <tr><td>2</td><td>A&gt;1 and B&lt;&gt;0</td><td>6</td><td>A=2 and X&lt;=1</td></tr>
+                            <tr><td>3</td><td>A&lt;=1 and B=0</td><td>7</td><td>A&lt;&gt;2 and X&gt;1</td></tr>
+                            <tr><td>4</td><td>A&lt;=1 and B&lt;&gt;0</td><td>8</td><td>A&lt;&gt;2 and X&lt;=1</td></tr>
+                        </table>
+                    </div>
+                    <div class="example-strip"><b>Four test cases cover all eight:</b> A=2,B=0,X=4 → covers 1,5 ·
+                        A=2,B=1,X=1 → covers 2,6 · A=1,B=0,X=2 → covers 3,7 · A=1,B=1,X=1 → covers 4,8.</div>
+                    <div class="rule-box">Multiple-condition coverage does <b>not</b> guarantee path coverage — this
+                        exact set of test cases misses path <code>acd</code>. That there are 4 test cases and 4 paths
+                        in this program is <b>pure coincidence</b> — there is no inherent relationship between the
+                        number of paths and the number of test cases.</div>
+                </div>
+
+                <div class="two-col">
+                    <div>
+                        <span class="subhead">Worked example — TABSIZE / NOTFOUND</span>
+                        <p style="color:var(--ink-dim); font-size:0.88rem;">Four situations to test: (1) I&lt;=TABSIZE
+                            and NOTFOUND true; (2) I&lt;=TABSIZE and NOTFOUND false (found before end of table); (3)
+                            I&gt;TABSIZE and NOTFOUND true (hit end without finding); (4) I&gt;TABSIZE and NOTFOUND
+                            false (entry is the last one in the table).</p>
+                    </div>
+                    <div>
+                        <span class="subhead">Worked example — triple-AND decision</span>
+                        <pre class="code-block">if (x==y &amp;&amp; length(z)==0 &amp;&amp; FLAG)
+    j=1;
+else
+    i=1;</pre>
+                        <p style="color:var(--ink-dim); font-size:0.85rem;">Three boolean conditions → 2³ = <b>8 test
+                                cases</b> for multiple-condition coverage (x==y, length(z)==0, FLAG each T/F, all
+                            combined).</p>
+                    </div>
+                </div>
+
+                <div class="rule-box" style="margin-top:6px;"><b>Summary rule:</b> for programs with only one
+                    condition per decision, the minimum test criterion is enough test cases to (1) evoke all outcomes
+                    of each decision at least once, and (2) invoke each point of entry at least once (ensuring every
+                    statement executes). For programs with decisions having multiple conditions, the minimum criterion
+                    is enough test cases to (1) evoke all <i>possible</i> combinations of condition outcomes in each
+                    decision, and (2) invoke all points of entry at least once. ("Possible" — because some combinations
+                    may be impossible to create.)</div>
+            </div>
+        </section>
+
+        <!-- CYCLOMATIC COMPLEXITY -->
+        <section id="cyclomatic">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 07 — CODE COMPLEXITY</div>
+                    <h2 class="sec-title">Cyclomatic complexity &amp; independent paths</h2>
+                </div>
+
+                <p style="color:var(--ink-dim); max-width:74ch;">Two open questions drive this: which of the paths
+                    are <i>independent</i> (if paths aren't independent, we may minimize the number of tests needed)?
+                    And is there an upper bound on the number of tests needed to ensure every statement executes at
+                    least once? <b>Cyclomatic complexity</b> answers both — it's an indication of how many
+                    "independent paths" exist in a program.</p>
+
+                <div class="mnemonic">
+                    <div class="icon">🔢</div>
+                    <div>
+                        <div class="label">Memory hook — the two equivalent formulas</div>
+                        <div class="phrase">"Predicates Plus One" = "Edges minus Nodes plus Two"</div>
+                        <div class="decode">CC = (# of predicate nodes) + 1 &nbsp;≡&nbsp; CC = E − N + 2 (E = edges,
+                            N = nodes). They always agree — use whichever is easier to count from the diagram you have.</div>
+                    </div>
+                </div>
+
+                <span class="subhead">Steps to determine cyclomatic complexity</span>
+                <ol style="color:var(--ink-dim); font-size:0.9rem; padding-left:20px;">
+                    <li>Start with a conventional flow chart.</li>
+                    <li>Identify the "decision points" — each one is a <b>predicate</b>.</li>
+                    <li>Convert "complex predicates" to "simple predicates."</li>
+                    <li>If there are loops, convert the loop conditions to simple predicates too.</li>
+                    <li>Combine all sequential statements into a single node in the flow graph.</li>
+                    <li>When sequential statements are followed by a simple predicate, combine the statements and the
+                        predicate check into one node with two edges emanating out — nodes with two emanating edges
+                        are called <b>predicate nodes</b>.</li>
+                    <li>Make sure all edges terminate in some node — add a node to represent all statements at the end
+                        of the program.</li>
+                </ol>
+
+                <div class="two-col">
+                    <div>
+                        <span class="subhead">Splitting a complex predicate</span>
+                        <div class="cfg-wrap">
+                            <svg viewBox="0 0 380 160" xmlns="http://www.w3.org/2000/svg">
+                                <defs>
+                                    <marker id="arrow3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+                                        <path d="M0,0 L10,5 L0,10 z" fill="var(--ink-dim)" />
+                                    </marker>
+                                </defs>
+                                <polygon points="55,60 100,90 55,120 10,90" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.6" />
+                                <text x="55" y="86" text-anchor="middle" class="mono" font-family="IBM Plex Mono" font-size="8" fill="var(--ink)">IF</text>
+                                <text x="55" y="97" text-anchor="middle" class="mono" font-family="IBM Plex Mono" font-size="8" fill="var(--ink)">(A or B)</text>
+                                <line x1="55" y1="60" x2="55" y2="20" stroke="var(--ink-dim)" stroke-width="1.3" marker-end="url(#arrow3)" />
+                                <circle cx="55" cy="14" r="10" fill="var(--surface-2)" stroke="var(--accent-2)" stroke-width="1.4" />
+                                <text x="55" y="18" text-anchor="middle" font-size="9" fill="var(--ink)">α</text>
+                                <line x1="55" y1="120" x2="55" y2="148" stroke="var(--ink-dim)" stroke-width="1.3" marker-end="url(#arrow3)" />
+                                <circle cx="55" cy="152" r="10" fill="var(--surface-2)" stroke="var(--accent-2)" stroke-width="1.4" />
+                                <text x="55" y="156" text-anchor="middle" font-size="9" fill="var(--ink)">β</text>
+
+                                <polygon points="220,60 260,90 220,120 180,90" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.6" />
+                                <text x="220" y="94" text-anchor="middle" class="mono" font-family="IBM Plex Mono" font-size="8" fill="var(--ink)">IF (A)</text>
+                                <polygon points="310,60 350,90 310,120 270,90" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.6" />
+                                <text x="310" y="94" text-anchor="middle" class="mono" font-family="IBM Plex Mono" font-size="8" fill="var(--ink)">IF (B)</text>
+                                <line x1="260" y1="90" x2="270" y2="90" stroke="var(--ink-dim)" stroke-width="1.3" marker-end="url(#arrow3)" />
+                                <line x1="220" y1="60" x2="330" y2="20" stroke="var(--ink-dim)" stroke-width="1.3" marker-end="url(#arrow3)" />
+                                <line x1="310" y1="60" x2="330" y2="24" stroke="var(--ink-dim)" stroke-width="1.3" marker-end="url(#arrow3)" />
+                                <circle cx="335" cy="14" r="10" fill="var(--surface-2)" stroke="var(--accent-2)" stroke-width="1.4" />
+                                <text x="335" y="18" text-anchor="middle" font-size="9" fill="var(--ink)">α</text>
+                                <line x1="310" y1="120" x2="310" y2="148" stroke="var(--ink-dim)" stroke-width="1.3" marker-end="url(#arrow3)" />
+                                <circle cx="310" cy="152" r="10" fill="var(--surface-2)" stroke="var(--accent-2)" stroke-width="1.4" />
+                                <text x="310" y="156" text-anchor="middle" font-size="9" fill="var(--ink)">β</text>
+                            </svg>
+                        </div>
+                        <div class="cfg-caption">(a) One predicate with a Boolean OR → (b) two chained simple predicates</div>
+                    </div>
+                    <div>
+                        <span class="subhead">Case (i): no decision node</span>
+                        <div class="rule-box">N=2, E=1, P=0 → <b>CC = E−N+2 = 1</b> and <b>CC = P+1 = 1</b>. # of
+                            independent paths = 1 (there's only one way through).</div>
+                        <span class="subhead" style="margin-top:16px;">Case (ii): adding one decision node</span>
+                        <div class="rule-box">N=4, E=4, P=1 → <b>CC = E−N+2 = 2</b> and <b>CC = P+1 = 2</b>. # of
+                            independent paths = 2. Every decision node introduced adds exactly one new path.</div>
+                    </div>
+                </div>
+
+                <div class="qa-deep" style="margin-top:20px;">
+                    <div class="qa-deep-head"><h3>Independent Paths &amp; Basis Sets</h3><span class="qa-tag">applying CC</span></div>
+                    <p class="qa-def">An <b>independent path</b> is a path in the flow graph that has not been
+                        traversed before in other paths. A set of independent paths that together cover all the edges
+                        is called a <b>basis set</b>. Find the basis set, then write test cases to execute every path
+                        in it — that's exactly how many tests you minimally need.</p>
+                </div>
+
+                <span class="subhead">Meaning &amp; interpretation — memorize this table</span>
+                <div class="table-wrap">
+                    <table class="cheat-table">
+                        <tr><th>Cyclomatic Complexity</th><th>What it means</th></tr>
+                        <tr><td>1 – 10</td><td>Well-written code, testability is high, cost/effort to maintain is low.</td></tr>
+                        <tr><td>10 – 20</td><td>Moderately complex, testability is medium, cost/effort to maintain is medium.</td></tr>
+                        <tr><td>20 – 40</td><td>Very complex, testability is low, cost/effort to maintain is high.</td></tr>
+                        <tr><td>&gt; 40</td><td>Not testable — any amount of money/effort may not be enough.</td></tr>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- CHALLENGES -->
+        <section id="challenges">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 08 — CHALLENGES</div>
+                    <h2 class="sec-title">Where white-box testing breaks down in practice</h2>
+                </div>
+                <div class="grid5" style="display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:14px;">
+                    <div class="type-card" style="background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-md); padding:18px;">
+                        <div style="font-size:1.4rem;">⏱️</div>
+                        <h4 style="margin-top:8px; font-size:1rem;">"Not finding time"</h4>
+                        <p style="color:var(--ink-dim); font-size:0.85rem; margin-top:6px;">Developers routinely report
+                            not finding time for testing under delivery pressure.</p>
+                    </div>
+                    <div class="type-card" style="background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-md); padding:18px;">
+                        <div style="font-size:1.4rem;">🙈</div>
+                        <h4 style="margin-top:8px; font-size:1rem;">Blind spots</h4>
+                        <p style="color:var(--ink-dim); font-size:0.85rem; margin-top:6px;">Developers develop blind
+                            spots for their own defects — the same misunderstanding that caused the bug also hides it.</p>
+                    </div>
+                    <div class="type-card" style="background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-md); padding:18px;">
+                        <div style="font-size:1.4rem;">🎯</div>
+                        <h4 style="margin-top:8px; font-size:1rem;">Coverage ≠ realism</h4>
+                        <p style="color:var(--ink-dim); font-size:0.85rem; margin-top:6px;">Fully covered code may not
+                            correspond to realistic user scenarios — 100% coverage is not the same as "correct."</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- COMMON MISTAKES -->
+        <section id="mistakes">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 09 — COMMON MISTAKES</div>
+                    <h2 class="sec-title">Where exam answers actually go wrong</h2>
+                    <p class="sec-desc">Every one of these has shown up as a graded confusion — drill them until the
+                        wrong answer stops sounding plausible.</p>
+                </div>
+
+                <div class="mistake-box">
+                    <h4>1. "100% statement coverage means the code is well tested."</h4>
+                    <div class="mistake-pair">
+                        <div class="m-wrong"><b>✗ WRONG:</b> Statement coverage alone is a strong quality signal.</div>
+                        <div class="m-right"><b>✓ RIGHT:</b> Statement coverage is the <i>weakest</i> criterion. In the
+                            <code>Total=0; if(code=="M")...else percent=value/Total*100;</code> example, a test suite
+                            that only ever hits the IF branch gets full statement coverage while the divide-by-zero in
+                            ELSE never runs.</div>
+                    </div>
+                </div>
+
+                <div class="mistake-box">
+                    <h4>2. "Decision coverage covers all individual conditions."</h4>
+                    <div class="mistake-pair">
+                        <div class="m-wrong"><b>✗ WRONG:</b> Hitting both True and False on a compound decision means
+                            every condition inside it was tested both ways.</div>
+                        <div class="m-right"><b>✓ RIGHT:</b> A compound decision can be True/False without every
+                            individual condition inside it taking both values — short-circuit evaluation can mask a
+                            sub-condition entirely. That's exactly why condition coverage exists as a separate,
+                            stronger criterion.</div>
+                    </div>
+                </div>
+
+                <div class="mistake-box">
+                    <h4>3. "Since condition coverage is 'stronger,' it guarantees decision coverage too."</h4>
+                    <div class="mistake-pair">
+                        <div class="m-wrong"><b>✗ WRONG:</b> Condition coverage implies decision coverage implies
+                            statement coverage, in a clean chain.</div>
+                        <div class="m-right"><b>✓ RIGHT:</b> They're not nested that way. The <code>A=2,B=4,X=4</code> /
+                            <code>A=0,B=0,X=1</code> pair covers all four individual conditions but <b>never executes
+                                path c</b> — so condition coverage does not guarantee decision, path, or statement
+                            coverage. You need Decision/Condition coverage to get both guarantees at once.</div>
+                    </div>
+                </div>
+
+                <div class="mistake-box">
+                    <h4>4. "Multiple-condition coverage = full path coverage."</h4>
+                    <div class="mistake-pair">
+                        <div class="m-wrong"><b>✗ WRONG:</b> The strongest coverage criterion in this chapter must
+                            also guarantee every path is executed.</div>
+                        <div class="m-right"><b>✓ RIGHT:</b> The 4-test-case set for <code>foo()</code> covers all 8
+                            condition combinations but still misses path <code>acd</code>. There is no inherent
+                            relationship between the number of test cases and the number of paths — matching counts
+                            (4 tests, 4 paths) is coincidence, not causation.</div>
+                    </div>
+                </div>
+
+                <div class="mistake-box">
+                    <h4>5. Mixing up the cyclomatic complexity formulas or miscounting predicates.</h4>
+                    <div class="mistake-pair">
+                        <div class="m-wrong"><b>✗ WRONG:</b> Treating a compound condition like <code>(A or B)</code>
+                            as one predicate node, or forgetting the "+2" / "+1" term.</div>
+                        <div class="m-right"><b>✓ RIGHT:</b> CC = E − N + 2 = P + 1. Complex predicates must first be
+                            split into simple predicates — each becomes its own predicate node — <i>before</i>
+                            counting. Undercounting compound conditions understates the true complexity.</div>
+                    </div>
+                </div>
+
+                <div class="mistake-box">
+                    <h4>6. Treating desk checking, walkthrough, and Fagan inspection as interchangeable.</h4>
+                    <div class="mistake-pair">
+                        <div class="m-wrong"><b>✗ WRONG:</b> "They're all just manual code review — pick any name."</div>
+                        <div class="m-right"><b>✓ RIGHT:</b> Desk checking = solo, author only, no log. Walkthrough =
+                            group, informal. Fagan/formal inspection = group, highly formal, defined roles (Author,
+                            Moderator, Inspectors, Scribe) and structured meetings (Preliminary → Defect Logging →
+                            Follow-up).</div>
+                    </div>
+                </div>
+
+                <div class="mistake-box">
+                    <h4>7. "White-box testing means running the code."</h4>
+                    <div class="mistake-pair">
+                        <div class="m-wrong"><b>✗ WRONG:</b> All white-box testing involves execution.</div>
+                        <div class="m-right"><b>✓ RIGHT:</b> White-box testing splits into <b>Static testing</b> (no
+                            execution — humans or tools reading source) and <b>Structural testing</b> (executes the
+                            compiled program against test cases). Code coverage and cyclomatic complexity live under
+                            different branches — coverage is structural, complexity calculation is often a static-tool
+                            feature.</div>
+                    </div>
+                </div>
+
+                <div class="mistake-box">
+                    <h4>8. Assuming a path label maps to one fixed set of input values.</h4>
+                    <div class="mistake-pair">
+                        <div class="m-wrong"><b>✗ WRONG:</b> "Path <code>abd</code> is always A=0,B=0,X=0" (or always
+                            A=1,B=1,X=1 — picking whichever slide you saw first).</div>
+                        <div class="m-right"><b>✓ RIGHT:</b> A path is the sequence of decision outcomes taken (here:
+                            false on decision 1, then false on decision 2) — many different inputs can trigger the
+                            same path, which is exactly why the deck uses <code>abd</code> with different concrete
+                            values in different examples.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CHEAT SHEET -->
+        <section id="cheat">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 10 — CHEAT SHEET</div>
+                    <h2 class="sec-title">Every technique, one scannable grid</h2>
+                </div>
+                <div class="table-wrap">
+                    <table class="cheat-table">
+                        <tr><th>Technique</th><th>Formula / Rule</th><th>Guarantees</th><th>Key weakness</th></tr>
+                        <tr><td>Desk checking</td><td>Author self-review, no formalism</td><td>Catches "obvious" errors</td><td>Not scalable, tunnel vision</td></tr>
+                        <tr><td>Code walkthrough</td><td>Group, informal</td><td>Multiple perspectives</td><td>Less structured than inspection</td></tr>
+                        <tr><td>Fagan / formal inspection</td><td>Group, roles (Author/Moderator/Inspectors/Scribe)</td><td>Very effective, thorough</td><td>Logistically hard, time-consuming</td></tr>
+                        <tr><td>Statement coverage</td><td># stmts exercised / total stmts</td><td>Every line runs once</td><td>Misses whole untaken branches</td></tr>
+                        <tr><td>Path coverage</td><td># paths exercised / total paths</td><td>Better representation than statements</td><td>Explodes with loops/branches</td></tr>
+                        <tr><td>Decision (branch) coverage</td><td>Every decision T &amp; F at least once</td><td>Usually implies statement coverage</td><td>Doesn't guarantee condition coverage</td></tr>
+                        <tr><td>Condition coverage</td><td># conditions covered / # conditions</td><td>Every individual condition T &amp; F</td><td>Doesn't guarantee decision coverage</td></tr>
+                        <tr><td>Decision/Condition coverage</td><td>Union of the two above</td><td>Both decision &amp; condition outcomes</td><td>Still not full path coverage</td></tr>
+                        <tr><td>Multiple-condition coverage</td><td>All 2ⁿ combos per decision</td><td>Condition + decision + decision/condition</td><td>Still not full path coverage</td></tr>
+                        <tr><td>Cyclomatic complexity</td><td>CC = E−N+2 = P+1</td><td># of independent paths / basis set size</td><td>Miscounted if predicates aren't simplified first</td></tr>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- POP QUIZ -->
+        <section id="quiz">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 11 — POP QUIZ</div>
+                    <h2 class="sec-title">Click to reveal</h2>
+                    <p class="sec-desc">No reload, no external libraries — just click a question to check yourself.</p>
+                </div>
+
+                <div class="quiz-q">
+                    <div class="q-label">Q1 · Multiple choice</div>
+                    <div class="q-text">In <code>foo()</code>, running only path <code>ace</code> (A=2, B=0, X=4)
+                        satisfies which coverage criterion?</div>
+                    <button class="quiz-reveal" onclick="this.nextElementSibling.classList.toggle('shown')">Reveal answer</button>
+                    <div class="quiz-answer"><b>Statement coverage.</b> It traverses every statement at least once,
+                        but it's a poor criterion — it can't tell you if the AND should be an OR, or if
+                        <code>X&gt;1</code> should be <code>X&gt;0</code>.</div>
+                </div>
+
+                <div class="quiz-q">
+                    <div class="q-label">Q2 · Short answer</div>
+                    <div class="q-text">Write the cyclomatic complexity formula in terms of edges (E) and nodes (N).</div>
+                    <button class="quiz-reveal" onclick="this.nextElementSibling.classList.toggle('shown')">Reveal answer</button>
+                    <div class="quiz-answer"><b>CC = E − N + 2.</b> Equivalently, CC = (# of predicate nodes) + 1.</div>
+                </div>
+
+                <div class="quiz-q">
+                    <div class="q-label">Q3 · Multiple choice</div>
+                    <div class="q-text">Which of these does condition coverage <i>not</i> guarantee?</div>
+                    <button class="quiz-reveal" onclick="this.nextElementSibling.classList.toggle('shown')">Reveal answer</button>
+                    <div class="quiz-answer"><b>Decision coverage (and therefore path/statement coverage too).</b>
+                        A test set can hit every individual condition's true/false values while never executing a
+                        particular decision outcome — e.g. never taking path <code>c</code> in <code>foo()</code>.</div>
+                </div>
+
+                <div class="quiz-q">
+                    <div class="q-label">Q4 · Short answer</div>
+                    <div class="q-text">Name the four roles in a Fagan (formal) inspection.</div>
+                    <button class="quiz-reveal" onclick="this.nextElementSibling.classList.toggle('shown')">Reveal answer</button>
+                    <div class="quiz-answer"><b>Author, Moderator, Inspectors (reviewers), Scribe.</b> Mnemonic:
+                        A-M-I-S.</div>
+                </div>
+
+                <div class="quiz-q">
+                    <div class="q-label">Q5 · Multiple choice</div>
+                    <div class="q-text">A program measures a cyclomatic complexity of 45. This means:</div>
+                    <button class="quiz-reveal" onclick="this.nextElementSibling.classList.toggle('shown')">Reveal answer</button>
+                    <div class="quiz-answer"><b>Not testable — any amount of money/effort may not be enough.</b>
+                        (CC &gt; 40 is the worst bracket on the interpretation table.)</div>
+                </div>
+
+                <div class="quiz-q">
+                    <div class="q-label">Q6 · Short answer</div>
+                    <div class="q-text">Given a program with no loops is unrealistic to path-cover exhaustively,
+                        what's the reasonable fallback goal stated in the deck?</div>
+                    <button class="quiz-reveal" onclick="this.nextElementSibling.classList.toggle('shown')">Reveal answer</button>
+                    <div class="quiz-answer"><b>Execute every statement at least once.</b> ("The ultimate white-box
+                        testing is to execute every path — an unrealistic goal with loops. A reasonable goal is to
+                        execute every statement at least once.")</div>
+                </div>
+
+                <div class="quiz-q">
+                    <div class="q-label">Q7 · Multiple choice</div>
+                    <div class="q-text">Which static testing type is solo, author-only, with no log or checklist
+                        maintained?</div>
+                    <button class="quiz-reveal" onclick="this.nextElementSibling.classList.toggle('shown')">Reveal answer</button>
+                    <div class="quiz-answer"><b>Desk checking.</b> It relies entirely on the thoroughness of the
+                        individual author.</div>
+                </div>
+
+                <div class="quiz-q">
+                    <div class="q-label">Q8 · True / False</div>
+                    <div class="q-text">Multiple-condition coverage guarantees full path coverage.</div>
+                    <button class="quiz-reveal" onclick="this.nextElementSibling.classList.toggle('shown')">Reveal answer</button>
+                    <div class="quiz-answer"><b>False.</b> The 4-test-case example that covers all 8 condition
+                        combinations for <code>foo()</code> still misses path <code>acd</code>.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PRACTICE LAB -->
+        <section id="lab">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 12 — PRACTICE LAB</div>
+                    <h2 class="sec-title">Exam-shaped problems, worked</h2>
+                    <p class="sec-desc">Same shape of question as the graded exercises in the deck — drill until it's
+                        automatic.</p>
+                </div>
+                <div class="examroom">
+                    <div class="practice-q">
+                        <div class="req">1. For <code>foo(int a, int b, int x)</code>, give one test case that
+                            achieves 100% statement coverage, and name the path it takes.</div>
+                        <div class="ans">→ A=2, B=0, X=4 → expected output X=3 (path <code>ace</code>)</div>
+                        <div class="why">Why: this input makes both decisions evaluate True, so both the
+                            <code>x=x/a</code> and <code>x=x+1</code> statements execute — every line runs at least
+                            once.</div>
+                    </div>
+                    <div class="practice-q">
+                        <div class="req">2. A control-flow graph has 7 edges and 6 nodes. Compute its cyclomatic
+                            complexity.</div>
+                        <div class="ans">→ CC = E − N + 2 = 7 − 6 + 2 = 3</div>
+                        <div class="why">Why: direct substitution into the edge/node formula — no need to count
+                            predicate nodes separately once E and N are known.</div>
+                    </div>
+                    <div class="practice-q">
+                        <div class="req">3. A decision combines three boolean sub-conditions with AND. How many test
+                            cases does condition coverage need at minimum, versus multiple-condition coverage?</div>
+                        <div class="ans">→ Condition coverage: as few as 2. Multiple-condition coverage: up to 2³ = 8.</div>
+                        <div class="why">Why: condition coverage only needs each sub-condition to be True once and
+                            False once total (often combinable into 2 well-chosen test cases); multiple-condition
+                            coverage needs every combination of the three sub-conditions' truth values.</div>
+                    </div>
+                    <div class="practice-q">
+                        <div class="req">4. A divide-by-zero bug hides in an ELSE branch that a statement-coverage-only
+                            test suite never enters. Which coverage criterion is the minimum needed to force that
+                            branch to run?</div>
+                        <div class="ans">→ Decision (branch) coverage</div>
+                        <div class="why">Why: decision coverage requires both the True and False outcome of every
+                            decision to be exercised, which forces the ELSE branch to run at least once.</div>
+                    </div>
+                    <div class="practice-q">
+                        <div class="req">5. In a Fagan inspection, the author explains their perspective, makes
+                            documents available, and highlights concern areas before the main review — which meeting
+                            is this?</div>
+                        <div class="ans">→ Preliminary meeting (optional)</div>
+                        <div class="why">Why: that's exactly the definition given for the preliminary meeting, distinct
+                            from the Defect Logging Meeting where reviewers actually raise and categorize defects.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <div>SE401 · Software Testing and Quality · Chapter 13 — White Box Testing</div>
+        <div class="toc-hint">Built as a study aid from lecture slides — always verify against your instructor's exact
+            wording before an exam.</div>
+        <div class="made">Made by <span>Shoug Alomran</span></div>
+    </footer>
+
+    <script>
+        const root = document.documentElement;
+        const sw = document.getElementById('switch');
+        const label = document.getElementById('theme-label');
+
+        function applyTheme(t) {
+            root.setAttribute('data-theme', t);
+            label.textContent = t.toUpperCase();
+        }
+
+        const prefersLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
+        applyTheme(prefersLight ? 'light' : 'dark');
+
+        sw.addEventListener('click', () => {
+            const current = root.getAttribute('data-theme');
+            applyTheme(current === 'dark' ? 'light' : 'dark');
+        });
+    </script>
+
+</body>
+
+</html>
