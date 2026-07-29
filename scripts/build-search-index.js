@@ -114,6 +114,36 @@ function extract(html) {
   return { title, desc, body };
 }
 
+/** Extract individual external resource cards so tools are searchable by name, description, and tags. */
+function extractResourceCards(html) {
+  const cards = [];
+  const cardRe = /<a\b[^>]*\bhref=["']([^"']+)["'][^>]*\bclass=["'][^"']*\bcard\b[^"']*["'][^>]*>([\s\S]*?)<\/a>/gi;
+  let match;
+
+  while ((match = cardRe.exec(html)) !== null) {
+    const cardHtml = match[2];
+    const titleMatch = cardHtml.match(/<h3[^>]*>([\s\S]*?)<\/h3>/i);
+    if (!titleMatch) continue;
+
+    const descriptionMatch = cardHtml.match(/<p[^>]*>([\s\S]*?)<\/p>/i);
+    const tagMatches = [...cardHtml.matchAll(/<div[^>]*class=["'][^"']*card-tags[^"']*["'][^>]*>([\s\S]*?)<\/div>/gi)];
+    const tags = tagMatches
+      .map((tagMatch) => tagMatch[1].replace(/<[^>]+>/g, " "))
+      .join(" ");
+    const clean = (value) => decodeEntities(value.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim());
+
+    cards.push({
+      title: clean(titleMatch[1]),
+      description: clean(`${descriptionMatch ? descriptionMatch[1] : ""} ${tags}`),
+      url: decodeEntities(match[1]),
+      section: "resources",
+      body: "",
+    });
+  }
+
+  return cards;
+}
+
 /** Convert an absolute file path under DOCS to a URL path. */
 function fileToUrl(filePath) {
   const rel = path.relative(DOCS, filePath);          // e.g. "academics/cs285/index.html"
@@ -166,6 +196,10 @@ function build() {
     const section  = SECTION_MAP[firstSeg] || firstSeg || "home";
 
     entries.push({ title, description: desc, url, section, body });
+
+    if (url === "/resources/") {
+      entries.push(...extractResourceCards(raw));
+    }
   }
 
   // Sort by URL for stable output
@@ -176,7 +210,7 @@ function build() {
 
 function main() {
   const { entries, offlinePlaceholders } = build();
-  fs.writeFileSync(OUT, JSON.stringify(entries, null, 2), "utf8");
+  fs.writeFileSync(OUT, JSON.stringify(entries), "utf8");
   console.log(`[ok] search-index.json → ${entries.length} pages`);
   if (offlinePlaceholders.length) {
     console.log(`[warn] search index skipped ${offlinePlaceholders.length} offline filesystem placeholders`);

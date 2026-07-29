@@ -124,7 +124,7 @@
 // Load search on every page
 (function () {
   var s = document.createElement("script");
-  s.src = "/javascripts/search.js";
+  s.src = "/javascripts/search.js?v=20260729-resources-1";
   s.async = true;
   document.head.appendChild(s);
 })();

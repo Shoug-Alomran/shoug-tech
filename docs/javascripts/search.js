@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  var INDEX_URL = "/search-index.json";
+  var INDEX_URL = "/search-index.json?v=20260729-resources-1";
   var index = null;
   var modal = null;
   var input = null;
@@ -132,7 +132,7 @@
     if (lt.startsWith(lq)) return 80;
     if (lu.includes(lq)) return 70;
     if (lt.includes(lq)) return 60;
-    if (ld.includes(lq)) return 40;
+    if (ld.includes(lq)) return item.section === "resources" ? 65 : 40;
     // word-level partial match
     var words = lq.split(/\s+/);
     var hits = words.filter(function (w) {
@@ -237,7 +237,7 @@
     document.body.style.overflow = "hidden";
 
     if (!index) {
-      fetch(INDEX_URL)
+      fetch(INDEX_URL, { cache: "no-store" })
         .then(function (r) { return r.json(); })
         .then(function (data) {
           index = data;
