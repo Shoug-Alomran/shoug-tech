@@ -40,10 +40,10 @@
     var path = window.location.pathname;
     if (document.body && document.body.getAttribute("data-legal-document") === "true") return true;
     return path.indexOf("/policy") === 0 ||
-           path.indexOf("/privacy") === 0 ||
-           path.indexOf("/copyright") === 0 ||
-           path.indexOf("/terms") === 0 ||
-           path.indexOf("/legal") === 0;
+      path.indexOf("/privacy") === 0 ||
+      path.indexOf("/copyright") === 0 ||
+      path.indexOf("/terms") === 0 ||
+      path.indexOf("/legal") === 0;
   }
 
   function isContentPage() {
@@ -76,8 +76,8 @@
 
   // ── Avatar presets (shared with /community/profile/) ──────────────────────
   var AVATAR_PRESETS = [
-    'av-f1.webp','av-f2.webp','av-f3.webp','av-f4.webp','av-f5.webp','av-f6.webp','av-f7.webp',
-    'av-m1.webp','av-m2.webp','av-m3.webp','av-m4.webp','av-m5.webp','av-m6.webp','av-m7.webp'
+    'av-f1.webp', 'av-f2.webp', 'av-f3.webp', 'av-f4.webp', 'av-f5.webp', 'av-f6.webp', 'av-f7.webp',
+    'av-m1.webp', 'av-m2.webp', 'av-m3.webp', 'av-m4.webp', 'av-m5.webp', 'av-m6.webp', 'av-m7.webp'
   ];
   function avatarUrl(preset) {
     var i = parseInt(preset, 10);
@@ -391,7 +391,7 @@
     document.getElementById("auth-forgot").addEventListener("click", showResetView);
     document.getElementById("auth-reset-back").addEventListener("click", hideResetView);
     document.getElementById("auth-reset-submit").addEventListener("click", doResetPassword);
-    document.getElementById("auth-reset-email").addEventListener("keydown", function(e) { if (e.key === "Enter") doResetPassword(); });
+    document.getElementById("auth-reset-email").addEventListener("keydown", function (e) { if (e.key === "Enter") doResetPassword(); });
 
     modal.querySelectorAll(".auth-tab").forEach(function (tab) {
       tab.addEventListener("click", function () {
@@ -436,12 +436,12 @@
     btn.disabled = true;
     btn.textContent = "Sending…";
     firebase.auth().sendPasswordResetEmail(email)
-      .then(function() {
+      .then(function () {
         errEl.style.color = "#22c55e";
         errEl.textContent = "Reset link sent — check your inbox.";
         btn.textContent = "Sent ✓";
       })
-      .catch(function(err) {
+      .catch(function (err) {
         errEl.style.color = "";
         errEl.textContent = authError(err.code) || "Could not send reset email.";
         btn.disabled = false;
@@ -554,13 +554,13 @@
     ].join("");
     document.body.appendChild(m);
 
-    var closeUe = function() {
+    var closeUe = function () {
       m.classList.remove("open");
       document.body.style.overflow = "";
-      setTimeout(function() { m.remove(); }, 150);
+      setTimeout(function () { m.remove(); }, 150);
     };
     document.getElementById("ue-close").addEventListener("click", closeUe);
-    m.addEventListener("click", function(e) { if (e.target === m) closeUe(); });
+    m.addEventListener("click", function (e) { if (e.target === m) closeUe(); });
 
     var newEmailEl = document.getElementById("ue-new-email");
     var passEl = document.getElementById("ue-pass");
@@ -577,15 +577,15 @@
       btn.textContent = "Updating…";
       var cred = firebase.auth.EmailAuthProvider.credential(user.email, pass);
       user.reauthenticateWithCredential(cred)
-        .then(function() { return user.updateEmail(newEmail); })
-        .then(function() {
+        .then(function () { return user.updateEmail(newEmail); })
+        .then(function () {
           errEl.style.color = "#22c55e";
           errEl.textContent = "Email updated successfully.";
           btn.textContent = "Done ✓";
           var emailEl = document.getElementById("shoug-drop-email");
           if (emailEl) emailEl.textContent = newEmail;
         })
-        .catch(function(err) {
+        .catch(function (err) {
           errEl.textContent = authError(err.code);
           btn.disabled = false;
           btn.textContent = "Update Email";
@@ -593,12 +593,12 @@
     }
 
     btn.addEventListener("click", doUpdateEmail);
-    passEl.addEventListener("keydown", function(e) { if (e.key === "Enter") doUpdateEmail(); });
+    passEl.addEventListener("keydown", function (e) { if (e.key === "Enter") doUpdateEmail(); });
 
     m.style.display = "flex";
-    requestAnimationFrame(function() { m.classList.add("open"); });
+    requestAnimationFrame(function () { m.classList.add("open"); });
     document.body.style.overflow = "hidden";
-    setTimeout(function() { newEmailEl && newEmailEl.focus(); }, 60);
+    setTimeout(function () { newEmailEl && newEmailEl.focus(); }, 60);
   }
 
   // ── Notifications ─────────────────────────────────────────────────────────
@@ -621,7 +621,7 @@
     firebase.firestore()
       .collection("notifications").doc(toUid).collection("items")
       .add(Object.assign({ read: false, createdAt: firebase.firestore.FieldValue.serverTimestamp() }, data))
-      .catch(function() {});
+      .catch(function () { });
   }
 
   function renderNotifDropdown(docs) {
@@ -631,7 +631,7 @@
       list.innerHTML = '<div class="shoug-notif-empty">No new notifications</div>';
       return;
     }
-    list.innerHTML = docs.map(function(d) {
+    list.innerHTML = docs.map(function (d) {
       var n = d.data();
       var when = n.createdAt ? timeAgo(n.createdAt.toDate()) : "";
       var pageLabel = n.pageUrl ? n.pageUrl.replace(/^\/|\/$/g, "").split("/").pop() || "page" : "page";
@@ -651,7 +651,7 @@
       .where("read", "==", false)
       .orderBy("createdAt", "desc")
       .limit(20)
-      .onSnapshot(function(snap) {
+      .onSnapshot(function (snap) {
         var count = snap.size;
         var badge = document.getElementById("shoug-notif-badge");
         if (badge) {
@@ -664,19 +664,19 @@
         if (!dropdownOpen || count > 0) {
           renderNotifDropdown(snap.docs);
         }
-      }, function() {});
+      }, function () { });
   }
 
   function markNotifsRead(user) {
     firebase.firestore()
       .collection("notifications").doc(user.uid).collection("items")
       .where("read", "==", false).limit(20).get()
-      .then(function(snap) {
+      .then(function (snap) {
         if (snap.empty) return;
         var batch = firebase.firestore().batch();
-        snap.forEach(function(d) { batch.update(d.ref, { read: true }); });
+        snap.forEach(function (d) { batch.update(d.ref, { read: true }); });
         return batch.commit();
-      }).catch(function() {});
+      }).catch(function () { });
   }
 
   // ── Exam reminders ────────────────────────────────────────────────────────
@@ -733,7 +733,7 @@
     var storageKey = "shoug-exam-toast:" + user.uid + ":" + exam.id + ":d" + days;
     try {
       if (localStorage.getItem(storageKey) === "dismissed") return;
-    } catch (e) {}
+    } catch (e) { }
 
     removeExamToast();
 
@@ -758,7 +758,7 @@
     var close = toast.querySelector(".shoug-exam-toast-close");
     if (close) {
       close.addEventListener("click", function () {
-        try { localStorage.setItem(storageKey, "dismissed"); } catch (e) {}
+        try { localStorage.setItem(storageKey, "dismissed"); } catch (e) { }
         removeExamToast();
       });
     }
@@ -773,7 +773,7 @@
     try {
       if (localStorage.getItem(key)) return;
       localStorage.setItem(key, "1");
-    } catch (e) {}
+    } catch (e) { }
     new Notification("Exam Reminder - " + (exam.course || "Exam"), {
       body: (exam.course || "Exam") + " " + examTypeLabel(exam.type) + " is " + examWhenLabel(days).toLowerCase() + " (" + examDateLabel(exam.date) + ")",
       icon: "/assets/favicon.png?v=2",
@@ -802,7 +802,7 @@
       if (!upcoming.length) return;
       showExamToast(user, upcoming[0]);
       maybeFireBrowserExamNotification(user, upcoming[0]);
-    }).catch(function () {});
+    }).catch(function () { });
   }
 
   function stopExamReminder() {
@@ -830,6 +830,19 @@
     var actions = document.querySelector(".shoug-header-actions");
     if (!actions) return;
     if (old) old.remove();
+
+    if (user === "pending") {
+      // Auth hasn't resolved yet, but the last session was signed in — show a
+      // dim placeholder avatar instead of "Sign In" to avoid a false logout flash.
+      var pending = document.createElement("div");
+      pending.id = "shoug-fb-user";
+      pending.className = "shoug-user-btn";
+      pending.style.opacity = "0.5";
+      pending.style.pointerEvents = "none";
+      pending.innerHTML = '<span>&#8230;</span>';
+      actions.insertBefore(pending, actions.firstChild);
+      return;
+    }
 
     var el = document.createElement(user ? "div" : "button");
     el.id = "shoug-fb-user";
@@ -885,7 +898,7 @@
         if (!url) return;
         var av = el.querySelector("#shoug-user-avatar");
         if (av) av.outerHTML = '<img id="shoug-user-avatar" class="shoug-user-avatar-img" src="' + url + '" alt="">';
-      }).catch(function () {});
+      }).catch(function () { });
 
       return;
     }
@@ -904,6 +917,50 @@
       .collection("pages").doc(slug);
   }
 
+  // Account-wide write-through cache: every page's completed/bookmarked state
+  // lives in one localStorage blob per uid, so even a page visited for the
+  // first time this session can render its real state immediately instead of
+  // flashing "not done"/"not bookmarked" until the Firestore read resolves.
+  var ACCOUNT_CACHE_TTL_MS = 10 * 60 * 1000;
+
+  function accountCacheKey(uid) {
+    return "shoug-progress-" + uid;
+  }
+  function readAccountCache(uid) {
+    try { return JSON.parse(localStorage.getItem(accountCacheKey(uid))) || { pages: {}, syncedAt: 0 }; }
+    catch (e) { return { pages: {}, syncedAt: 0 }; }
+  }
+  function writeAccountCache(uid, cache) {
+    try { localStorage.setItem(accountCacheKey(uid), JSON.stringify(cache)); } catch (e) {}
+  }
+  function readPageCache(uid) {
+    return readAccountCache(uid).pages[pageSlug()] || {};
+  }
+  function writePageCache(uid, patch) {
+    var cache = readAccountCache(uid);
+    var slug = pageSlug();
+    cache.pages[slug] = Object.assign({}, cache.pages[slug], patch);
+    writeAccountCache(uid, cache);
+  }
+
+  // Pulls every page's completed/bookmarked state in one query and refreshes
+  // the account-wide cache, throttled so it doesn't re-fetch on every single
+  // page load. Runs in the background — never blocks the current page.
+  function syncAccountCache(user) {
+    var cache = readAccountCache(user.uid);
+    if (Date.now() - (cache.syncedAt || 0) < ACCOUNT_CACHE_TTL_MS) return;
+    firebase.firestore().collection("userProgress").doc(user.uid).collection("pages").get()
+      .then(function (snap) {
+        var pages = {};
+        snap.forEach(function (doc) {
+          var d = doc.data();
+          pages[doc.id] = { completed: !!d.completed, bookmarked: !!d.bookmarked };
+        });
+        writeAccountCache(user.uid, { pages: pages, syncedAt: Date.now() });
+      })
+      .catch(function () {});
+  }
+
   function injectCompleteBtn(user) {
     if (!isContentPage()) return;
     if (window.location.pathname.indexOf("/academics/") !== 0) return;
@@ -917,14 +974,18 @@
     ].join("");
     document.body.appendChild(completeBtn);
 
+    if (readPageCache(user.uid).completed) setDone(true);
     pageDoc(user).get().then(function (doc) {
-      if (doc.exists && doc.data().completed) setDone(true);
+      var completed = doc.exists && !!doc.data().completed;
+      setDone(completed);
+      writePageCache(user.uid, { completed: completed });
     });
 
     completeBtn.addEventListener("click", function () {
       var isDone = completeBtn.classList.contains("done");
       var next = !isDone;
       setDone(next);
+      writePageCache(user.uid, { completed: next });
       var path = progressUrl();
       var data = {
         url: path,
@@ -945,16 +1006,16 @@
       // Sync coursesActive: recount distinct completed courses from userProgress
       firebase.firestore().collection("userProgress").doc(user.uid)
         .collection("pages").where("completed", "==", true).get()
-        .then(function(snap) {
+        .then(function (snap) {
           var seen = {};
-          snap.forEach(function(doc) {
+          snap.forEach(function (doc) {
             var url = (doc.data().url || "").replace(/^\/+/, "");
             var parts = url.split("/").filter(Boolean);
             if (parts.length >= 3) seen[parts[0] + "/" + parts[1] + "/" + parts[2]] = true;
           });
           firebase.firestore().collection("users").doc(user.uid)
             .update({ coursesActive: Object.keys(seen).length })
-            .catch(function() {});
+            .catch(function () { });
         });
     });
   }
@@ -990,8 +1051,8 @@
     if (!isContentPage()) return;
     if (document.getElementById("shoug-page-comments")) return;
     firebase.firestore().collection("users").doc(user.uid).get()
-      .catch(function() { return { exists: false, data: function() { return null; } }; })
-      .then(function(doc) {
+      .catch(function () { return { exists: false, data: function () { return null; } }; })
+      .then(function (doc) {
         _cmtProfile = doc.exists ? doc.data() : null;
         buildCommentSection(user);
       });
@@ -1007,16 +1068,16 @@
 
     var formHtml = hasProfile
       ? '<div class="scmt-form">'
-          + '<span class="scmt-form-label">Leave a comment</span>'
-          + '<div class="scmt-form-row">'
-          + avatarBlock("scmt-av", p.avatarPreset, c, init)
-          + '<textarea class="scmt-input" id="scmt-input" placeholder="Share your thoughts, ask a question, or help a classmate…" rows="3" maxlength="1000"></textarea>'
-          + '</div>'
-          + '<div class="scmt-form-foot">'
-          + '<span class="scmt-as">Posting as <strong style="color:'+c+'">@'+escHtml(p.username)+'</strong> &nbsp;·&nbsp; Ctrl+Enter to post</span>'
-          + '<button class="scmt-post" id="scmt-post">Post Comment</button>'
-          + '</div>'
-          + '</div>'
+      + '<span class="scmt-form-label">Leave a comment</span>'
+      + '<div class="scmt-form-row">'
+      + avatarBlock("scmt-av", p.avatarPreset, c, init)
+      + '<textarea class="scmt-input" id="scmt-input" placeholder="Share your thoughts, ask a question, or help a classmate…" rows="3" maxlength="1000"></textarea>'
+      + '</div>'
+      + '<div class="scmt-form-foot">'
+      + '<span class="scmt-as">Posting as <strong style="color:' + c + '">@' + escHtml(p.username) + '</strong> &nbsp;·&nbsp; Ctrl+Enter to post</span>'
+      + '<button class="scmt-post" id="scmt-post">Post Comment</button>'
+      + '</div>'
+      + '</div>'
       : '<div class="scmt-noprofile">Set up a <a href="/account/">community profile</a> on your dashboard to join the discussion.</div>';
 
     var wrap = document.createElement("section");
@@ -1028,7 +1089,7 @@
       + '</div>';
 
     var embedWrapper = document.querySelector(".embed-area-wrapper");
-    var contentArea  = document.querySelector(".content-area");
+    var contentArea = document.querySelector(".content-area");
     if (embedWrapper && contentArea) {
       contentArea.style.overflow = "visible";
       contentArea.style.display = "block";
@@ -1049,8 +1110,8 @@
     if (hasProfile) {
       var input = document.getElementById("scmt-input");
       var btn = document.getElementById("scmt-post");
-      btn.addEventListener("click", function() { postPageComment(user, slug, input, btn); });
-      input.addEventListener("keydown", function(e) {
+      btn.addEventListener("click", function () { postPageComment(user, slug, input, btn); });
+      input.addEventListener("keydown", function (e) {
         if ((e.ctrlKey || e.metaKey) && e.key === "Enter") postPageComment(user, slug, input, btn);
       });
     }
@@ -1058,8 +1119,8 @@
     _cmtUnsub = firebase.firestore()
       .collection("pageComments").doc(slug).collection("comments")
       .orderBy("createdAt", "asc").limit(100)
-      .onSnapshot(function(snap) { renderCommentList(snap, user); },
-        function() {
+      .onSnapshot(function (snap) { renderCommentList(snap, user); },
+        function () {
           var list = document.getElementById("scmt-list");
           if (list) list.innerHTML = '<div class="scmt-empty">Comments unavailable — update your Firestore rules to enable this.</div>';
         });
@@ -1070,19 +1131,19 @@
     var countEl = document.getElementById("scmt-count");
     if (!list) return;
     var all = [];
-    snap.forEach(function(doc) { all.push(Object.assign({ id: doc.id }, doc.data())); });
+    snap.forEach(function (doc) { all.push(Object.assign({ id: doc.id }, doc.data())); });
 
     // Separate top-level comments from replies
-    var topLevel = all.filter(function(c) { return !c.replyTo; });
+    var topLevel = all.filter(function (c) { return !c.replyTo; });
     var replyMap = {};
-    all.forEach(function(c) {
+    all.forEach(function (c) {
       if (c.replyTo) {
         if (!replyMap[c.replyTo]) replyMap[c.replyTo] = [];
         replyMap[c.replyTo].push(c);
       }
     });
-    Object.keys(replyMap).forEach(function(k) {
-      replyMap[k].sort(function(a, b) {
+    Object.keys(replyMap).forEach(function (k) {
+      replyMap[k].sort(function (a, b) {
         var ta = a.createdAt && a.createdAt.toDate ? a.createdAt.toDate().getTime() : 0;
         var tb = b.createdAt && b.createdAt.toDate ? b.createdAt.toDate().getTime() : 0;
         return ta - tb;
@@ -1105,22 +1166,22 @@
         + avatarBlock("scmt-av", cm.avatarPreset, cc, ci)
         + '<div class="scmt-body">'
         + '<div class="scmt-meta">'
-        + (isReply && cm.replyToUsername ? '<span class="scmt-reply-to">↳ @'+escHtml(cm.replyToUsername)+'&nbsp;&nbsp;</span>' : "")
-        + '<span class="scmt-author" style="color:'+cc+'">'+escHtml(cm.displayName || cm.username || "Unknown")+'</span>'
-        + '<span class="scmt-uname">@'+escHtml(cm.username || "")+'</span>'
-        + '<span class="scmt-time">'+escHtml(timeStr)+'</span>'
-        + (isMe ? '<button class="scmt-del" data-id="'+escHtml(cm.id)+'" data-slug="'+escHtml(slug)+'">✕</button>' : "")
+        + (isReply && cm.replyToUsername ? '<span class="scmt-reply-to">↳ @' + escHtml(cm.replyToUsername) + '&nbsp;&nbsp;</span>' : "")
+        + '<span class="scmt-author" style="color:' + cc + '">' + escHtml(cm.displayName || cm.username || "Unknown") + '</span>'
+        + '<span class="scmt-uname">@' + escHtml(cm.username || "") + '</span>'
+        + '<span class="scmt-time">' + escHtml(timeStr) + '</span>'
+        + (isMe ? '<button class="scmt-del" data-id="' + escHtml(cm.id) + '" data-slug="' + escHtml(slug) + '">✕</button>' : "")
         + '</div>'
-        + '<div class="scmt-text">'+escHtml(cm.text)+'</div>'
-        + (hasProfile && !isReply ? '<div class="scmt-actions"><button class="scmt-reply-btn" data-id="'+escHtml(cm.id)+'">↳ Reply</button></div>' : "")
+        + '<div class="scmt-text">' + escHtml(cm.text) + '</div>'
+        + (hasProfile && !isReply ? '<div class="scmt-actions"><button class="scmt-reply-btn" data-id="' + escHtml(cm.id) + '">↳ Reply</button></div>' : "")
         + '</div></div>';
     }
 
-    list.innerHTML = topLevel.map(function(cm) {
+    list.innerHTML = topLevel.map(function (cm) {
       var replies = replyMap[cm.id] || [];
       var html = '<div class="scmt-reply-wrap">' + commentHtml(cm, false);
       if (hasProfile) {
-        html += '<div class="scmt-inline-form" id="rform-'+escHtml(cm.id)+'">'
+        html += '<div class="scmt-inline-form" id="rform-' + escHtml(cm.id) + '">'
           + '<textarea class="scmt-inline-input" placeholder="Write a reply…" rows="2" maxlength="500"></textarea>'
           + '<div class="scmt-inline-actions">'
           + '<button class="scmt-inline-post">Reply</button>'
@@ -1128,14 +1189,14 @@
           + '</div></div>';
       }
       if (replies.length) {
-        html += '<div class="scmt-replies">' + replies.map(function(r) { return commentHtml(r, true); }).join("") + '</div>';
+        html += '<div class="scmt-replies">' + replies.map(function (r) { return commentHtml(r, true); }).join("") + '</div>';
       }
       return html + '</div>';
     }).join("");
 
     // Delete buttons
-    list.querySelectorAll(".scmt-del").forEach(function(btn) {
-      btn.addEventListener("click", function(e) {
+    list.querySelectorAll(".scmt-del").forEach(function (btn) {
+      btn.addEventListener("click", function (e) {
         e.stopPropagation();
         if (!confirm("Delete this comment?")) return;
         firebase.firestore().collection("pageComments").doc(btn.dataset.slug)
@@ -1145,10 +1206,10 @@
 
     // Reply buttons → open inline form
     if (hasProfile) {
-      list.querySelectorAll(".scmt-reply-btn").forEach(function(btn) {
-        btn.addEventListener("click", function() {
+      list.querySelectorAll(".scmt-reply-btn").forEach(function (btn) {
+        btn.addEventListener("click", function () {
           var parentId = btn.dataset.id;
-          list.querySelectorAll(".scmt-inline-form.open").forEach(function(f) { f.classList.remove("open"); });
+          list.querySelectorAll(".scmt-inline-form.open").forEach(function (f) { f.classList.remove("open"); });
           var form = document.getElementById("rform-" + parentId);
           if (!form) return;
           form.classList.add("open");
@@ -1157,15 +1218,15 @@
         });
       });
 
-      list.querySelectorAll(".scmt-inline-form").forEach(function(form) {
+      list.querySelectorAll(".scmt-inline-form").forEach(function (form) {
         var parentId = form.id.replace("rform-", "");
-        var parentCm = topLevel.filter(function(c) { return c.id === parentId; })[0];
+        var parentCm = topLevel.filter(function (c) { return c.id === parentId; })[0];
         var parentUsername = parentCm ? (parentCm.username || "") : "";
         var ta = form.querySelector(".scmt-inline-input");
         var postBtn = form.querySelector(".scmt-inline-post");
         var cancelBtn = form.querySelector(".scmt-inline-cancel");
 
-        if (cancelBtn) cancelBtn.addEventListener("click", function() { form.classList.remove("open"); });
+        if (cancelBtn) cancelBtn.addEventListener("click", function () { form.classList.remove("open"); });
 
         function doReply() {
           var text = ta ? ta.value.trim() : "";
@@ -1181,7 +1242,7 @@
             replyTo: parentId,
             replyToUsername: parentUsername,
             createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-          }).then(function() {
+          }).then(function () {
             if (ta) ta.value = "";
             form.classList.remove("open");
             postBtn.disabled = false;
@@ -1197,12 +1258,12 @@
                 commentPreview: text.slice(0, 120),
               });
             }
-          }).catch(function() { postBtn.disabled = false; });
+          }).catch(function () { postBtn.disabled = false; });
         }
 
         if (postBtn) postBtn.addEventListener("click", doReply);
         if (ta) {
-          ta.addEventListener("keydown", function(e) {
+          ta.addEventListener("keydown", function (e) {
             if ((e.ctrlKey || e.metaKey) && e.key === "Enter") doReply();
             if (e.key === "Escape") form.classList.remove("open");
           });
@@ -1223,10 +1284,10 @@
       avatarPreset: _cmtProfile.avatarPreset != null ? _cmtProfile.avatarPreset : null,
       text: text,
       createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-    }).then(function() {
+    }).then(function () {
       input.value = "";
       btn.disabled = false;
-    }).catch(function() {
+    }).catch(function () {
       btn.disabled = false;
     });
   }
@@ -1297,35 +1358,35 @@
           body: "Start here for course content. Pick a track, then choose a course.",
         },
         {
-          target: function(){ return document.querySelector(".hub-grid") || document.querySelector(".track-card"); },
+          target: function () { return document.querySelector(".hub-grid") || document.querySelector(".track-card"); },
           position: "bottom",
           tag: "Step 1 of 5 · Track Cards",
           title: "Four Subject Tracks",
           body: "Each card is a subject track. The badge shows how many courses are inside.",
         },
         {
-          target: function(){ return document.querySelector('a.track-card[href="/academics/computer-science/"]'); },
+          target: function () { return document.querySelector('a.track-card[href="/academics/computer-science/"]'); },
           position: "bottom",
           tag: "Step 2 of 5 · Computer Science",
           title: "Computer Science Track",
           body: "<strong>CS</strong> has the core computing courses: data, systems, databases, networks, and more.",
         },
         {
-          target: function(){ return document.querySelector('a.track-card[href="/academics/software-engineering/"]'); },
+          target: function () { return document.querySelector('a.track-card[href="/academics/software-engineering/"]'); },
           position: "bottom",
           tag: "Step 3 of 5 · Software Engineering",
           title: "Software Engineering Track",
           body: "<strong>SE</strong> covers requirements, architecture, design, testing, and practice.",
         },
         {
-          target: function(){ return document.querySelector('a.track-card[href="/academics/cybersecurity/"]') || document.querySelector('a.track-card.cyber'); },
+          target: function () { return document.querySelector('a.track-card[href="/academics/cybersecurity/"]') || document.querySelector('a.track-card.cyber'); },
           position: "top",
           tag: "Step 4 of 5 · Cybersecurity",
           title: "Cybersecurity Track",
           body: "<strong>CYS</strong> is the hands-on security track: labs, tools, and CTF-style work.",
         },
         {
-          target: function(){ return document.querySelector('a.track-card[href="/academics/other-courses/"]'); },
+          target: function () { return document.querySelector('a.track-card[href="/academics/other-courses/"]'); },
           position: "top",
           tag: "Step 5 of 5 · Other Courses",
           title: "Other Courses",
@@ -1337,7 +1398,7 @@
       // Subject listing page like /academics/computer-science/
       steps = [
         {
-          target: function(){ return document.querySelector(".course-grid") || document.querySelector(".course-card") || document.querySelector(".course-row"); },
+          target: function () { return document.querySelector(".course-grid") || document.querySelector(".course-card") || document.querySelector(".course-row"); },
           position: "bottom",
           tag: "Subject Track",
           title: "Pick a Course",
@@ -1356,14 +1417,14 @@
           body: "Course pages are split into sections. Use the sidebar or tabs to move around.",
         },
         {
-          target: function(){ return document.querySelector(".academic-sidebar"); },
+          target: function () { return document.querySelector(".academic-sidebar"); },
           position: "right",
           tag: "Step 1 of 6 · Sidebar",
           title: "Course Directory Sidebar",
           body: "This is the course directory. Expand subjects and jump straight to any course or section.",
         },
         {
-          target: function(){
+          target: function () {
             return document.querySelector(".academic-sidebar .tree-toggle-button")
               || document.querySelector(".tree-toggle-button");
           },
@@ -1373,7 +1434,7 @@
           body: "Use <strong>[+]</strong> and <strong>[-]</strong> to expand or collapse course groups.",
         },
         {
-          target: function(){
+          target: function () {
             return document.querySelector("nav.sub-nav") || document.querySelector(".sub-nav");
           },
           position: "bottom",
@@ -1382,7 +1443,7 @@
           body: "Use these tabs for overview, notes, slides, study material, and exams.",
         },
         {
-          target: function(){
+          target: function () {
             return document.querySelector(".meta-panel-container") || document.querySelector(".meta-panel");
           },
           position: "left",
@@ -1391,7 +1452,7 @@
           body: "Quick course facts live here: status, credits, prerequisites, and section links.",
         },
         {
-          target: function(){
+          target: function () {
             return document.querySelector(".tag-complete")
               || document.getElementById("shoug-complete-btn")
               || document.querySelector(".shoug-complete-btn");
@@ -1420,28 +1481,28 @@
           body: "A curated shelf of tools, docs, guides, and references.",
         },
         {
-          target: function(){ return document.querySelector(".jump-nav") || document.querySelector(".jump-nav-inner"); },
+          target: function () { return document.querySelector(".jump-nav") || document.querySelector(".jump-nav-inner"); },
           position: "bottom",
           tag: "Step 1 of 4 · Section Nav",
           title: "Jump to Any Category",
           body: "Use this bar to jump straight to a resource category.",
         },
         {
-          target: function(){ return document.querySelector(".section-title-wrap") || document.querySelector(".section-num"); },
+          target: function () { return document.querySelector(".section-title-wrap") || document.querySelector(".section-num"); },
           position: "bottom",
           tag: "Step 2 of 4 · Sections",
           title: "Organised by Category",
           body: "Numbered sections group related tools and links.",
         },
         {
-          target: function(){ return document.querySelector("a.card") || document.querySelector(".card"); },
+          target: function () { return document.querySelector("a.card") || document.querySelector(".card"); },
           position: "bottom",
           tag: "Step 3 of 4 · Resource Cards",
           title: "Resource Cards",
           body: "Each card opens a tool, guide, or reference. Tags show what it covers.",
         },
         {
-          target: function(){ return document.querySelector(".nav-alert"); },
+          target: function () { return document.querySelector(".nav-alert"); },
           position: "bottom",
           tag: "Step 4 of 4 · Security Sections",
           title: "Security-Flagged Content",
@@ -1459,14 +1520,14 @@
           body: "Workshops are guided practical sessions with materials and notes.",
         },
         {
-          target: function(){ return document.querySelector(".hero") || document.querySelector(".hero-title"); },
+          target: function () { return document.querySelector(".hero") || document.querySelector(".hero-title"); },
           position: "bottom",
           tag: "Step 1 of 3 · Overview",
           title: "What's Here",
           body: "This gives the quick workshop overview.",
         },
         {
-          target: function(){
+          target: function () {
             return (triggerEl && triggerEl.closest && triggerEl.closest(".dossier-card")) ||
               document.querySelector(".dossier-card") ||
               document.querySelector(".workshops-hub");
@@ -1477,7 +1538,7 @@
           body: "Each card opens one workshop's materials, notes, and session details.",
         },
         {
-          target: function(){
+          target: function () {
             return document.querySelector('.dossier-card[data-accent="red"]');
           },
           position: "bottom",
@@ -1489,7 +1550,7 @@
 
       var triggeredWorkshopCard = triggerEl && triggerEl.closest ? triggerEl.closest(".dossier-card") : null;
       if (triggeredWorkshopCard && triggeredWorkshopCard.getAttribute("data-accent") !== "red") {
-        steps = steps.filter(function(step) { return step.title !== "Cybersecurity Crash Course"; });
+        steps = steps.filter(function (step) { return step.title !== "Cybersecurity Crash Course"; });
       }
 
     } else if (context === "about") {
@@ -1502,21 +1563,21 @@
           body: "A quick profile: background, roles, skills, and contact.",
         },
         {
-          target: function(){ return document.querySelector(".identity-col") || document.querySelector(".display-name"); },
+          target: function () { return document.querySelector(".identity-col") || document.querySelector(".display-name"); },
           position: "right",
           tag: "Step 1 of 3 · Identity",
           title: "Who Built This",
           body: "Name, roles, and a short personal intro live here.",
         },
         {
-          target: function(){ return document.querySelector(".terminal-col") || document.querySelector(".terminal-block"); },
+          target: function () { return document.querySelector(".terminal-col") || document.querySelector(".terminal-block"); },
           position: "left",
           tag: "Step 2 of 3 · Terminal Block",
           title: "Skills & Stats",
           body: "A quick system-log view of skills, tools, and stats.",
         },
         {
-          target: function(){ return document.querySelector(".shoug-contact-btn") || document.querySelector('a[href^="mailto"]'); },
+          target: function () { return document.querySelector(".shoug-contact-btn") || document.querySelector('a[href^="mailto"]'); },
           position: "bottom",
           tag: "Step 3 of 3 · Contact",
           title: "Get in Touch",
@@ -1534,21 +1595,21 @@
           body: "Browse projects, case studies, and applied work.",
         },
         {
-          target: function(){ return document.querySelector(".hero") || document.querySelector(".hero-title"); },
+          target: function () { return document.querySelector(".hero") || document.querySelector(".hero-title"); },
           position: "bottom",
           tag: "Step 1 of 3 · Hero",
           title: "Work Overview",
           body: "This summarizes the kinds of work featured here.",
         },
         {
-          target: function(){ return document.querySelector(".panels-grid") || document.querySelector(".panel"); },
+          target: function () { return document.querySelector(".panels-grid") || document.querySelector(".panel"); },
           position: "bottom",
           tag: "Step 2 of 3 · Panels",
           title: "Work Categories",
           body: "Panels group projects by theme, role, or output.",
         },
         {
-          target: function(){ return document.querySelector(".work-grid") || document.querySelector(".work-card"); },
+          target: function () { return document.querySelector(".work-grid") || document.querySelector(".work-card"); },
           position: "top",
           tag: "Step 3 of 3 · Project Cards",
           title: "Project Cards",
@@ -1567,14 +1628,14 @@
           body: "This is the full archive for one workshop.",
         },
         {
-          target: function(){ return document.querySelector(".hero") || document.querySelector(".hero-content"); },
+          target: function () { return document.querySelector(".hero") || document.querySelector(".hero-content"); },
           position: "bottom",
           tag: "Step 1 of 2 · Overview",
           title: "Workshop Brief",
           body: "A quick brief: topic, audience, and session context.",
         },
         {
-          target: function(){ return document.querySelector(".cards-grid") || document.querySelector(".workshop-card"); },
+          target: function () { return document.querySelector(".cards-grid") || document.querySelector(".workshop-card"); },
           position: "bottom",
           tag: "Step 2 of 2 · Sections",
           title: "Navigate the Dossier",
@@ -1593,14 +1654,14 @@
           body: "A project archive with scope, stack, role, and outputs.",
         },
         {
-          target: function(){ return document.querySelector(".filters") || document.querySelector(".filter-btn"); },
+          target: function () { return document.querySelector(".filters") || document.querySelector(".filter-btn"); },
           position: "bottom",
           tag: "Step 1 of 2 · Filters",
           title: "Filter by Category",
           body: "Filter projects by domain or view everything.",
         },
         {
-          target: function(){ return document.querySelector(".project-record") || document.querySelector(".project-list"); },
+          target: function () { return document.querySelector(".project-record") || document.querySelector(".project-list"); },
           position: "top",
           tag: "Step 2 of 2 · Project Records",
           title: "Project Records",
@@ -1618,21 +1679,21 @@
           body: "Follow classmates, discuss courses, and compare progress.",
         },
         {
-          target: function(){ return document.querySelector(".comm-tabs") || document.querySelector(".comm-tab"); },
+          target: function () { return document.querySelector(".comm-tabs") || document.querySelector(".comm-tab"); },
           position: "bottom",
           tag: "Step 1 of 3 · Tabs",
           title: "Four Sections",
           body: "Tabs switch between Browse, Activity, Leaderboards, and Discussions.",
         },
         {
-          target: function(){ return document.querySelector('button.comm-tab[data-tab="discuss"]') || document.querySelector('button.comm-tab'); },
+          target: function () { return document.querySelector('button.comm-tab[data-tab="discuss"]') || document.querySelector('button.comm-tab'); },
           position: "bottom",
           tag: "Step 2 of 3 · Discussions",
           title: "Course Discussions",
           body: "Pick a course, then ask questions or reply to classmates.",
         },
         {
-          target: function(){ return document.querySelector('button.comm-tab[data-tab="leaderboard"]'); },
+          target: function () { return document.querySelector('button.comm-tab[data-tab="leaderboard"]'); },
           position: "bottom",
           tag: "Step 3 of 3 · Leaderboards",
           title: "Leaderboard & Podium",
@@ -1650,21 +1711,21 @@
           body: "Profiles show study stats, course progress, and exams.",
         },
         {
-          target: function(){ return document.querySelector(".profile-stats"); },
+          target: function () { return document.querySelector(".profile-stats"); },
           position: "bottom",
           tag: "Step 1 of 3 · Stats",
           title: "Study Stats",
           body: "Quick stats: completed pages, active courses, followers, and following.",
         },
         {
-          target: function(){ return document.getElementById("exam-section"); },
+          target: function () { return document.getElementById("exam-section"); },
           position: "top",
           tag: "Step 2 of 3 · Exams",
           title: "Exam Countdowns",
           body: "Exam countdowns help track quizzes, midterms, and finals.",
         },
         {
-          target: function(){ return document.getElementById("follow-btn") || document.getElementById("edit-btn"); },
+          target: function () { return document.getElementById("follow-btn") || document.getElementById("edit-btn"); },
           position: "bottom",
           tag: "Step 3 of 3 · Follow",
           title: "Follow or Edit",
@@ -1675,42 +1736,42 @@
     } else if (context === "account-calendar") {
       steps = [
         {
-          target: function(){ return document.getElementById("semester-scope"); },
+          target: function () { return document.getElementById("semester-scope"); },
           position: "bottom",
           tag: "Calendar · Semester",
           title: "Filter by Semester",
           body: "Use this when you want one term only. Choose <strong>All semesters</strong> to browse everything.",
         },
         {
-          target: function(){ return document.getElementById("today-dashboard"); },
+          target: function () { return document.getElementById("today-dashboard"); },
           position: "bottom",
           tag: "Calendar · Today",
           title: "Today at a Glance",
           body: "These cards show today’s classes, exams, study sessions, and real exam conflicts.",
         },
         {
-          target: function(){ return document.getElementById("month-grid") || document.getElementById("calendar-month-panel"); },
+          target: function () { return document.getElementById("month-grid") || document.getElementById("calendar-month-panel"); },
           position: "top",
           tag: "Calendar · Month",
           title: "Open Any Day",
           body: "Click a day to see the hourly Apple-style view, edit exams, add events, or adjust a single class meeting.",
         },
         {
-          target: function(){ return document.getElementById("view-filters"); },
+          target: function () { return document.getElementById("view-filters"); },
           position: "left",
           tag: "Calendar · Focus",
           title: "Hide Layers Temporarily",
           body: "Turn layers on or off without deleting anything. Useful when you only want to see exams or study sessions.",
         },
         {
-          target: function(){ return document.getElementById("class-title") || document.getElementById("calendar-class-panel"); },
+          target: function () { return document.getElementById("class-title") || document.getElementById("calendar-class-panel"); },
           position: "left",
           tag: "Calendar · Classes",
           title: "Add Class Schedules",
           body: "Add a course once for the semester. PSU dates stop the course automatically when classes end.",
         },
         {
-          target: function(){ return document.getElementById("study-template") || document.getElementById("calendar-study-panel"); },
+          target: function () { return document.getElementById("study-template") || document.getElementById("calendar-study-panel"); },
           position: "left",
           tag: "Calendar · Study",
           title: "Schedule Study Blocks",
@@ -1728,21 +1789,21 @@
           body: "Your study progress lives here, grouped by course and track.",
         },
         {
-          target: function(){ return document.getElementById("stats-row") || document.querySelector(".stats-row"); },
+          target: function () { return document.getElementById("stats-row") || document.querySelector(".stats-row"); },
           position: "bottom",
           tag: "Step 1 of 3 · Stats Strip",
           title: "Key Numbers at a Glance",
           body: "Top stats summarize completions, streaks, courses, and study days.",
         },
         {
-          target: function(){ return document.getElementById("overview-row") || document.querySelector(".overview-row"); },
+          target: function () { return document.getElementById("overview-row") || document.querySelector(".overview-row"); },
           position: "bottom",
           tag: "Step 2 of 3 · Progress Overview",
           title: "Progress Ring & Charts",
           body: "Charts summarize completion, balance, and recent activity.",
         },
         {
-          target: function(){ return document.getElementById("track-grid") || document.querySelector(".track-grid"); },
+          target: function () { return document.getElementById("track-grid") || document.querySelector(".track-grid"); },
           position: "top",
           tag: "Step 3 of 3 · Track Breakdown",
           title: "Progress by Track",
@@ -1760,21 +1821,21 @@
           body: "Saved pages live here, organized like a small database.",
         },
         {
-          target: function(){ return document.querySelector(".folder-col") || document.querySelector(".folder-list"); },
+          target: function () { return document.querySelector(".folder-col") || document.querySelector(".folder-list"); },
           position: "right",
           tag: "Step 1 of 3 · Directories",
           title: "Folder Sidebar",
           body: "Folders filter your saved pages. Add folders when needed.",
         },
         {
-          target: function(){ return document.querySelector(".table-col") || document.querySelector(".table-body"); },
+          target: function () { return document.querySelector(".table-col") || document.querySelector(".table-body"); },
           position: "left",
           tag: "Step 2 of 3 · Records Table",
           title: "Bookmark Records",
           body: "Rows are saved pages. Click one to inspect or reopen it.",
         },
         {
-          target: function(){ return document.querySelector(".term-input-row") || document.querySelector(".term-input"); },
+          target: function () { return document.querySelector(".term-input-row") || document.querySelector(".term-input"); },
           position: "top",
           tag: "Step 3 of 3 · Terminal",
           title: "Command Interface",
@@ -1792,14 +1853,14 @@
           body: "Your degree plan, shown in different visual layouts.",
         },
         {
-          target: function(){ return document.querySelector(".hero") || document.querySelector("h1"); },
+          target: function () { return document.querySelector(".hero") || document.querySelector("h1"); },
           position: "bottom",
           tag: "Step 1 of 2 · Your Plan",
           title: "Degree Plan Overview",
           body: "Scroll through semesters from Year 1 to graduation.",
         },
         {
-          target: function(){ return document.querySelector("nav") || document.querySelector(".shoug-header-nav"); },
+          target: function () { return document.querySelector("nav") || document.querySelector(".shoug-header-nav"); },
           position: "bottom",
           tag: "Step 2 of 2 · Switch Themes",
           title: "Try Other Layouts",
@@ -1818,42 +1879,42 @@
           body: "A quick tour of where everything lives.",
         },
         {
-          target: function(){ return document.querySelector('.shoug-header-nav a[href="/academics/"]'); },
+          target: function () { return document.querySelector('.shoug-header-nav a[href="/academics/"]'); },
           position: "bottom",
           tag: "Step 1 of 7 · Academics",
           title: "Course Content",
           body: "<strong>Academics</strong> is where course notes, slides, and quizzes live.",
         },
         {
-          target: function(){ return document.querySelector('.shoug-header-nav a[href="/work/"]'); },
+          target: function () { return document.querySelector('.shoug-header-nav a[href="/work/"]'); },
           position: "bottom",
           tag: "Step 2 of 7 · Work",
           title: "Projects & Portfolio",
           body: "<strong>Work</strong> shows projects and case studies.",
         },
         {
-          target: function(){ return document.querySelector('.shoug-header-nav a[href="/workshops/"]'); },
+          target: function () { return document.querySelector('.shoug-header-nav a[href="/workshops/"]'); },
           position: "bottom",
           tag: "Step 3 of 7 · Workshops",
           title: "Workshops",
           body: "<strong>Workshops</strong> are guided hands-on sessions.",
         },
         {
-          target: function(){ return document.querySelector('.shoug-header-nav a[href="/resources/"]'); },
+          target: function () { return document.querySelector('.shoug-header-nav a[href="/resources/"]'); },
           position: "bottom",
           tag: "Step 4 of 7 · Resources",
           title: "Study Resources",
           body: "<strong>Resources</strong> has tools, references, guides, and links.",
         },
         {
-          target: function(){ return document.querySelector('.shoug-header-nav a[href="/about/"]'); },
+          target: function () { return document.querySelector('.shoug-header-nav a[href="/about/"]'); },
           position: "bottom",
           tag: "Step 5 of 7 · About",
           title: "About This Site",
           body: "<strong>About</strong> explains who built the site and how to reach out.",
         },
         {
-          target: function(){ return document.getElementById("shoug-fb-user") || document.querySelector(".shoug-auth-btn") || document.querySelector(".shoug-header-actions"); },
+          target: function () { return document.getElementById("shoug-fb-user") || document.querySelector(".shoug-auth-btn") || document.querySelector(".shoug-header-actions"); },
           position: "bottom",
           tag: "Step 6 of 7 · Account",
           title: "Sign In to Track Progress",
@@ -1907,7 +1968,7 @@
     if (triggerEl) {
       var matchedIndex = -1;
       var matchedScore = -1;
-      steps.forEach(function(step, idx) {
+      steps.forEach(function (step, idx) {
         var score = stepTriggerScore(step);
         if (score > matchedScore) {
           matchedScore = score;
@@ -1924,7 +1985,7 @@
       }
     }
 
-    steps.forEach(function(step, idx) {
+    steps.forEach(function (step, idx) {
       var label = step.tag || "";
       var detail = label.indexOf("·") !== -1 ? " · " + label.split("·").slice(1).join("·").trim() : "";
       step.tag = "Step " + (idx + 1) + " of " + steps.length + detail;
@@ -1937,12 +1998,12 @@
 
     // Arrow (CSS triangle) — always above header
     var arrowEl = document.createElement("div");
-    arrowEl.style.cssText = "position:fixed;width:0;height:0;z-index:"+(CARD_Z)+";pointer-events:none;display:none;";
+    arrowEl.style.cssText = "position:fixed;width:0;height:0;z-index:" + (CARD_Z) + ";pointer-events:none;display:none;";
 
     // Tooltip card — always above header
     var card = document.createElement("div");
     card.id = "shoug-ob-card";
-    card.style.cssText = "position:fixed;z-index:"+(CARD_Z)+";width:min(400px,calc(100vw - 40px));max-width:calc(100vw - 16px);box-sizing:border-box;margin:0;background:#0a0514;border:1px solid rgba(184,41,234,.45);font-family:'JetBrains Mono',monospace;pointer-events:all;";
+    card.style.cssText = "position:fixed;z-index:" + (CARD_Z) + ";width:min(400px,calc(100vw - 40px));max-width:calc(100vw - 16px);box-sizing:border-box;margin:0;background:#0a0514;border:1px solid rgba(184,41,234,.45);font-family:'JetBrains Mono',monospace;pointer-events:all;";
 
     document.body.appendChild(dimEl);
     document.body.appendChild(arrowEl);
@@ -1952,7 +2013,7 @@
     var activePosition = "bottom";
 
     function clearHighlight() {
-      document.querySelectorAll(".ob-hl").forEach(function(el){
+      document.querySelectorAll(".ob-hl").forEach(function (el) {
         el.classList.remove("ob-hl");
         if (el.dataset.obPositioned === "1") {
           el.style.removeProperty("position");
@@ -2030,111 +2091,111 @@
         ].join(";");
       } else if (position === "bottom") {
 
-          var canFitBelow = rect.bottom + GAP + ch <= vh - 12;
-          var canFitAbove = rect.top - GAP - ch >= 8;
-          var placeBelow = canFitBelow || (!canFitAbove && rect.top < (vh / 2));
-          top  = rect.bottom + GAP;
-          left = Math.min(Math.max(midX - cw / 2, 12), vw - cw - 12);
-          if (!placeBelow) top = rect.top - GAP - ch;
-          arrowEl.style.cssText = placeBelow ? [
-              "position:fixed",
-              "left:" + (midX - 7) + "px",
-              "top:" + rect.bottom + "px",
-              "border-left:7px solid transparent",
-              "border-right:7px solid transparent",
-              "border-bottom:12px solid #b829ea",
-              "z-index:" + (CARD_Z + 2),
-              "pointer-events:none",
-              "display:block"
-            ].join(";") : [
-              "position:fixed",
-              "left:" + (midX - 7) + "px",
-              "top:" + (rect.top - GAP) + "px",
-              "border-left:7px solid transparent",
-              "border-right:7px solid transparent",
-              "border-top:12px solid #b829ea",
-              "z-index:" + (CARD_Z + 2),
-              "pointer-events:none",
-              "display:block"
-            ].join(";");
-        } else if (position === "right") {
-          top  = Math.min(Math.max(midY - ch / 2, 12), vh - ch - 12);
-          left = rect.right + GAP;
-          var flippedLeft = left + cw > vw - 12;
-          if (flippedLeft) left = rect.left - cw - GAP;
-          var arrowTop = Math.min(Math.max(midY - 7, top + 16), top + ch - 30);
-          arrowEl.style.cssText = [
-            "position:fixed",
-            "top:" + arrowTop + "px",
-            "left:" + (flippedLeft ? (left + cw) : (left - 12)) + "px",
-            "border-top:7px solid transparent",
-            "border-bottom:7px solid transparent",
-            flippedLeft ? "border-right:12px solid #b829ea" : "border-left:12px solid #b829ea",
-            "z-index:" + (CARD_Z + 2),
-            "pointer-events:none",
-            "display:block"
-          ].join(";");
-        } else if (position === "left") {
-          top  = Math.min(Math.max(midY - ch / 2, 12), vh - ch - 12);
-          left = rect.left - cw - GAP;
-          var flippedRight = left < 12;
-          if (flippedRight) left = rect.right + GAP;
-          var arrowTop2 = Math.min(Math.max(midY - 7, top + 16), top + ch - 30);
-          arrowEl.style.cssText = [
-            "position:fixed",
-            "top:" + arrowTop2 + "px",
-            "left:" + (flippedRight ? (left - 12) : (left + cw)) + "px",
-            "border-top:7px solid transparent",
-            "border-bottom:7px solid transparent",
-            flippedRight ? "border-left:12px solid #b829ea" : "border-right:12px solid #b829ea",
-            "z-index:" + (CARD_Z + 2),
-            "pointer-events:none",
-            "display:block"
-          ].join(";");
-        } else {
-          var canFitAbove2 = rect.top - GAP - ch >= 8;
-          var canFitBelow2 = rect.bottom + GAP + ch <= vh - 12;
-          var placeAbove = canFitAbove2 || (!canFitBelow2 && rect.top > (vh / 2));
-          top  = rect.top - GAP - ch;
-          left = Math.min(Math.max(midX - cw / 2, 12), vw - cw - 12);
-          if (!placeAbove) top = rect.bottom + GAP;
-          arrowEl.style.cssText = placeAbove ? [
-              "position:fixed",
-              "left:" + (midX - 7) + "px",
-              "top:" + (rect.top - GAP) + "px",
-              "border-left:7px solid transparent",
-              "border-right:7px solid transparent",
-              "border-top:12px solid #b829ea",
-              "z-index:" + (CARD_Z + 2),
-              "pointer-events:none",
-              "display:block"
-            ].join(";") : [
-              "position:fixed",
-              "left:" + (midX - 7) + "px",
-              "top:" + rect.bottom + "px",
-              "border-left:7px solid transparent",
-              "border-right:7px solid transparent",
-              "border-bottom:12px solid #b829ea",
-              "z-index:" + (CARD_Z + 2),
-              "pointer-events:none",
-              "display:block"
-            ].join(";");
-        }
+        var canFitBelow = rect.bottom + GAP + ch <= vh - 12;
+        var canFitAbove = rect.top - GAP - ch >= 8;
+        var placeBelow = canFitBelow || (!canFitAbove && rect.top < (vh / 2));
+        top = rect.bottom + GAP;
+        left = Math.min(Math.max(midX - cw / 2, 12), vw - cw - 12);
+        if (!placeBelow) top = rect.top - GAP - ch;
+        arrowEl.style.cssText = placeBelow ? [
+          "position:fixed",
+          "left:" + (midX - 7) + "px",
+          "top:" + rect.bottom + "px",
+          "border-left:7px solid transparent",
+          "border-right:7px solid transparent",
+          "border-bottom:12px solid #b829ea",
+          "z-index:" + (CARD_Z + 2),
+          "pointer-events:none",
+          "display:block"
+        ].join(";") : [
+          "position:fixed",
+          "left:" + (midX - 7) + "px",
+          "top:" + (rect.top - GAP) + "px",
+          "border-left:7px solid transparent",
+          "border-right:7px solid transparent",
+          "border-top:12px solid #b829ea",
+          "z-index:" + (CARD_Z + 2),
+          "pointer-events:none",
+          "display:block"
+        ].join(";");
+      } else if (position === "right") {
+        top = Math.min(Math.max(midY - ch / 2, 12), vh - ch - 12);
+        left = rect.right + GAP;
+        var flippedLeft = left + cw > vw - 12;
+        if (flippedLeft) left = rect.left - cw - GAP;
+        var arrowTop = Math.min(Math.max(midY - 7, top + 16), top + ch - 30);
+        arrowEl.style.cssText = [
+          "position:fixed",
+          "top:" + arrowTop + "px",
+          "left:" + (flippedLeft ? (left + cw) : (left - 12)) + "px",
+          "border-top:7px solid transparent",
+          "border-bottom:7px solid transparent",
+          flippedLeft ? "border-right:12px solid #b829ea" : "border-left:12px solid #b829ea",
+          "z-index:" + (CARD_Z + 2),
+          "pointer-events:none",
+          "display:block"
+        ].join(";");
+      } else if (position === "left") {
+        top = Math.min(Math.max(midY - ch / 2, 12), vh - ch - 12);
+        left = rect.left - cw - GAP;
+        var flippedRight = left < 12;
+        if (flippedRight) left = rect.right + GAP;
+        var arrowTop2 = Math.min(Math.max(midY - 7, top + 16), top + ch - 30);
+        arrowEl.style.cssText = [
+          "position:fixed",
+          "top:" + arrowTop2 + "px",
+          "left:" + (flippedRight ? (left - 12) : (left + cw)) + "px",
+          "border-top:7px solid transparent",
+          "border-bottom:7px solid transparent",
+          flippedRight ? "border-left:12px solid #b829ea" : "border-right:12px solid #b829ea",
+          "z-index:" + (CARD_Z + 2),
+          "pointer-events:none",
+          "display:block"
+        ].join(";");
+      } else {
+        var canFitAbove2 = rect.top - GAP - ch >= 8;
+        var canFitBelow2 = rect.bottom + GAP + ch <= vh - 12;
+        var placeAbove = canFitAbove2 || (!canFitBelow2 && rect.top > (vh / 2));
+        top = rect.top - GAP - ch;
+        left = Math.min(Math.max(midX - cw / 2, 12), vw - cw - 12);
+        if (!placeAbove) top = rect.bottom + GAP;
+        arrowEl.style.cssText = placeAbove ? [
+          "position:fixed",
+          "left:" + (midX - 7) + "px",
+          "top:" + (rect.top - GAP) + "px",
+          "border-left:7px solid transparent",
+          "border-right:7px solid transparent",
+          "border-top:12px solid #b829ea",
+          "z-index:" + (CARD_Z + 2),
+          "pointer-events:none",
+          "display:block"
+        ].join(";") : [
+          "position:fixed",
+          "left:" + (midX - 7) + "px",
+          "top:" + rect.bottom + "px",
+          "border-left:7px solid transparent",
+          "border-right:7px solid transparent",
+          "border-bottom:12px solid #b829ea",
+          "z-index:" + (CARD_Z + 2),
+          "pointer-events:none",
+          "display:block"
+        ].join(";");
+      }
 
       top = Math.max(8, Math.min(top, vh - ch - 12));
       left = Math.max(8, Math.min(left, vw - cw - 8));
 
-      card.style.top  = top + "px";
+      card.style.top = top + "px";
       card.style.left = left + "px";
 
       // Final safety pass — re-measure after layout (fonts/images can change
       // the card's real size) and re-clamp so it can never spill off-screen.
-      requestAnimationFrame(function(){
+      requestAnimationFrame(function () {
         var vw2 = window.innerWidth;
         var vh2 = window.innerHeight;
         var r = card.getBoundingClientRect();
         var newLeft = Math.min(Math.max(r.left, 8), vw2 - r.width - 8);
-        var newTop  = Math.min(Math.max(r.top, 8), vh2 - r.height - 8);
+        var newTop = Math.min(Math.max(r.top, 8), vh2 - r.height - 8);
         if (Math.abs(newLeft - r.left) > .5) card.style.left = newLeft + "px";
         if (Math.abs(newTop - r.top) > .5) card.style.top = newTop + "px";
       });
@@ -2206,22 +2267,22 @@
       card.innerHTML = [
         '<div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,#b829ea,rgba(184,41,234,.08));"></div>',
         '<div style="padding:28px 28px 18px;">',
-        '  <div style="font-size:.5rem;color:#b829ea;letter-spacing:.22em;text-transform:uppercase;margin-bottom:8px;">'+s.tag+'</div>',
-        '  <div style="font-size:.94rem;font-weight:800;color:#f8f7fb;margin-bottom:10px;line-height:1.3;">'+s.title+'</div>',
-        '  <div style="font-size:.76rem;color:#8f8b9a;line-height:1.75;font-family:\'Inter\',sans-serif;">'+s.body+'</div>',
+        '  <div style="font-size:.5rem;color:#b829ea;letter-spacing:.22em;text-transform:uppercase;margin-bottom:8px;">' + s.tag + '</div>',
+        '  <div style="font-size:.94rem;font-weight:800;color:#f8f7fb;margin-bottom:10px;line-height:1.3;">' + s.title + '</div>',
+        '  <div style="font-size:.76rem;color:#8f8b9a;line-height:1.75;font-family:\'Inter\',sans-serif;">' + s.body + '</div>',
         '</div>',
         '<div style="padding:12px 28px 20px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid rgba(255,255,255,.05);">',
-        '  <div style="font-size:.52rem;color:#4a4258;letter-spacing:.12em;text-transform:uppercase;">Walkthrough '+progressLabel+'</div>',
+        '  <div style="font-size:.52rem;color:#4a4258;letter-spacing:.12em;text-transform:uppercase;">Walkthrough ' + progressLabel + '</div>',
         '  <div style="display:flex;gap:8px;align-items:center;">',
         '  <button id="ob-skip" style="height:32px;padding:0 14px;background:transparent;border:none;color:#6f667c;font-family:\'JetBrains Mono\',monospace;font-size:.6rem;cursor:pointer;">Skip</button>',
-        '  <button id="ob-next" style="height:32px;padding:0 18px;background:#b829ea;border:none;color:#0a0514;font-family:\'JetBrains Mono\',monospace;font-size:.62rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;">'+primaryLabel+'</button>',
+        '  <button id="ob-next" style="height:32px;padding:0 18px;background:#b829ea;border:none;color:#0a0514;font-family:\'JetBrains Mono\',monospace;font-size:.62rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;">' + primaryLabel + '</button>',
         '  </div>',
         '</div>',
       ].join("");
 
-      requestAnimationFrame(function(){ positionCard(rect, activePosition); });
+      requestAnimationFrame(function () { positionCard(rect, activePosition); });
 
-      document.getElementById("ob-next").addEventListener("click", function(){
+      document.getElementById("ob-next").addEventListener("click", function () {
         if (current < steps.length - 1) { current++; render(); } else { finish(); }
       });
       var skip = document.getElementById("ob-skip");
@@ -2237,10 +2298,10 @@
         document.body.classList.remove("mobile-nav-open");
         navMenuOpenedByOnboarding = false;
       }
-      [dimEl, arrowEl, card].forEach(function(el){
+      [dimEl, arrowEl, card].forEach(function (el) {
         el.style.opacity = "0";
         el.style.transition = "opacity 300ms";
-        setTimeout(function(){ el.remove(); }, 320);
+        setTimeout(function () { el.remove(); }, 320);
       });
     }
 
@@ -2253,31 +2314,33 @@
     }
 
     dimEl.style.opacity = "0";
-    card.style.opacity  = "0";
+    card.style.opacity = "0";
     dimEl.style.transition = card.style.transition = "opacity 300ms";
     render();
-    requestAnimationFrame(function(){ requestAnimationFrame(function(){
-      dimEl.style.opacity = "1";
-      card.style.opacity  = "1";
-    }); });
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () {
+        dimEl.style.opacity = "1";
+        card.style.opacity = "1";
+      });
+    });
 
     // Escape hatches — the walkthrough must never be able to fully block the
     // site. Clicking the dim backdrop or pressing Escape always closes it.
     dimEl.addEventListener("click", dismissForNow);
-    var escHandler = function(e){
+    var escHandler = function (e) {
       if (e.key === "Escape") { dismissForNow(); document.removeEventListener("keydown", escHandler); }
     };
     document.addEventListener("keydown", escHandler);
 
     // Watchdog — if the card never ends up visible on-screen (positioning
     // bug, slow layout, etc.), auto-dismiss instead of leaving a stuck overlay.
-    setTimeout(function(){
+    setTimeout(function () {
       if (!document.body.contains(card)) return;
       var r = card.getBoundingClientRect();
       var onScreen = r.width > 0 && r.height > 0 &&
         r.right > 0 && r.bottom > 0 &&
         r.left < window.innerWidth && r.top < window.innerHeight;
-      console.log("[onboarding debug]", JSON.stringify(r), "vw="+window.innerWidth, "vh="+window.innerHeight, "onScreen="+onScreen, "opacity="+card.style.opacity);
+      console.log("[onboarding debug]", JSON.stringify(r), "vw=" + window.innerWidth, "vh=" + window.innerHeight, "onScreen=" + onScreen, "opacity=" + card.style.opacity);
       if (!onScreen) finish();
     }, 1500);
 
@@ -2324,16 +2387,24 @@
     ].join("");
     document.body.appendChild(panel);
 
+    // Render last-known bookmark state immediately, then confirm/correct once
+    // the Firestore read resolves (covers cross-device changes).
+    if (readPageCache(user.uid).bookmarked) {
+      var cachedBtn = document.getElementById("shoug-bookmark-icon");
+      if (cachedBtn) cachedBtn.classList.add("active");
+    }
+
     // Load note + bookmark state from the existing pages doc (single read)
-    db.collection("userProgress").doc(user.uid).collection("pages").doc(slug).get().then(function(doc) {
-      if (!doc.exists) return;
-      var d = doc.data();
+    db.collection("userProgress").doc(user.uid).collection("pages").doc(slug).get().then(function (doc) {
+      var d = (doc.exists && doc.data()) || {};
       if (d.note) { var ta = document.getElementById("shoug-notes-ta"); if (ta) ta.value = d.note; }
-      if (d.bookmarked) { var btn = document.getElementById("shoug-bookmark-icon"); if (btn) btn.classList.add("active"); }
+      var btn = document.getElementById("shoug-bookmark-icon");
+      if (btn) btn.classList.toggle("active", !!d.bookmarked);
+      writePageCache(user.uid, { bookmarked: !!d.bookmarked });
     });
 
     // Notes toggle
-    document.getElementById("shoug-notes-icon").addEventListener("click", function() {
+    document.getElementById("shoug-notes-icon").addEventListener("click", function () {
       var p = document.getElementById("shoug-notes-panel");
       var ic = document.getElementById("shoug-notes-icon");
       var open = p.classList.toggle("open");
@@ -2342,17 +2413,18 @@
     });
 
     // Notes auto-save
-    document.getElementById("shoug-notes-ta").addEventListener("input", function() {
+    document.getElementById("shoug-notes-ta").addEventListener("input", function () {
       clearTimeout(_notesDebounce);
       var st = document.getElementById("np-status");
       if (st) st.textContent = "unsaved…";
-      _notesDebounce = setTimeout(function() { saveNote(user, slug); }, 1500);
+      _notesDebounce = setTimeout(function () { saveNote(user, slug); }, 1500);
     });
 
     // Bookmark toggle — stored on the existing pages doc via merge
-    document.getElementById("shoug-bookmark-icon").addEventListener("click", function() {
+    document.getElementById("shoug-bookmark-icon").addEventListener("click", function () {
       var btn = document.getElementById("shoug-bookmark-icon");
       var active = btn.classList.toggle("active");
+      writePageCache(user.uid, { bookmarked: active });
       var ref = db.collection("userProgress").doc(user.uid).collection("pages").doc(slug);
       if (active) {
         ref.set({ url: window.location.pathname, title: pageTitle(), bookmarked: true, bookmarkFolder: null, bookmarkSavedAt: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true });
@@ -2370,9 +2442,9 @@
     // Merge note onto the existing pages doc so we don't overwrite progress data
     var ref = firebase.firestore().collection("userProgress").doc(user.uid).collection("pages").doc(slug);
     ref.set({ note: note, url: window.location.pathname, title: pageTitle(), noteUpdatedAt: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true })
-      .then(function() {
-        if (st) { st.textContent = "saved"; setTimeout(function() { var s = document.getElementById("np-status"); if (s) s.textContent = ""; }, 2000); }
-      }).catch(function() { if (st) st.textContent = "error"; });
+      .then(function () {
+        if (st) { st.textContent = "saved"; setTimeout(function () { var s = document.getElementById("np-status"); if (s) s.textContent = ""; }, 2000); }
+      }).catch(function () { if (st) st.textContent = "error"; });
   }
 
   // ── App section tab bar ───────────────────────────────────────────────────
@@ -2380,11 +2452,11 @@
   function isAppPage() {
     var p = window.location.pathname;
     return p.indexOf("/bookmarks") === 0 ||
-           p.indexOf("/account") === 0 ||
-           p.indexOf("/community") === 0;
+      p.indexOf("/account") === 0 ||
+      p.indexOf("/community") === 0;
   }
 
-  function curNavLang() { return (document.documentElement.lang||"en").slice(0,2)==="ar" ? "ar" : "en"; }
+  function curNavLang() { return (document.documentElement.lang || "en").slice(0, 2) === "ar" ? "ar" : "en"; }
 
   var APP_NAV_LABELS = {
     en: { home: "Home", profile: "My Profile", calendar: "Calendar", bookmarks: "Bookmarks", progress: "My Progress", community: "Community", theme: "Toggle dark and light mode" },
@@ -2406,7 +2478,7 @@
     if (!nav) return;
     var labels = APP_NAV_LABELS[curNavLang()];
     var tabs = nav.querySelectorAll(".shoug-app-tab");
-    tabs.forEach(function(t, i) { if (APP_NAV_KEYS[i]) t.textContent = labels[APP_NAV_KEYS[i]]; });
+    tabs.forEach(function (t, i) { if (APP_NAV_KEYS[i]) t.textContent = labels[APP_NAV_KEYS[i]]; });
     var themeBtn = document.getElementById("shoug-theme-toggle");
     if (themeBtn) themeBtn.setAttribute("aria-label", labels.theme);
   }
@@ -2417,23 +2489,35 @@
     var path = window.location.pathname;
     var labels = APP_NAV_LABELS[curNavLang()];
     var tabs = [
-      { key: "home",        href: "/",
-        active: false },
-      { key: "profile",     href: "/community/profile/?u=" + encodeURIComponent(user.uid),
-        active: path.indexOf("/community/profile") === 0 },
-      { key: "calendar",    href: "/account/calendar/",
-        active: path.indexOf("/account/calendar") === 0 },
-      { key: "bookmarks",   href: "/bookmarks/",
-        active: path.indexOf("/bookmarks") === 0 },
-      { key: "progress",    href: "/account/",
-        active: path === "/account/" || path === "/account" },
-      { key: "community",   href: "/community/",
-        active: path.indexOf("/community") === 0 && path.indexOf("/community/profile") !== 0 },
+      {
+        key: "home", href: "/",
+        active: false
+      },
+      {
+        key: "profile", href: "/community/profile/?u=" + encodeURIComponent(user.uid),
+        active: path.indexOf("/community/profile") === 0
+      },
+      {
+        key: "calendar", href: "/account/calendar/",
+        active: path.indexOf("/account/calendar") === 0
+      },
+      {
+        key: "bookmarks", href: "/bookmarks/",
+        active: path.indexOf("/bookmarks") === 0
+      },
+      {
+        key: "progress", href: "/account/",
+        active: path === "/account/" || path === "/account"
+      },
+      {
+        key: "community", href: "/community/",
+        active: path.indexOf("/community") === 0 && path.indexOf("/community/profile") !== 0
+      },
     ];
     var isLight = document.body.classList.contains("shoug-light-mode");
     var nav = document.createElement("nav");
     nav.id = "shoug-app-nav";
-    nav.innerHTML = tabs.map(function(t) {
+    nav.innerHTML = tabs.map(function (t) {
       return '<a class="shoug-app-tab' + (t.active ? " active" : "") + '" href="' + t.href + '">' + labels[t.key] + "</a>";
     }).join("")
       + '<div style="flex:1"></div>'
@@ -2468,7 +2552,7 @@
     }
     ensureArabicLocalization();
 
-    document.getElementById("shoug-theme-toggle").addEventListener("click", function() {
+    document.getElementById("shoug-theme-toggle").addEventListener("click", function () {
       var nowLight = document.body.classList.toggle("shoug-light-mode");
       localStorage.setItem("shoug-theme", nowLight ? "light" : "dark");
       if (nowLight) {
@@ -2489,7 +2573,7 @@
 
   function removePageIcons() {
     clearTimeout(_notesDebounce);
-    ["shoug-page-icons", "shoug-notes-panel"].forEach(function(id) {
+    ["shoug-page-icons", "shoug-notes-panel"].forEach(function (id) {
       var el = document.getElementById(id); if (el) el.remove();
     });
   }
@@ -2499,7 +2583,7 @@
   // ── Theme toggle ──────────────────────────────────────────────────────────
 
   var MOON_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>';
-  var SUN_SVG  = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>';
+  var SUN_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>';
 
   function injectThemeToggle() {
     if (!isAppPage()) return;
@@ -2542,8 +2626,12 @@
     window.__shoug_fb = firebase;
     window.dispatchEvent(new CustomEvent("shoug:fb"));
 
-    // Show sign-in button immediately (before auth resolves)
-    setHeaderButton(null);
+    // Show sign-in button immediately (before auth resolves) — unless we know
+    // from the last session that the visitor was signed in, in which case show
+    // a pending avatar instead of flashing "Sign In" while Firebase reconnects.
+    var wasSignedIn = false;
+    try { wasSignedIn = localStorage.getItem("shoug-was-signed-in") === "1"; } catch (e) { }
+    setHeaderButton(wasSignedIn ? "pending" : null);
     injectThemeToggle();
     injectBlueprintCredit();
 
@@ -2636,7 +2724,7 @@
         if (!target || target === hoverTarget) return;
         hoverTarget = target;
         clearTimeout(hoverTimer);
-        hoverTimer = setTimeout(function(){ start(target); }, 450);
+        hoverTimer = setTimeout(function () { start(target); }, 450);
       }
 
       function onPointerOut(event) {
@@ -2674,6 +2762,10 @@
     });
 
     firebase.auth().onAuthStateChanged(function (user) {
+      try {
+        if (user) localStorage.setItem("shoug-was-signed-in", "1");
+        else localStorage.removeItem("shoug-was-signed-in");
+      } catch (e) { }
       if (!user && _notifUnsub) { _notifUnsub(); _notifUnsub = null; }
       if (!user) stopExamReminder();
       setHeaderButton(user);
@@ -2682,6 +2774,7 @@
       removeAppNav();
       removeCommentSection();
       if (user) {
+        syncAccountCache(user);
         injectCompleteBtn(user);
         injectPageIcons(user);
         injectAppNav(user);
@@ -2698,9 +2791,13 @@
 
   function loadAndBoot() {
     loadScript(FB_BASE + "app-compat.js", function () {
-      loadScript(FB_BASE + "auth-compat.js", function () {
-        loadScript(FB_BASE + "firestore-compat.js", boot);
-      });
+      // auth-compat and firestore-compat both just attach onto the `firebase`
+      // namespace created by app-compat — they don't depend on each other, so
+      // loading them in parallel (instead of chained) saves a network round trip.
+      var pending = 2;
+      function done() { if (--pending === 0) boot(); }
+      loadScript(FB_BASE + "auth-compat.js", done);
+      loadScript(FB_BASE + "firestore-compat.js", done);
     });
   }
 
