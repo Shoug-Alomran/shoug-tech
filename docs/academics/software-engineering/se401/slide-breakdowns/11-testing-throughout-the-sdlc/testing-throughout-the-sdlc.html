@@ -1,0 +1,1227 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Testing Throughout the SDLC — The Mirrored V | SE401 Ch.11</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --radius-sm: 8px;
+            --radius-md: 14px;
+            --radius-lg: 22px;
+            --font-head: 'Sora', sans-serif;
+            --font-body: 'Inter', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+            --maxw: 1200px;
+        }
+
+        html[data-theme="dark"] {
+            --bg: #0b141c;
+            --surface: #101d28;
+            --surface-2: #152633;
+            --ink: #e6eef4;
+            --ink-dim: #8ea4b5;
+            --line: #223546;
+            --accent: #4f9dff;
+            --accent-2: #e5a642;
+            --danger: #ef6a6a;
+            --danger-2: #6fcf8f;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        html[data-theme="light"] {
+            --bg: #eef2f5;
+            --surface: #ffffff;
+            --surface-2: #f2f5f7;
+            --ink: #142433;
+            --ink-dim: #4f6577;
+            --line: #d7e0e7;
+            --accent: #1f6fd6;
+            --accent-2: #b5760f;
+            --danger: #c93b3b;
+            --danger-2: #1f9457;
+            --shadow: 0 10px 26px rgba(15, 30, 45, 0.10);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            background:
+                radial-gradient(circle at 1px 1px, var(--line) 1px, transparent 1px) 0 0/26px 26px,
+                var(--bg);
+            color: var(--ink);
+            font-family: var(--font-body);
+            font-size: clamp(15px, 0.4vw + 14px, 17px);
+            line-height: 1.6;
+            transition: background-color .35s ease, color .35s ease;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: var(--font-head);
+            margin: 0;
+            letter-spacing: -0.01em;
+        }
+
+        a { color: inherit; }
+        .mono { font-family: var(--font-mono); }
+
+        .wrap {
+            max-width: var(--maxw);
+            margin: 0 auto;
+            padding: 0 clamp(16px, 4vw, 40px);
+        }
+
+        header.top {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            backdrop-filter: blur(10px);
+            background: color-mix(in srgb, var(--bg) 78%, transparent);
+            border-bottom: 1px solid var(--line);
+        }
+
+        .top-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px clamp(16px, 4vw, 40px);
+            max-width: var(--maxw);
+            margin: 0 auto;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .brand { display: flex; align-items: center; gap: 10px; }
+        .brand .logo-mini { width: 30px; height: 30px; flex: none; }
+        .brand-text { font-family: var(--font-head); font-weight: 700; font-size: 1.05rem; }
+        .brand-text span { color: var(--accent); }
+
+        nav.pillnav { display: flex; gap: 5px; flex-wrap: wrap; }
+
+        nav.pillnav a {
+            font-family: var(--font-mono);
+            font-size: 0.68rem;
+            text-decoration: none;
+            color: var(--ink-dim);
+            padding: 6px 9px;
+            border-radius: 999px;
+            border: 1px solid transparent;
+            white-space: nowrap;
+            transition: all .2s ease;
+        }
+
+        nav.pillnav a:hover { color: var(--ink); border-color: var(--line); background: var(--surface); }
+
+        .theme-toggle { display: flex; align-items: center; gap: 8px; font-family: var(--font-mono); font-size: 0.7rem; color: var(--ink-dim); }
+
+        .switch {
+            width: 46px; height: 26px; border-radius: 999px; background: var(--surface-2);
+            border: 1px solid var(--line); position: relative; cursor: pointer; flex: none;
+        }
+
+        .switch .knob {
+            position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; border-radius: 50%;
+            background: var(--accent); transition: left .25s ease, background .25s ease;
+        }
+
+        html[data-theme="light"] .switch .knob { left: 22px; }
+
+        .hero { padding: clamp(40px, 7vw, 80px) 0 clamp(20px, 4vw, 40px); }
+
+        .hero-grid {
+            display: grid; grid-template-columns: 1.2fr 0.8fr; gap: clamp(20px, 4vw, 50px); align-items: center;
+        }
+
+        @media (max-width:820px) { .hero-grid { grid-template-columns: 1fr; } }
+
+        .eyebrow {
+            font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase;
+            color: var(--accent-2); margin-bottom: 14px; display: flex; align-items: center; gap: 10px;
+        }
+
+        .eyebrow::before { content: ''; width: 26px; height: 1px; background: var(--accent-2); }
+
+        h1.hero-title { font-size: clamp(2.1rem, 5vw, 3.5rem); line-height: 1.06; font-weight: 700; }
+        h1.hero-title em { font-style: normal; color: var(--accent); }
+
+        .hero-sub { margin-top: 18px; color: var(--ink-dim); max-width: 56ch; font-size: 1.02rem; }
+
+        .hero-badges { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 22px; }
+
+        .badge {
+            font-family: var(--font-mono); font-size: 0.72rem; padding: 6px 12px; border-radius: 8px;
+            background: var(--surface); border: 1px solid var(--line); color: var(--ink-dim);
+        }
+
+        .blueprint-wrap { display: flex; justify-content: center; }
+        .blueprint-wrap svg { width: min(360px, 92%); height: auto; }
+
+        section { padding: clamp(30px, 5vw, 60px) 0; border-top: 1px solid var(--line); }
+        section:first-of-type { border-top: none; }
+
+        .sec-head { margin-bottom: clamp(20px, 3vw, 34px); max-width: 74ch; }
+        .sec-num { font-family: var(--font-mono); color: var(--accent); font-size: 0.78rem; letter-spacing: 0.1em; }
+        .sec-title { font-size: clamp(1.5rem, 3vw, 2.05rem); margin-top: 6px; }
+        .sec-desc { color: var(--ink-dim); margin-top: 10px; font-size: 0.98rem; }
+
+        .mnemonic {
+            background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 14%, transparent), transparent);
+            border: 1px dashed color-mix(in srgb, var(--accent) 55%, var(--line));
+            border-radius: var(--radius-md); padding: 16px 20px; display: flex; gap: 14px;
+            align-items: flex-start; margin: 18px 0;
+        }
+
+        .mnemonic .icon { font-size: 1.4rem; flex: none; line-height: 1; }
+        .mnemonic .label { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); }
+        .mnemonic .phrase { font-family: var(--font-head); font-weight: 600; font-size: 1.05rem; margin-top: 3px; }
+        .mnemonic .decode { color: var(--ink-dim); font-size: 0.86rem; margin-top: 4px; }
+
+        .stack-diagram {
+            display: grid; grid-template-columns: 1fr; gap: 0; margin-top: 20px;
+            border: 1px solid var(--line); border-radius: var(--radius-lg); overflow: hidden;
+        }
+
+        .stack-layer { padding: 18px clamp(16px, 3vw, 26px); position: relative; }
+        .stack-layer.a { background: color-mix(in srgb, var(--accent) 10%, var(--surface)); border-bottom: 1px dashed var(--line); }
+        .stack-layer.b { background: var(--surface); }
+        .stack-layer .tag { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); }
+        .stack-layer.b .tag { color: var(--accent-2); }
+        .stack-layer h4 { font-size: 1.1rem; margin-top: 6px; }
+        .stack-layer p { color: var(--ink-dim); font-size: 0.9rem; margin-top: 6px; max-width: 74ch; }
+
+        .timeline { position: relative; margin-top: 26px; padding-left: 28px; }
+        .timeline::before { content: ''; position: absolute; left: 8px; top: 6px; bottom: 6px; width: 2px; background: var(--line); }
+        .tl-item { position: relative; padding-bottom: 26px; }
+        .tl-item:last-child { padding-bottom: 0; }
+        .tl-dot { position: absolute; left: -28px; top: 2px; width: 18px; height: 18px; border-radius: 50%; background: var(--surface); border: 2px solid var(--accent); }
+        .tl-year { font-family: var(--font-mono); font-size: 0.78rem; color: var(--accent); }
+        .tl-item h4 { font-size: 1.03rem; margin-top: 4px; }
+        .tl-item p { color: var(--ink-dim); font-size: 0.88rem; margin-top: 6px; max-width: 70ch; }
+        .tl-item .tl-key { font-size: 0.82rem; margin-top: 6px; color: var(--ink); font-style: italic; }
+
+        .grid5 { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; margin-top: 20px; }
+
+        .type-card {
+            background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-md);
+            padding: 18px; transition: transform .2s ease, box-shadow .2s ease;
+        }
+
+        .type-card:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
+        .type-card .icon { font-size: 1.6rem; }
+        .type-card h4 { font-size: 1.0rem; margin-top: 8px; }
+        .type-card p { color: var(--ink-dim); font-size: 0.85rem; margin: 8px 0 0; }
+
+        .qa-deep {
+            background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg);
+            padding: clamp(18px, 3vw, 30px); margin-bottom: 26px; position: relative; border-left: 5px solid var(--accent);
+        }
+
+        .qa-deep-head { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; justify-content: space-between; }
+        .qa-deep h3 { font-size: clamp(1.25rem, 2.3vw, 1.6rem); }
+        .qa-tag { font-family: var(--font-mono); font-size: 0.7rem; padding: 5px 11px; border-radius: 999px; background: var(--surface-2); border: 1px solid var(--line); color: var(--ink-dim); }
+        .qa-def { margin-top: 10px; color: var(--ink); font-size: 0.98rem; max-width: 80ch; }
+
+        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; margin-top: 20px; }
+        @media (max-width:760px) { .two-col { grid-template-columns: 1fr; } }
+
+        .subhead { font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent-2); margin-bottom: 10px; display: block; }
+
+        .pattern-chip-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
+        .pattern-chip { font-family: var(--font-mono); font-size: 0.75rem; padding: 5px 12px; border-radius: 999px; background: color-mix(in srgb, var(--accent) 14%, var(--surface-2)); border: 1px solid var(--line); }
+
+        .example-strip { margin-top: 16px; background: color-mix(in srgb, var(--accent-2) 10%, transparent); border: 1px solid color-mix(in srgb, var(--accent-2) 35%, var(--line)); border-radius: var(--radius-sm); padding: 12px 14px; font-size: 0.86rem; }
+        .example-strip b { color: var(--accent-2); }
+
+        .rule-box { margin-top: 14px; background: var(--surface-2); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 12px 14px; font-size: 0.84rem; color: var(--ink-dim); }
+        .rule-box b { color: var(--ink); }
+
+        .cheat-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        .cheat-table th, .cheat-table td { border: 1px solid var(--line); padding: 12px 14px; text-align: left; font-size: 0.85rem; vertical-align: top; }
+        .cheat-table th { background: var(--surface-2); font-family: var(--font-mono); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent-2); }
+        .cheat-table tr:nth-child(even) td { background: color-mix(in srgb, var(--surface-2) 55%, transparent); }
+        .table-scroll { overflow-x: auto; }
+
+        .examroom {
+            background: repeating-linear-gradient(180deg, var(--surface) 0px, var(--surface) 27px, var(--surface-2) 28px);
+            border: 1px solid var(--line); border-radius: var(--radius-lg); padding: clamp(18px, 3vw, 28px);
+        }
+
+        .practice-q { border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface); padding: 14px 16px; margin: 12px 0; font-size: 0.92rem; }
+        .practice-q .req { color: var(--ink); }
+        .practice-q .ans { margin-top: 8px; font-family: var(--font-mono); font-size: 0.78rem; color: var(--accent); }
+        .practice-q .why { margin-top: 6px; color: var(--ink-dim); font-size: 0.82rem; }
+
+        /* mistakes */
+        .mistake-box {
+            border: 1px solid color-mix(in srgb, var(--danger) 40%, var(--line));
+            border-radius: var(--radius-md);
+            background: color-mix(in srgb, var(--danger) 7%, var(--surface));
+            padding: 16px 20px;
+            margin: 16px 0;
+        }
+        .mistake-box h4 { font-size: 1rem; margin-bottom: 10px; }
+        .mistake-row { display: flex; gap: 10px; align-items: flex-start; padding: 6px 0; font-size: 0.88rem; }
+        .mistake-row .tag-wrong { font-family: var(--font-mono); font-size: 0.72rem; color: var(--danger); flex: none; width: 78px; font-weight: 600; }
+        .mistake-row .tag-right { font-family: var(--font-mono); font-size: 0.72rem; color: var(--danger-2); flex: none; width: 78px; font-weight: 600; }
+        .mistake-row p { margin: 0; color: var(--ink); }
+        .mistake-why { margin-top: 6px; color: var(--ink-dim); font-size: 0.82rem; padding-left: 88px; }
+
+        /* quiz */
+        .quiz-list { display: flex; flex-direction: column; gap: 12px; margin-top: 20px; }
+        .quiz-item { border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--surface); padding: 14px 18px; }
+        .quiz-q { display: flex; justify-content: space-between; align-items: center; gap: 12px; cursor: pointer; }
+        .quiz-q p { margin: 0; font-weight: 600; font-size: 0.95rem; }
+        .quiz-reveal { font-family: var(--font-mono); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent); background: var(--surface-2); border: 1px solid var(--line); border-radius: 999px; padding: 6px 12px; cursor: pointer; flex: none; }
+        .quiz-answer { max-height: 0; overflow: hidden; opacity: 0; transition: max-height .3s ease, opacity .25s ease, margin .3s ease; font-size: 0.88rem; color: var(--ink-dim); }
+        .quiz-answer.open { max-height: 300px; opacity: 1; margin-top: 12px; }
+        .quiz-answer b { color: var(--ink); }
+        .qtag { font-family: var(--font-mono); font-size: 0.65rem; color: var(--accent-2); text-transform: uppercase; letter-spacing: 0.06em; }
+
+        /* chunk table */
+        .chunk-table td:first-child, .chunk-table th:first-child { font-family: var(--font-mono); font-weight: 600; color: var(--accent); }
+
+        footer { padding: 40px clamp(16px, 4vw, 40px) 60px; text-align: center; color: var(--ink-dim); font-family: var(--font-mono); font-size: 0.78rem; }
+        footer .made { color: var(--ink); font-weight: 600; margin-top: 6px; }
+        footer .made span { color: var(--accent); }
+        .toc-hint { margin-top: 26px; color: var(--ink-dim); font-size: 0.82rem; }
+        ::selection { background: var(--accent); color: #fff; }
+
+        code { font-family: var(--font-mono); background: color-mix(in srgb, var(--surface-2) 80%, transparent); padding: 1px 5px; border-radius: 4px; font-size: 0.88em; }
+    </style>
+
+    <meta name="description" content="Every development activity has a matching testing activity. Walk the V-model from component to acceptance testing, tour the four test types, and cover maintenance testing — built from the SE401 lecture deck.">
+    <link rel="canonical" href="https://shoug-tech.com/academics/software-engineering/se401/slide-breakdowns/11-testing-throughout-the-sdlc/testing-throughout-the-sdlc.html">
+    <meta property="og:title" content="Testing Throughout the SDLC — The Mirrored V | SE401 Ch.11">
+    <meta property="og:description" content="Every development activity has a matching testing activity. Walk the V-model from component to acceptance testing, tour the four test types, and cover maintenance testing — built from the SE401 lecture deck.">
+    <meta property="og:url" content="https://shoug-tech.com/academics/software-engineering/se401/slide-breakdowns/11-testing-throughout-the-sdlc/testing-throughout-the-sdlc.html">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://shoug-tech.com/logo.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Testing Throughout the SDLC — The Mirrored V | SE401 Ch.11">
+    <meta name="twitter:description" content="Every development activity has a matching testing activity. Walk the V-model from component to acceptance testing, tour the four test types, and cover maintenance testing — built from the SE401 lecture deck.">
+    <meta name="twitter:image" content="https://shoug-tech.com/logo.png">
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","url":"https://shoug-tech.com/academics/software-engineering/se401/slide-breakdowns/11-testing-throughout-the-sdlc/testing-throughout-the-sdlc.html","name":"Testing Throughout the SDLC — The Mirrored V | SE401 Ch.11","description":"Every development activity has a matching testing activity. Walk the V-model from component to acceptance testing, tour the four test types, and cover maintenance testing — built from the SE401 lecture deck.","isPartOf":{"@type":"WebSite","name":"Shoug's Digital Garden","url":"https://shoug-tech.com/"}}</script>
+
+    <link rel="alternate" hreflang="en" href="https://shoug-tech.com/academics/software-engineering/se401/slide-breakdowns/11-testing-throughout-the-sdlc/testing-throughout-the-sdlc.html">
+    <link rel="alternate" hreflang="ar" href="https://shoug-tech.com/ar/academics/software-engineering/se401/slide-breakdowns/11-testing-throughout-the-sdlc/testing-throughout-the-sdlc.html">
+    <link rel="alternate" hreflang="x-default" href="https://shoug-tech.com/academics/software-engineering/se401/slide-breakdowns/11-testing-throughout-the-sdlc/testing-throughout-the-sdlc.html">
+</head>
+
+<body>
+
+    <header class="top">
+        <div class="top-inner">
+            <div class="brand">
+                <svg class="logo-mini" viewBox="0 0 40 40">
+                    <path d="M8 8 L20 32 L32 8" fill="none" stroke="var(--accent)" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" />
+                </svg>
+                <div class="brand-text">SDLC<span>·</span>Testing Map</div>
+            </div>
+            <nav class="pillnav">
+                <a href="#models">Dev Models</a>
+                <a href="#vv">V&amp;V</a>
+                <a href="#lifecycle">Life Cycle</a>
+                <a href="#levels">Levels Overview</a>
+                <a href="#component">Component</a>
+                <a href="#integration">Integration</a>
+                <a href="#system">System</a>
+                <a href="#acceptance">Acceptance</a>
+                <a href="#types">Test Types</a>
+                <a href="#iso9126">ISO 9126</a>
+                <a href="#maintenance">Maintenance</a>
+                <a href="#cheat">Cheat Sheet</a>
+                <a href="#mistakes">Mistakes</a>
+                <a href="#quiz">Pop Quiz</a>
+                <a href="#lab">Practice Lab</a>
+            </nav>
+            <div class="theme-toggle">
+                <span id="theme-label">DARK</span>
+                <div class="switch" id="switch" role="button" aria-label="Toggle theme">
+                    <div class="knob"></div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+
+        <!-- HERO -->
+        <section class="hero">
+            <div class="wrap hero-grid">
+                <div>
+                    <div class="eyebrow">SE401 · Software Quality Assurance and Testing · Chapter 11</div>
+                    <h1 class="hero-title">Every build step<br>has a <em>mirror-image test step.</em></h1>
+                    <p class="hero-sub">Draw the SDLC as a straight line, then fold it in half at Implementation — that
+                        fold is the <b>V-model</b>. Requirements mirror Acceptance test, design mirrors System test,
+                        detailed design mirrors Component test. This chapter is that mirror, plus what happens
+                        inside each reflection: which test level, which test type, and what still needs testing
+                        after the system ships.</p>
+                    <div class="hero-badges">
+                        <div class="badge">3 life-cycle models</div>
+                        <div class="badge">4 test levels</div>
+                        <div class="badge">4 test types</div>
+                        <div class="badge">Maintenance testing</div>
+                    </div>
+                </div>
+                <div class="blueprint-wrap">
+                    <svg viewBox="0 0 320 300">
+                        <g font-family="JetBrains Mono" font-size="9" fill="var(--ink-dim)">
+                            <line x1="40" y1="30" x2="160" y2="230" stroke="var(--accent)" stroke-width="2" />
+                            <line x1="280" y1="30" x2="160" y2="230" stroke="var(--accent-2)" stroke-width="2" />
+                            <circle cx="40" cy="30" r="7" fill="var(--accent)" /><text x="52" y="26">User req.</text>
+                            <circle cx="90" cy="80" r="7" fill="var(--accent)" /><text x="102" y="76">System req.</text>
+                            <circle cx="120" cy="130" r="7" fill="var(--accent)" /><text x="132" y="126">Global design</text>
+                            <circle cx="150" cy="185" r="7" fill="var(--accent)" /><text x="160" y="181">Detail design</text>
+                            <circle cx="160" cy="230" r="8" fill="var(--ink)" /><text x="140" y="252" text-anchor="middle">Implementation</text>
+                            <circle cx="230" cy="185" r="7" fill="var(--accent-2)" /><text x="238" y="181">Component test</text>
+                            <circle cx="255" cy="130" r="7" fill="var(--accent-2)" /><text x="150" y="118" text-anchor="end">Integration test</text>
+                            <circle cx="265" cy="80" r="7" fill="var(--accent-2)" /><text x="150" y="68" text-anchor="end">System test</text>
+                            <circle cx="280" cy="30" r="7" fill="var(--accent-2)" /><text x="150" y="18" text-anchor="end">Acceptance test</text>
+                        </g>
+                    </svg>
+                </div>
+            </div>
+        </section>
+
+        <!-- DEV MODELS -->
+        <section id="models">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 01 — SOFTWARE DEVELOPMENT MODELS</div>
+                    <h2 class="sec-title">The life-cycle model decides how testing gets organized</h2>
+                    <p class="sec-desc">Testing is highly related to development activities — so before you can talk
+                        about test levels, you need the shape of the development process they hang off of.</p>
+                </div>
+
+                <div class="mnemonic">
+                    <div class="icon">🪞</div>
+                    <div>
+                        <div class="label">Memory hook</div>
+                        <div class="phrase">"Fold the waterfall in half and it becomes a V."</div>
+                        <div class="decode">Waterfall is a straight cascade of phases ending in Testing. Fold that
+                            cascade at Implementation and mirror each phase with a matching test-execution phase — that
+                            fold is the V-model.</div>
+                    </div>
+                </div>
+
+                <div class="stack-diagram">
+                    <div class="stack-layer a">
+                        <span class="tag">Waterfall model</span>
+                        <h4>User requirements → System requirements → Global design → Detailed design → Implementation → Testing</h4>
+                        <p>A strict cascade: each phase finishes before the next starts, and testing sits as one block
+                            at the very end.</p>
+                    </div>
+                    <div class="stack-layer b">
+                        <span class="tag">The V-model</span>
+                        <h4>The same cascade, mirrored, with a test-preparation and test-execution stage for every development stage</h4>
+                        <p>Testing needs to begin as early as possible in the life cycle and can be integrated into
+                            each phase. Within the V-model, validation testing takes place especially during the
+                            early stages (reviewing the user requirements) <b>and</b> late in the life cycle (during
+                            user acceptance testing).</p>
+                    </div>
+                    <div class="stack-layer a">
+                        <span class="tag">Iterative-incremental development</span>
+                        <h4>Define → Develop → Build → Test → Implement, repeated per phase</h4>
+                        <p>The process of establishing requirements, designing, building and testing a system carried
+                            out as a series of shorter development cycles. Each <b>increment</b>, added to what was
+                            built previously, forms a growing partial system — which should also be tested.
+                            <b>Regression testing is increasingly important to all iteration phases after the
+                            first one.</b></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- V AND V -->
+        <section id="vv">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 02 — WHAT TESTING IS FOCUSED ON</div>
+                    <h2 class="sec-title">Verification vs. Validation</h2>
+                    <p class="sec-desc">Two questions, asked at different moments, and constantly confused.</p>
+                </div>
+
+                <div class="mnemonic">
+                    <div class="icon">🔧</div>
+                    <div>
+                        <div class="label">Memory hook</div>
+                        <div class="phrase">"veRification = Right way. vAlidation = right thing."</div>
+                        <div class="decode">Verification: am I building the SW <b>correctly</b>? Validation: am I
+                            building the <b>right</b> SW?</div>
+                    </div>
+                </div>
+
+                <div class="two-col">
+                    <div class="qa-deep" style="margin-bottom:0;">
+                        <div class="qa-deep-head"><h3>Verification</h3><span class="qa-tag">correctly built</span></div>
+                        <p class="qa-def"><i>"Am I building the SW correctly?"</i> — is the deliverable built
+                            according to the specifications?</p>
+                    </div>
+                    <div class="qa-deep" style="margin-bottom:0; border-left-color: var(--accent-2);">
+                        <div class="qa-deep-head"><h3>Validation</h3><span class="qa-tag">right SW</span></div>
+                        <p class="qa-def"><i>"Am I building the right SW?"</i> — is the deliverable fit for purpose,
+                            e.g. does it provide a solution to the problem?</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- LIFE CYCLE -->
+        <section id="lifecycle">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 03 — TESTING WITHIN A LIFE CYCLE MODEL</div>
+                    <h2 class="sec-title">Four traits of good testing, in any model</h2>
+                </div>
+
+                <div class="grid5">
+                    <div class="type-card">
+                        <div class="icon">🔁</div>
+                        <h4>1 — Matching activity</h4>
+                        <p>Every development activity has a corresponding testing activity.</p>
+                    </div>
+                    <div class="type-card">
+                        <div class="icon">🎯</div>
+                        <h4>2 — Level-specific objectives</h4>
+                        <p>Each test level has test objectives specific to that level.</p>
+                    </div>
+                    <div class="type-card">
+                        <div class="icon">✍️</div>
+                        <h4>3 — Design starts early</h4>
+                        <p>The analysis &amp; design of tests for a given test level should begin during the
+                            corresponding development activity.</p>
+                    </div>
+                    <div class="type-card">
+                        <div class="icon">👀</div>
+                        <h4>4 — Testers review drafts</h4>
+                        <p>Testers should be involved in reviewing documents as soon as drafts are available in the
+                            development life cycle.</p>
+                    </div>
+                </div>
+
+                <div class="rule-box" style="margin-top:20px;"><b>Flexibility rule:</b> test levels can be combined
+                    or reorganized depending on the nature of the project or the system architecture.</div>
+
+                <div class="subhead" style="margin-top:28px;">The V-model, level by level</div>
+                <div class="table-scroll">
+                <table class="cheat-table chunk-table">
+                    <tr><th>Development stage</th><th>Test preparation</th><th>Test execution stage</th></tr>
+                    <tr><td>User requirements</td><td>Preparation acceptance test</td><td>Acceptance test execution → operational system</td></tr>
+                    <tr><td>System requirements</td><td>Preparation system test</td><td>System test execution</td></tr>
+                    <tr><td>Global design</td><td>Preparation integration test</td><td>Integration test execution</td></tr>
+                    <tr><td>Detailed design</td><td>—</td><td>Component test execution</td></tr>
+                    <tr><td>Implementation</td><td colspan="2">feeds directly into component test execution</td></tr>
+                </table>
+                </div>
+                <div class="example-strip"><b>Read the arrows:</b> each dev stage on the left points across to its
+                    preparation stage, which points up to its execution stage — that's the literal shape of the "V".
+                    The higher up the V, the bigger the scope of both the requirement and the test.</div>
+            </div>
+        </section>
+
+        <!-- TEST LEVELS OVERVIEW -->
+        <section id="levels">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 04 — TEST LEVELS</div>
+                    <h2 class="sec-title">Four levels, stacked bottom to top</h2>
+                    <p class="sec-desc">For each test level, the deck asks you to know: the generic objectives, the
+                        test basis (docs/products used to derive test cases), the test objects (what is being
+                        tested), typical defects/failures found, and specific approaches &amp; responsibilities.</p>
+                </div>
+
+                <div class="mnemonic">
+                    <div class="icon">🏛️</div>
+                    <div>
+                        <div class="label">Chunking acronym — bottom to top</div>
+                        <div class="phrase">"CISA" — Component → Integration → System → Acceptance</div>
+                        <div class="decode">Picture stacked discs growing wider as you go up: black
+                            (<b>C</b>omponent, smallest — any module/program/object separately testable) →
+                            dark blue (<b>I</b>ntegration, interfaces between components + interactions with other
+                            systems) → light blue (<b>S</b>ystem, the whole product as defined by project scope) →
+                            outline (<b>A</b>cceptance, widest — the customer's responsibility, goal is confidence
+                            in the system).</div>
+                    </div>
+                </div>
+
+                <div class="grid5">
+                    <div class="type-card"><div class="icon">⚫</div><h4>Component (Unit)</h4><p>Any module, program, object separately testable.</p></div>
+                    <div class="type-card"><div class="icon">🔵</div><h4>Integration</h4><p>Interfaces between components; interactions with other systems (OS, HW, …).</p></div>
+                    <div class="type-card"><div class="icon">🔷</div><h4>System</h4><p>Behavior of the whole product as defined by the project scope.</p></div>
+                    <div class="type-card"><div class="icon">⚪</div><h4>Acceptance</h4><p>Responsibility of the customer — goal is to gain confidence in the system.</p></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- COMPONENT TESTING -->
+        <section id="component">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 05 — LEVEL 1</div>
+                    <h2 class="sec-title">Component testing</h2>
+                </div>
+                <div class="qa-deep">
+                    <div class="qa-deep-head"><h3>Component testing</h3><span class="qa-tag">a.k.a. unit testing</span></div>
+                    <p class="qa-def">Verifying the functioning of software items (modules, methods, objects, classes
+                        etc.) that are separately testable. Includes testing of functionality <b>and</b> specific
+                        non-functional characteristics, such as resource behavior (e.g. memory leaks), robustness
+                        testing, and structural testing (e.g. branch coverage).</p>
+
+                    <div class="two-col">
+                        <div>
+                            <span class="subhead">Test basis</span>
+                            <p style="color:var(--ink-dim); font-size:0.9rem;">All materials applicable for the
+                                component under test: specification of the component, software design, the data
+                                model (e.g. class diagrams), and the code itself.</p>
+                            <span class="subhead" style="margin-top:16px;">Approach &amp; responsibility</span>
+                            <div class="rule-box">Component testing usually involves the <b>programmer who wrote the
+                                code</b>. Defects are fixed as soon as they are found, without formal recording of
+                                incidents. TDD (test-driven development) — prepare and automate test cases before
+                                coding — is used in XP (extreme programming).</div>
+                        </div>
+                        <div>
+                            <span class="subhead">Stubs &amp; drivers</span>
+                            <p style="color:var(--ink-dim); font-size:0.9rem;">Writing code to test the project code —
+                                stubs, drivers, and simulators may be used.</p>
+                            <div class="pattern-chip-row">
+                                <span class="pattern-chip">Stub</span>
+                                <span class="pattern-chip">Driver</span>
+                            </div>
+                            <div class="example-strip" style="margin-top:12px;"><b>Stub:</b> code that replaces a
+                                called component in order to simulate its purpose (e.g. "hard-coded" data replacing
+                                data from a database).<br><br><b>Driver:</b> code that replaces another software
+                                component in order to call the component under test.</div>
+                        </div>
+                    </div>
+
+                    <span class="subhead" style="margin-top:20px; display:block;">Worked example (from the slides)</span>
+                    <div class="rule-box mono" style="font-size:0.78rem; white-space:pre; overflow-x:auto;">public void getLocationListTest()
+{
+    //Arrange
+    VisitorRepositoryStub stub = new VisitorRepositoryStub();
+    VisitorBLL bll = new VisitorBLL(stub);
+    List&lt;LocationSummary&gt; expectedResult = stub.getLocationList("nb-NO");
+    //Act
+    List&lt;LocationSummary&gt; result = bll.getLocationList("nb-NO");
+    //Assert
+    Assert.Equal(expectedResult.Count(), result.Count());
+    Assert.Equal(expectedResult[0].id, result[0].id);
+}</div>
+                    <div class="example-strip"><b>Arrange–Act–Assert:</b> a <code>VisitorRepositoryStub</code> stands
+                        in for the real database repository so <code>VisitorBLL</code> can be tested in isolation —
+                        exactly the stub definition above, made concrete.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- INTEGRATION TESTING -->
+        <section id="integration">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 06 — LEVEL 2</div>
+                    <h2 class="sec-title">Integration testing</h2>
+                </div>
+                <div class="qa-deep">
+                    <div class="qa-deep-head"><h3>Integration testing</h3><span class="qa-tag">interfaces between parts</span></div>
+                    <p class="qa-def">Tests interfaces between components. Test interactions with different parts of
+                        a system, such as the operating system, file system, hardware, and interfaces between
+                        systems.</p>
+
+                    <div class="two-col">
+                        <div>
+                            <span class="subhead">Two types</span>
+                            <div class="table-scroll">
+                            <table class="cheat-table">
+                                <tr><th>Component integration</th><td>Tests the interactions between software components — done <b>after</b> component testing.</td></tr>
+                                <tr><th>System integration</th><td>Tests the interactions between different systems — done <b>after</b> system testing.</td></tr>
+                            </table>
+                            </div>
+                            <span class="subhead" style="margin-top:16px;">Test basis &amp; test objects</span>
+                            <p style="color:var(--ink-dim); font-size:0.88rem;">Basis: software and system design, the
+                                system architecture, workflows/use cases. Objects: builds including some or all
+                                components of the system, database elements, system infrastructure, interfaces
+                                between components/objects, system configuration, configuration data.</p>
+                        </div>
+                        <div>
+                            <span class="subhead">Approach &amp; responsibilities</span>
+                            <div class="rule-box">Start integration with those components that are expected to cause
+                                the <b>most problems</b>.</div>
+                            <div class="rule-box" style="margin-top:10px;"><b>Big bang vs. incremental (a past exam
+                                point):</b> to reduce the risk of late defect discovery, integration should normally
+                                be <b>incremental rather than "big bang."</b></div>
+                            <div class="rule-box" style="margin-top:10px;">Both functional and structural approaches
+                                may be used. Ideally, testers should understand the architecture and influence
+                                integration planning. Can be done by the developers or by a separate team.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SYSTEM TESTING -->
+        <section id="system">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 07 — LEVEL 3</div>
+                    <h2 class="sec-title">System testing</h2>
+                </div>
+                <div class="qa-deep">
+                    <div class="qa-deep-head"><h3>System testing</h3><span class="qa-tag">the whole product</span></div>
+                    <p class="qa-def">Testing the behavior of the whole system as defined by the scope of the
+                        project.</p>
+
+                    <div class="two-col">
+                        <div>
+                            <span class="subhead">Test basis</span>
+                            <p style="color:var(--ink-dim); font-size:0.88rem;">System requirements specification
+                                (functional and non-functional), business processes, risk analysis, use cases, other
+                                high-level descriptions of system behavior and interactions with OS/system resources.
+                                Requirements may exist as text and/or models — and testers also need to deal with
+                                incomplete or undocumented requirements.</p>
+                            <span class="subhead" style="margin-top:16px;">Test objects</span>
+                            <p style="color:var(--ink-dim); font-size:0.88rem;">The entire integrated system, user
+                                manuals, operation manuals, system configuration information, configuration data.</p>
+                        </div>
+                        <div>
+                            <span class="subhead">Approach &amp; responsibilities</span>
+                            <div class="rule-box">Test environment should correspond to the production environment as
+                                much as possible (e.g. same OS).</div>
+                            <div class="rule-box" style="margin-top:10px;"><b>Ordering rule to memorize:</b> first,
+                                the most suited <b>black-box</b> technique — then, <b>white-box</b> technique to
+                                assess the thoroughness of testing.</div>
+                            <div class="rule-box" style="margin-top:10px;">An independent test team may be
+                                responsible for the testing. The level of independence is based on the applicable
+                                risk level.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ACCEPTANCE TESTING -->
+        <section id="acceptance">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 08 — LEVEL 4</div>
+                    <h2 class="sec-title">Acceptance testing</h2>
+                </div>
+                <div class="qa-deep">
+                    <div class="qa-deep-head"><h3>Acceptance testing</h3><span class="qa-tag">the customer's call</span></div>
+                    <p class="qa-def">Answers three questions: can the system be released? What are the outstanding
+                        risks? Has development met its obligations? The goal is to establish confidence in the
+                        system and in its non-functional characteristics.</p>
+
+                    <div class="mnemonic" style="margin-top:16px;">
+                        <div class="icon">💉</div>
+                        <div>
+                            <div class="label">Four types, memory hook</div>
+                            <div class="phrase">"User Operates, Contracts Approve"</div>
+                            <div class="decode">User acceptance testing · Operational testing · Contract &amp;
+                                regulation acceptance testing · Alpha/beta testing</div>
+                        </div>
+                    </div>
+
+                    <div class="two-col">
+                        <div>
+                            <span class="subhead">Test basis</span>
+                            <p style="color:var(--ink-dim); font-size:0.88rem;">User requirements specification, use
+                                cases, system requirements specification, business processes, risk analysis.</p>
+                            <span class="subhead" style="margin-top:16px;">Responsibilities</span>
+                            <p style="color:var(--ink-dim); font-size:0.88rem;">Customers or users of a system.
+                                Stakeholders may be involved.</p>
+                        </div>
+                        <div>
+                            <div class="table-scroll">
+                            <table class="cheat-table">
+                                <tr><th>User acceptance testing</th><td>Validates the fitness for use of the system by users.</td></tr>
+                                <tr><th>Operational testing</th><td>Usually done by system administrators: backup/restore, disaster recovery, user management, maintenance tasks, periodic checks of security vulnerabilities.</td></tr>
+                                <tr><th>Contract &amp; regulation acceptance testing</th><td>Performed against a contract's acceptance criteria (e.g. governmental, legal, or safety regulations).</td></tr>
+                                <tr><th>Alpha / beta testing</th><td>Alpha: performed at the developing organization's site. Beta (field testing): performed by people at their own locations. <b>Both are performed by potential customers, not the developers of the product.</b></td></tr>
+                            </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TEST TYPES -->
+        <section id="types">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 09 — TEST TYPES</div>
+                    <h2 class="sec-title">Four lenses you can point at any test level</h2>
+                    <p class="sec-desc">Test levels are "where" in the SDLC you test. Test types are "what angle" you
+                        test from — and any of the four can be applied at any of the four levels.</p>
+                </div>
+
+                <div class="mnemonic">
+                    <div class="icon">🧭</div>
+                    <div>
+                        <div class="label">Memory hook</div>
+                        <div class="phrase">"What it does, how it works, why it broke."</div>
+                        <div class="decode"><b>Functional</b> = what the system does. <b>Non-functional</b> = how well
+                            it does it. <b>Structural</b> = how the code itself is built (coverage). <b>Related to
+                            changes</b> = did it still work after we touched it.</div>
+                    </div>
+                </div>
+
+                <div class="grid5">
+                    <div class="type-card">
+                        <div class="icon">⚙️</div>
+                        <h4>Functional ("what")</h4>
+                        <p>Suitability, interoperability, security, accuracy, compliance.</p>
+                    </div>
+                    <div class="type-card">
+                        <div class="icon">📈</div>
+                        <h4>Non-functional ("how")</h4>
+                        <p>Performance/load/stress, reliability, usability, efficiency, maintainability, portability.</p>
+                    </div>
+                    <div class="type-card">
+                        <div class="icon">🧩</div>
+                        <h4>Structural</h4>
+                        <p>Measured via code coverage.</p>
+                    </div>
+                    <div class="type-card">
+                        <div class="icon">♻️</div>
+                        <h4>Related to changes</h4>
+                        <p>Confirmation testing and regression testing.</p>
+                    </div>
+                </div>
+
+                <div class="qa-deep" style="margin-top:26px;">
+                    <div class="qa-deep-head"><h3>Functional testing (black-box)</h3><span class="qa-tag">external behavior</span></div>
+                    <p class="qa-def">Objective: test what a system should do, considering the external behavior of
+                        the software. Test levels: may be performed at all test levels. Test basis: the expected
+                        behavior description can be found in work products such as requirements specification,
+                        business processes, use cases, functional specifications — may be undocumented.</p>
+                </div>
+
+                <div class="qa-deep" style="border-left-color: var(--accent-2);">
+                    <div class="qa-deep-head"><h3>Non-functional testing</h3><span class="qa-tag">quantified on a scale</span></div>
+                    <p class="qa-def">Objective: measuring characteristics of software that can be quantified on a
+                        varying scale, e.g. response times for performance testing. May be performed at all test
+                        levels. Detailed in "Software Engineering — Software Product Quality" (ISO 9126).</p>
+                </div>
+
+                <div class="qa-deep">
+                    <div class="qa-deep-head"><h3>Structural testing (white-box)</h3><span class="qa-tag">coverage</span></div>
+                    <p class="qa-def">Objective: measuring the thoroughness of testing through assessment of the
+                        coverage of a set of structural elements or coverage items. May be performed at all test
+                        levels, but especially in component testing and component integration testing.</p>
+                    <div class="two-col">
+                        <div>
+                            <span class="subhead">Test basis</span>
+                            <p style="color:var(--ink-dim); font-size:0.88rem;">Based on the structure of the code as
+                                well as the architecture of the system (e.g. a calling hierarchy, a business model,
+                                or a menu structure).</p>
+                        </div>
+                        <div>
+                            <span class="subhead">Approach &amp; tools</span>
+                            <p style="color:var(--ink-dim); font-size:0.88rem;">Structural techniques are best used
+                                <i>after</i> specification-based techniques, to help measure the thoroughness of
+                                testing. Coverage measurement tools assess the percentage of executable elements
+                                (e.g. statements or decision outcomes) that have been exercised.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="qa-deep" style="border-left-color: var(--accent-2);">
+                    <div class="qa-deep-head"><h3>Testing related to changes</h3><span class="qa-tag">confirmation + regression</span></div>
+                    <p class="qa-def">Objective: to verify that modifications in the software or the environment have
+                        not caused unintended side effects and that the system still meets its requirements. May be
+                        performed at all test levels, applies to functional, non-functional, and structural testing.</p>
+                    <div class="two-col">
+                        <div>
+                            <span class="subhead">Confirmation testing</span>
+                            <p style="color:var(--ink-dim); font-size:0.88rem;">After a defect is detected and fixed,
+                                the software should be retested to confirm that the original defect has been
+                                successfully removed.</p>
+                        </div>
+                        <div>
+                            <span class="subhead">Regression testing</span>
+                            <p style="color:var(--ink-dim); font-size:0.88rem;">The repeated testing of an already
+                                tested program, after modification, to discover any defects introduced or uncovered
+                                as a result of the change(s).</p>
+                        </div>
+                    </div>
+                    <div class="rule-box" style="margin-top:14px;">The extent of regression testing is based on the
+                        risk of finding defects in software that was working previously. Regression test suites are
+                        run many times and generally evolve slowly, so regression testing is a strong candidate for
+                        <b>automation</b>. If the regression test suite is very large, it may be more appropriate to
+                        select a subset for execution.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ISO 9126 -->
+        <section id="iso9126">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 10 — QUALITY MODEL</div>
+                    <h2 class="sec-title">ISO 9126 — the six characteristics non-functional testing measures</h2>
+                    <p class="sec-desc">This is the reference model behind every "non-functional" bullet above — it's
+                        the answer key when an exam question just says "which quality characteristic is this?"</p>
+                </div>
+
+                <div class="mnemonic">
+                    <div class="icon">🎡</div>
+                    <div>
+                        <div class="label">Memory hook</div>
+                        <div class="phrase">"FRU-PEM" wheel — Functionality, Reliability, Usability, Portability, Efficiency, Maintainability</div>
+                        <div class="decode">Picture a six-spoke wheel around a hub labeled ISO 9126, plus
+                            <b>Compliance</b> sitting at the center alongside it.</div>
+                    </div>
+                </div>
+
+                <div class="table-scroll">
+                <table class="cheat-table">
+                    <tr><th>Characteristic</th><th>Sub-characteristics (from the slide)</th></tr>
+                    <tr><td>Functionality</td><td>Suitability, accuracy, security, interoperability</td></tr>
+                    <tr><td>Reliability</td><td>Maturity, fault tolerance, recoverability</td></tr>
+                    <tr><td>Usability</td><td>Learnability, understandability, attractiveness, operability</td></tr>
+                    <tr><td>Efficiency</td><td>Resource utilisation, time behaviour</td></tr>
+                    <tr><td>Maintainability</td><td>Analysability, changeability, testability, stability</td></tr>
+                    <tr><td>Portability</td><td>Adaptability, replaceability, installability, co-existence</td></tr>
+                    <tr><td colspan="2"><b>+ Compliance</b> — sits alongside the six as its own dimension</td></tr>
+                </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- MAINTENANCE -->
+        <section id="maintenance">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 11 — AFTER RELEASE</div>
+                    <h2 class="sec-title">Maintenance testing</h2>
+                    <p class="sec-desc">Testing doesn't stop at acceptance — it continues for as long as the system
+                        is alive.</p>
+                </div>
+
+                <div class="qa-deep">
+                    <div class="qa-deep-head"><h3>Maintenance testing</h3><span class="qa-tag">the operational system</span></div>
+                    <p class="qa-def">Objective: maintenance testing is done on an existing operational system, and is
+                        triggered by modifications, migration, or retirement of the software or system.</p>
+
+                    <div class="mnemonic" style="margin-top:16px;">
+                        <div class="icon">💊</div>
+                        <div>
+                            <div class="label">Memory hook</div>
+                            <div class="phrase">Think "MMR" — the vaccine shot, not test types</div>
+                            <div class="decode"><b>M</b>odifications, <b>M</b>igration, <b>R</b>etirement — the three
+                                triggers for maintenance testing, given as a booster shot to keep an aging system
+                                healthy.</div>
+                        </div>
+                    </div>
+
+                    <div class="grid5">
+                        <div class="type-card">
+                            <div class="icon">🛠️</div>
+                            <h4>Modifications</h4>
+                            <p>Planned enhancement changes (e.g. release-based); corrective and emergency changes
+                                (patches); changes of environment (OS or database upgrades).</p>
+                        </div>
+                        <div class="type-card">
+                            <div class="icon">🚚</div>
+                            <h4>Migration</h4>
+                            <p>e.g. from one platform to another — needs operational tests of the new environment
+                                plus tests on the changed software.</p>
+                        </div>
+                        <div class="type-card">
+                            <div class="icon">🗄️</div>
+                            <h4>Retirement of a system</h4>
+                            <p>Testing of data migration or archiving if long data-retention periods are required.</p>
+                        </div>
+                    </div>
+
+                    <div class="two-col" style="margin-top:24px;">
+                        <div>
+                            <span class="subhead">Scope</span>
+                            <p style="color:var(--ink-dim); font-size:0.88rem;">Related to the risk of the change, the
+                                size of the existing system, and the size of the change.</p>
+                            <span class="subhead" style="margin-top:14px;">Test levels</span>
+                            <p style="color:var(--ink-dim); font-size:0.88rem;">Depending on the changes, maintenance
+                                testing may be done at any or all test levels and for any or all test types.</p>
+                        </div>
+                        <div>
+                            <span class="subhead">Approach</span>
+                            <div class="rule-box">Determining how the existing system may be affected by changes is
+                                called <b>impact analysis</b>, and is used to help decide how much regression testing
+                                to do.</div>
+                            <div class="rule-box" style="margin-top:10px;"><b>Note:</b> maintenance testing can be
+                                difficult if specifications are out of date or missing.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CHEAT SHEET -->
+        <section id="cheat">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 12 — CHEAT SHEET</div>
+                    <h2 class="sec-title">Every test level, one table</h2>
+                </div>
+                <div class="table-scroll">
+                <table class="cheat-table">
+                    <tr><th>Level</th><th>Objective</th><th>Test basis</th><th>Responsibility</th></tr>
+                    <tr><td>Component</td><td>Verify software items separately testable (modules, methods, objects, classes)</td><td>Component spec, software design, data model, code</td><td>Usually the programmer who wrote the code</td></tr>
+                    <tr><td>Integration</td><td>Test interfaces between components / interactions with other systems</td><td>Software &amp; system design, architecture, workflows/use cases</td><td>Developers or a separate team; incremental, not big bang</td></tr>
+                    <tr><td>System</td><td>Test the behavior of the whole system as defined by project scope</td><td>System requirements spec, business processes, risk analysis, use cases</td><td>Often an independent test team; black-box then white-box</td></tr>
+                    <tr><td>Acceptance</td><td>Establish confidence to release the system</td><td>User requirements spec, use cases, business processes, risk analysis</td><td>Customers, users, stakeholders</td></tr>
+                </table>
+                </div>
+
+                <div class="subhead" style="margin-top:26px;">Four test types, one table</div>
+                <div class="table-scroll">
+                <table class="cheat-table">
+                    <tr><th>Type</th><th>Answers</th><th>Levels</th></tr>
+                    <tr><td>Functional (black-box)</td><td>What the system should do — external behavior</td><td>All levels</td></tr>
+                    <tr><td>Non-functional</td><td>Quantifiable quality on a varying scale (ISO 9126)</td><td>All levels</td></tr>
+                    <tr><td>Structural (white-box)</td><td>How thorough is the testing — code coverage</td><td>All levels, especially component &amp; component integration</td></tr>
+                    <tr><td>Related to changes</td><td>Did the fix work (confirmation), did it break something else (regression)</td><td>All levels; strong automation candidate</td></tr>
+                </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- COMMON MISTAKES -->
+        <section id="mistakes">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 13 — COMMON MISTAKES</div>
+                    <h2 class="sec-title">Where students actually lose marks</h2>
+                    <p class="sec-desc">These are the specific mix-ups this chapter invites — drill the ✓ RIGHT side
+                        until it's automatic.</p>
+                </div>
+
+                <div class="mistake-box">
+                    <h4>1. Verification vs. Validation</h4>
+                    <div class="mistake-row"><span class="tag-wrong">✗ WRONG</span><p>"Verification checks if the software solves the problem."</p></div>
+                    <div class="mistake-row"><span class="tag-right">✓ RIGHT</span><p>Verification checks if it was built <b>correctly</b> against the spec. Validation checks if it's the <b>right</b> solution/fit for purpose.</p></div>
+                    <div class="mistake-why">Why students mix it up: both sound like "does it work" — but one is about matching a spec, the other about matching a real-world need.</div>
+                </div>
+
+                <div class="mistake-box">
+                    <h4>2. Confirmation testing vs. Regression testing</h4>
+                    <div class="mistake-row"><span class="tag-wrong">✗ WRONG</span><p>"They're the same thing — retesting after a fix."</p></div>
+                    <div class="mistake-row"><span class="tag-right">✓ RIGHT</span><p>Confirmation testing retests <b>the specific defect that was fixed</b>. Regression testing retests <b>everything else</b> to catch unintended side effects.</p></div>
+                    <div class="mistake-why">A single bug fix needs both: confirm the bug is gone, then regress to check nothing else broke.</div>
+                </div>
+
+                <div class="mistake-box">
+                    <h4>3. Component integration vs. System integration — the order</h4>
+                    <div class="mistake-row"><span class="tag-wrong">✗ WRONG</span><p>"System integration happens before system testing."</p></div>
+                    <div class="mistake-row"><span class="tag-right">✓ RIGHT</span><p>Component integration is done <b>after component testing</b>. System integration is done <b>after system testing</b>.</p></div>
+                    <div class="mistake-why">Integration testing sits between two levels each time — it isn't a single stage, it's two separate stages named after what came right before them.</div>
+                </div>
+
+                <div class="mistake-box">
+                    <h4>4. Alpha vs. Beta testing — who performs them</h4>
+                    <div class="mistake-row"><span class="tag-wrong">✗ WRONG</span><p>"Beta testing is done by the development team, in the field."</p></div>
+                    <div class="mistake-row"><span class="tag-right">✓ RIGHT</span><p>Alpha: at the developing organization's site. Beta (field testing): at the users' own locations. <b>Both</b> are performed by potential customers, not the developers.</p></div>
+                    <div class="mistake-why">The variable is location, not who's doing the testing — the tester is a potential customer either way.</div>
+                </div>
+
+                <div class="mistake-box">
+                    <h4>5. Big bang integration "saves time"</h4>
+                    <div class="mistake-row"><span class="tag-wrong">✗ WRONG</span><p>"Big bang integration is fine — it's faster to just plug everything in at once."</p></div>
+                    <div class="mistake-row"><span class="tag-right">✓ RIGHT</span><p>To reduce the risk of <b>late defect discovery</b>, integration should normally be incremental rather than big bang.</p></div>
+                    <div class="mistake-why">This exact line was flagged as a past exam point on the slide — big bang doesn't fail more, it fails <i>later and harder to localize</i>.</div>
+                </div>
+
+                <div class="mistake-box">
+                    <h4>6. Functional vs. Structural testing</h4>
+                    <div class="mistake-row"><span class="tag-wrong">✗ WRONG</span><p>"Structural testing checks what the system should do."</p></div>
+                    <div class="mistake-row"><span class="tag-right">✓ RIGHT</span><p>Functional = <b>what</b> the system does (black-box, external behavior). Structural = <b>how thoroughly</b> the code was exercised (white-box, code coverage).</p></div>
+                    <div class="mistake-why">Structural testing doesn't ask "is the answer right," it asks "did our tests actually touch this branch of code."</div>
+                </div>
+
+                <div class="mistake-box">
+                    <h4>7. Who does component testing</h4>
+                    <div class="mistake-row"><span class="tag-wrong">✗ WRONG</span><p>"A separate QA team always writes and runs component tests."</p></div>
+                    <div class="mistake-row"><span class="tag-right">✓ RIGHT</span><p>Component testing usually involves the <b>programmer who wrote the code</b>, with defects fixed on the spot, without formal incident recording.</p></div>
+                    <div class="mistake-why">This flips at higher levels — system testing is more likely to involve an independent team; component testing is the most developer-owned level.</div>
+                </div>
+
+                <div class="mistake-box">
+                    <h4>8. Black-box / white-box order in system testing</h4>
+                    <div class="mistake-row"><span class="tag-wrong">✗ WRONG</span><p>"Run white-box structural checks first, then confirm behavior with black-box tests."</p></div>
+                    <div class="mistake-row"><span class="tag-right">✓ RIGHT</span><p>First the most suited <b>black-box</b> technique — then <b>white-box</b> technique to assess the thoroughness of that testing.</p></div>
+                    <div class="mistake-why">You can't measure "thoroughness of testing" (white-box's job) until testing has already happened (black-box's job) — coverage is measured against tests that already exist.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- POP QUIZ -->
+        <section id="quiz">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 14 — POP QUIZ</div>
+                    <h2 class="sec-title">Click a question to reveal the answer</h2>
+                    <p class="sec-desc">No reload, no scoring pressure — just click each card.</p>
+                </div>
+
+                <div class="quiz-list">
+                    <div class="quiz-item">
+                        <div class="quiz-q" onclick="toggleQuiz(this)">
+                            <p><span class="qtag">MCQ</span><br>In the V-model, "Preparation System test" mirrors which development stage?</p>
+                            <button class="quiz-reveal">Reveal</button>
+                        </div>
+                        <div class="quiz-answer"><b>System requirements.</b> The V-model pairs System requirements → Preparation system test → System test execution — same horizontal level of the V.</div>
+                    </div>
+
+                    <div class="quiz-item">
+                        <div class="quiz-q" onclick="toggleQuiz(this)">
+                            <p><span class="qtag">Short answer</span><br>In one sentence, what's the difference between verification and validation?</p>
+                            <button class="quiz-reveal">Reveal</button>
+                        </div>
+                        <div class="quiz-answer">Verification asks "am I building the SW correctly?" (matches the spec); validation asks "am I building the right SW?" (fit for purpose / solves the problem).</div>
+                    </div>
+
+                    <div class="quiz-item">
+                        <div class="quiz-q" onclick="toggleQuiz(this)">
+                            <p><span class="qtag">True / False</span><br>Beta testing is performed by the developers of the product.</p>
+                            <button class="quiz-reveal">Reveal</button>
+                        </div>
+                        <div class="quiz-answer"><b>False.</b> Both alpha and beta testing are performed by potential customers, not the developers — alpha at the developer's site, beta at the customer's own location.</div>
+                    </div>
+
+                    <div class="quiz-item">
+                        <div class="quiz-q" onclick="toggleQuiz(this)">
+                            <p><span class="qtag">Short answer</span><br>Name the two types of integration testing and what each follows.</p>
+                            <button class="quiz-reveal">Reveal</button>
+                        </div>
+                        <div class="quiz-answer"><b>Component integration</b> — done after component testing. <b>System integration</b> — done after system testing.</div>
+                    </div>
+
+                    <div class="quiz-item">
+                        <div class="quiz-q" onclick="toggleQuiz(this)">
+                            <p><span class="qtag">MCQ</span><br>In system testing, which technique is applied first?</p>
+                            <button class="quiz-reveal">Reveal</button>
+                        </div>
+                        <div class="quiz-answer"><b>Black-box.</b> The most suited black-box technique goes first; white-box is used afterward to assess the thoroughness of that testing.</div>
+                    </div>
+
+                    <div class="quiz-item">
+                        <div class="quiz-q" onclick="toggleQuiz(this)">
+                            <p><span class="qtag">Short answer</span><br>What is "impact analysis" used for in maintenance testing?</p>
+                            <button class="quiz-reveal">Reveal</button>
+                        </div>
+                        <div class="quiz-answer">Determining how the existing system may be affected by a change — used to help decide how much regression testing to do.</div>
+                    </div>
+
+                    <div class="quiz-item">
+                        <div class="quiz-q" onclick="toggleQuiz(this)">
+                            <p><span class="qtag">MCQ</span><br>Which test type category does "Usability" belong to?</p>
+                            <button class="quiz-reveal">Reveal</button>
+                        </div>
+                        <div class="quiz-answer"><b>Non-functional testing</b> (ISO 9126) — usability breaks down into learnability, understandability, attractiveness, and operability.</div>
+                    </div>
+
+                    <div class="quiz-item">
+                        <div class="quiz-q" onclick="toggleQuiz(this)">
+                            <p><span class="qtag">Short answer</span><br>Name the three triggers for maintenance testing.</p>
+                            <button class="quiz-reveal">Reveal</button>
+                        </div>
+                        <div class="quiz-answer"><b>Modifications, Migration, Retirement</b> (the "MMR" mnemonic) — of the software or the system.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PRACTICE LAB -->
+        <section id="lab">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 15 — PRACTICE LAB</div>
+                    <h2 class="sec-title">Apply the concepts to scenarios</h2>
+                    <p class="sec-desc">Grounded directly in the slide definitions — the kind of scenario an exam
+                        question rephrases with different nouns.</p>
+                </div>
+                <div class="examroom">
+                    <div class="practice-q">
+                        <div class="req">1. A tester confirms that a login screen matches the spec's field lengths and validation rules exactly. Later, a stakeholder asks whether the login screen actually solves the users' real complaint about slow sign-in. Which activity is which?</div>
+                        <div class="ans">→ First is Verification, second is Validation</div>
+                        <div class="why">Why: matching the spec = "built correctly" (verification). Solving the real problem = "right SW" (validation).</div>
+                    </div>
+                    <div class="practice-q">
+                        <div class="req">2. Looking at the V-model, during which development phase should the team begin preparing the Integration test?</div>
+                        <div class="ans">→ Global design</div>
+                        <div class="why">Why: the V-model pairs Global design with "Preparation Integration test," feeding into Integration test execution.</div>
+                    </div>
+                    <div class="practice-q">
+                        <div class="req">3. A component test replaces a database call with hard-coded location data so `VisitorBLL` can be tested without a live database connection. What is this piece of test code called?</div>
+                        <div class="ans">→ A stub</div>
+                        <div class="why">Why: a stub is code that replaces a called component to simulate its purpose — exactly what "hard-coded data to replace data from a database" describes.</div>
+                    </div>
+                    <div class="practice-q">
+                        <div class="req">4. A team decides to plug in all 12 modules of a new system simultaneously the week before release, rather than a few at a time. What's the risk, and what's the recommended approach instead?</div>
+                        <div class="ans">→ Big bang risks late defect discovery; incremental integration is recommended</div>
+                        <div class="why">Why: to reduce the risk of late defect discovery, integration should normally be incremental rather than "big bang" — flagged on the slide as a past exam point.</div>
+                    </div>
+                    <div class="practice-q">
+                        <div class="req">5. A project's regression test suite has grown so large it can no longer run before every release deadline. What does the slide recommend?</div>
+                        <div class="ans">→ Select a subset of the regression suite for execution</div>
+                        <div class="why">Why: "if the regression test suite is very large it may be more appropriate to select a subset for execution" — based on the risk of finding defects in previously-working software.</div>
+                    </div>
+                    <div class="practice-q">
+                        <div class="req">6. A company migrates its inventory system from an on-premise server to the cloud. Per the maintenance testing slide, what two things need testing here?</div>
+                        <div class="ans">→ Operational tests of the new environment, and tests on the changed software</div>
+                        <div class="why">Why: migration (e.g. from one platform to another) requires both — verifying the new environment works operationally, and verifying the software itself still behaves correctly on it.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <div>SE401 · Software Quality Assurance and Testing · Chapter 11 — Testing Throughout the SDLC</div>
+        <div class="toc-hint">Built as a study aid from lecture slides — always verify against your instructor's exact
+            wording before an exam.</div>
+        <div class="made">Made by <span>Shoug Alomran</span></div>
+    </footer>
+
+    <script>
+        const root = document.documentElement;
+        const sw = document.getElementById('switch');
+        const label = document.getElementById('theme-label');
+
+        function applyTheme(t) {
+            root.setAttribute('data-theme', t);
+            label.textContent = t.toUpperCase();
+        }
+
+        const prefersLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
+        applyTheme(prefersLight ? 'light' : 'dark');
+
+        sw.addEventListener('click', () => {
+            const current = root.getAttribute('data-theme');
+            applyTheme(current === 'dark' ? 'light' : 'dark');
+        });
+
+        function toggleQuiz(el) {
+            const answer = el.parentElement.querySelector('.quiz-answer');
+            answer.classList.toggle('open');
+        }
+    </script>
+
+</body>
+
+</html>

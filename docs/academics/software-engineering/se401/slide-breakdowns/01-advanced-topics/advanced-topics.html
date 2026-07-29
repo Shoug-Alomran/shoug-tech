@@ -1,0 +1,1322 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web &amp; Mobile Testing — Field Manual | SE401 Ch.1</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --radius-sm: 8px;
+            --radius-md: 14px;
+            --radius-lg: 22px;
+            --font-head: 'Space Grotesk', sans-serif;
+            --font-body: 'Inter', sans-serif;
+            --font-mono: 'IBM Plex Mono', monospace;
+            --maxw: 1180px;
+        }
+
+        html[data-theme="dark"] {
+            --bg: #0b1420;
+            --surface: #101c2b;
+            --surface-2: #16263a;
+            --ink: #e7edf3;
+            --ink-dim: #92a4b8;
+            --line: #223347;
+            --accent: #4fb0e0;
+            --accent-2: #e08a3e;
+            --bad: #e0644f;
+            --good: #4fbf82;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        html[data-theme="light"] {
+            --bg: #eef2f4;
+            --surface: #ffffff;
+            --surface-2: #f2f6f8;
+            --ink: #12202c;
+            --ink-dim: #55697a;
+            --line: #d7e0e6;
+            --accent: #146f9e;
+            --accent-2: #b86a1c;
+            --bad: #c23e2c;
+            --good: #1f8f5b;
+            --shadow: 0 10px 26px rgba(15, 30, 40, 0.12);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            background:
+                radial-gradient(circle at 1px 1px, var(--line) 1px, transparent 1px) 0 0/26px 26px,
+                var(--bg);
+            color: var(--ink);
+            font-family: var(--font-body);
+            font-size: clamp(15px, 0.4vw + 14px, 17px);
+            line-height: 1.6;
+            transition: background-color .35s ease, color .35s ease;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: var(--font-head);
+            margin: 0;
+            letter-spacing: -0.01em;
+        }
+
+        a { color: inherit; }
+        .mono { font-family: var(--font-mono); }
+
+        .wrap {
+            max-width: var(--maxw);
+            margin: 0 auto;
+            padding: 0 clamp(16px, 4vw, 40px);
+        }
+
+        header.top {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            backdrop-filter: blur(10px);
+            background: color-mix(in srgb, var(--bg) 78%, transparent);
+            border-bottom: 1px solid var(--line);
+        }
+
+        .top-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px clamp(16px, 4vw, 40px);
+            max-width: var(--maxw);
+            margin: 0 auto;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .brand { display: flex; align-items: center; gap: 10px; }
+        .brand .logo-mini { width: 30px; height: 30px; flex: none; }
+        .brand-text { font-family: var(--font-head); font-weight: 700; font-size: 1.05rem; }
+        .brand-text span { color: var(--accent); }
+
+        nav.pillnav { display: flex; gap: 6px; flex-wrap: wrap; }
+
+        nav.pillnav a {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            text-decoration: none;
+            color: var(--ink-dim);
+            padding: 6px 10px;
+            border-radius: 999px;
+            border: 1px solid transparent;
+            white-space: nowrap;
+            transition: all .2s ease;
+        }
+
+        nav.pillnav a:hover { color: var(--ink); border-color: var(--line); background: var(--surface); }
+
+        .theme-toggle { display: flex; align-items: center; gap: 8px; font-family: var(--font-mono); font-size: 0.7rem; color: var(--ink-dim); }
+
+        .switch { width: 46px; height: 26px; border-radius: 999px; background: var(--surface-2); border: 1px solid var(--line); position: relative; cursor: pointer; flex: none; }
+        .switch .knob { position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; border-radius: 50%; background: var(--accent); transition: left .25s ease, background .25s ease; }
+        html[data-theme="light"] .switch .knob { left: 22px; }
+
+        /* HERO */
+        .hero { padding: clamp(40px, 7vw, 80px) 0 clamp(20px, 4vw, 40px); }
+        .hero-grid { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: clamp(20px, 4vw, 50px); align-items: center; }
+        @media (max-width:820px) { .hero-grid { grid-template-columns: 1fr; } }
+
+        .eyebrow {
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--accent-2);
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .eyebrow::before { content: ''; width: 26px; height: 1px; background: var(--accent-2); }
+
+        h1.hero-title { font-size: clamp(2.1rem, 5vw, 3.6rem); line-height: 1.05; font-weight: 700; }
+        h1.hero-title em { font-style: normal; color: var(--accent); }
+        .hero-sub { margin-top: 18px; color: var(--ink-dim); max-width: 56ch; font-size: 1.02rem; }
+        .hero-badges { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 22px; }
+        .badge { font-family: var(--font-mono); font-size: 0.72rem; padding: 6px 12px; border-radius: 8px; background: var(--surface); border: 1px solid var(--line); color: var(--ink-dim); }
+
+        .blueprint-wrap { display: flex; justify-content: center; }
+        .blueprint-wrap svg { width: min(340px, 90%); height: auto; }
+
+        section { padding: clamp(30px, 5vw, 60px) 0; border-top: 1px solid var(--line); }
+        section:first-of-type { border-top: none; }
+
+        .sec-head { margin-bottom: clamp(20px, 3vw, 34px); max-width: 74ch; }
+        .sec-num { font-family: var(--font-mono); color: var(--accent); font-size: 0.78rem; letter-spacing: 0.1em; }
+        .sec-title { font-size: clamp(1.5rem, 3vw, 2.1rem); margin-top: 6px; }
+        .sec-desc { color: var(--ink-dim); margin-top: 10px; font-size: 0.98rem; }
+
+        .mnemonic {
+            background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 14%, transparent), transparent);
+            border: 1px dashed color-mix(in srgb, var(--accent) 55%, var(--line));
+            border-radius: var(--radius-md);
+            padding: 16px 20px;
+            display: flex;
+            gap: 14px;
+            align-items: flex-start;
+            margin: 18px 0;
+        }
+        .mnemonic .icon { font-size: 1.4rem; flex: none; line-height: 1; }
+        .mnemonic .label { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); }
+        .mnemonic .phrase { font-family: var(--font-head); font-weight: 600; font-size: 1.05rem; margin-top: 3px; }
+        .mnemonic .decode { color: var(--ink-dim); font-size: 0.86rem; margin-top: 4px; }
+
+        /* website vs webapp stack */
+        .stack-diagram { display: grid; grid-template-columns: 1fr; gap: 0; margin-top: 20px; border: 1px solid var(--line); border-radius: var(--radius-lg); overflow: hidden; }
+        .stack-layer { padding: 20px clamp(16px, 3vw, 28px); position: relative; }
+        .stack-layer.style { background: color-mix(in srgb, var(--accent) 10%, var(--surface)); border-bottom: 1px dashed var(--line); }
+        .stack-layer.pattern { background: var(--surface); }
+        .stack-layer .tag { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); }
+        .stack-layer h4 { font-size: 1.15rem; margin-top: 6px; }
+        .stack-layer p { color: var(--ink-dim); font-size: 0.9rem; margin-top: 6px; max-width: 70ch; }
+        .stack-layer.pattern .tag { color: var(--accent-2); }
+
+        /* classification grid */
+        .grid5 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-top: 20px; }
+        .type-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-md); padding: 18px; transition: transform .2s ease, box-shadow .2s ease; }
+        .type-card:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
+        .type-card .icon { font-size: 1.6rem; }
+        .type-card h4 { font-size: 1.02rem; margin-top: 8px; }
+        .type-card p { color: var(--ink-dim); font-size: 0.85rem; margin: 8px 0 0; }
+
+        /* deep dive */
+        .qa-deep { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg); padding: clamp(18px, 3vw, 30px); margin-bottom: 26px; position: relative; border-left: 5px solid var(--accent); }
+        .qa-deep-head { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; justify-content: space-between; }
+        .qa-deep h3 { font-size: clamp(1.25rem, 2.4vw, 1.6rem); }
+        .qa-tag { font-family: var(--font-mono); font-size: 0.7rem; padding: 5px 11px; border-radius: 999px; background: var(--surface-2); border: 1px solid var(--line); color: var(--ink-dim); }
+        .qa-def { margin-top: 10px; color: var(--ink); font-size: 0.98rem; max-width: 78ch; }
+
+        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; margin-top: 20px; }
+        @media (max-width:760px) { .two-col { grid-template-columns: 1fr; } }
+
+        .subhead { font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent-2); margin-bottom: 10px; display: block; }
+
+        .pattern-chip-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
+        .pattern-chip { font-family: var(--font-mono); font-size: 0.75rem; padding: 5px 12px; border-radius: 999px; background: color-mix(in srgb, var(--accent) 14%, var(--surface-2)); border: 1px solid var(--line); }
+
+        .example-strip { margin-top: 16px; background: color-mix(in srgb, var(--accent-2) 10%, transparent); border: 1px solid color-mix(in srgb, var(--accent-2) 35%, var(--line)); border-radius: var(--radius-sm); padding: 12px 14px; font-size: 0.86rem; }
+        .example-strip b { color: var(--accent-2); }
+
+        .rule-box { margin-top: 14px; background: var(--surface-2); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 12px 14px; font-size: 0.84rem; color: var(--ink-dim); }
+        .rule-box b { color: var(--ink); }
+
+        /* checklist */
+        .checklist { list-style: none; margin: 14px 0 0; padding: 0; display: grid; gap: 8px; }
+        .checklist li { display: flex; gap: 10px; align-items: flex-start; font-size: 0.9rem; background: var(--surface-2); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 9px 12px; }
+        .checklist li::before { content: '✓'; color: var(--good); font-weight: 700; flex: none; }
+
+        /* cheat table */
+        .cheat-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        .cheat-table th, .cheat-table td { border: 1px solid var(--line); padding: 12px 14px; text-align: left; font-size: 0.86rem; }
+        .cheat-table th { background: var(--surface-2); font-family: var(--font-mono); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent-2); }
+        .cheat-table tr:nth-child(even) td { background: color-mix(in srgb, var(--surface-2) 55%, transparent); }
+        .table-scroll { overflow-x: auto; }
+
+        /* mistakes */
+        .mistake-box { background: var(--surface); border: 1px solid var(--line); border-left: 5px solid var(--bad); border-radius: var(--radius-md); padding: 16px 20px; margin: 16px 0; }
+        .mistake-box h4 { font-size: 1rem; margin-bottom: 10px; }
+        .wrong-right { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 8px; }
+        @media (max-width:760px) { .wrong-right { grid-template-columns: 1fr; } }
+        .wr-item { border-radius: var(--radius-sm); padding: 10px 12px; font-size: 0.86rem; }
+        .wr-item.wrong { background: color-mix(in srgb, var(--bad) 12%, transparent); border: 1px solid color-mix(in srgb, var(--bad) 40%, var(--line)); }
+        .wr-item.right { background: color-mix(in srgb, var(--good) 12%, transparent); border: 1px solid color-mix(in srgb, var(--good) 40%, var(--line)); }
+        .wr-item .tag-label { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.08em; font-weight: 700; }
+        .wr-item.wrong .tag-label { color: var(--bad); }
+        .wr-item.right .tag-label { color: var(--good); }
+
+        /* quiz */
+        .quiz-item { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-md); padding: 16px 20px; margin: 14px 0; }
+        .quiz-q { display: flex; justify-content: space-between; align-items: center; gap: 12px; cursor: pointer; font-weight: 600; font-size: 0.96rem; }
+        .quiz-q .qnum { color: var(--accent); font-family: var(--font-mono); margin-right: 8px; }
+        .quiz-reveal { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.06em; text-transform: uppercase; background: var(--surface-2); border: 1px solid var(--line); border-radius: 999px; padding: 5px 12px; color: var(--ink-dim); flex: none; }
+        .quiz-answer { display: none; margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--line); font-size: 0.9rem; color: var(--ink-dim); }
+        .quiz-answer.open { display: block; }
+        .quiz-answer b { color: var(--good); }
+
+        /* practice lab */
+        .examroom { background: repeating-linear-gradient(180deg, var(--surface) 0px, var(--surface) 27px, var(--surface-2) 28px); border: 1px solid var(--line); border-radius: var(--radius-lg); padding: clamp(18px, 3vw, 28px); }
+        .practice-q { border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface); padding: 14px 16px; margin: 12px 0; font-size: 0.92rem; }
+        .practice-q .req { color: var(--ink); }
+        .practice-q .ans { margin-top: 8px; font-family: var(--font-mono); font-size: 0.78rem; color: var(--accent); }
+        .practice-q .why { margin-top: 6px; color: var(--ink-dim); font-size: 0.82rem; }
+
+        /* chunk table for acronym breakdown */
+        .chunk-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 16px; }
+        .chunk-card { background: var(--surface-2); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 12px; text-align: center; }
+        .chunk-card .letter { font-family: var(--font-head); font-size: 1.6rem; font-weight: 700; color: var(--accent); }
+        .chunk-card .word { font-size: 0.8rem; margin-top: 4px; font-weight: 600; }
+
+        footer { padding: 40px clamp(16px, 4vw, 40px) 60px; text-align: center; color: var(--ink-dim); font-family: var(--font-mono); font-size: 0.78rem; }
+        footer .made { color: var(--ink); font-weight: 600; margin-top: 6px; }
+        footer .made span { color: var(--accent); }
+        .toc-hint { margin-top: 26px; color: var(--ink-dim); font-size: 0.82rem; }
+
+        ::selection { background: var(--accent); color: #fff; }
+
+        code { font-family: var(--font-mono); background: color-mix(in srgb, var(--surface-2) 70%, transparent); padding: 1px 6px; border-radius: 4px; font-size: 0.88em; }
+    </style>
+
+    <meta name="description" content="Web and mobile testing, field-guide style: website vs web app, the six web testing types, Selenium automation, native/hybrid/web mobile apps, and the seven mobile app testing types — built from SE401's Advanced Topics slides.">
+    <link rel="canonical" href="https://shoug-tech.com/academics/software-engineering/se401/slide-breakdowns/01-advanced-topics/advanced-topics.html">
+    <meta property="og:title" content="Web &amp; Mobile Testing — Field Manual | SE401 Ch.1">
+    <meta property="og:description" content="Web and mobile testing, field-guide style: website vs web app, the six web testing types, Selenium automation, native/hybrid/web mobile apps, and the seven mobile app testing types — built from SE401's Advanced Topics slides.">
+    <meta property="og:url" content="https://shoug-tech.com/academics/software-engineering/se401/slide-breakdowns/01-advanced-topics/advanced-topics.html">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://shoug-tech.com/logo.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Web &amp; Mobile Testing — Field Manual | SE401 Ch.1">
+    <meta name="twitter:description" content="Web and mobile testing, field-guide style: website vs web app, the six web testing types, Selenium automation, native/hybrid/web mobile apps, and the seven mobile app testing types — built from SE401's Advanced Topics slides.">
+    <meta name="twitter:image" content="https://shoug-tech.com/logo.png">
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","url":"https://shoug-tech.com/academics/software-engineering/se401/slide-breakdowns/01-advanced-topics/advanced-topics.html","name":"Web &amp; Mobile Testing — Field Manual | SE401 Ch.1","description":"Web and mobile testing, field-guide style: website vs web app, the six web testing types, Selenium automation, native/hybrid/web mobile apps, and the seven mobile app testing types — built from SE401's Advanced Topics slides.","isPartOf":{"@type":"WebSite","name":"Shoug's Digital Garden","url":"https://shoug-tech.com/"}}</script>
+
+    <link rel="alternate" hreflang="en" href="https://shoug-tech.com/academics/software-engineering/se401/slide-breakdowns/01-advanced-topics/advanced-topics.html">
+    <link rel="alternate" hreflang="ar" href="https://shoug-tech.com/ar/academics/software-engineering/se401/slide-breakdowns/01-advanced-topics/advanced-topics.html">
+    <link rel="alternate" hreflang="x-default" href="https://shoug-tech.com/academics/software-engineering/se401/slide-breakdowns/01-advanced-topics/advanced-topics.html">
+</head>
+
+<body>
+
+    <header class="top">
+        <div class="top-inner">
+            <div class="brand">
+                <svg class="logo-mini" viewBox="0 0 40 40">
+                    <rect x="6" y="6" width="28" height="28" rx="6" fill="none" stroke="currentColor" stroke-width="2" opacity="0.35" />
+                    <path d="M13 20 L18 25 L27 14" fill="none" stroke="var(--accent)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+                <div class="brand-text">QA<span>·</span>Field Manual</div>
+            </div>
+            <nav class="pillnav">
+                <a href="#site-vs-app">Site vs App</a>
+                <a href="#web-testing">Web Testing</a>
+                <a href="#functionality">Functionality</a>
+                <a href="#other-web-types">Other Web Types</a>
+                <a href="#automation">Automation</a>
+                <a href="#mobile-apps">Mobile Apps</a>
+                <a href="#mobile-testing">Mobile Testing</a>
+                <a href="#mobile-types">Mobile Test Types</a>
+                <a href="#manual-vs-auto">Manual vs Auto</a>
+                <a href="#cheat">Cheat Sheet</a>
+                <a href="#mistakes">Mistakes</a>
+                <a href="#quiz">Pop Quiz</a>
+                <a href="#lab">Practice Lab</a>
+            </nav>
+            <div class="theme-toggle">
+                <span id="theme-label">DARK</span>
+                <div class="switch" id="switch" role="button" aria-label="Toggle theme">
+                    <div class="knob"></div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+
+        <!-- HERO -->
+        <section class="hero">
+            <div class="wrap hero-grid">
+                <div>
+                    <div class="eyebrow">SE401 · Software Quality Assurance &amp; Testing · Advanced Topics</div>
+                    <h1 class="hero-title">Testing doesn't stop<br><em>at the desktop app.</em></h1>
+                    <p class="hero-sub">Everything you learned about testing — functionality, usability, security,
+                        performance — still applies. But the web adds browsers, servers, and caches to break in new
+                        ways, and mobile adds screens, batteries, and networks that come and go. This is the field
+                        manual for testing things that live in a browser tab or in someone's pocket.</p>
+                    <div class="hero-badges">
+                        <div class="badge">6 web testing types</div>
+                        <div class="badge">Selenium automation</div>
+                        <div class="badge">Native / Web / Hybrid apps</div>
+                        <div class="badge">7 mobile testing types</div>
+                    </div>
+                </div>
+                <div class="blueprint-wrap">
+                    <svg viewBox="0 0 320 320">
+                        <rect x="20" y="20" width="280" height="280" rx="18" fill="none" stroke="var(--line)" stroke-width="2" />
+                        <text x="160" y="46" text-anchor="middle" class="mono" font-family="IBM Plex Mono" font-size="11" fill="var(--accent)">BROWSER ↔ SERVER</text>
+                        <rect x="40" y="66" width="90" height="60" rx="8" fill="none" stroke="var(--accent)" stroke-width="1.6" />
+                        <text x="85" y="100" text-anchor="middle" class="mono" font-family="IBM Plex Mono" font-size="10" fill="var(--ink-dim)">Client</text>
+                        <rect x="190" y="66" width="90" height="60" rx="8" fill="none" stroke="var(--accent-2)" stroke-width="1.6" />
+                        <text x="235" y="100" text-anchor="middle" class="mono" font-family="IBM Plex Mono" font-size="10" fill="var(--ink-dim)">Server</text>
+                        <line x1="130" y1="86" x2="190" y2="86" stroke="var(--line)" stroke-width="1.5" marker-end="url(#arrow1)" />
+                        <line x1="190" y1="106" x2="130" y2="106" stroke="var(--line)" stroke-width="1.5" marker-end="url(#arrow2)" />
+                        <defs>
+                            <marker id="arrow1" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6" fill="none" stroke="var(--line)" /></marker>
+                            <marker id="arrow2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6" fill="none" stroke="var(--line)" /></marker>
+                        </defs>
+                        <circle cx="160" cy="190" r="46" fill="color-mix(in srgb, var(--accent) 18%, transparent)" stroke="var(--accent-2)" stroke-width="2" />
+                        <text x="160" y="186" text-anchor="middle" class="mono" font-family="IBM Plex Mono" font-size="10" fill="var(--accent-2)">MOBILE</text>
+                        <text x="160" y="200" text-anchor="middle" class="mono" font-family="IBM Plex Mono" font-size="9" fill="var(--ink-dim)">handheld</text>
+                        <g font-family="IBM Plex Mono" font-size="9" fill="var(--ink-dim)">
+                            <circle cx="90" cy="250" r="5" fill="var(--accent)" /><text x="90" y="268" text-anchor="middle">iOS</text>
+                            <circle cx="160" cy="260" r="5" fill="var(--accent)" /><text x="160" y="278" text-anchor="middle">HYBRID</text>
+                            <circle cx="230" cy="250" r="5" fill="var(--accent)" /><text x="230" y="268" text-anchor="middle">ANDROID</text>
+                        </g>
+                        <g stroke="var(--line)" stroke-width="1.3">
+                            <line x1="140" y1="220" x2="94" y2="245" />
+                            <line x1="160" y1="236" x2="160" y2="254" />
+                            <line x1="180" y1="220" x2="226" y2="245" />
+                        </g>
+                    </svg>
+                </div>
+            </div>
+        </section>
+
+        <!-- SITE VS APP -->
+        <section id="site-vs-app">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 01 — THE FOUNDATIONAL DISTINCTION</div>
+                    <h2 class="sec-title">Website vs. Web Application</h2>
+                    <p class="sec-desc">Get this one right first — every testing decision downstream depends on which
+                        of the two you're actually looking at.</p>
+                </div>
+
+                <div class="mnemonic">
+                    <div class="icon">📖</div>
+                    <div>
+                        <div class="label">Memory hook</div>
+                        <div class="phrase">"A website is a book. A web app is a conversation."</div>
+                        <div class="decode">A book (website) reads the same to everyone. A conversation (web app)
+                            changes depending on what you say back to it — that's your input driving dynamic output.</div>
+                    </div>
+                </div>
+
+                <div class="stack-diagram">
+                    <div class="stack-layer style">
+                        <span class="tag">Website</span>
+                        <h4>A collection of related, static web pages</h4>
+                        <p>A collection of related web pages, including multimedia content, typically identified with
+                            a common domain name, and published on at least one web server. Notable example:
+                            <b>wikipedia.org</b>. So — a website is <b>informational</b>.</p>
+                    </div>
+                    <div class="stack-layer pattern">
+                        <span class="tag">Web Application</span>
+                        <h4>A client–server program with logic behind it</h4>
+                        <p>A client–server computer program which the client (including the user interface and
+                            client-side logic) runs in a web browser. Common web applications include <b>webmail,
+                                online retail sales, and online auction</b>. So — a web application is
+                            <b>interactive</b>.</p>
+                    </div>
+                </div>
+
+                <div class="two-col" style="margin-top:26px;">
+                    <div>
+                        <span class="subhead">Website — static pages</span>
+                        <div class="rule-box"><b>Every user sees the same information every time.</b> Flow: user →
+                            page 1 → page 2, no branching based on the user.</div>
+                    </div>
+                    <div>
+                        <span class="subhead">Web App — dynamic pages</span>
+                        <div class="rule-box"><b>Every user sees different information depending on their input.</b>
+                            Flow: user input → the web app processes it → dynamic output tailored to that user.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- WEB TESTING OVERVIEW -->
+        <section id="web-testing">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 02 — WHAT IS WEB TESTING</div>
+                    <h2 class="sec-title">Checked end-to-end, before it ever goes live</h2>
+                </div>
+
+                <p>Web testing is a software testing practice to test websites or web applications for potential
+                    bugs. A web-based system needs to be checked <b>completely from end-to-end</b> before it goes
+                    live for end users. It is performed <b>before</b> making the web application alive — by
+                    performing web testing, we make sure the site or app is functioning properly and can be
+                    <b>accepted</b> by real-time users.</p>
+
+                <div class="qa-deep" style="margin-top:24px;">
+                    <div class="qa-deep-head">
+                        <h3>Why is web testing challenging?</h3><span class="qa-tag">interoperability</span>
+                    </div>
+                    <p class="qa-def">Web-based systems and applications interoperate with many different:</p>
+                    <div class="chunk-grid">
+                        <div class="chunk-card"><div class="letter">OS</div><div class="word">Operating systems</div></div>
+                        <div class="chunk-card"><div class="letter">BR</div><div class="word">Browsers</div></div>
+                        <div class="chunk-card"><div class="letter">HW</div><div class="word">Hardware platforms</div></div>
+                        <div class="chunk-card"><div class="letter">CP</div><div class="word">Communication protocols</div></div>
+                    </div>
+                    <div class="example-strip" style="margin-top:16px;">The search for errors across all of these
+                        combinations represents a significant challenge — new technologies make web applications
+                        rich, <b>but</b> they become more difficult to test.</div>
+                </div>
+
+                <div class="sec-head" style="margin-top:36px;">
+                    <div class="sec-num">§ 03 — THE SIX WEB TESTING TYPES</div>
+                    <h2 class="sec-title">One wheel, six lenses to test a site through</h2>
+                    <p class="sec-desc">Some or all of the following testing types may be performed depending on the
+                        web testing requirements.</p>
+                </div>
+
+                <div class="mnemonic">
+                    <div class="icon">🎡</div>
+                    <div>
+                        <div class="label">Memory hook</div>
+                        <div class="phrase">"Fun Users Interact Compatibly, Performing Securely"</div>
+                        <div class="decode"><b>F</b>unctionality · <b>U</b>sability · <b>I</b>nterface ·
+                            <b>C</b>ompatibility · <b>P</b>erformance · <b>S</b>ecurity</div>
+                    </div>
+                </div>
+
+                <div class="grid5">
+                    <div class="type-card"><div class="icon">⚙️</div><h4>1. Functionality</h4><p>Links, forms,
+                            cookies, HTML/CSS, database — does it do what the spec says?</p></div>
+                    <div class="type-card"><div class="icon">🧭</div><h4>2. Usability</h4><p>Navigation and content —
+                            is it easy to understand and learn?</p></div>
+                    <div class="type-card"><div class="icon">🔌</div><h4>3. Interface</h4><p>Do the web, application,
+                            and database server layers talk to each other correctly?</p></div>
+                    <div class="type-card"><div class="icon">🖥️</div><h4>4. Compatibility</h4><p>Browsers, operating
+                            systems, hardware — does it perform the same everywhere?</p></div>
+                    <div class="type-card"><div class="icon">⚡</div><h4>5. Performance</h4><p>Response times, load,
+                            stress, and crash recovery under traffic.</p></div>
+                    <div class="type-card"><div class="icon">🔒</div><h4>6. Security</h4><p>Unauthorized access,
+                            sessions, SSL/HTTPS — is sensitive data protected?</p></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FUNCTIONALITY DEEP DIVE -->
+        <section id="functionality">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 04 — FUNCTIONALITY TESTING</div>
+                    <h2 class="sec-title">The biggest of the six, broken into five sub-checks</h2>
+                    <p class="sec-desc">Testing the features and operational behavior of a web application to ensure
+                        they correspond to its specifications.</p>
+                </div>
+
+                <div class="qa-deep">
+                    <div class="qa-deep-head">
+                        <h3>1.1 Check all the links</h3><span class="qa-tag">links</span>
+                    </div>
+                    <ul class="checklist">
+                        <li>Test the <b>external</b> links from all the pages to a specific domain under test.</li>
+                        <li>Test all <b>internal</b> links between web application pages.</li>
+                        <li>Test links used to <b>send email</b> to admin or other users from web pages.</li>
+                        <li>Test to check if there are any <b>orphan pages</b> — pages with no incoming links.</li>
+                        <li>Finally, check for <b>broken links</b> in all the above-mentioned link types.</li>
+                    </ul>
+                </div>
+
+                <div class="two-col">
+                    <div class="qa-deep" style="margin-bottom:0;">
+                        <div class="qa-deep-head">
+                            <h3>1.2 Test forms</h3><span class="qa-tag">forms</span>
+                        </div>
+                        <p class="qa-def">Forms are part of any website used for receiving information from users and
+                            to interact with them. Check:</p>
+                        <ul class="checklist">
+                            <li>All the <b>validations</b> on each field.</li>
+                            <li><b>Default values</b> of the fields.</li>
+                            <li><b>Wrong inputs</b> to the fields in the forms.</li>
+                        </ul>
+                    </div>
+                    <div class="qa-deep" style="margin-bottom:0;">
+                        <div class="qa-deep-head">
+                            <h3>1.3 Test cookies</h3><span class="qa-tag">cookies</span>
+                        </div>
+                        <p class="qa-def">Cookies are small files stored on a user's computer, holding data specific
+                            to a particular client and website, accessed by the web server or the client.</p>
+                        <ul class="checklist">
+                            <li>Test by <b>enabling</b> or <b>disabling</b> cookies in a browser.</li>
+                            <li>Test if cookies are <b>encrypted</b> before being written to the user's machine.</li>
+                            <li>Test if cookies are <b>deleted</b> when they are not needed anymore.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="two-col">
+                    <div class="qa-deep" style="margin-bottom:0;">
+                        <div class="qa-deep-head">
+                            <h3>1.4 Test HTML &amp; CSS</h3><span class="qa-tag">markup</span>
+                        </div>
+                        <ul class="checklist">
+                            <li>Checking for <b>syntax errors</b>.</li>
+                            <li>Check if the site is <b>crawlable</b> by different search engines.</li>
+                            <li>Readable <b>color scheme</b> and <b>fonts</b>.</li>
+                            <li><b>Standards</b> compliance (e.g. W3C and ISO).</li>
+                        </ul>
+                    </div>
+                    <div class="qa-deep" style="margin-bottom:0;">
+                        <div class="qa-deep-head">
+                            <h3>1.5 Database testing</h3><span class="qa-tag">database</span>
+                        </div>
+                        <ul class="checklist">
+                            <li>Data <b>validity</b>: test if any errors are shown while executing queries.</li>
+                            <li>Data <b>integrity</b>: check for errors while editing, deleting, modifying data.</li>
+                            <li>Check <b>response time</b> of queries; confirm queries execute correctly.</li>
+                            <li>Check retrieved data is <b>shown accurately</b> in the web application.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="example-strip"><b>Example functionality scenarios straight from the deck:</b> all
+                    mandatory fields must be validated; the system must not show an error for optional fields;
+                    numeric fields must reject alphabets with a proper error message; a pop-up ("This field is
+                    limited to 500 characters") must display at the field's max size; update/delete actions need a
+                    confirmation message; input fields must be tested against special characters.</div>
+            </div>
+        </section>
+
+        <!-- OTHER WEB TYPES -->
+        <section id="other-web-types">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 05 — THE OTHER FIVE WEB TESTING TYPES</div>
+                    <h2 class="sec-title">Usability, Interface, Compatibility, Security, Performance</h2>
+                </div>
+
+                <div class="qa-deep">
+                    <div class="qa-deep-head"><h3>2. Usability Testing</h3><span class="qa-tag">human ↔ system</span></div>
+                    <p class="qa-def">The process by which the human-computer interaction characteristics of a system
+                        are measured, and weaknesses are identified for correction. Basically, system
+                        <b>navigation</b> and <b>content</b> are checked in usability testing.</p>
+                    <div class="two-col">
+                        <div>
+                            <span class="subhead">2.1 Navigation</span>
+                            <p style="color:var(--ink-dim); font-size:0.9rem;">How a user <b>surfs</b> the pages —
+                                buttons, boxes, links. Menus/buttons/links to other pages must be <b>easily visible</b>
+                                and <b>consistent</b> across all pages. The app should be easy to use and navigate.</p>
+                        </div>
+                        <div>
+                            <span class="subhead">2.2 Content</span>
+                            <p style="color:var(--ink-dim); font-size:0.9rem;">Content should be <b>logical</b> and
+                                easy to <b>understand</b> — check for spelling errors. Dark colors annoy users and
+                                should be avoided in the site theme. All anchor text links should work; images should
+                                be placed properly with proper sizes.</p>
+                        </div>
+                    </div>
+                    <div class="rule-box"><b>Exam scenarios to remember:</b> tool-tip text on every field · standard
+                        button format/size · a home link on every single page · confirmation message for every
+                        interaction · scroll bars appear only when required · every field/button reachable by
+                        keyboard shortcuts.</div>
+                </div>
+
+                <div class="qa-deep">
+                    <div class="qa-deep-head"><h3>3. Interface Testing</h3><span class="qa-tag">three layers</span></div>
+                    <p class="qa-def">The main layers in a web application are the <b>Web server</b>, the
+                        <b>Application server</b>, and the <b>Database server</b>. Interface testing checks that all
+                        interactions between these layers execute properly, and that interactions between different
+                        pages in the application are also checked.</p>
+                </div>
+
+                <div class="qa-deep">
+                    <div class="qa-deep-head"><h3>4. Compatibility Testing</h3><span class="qa-tag">cross-environment</span></div>
+                    <p class="qa-def">Used to determine if your software is compatible with other elements of a
+                        system with which it should operate — e.g. <b>Browsers</b>, <b>Operating Systems</b>, or
+                        <b>hardware</b>. The purpose is to evaluate how well the software performs under different
+                        browsers, operating systems, hardware, or software.</p>
+                    <div class="example-strip"><b>Scenarios:</b> test in IE, Firefox, Chrome, Safari and Opera; test
+                        HTML-version-to-browser compatibility; images/fonts/JS/animated GIFs display correctly across
+                        browsers.</div>
+                </div>
+
+                <div class="two-col">
+                    <div class="qa-deep" style="margin-bottom:0;">
+                        <div class="qa-deep-head"><h3>5. Security Testing</h3><span class="qa-tag">sensitive data</span></div>
+                        <p class="qa-def">Vital for web applications that store sensitive customer information like
+                            credit cards, IDs, and passwords.</p>
+                        <ul class="checklist">
+                            <li>Unauthorized access to secure pages should not be permitted.</li>
+                            <li>Restricted files should not be downloadable without appropriate access.</li>
+                            <li>Sessions are automatically killed after prolonged inactivity.</li>
+                            <li>SSL certificates redirect the site to encrypted SSL pages.</li>
+                        </ul>
+                    </div>
+                    <div class="qa-deep" style="margin-bottom:0;">
+                        <div class="qa-deep-head"><h3>6. Performance Testing</h3><span class="qa-tag">under load</span></div>
+                        <p class="qa-def">Ensures your site works under all loads.</p>
+                        <ul class="checklist">
+                            <li>Response times at different connection speeds.</li>
+                            <li><b>Load test</b> — behavior under normal and peak loads.</li>
+                            <li><b>Stress test</b> — find the break point beyond normal load at peak time.</li>
+                            <li>Test how the site recovers after a crash caused by peak load.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- AUTOMATION -->
+        <section id="automation">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 06 — WEBSITE TEST AUTOMATION</div>
+                    <h2 class="sec-title">Let the machine do the repetitive clicking</h2>
+                </div>
+
+                <p>Automation testing helps relieve the bulk of tedious and repetitive human tasks. With the right
+                    test automation framework or tool, QAs can automate repetitive browser actions like interacting
+                    with web elements or filling out long HTML forms — saving time and effort, getting faster and
+                    accurate results, increasing software efficiency, and freeing the team to focus on innovation.</p>
+
+                <div class="grid5" style="margin-top:20px;">
+                    <div class="type-card"><div class="icon">⚡</div><h4>Faster feedback</h4></div>
+                    <div class="type-card"><div class="icon">📈</div><h4>Improved test efficiency</h4></div>
+                    <div class="type-card"><div class="icon">💰</div><h4>Reduced expenses</h4></div>
+                    <div class="type-card"><div class="icon">♻️</div><h4>Reusability of test cases</h4></div>
+                    <div class="type-card"><div class="icon">🚀</div><h4>Faster time to market</h4></div>
+                </div>
+
+                <div class="qa-deep" style="margin-top:26px;">
+                    <div class="qa-deep-head"><h3>Selenium</h3><span class="qa-tag">web only</span></div>
+                    <p class="qa-def">Selenium is an <b>open-source testing tool for web applications</b>. Any web
+                        application can be tested on web browsers with this automation testing tool.</p>
+                    <div class="rule-box"><b>Key limit to remember:</b> Selenium can test only web applications — it
+                        is <b>not</b> useful for mobile or desktop applications.</div>
+                    <div class="two-col">
+                        <div>
+                            <span class="subhead">Test scripts written in</span>
+                            <div class="pattern-chip-row"><span class="pattern-chip">Java</span><span class="pattern-chip">Python</span><span class="pattern-chip">C#</span><span class="pattern-chip">PHP</span><span class="pattern-chip">Ruby</span><span class="pattern-chip">Perl</span><span class="pattern-chip">.Net</span></div>
+                        </div>
+                        <div>
+                            <span class="subhead">Runs on / with</span>
+                            <div class="pattern-chip-row"><span class="pattern-chip">Windows</span><span class="pattern-chip">Mac</span><span class="pattern-chip">Linux</span><span class="pattern-chip">Firefox</span><span class="pattern-chip">IE</span><span class="pattern-chip">Chrome</span><span class="pattern-chip">Safari</span><span class="pattern-chip">Opera</span><span class="pattern-chip">JUnit</span></div>
+                        </div>
+                    </div>
+                    <div class="example-strip" style="margin-top:16px;"><b>Setup Selenium:</b> Eclipse IDE (or
+                        another IDE) → Selenium Client and language WebDriver bindings → configure Selenium
+                        WebDriver with Eclipse.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- MOBILE APPS -->
+        <section id="mobile-apps">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 07 — MOBILE APPLICATIONS</div>
+                    <h2 class="sec-title">Three ways to build for a phone</h2>
+                    <p class="sec-desc">A mobile application is a software application developed specifically for
+                        use on small, wireless, handheld mobile devices such as smart-phones and tablets — available
+                        through distribution platforms like the App Store (iOS) or Google Play Store, on the two main
+                        platforms: <b>iOS</b> and <b>Android</b>.</p>
+                </div>
+
+                <div class="mnemonic">
+                    <div class="icon">🧩</div>
+                    <div>
+                        <div class="label">Memory hook</div>
+                        <div class="phrase">"Native is fast, Web is easy, Hybrid is both."</div>
+                        <div class="decode">Native = platform-specific, fastest, most reliable. Web = a website
+                            dressed up for mobile, quick to build, slower. Hybrid = installed like native, but web
+                            technology on the inside — the middle ground.</div>
+                    </div>
+                </div>
+
+                <div class="grid5">
+                    <div class="type-card">
+                        <div class="icon">📱</div>
+                        <h4>Native Apps</h4>
+                        <p>Installed through mobile platform stores (Google Play / App Store). <b>Platform
+                                specific.</b> Offers the fastest, most reliable, most responsive experience. Example:
+                            App Store, Settings.</p>
+                    </div>
+                    <div class="type-card">
+                        <div class="icon">🌐</div>
+                        <h4>Mobile Web Apps</h4>
+                        <p>Server-side apps accessed on mobile via browsers (Chrome, Firefox) over a mobile or Wi-Fi
+                            network. Simpler and quicker to develop than native — but slower and less intuitive.</p>
+                    </div>
+                    <div class="type-card">
+                        <div class="icon">🔀</div>
+                        <h4>Hybrid Apps</h4>
+                        <p>A combination of native + web app — installed like a native app, but web app on the
+                            inside. Run on-device or offline, written with HTML5 and CSS. Example: Netflix.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- MOBILE TESTING VS APP TESTING -->
+        <section id="mobile-testing">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 08 — MOBILE TESTING VS. MOBILE APPLICATION TESTING</div>
+                    <h2 class="sec-title">The hardware vs. the software running on it</h2>
+                </div>
+
+                <div class="stack-diagram">
+                    <div class="stack-layer style">
+                        <span class="tag">Mobile Testing</span>
+                        <h4>Testing the device — the hardware</h4>
+                        <p>Testing the mobile device itself: internal processors, internal hardware, screen sizes,
+                            resolution, space/memory, camera, radio, Bluetooth, WIFI, etc.</p>
+                    </div>
+                    <div class="stack-layer pattern">
+                        <span class="tag">Mobile Application Testing</span>
+                        <h4>Testing the apps — the software</h4>
+                        <p>Testing the applications (software) that work on mobile devices and their functionality —
+                            a process by which application software developed for handheld mobile devices is tested
+                            for its <b>functionality</b>, <b>usability</b> and <b>consistency</b>. Can be
+                            <b>automated</b> or <b>manual</b>.</p>
+                    </div>
+                </div>
+
+                <div class="two-col" style="margin-top:26px;">
+                    <div>
+                        <span class="subhead">Why testing mobile apps matters</span>
+                        <div class="rule-box">Forecast mobile users worldwide climbs steadily, ~6.95B (2020) toward
+                            ~7.49B (2025*). Mobile traffic is up <b>222%</b> in the last 7 years — from 16.2% share of
+                            combined worldwide traffic in 2013 to 53.3% in 2019. More users on more devices means more
+                            surface area for bugs to hide in.</div>
+                    </div>
+                    <div>
+                        <span class="subhead">Challenges in mobile app testing</span>
+                        <ul class="checklist">
+                            <li>Variety of mobile devices in the market (HTC, iPhone, Samsung, etc.).</li>
+                            <li>Diverse mobile operating platforms (iOS, Android).</li>
+                            <li>Different network service providers.</li>
+                            <li>Different input methods.</li>
+                            <li>Hardware compatibility.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="qa-deep" style="margin-top:26px;">
+                    <div class="qa-deep-head"><h3>Mobile environment test design considerations</h3><span class="qa-tag">4 areas</span></div>
+                    <div class="table-scroll">
+                        <table class="cheat-table">
+                            <tr><th>Area</th><th>Comment</th></tr>
+                            <tr><td>Connectivity</td><td>Device provisioning, network speed, network latency,
+                                    network availability in remote areas, service reliability.</td></tr>
+                            <tr><td>Diversity of Devices</td><td>Numerous web browsers to test, multiple versions of
+                                    runtimes for Java or other languages.</td></tr>
+                            <tr><td>Device Constraints</td><td>Limited memory or processor, small screen size,
+                                    multiple operating systems, multitasking capabilities, data cache sizes.</td></tr>
+                            <tr><td>Input Devices</td><td>Touch screens, stylus, mouse, buttons, rollers.</td></tr>
+                            <tr><td>Installation &amp; Maintenance</td><td>Installing and uninstalling, patching,
+                                    upgrading.</td></tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- MOBILE TEST TYPES -->
+        <section id="mobile-types">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 09 — MAJOR TYPES OF MOBILE APP TESTING</div>
+                    <h2 class="sec-title">Six on the wheel, plus recoverability and the rest</h2>
+                </div>
+
+                <div class="mnemonic">
+                    <div class="icon">🎯</div>
+                    <div>
+                        <div class="label">Memory hook</div>
+                        <div class="phrase">"Few Locals Perform Security Compatibility Usability"</div>
+                        <div class="decode"><b>F</b>unctional · <b>L</b>ocalization · <b>P</b>erformance ·
+                            <b>S</b>ecurity · <b>C</b>ompatibility · <b>U</b>sability — the six-spoke wheel from the
+                            slides, plus Recoverability and other scenario groups covered separately.</div>
+                    </div>
+                </div>
+
+                <div class="qa-deep">
+                    <div class="qa-deep-head"><h3>Functional Testing</h3><span class="qa-tag">interactions + transactions</span></div>
+                    <p class="qa-def">Consists of testing user interactions and testing the transactions. Relevant
+                        factors: type of application (banking, gaming, social, business), target audience type
+                        (consumer, enterprise, education), distribution channel (Apple App Store, Google Play, direct
+                        distribution).</p>
+                    <div class="rule-box"><b>Scenarios to know:</b> mandatory fields work as required and are
+                        displayed distinctively from non-mandatory fields · app behaves correctly on start/stop · app
+                        minimizes on an incoming call · phone can store/process/receive SMS while the app runs ·
+                        multitasking works as required · social sharing/posting/navigation works · payment gateways
+                        (Visa, Mastercard, PayPal) work · truncation errors stay within an affordable limit ·
+                        appropriate error messages ("Network error. Please try after some time") on network failure
+                        · other apps aren't starved of memory · app resumes at the last operation after a hard reboot
+                        or crash · works across 2G/3G/4G/5G · <b>regression testing</b> uncovers new bugs in existing
+                        areas after changes.</div>
+                </div>
+
+                <div class="two-col">
+                    <div class="qa-deep" style="margin-bottom:0;">
+                        <div class="qa-deep-head"><h3>Performance Testing</h3><span class="qa-tag">load</span></div>
+                        <p class="qa-def">Ensures the app performs acceptably under certain performance requirements,
+                            such as access by a huge number of users or the removal of a key infrastructure part
+                            like a database server.</p>
+                        <ul class="checklist">
+                            <li>Performs correctly under peak, average, minimum user loads.</li>
+                            <li>Client-server config gives optimum performance.</li>
+                            <li>Identify application/infrastructure bottlenecks.</li>
+                            <li>Battery life supports the app under projected load.</li>
+                            <li>Performance holds when switching WIFI ↔ 3G/4G/5G.</li>
+                            <li>Battery consumption, memory leaks, GPS/camera use stay within guidelines.</li>
+                        </ul>
+                    </div>
+                    <div class="qa-deep" style="margin-bottom:0;">
+                        <div class="qa-deep-head"><h3>Security Testing</h3><span class="qa-tag">data &amp; network</span></div>
+                        <p class="qa-def">Ensures the application's data and networking security requirements are
+                            met as per guidelines.</p>
+                        <ul class="checklist">
+                            <li>Withstands <b>brute force attacks</b> (automated trial-and-error to guess a
+                                username/password/credit-card number).</li>
+                            <li>No sensitive content/functionality without proper authentication.</li>
+                            <li>Strong password protection; no session expiration gaps.</li>
+                            <li>Prevents <b>SQL injection</b>; validates certificates (<b>certificate pinning</b>).</li>
+                            <li>Protects against denial-of-service, buffer overflows, malicious client-side and
+                                runtime injections.</li>
+                            <li>Regular audits for data protection analysis.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="two-col">
+                    <div class="qa-deep" style="margin-bottom:0;">
+                        <div class="qa-deep-head"><h3>Usability Testing</h3><span class="qa-tag">quick &amp; easy</span></div>
+                        <p class="qa-def">Performed to have a quick and easy-to-use app rather than a slow, feature-
+                            heavy but difficult one. Goal: easy-to-use, intuitive, similar to widely-used
+                            industry-accepted interfaces.</p>
+                        <ul class="checklist">
+                            <li>Buttons sized for big fingers, placed consistently, natural/consistent icons.</li>
+                            <li>Same-function buttons share the same color.</li>
+                            <li>Tap zoom-in/zoom-out enabled; keyboard input minimized appropriately.</li>
+                            <li>Undo/back available within an acceptable duration.</li>
+                            <li>Contextual menus not overloaded; text short, clear, readable font size.</li>
+                            <li>App re-opens in the same state; strings localize when translation is available.</li>
+                        </ul>
+                    </div>
+                    <div class="qa-deep" style="margin-bottom:0;">
+                        <div class="qa-deep-head"><h3>Compatibility Testing</h3><span class="qa-tag">size, OS, hardware</span></div>
+                        <p class="qa-def">Ensures the app is tested across all devices — since mobile devices differ
+                            in size, resolution, screen, version, and hardware — so it works as desired everywhere.</p>
+                        <ul class="checklist">
+                            <li>UI matches the device's screen size — no partially invisible or inaccessible
+                                text/controls.</li>
+                            <li>Text is readable for all users.</li>
+                            <li>Call/alarm functionality works while the app runs — app minimizes/suspends during a
+                                call, resumes after.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="qa-deep">
+                    <div class="qa-deep-head"><h3>Recoverability Testing</h3><span class="qa-tag">crash &amp; interrupt</span></div>
+                    <ul class="checklist">
+                        <li>Crash recovery and transaction interruptions.</li>
+                        <li>Validate effective app recovery after unexpected interruption/crash.</li>
+                        <li>Verify how the app handles a transaction during a power failure (battery dies, sudden
+                            manual shutdown).</li>
+                        <li>When a connection is suspended, the system re-establishes it to recover data directly
+                            affected by that suspension.</li>
+                    </ul>
+                </div>
+
+                <div class="qa-deep">
+                    <div class="qa-deep-head"><h3>Other testing scenarios</h3><span class="qa-tag">install / uninstall / misc</span></div>
+                    <div class="two-col" style="margin-top:0;">
+                        <div>
+                            <ul class="checklist">
+                                <li><b>Installation testing</b> — app installs in a reasonable amount of time with
+                                    required criteria.</li>
+                                <li><b>Uninstallation testing</b> — app uninstalls in a reasonable amount of time.</li>
+                                <li><b>Network test cases</b> — network performs under required load and supports all
+                                    necessary apps during testing.</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <ul class="checklist">
+                                <li>Continued keypad entry survives interrupts and network issues.</li>
+                                <li>Charger effect while an app runs in the background.</li>
+                                <li>Low battery + high performance demand; battery removed mid-operation.</li>
+                                <li>Battery consumption by the app; check for application side effects.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- MANUAL VS AUTO -->
+        <section id="manual-vs-auto">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 10 — MANUAL OR AUTOMATED MOBILE APP TESTING</div>
+                    <h2 class="sec-title">Both are widespread — the choice is contextual</h2>
+                    <p class="sec-desc">Both manual and automated testing can provide good results. The choice
+                        should be based on the company's preferences and capabilities. Manual testing will
+                        <b>not</b> be entirely replaced by test automation — there are certain situations when manual
+                        control is the better option.</p>
+                </div>
+
+                <div class="table-scroll">
+                    <table class="cheat-table">
+                        <tr><th></th><th>Manual Testing</th><th>Automated Testing</th></tr>
+                        <tr><td><b>Advantages</b></td>
+                            <td>Cost-effective in a short-term period · more flexible · better simulation of user
+                                actions</td>
+                            <td>Cost-effective in the long-term · running process is faster · reused easily · test
+                                results easy to share</td></tr>
+                        <tr><td><b>Disadvantages</b></td>
+                            <td>Difficult to reuse · running process is slow · some cases can't be executed manually</td>
+                            <td>Automated tools may have limitations · less efficient at defining user-friendliness
+                                or positive customer experience</td></tr>
+                    </table>
+                </div>
+
+                <div class="qa-deep" style="margin-top:26px;">
+                    <div class="qa-deep-head"><h3>Universal mobile testing tools</h3><span class="qa-tag">Android + iOS</span></div>
+                    <div class="two-col">
+                        <div>
+                            <span class="subhead">Universal (Android &amp; iOS)</span>
+                            <ul class="checklist">
+                                <li><b>Eggplant</b> — industry-leading test automation and monitoring platform.</li>
+                                <li><b>Ranorex</b> — automated tool for mobile, web, and desktop solutions.</li>
+                                <li><b>Appium</b> — open-source test automation framework for native, hybrid, and web
+                                    solutions.</li>
+                                <li><b>Kobiton</b> — AI-powered tool for manual and automated testing.</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <span class="subhead">Platform-specific</span>
+                            <ul class="checklist">
+                                <li><b>Selendroid</b> — test automation framework for native or hybrid <b>Android</b>
+                                    apps.</li>
+                                <li><b>iOS Driver</b> — open-source tool for <b>iOS</b> native, hybrid, or mobile web
+                                    solutions.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CHEAT SHEET -->
+        <section id="cheat">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 11 — CHEAT SHEET</div>
+                    <h2 class="sec-title">Every testing type, in one scan</h2>
+                </div>
+                <div class="table-scroll">
+                    <table class="cheat-table">
+                        <tr><th>Domain</th><th>Testing Type</th><th>What it checks</th></tr>
+                        <tr><td rowspan="6">Web</td><td>Functionality</td><td>Links, forms, cookies, HTML/CSS,
+                                database</td></tr>
+                        <tr><td>Usability</td><td>Navigation + content, easy to understand/learn</td></tr>
+                        <tr><td>Interface</td><td>Web server ↔ app server ↔ database server interactions</td></tr>
+                        <tr><td>Compatibility</td><td>Browsers, OS, hardware</td></tr>
+                        <tr><td>Performance</td><td>Response time, load, stress, crash recovery</td></tr>
+                        <tr><td>Security</td><td>Unauthorized access, sessions, SSL/HTTPS</td></tr>
+                        <tr><td rowspan="7">Mobile App</td><td>Functional</td><td>User interactions, transactions,
+                                regression</td></tr>
+                        <tr><td>Performance</td><td>Load, battery, network switching, bottlenecks</td></tr>
+                        <tr><td>Security</td><td>Brute force, SQL injection, cert pinning, DoS</td></tr>
+                        <tr><td>Usability</td><td>Button size/placement, undo, readable text</td></tr>
+                        <tr><td>Compatibility</td><td>Screen size, calls/alarms interrupting the app</td></tr>
+                        <tr><td>Recoverability</td><td>Crash, power loss, connection suspension</td></tr>
+                        <tr><td>Install/Uninstall/Network</td><td>Reasonable time, required criteria, network load</td></tr>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- COMMON MISTAKES -->
+        <section id="mistakes">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 12 — COMMON MISTAKES</div>
+                    <h2 class="sec-title">What students actually get wrong on this material</h2>
+                    <p class="sec-desc">These are the mix-ups that show up on exams — read each pair twice.</p>
+                </div>
+
+                <div class="mistake-box">
+                    <h4>Website vs. Web Application</h4>
+                    <div class="wrong-right">
+                        <div class="wr-item wrong"><div class="tag-label">✗ WRONG</div>Thinking "web application"
+                            just means "a big website" or that the two terms are interchangeable.</div>
+                        <div class="wr-item right"><div class="tag-label">✓ RIGHT</div>A website is
+                            <b>informational</b> and static (Wikipedia); a web app is <b>interactive</b> and dynamic,
+                            with client-side logic responding to user input (webmail, online retail).</div>
+                    </div>
+                </div>
+
+                <div class="mistake-box">
+                    <h4>Mobile Testing vs. Mobile Application Testing</h4>
+                    <div class="wrong-right">
+                        <div class="wr-item wrong"><div class="tag-label">✗ WRONG</div>Using the two terms as
+                            synonyms, or assuming "mobile testing" covers the app's features.</div>
+                        <div class="wr-item right"><div class="tag-label">✓ RIGHT</div>Mobile Testing =
+                            <b>hardware</b> (processors, camera, Bluetooth, WIFI). Mobile Application Testing =
+                            <b>software</b> — the app's functionality, usability, consistency.</div>
+                    </div>
+                </div>
+
+                <div class="mistake-box">
+                    <h4>Selenium's scope</h4>
+                    <div class="wrong-right">
+                        <div class="wr-item wrong"><div class="tag-label">✗ WRONG</div>"Selenium can automate mobile
+                            app testing too, since it automates browser actions."</div>
+                        <div class="wr-item right"><div class="tag-label">✓ RIGHT</div>Selenium tests <b>only web
+                                applications</b> in browsers — it is explicitly <b>not useful for mobile or desktop
+                                applications</b>. For mobile, you'd reach for Appium, Selendroid, or iOS Driver.</div>
+                    </div>
+                </div>
+
+                <div class="mistake-box">
+                    <h4>Native vs. Hybrid vs. Mobile Web apps</h4>
+                    <div class="wrong-right">
+                        <div class="wr-item wrong"><div class="tag-label">✗ WRONG</div>Assuming a hybrid app is "just
+                            a native app with some web pages in it," or that mobile web apps get installed from an
+                            app store.</div>
+                        <div class="wr-item right"><div class="tag-label">✓ RIGHT</div>Native = platform-specific,
+                            installed via store, fastest. Mobile Web = accessed via a browser, no install, slower.
+                            Hybrid = <b>installed like a native app</b> but built with web technologies (HTML5/CSS)
+                            on the inside.</div>
+                    </div>
+                </div>
+
+                <div class="mistake-box">
+                    <h4>Load testing vs. Stress testing</h4>
+                    <div class="wrong-right">
+                        <div class="wr-item wrong"><div class="tag-label">✗ WRONG</div>Treating "load test" and
+                            "stress test" as the same activity with different names.</div>
+                        <div class="wr-item right"><div class="tag-label">✓ RIGHT</div><b>Load</b> testing determines
+                            behavior under <b>normal and peak</b> loads. <b>Stress</b> testing pushes <b>beyond</b>
+                            normal loads to find the break point — then checks how the system recovers from a
+                            resulting crash.</div>
+                    </div>
+                </div>
+
+                <div class="mistake-box">
+                    <h4>Orphan pages vs. broken links</h4>
+                    <div class="wrong-right">
+                        <div class="wr-item wrong"><div class="tag-label">✗ WRONG</div>Confusing an "orphan page"
+                            (a page nothing links to) with a "broken link" (a link that points nowhere valid).</div>
+                        <div class="wr-item right"><div class="tag-label">✓ RIGHT</div>An <b>orphan page</b> exists
+                            but has no incoming links pointing to it. A <b>broken link</b> points to a destination
+                            that doesn't resolve. Functionality testing checks for both, separately.</div>
+                    </div>
+                </div>
+
+                <div class="mistake-box">
+                    <h4>Interface Testing vs. Compatibility Testing</h4>
+                    <div class="wrong-right">
+                        <div class="wr-item wrong"><div class="tag-label">✗ WRONG</div>Mixing up "interface testing"
+                            (sounds like UI) with checking how the app looks on different screens.</div>
+                        <div class="wr-item right"><div class="tag-label">✓ RIGHT</div><b>Interface testing</b>
+                            checks the <b>server-side layers</b> talking to each other — web server ↔ application
+                            server ↔ database server. <b>Compatibility testing</b> checks the <b>client-side</b>
+                            environment — browsers, OS, hardware.</div>
+                    </div>
+                </div>
+
+                <div class="mistake-box">
+                    <h4>Recoverability testing as an afterthought</h4>
+                    <div class="wrong-right">
+                        <div class="wr-item wrong"><div class="tag-label">✗ WRONG</div>Forgetting recoverability
+                            testing exists as its own type, and folding it into "performance" or "functional."</div>
+                        <div class="wr-item right"><div class="tag-label">✓ RIGHT</div>Recoverability testing is its
+                            own scenario group in the slides: crash recovery, transaction interruption, power
+                            failure mid-transaction, and re-establishing suspended connections.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- POP QUIZ -->
+        <section id="quiz">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 13 — POP QUIZ</div>
+                    <h2 class="sec-title">Test yourself — click a question to reveal the answer</h2>
+                </div>
+
+                <div class="quiz-item">
+                    <div class="quiz-q" onclick="this.nextElementSibling.classList.toggle('open')">
+                        <span><span class="qnum">Q1.</span>A collection of static pages, all users see the same
+                            content, published under one domain — is this a website or a web application?</span>
+                        <span class="quiz-reveal">Reveal</span>
+                    </div>
+                    <div class="quiz-answer"><b>Website.</b> It's informational and static — every user sees the
+                        same information every time (e.g. wikipedia.org).</div>
+                </div>
+
+                <div class="quiz-item">
+                    <div class="quiz-q" onclick="this.nextElementSibling.classList.toggle('open')">
+                        <span><span class="qnum">Q2.</span>True or false: Selenium can be used to automate testing
+                            of a native Android app.</span>
+                        <span class="quiz-reveal">Reveal</span>
+                    </div>
+                    <div class="quiz-answer"><b>False.</b> Selenium tests only web applications in a browser — it is
+                        explicitly not useful for mobile or desktop applications.</div>
+                </div>
+
+                <div class="quiz-item">
+                    <div class="quiz-q" onclick="this.nextElementSibling.classList.toggle('open')">
+                        <span><span class="qnum">Q3.</span>Which of the six web testing types checks that the web
+                            server, application server, and database server interact correctly?</span>
+                        <span class="quiz-reveal">Reveal</span>
+                    </div>
+                    <div class="quiz-answer"><b>Interface Testing.</b> It focuses on the three server-side layers
+                        talking to each other, plus interactions between different pages.</div>
+                </div>
+
+                <div class="quiz-item">
+                    <div class="quiz-q" onclick="this.nextElementSibling.classList.toggle('open')">
+                        <span><span class="qnum">Q4.</span>An app is installed from the Google Play Store but is
+                            actually built with HTML5 and CSS on the inside. What type of mobile app is this?</span>
+                        <span class="quiz-reveal">Reveal</span>
+                    </div>
+                    <div class="quiz-answer"><b>Hybrid app.</b> Installed like a native app, but web app technology
+                        under the hood — Netflix is the example given in the slides.</div>
+                </div>
+
+                <div class="quiz-item">
+                    <div class="quiz-q" onclick="this.nextElementSibling.classList.toggle('open')">
+                        <span><span class="qnum">Q5.</span>Short answer: name the difference between load testing and
+                            stress testing.</span>
+                        <span class="quiz-reveal">Reveal</span>
+                    </div>
+                    <div class="quiz-answer">Load testing checks behavior under normal <b>and peak</b> loads. Stress
+                        testing pushes <b>beyond</b> normal loads to find the site's break point, then checks
+                        recovery from a resulting crash.</div>
+                </div>
+
+                <div class="quiz-item">
+                    <div class="quiz-q" onclick="this.nextElementSibling.classList.toggle('open')">
+                        <span><span class="qnum">Q6.</span>An automated process of trial-and-error used to guess a
+                            username, password, or credit-card number — what is this attack called, and which mobile
+                            testing type checks for it?</span>
+                        <span class="quiz-reveal">Reveal</span>
+                    </div>
+                    <div class="quiz-answer"><b>Brute force attack</b> — checked under <b>Security Testing</b> for
+                        mobile applications.</div>
+                </div>
+
+                <div class="quiz-item">
+                    <div class="quiz-q" onclick="this.nextElementSibling.classList.toggle('open')">
+                        <span><span class="qnum">Q7.</span>A tester verifies an app resumes at its last operation
+                            after a hard reboot, and separately verifies it survives a battery dying mid-transaction.
+                            Are these the same testing type?</span>
+                        <span class="quiz-reveal">Reveal</span>
+                    </div>
+                    <div class="quiz-answer">Not exactly — "resumes at the last operation after reboot/crash" is
+                        listed under <b>Functional Testing</b> scenarios, while "handles a transaction during power
+                        failure" and "re-establishes a suspended connection" fall under <b>Recoverability
+                            Testing</b>. Both deal with resilience, but they're distinct categories in the slides.</div>
+                </div>
+
+                <div class="quiz-item">
+                    <div class="quiz-q" onclick="this.nextElementSibling.classList.toggle('open')">
+                        <span><span class="qnum">Q8.</span>Name two universal mobile testing tools (work on both
+                            Android and iOS) and one platform-specific tool.</span>
+                        <span class="quiz-reveal">Reveal</span>
+                    </div>
+                    <div class="quiz-answer">Universal: <b>Eggplant, Ranorex, Appium, or Kobiton</b> (any two).
+                        Platform-specific: <b>Selendroid</b> (Android only) or <b>iOS Driver</b> (iOS only).</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PRACTICE LAB -->
+        <section id="lab">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 14 — PRACTICE LAB</div>
+                    <h2 class="sec-title">Match the scenario to the testing type</h2>
+                    <p class="sec-desc">Realistic exam-shape questions, built from the deck's own scenario lists —
+                        drill these until the mapping is automatic.</p>
+                </div>
+                <div class="examroom">
+                    <div class="practice-q">
+                        <div class="req">1. A QA engineer checks that the "Submit" button is disabled until the
+                            "Email" field passes validation, and that a numeric-only field rejects letters with a
+                            proper error message.</div>
+                        <div class="ans">→ Functionality Testing (specifically, form testing — 1.2)</div>
+                        <div class="why">Why: field validations, default values, and wrong-input handling are exactly
+                            what "test forms on all pages" covers.</div>
+                    </div>
+                    <div class="practice-q">
+                        <div class="req">2. A tester opens the same banking app on Chrome, Firefox, and Safari to
+                            confirm the layout and JavaScript behave identically in each.</div>
+                        <div class="ans">→ Compatibility Testing</div>
+                        <div class="why">Why: evaluating how well software performs under different browsers is the
+                            textbook definition of compatibility testing.</div>
+                    </div>
+                    <div class="practice-q">
+                        <div class="req">3. A tester simulates 10,000 concurrent users hitting an e-commerce site
+                            during a flash sale to find the point at which the server starts failing requests.</div>
+                        <div class="ans">→ Performance Testing — specifically, stress testing</div>
+                        <div class="why">Why: pushing beyond normal load to find the break point at peak time is the
+                            definition of stress testing, a performance-testing activity.</div>
+                    </div>
+                    <div class="practice-q">
+                        <div class="req">4. A mobile QA team verifies the app cannot be installed on unauthorized
+                            devices, that sessions expire after inactivity, and that no attacker can read stored
+                            passwords in plaintext.</div>
+                        <div class="ans">→ Security Testing</div>
+                        <div class="why">Why: unauthorized access prevention, session expiration, and encrypted
+                            sensitive data are core security-testing scenarios (for both web and mobile).</div>
+                    </div>
+                    <div class="practice-q">
+                        <div class="req">5. A tester force-closes a shopping app mid-checkout, then relaunches it to
+                            confirm the cart and transaction state are still intact.</div>
+                        <div class="ans">→ Recoverability Testing</div>
+                        <div class="why">Why: crash recovery and validating effective recovery after an unexpected
+                            interruption is exactly what recoverability testing scenarios describe.</div>
+                    </div>
+                    <div class="practice-q">
+                        <div class="req">6. A team is deciding between Selenium and Appium for a new project that
+                            targets both a responsive website and a native Android app.</div>
+                        <div class="ans">→ Selenium for the website, Appium for the native Android app</div>
+                        <div class="why">Why: Selenium is web-only by design; Appium is the open-source framework
+                            explicitly built for native, hybrid, and web mobile solutions.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <div>SE401 · Software Quality Assurance and Testing · Advanced Topics — Web &amp; Mobile Testing</div>
+        <div class="toc-hint">Built as a study aid from lecture slides — always verify against your instructor's
+            exact wording before an exam.</div>
+        <div class="made">Made by <span>Shoug Alomran</span></div>
+    </footer>
+
+    <script>
+        const root = document.documentElement;
+        const sw = document.getElementById('switch');
+        const label = document.getElementById('theme-label');
+
+        function applyTheme(t) {
+            root.setAttribute('data-theme', t);
+            label.textContent = t.toUpperCase();
+        }
+
+        const prefersLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
+        applyTheme(prefersLight ? 'light' : 'dark');
+
+        sw.addEventListener('click', () => {
+            const current = root.getAttribute('data-theme');
+            applyTheme(current === 'dark' ? 'light' : 'dark');
+        });
+    </script>
+
+</body>
+
+</html>

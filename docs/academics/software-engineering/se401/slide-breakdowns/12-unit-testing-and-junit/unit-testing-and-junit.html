@@ -1,0 +1,1463 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unit Testing &amp; JUnit — The Assertion Playbook | SE401 Ch.12</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --radius-sm: 8px;
+            --radius-md: 14px;
+            --radius-lg: 22px;
+            --font-head: 'Sora', sans-serif;
+            --font-body: 'Inter', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+            --maxw: 1180px;
+        }
+
+        html[data-theme="dark"] {
+            --bg: #0b1210;
+            --surface: #101a16;
+            --surface-2: #15221c;
+            --ink: #e7f2ec;
+            --ink-dim: #8aa39a;
+            --line: #223129;
+            --accent: #35c98b;
+            --accent-2: #e0a43a;
+            --danger: #e2584a;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            --code-bg: #0c1512;
+        }
+
+        html[data-theme="light"] {
+            --bg: #f1f4f1;
+            --surface: #ffffff;
+            --surface-2: #eaf0ec;
+            --ink: #10201a;
+            --ink-dim: #57685f;
+            --line: #d7ded7;
+            --accent: #1c9d68;
+            --accent-2: #a9700f;
+            --danger: #c23b2c;
+            --shadow: 0 10px 26px rgba(20, 30, 25, 0.10);
+            --code-bg: #101c17;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            background:
+                radial-gradient(circle at 1px 1px, var(--line) 1px, transparent 1px) 0 0/26px 26px,
+                var(--bg);
+            color: var(--ink);
+            font-family: var(--font-body);
+            font-size: clamp(15px, 0.4vw + 14px, 17px);
+            line-height: 1.6;
+            transition: background-color .35s ease, color .35s ease;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: var(--font-head);
+            margin: 0;
+            letter-spacing: -0.01em;
+        }
+
+        a { color: inherit; }
+
+        .mono { font-family: var(--font-mono); }
+
+        .wrap {
+            max-width: var(--maxw);
+            margin: 0 auto;
+            padding: 0 clamp(16px, 4vw, 40px);
+        }
+
+        header.top {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            backdrop-filter: blur(10px);
+            background: color-mix(in srgb, var(--bg) 78%, transparent);
+            border-bottom: 1px solid var(--line);
+        }
+
+        .top-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px clamp(16px, 4vw, 40px);
+            max-width: var(--maxw);
+            margin: 0 auto;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .brand { display: flex; align-items: center; gap: 10px; }
+        .brand .logo-mini { width: 30px; height: 30px; flex: none; }
+
+        .brand-text {
+            font-family: var(--font-head);
+            font-weight: 700;
+            font-size: 1.05rem;
+        }
+        .brand-text span { color: var(--accent); }
+
+        nav.pillnav { display: flex; gap: 6px; flex-wrap: wrap; }
+
+        nav.pillnav a {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            text-decoration: none;
+            color: var(--ink-dim);
+            padding: 6px 10px;
+            border-radius: 999px;
+            border: 1px solid transparent;
+            white-space: nowrap;
+            transition: all .2s ease;
+        }
+        nav.pillnav a:hover { color: var(--ink); border-color: var(--line); background: var(--surface); }
+
+        .theme-toggle {
+            display: flex; align-items: center; gap: 8px;
+            font-family: var(--font-mono); font-size: 0.7rem; color: var(--ink-dim);
+        }
+
+        .switch {
+            width: 46px; height: 26px; border-radius: 999px;
+            background: var(--surface-2); border: 1px solid var(--line);
+            position: relative; cursor: pointer; flex: none;
+        }
+        .switch .knob {
+            position: absolute; top: 2px; left: 2px; width: 20px; height: 20px;
+            border-radius: 50%; background: var(--accent);
+            transition: left .25s ease, background .25s ease;
+        }
+        html[data-theme="light"] .switch .knob { left: 22px; }
+
+        .hero { padding: clamp(40px, 7vw, 80px) 0 clamp(20px, 4vw, 40px); }
+        .hero-grid {
+            display: grid; grid-template-columns: 1.2fr 0.8fr;
+            gap: clamp(20px, 4vw, 50px); align-items: center;
+        }
+        @media (max-width:820px) { .hero-grid { grid-template-columns: 1fr; } }
+
+        .eyebrow {
+            font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.14em;
+            text-transform: uppercase; color: var(--accent-2); margin-bottom: 14px;
+            display: flex; align-items: center; gap: 10px;
+        }
+        .eyebrow::before { content: ''; width: 26px; height: 1px; background: var(--accent-2); }
+
+        h1.hero-title { font-size: clamp(2.1rem, 5vw, 3.6rem); line-height: 1.05; font-weight: 700; }
+        h1.hero-title em { font-style: normal; color: var(--accent); }
+
+        .hero-sub { margin-top: 18px; color: var(--ink-dim); max-width: 54ch; font-size: 1.02rem; }
+
+        .hero-badges { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 22px; }
+        .badge {
+            font-family: var(--font-mono); font-size: 0.72rem; padding: 6px 12px;
+            border-radius: 8px; background: var(--surface); border: 1px solid var(--line); color: var(--ink-dim);
+        }
+
+        .blueprint-wrap { display: flex; justify-content: center; }
+        .blueprint-wrap svg { width: min(340px, 90%); height: auto; }
+
+        section { padding: clamp(30px, 5vw, 60px) 0; border-top: 1px solid var(--line); }
+        section:first-of-type { border-top: none; }
+
+        .sec-head { margin-bottom: clamp(20px, 3vw, 34px); max-width: 74ch; }
+        .sec-num { font-family: var(--font-mono); color: var(--accent); font-size: 0.78rem; letter-spacing: 0.1em; }
+        .sec-title { font-size: clamp(1.5rem, 3vw, 2.1rem); margin-top: 6px; }
+        .sec-desc { color: var(--ink-dim); margin-top: 10px; font-size: 0.98rem; }
+
+        .mnemonic {
+            background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 14%, transparent), transparent);
+            border: 1px dashed color-mix(in srgb, var(--accent) 55%, var(--line));
+            border-radius: var(--radius-md); padding: 16px 20px; display: flex; gap: 14px;
+            align-items: flex-start; margin: 18px 0;
+        }
+        .mnemonic .icon { font-size: 1.4rem; flex: none; line-height: 1; }
+        .mnemonic .label {
+            font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.1em;
+            text-transform: uppercase; color: var(--accent);
+        }
+        .mnemonic .phrase { font-family: var(--font-head); font-weight: 600; font-size: 1.05rem; margin-top: 3px; }
+        .mnemonic .decode { color: var(--ink-dim); font-size: 0.86rem; margin-top: 4px; }
+
+        /* code blocks */
+        .code-block {
+            background: var(--code-bg);
+            border: 1px solid var(--line);
+            border-radius: var(--radius-md);
+            padding: 16px 18px;
+            margin: 16px 0;
+            overflow-x: auto;
+            box-shadow: var(--shadow);
+        }
+        .code-block .cap {
+            font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.1em;
+            text-transform: uppercase; color: var(--accent-2); margin-bottom: 10px; display: block;
+        }
+        .code-block pre {
+            margin: 0; font-family: var(--font-mono); font-size: 0.84rem; line-height: 1.65;
+            color: #d3e6dc; white-space: pre;
+        }
+        .code-block code { font-family: var(--font-mono); }
+        .tok-kw { color: #7fc4ff; }
+        .tok-ann { color: #ff9e6d; }
+        .tok-str { color: #9fe3a0; }
+        .tok-cmt { color: #6f8a7e; font-style: italic; }
+        .tok-type { color: #d8a9ff; }
+        .tok-met { color: #ffd76d; }
+        .tok-num { color: #ffb3b3; }
+
+        /* classification / deep dive */
+        .qa-deep {
+            background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg);
+            padding: clamp(18px, 3vw, 30px); margin-bottom: 26px; position: relative;
+            border-left: 5px solid var(--accent);
+        }
+        .qa-deep-head { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; justify-content: space-between; }
+        .qa-deep h3 { font-size: clamp(1.2rem, 2.2vw, 1.5rem); }
+        .qa-tag {
+            font-family: var(--font-mono); font-size: 0.68rem; padding: 5px 11px; border-radius: 999px;
+            background: var(--surface-2); border: 1px solid var(--line); color: var(--ink-dim);
+        }
+        .qa-def { margin-top: 10px; color: var(--ink); font-size: 0.96rem; max-width: 80ch; }
+
+        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; margin-top: 20px; }
+        @media (max-width:760px) { .two-col { grid-template-columns: 1fr; } }
+
+        .subhead {
+            font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase;
+            color: var(--accent-2); margin-bottom: 10px; display: block;
+        }
+
+        .pattern-chip-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
+        .pattern-chip {
+            font-family: var(--font-mono); font-size: 0.75rem; padding: 5px 12px; border-radius: 999px;
+            background: color-mix(in srgb, var(--accent) 14%, var(--surface-2)); border: 1px solid var(--line);
+        }
+
+        .example-strip {
+            margin-top: 16px; background: color-mix(in srgb, var(--accent-2) 10%, transparent);
+            border: 1px solid color-mix(in srgb, var(--accent-2) 35%, var(--line));
+            border-radius: var(--radius-sm); padding: 12px 14px; font-size: 0.86rem;
+        }
+        .example-strip b { color: var(--accent-2); }
+
+        .rule-box {
+            margin-top: 14px; background: var(--surface-2); border: 1px solid var(--line);
+            border-radius: var(--radius-sm); padding: 12px 14px; font-size: 0.84rem; color: var(--ink-dim);
+        }
+        .rule-box b { color: var(--ink); }
+
+        /* grid of cards */
+        .grid3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-top: 20px; }
+        .type-card {
+            background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-md);
+            padding: 18px; transition: transform .2s ease, box-shadow .2s ease;
+        }
+        .type-card:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
+        .type-card .icon { font-size: 1.5rem; }
+        .type-card h4 { font-size: 1.0rem; margin-top: 8px; }
+        .type-card p { color: var(--ink-dim); font-size: 0.85rem; margin: 8px 0 0; }
+
+        /* verdict cards */
+        .verdict-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap: 16px; margin-top: 22px; }
+        .verdict-card {
+            border-radius: var(--radius-md); padding: 18px 20px; border: 1px solid var(--line);
+            background: var(--surface);
+        }
+        .verdict-card.pass { border-top: 4px solid var(--accent); }
+        .verdict-card.fail { border-top: 4px solid var(--danger); }
+        .verdict-card.error { border-top: 4px solid var(--accent-2); }
+        .verdict-card h4 { font-size: 1.1rem; }
+        .verdict-card.pass h4 { color: var(--accent); }
+        .verdict-card.fail h4 { color: var(--danger); }
+        .verdict-card.error h4 { color: var(--accent-2); }
+        .verdict-card ul { margin: 10px 0 0; padding-left: 18px; color: var(--ink-dim); font-size: 0.86rem; }
+        .verdict-card li { margin-bottom: 4px; }
+
+        /* decision tree */
+        .dtree { margin-top: 22px; border: 1px solid var(--line); border-radius: var(--radius-lg); overflow: hidden; }
+        .dtree-row {
+            display: grid; grid-template-columns: 1fr 1fr; border-bottom: 1px dashed var(--line);
+        }
+        .dtree-row:last-child { border-bottom: none; }
+        .dtree-q {
+            padding: 14px 18px; background: var(--surface-2); font-family: var(--font-mono);
+            font-size: 0.84rem; display: flex; align-items: center; border-right: 1px dashed var(--line);
+        }
+        .dtree-a { padding: 14px 18px; background: var(--surface); font-size: 0.88rem; display: flex; align-items: center; }
+        @media (max-width:600px) { .dtree-row { grid-template-columns: 1fr; } .dtree-q { border-right: none; border-bottom: 1px dashed var(--line); } }
+
+        /* mistakes */
+        .mistake-box {
+            border: 1px solid color-mix(in srgb, var(--danger) 45%, var(--line));
+            background: color-mix(in srgb, var(--danger) 8%, var(--surface));
+            border-radius: var(--radius-md); padding: 16px 20px; margin: 18px 0;
+        }
+        .mistake-box h4 { font-size: 1.0rem; margin-bottom: 10px; }
+        .mistake-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 10px; }
+        @media (max-width:600px) { .mistake-pair { grid-template-columns: 1fr; } }
+        .wrong, .right {
+            border-radius: var(--radius-sm); padding: 10px 12px; font-size: 0.85rem;
+        }
+        .wrong { background: color-mix(in srgb, var(--danger) 14%, transparent); border: 1px solid color-mix(in srgb, var(--danger) 40%, var(--line)); }
+        .right { background: color-mix(in srgb, var(--accent) 14%, transparent); border: 1px solid color-mix(in srgb, var(--accent) 40%, var(--line)); }
+        .wrong .tag, .right .tag { font-family: var(--font-mono); font-size: 0.7rem; font-weight: 700; letter-spacing: 0.05em; display: block; margin-bottom: 4px; }
+        .wrong .tag { color: var(--danger); }
+        .right .tag { color: var(--accent); }
+
+        /* quiz */
+        .quiz-item {
+            border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--surface);
+            padding: 16px 18px; margin: 14px 0;
+        }
+        .quiz-q { font-size: 0.96rem; font-weight: 600; display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; }
+        .quiz-reveal {
+            font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.05em; text-transform: uppercase;
+            background: var(--surface-2); border: 1px solid var(--line); border-radius: 999px;
+            padding: 6px 12px; cursor: pointer; color: var(--accent-2); flex: none; transition: all .2s ease;
+        }
+        .quiz-reveal:hover { border-color: var(--accent-2); }
+        .quiz-answer {
+            display: none; margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--line);
+            color: var(--ink-dim); font-size: 0.88rem;
+        }
+        .quiz-answer.show { display: block; }
+        .quiz-answer b { color: var(--accent); }
+
+        /* cheat table */
+        .cheat-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        .cheat-table th, .cheat-table td {
+            border: 1px solid var(--line); padding: 12px 14px; text-align: left; font-size: 0.85rem;
+        }
+        .cheat-table th {
+            background: var(--surface-2); font-family: var(--font-mono); font-size: 0.68rem;
+            text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent-2);
+        }
+        .cheat-table tr:nth-child(even) td { background: color-mix(in srgb, var(--surface-2) 55%, transparent); }
+        .cheat-table code { font-family: var(--font-mono); font-size: 0.82em; color: var(--accent); }
+
+        /* practice lab */
+        .examroom {
+            background: repeating-linear-gradient(180deg, var(--surface) 0px, var(--surface) 27px, var(--surface-2) 28px);
+            border: 1px solid var(--line); border-radius: var(--radius-lg); padding: clamp(18px, 3vw, 28px);
+        }
+        .practice-q {
+            border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface);
+            padding: 14px 16px; margin: 12px 0; font-size: 0.92rem;
+        }
+        .practice-q .req { color: var(--ink); }
+        .practice-q .ans { margin-top: 8px; font-family: var(--font-mono); font-size: 0.78rem; color: var(--accent); }
+        .practice-q .why { margin-top: 6px; color: var(--ink-dim); font-size: 0.82rem; }
+
+        /* chunk table */
+        .chunk-table { width: 100%; border-collapse: collapse; margin-top: 18px; }
+        .chunk-table th, .chunk-table td {
+            border: 1px solid var(--line); padding: 10px 12px; font-size: 0.82rem; text-align: left;
+        }
+        .chunk-table th { background: var(--surface-2); font-family: var(--font-mono); font-size: 0.66rem; text-transform: uppercase; color: var(--accent-2); }
+
+        footer {
+            padding: 40px clamp(16px, 4vw, 40px) 60px; text-align: center; color: var(--ink-dim);
+            font-family: var(--font-mono); font-size: 0.78rem;
+        }
+        footer .made { color: var(--ink); font-weight: 600; margin-top: 6px; }
+        footer .made span { color: var(--accent); }
+        .toc-hint { margin-top: 26px; color: var(--ink-dim); font-size: 0.82rem; }
+
+        ::selection { background: var(--accent); color: #06120c; }
+    </style>
+
+    <meta name="description" content="A test method doesn&#x27;t return a result — it either does nothing (pass), throws an AssertionFailedError (fail), or blows up unexpectedly (error). This is the full JUnit playbook: annotations, every assertion method, exception testing, fixtures, timeouts, and parameterized tests, straight from the SE401 slides.">
+    <link rel="canonical" href="https://shoug-tech.com/academics/software-engineering/se401/slide-breakdowns/12-unit-testing-and-junit/unit-testing-and-junit.html">
+    <meta property="og:title" content="Unit Testing &amp; JUnit — The Assertion Playbook | SE401 Ch.12">
+    <meta property="og:description" content="A test method doesn&#x27;t return a result — it either does nothing (pass), throws an AssertionFailedError (fail), or blows up unexpectedly (error). The full JUnit playbook from the SE401 slides.">
+    <meta property="og:url" content="https://shoug-tech.com/academics/software-engineering/se401/slide-breakdowns/12-unit-testing-and-junit/unit-testing-and-junit.html">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://shoug-tech.com/logo.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Unit Testing &amp; JUnit — The Assertion Playbook | SE401 Ch.12">
+    <meta name="twitter:description" content="A test method doesn&#x27;t return a result — it either does nothing (pass), throws an AssertionFailedError (fail), or blows up unexpectedly (error). The full JUnit playbook from the SE401 slides.">
+    <meta name="twitter:image" content="https://shoug-tech.com/logo.png">
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","url":"https://shoug-tech.com/academics/software-engineering/se401/slide-breakdowns/12-unit-testing-and-junit/unit-testing-and-junit.html","name":"Unit Testing &amp; JUnit — The Assertion Playbook | SE401 Ch.12","description":"A test method doesn&#x27;t return a result — it either does nothing (pass), throws an AssertionFailedError (fail), or blows up unexpectedly (error). The full JUnit playbook from the SE401 slides.","isPartOf":{"@type":"WebSite","name":"Shoug's Digital Garden","url":"https://shoug-tech.com/"}}</script>
+
+    <link rel="alternate" hreflang="en" href="https://shoug-tech.com/academics/software-engineering/se401/slide-breakdowns/12-unit-testing-and-junit/unit-testing-and-junit.html">
+    <link rel="alternate" hreflang="ar" href="https://shoug-tech.com/ar/academics/software-engineering/se401/slide-breakdowns/12-unit-testing-and-junit/unit-testing-and-junit.html">
+    <link rel="alternate" hreflang="x-default" href="https://shoug-tech.com/academics/software-engineering/se401/slide-breakdowns/12-unit-testing-and-junit/unit-testing-and-junit.html">
+</head>
+
+<body>
+
+    <header class="top">
+        <div class="top-inner">
+            <div class="brand">
+                <svg class="logo-mini" viewBox="0 0 40 40">
+                    <rect x="6" y="6" width="28" height="28" rx="6" fill="none" stroke="currentColor" stroke-width="2" opacity="0.35" />
+                    <path d="M13 20 L18 25 L27 14" fill="none" stroke="var(--accent)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+                <div class="brand-text">JUnit<span>·</span>Assertion Playbook</div>
+            </div>
+            <nav class="pillnav">
+                <a href="#basics">Unit Testing</a>
+                <a href="#anatomy">Anatomy</a>
+                <a href="#verdicts">Verdicts</a>
+                <a href="#example">Worked Example</a>
+                <a href="#assertions">Assertions</a>
+                <a href="#exceptions">Exceptions</a>
+                <a href="#fixtures">Fixtures</a>
+                <a href="#advanced">Timeouts &amp; Params</a>
+                <a href="#practices">Best Practices</a>
+                <a href="#cheat">Cheat Sheet</a>
+                <a href="#mistakes">Mistakes</a>
+                <a href="#quiz">Pop Quiz</a>
+                <a href="#lab">Practice Lab</a>
+            </nav>
+            <div class="theme-toggle">
+                <span id="theme-label">DARK</span>
+                <div class="switch" id="switch" role="button" aria-label="Toggle theme">
+                    <div class="knob"></div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+
+        <!-- HERO -->
+        <section class="hero">
+            <div class="wrap hero-grid">
+                <div>
+                    <div class="eyebrow">SE401 · Software Testing and Quality · Chapter 12</div>
+                    <h1 class="hero-title">Unit testing,<br><em>one assertion at a time.</em></h1>
+                    <p class="hero-sub">A JUnit test method is basically a tiny courtroom: you set up the facts
+                        (<code class="mono">Value v1 = new Value();</code>), call the witness
+                        (<code class="mono">v1.setName("Y")</code>), then hand the judge — an <code
+                            class="mono">assert</code> call — the expected and actual answers. If the judge agrees,
+                        the method does <b>nothing</b> and life goes on. If it disagrees, it throws an error and the
+                        case is closed. This chapter is every rule the judge plays by.</p>
+                    <div class="hero-badges">
+                        <div class="badge">For a class Foo → FooTest</div>
+                        <div class="badge">6 families of assertions</div>
+                        <div class="badge">Pass / Fail / Error</div>
+                        <div class="badge">JUnit 5 lifecycle</div>
+                    </div>
+                </div>
+                <div class="blueprint-wrap">
+                    <svg viewBox="0 0 320 320">
+                        <rect x="20" y="20" width="280" height="280" rx="18" fill="none" stroke="var(--line)" stroke-width="2" />
+                        <text x="160" y="46" text-anchor="middle" class="mono" font-family="JetBrains Mono" font-size="11" fill="var(--accent)">@Test METHOD</text>
+                        <rect x="45" y="62" width="230" height="230" rx="12" fill="none" stroke="var(--accent)" stroke-width="1.6" stroke-dasharray="5 5" />
+                        <circle cx="160" cy="177" r="46" fill="color-mix(in srgb, var(--accent) 18%, transparent)" stroke="var(--accent-2)" stroke-width="2" />
+                        <text x="160" y="173" text-anchor="middle" class="mono" font-family="JetBrains Mono" font-size="10" fill="var(--accent-2)">assert</text>
+                        <text x="160" y="187" text-anchor="middle" class="mono" font-family="JetBrains Mono" font-size="9" fill="var(--ink-dim)">verdict</text>
+                        <g font-family="JetBrains Mono" font-size="9" fill="var(--ink-dim)">
+                            <circle cx="160" cy="95" r="5" fill="var(--accent-2)" /><text x="160" y="86" text-anchor="middle">SET-UP</text>
+                            <circle cx="230" cy="135" r="5" fill="#35c98b" /><text x="255" y="130" text-anchor="middle">PASS</text>
+                            <circle cx="230" cy="220" r="5" fill="#e2584a" /><text x="258" y="225" text-anchor="middle">FAIL</text>
+                            <circle cx="90" cy="220" r="5" fill="#e0a43a" /><text x="63" y="225" text-anchor="middle">ERROR</text>
+                            <circle cx="90" cy="135" r="5" fill="var(--accent-2)" /><text x="60" y="130" text-anchor="middle">TEAR-DN</text>
+                        </g>
+                        <g stroke="var(--line)" stroke-width="1.3">
+                            <line x1="160" y1="131" x2="160" y2="100" />
+                            <line x1="196" y1="150" x2="226" y2="136" />
+                            <line x1="196" y1="205" x2="226" y2="219" />
+                            <line x1="124" y1="205" x2="94" y2="219" />
+                            <line x1="124" y1="150" x2="94" y2="136" />
+                        </g>
+                    </svg>
+                </div>
+            </div>
+        </section>
+
+        <!-- UNIT TESTING BASICS -->
+        <section id="basics">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 01 — THE FOUNDATIONS</div>
+                    <h2 class="sec-title">What unit testing is, and why JUnit exists</h2>
+                    <p class="sec-desc">Get the vocabulary locked in first — "unit," "test case," and "test suite"
+                        get used precisely for the rest of the chapter.</p>
+                </div>
+
+                <div class="mnemonic">
+                    <div class="icon">🔬</div>
+                    <div>
+                        <div class="label">Memory hook</div>
+                        <div class="phrase">"One class, in isolation, by its own author."</div>
+                        <div class="decode">Unit testing looks for errors in a <b>subsystem in isolation</b> —
+                            usually a single class and its helpers — and it's usually carried out by the
+                            <b>developer who wrote it</b>, using black-box and/or white-box techniques to design the
+                            cases.</div>
+                    </div>
+                </div>
+
+                <div class="two-col">
+                    <div>
+                        <span class="subhead">The basic idea</span>
+                        <div class="rule-box">
+                            For a given class <code class="mono">Foo</code>, create another class
+                            <code class="mono">FooTest</code> to test it, containing various "test case" methods to
+                            run. Each method looks for particular results and passes / fails. JUnit provides
+                            <code class="mono">assert</code> commands to help write these checks — put assertion
+                            calls in your test methods for things you expect to be true; if they aren't, the test
+                            fails.
+                        </div>
+                        <div class="rule-box" style="margin-top:12px;">
+                            <b>Test case</b> — a single test of a single method.<br>
+                            <b>Test suite</b> — a collection of test cases (group your test methods in a class with
+                            <code class="mono">@SelectPackages</code> or <code class="mono">@SelectClasses</code>).
+                        </div>
+                    </div>
+                    <div>
+                        <span class="subhead">Why JUnit specifically</span>
+                        <div class="grid3" style="margin-top:0;">
+                            <div class="type-card"><div class="icon">⚡</div><h4>Faster, higher quality</h4><p>Write
+                                    code faster while increasing quality; tests are inexpensive and check their own
+                                    results with immediate feedback.</p></div>
+                            <div class="type-card"><div class="icon">🧱</div><h4>Stability</h4><p>Increases the
+                                    stability of software — unit tests are developer tests that catch regressions
+                                    from refactoring.</p></div>
+                            <div class="type-card"><div class="icon">☕</div><h4>Free &amp; Java-native</h4><p>Written
+                                    in Java, free, elegantly simple, and gives a proper hands-on understanding of unit
+                                    testing.</p></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="example-strip"><b>What JUnit helps the programmer do:</b> define and execute tests and
+                    test suites; formalize requirements and clarify architecture; write and debug code; integrate
+                    code while always being ready to release a working version. Unit testing is especially important
+                    when requirements change frequently — code gets refactored often, and tests confirm the
+                    refactor didn't break anything.</div>
+
+                <div class="rule-box" style="margin-top:16px;"><b>A known limitation:</b> JUnit is designed to call
+                    methods and compare their return values against expected results. That ignores programs that do
+                    work in response to GUI commands, or methods used mainly to produce output. Heavy JUnit use
+                    therefore pushes you toward a "functional" style — methods that return a value rather than
+                    cause side effects — which is arguably a good thing: simpler, more general, easier to reuse.</div>
+            </div>
+        </section>
+
+        <!-- ANATOMY -->
+        <section id="anatomy">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 02 — ANATOMY OF A TEST</div>
+                    <h2 class="sec-title">A JUnit test class, piece by piece</h2>
+                </div>
+
+                <div class="code-block">
+                    <span class="cap">The skeleton</span>
+                    <pre><span class="tok-kw">import static</span> org.junit.jupiter.api.Assertions.*;
+<span class="tok-kw">import</span> org.junit.jupiter.api.Test;
+
+<span class="tok-kw">class</span> <span class="tok-type">name</span> {
+    ...
+
+    <span class="tok-ann">@Test</span>
+    <span class="tok-kw">void</span> <span class="tok-met">name</span>() {  <span class="tok-cmt">// a test case method</span>
+        ...
+    }
+}</pre>
+                </div>
+
+                <p style="color:var(--ink-dim); font-size:0.92rem;">A method annotated <code
+                        class="mono">@Test</code> is flagged as a JUnit test case. <b>All</b> <code
+                        class="mono">@Test</code> methods run automatically when JUnit runs the test class.</p>
+
+                <div class="two-col">
+                    <div>
+                        <span class="subhead">The structure of a test method</span>
+                        <div class="rule-box">
+                            <b>A test method doesn't return a result.</b><br>
+                            If the tests run correctly, the method does <i>nothing</i>.<br>
+                            If a test fails, it throws an <code class="mono">AssertionFailedError</code>.<br>
+                            JUnit catches that error and deals with it — you don't have to do anything yourself.
+                        </div>
+                    </div>
+                    <div>
+                        <span class="subhead">Naming convention</span>
+                        <div class="rule-box">
+                            Class under test: <code class="mono">Value</code><br>
+                            JUnit test for it: <code class="mono">ValueTest</code><br>
+                            Test classes are sometimes placed in a separate package. Each test method represents a
+                            single test case and can independently earn a pass, fail, or error verdict.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="example-strip"><b>Organizing a real project:</b> create test cases in the same package as
+                    the code under test. For each Java package in the application, define a <code
+                        class="mono">TestSuite</code> class containing all the tests for that package, plus similar
+                    suites for higher- and lower-level packages. Make sure your build process compiles all tests —
+                    but keep production and test code compiled into <i>separate trees</i>, so you can deploy without
+                    shipping the tests.</div>
+            </div>
+        </section>
+
+        <!-- VERDICTS -->
+        <section id="verdicts">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 03 — TEST CASE VERDICTS</div>
+                    <h2 class="sec-title">Pass, Fail, or Error — the only three outcomes</h2>
+                    <p class="sec-desc">A <i>verdict</i> is the result of executing a single test case. This
+                        three-way split is one of the most exam-tested distinctions in the whole chapter.</p>
+                </div>
+
+                <div class="verdict-row">
+                    <div class="verdict-card pass">
+                        <h4>✓ Pass</h4>
+                        <ul>
+                            <li>The test case execution was completed.</li>
+                            <li>The function being tested performed as expected.</li>
+                            <li>All assertions were true.</li>
+                        </ul>
+                    </div>
+                    <div class="verdict-card fail">
+                        <h4>✗ Fail</h4>
+                        <ul>
+                            <li>The test case execution was completed.</li>
+                            <li>The function being tested did <i>not</i> perform as expected.</li>
+                            <li>One or more assertions were false — execution of the test case stops right there.</li>
+                        </ul>
+                    </div>
+                    <div class="verdict-card error">
+                        <h4>⚠ Error</h4>
+                        <ul>
+                            <li>The test case execution was <i>not</i> completed.</li>
+                            <li>Caused by an unexpected event, an unexpected exception, or improper set-up of the
+                                test case.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="mnemonic">
+                    <div class="icon">🌳</div>
+                    <div>
+                        <div class="label">Extra memorization aid — decision tree</div>
+                        <div class="phrase">Two yes/no questions get you to any verdict.</div>
+                        <div class="decode">Ask "did it finish?" first, then "was it right?" — never guess between
+                            Fail and Error again.</div>
+                    </div>
+                </div>
+
+                <div class="dtree">
+                    <div class="dtree-row">
+                        <div class="dtree-q">Did the test case finish executing?</div>
+                        <div class="dtree-a">No → an unexpected exception or bad set-up occurred → <b
+                                style="color:var(--accent-2);">ERROR</b></div>
+                    </div>
+                    <div class="dtree-row">
+                        <div class="dtree-q">Yes — and was the function's behavior as expected?</div>
+                        <div class="dtree-a">No, an assertion was false → <b style="color:var(--danger);">FAIL</b></div>
+                    </div>
+                    <div class="dtree-row">
+                        <div class="dtree-q">Yes — and all assertions held true?</div>
+                        <div class="dtree-a">Yes → <b style="color:var(--accent);">PASS</b></div>
+                    </div>
+                </div>
+
+                <div class="rule-box" style="margin-top:16px;"><b>During execution of a test case:</b> if an
+                    assertion is true, execution continues. If any assertion is false, execution of the test case
+                    stops and it fails. If an unexpected exception is encountered, the verdict is an error. If all
+                    assertions were true, the test case passes.</div>
+            </div>
+        </section>
+
+        <!-- WORKED EXAMPLE -->
+        <section id="example">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 04 — A WORKED EXAMPLE</div>
+                    <h2 class="sec-title">Reading a real test case, line by line</h2>
+                    <p class="sec-desc">Straight from the slides — a test for <code class="mono">setName()</code> on
+                        a class called <code class="mono">Value</code>.</p>
+                </div>
+
+                <div class="code-block">
+                    <span class="cap">A simple JUnit test case — annotated walkthrough</span>
+                    <pre><span class="tok-cmt">/** Test of setName() method, of class Value */</span>
+<span class="tok-ann">@Test</span>                                          <span class="tok-cmt">// ① identifies this Java method as a test case</span>
+<span class="tok-kw">public void</span> <span class="tok-met">createAndSetName</span>() {
+    Value v1 = <span class="tok-kw">new</span> <span class="tok-type">Value</span>();
+
+    v1.setName(<span class="tok-str">"Y"</span>);                            <span class="tok-cmt">// ② confirm setName saves the given name</span>
+
+    String expected = <span class="tok-str">"Y"</span>;
+    String actual = v1.getName();               <span class="tok-cmt">// ③ check the Value object really stored it</span>
+
+    Assert.assertEquals(expected, actual);       <span class="tok-cmt">// ④ expected vs actual must be equal, or the test fails</span>
+}</pre>
+                </div>
+
+                <div class="example-strip"><b>Reading order that matters on exams:</b> ① a method needs
+                    <code class="mono">@Test</code> to be recognized as a test case at all — a plain method with no
+                    annotation is just dead code to JUnit. ② the test <i>acts</i> on the object under test. ③ it
+                    <i>observes</i> the resulting state. ④ it <i>asserts</i> that the observed state matches
+                    expectations — this is the only line that can flip the verdict to Fail.</div>
+
+                <div class="code-block">
+                    <span class="cap">The class under test — BinarySearch.java</span>
+                    <pre><span class="tok-kw">public class</span> <span class="tok-type">BinarySearch</span> {
+  <span class="tok-kw">public static int</span> <span class="tok-met">search</span>(<span class="tok-kw">int</span>[] a, <span class="tok-kw">int</span> x) {
+        ...
+  }
+
+  <span class="tok-kw">public static int</span> <span class="tok-met">checkedSearch</span>(<span class="tok-kw">int</span>[] a, <span class="tok-kw">int</span> x) {
+        ...
+  }
+}</pre>
+                </div>
+
+                <div class="code-block">
+                    <span class="cap">The JUnit test — BinarySearchTest.java</span>
+                    <pre><span class="tok-kw">public class</span> <span class="tok-type">BinarySearchTest</span> {
+  <span class="tok-ann">@Test</span>
+  <span class="tok-kw">public void</span> <span class="tok-met">testSearch1</span>() {
+        <span class="tok-kw">int</span>[] a = { <span class="tok-num">1</span>, <span class="tok-num">3</span>, <span class="tok-num">5</span>, <span class="tok-num">7</span> };
+        assertTrue(search(a, <span class="tok-num">3</span>) == <span class="tok-num">1</span>);
+  }
+
+  <span class="tok-ann">@Test</span>
+  <span class="tok-kw">public void</span> <span class="tok-met">testSearch2</span>() {
+        <span class="tok-kw">int</span>[] a = { <span class="tok-num">1</span>, <span class="tok-num">3</span>, <span class="tok-num">5</span>, <span class="tok-num">7</span> };
+        assertTrue(search(a, <span class="tok-num">2</span>) == -<span class="tok-num">1</span>);
+  }
+
+  <span class="tok-ann">@Test</span>
+  <span class="tok-kw">public void</span> <span class="tok-met">testCheckedSearch1</span>() { … }
+  <span class="tok-ann">@Test</span>
+  <span class="tok-kw">public void</span> <span class="tok-met">testCheckedSearch2</span>() { … }
+  <span class="tok-ann">@Test</span>
+  <span class="tok-kw">public void</span> <span class="tok-met">testCheckedSearch3</span>() { … }
+}</pre>
+                </div>
+
+                <div class="rule-box"><b>Running it in Eclipse/NetBeans:</b> install a JDK, create a Java project
+                    whose name matches the sample-code folder, add the <code class="mono">JUnit</code> library
+                    (choose JUnit 5) via Project → Libraries → Add Library, then Run As → <code class="mono">JUnit
+                        Test</code>. JUnit 5 requires Java 8+ at runtime (it can still test code compiled with older
+                    JDKs), and is supported by IntelliJ IDEA, Eclipse, NetBeans, VS Code, and build tools Gradle,
+                    Maven, and Ant. JUnit can also run independently from the command line or through a build tool
+                    like Ant — <i>you can use both methods of running JUnit.</i></div>
+            </div>
+        </section>
+
+        <!-- ASSERTIONS -->
+        <section id="assertions">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 05 — ASSERTION METHODS</div>
+                    <h2 class="sec-title">Six families of assertions, all static in org.junit.Assert</h2>
+                    <p class="sec-desc">Assertions are Boolean expressions. If the assertion is false, an
+                        <code class="mono">AssertionFailedError</code> is thrown. They can check equality of objects
+                        and values, or identity of references — and every one determines the test case verdict.</p>
+                </div>
+
+                <div class="mnemonic">
+                    <div class="icon">🧩</div>
+                    <div>
+                        <div class="label">Memory hook</div>
+                        <div class="phrase">"Trust No Identical Equal Arrays"</div>
+                        <div class="decode"><b>T</b>rue/False · <b>N</b>ull · <b>I</b>dentity (Same) · <b>E</b>quals ·
+                            <b>A</b>rrayEquals — plus a Floating-Point variant of Equals. Every family also accepts an
+                            optional leading <code class="mono">message</code> argument, printed only on failure.</div>
+                    </div>
+                </div>
+
+                <div class="qa-deep">
+                    <div class="qa-deep-head"><h3>1. Boolean conditions</h3><span class="qa-tag">is it true or false?</span></div>
+                    <p class="qa-def">Assert that a Boolean condition is true or false.</p>
+                    <div class="code-block"><pre>assertTrue(<span class="tok-type">condition</span>)
+assertFalse(<span class="tok-type">condition</span>)
+assertTrue(<span class="tok-str">message</span>, <span class="tok-type">condition</span>)
+assertFalse(<span class="tok-str">message</span>, <span class="tok-type">condition</span>)
+
+<span class="tok-cmt">// examples</span>
+assertTrue(search(a, <span class="tok-num">3</span>) == <span class="tok-num">1</span>);
+assertFalse(<span class="tok-str">"Failure: 2 is not in array."</span>, search(a, <span class="tok-num">2</span>) &gt;= <span class="tok-num">0</span>);</pre></div>
+                </div>
+
+                <div class="qa-deep">
+                    <div class="qa-deep-head"><h3>2. Null objects</h3><span class="qa-tag">is the reference null?</span></div>
+                    <p class="qa-def">Assert an object reference is null or non-null.</p>
+                    <div class="code-block"><pre>assertNull(<span class="tok-type">object</span>)
+assertNotNull(<span class="tok-type">object</span>)
+assertNull(<span class="tok-str">message</span>, <span class="tok-type">object</span>)
+assertNotNull(<span class="tok-str">message</span>, <span class="tok-type">object</span>)
+
+<span class="tok-cmt">// examples</span>
+assertNotNull(<span class="tok-str">"Should not be null."</span>, <span class="tok-kw">new</span> <span class="tok-type">Object</span>());
+assertNull(<span class="tok-str">"Should be null."</span>, <span class="tok-kw">null</span>);</pre></div>
+                </div>
+
+                <div class="qa-deep">
+                    <div class="qa-deep-head"><h3>3. Object identity</h3><span class="qa-tag">are they the same reference?</span></div>
+                    <p class="qa-def">Assert two object references are identical.
+                        <code class="mono">assertSame(expected, actual)</code> is true if <code
+                            class="mono">expected == actual</code>; <code class="mono">assertNotSame</code> is true
+                        if <code class="mono">expected != actual</code>. Order doesn't affect the comparison, but it
+                        does affect the wording of the failure message.</p>
+                    <div class="code-block"><pre>assertSame(<span class="tok-type">expected</span>, <span class="tok-type">actual</span>)
+assertNotSame(<span class="tok-type">expected</span>, <span class="tok-type">actual</span>)
+assertSame(<span class="tok-str">message</span>, <span class="tok-type">expected</span>, <span class="tok-type">actual</span>)
+
+<span class="tok-cmt">// examples</span>
+assertNotSame(<span class="tok-str">"Should not be same."</span>, <span class="tok-kw">new</span> <span class="tok-type">Object</span>(), <span class="tok-kw">new</span> <span class="tok-type">Object</span>());
+
+Integer num1 = Integer.valueOf(<span class="tok-num">2013</span>);
+assertSame(<span class="tok-str">"Should be same."</span>, num1, num1);        <span class="tok-cmt">// passes — same reference</span>
+
+Integer num2 = Integer.valueOf(<span class="tok-num">2014</span>);
+assertSame(<span class="tok-str">"Should be same."</span>, num1, num2);        <span class="tok-cmt">// fails!</span>
+<span class="tok-cmt">// java.lang.AssertionError:
+// Should be same. expected same:&lt;2013&gt; was not:&lt;2014&gt;</span></pre></div>
+                </div>
+
+                <div class="qa-deep">
+                    <div class="qa-deep-head"><h3>4. Object equality</h3><span class="qa-tag">is the content equal?</span></div>
+                    <p class="qa-def">Assert two objects are equal. <code class="mono">assertEquals(expected,
+                            actual)</code> is true if <code class="mono">expected.equals(actual)</code> — it relies
+                        entirely on the class under test's own <code class="mono">equals()</code> method, so it's up
+                        to that class to define a suitable one.</p>
+                    <div class="code-block"><pre>assertEquals(<span class="tok-type">expected</span>, <span class="tok-type">actual</span>)
+assertEquals(<span class="tok-str">message</span>, <span class="tok-type">expected</span>, <span class="tok-type">actual</span>)
+
+<span class="tok-cmt">// examples</span>
+assertEquals(<span class="tok-str">"Should be equal."</span>, <span class="tok-str">"JUnit"</span>, <span class="tok-str">"JUnit"</span>);   <span class="tok-cmt">// passes</span>
+assertEquals(<span class="tok-str">"Should be equal."</span>, <span class="tok-str">"JUnit"</span>, <span class="tok-str">"Java"</span>);    <span class="tok-cmt">// fails!</span>
+<span class="tok-cmt">// org.junit.ComparisonFailure:
+// Should be equal. expected:&lt;J[Unit]&gt; but was:&lt;J[ava]&gt;</span></pre></div>
+                </div>
+
+                <div class="qa-deep">
+                    <div class="qa-deep-head"><h3>5. Array equality</h3><span class="qa-tag">element-by-element</span></div>
+                    <p class="qa-def">Assert two arrays are equal. The arrays must have the same length, and each
+                        valid index <code class="mono">i</code> is checked recursively — effectively
+                        <code class="mono">assertEquals(expected[i], actual[i])</code> for every position, which
+                        also lets it recurse cleanly into nested (2-D) arrays.</p>
+                    <div class="code-block"><pre>assertArrayEquals(<span class="tok-type">expected</span>, <span class="tok-type">actual</span>)
+assertArrayEquals(<span class="tok-str">message</span>, <span class="tok-type">expected</span>, <span class="tok-type">actual</span>)
+
+<span class="tok-cmt">// examples</span>
+<span class="tok-kw">int</span>[] a1 = { <span class="tok-num">2</span>, <span class="tok-num">3</span>, <span class="tok-num">5</span>, <span class="tok-num">7</span> };
+<span class="tok-kw">int</span>[] a2 = { <span class="tok-num">2</span>, <span class="tok-num">3</span>, <span class="tok-num">5</span>, <span class="tok-num">7</span> };
+assertArrayEquals(<span class="tok-str">"Should be equal"</span>, a1, a2);
+
+<span class="tok-kw">int</span>[][] a11 = { { <span class="tok-num">2</span>, <span class="tok-num">3</span> }, { <span class="tok-num">5</span>, <span class="tok-num">7</span> }, { <span class="tok-num">11</span>, <span class="tok-num">13</span> } };
+<span class="tok-kw">int</span>[][] a12 = { { <span class="tok-num">2</span>, <span class="tok-num">3</span> }, { <span class="tok-num">5</span>, <span class="tok-num">7</span> }, { <span class="tok-num">11</span>, <span class="tok-num">13</span> } };
+assertArrayEquals(<span class="tok-str">"Should be equal"</span>, a11, a12);</pre></div>
+                </div>
+
+                <div class="qa-deep">
+                    <div class="qa-deep-head"><h3>6. Floating-point values</h3><span class="qa-tag">equal within a delta</span></div>
+                    <p class="qa-def">For comparing <code class="mono">double</code> or <code class="mono">float</code>
+                        values, <code class="mono">assertEquals</code> requires an additional
+                        <code class="mono">delta</code> parameter, because binary floating-point math is imprecise.
+                        The assertion evaluates to true if <code class="mono">Math.abs(expected - actual) &lt;=
+                            delta</code>.</p>
+                    <div class="code-block"><pre>assertEquals(<span class="tok-type">expected</span>, <span class="tok-type">actual</span>, <span class="tok-type">delta</span>)
+assertEquals(<span class="tok-str">message</span>, <span class="tok-type">expected</span>, <span class="tok-type">actual</span>, <span class="tok-type">delta</span>)
+
+<span class="tok-cmt">// example</span>
+<span class="tok-kw">double</span> d1 = <span class="tok-num">100.0</span>, d2 = <span class="tok-num">99.99995</span>;
+assertEquals(<span class="tok-str">"Should be equal within delta."</span>, d1, d2, <span class="tok-num">0.0001</span>);</pre></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- EXCEPTIONS -->
+        <section id="exceptions">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 06 — EXCEPTION TESTING</div>
+                    <h2 class="sec-title">A.k.a. robustness testing</h2>
+                    <p class="sec-desc">Sometimes the <i>correct</i>, expected outcome of a test is an exception —
+                        you're proving the code fails safely on bad input.</p>
+                </div>
+
+                <div class="code-block">
+                    <span class="cap">The method under test — expects to throw on bad input</span>
+                    <pre><span class="tok-kw">public static int</span> <span class="tok-met">checkedSearch</span>(<span class="tok-kw">int</span>[] a, <span class="tok-kw">int</span> x) {
+  <span class="tok-kw">if</span> (a == <span class="tok-kw">null</span> || a.length == <span class="tok-num">0</span>)
+    <span class="tok-kw">throw new</span> <span class="tok-type">IllegalArgumentException</span>(<span class="tok-str">"Null or empty array."</span>);
+  ...
+}
+
+checkedSearch(<span class="tok-kw">null</span>, <span class="tok-num">1</span>);</pre>
+                </div>
+
+                <div class="two-col">
+                    <div>
+                        <span class="subhead">Approach 1 — assertThrows()</span>
+                        <p style="color:var(--ink-dim); font-size:0.88rem;">Specify the expected exception class
+                            directly. The verdict is a <b>pass</b> if that exact exception is thrown, and a
+                            <b>fail</b> if no exception (or an unexpected one) occurs.</p>
+                        <div class="code-block"><pre><span class="tok-ann">@Test</span>
+<span class="tok-kw">void</span> <span class="tok-met">exceptionTesting</span>() {
+    Exception exception = assertThrows(
+        ArithmeticException.<span class="tok-kw">class</span>,
+        () -&gt; calculator.divide(<span class="tok-num">1</span>, <span class="tok-num">0</span>));
+    assertEquals(<span class="tok-str">"/ by zero"</span>, exception.getMessage());
+}</pre></div>
+                    </div>
+                    <div>
+                        <span class="subhead">Approach 2 — try/catch + fail()</span>
+                        <p style="color:var(--ink-dim); font-size:0.88rem;">Catch the exception manually and call
+                            <code class="mono">fail()</code> if it never arrives. This is more verbose, but it lets
+                            you inspect specific messages/details of the exception and distinguish between different
+                            exception types in the same block.</p>
+                        <div class="code-block"><pre><span class="tok-ann">@Test</span>
+<span class="tok-kw">public void</span> <span class="tok-met">testCheckedSearch3</span>() {
+  <span class="tok-kw">try</span> {
+        checkedSearch(<span class="tok-kw">null</span>, <span class="tok-num">1</span>);
+        fail(<span class="tok-str">"Exception should have occurred"</span>);
+  } <span class="tok-kw">catch</span> (IllegalArgumentException e) {
+        assertEquals(e.getMessage(),
+            <span class="tok-str">"Null or empty array."</span>);
+  }
+}</pre></div>
+                    </div>
+                </div>
+
+                <div class="rule-box"><b><code class="mono">fail()</code> / <code class="mono">fail(message)</code></b>
+                    is an unconditional failure — it always fails if it's executed. It's used at a point in the code
+                    that should never be reached, such as the line right after a statement that should have thrown
+                    an exception.</div>
+            </div>
+        </section>
+
+        <!-- FIXTURES -->
+        <section id="fixtures">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 07 — TEST FIXTURES</div>
+                    <h2 class="sec-title">Set-up, tear-down, and the JUnit lifecycle</h2>
+                    <p class="sec-desc">A <i>fixture</i> is the context in which a test case executes — the common
+                        objects or resources available to any test case, plus the activities that manage them.</p>
+                </div>
+
+                <div class="mnemonic">
+                    <div class="icon">🧅</div>
+                    <div>
+                        <div class="label">Extra memorization aid — nesting analogy</div>
+                        <div class="phrase">"All wraps Each, Each wraps the Test — like an onion."</div>
+                        <div class="decode"><code class="mono">@BeforeAll</code> runs once, on the outside, before
+                            anything else. Inside that, <code class="mono">@BeforeEach</code> /
+                            <code class="mono">@Test</code> / <code class="mono">@AfterEach</code> repeat once per
+                            test method. <code class="mono">@AfterAll</code> closes the onion on the outside, last of
+                            all.</div>
+                    </div>
+                </div>
+
+                <div class="two-col">
+                    <div>
+                        <span class="subhead">Per-test: @BeforeEach / @AfterEach</span>
+                        <div class="rule-box">
+                            <b>Set-up</b> — tasks that must be done <i>prior to each</i> test case: create objects to
+                            work with, open a network connection, open a file to read/write.<br><br>
+                            <b>Tear-down</b> — tasks to clean up <i>after execution of each</i> test case: ensures
+                            resources are released and the system is in a known state for the next test case.
+                        </div>
+                        <div class="rule-box" style="margin-top:10px; border-color: color-mix(in srgb, var(--danger) 40%, var(--line));">
+                            <b>Important:</b> clean-up should <i>not</i> be written at the end of a test case's own
+                            body — a failure ends execution of the test case right there, so code after the failing
+                            assertion never runs. <code class="mono">@AfterEach</code> methods run regardless of the
+                            verdict, even if exceptions are thrown or an assertion fails.
+                        </div>
+                    </div>
+                    <div>
+                        <span class="subhead">Once per class: @BeforeAll / @AfterAll</span>
+                        <div class="rule-box">
+                            <code class="mono">@BeforeAll</code> — on a <b>static</b> method, one method only. Runs
+                            <i>once</i> for the entire test class, before any of the tests and before any
+                            <code class="mono">@BeforeEach</code> methods. Useful for starting servers, opening
+                            connections — shared, non-destructive resources with no need to reset per test case.<br><br>
+                            <code class="mono">@AfterAll</code> — also on a static method, runs <i>once</i>, after
+                            all tests and after any <code class="mono">@AfterEach</code> methods. Useful for stopping
+                            servers, closing connections.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="code-block">
+                    <span class="cap">Example — using a file as a test fixture</span>
+                    <pre><span class="tok-kw">public class</span> <span class="tok-type">OutputTest</span> {
+  <span class="tok-kw">private</span> File output;
+
+  <span class="tok-ann">@BeforeEach</span>
+  <span class="tok-kw">public void</span> <span class="tok-met">createOutputFile</span>() {         <span class="tok-cmt">// ① and ④</span>
+      output = <span class="tok-kw">new</span> <span class="tok-type">File</span>(...);
+  }
+
+  <span class="tok-ann">@AfterEach</span>
+  <span class="tok-kw">public void</span> <span class="tok-met">deleteOutputFile</span>() {         <span class="tok-cmt">// ③ and ⑥</span>
+      output.close();
+      output.delete();
+  }
+
+  <span class="tok-ann">@Test</span>
+  <span class="tok-kw">public void</span> <span class="tok-met">test1WithFile</span>() { <span class="tok-cmt">// code for test case</span> }  <span class="tok-cmt">// ②</span>
+
+  <span class="tok-ann">@Test</span>
+  <span class="tok-kw">public void</span> <span class="tok-met">test2WithFile</span>() { <span class="tok-cmt">// code for test case</span> }  <span class="tok-cmt">// ⑤</span>
+}</pre>
+                </div>
+
+                <div class="rule-box"><b>Actual execution order:</b> ① <code class="mono">createOutputFile()</code>
+                    → ② <code class="mono">test1WithFile()</code> → ③ <code class="mono">deleteOutputFile()</code> →
+                    ④ <code class="mono">createOutputFile()</code> → ⑤ <code class="mono">test2WithFile()</code> → ⑥
+                    <code class="mono">deleteOutputFile()</code>. Notice set-up/tear-down run <i>around each</i>
+                    test. What's <b>not</b> guaranteed is that <code class="mono">test1WithFile</code> runs before
+                    <code class="mono">test2WithFile</code> — and if multiple methods carry
+                    <code class="mono">@BeforeEach</code>, there's no guarantee of the order they run in either.</div>
+
+                <div class="code-block">
+                    <span class="cap">Once-only set-up / tear-down</span>
+                    <pre><span class="tok-ann">@BeforeAll</span>
+<span class="tok-kw">public static void</span> <span class="tok-met">anyName</span>() {
+    <span class="tok-cmt">// class setup code here</span>
+}
+
+<span class="tok-ann">@AfterAll</span>
+<span class="tok-kw">public static void</span> <span class="tok-met">anyName</span>() {
+    <span class="tok-cmt">// class clean up code here</span>
+}</pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- ADVANCED: TIMEOUTS + PARAMETERIZED -->
+        <section id="advanced">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 08 — TIMED &amp; PARAMETERIZED TESTS</div>
+                    <h2 class="sec-title">Two JUnit 5 features that scale your test suite</h2>
+                </div>
+
+                <div class="qa-deep">
+                    <div class="qa-deep-head"><h3>Timed tests</h3><span class="qa-tag">@Timeout</span></div>
+                    <p class="qa-def">Useful for simple performance tests — network communication, complex
+                        computation. The <code class="mono">@Timeout</code> annotation's time unit defaults to
+                        seconds but is configurable. The test <b>fails</b> if the timeout occurs before the test
+                        method completes.</p>
+                    <div class="code-block"><pre><span class="tok-ann">@Test</span>
+<span class="tok-ann">@Timeout(5)</span>                          <span class="tok-cmt">// 5 seconds</span>
+<span class="tok-kw">public void</span> <span class="tok-met">testLengthyOperation</span>() {
+    ...
+}
+
+<span class="tok-cmt">// or with an explicit unit:</span>
+<span class="tok-ann">@Timeout(value = 100, unit = TimeUnit.MILLISECONDS)</span></pre></div>
+                    <div class="example-strip"><b>Exam trap:</b> if the question gives you a time in a different
+                        unit (e.g. "500 milliseconds"), you need to convert it to the annotation's expected unit — or
+                        pass <code class="mono">unit = TimeUnit.MILLISECONDS</code> explicitly instead of assuming
+                        seconds.</div>
+                </div>
+
+                <div class="qa-deep">
+                    <div class="qa-deep-head"><h3>Parameterized tests</h3><span class="qa-tag">@ParameterizedTest</span></div>
+                    <p class="qa-def">Repeat the same test-case logic multiple times with different data. Declared
+                        just like a regular <code class="mono">@Test</code> method but using
+                        <code class="mono">@ParameterizedTest</code> instead — and it must declare at least one
+                        <b>source</b> that supplies the arguments for each invocation, which the method then consumes
+                        as a parameter.</p>
+                    <div class="code-block"><pre><span class="tok-ann">@ParameterizedTest</span>
+<span class="tok-ann">@ValueSource(strings = { "racecar", "radar", "able was I ere I saw elba" })</span>
+<span class="tok-kw">void</span> <span class="tok-met">palindromes</span>(String candidate) {
+    assertTrue(StringUtils.isPalindrome(candidate));
+}</pre></div>
+                    <div class="rule-box">One test method, three separate invocations — one per string in
+                        <code class="mono">@ValueSource</code>. Each invocation gets its own pass/fail/error verdict,
+                        exactly like a hand-written <code class="mono">@Test</code> method would.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- BEST PRACTICES -->
+        <section id="practices">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 09 — BEST PRACTICES</div>
+                    <h2 class="sec-title">Writing tests that fail atomically</h2>
+                    <p class="sec-desc">"Failure atomically" means: when a test fails, you know <i>exactly</i> what
+                        failed — no detective work required.</p>
+                </div>
+
+                <div class="mnemonic">
+                    <div class="icon">🚦</div>
+                    <div>
+                        <div class="label">Memory hook — TDD cycle</div>
+                        <div class="phrase">Red → Green → Refactor</div>
+                        <div class="decode">1. Write a failing test first (red). 2. Write just enough code to pass it
+                            (green). 3. Refactor. 4. Run tests again. 5. Repeat until the software meets its goal. 6.
+                            Write new code <i>only</i> when a test is failing.</div>
+                    </div>
+                </div>
+
+                <div class="two-col">
+                    <div>
+                        <span class="subhead">Structural practices</span>
+                        <ul style="color:var(--ink-dim); font-size:0.9rem; padding-left:20px;">
+                            <li>Separate production and test code — but typically keep them in the <i>same</i>
+                                packages.</li>
+                            <li>Compile into separate trees, allowing deployment without shipping tests.</li>
+                            <li>Don't forget OO techniques and base classing for shared test logic.</li>
+                            <li>Each test case should be independent, independent of execution order, with no
+                                dependencies on the state left behind by previous tests.</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <span class="subhead">Writing the assertions themselves</span>
+                        <ul style="color:var(--ink-dim); font-size:0.9rem; padding-left:20px;">
+                            <li>Give each test a clear, long, descriptive name.</li>
+                            <li>Assertions should always have clear messages explaining what failed.</li>
+                            <li>Write many small tests, not one big test — each test should have roughly just 1
+                                assertion at its end.</li>
+                            <li>Test for expected errors / exceptions explicitly.</li>
+                            <li>Choose a descriptive assert method — don't force everything through
+                                <code class="mono">assertTrue</code>.</li>
+                            <li>Choose representative test cases from equivalent input classes.</li>
+                            <li>Avoid complex logic in test methods if at all possible.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CHEAT SHEET -->
+        <section id="cheat">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 10 — CHEAT SHEET</div>
+                    <h2 class="sec-title">Every annotation and assertion, in two tables</h2>
+                </div>
+
+                <span class="subhead">JUnit 5 annotations</span>
+                <table class="cheat-table">
+                    <tr><th>Annotation</th><th>Runs</th><th>Typical use</th></tr>
+                    <tr><td><code>@Test</code></td><td>Identifies the method as a test case</td><td>Every unit test method</td></tr>
+                    <tr><td><code>@BeforeEach</code></td><td>Before <i>each</i> test</td><td>Prepare environment — read input data, init the class</td></tr>
+                    <tr><td><code>@AfterEach</code></td><td>After <i>each</i> test, always</td><td>Clean up — delete temp data, restore defaults</td></tr>
+                    <tr><td><code>@BeforeAll</code> (static)</td><td>Once, before all tests + all @BeforeEach</td><td>Time-intensive setup, e.g. connect to a database</td></tr>
+                    <tr><td><code>@AfterAll</code> (static)</td><td>Once, after all tests + all @AfterEach</td><td>Clean-up, e.g. disconnect from a database</td></tr>
+                    <tr><td><code>@Timeout(5)</code></td><td>Fails if method exceeds 5 seconds</td><td>Simple performance testing</td></tr>
+                    <tr><td><code>@Timeout(value=100, unit=MILLISECONDS)</code></td><td>Fails if method exceeds 100 ms</td><td>Performance testing with explicit unit</td></tr>
+                    <tr><td><code>@ParameterizedTest</code> + <code>@ValueSource</code></td><td>Once per supplied value</td><td>Same logic, many inputs</td></tr>
+                    <tr><td><code>@SelectPackages</code> / <code>@SelectClasses</code></td><td>Groups tests into a suite</td><td>Run a whole group of related tests together</td></tr>
+                </table>
+
+                <span class="subhead" style="margin-top:26px;">Assertion methods (org.junit.Assert)</span>
+                <table class="cheat-table">
+                    <tr><th>Family</th><th>Method(s)</th><th>True when…</th></tr>
+                    <tr><td>Boolean</td><td><code>assertTrue</code> / <code>assertFalse</code></td><td>the condition matches</td></tr>
+                    <tr><td>Null</td><td><code>assertNull</code> / <code>assertNotNull</code></td><td>the reference is/isn't null</td></tr>
+                    <tr><td>Identity</td><td><code>assertSame</code> / <code>assertNotSame</code></td><td><code>expected == actual</code> (or <code>!=</code>)</td></tr>
+                    <tr><td>Equality</td><td><code>assertEquals</code></td><td><code>expected.equals(actual)</code></td></tr>
+                    <tr><td>Arrays</td><td><code>assertArrayEquals</code></td><td>same length + every element equal, recursively</td></tr>
+                    <tr><td>Floating point</td><td><code>assertEquals(exp, act, delta)</code></td><td><code>Math.abs(expected - actual) &lt;= delta</code></td></tr>
+                    <tr><td>Exceptions</td><td><code>assertThrows(Class, lambda)</code></td><td>exactly that exception class is thrown</td></tr>
+                    <tr><td>Unconditional</td><td><code>fail()</code> / <code>fail(message)</code></td><td>never — always fails when reached</td></tr>
+                </table>
+
+                <span class="subhead" style="margin-top:26px;">Chunking table — the six data types every assertion targets</span>
+                <table class="chunk-table">
+                    <tr><th>Type of thing you're checking</th><th>Ask yourself</th></tr>
+                    <tr><td>A raw boolean expression</td><td>Is it true or false?</td></tr>
+                    <tr><td>A reference that might be empty</td><td>Is it null, or not?</td></tr>
+                    <tr><td>Two references</td><td>Do they point to the <i>same</i> object?</td></tr>
+                    <tr><td>Two objects' content</td><td>Are they <code>.equals()</code> to each other?</td></tr>
+                    <tr><td>Two arrays</td><td>Same length, every slot equal?</td></tr>
+                    <tr><td>Two decimals</td><td>Within an acceptable <code>delta</code> of each other?</td></tr>
+                </table>
+            </div>
+        </section>
+
+        <!-- MISTAKES -->
+        <section id="mistakes">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 11 — COMMON MISTAKES</div>
+                    <h2 class="sec-title">Where students actually lose points</h2>
+                    <p class="sec-desc">Seven confusions that show up over and over on quizzes and in real test
+                        code.</p>
+                </div>
+
+                <div class="mistake-box">
+                    <h4>1. Mixing up Fail vs. Error</h4>
+                    <div class="mistake-pair">
+                        <div class="wrong"><span class="tag">✗ WRONG</span>"The test threw a NullPointerException it
+                            wasn't expecting, so it <i>failed</i>."</div>
+                        <div class="right"><span class="tag">✓ RIGHT</span>An unexpected exception means the test
+                            case didn't finish executing — that's an <b>error</b>, not a fail. Fail is reserved for a
+                            completed run where an assertion turned out false.</div>
+                    </div>
+                </div>
+
+                <div class="mistake-box">
+                    <h4>2. assertEquals vs. assertSame</h4>
+                    <div class="mistake-pair">
+                        <div class="wrong"><span class="tag">✗ WRONG</span>Using <code
+                                class="mono">assertSame(num1, num2)</code> to check that two Integer objects "have the
+                            same value."</div>
+                        <div class="right"><span class="tag">✓ RIGHT</span><code class="mono">assertSame</code>
+                            checks reference identity (<code class="mono">==</code>) — two separately-created objects
+                            with equal content will still fail it. Use <code class="mono">assertEquals</code> for
+                            content equality via <code class="mono">.equals()</code>.</div>
+                    </div>
+                </div>
+
+                <div class="mistake-box">
+                    <h4>3. Comparing floats/doubles with plain assertEquals</h4>
+                    <div class="mistake-pair">
+                        <div class="wrong"><span class="tag">✗ WRONG</span><code class="mono">assertEquals(100.0,
+                                result)</code> on a computed double.</div>
+                        <div class="right"><span class="tag">✓ RIGHT</span>Floating-point math accumulates rounding
+                            error, so <code class="mono">assertEquals</code> on <code class="mono">double</code>/<code
+                                class="mono">float</code> requires a <b>delta</b> parameter:
+                            <code class="mono">assertEquals(expected, actual, delta)</code>.</div>
+                    </div>
+                </div>
+
+                <div class="mistake-box">
+                    <h4>4. Putting clean-up code at the end of the test method</h4>
+                    <div class="mistake-pair">
+                        <div class="wrong"><span class="tag">✗ WRONG</span>Writing <code class="mono">file.delete()
+                            </code> as the last line inside a <code class="mono">@Test</code> method.</div>
+                        <div class="right"><span class="tag">✓ RIGHT</span>If an assertion earlier in that method
+                            fails, execution stops immediately — the clean-up line never runs. Put tear-down logic in
+                            <code class="mono">@AfterEach</code>, which runs regardless of the verdict.</div>
+                    </div>
+                </div>
+
+                <div class="mistake-box">
+                    <h4>5. Confusing @BeforeEach/@AfterEach with @BeforeAll/@AfterAll</h4>
+                    <div class="mistake-pair">
+                        <div class="wrong"><span class="tag">✗ WRONG</span>Marking a database-connection method
+                            <code class="mono">@BeforeEach</code> and making it non-static, expecting it to run once
+                            for the whole class.</div>
+                        <div class="right"><span class="tag">✓ RIGHT</span><code class="mono">@BeforeAll</code> /
+                            <code class="mono">@AfterAll</code> run <i>once per class</i> and must be on a
+                            <b>static</b> method. <code class="mono">@BeforeEach</code> /
+                            <code class="mono">@AfterEach</code> run once <i>per test method</i> and are instance
+                            methods.</div>
+                    </div>
+                </div>
+
+                <div class="mistake-box">
+                    <h4>6. One giant test method with many assertions</h4>
+                    <div class="mistake-pair">
+                        <div class="wrong"><span class="tag">✗ WRONG</span>A single <code class="mono">@Test</code>
+                            method with 8 unrelated assertions checking 8 different behaviors.</div>
+                        <div class="right"><span class="tag">✓ RIGHT</span>Write many small tests, each with roughly
+                            one assertion at its end — this is what "failure atomically" means: when something
+                            breaks, you know exactly what, without reading a stack trace essay.</div>
+                    </div>
+                </div>
+
+                <div class="mistake-box">
+                    <h4>7. Reaching for assertTrue for everything</h4>
+                    <div class="mistake-pair">
+                        <div class="wrong"><span class="tag">✗ WRONG</span><code class="mono">assertTrue(a.equals(b))
+                            </code> instead of a descriptive assertion.</div>
+                        <div class="right"><span class="tag">✓ RIGHT</span><code class="mono">assertEquals(a, b)</code>
+                            is more descriptive and produces a much more useful failure message (showing both
+                            expected and actual values) than a generic true/false check.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- QUIZ -->
+        <section id="quiz">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 12 — POP QUIZ</div>
+                    <h2 class="sec-title">Quick self-check — click a question to reveal the answer</h2>
+                </div>
+
+                <div class="quiz-item">
+                    <div class="quiz-q">1. What annotation is required for JUnit to recognize a method as a test case?
+                        <button class="quiz-reveal" onclick="this.parentElement.nextElementSibling.classList.toggle('show')">Reveal</button></div>
+                    <div class="quiz-answer"><b>@Test</b>. Without it, the method is just a regular method — JUnit
+                        won't run it, no matter how it's named.</div>
+                </div>
+
+                <div class="quiz-item">
+                    <div class="quiz-q">2. True or False: <code class="mono">assertEquals(100.0, 99.99995)</code>
+                        (no delta) is the correct way to compare two doubles.
+                        <button class="quiz-reveal" onclick="this.parentElement.nextElementSibling.classList.toggle('show')">Reveal</button></div>
+                    <div class="quiz-answer"><b>False.</b> Comparing floating-point values needs a third
+                        <code class="mono">delta</code> argument: <code class="mono">assertEquals(expected, actual,
+                            delta)</code>, true when <code class="mono">Math.abs(expected - actual) &lt;=
+                            delta</code>.</div>
+                </div>
+
+                <div class="quiz-item">
+                    <div class="quiz-q">3. A test method throws a <code class="mono">NullPointerException</code>
+                        that nothing in the test caught or expected. What's the verdict?
+                        <button class="quiz-reveal" onclick="this.parentElement.nextElementSibling.classList.toggle('show')">Reveal</button></div>
+                    <div class="quiz-answer"><b>Error</b> — the test case execution was not completed, due to an
+                        unexpected exception.</div>
+                </div>
+
+                <div class="quiz-item">
+                    <div class="quiz-q">4. Which annotation runs a method once, before any test in the class, and
+                        what modifier must that method have?
+                        <button class="quiz-reveal" onclick="this.parentElement.nextElementSibling.classList.toggle('show')">Reveal</button></div>
+                    <div class="quiz-answer"><b>@BeforeAll</b>, and the method must be <b>static</b>. It runs before
+                        any of the tests and before any <code class="mono">@BeforeEach</code> methods.</div>
+                </div>
+
+                <div class="quiz-item">
+                    <div class="quiz-q">5. What does <code class="mono">assertSame(expected, actual)</code> check
+                        that <code class="mono">assertEquals(expected, actual)</code> does not?
+                        <button class="quiz-reveal" onclick="this.parentElement.nextElementSibling.classList.toggle('show')">Reveal</button></div>
+                    <div class="quiz-answer"><b>Reference identity</b> — that <code class="mono">expected ==
+                            actual</code> (they are literally the same object in memory), not just that
+                        <code class="mono">expected.equals(actual)</code> is true.</div>
+                </div>
+
+                <div class="quiz-item">
+                    <div class="quiz-q">6. Why is it wrong to put tear-down/clean-up code at the very end of a
+                        <code class="mono">@Test</code> method body instead of in <code class="mono">@AfterEach</code>?
+                        <button class="quiz-reveal" onclick="this.parentElement.nextElementSibling.classList.toggle('show')">Reveal</button></div>
+                    <div class="quiz-answer">If an earlier assertion in that method fails, execution stops
+                        immediately — any code after it, including clean-up, never runs. <code
+                            class="mono">@AfterEach</code> methods run regardless of the verdict.</div>
+                </div>
+
+                <div class="quiz-item">
+                    <div class="quiz-q">7. Which annotation lets one test method run multiple times with different
+                        input values, and what supplies those values?
+                        <button class="quiz-reveal" onclick="this.parentElement.nextElementSibling.classList.toggle('show')">Reveal</button></div>
+                    <div class="quiz-answer"><b>@ParameterizedTest</b>, combined with a <b>source</b> annotation
+                        such as <code class="mono">@ValueSource</code> that provides the arguments for each
+                        invocation.</div>
+                </div>
+
+                <div class="quiz-item">
+                    <div class="quiz-q">8. Short answer: following the naming convention from the slides, what would
+                        you call the JUnit test class for a class named <code class="mono">Order</code>?
+                        <button class="quiz-reveal" onclick="this.parentElement.nextElementSibling.classList.toggle('show')">Reveal</button></div>
+                    <div class="quiz-answer"><b>OrderTest</b> — class under test <code class="mono">X</code> →
+                        JUnit test class <code class="mono">XTest</code>.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PRACTICE LAB -->
+        <section id="lab">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 13 — PRACTICE LAB</div>
+                    <h2 class="sec-title">Diagnose the code, pick the right call</h2>
+                    <p class="sec-desc">Exam-style scenarios built directly from the slide examples — work out the
+                        answer before revealing it.</p>
+                </div>
+                <div class="examroom">
+                    <div class="practice-q">
+                        <div class="req">1. You need to check that <code class="mono">search(a, 2)</code> returns
+                            -1 when 2 isn't in the sorted array <code class="mono">{1, 3, 5, 7}</code>, and you want a
+                            custom failure message if it doesn't.</div>
+                        <div class="ans">→ assertTrue("Failure: 2 is not in array.", search(a, 2) == -1);</div>
+                        <div class="why">Why: it's a raw Boolean condition (an equality check on an int), so it
+                            belongs to the Boolean-condition family — <code class="mono">assertTrue</code> with an
+                            optional leading message.</div>
+                    </div>
+                    <div class="practice-q">
+                        <div class="req">2. Two <code class="mono">Integer</code> variables, <code
+                                class="mono">num1 = Integer.valueOf(2013)</code> and
+                            <code class="mono">num2 = Integer.valueOf(2014)</code>. You call
+                            <code class="mono">assertSame("Should be same.", num1, num2)</code>. What happens?</div>
+                        <div class="ans">→ Fails, with: "Should be same. expected same:&lt;2013&gt; was
+                            not:&lt;2014&gt;"</div>
+                        <div class="why">Why: assertSame checks reference identity (==). Even setting aside that the
+                            values differ, two distinct Integer objects are never the same reference outside the
+                            small-integer cache — the assertion is false and the test fails (not errors).</div>
+                    </div>
+                    <div class="practice-q">
+                        <div class="req">3. A method <code class="mono">checkedSearch(null, 1)</code> is supposed to
+                            throw <code class="mono">IllegalArgumentException("Null or empty array.")</code>. Write
+                            the try/catch version of the test, using <code class="mono">fail()</code>.</div>
+                        <div class="ans">→ try { checkedSearch(null,1); fail("Exception should have occurred"); }
+                            catch (IllegalArgumentException e) { assertEquals(e.getMessage(), "Null or empty
+                            array."); }</div>
+                        <div class="why">Why: if the exception is thrown, control jumps straight to the catch block
+                            and the assertion runs — pass. If it's <i>not</i> thrown, execution reaches
+                            <code class="mono">fail()</code>, which unconditionally fails the test.</div>
+                    </div>
+                    <div class="practice-q">
+                        <div class="req">4. A <code class="mono">@BeforeEach</code> method calls
+                            <code class="mono">output.open()</code>, which throws an unchecked I/O exception because
+                            the disk is full. What's the verdict of the <code class="mono">@Test</code> method that
+                            was about to run?</div>
+                        <div class="ans">→ Error</div>
+                        <div class="why">Why: the test case's execution was never completed — it never even got past
+                            fixture set-up. That's an error, not a fail (which requires the run to complete with a
+                            false assertion) and not a pass.</div>
+                    </div>
+                    <div class="practice-q">
+                        <div class="req">5. You have <code class="mono">int[][] a11</code> and
+                            <code class="mono">int[][] a12</code>, both <code class="mono">{{2,3},{5,7},{11,13}}</code>.
+                            Which single assertion call verifies they're equal, and why not <code
+                                class="mono">assertEquals</code>?</div>
+                        <div class="ans">→ assertArrayEquals("Should be equal", a11, a12);</div>
+                        <div class="why">Why: arrays don't override <code class="mono">.equals()</code> to compare
+                            contents (it falls back to reference identity), so <code class="mono">assertEquals</code>
+                            would incorrectly fail two equal-content arrays. <code class="mono">assertArrayEquals</code>
+                            checks length and recurses element-by-element — including nested arrays.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <div>SE401 · Software Testing and Quality · Chapter 12 — Unit Testing and JUnit</div>
+        <div class="toc-hint">Built as a study aid from lecture slides — always verify against your instructor's
+            exact wording before an exam.</div>
+        <div class="made">Made by <span>Shoug Alomran</span></div>
+    </footer>
+
+    <script>
+        const root = document.documentElement;
+        const sw = document.getElementById('switch');
+        const label = document.getElementById('theme-label');
+
+        function applyTheme(t) {
+            root.setAttribute('data-theme', t);
+            label.textContent = t.toUpperCase();
+        }
+
+        const prefersLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
+        applyTheme(prefersLight ? 'light' : 'dark');
+
+        sw.addEventListener('click', () => {
+            const current = root.getAttribute('data-theme');
+            applyTheme(current === 'dark' ? 'light' : 'dark');
+        });
+    </script>
+
+</body>
+
+</html>

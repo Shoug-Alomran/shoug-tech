@@ -1,0 +1,1364 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quality Assurance, Control &amp; Metrics — PM Field Guide | SE423 Ch.6</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --radius-sm: 8px;
+            --radius-md: 14px;
+            --radius-lg: 22px;
+            --font-head: 'Sora', sans-serif;
+            --font-body: 'Inter', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+            --maxw: 1180px;
+        }
+
+        html[data-theme="dark"] {
+            --bg: #0d1420;
+            --surface: #131c2b;
+            --surface-2: #182437;
+            --ink: #e7edf2;
+            --ink-dim: #8fa0b3;
+            --line: #243146;
+            --accent: #3fa9f5;
+            --accent-2: #e0a63a;
+            --bad: #e8697a;
+            --good: #4bb87f;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+        }
+
+        html[data-theme="light"] {
+            --bg: #eef1f0;
+            --surface: #ffffff;
+            --surface-2: #f3f5f2;
+            --ink: #182225;
+            --ink-dim: #57666d;
+            --line: #d7dbd6;
+            --accent: #1f7fc4;
+            --accent-2: #b8802a;
+            --bad: #c94a5c;
+            --good: #29885a;
+            --shadow: 0 10px 26px rgba(20, 30, 25, 0.10);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            background:
+                radial-gradient(circle at 1px 1px, var(--line) 1px, transparent 1px) 0 0/26px 26px,
+                var(--bg);
+            color: var(--ink);
+            font-family: var(--font-body);
+            font-size: clamp(15px, 0.4vw + 14px, 17px);
+            line-height: 1.6;
+            transition: background-color .35s ease, color .35s ease;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: var(--font-head);
+            margin: 0;
+            letter-spacing: -0.01em;
+        }
+
+        a { color: inherit; }
+        .mono { font-family: var(--font-mono); }
+
+        .wrap {
+            max-width: var(--maxw);
+            margin: 0 auto;
+            padding: 0 clamp(16px, 4vw, 40px);
+        }
+
+        header.top {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            backdrop-filter: blur(10px);
+            background: color-mix(in srgb, var(--bg) 78%, transparent);
+            border-bottom: 1px solid var(--line);
+        }
+
+        .top-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px clamp(16px, 4vw, 40px);
+            max-width: var(--maxw);
+            margin: 0 auto;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .brand { display: flex; align-items: center; gap: 10px; }
+        .brand .logo-mini { width: 30px; height: 30px; flex: none; }
+        .brand-text { font-family: var(--font-head); font-weight: 700; font-size: 1.05rem; }
+        .brand-text span { color: var(--accent); }
+
+        nav.pillnav { display: flex; gap: 6px; flex-wrap: wrap; }
+
+        nav.pillnav a {
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            text-decoration: none;
+            color: var(--ink-dim);
+            padding: 6px 10px;
+            border-radius: 999px;
+            border: 1px solid transparent;
+            white-space: nowrap;
+            transition: all .2s ease;
+        }
+
+        nav.pillnav a:hover { color: var(--ink); border-color: var(--line); background: var(--surface); }
+
+        .theme-toggle {
+            display: flex; align-items: center; gap: 8px;
+            font-family: var(--font-mono); font-size: 0.7rem; color: var(--ink-dim);
+        }
+
+        .switch {
+            width: 46px; height: 26px; border-radius: 999px;
+            background: var(--surface-2); border: 1px solid var(--line);
+            position: relative; cursor: pointer; flex: none;
+        }
+
+        .switch .knob {
+            position: absolute; top: 2px; left: 2px; width: 20px; height: 20px;
+            border-radius: 50%; background: var(--accent);
+            transition: left .25s ease, background .25s ease;
+        }
+
+        html[data-theme="light"] .switch .knob { left: 22px; }
+
+        /* HERO */
+        .hero { padding: clamp(40px, 7vw, 80px) 0 clamp(20px, 4vw, 40px); }
+
+        .hero-grid {
+            display: grid; grid-template-columns: 1.2fr 0.8fr;
+            gap: clamp(20px, 4vw, 50px); align-items: center;
+        }
+
+        @media (max-width:820px) { .hero-grid { grid-template-columns: 1fr; } }
+
+        .eyebrow {
+            font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.14em;
+            text-transform: uppercase; color: var(--accent-2); margin-bottom: 14px;
+            display: flex; align-items: center; gap: 10px;
+        }
+
+        .eyebrow::before { content: ''; width: 26px; height: 1px; background: var(--accent-2); }
+
+        h1.hero-title { font-size: clamp(2.1rem, 5vw, 3.6rem); line-height: 1.05; font-weight: 700; }
+        h1.hero-title em { font-style: normal; color: var(--accent); }
+
+        .hero-sub { margin-top: 18px; color: var(--ink-dim); max-width: 56ch; font-size: 1.02rem; }
+
+        .hero-badges { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 22px; }
+
+        .badge {
+            font-family: var(--font-mono); font-size: 0.72rem; padding: 6px 12px;
+            border-radius: 8px; background: var(--surface); border: 1px solid var(--line);
+            color: var(--ink-dim);
+        }
+
+        .blueprint-wrap { display: flex; justify-content: center; }
+        .blueprint-wrap svg { width: min(340px, 90%); height: auto; }
+
+        section { padding: clamp(30px, 5vw, 60px) 0; border-top: 1px solid var(--line); }
+        section:first-of-type { border-top: none; }
+
+        .sec-head { margin-bottom: clamp(20px, 3vw, 34px); max-width: 74ch; }
+        .sec-num { font-family: var(--font-mono); color: var(--accent); font-size: 0.78rem; letter-spacing: 0.1em; }
+        .sec-title { font-size: clamp(1.5rem, 3vw, 2.1rem); margin-top: 6px; }
+        .sec-desc { color: var(--ink-dim); margin-top: 10px; font-size: 0.98rem; }
+
+        .mnemonic {
+            background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 14%, transparent), transparent);
+            border: 1px dashed color-mix(in srgb, var(--accent) 55%, var(--line));
+            border-radius: var(--radius-md); padding: 16px 20px;
+            display: flex; gap: 14px; align-items: flex-start; margin: 18px 0;
+        }
+
+        .mnemonic .icon { font-size: 1.4rem; flex: none; line-height: 1; }
+        .mnemonic .label {
+            font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.1em;
+            text-transform: uppercase; color: var(--accent);
+        }
+        .mnemonic .phrase { font-family: var(--font-head); font-weight: 600; font-size: 1.05rem; margin-top: 3px; }
+        .mnemonic .decode { color: var(--ink-dim); font-size: 0.86rem; margin-top: 4px; }
+
+        /* stack diagram (QA vs QC) */
+        .stack-diagram {
+            display: grid; grid-template-columns: 1fr; gap: 0; margin-top: 20px;
+            border: 1px solid var(--line); border-radius: var(--radius-lg); overflow: hidden;
+        }
+
+        .stack-layer { padding: 20px clamp(16px, 3vw, 28px); position: relative; }
+        .stack-layer.style { background: color-mix(in srgb, var(--accent) 10%, var(--surface)); border-bottom: 1px dashed var(--line); }
+        .stack-layer.pattern { background: var(--surface); }
+        .stack-layer .tag { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); }
+        .stack-layer h4 { font-size: 1.15rem; margin-top: 6px; }
+        .stack-layer p { color: var(--ink-dim); font-size: 0.9rem; margin-top: 6px; max-width: 70ch; }
+        .stack-layer.pattern .tag { color: var(--accent-2); }
+
+        /* classification / grid cards */
+        .grid5 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-top: 20px; }
+
+        .type-card {
+            background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-md);
+            padding: 18px; transition: transform .2s ease, box-shadow .2s ease;
+        }
+
+        .type-card:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
+        .type-card .icon { font-size: 1.6rem; }
+        .type-card h4 { font-size: 1.02rem; margin-top: 8px; }
+        .type-card p { color: var(--ink-dim); font-size: 0.85rem; margin: 8px 0 0; }
+
+        /* deep dive panels */
+        .qa-deep {
+            background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg);
+            padding: clamp(18px, 3vw, 30px); margin-bottom: 26px; position: relative;
+            border-left: 5px solid var(--accent);
+        }
+
+        .qa-deep-head { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; justify-content: space-between; }
+        .qa-deep h3 { font-size: clamp(1.3rem, 2.4vw, 1.7rem); }
+        .qa-tag {
+            font-family: var(--font-mono); font-size: 0.7rem; padding: 5px 11px; border-radius: 999px;
+            background: var(--surface-2); border: 1px solid var(--line); color: var(--ink-dim);
+        }
+        .qa-def { margin-top: 10px; color: var(--ink); font-size: 0.98rem; max-width: 78ch; }
+
+        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; margin-top: 20px; }
+        @media (max-width:760px) { .two-col { grid-template-columns: 1fr; } }
+
+        .subhead {
+            font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase;
+            color: var(--accent-2); margin-bottom: 10px; display: block;
+        }
+
+        .pattern-chip-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
+        .pattern-chip {
+            font-family: var(--font-mono); font-size: 0.75rem; padding: 5px 12px; border-radius: 999px;
+            background: color-mix(in srgb, var(--accent) 14%, var(--surface-2)); border: 1px solid var(--line);
+        }
+
+        .example-strip {
+            margin-top: 16px; background: color-mix(in srgb, var(--accent-2) 10%, transparent);
+            border: 1px solid color-mix(in srgb, var(--accent-2) 35%, var(--line));
+            border-radius: var(--radius-sm); padding: 12px 14px; font-size: 0.86rem;
+        }
+        .example-strip b { color: var(--accent-2); }
+
+        .rule-box {
+            margin-top: 14px; background: var(--surface-2); border: 1px solid var(--line);
+            border-radius: var(--radius-sm); padding: 12px 14px; font-size: 0.84rem; color: var(--ink-dim);
+        }
+        .rule-box b { color: var(--ink); }
+
+        /* timeline (reused for process flows) */
+        .timeline { position: relative; margin-top: 26px; padding-left: 28px; }
+        .timeline::before {
+            content: ''; position: absolute; left: 8px; top: 6px; bottom: 6px; width: 2px; background: var(--line);
+        }
+        .tl-item { position: relative; padding-bottom: 26px; }
+        .tl-item:last-child { padding-bottom: 0; }
+        .tl-dot {
+            position: absolute; left: -28px; top: 2px; width: 18px; height: 18px; border-radius: 50%;
+            background: var(--surface); border: 2px solid var(--accent);
+        }
+        .tl-year { font-family: var(--font-mono); font-size: 0.78rem; color: var(--accent); }
+        .tl-item h4 { font-size: 1.05rem; margin-top: 4px; }
+        .tl-item p { color: var(--ink-dim); font-size: 0.88rem; margin-top: 6px; max-width: 68ch; }
+
+        /* cheat table */
+        .cheat-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        .cheat-table th, .cheat-table td { border: 1px solid var(--line); padding: 12px 14px; text-align: left; font-size: 0.86rem; }
+        .cheat-table th {
+            background: var(--surface-2); font-family: var(--font-mono); font-size: 0.7rem;
+            text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent-2);
+        }
+        .cheat-table tr:nth-child(even) td { background: color-mix(in srgb, var(--surface-2) 55%, transparent); }
+
+        /* red/green comparison tables */
+        .rg-table { width: 100%; border-collapse: collapse; margin-top: 14px; }
+        .rg-table th, .rg-table td { border: 1px solid var(--line); padding: 10px 12px; font-size: 0.84rem; text-align: left; }
+        .rg-table th { font-family: var(--font-mono); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.06em; background: var(--surface-2); }
+        .rg-table td.bad-cell { color: var(--bad); }
+        .rg-table td.good-cell { color: var(--good); }
+
+        /* mistakes */
+        .mistake-box {
+            border: 1px solid color-mix(in srgb, var(--bad) 45%, var(--line));
+            background: color-mix(in srgb, var(--bad) 8%, var(--surface));
+            border-radius: var(--radius-md); padding: 16px 20px; margin: 16px 0;
+        }
+        .mistake-box .mtitle { font-family: var(--font-head); font-weight: 600; font-size: 1rem; margin-bottom: 10px; }
+        .mistake-row { display: flex; gap: 10px; align-items: flex-start; margin-top: 8px; font-size: 0.88rem; }
+        .mistake-row .tag-x { color: var(--bad); font-family: var(--font-mono); font-weight: 600; flex: none; }
+        .mistake-row .tag-c { color: var(--good); font-family: var(--font-mono); font-weight: 600; flex: none; }
+
+        /* quiz */
+        .quiz-item {
+            border: 1px solid var(--line); background: var(--surface); border-radius: var(--radius-md);
+            padding: 14px 18px; margin: 14px 0;
+        }
+        .quiz-q { display: flex; justify-content: space-between; align-items: center; gap: 14px; cursor: pointer; }
+        .quiz-q .qtext { font-size: 0.94rem; font-weight: 500; }
+        .quiz-reveal {
+            font-family: var(--font-mono); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.06em;
+            color: var(--bg); background: var(--accent); border: none; border-radius: 999px;
+            padding: 6px 14px; cursor: pointer; flex: none;
+        }
+        .quiz-answer {
+            display: none; margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--line);
+            font-size: 0.88rem; color: var(--ink-dim);
+        }
+        .quiz-answer.show { display: block; }
+        .quiz-answer b { color: var(--accent-2); }
+
+        /* practice lab */
+        .examroom {
+            background: repeating-linear-gradient(180deg, var(--surface) 0px, var(--surface) 27px, var(--surface-2) 28px);
+            border: 1px solid var(--line); border-radius: var(--radius-lg); padding: clamp(18px, 3vw, 28px);
+        }
+        .practice-q {
+            border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface);
+            padding: 14px 16px; margin: 12px 0; font-size: 0.92rem;
+        }
+        .practice-q .req { color: var(--ink); }
+        .practice-q .ans { margin-top: 8px; font-family: var(--font-mono); font-size: 0.78rem; color: var(--accent); }
+        .practice-q .why { margin-top: 6px; color: var(--ink-dim); font-size: 0.82rem; }
+
+        /* chunk memory table */
+        .chunk-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-top: 18px; }
+        .chunk-card { border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--surface); padding: 16px 18px; }
+        .chunk-card .chead { font-family: var(--font-mono); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent); }
+        .chunk-card ul { margin: 10px 0 0; padding-left: 18px; font-size: 0.86rem; color: var(--ink-dim); }
+        .chunk-card ul li { margin-bottom: 4px; }
+
+        footer {
+            padding: 40px clamp(16px, 4vw, 40px) 60px; text-align: center; color: var(--ink-dim);
+            font-family: var(--font-mono); font-size: 0.78rem;
+        }
+        footer .made { color: var(--ink); font-weight: 600; margin-top: 6px; }
+        footer .made span { color: var(--accent); }
+        .toc-hint { margin-top: 26px; color: var(--ink-dim); font-size: 0.82rem; }
+
+        ::selection { background: var(--accent); color: #fff; }
+
+        code { font-family: var(--font-mono); font-size: 0.9em; background: color-mix(in srgb, var(--surface-2) 80%, transparent); padding: 1px 5px; border-radius: 4px; }
+    </style>
+
+    <meta name="description" content="How software project management defines quality: QA vs QC, planning quality, the SQA group, why projects really succeed or fail, and how to build and read software metrics — from SE423's Quality chapter.">
+    <link rel="canonical" href="https://shoug-tech.com/academics/software-engineering/se423/slide-breakdowns/06-quality/quality.html">
+    <meta property="og:title" content="Quality Assurance, Control &amp; Metrics — PM Field Guide | SE423 Ch.6">
+    <meta property="og:description" content="How software project management defines quality: QA vs QC, planning quality, the SQA group, why projects really succeed or fail, and how to build and read software metrics.">
+    <meta property="og:url" content="https://shoug-tech.com/academics/software-engineering/se423/slide-breakdowns/06-quality/quality.html">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://shoug-tech.com/logo.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Quality Assurance, Control &amp; Metrics — PM Field Guide | SE423 Ch.6">
+    <meta name="twitter:description" content="How software project management defines quality: QA vs QC, planning quality, the SQA group, why projects really succeed or fail, and how to build and read software metrics.">
+    <meta name="twitter:image" content="https://shoug-tech.com/logo.png">
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","url":"https://shoug-tech.com/academics/software-engineering/se423/slide-breakdowns/06-quality/quality.html","name":"Quality Assurance, Control &amp; Metrics — PM Field Guide | SE423 Ch.6","description":"How software project management defines quality: QA vs QC, planning quality, the SQA group, why projects really succeed or fail, and how to build and read software metrics.","isPartOf":{"@type":"WebSite","name":"Shoug's Digital Garden","url":"https://shoug-tech.com/"}}</script>
+
+    <link rel="alternate" hreflang="en" href="https://shoug-tech.com/academics/software-engineering/se423/slide-breakdowns/06-quality/quality.html">
+    <link rel="alternate" hreflang="ar" href="https://shoug-tech.com/ar/academics/software-engineering/se423/slide-breakdowns/06-quality/quality.html">
+    <link rel="alternate" hreflang="x-default" href="https://shoug-tech.com/academics/software-engineering/se423/slide-breakdowns/06-quality/quality.html">
+</head>
+
+<body>
+
+    <header class="top">
+        <div class="top-inner">
+            <div class="brand">
+                <svg class="logo-mini" viewBox="0 0 40 40">
+                    <rect x="6" y="6" width="28" height="28" rx="6" fill="none" stroke="currentColor" stroke-width="2" opacity="0.35" />
+                    <path d="M13 20l5 5 9-11" fill="none" stroke="var(--accent)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+                <div class="brand-text">Quality<span>·</span>Field Guide</div>
+            </div>
+            <nav class="pillnav">
+                <a href="#quality">Quality Basics</a>
+                <a href="#qa-qc">QA vs QC</a>
+                <a href="#planning">Planning &amp; SQA</a>
+                <a href="#success">Project Success</a>
+                <a href="#succeed-fail">Succeed / Fail</a>
+                <a href="#metrics">Metrics</a>
+                <a href="#cheat">Cheat Sheet</a>
+                <a href="#mistakes">Mistakes</a>
+                <a href="#quiz">Pop Quiz</a>
+                <a href="#lab">Practice Lab</a>
+            </nav>
+            <div class="theme-toggle">
+                <span id="theme-label">DARK</span>
+                <div class="switch" id="switch" role="button" aria-label="Toggle theme">
+                    <div class="knob"></div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+
+        <!-- HERO -->
+        <section class="hero">
+            <div class="wrap hero-grid">
+                <div>
+                    <div class="eyebrow">SE423 · Software Project Management · Chapter 06</div>
+                    <h1 class="hero-title">Quality isn't inspected in.<br><em>It's engineered in, then verified.</em></h1>
+                    <p class="hero-sub">Picture a factory floor. <b>Quality Assurance</b> is the engineer who designs the
+                        assembly line so defects rarely happen in the first place. <b>Quality Control</b> is the inspector
+                        standing at the end of the line, checking what came out. Both jobs matter — but only one of them
+                        can actually prevent the fire, the other one just catches it. This chapter is the PM-process view
+                        of quality: how you plan it, assure it, control it, and prove it happened with numbers.</p>
+                    <div class="hero-badges">
+                        <div class="badge">QA vs QC, once and for all</div>
+                        <div class="badge">Why projects really succeed</div>
+                        <div class="badge">Metrics, measures &amp; measurement</div>
+                        <div class="badge">PM-process view, not testing-focused</div>
+                    </div>
+                </div>
+                <div class="blueprint-wrap">
+                    <svg viewBox="0 0 320 320">
+                        <rect x="20" y="20" width="280" height="280" rx="18" fill="none" stroke="var(--line)" stroke-width="2" />
+                        <text x="160" y="46" text-anchor="middle" class="mono" font-family="JetBrains Mono" font-size="10" fill="var(--accent)">PLAN → ASSURE → CONTROL</text>
+                        <circle cx="160" cy="180" r="88" fill="none" stroke="var(--accent)" stroke-width="1.6" stroke-dasharray="5 5" />
+                        <circle cx="160" cy="180" r="42" fill="color-mix(in srgb, var(--accent) 18%, transparent)" stroke="var(--accent-2)" stroke-width="2" />
+                        <text x="160" y="176" text-anchor="middle" class="mono" font-family="JetBrains Mono" font-size="10" fill="var(--accent-2)">QUALITY</text>
+                        <text x="160" y="190" text-anchor="middle" class="mono" font-family="JetBrains Mono" font-size="9" fill="var(--ink-dim)">delivered</text>
+                        <g font-family="JetBrains Mono" font-size="9" fill="var(--ink-dim)">
+                            <circle cx="160" cy="92" r="5" fill="var(--accent-2)" /><text x="160" y="82" text-anchor="middle">PLAN</text>
+                            <circle cx="234" cy="180" r="5" fill="var(--accent-2)" /><text x="258" y="184" text-anchor="middle">QA</text>
+                            <circle cx="160" cy="268" r="5" fill="var(--accent-2)" /><text x="160" y="286" text-anchor="middle">QC</text>
+                            <circle cx="86" cy="180" r="5" fill="var(--accent-2)" /><text x="60" y="184" text-anchor="middle">METRICS</text>
+                        </g>
+                        <g stroke="var(--line)" stroke-width="1.3">
+                            <line x1="160" y1="138" x2="160" y2="97" />
+                            <line x1="196" y1="180" x2="229" y2="180" />
+                            <line x1="160" y1="222" x2="160" y2="263" />
+                            <line x1="124" y1="180" x2="91" y2="180" />
+                        </g>
+                    </svg>
+                </div>
+            </div>
+        </section>
+
+        <!-- QUALITY BASICS -->
+        <section id="quality">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 01 — QUALITY BASICS</div>
+                    <h2 class="sec-title">What "software quality" actually means</h2>
+                    <p class="sec-desc">A definition of quality should emphasize three points — and testing is only one
+                        tool for checking whether you hit them.</p>
+                </div>
+
+                <div class="mnemonic">
+                    <div class="icon">📐</div>
+                    <div>
+                        <div class="label">Memory hook</div>
+                        <div class="phrase">"Written, Formal, Implied."</div>
+                        <div class="decode">The three things quality is measured against: (1) explicit <b>requirements</b>
+                            — lack of conformance is lack of quality. (2) specified <b>standards</b> that guide how the
+                            software is engineered — skip them and quality almost certainly suffers. (3) <b>implicit
+                            requirements</b> that often go unmentioned (e.g. good maintainability) — meet the explicit
+                            spec but miss these, and quality is still suspect.</div>
+                    </div>
+                </div>
+
+                <div class="grid5">
+                    <div class="type-card">
+                        <div class="icon">1️⃣</div>
+                        <h4>Explicit requirements</h4>
+                        <p>The foundation quality is measured from. If the software doesn't conform to what was asked
+                            for, that's a lack of quality, full stop.</p>
+                    </div>
+                    <div class="type-card">
+                        <div class="icon">2️⃣</div>
+                        <h4>Specified standards</h4>
+                        <p>Development criteria that guide how software is engineered. Ignore the criteria and lack of
+                            quality will almost surely follow.</p>
+                    </div>
+                    <div class="type-card">
+                        <div class="icon">3️⃣</div>
+                        <h4>Implicit requirements</h4>
+                        <p>Unmentioned expectations like maintainability. Conforming to the spec but missing these still
+                            makes quality suspect.</p>
+                    </div>
+                </div>
+
+                <div class="qa-deep" style="margin-top:26px;">
+                    <div class="qa-deep-head">
+                        <h3>Software Testing</h3><span class="qa-tag">full-life-cycle assessment</span>
+                    </div>
+                    <p class="qa-def">The purpose of testing is to <b>assess and evaluate the quality of work performed
+                        at each step</b> of the development process. Its goal is to ensure the software performs as
+                        intended, and to improve quality, reliability, and maintainability.</p>
+                    <div class="two-col">
+                        <div>
+                            <span class="subhead">What testing is NOT for</span>
+                            <div class="rule-box">Although it sometimes feels that way, testing is <b>not</b> there to
+                                soak up whatever budget or schedule is left over at the end of a development effort.</div>
+                        </div>
+                        <div>
+                            <span class="subhead">The exact framing to remember</span>
+                            <div class="example-strip"><i>"Software testing is a full-life-cycle assessment of
+                                quality."</i> — it happens throughout, not just at the end.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="qa-deep">
+                    <div class="qa-deep-head">
+                        <h3>Quality and Testing</h3><span class="qa-tag">testing measures, it doesn't deliver</span>
+                    </div>
+                    <p class="qa-def">A good development process, tools, methods, and people go far in providing quality
+                        products. Testing is <b>one aspect</b> of assuring software quality — <b>it is a measure of
+                        quality, it does not deliver quality.</b></p>
+                    <div class="example-strip"><b>The line to remember:</b> "Quality cannot be tested into a product."</div>
+                    <div class="two-col">
+                        <div>
+                            <span class="subhead">Software Quality Assurance includes</span>
+                            <div class="pattern-chip-row">
+                                <span class="pattern-chip">SE process improvement</span>
+                                <span class="pattern-chip">Fault-tolerant design</span>
+                                <span class="pattern-chip">V&amp;V (incl. testing)</span>
+                            </div>
+                        </div>
+                        <div>
+                            <span class="subhead">What each piece is for</span>
+                            <div class="rule-box">
+                                <b>Process improvement</b> — prevent the insertion of defects.<br>
+                                <b>Fault-tolerant design</b> — tolerate the existence of defects.<br>
+                                <b>V&amp;V</b> — all aspects of verification &amp; validation, including testing.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- QA vs QC -->
+        <section id="qa-qc">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 02 — THE CORE DISTINCTION</div>
+                    <h2 class="sec-title">Quality Assurance vs. Quality Control</h2>
+                    <p class="sec-desc">Every PM exam loves this pair. Lock it in before anything else in this chapter.</p>
+                </div>
+
+                <div class="mnemonic">
+                    <div class="icon">🛡️</div>
+                    <div>
+                        <div class="label">Memory hook</div>
+                        <div class="phrase">"QA builds the guardrails. QC checks the road."</div>
+                        <div class="decode">QA is the <b>framework</b> of activities and standards that makes good work
+                            possible in the first place. QC is the <b>ongoing monitoring</b> that checks whether the
+                            actual results comply with those standards, correcting problems as they appear.</div>
+                    </div>
+                </div>
+
+                <div class="stack-diagram">
+                    <div class="stack-layer style">
+                        <span class="tag">Perform Quality Assurance</span>
+                        <h4>The framework, applied continuously</h4>
+                        <p>Provides the framework of activities and standards for <i>performing</i> quality control. QA
+                            activities strive to ensure: (1) few, if any, defects remain in the software system when it
+                            is delivered, and (2) any remaining defects will cause minimal disruptions or damages.</p>
+                    </div>
+                    <div class="stack-layer pattern">
+                        <span class="tag">Perform Quality Control</span>
+                        <h4>Monitoring specific results, throughout the project</h4>
+                        <p>Concerned with monitoring specific project results for compliance with quality standards.
+                            Performed <b>throughout the project</b> — and may also include taking control actions to
+                            correct the causes of quality problems.</p>
+                    </div>
+                </div>
+
+                <div class="example-strip" style="margin-top:22px;"><b>One-line test for exam questions:</b> if the
+                    question is about setting up the standards and the process that will be followed → QA. If the
+                    question is about checking a specific deliverable against those standards right now → QC.</div>
+            </div>
+        </section>
+
+        <!-- PLANNING & SQA GROUP -->
+        <section id="planning">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 03 — PLANNING QUALITY &amp; THE SQA GROUP</div>
+                    <h2 class="sec-title">Deciding what "good" means before you build anything</h2>
+                </div>
+
+                <div class="qa-deep">
+                    <div class="qa-deep-head">
+                        <h3>Planning Quality</h3><span class="qa-tag">inputs to consider</span>
+                    </div>
+                    <p class="qa-def">Five things need to be considered while planning quality: <b>Scope</b>,
+                        <b>Stakeholders</b>, <b>Risks</b>, <b>Internal and External Environmental Factors</b>, and
+                        <b>Process</b>. Out of this, project-specific standards and procedures are created.</p>
+                    <div class="two-col">
+                        <div>
+                            <span class="subhead">What those standards must satisfy</span>
+                            <div class="rule-box">
+                                Based on quality standards for each deliverable · includes how the PM activities
+                                themselves should be done · plans/project must comply with <b>external</b> standards
+                                (CISG, ISO 9000, OSHA, etc.) · must comply with <b>organizational</b> standards · must meet
+                                the <b>customer's</b> quality standards · tracking/proof may be needed (metrics,
+                                measurements, etc.)
+                            </div>
+                        </div>
+                        <div>
+                            <span class="subhead">The three "must comply with" layers</span>
+                            <div class="pattern-chip-row">
+                                <span class="pattern-chip">External standards</span>
+                                <span class="pattern-chip">Organizational standards</span>
+                                <span class="pattern-chip">Customer's standards</span>
+                            </div>
+                            <div class="example-strip" style="margin-top:14px;">Think of it as three concentric rings —
+                                the project has to satisfy all three at once, not just pick the easiest one.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="qa-deep">
+                    <div class="qa-deep-head">
+                        <h3>The SQA Group</h3><span class="qa-tag">who enforces the framework</span>
+                    </div>
+                    <p class="qa-def">The group should prepare an SQA plan for the project. That plan identifies:</p>
+                    <div class="grid5">
+                        <div class="type-card"><h4>Evaluations</h4><p>To be performed across the project.</p></div>
+                        <div class="type-card"><h4>Audits &amp; reviews</h4><p>To be performed on the work.</p></div>
+                        <div class="type-card"><h4>Applicable standards</h4><p>Which standards apply to this project.</p></div>
+                        <div class="type-card"><h4>Error reporting</h4><p>Procedures for reporting &amp; tracking.</p></div>
+                        <div class="type-card"><h4>Change management</h4><p>Procedures for managing change.</p></div>
+                        <div class="type-card"><h4>SQA documents</h4><p>What the group itself must produce.</p></div>
+                        <div class="type-card"><h4>Feedback amount</h4><p>How much feedback goes to the project team.</p></div>
+                    </div>
+                    <div class="two-col" style="margin-top:22px;">
+                        <div>
+                            <span class="subhead">What the SQA group actually does</span>
+                            <div class="rule-box">
+                                Participates in developing the project's software process description · reviews SE
+                                activities to verify compliance with the defined process · audits designated work
+                                products to verify compliance · ensures deviations in software work/work products are
+                                documented and handled per a documented procedure · records any noncompliance and
+                                reports it to senior management.
+                            </div>
+                        </div>
+                        <div>
+                            <span class="subhead">Chain of accountability</span>
+                            <p style="color:var(--ink-dim); font-size:0.9rem;"><code>Reviews process</code> →
+                                <code>Audits work products</code> → <code>Documents deviations</code> →
+                                <code>Reports noncompliance to senior management</code>. The SQA group is the enforcement
+                                arm, not just an advisory one.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PROJECT SUCCESS -->
+        <section id="success">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 04 — PROJECT SUCCESS: THE SOFT SKILLS</div>
+                    <h2 class="sec-title">Discipline, restraint, and knowing when to stop over-processing</h2>
+                </div>
+
+                <div class="two-col">
+                    <div>
+                        <span class="subhead">Think Small</span>
+                        <div class="rule-box">Keep requirements tight &amp; focused · one milestone at a time · smaller,
+                            incremental chunks · as simple as possible, but no simpler.</div>
+                    </div>
+                    <div>
+                        <span class="subhead">Process Spectrum</span>
+                        <div class="rule-box"><i>"Too much medicine can kill the patient."</i> Process lives on a
+                            spectrum between <b>Chaos</b> and <b>Bureaucracy</b> — balance is crucial. Too little
+                            process invites chaos; too much strangles delivery.</div>
+                    </div>
+                </div>
+
+                <div class="mnemonic">
+                    <div class="icon">🧊</div>
+                    <div>
+                        <div class="label">Memory hook</div>
+                        <div class="phrase">"Paralysis has two flavors: too much thinking, or fear of thinking at all."</div>
+                        <div class="decode"><b>Analysis Paralysis</b> — over-process, nothing gets finished. 65% of
+                            software professionals have experienced this. <b>Paralysis Paranoia</b> — the opposite
+                            over-correction: fear of over-process, which itself becomes process avoidance.</div>
+                    </div>
+                </div>
+
+                <div class="two-col">
+                    <div>
+                        <span class="subhead">Be Disciplined &amp; Professional</span>
+                        <div class="rule-box">Learn to say "No" — be polite but firm · the value of versions ("we'll put
+                            that in phase 2") · an ounce of prevention (is worth a pound of cure).</div>
+                    </div>
+                    <div>
+                        <span class="subhead">MBWA — Management By Walk About</span>
+                        <div class="rule-box">Shows you're actually involved day-to-day · recognizes individuals may say
+                            more 1-on-1 · allows spontaneity · finds personnel problems sooner.</div>
+                    </div>
+                </div>
+
+                <div class="two-col">
+                    <div>
+                        <span class="subhead">Delegate</span>
+                        <div class="rule-box">Don't be a "control freak." You need to be the <b>hub</b> — but not
+                            everything running through you.</div>
+                    </div>
+                    <div>
+                        <span class="subhead">Project Home Page</span>
+                        <div class="rule-box">Give your project an intranet page — a central repository for status,
+                            documents, and other resources.</div>
+                    </div>
+                </div>
+
+                <div class="qa-deep" style="margin-top:26px;">
+                    <div class="qa-deep-head">
+                        <h3>Success Metrics</h3><span class="qa-tag">4 candidates, 1 real answer</span>
+                    </div>
+                    <div class="two-col">
+                        <div>
+                            <span class="subhead">The four things people measure</span>
+                            <div class="rule-box">
+                                1. <b>On schedule</b> — requires good plan, estimation, control.<br>
+                                2. <b>Within budget</b> — again: planning, estimation &amp; control.<br>
+                                3. <b>According to requirements</b> — importance of good requirements; perception &amp;
+                                negotiation are critical.<br>
+                                4. <b>High quality</b> — may or may not be the same as item 3.
+                            </div>
+                        </div>
+                        <div>
+                            <span class="subhead">The only real measure</span>
+                            <div class="example-strip"><b>Is the customer happy?</b> Customer satisfaction is the only
+                                real measure of success — schedule, budget, and requirements are all proxies for it.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- WHY PROJECTS SUCCEED / FAIL -->
+        <section id="succeed-fail">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 05 — WHY PROJECTS SUCCEED OR FAIL</div>
+                    <h2 class="sec-title">The factors, the evidence, and the satire</h2>
+                    <p class="sec-desc">To identify a project's success potential you'd look at metrics like project
+                        size, project duration, and project team size. But the deeper factors are consistent across
+                        studies.</p>
+                </div>
+
+                <div class="mnemonic">
+                    <div class="icon">🧩</div>
+                    <div>
+                        <div class="label">Chunking mnemonic</div>
+                        <div class="phrase">"People set the Scope, Process gets it Done."</div>
+                        <div class="decode">The nine success factors chunk cleanly into three groups of three: People,
+                            Scope, and Process. Executive support is factor #1 — it's called out separately because
+                            everything else depends on it.</div>
+                    </div>
+                </div>
+
+                <div class="chunk-grid">
+                    <div class="chunk-card">
+                        <div class="chead">People</div>
+                        <ul>
+                            <li>Executive support</li>
+                            <li>User involvement</li>
+                            <li>Experienced project manager</li>
+                        </ul>
+                    </div>
+                    <div class="chunk-card">
+                        <div class="chead">Scope</div>
+                        <ul>
+                            <li>Clear business objectives</li>
+                            <li>Minimized scope</li>
+                            <li>Firm basic requirements</li>
+                        </ul>
+                    </div>
+                    <div class="chunk-card">
+                        <div class="chead">Process</div>
+                        <ul>
+                            <li>Standard software infrastructure</li>
+                            <li>Formal methodology</li>
+                            <li>Reliable estimates</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="example-strip" style="margin-top:20px;"><b>Why executive support matters most:</b> top
+                    management can secure adequate resources, get approval for unique project needs in a timely manner,
+                    generate cooperation from people throughout the organization, and provide leadership guidance.</div>
+
+                <div class="qa-deep" style="margin-top:28px;">
+                    <div class="qa-deep-head">
+                        <h3>State of the Practice in Software Management</h3><span class="qa-tag">social factors + technology</span>
+                    </div>
+                    <p class="qa-def">Two categories of factors influence success or failure: <b>Social Factors</b> and
+                        <b>Technology</b>.</p>
+                    <table class="rg-table">
+                        <tr><th>Technology — Unsuccessful projects</th><th>Technology — Successful projects</th></tr>
+                        <tr><td class="bad-cell">No historical software measurement data</td><td class="good-cell">Accurate software measurement</td></tr>
+                        <tr><td class="bad-cell">Failure to use automated estimating tool</td><td class="good-cell">Early use of estimating tools</td></tr>
+                        <tr><td class="bad-cell">Failure to use automated planning tool</td><td class="good-cell">Continuous use of planning tool</td></tr>
+                        <tr><td class="bad-cell">Failure to monitor progress or milestones</td><td class="good-cell">Formal progress reporting</td></tr>
+                        <tr><td class="bad-cell">Failure to use effective architecture</td><td class="good-cell">Formal architecture planning</td></tr>
+                        <tr><td class="bad-cell">Failure to use effective development methods</td><td class="good-cell">Formal development methods</td></tr>
+                        <tr><td class="bad-cell">Failure to use design reviews</td><td class="good-cell">Formal design reviews</td></tr>
+                        <tr><td class="bad-cell">Failure to use code inspections</td><td class="good-cell">Formal code inspections</td></tr>
+                        <tr><td class="bad-cell">Failure to include formal risk management</td><td class="good-cell">Formal risk management</td></tr>
+                        <tr><td class="bad-cell">Informal, inadequate testing</td><td class="good-cell">Formal testing methods</td></tr>
+                        <tr><td class="bad-cell">Manual design and specification</td><td class="good-cell">Automated design and specification / automated configuration control</td></tr>
+                        <tr><td class="bad-cell">More than 30% creep in user requirements</td><td class="good-cell">Less than 10% creep in requirements</td></tr>
+                    </table>
+                    <table class="rg-table" style="margin-top:20px;">
+                        <tr><th>Social — Unsuccessful projects</th><th>Social — Successful projects</th></tr>
+                        <tr><td class="bad-cell">Excessive schedule pressure</td><td class="good-cell">Realistic schedule pressure</td></tr>
+                        <tr><td class="bad-cell">Executive rejection of estimates</td><td class="good-cell">Executive understanding of estimates</td></tr>
+                        <tr><td class="bad-cell">Severe friction with clients</td><td class="good-cell">Cooperation with clients</td></tr>
+                        <tr><td class="bad-cell">Divisive corporate politics</td><td class="good-cell">Congruent management goals</td></tr>
+                        <tr><td class="bad-cell">Poor team communications</td><td class="good-cell">Excellent team communications</td></tr>
+                        <tr><td class="bad-cell">Naïve senior executives</td><td class="good-cell">Experienced senior executives</td></tr>
+                        <tr><td class="bad-cell">Project management malpractice</td><td class="good-cell">Capable project management</td></tr>
+                        <tr><td class="bad-cell">Unqualified technical staff</td><td class="good-cell">Capable technical staff</td></tr>
+                        <tr><td class="bad-cell">Generalists used for critical tasks (QA, testing, planning, estimating)</td><td class="good-cell">Specialists used for critical tasks (QA, testing, planning, estimating)</td></tr>
+                    </table>
+                </div>
+
+                <div class="qa-deep">
+                    <div class="qa-deep-head">
+                        <h3>How To Ensure a Project Fails</h3><span class="qa-tag">the satirical checklist</span>
+                    </div>
+                    <p class="qa-def">Straight from the slides — read every line as sarcasm, then do the opposite.</p>
+                    <div class="rule-box">
+                        Do the same things you did on the last project, over and over · don't listen to your experts,
+                        "the last project worked out okay (mostly)" · don't measure progress with metrics — the only
+                        thing that counts is "did you meet the delivery date?" · set delivery dates with the customer
+                        but not with the developers, because "developers can meet any schedule we ask for" · don't use
+                        new tools, keep using the ones from ten or twenty years ago · spend your time making sure people
+                        do it your way · let office politics and vendettas matter more than the project.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- METRICS -->
+        <section id="metrics">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 06 — MEASUREMENT AND METRICS</div>
+                    <h2 class="sec-title">Turning "largely qualitative" into something you can compare</h2>
+                    <p class="sec-desc"><i>"Not everything that can be counted counts, and not everything that counts
+                        can be counted."</i> — Albert Einstein</p>
+                </div>
+
+                <p style="color:var(--ink-dim); max-width:74ch;">Software measurement is concerned with deriving a
+                    <b>quantitative (numeric) value</b> for an attribute of a software product or process that is
+                    largely <b>qualitative</b>. This allows objective comparisons between techniques and processes.
+                    Although some companies have introduced measurement programs, systematic use of measurement is
+                    still uncommon — and there are few standards in this area.</p>
+
+                <div class="mnemonic">
+                    <div class="icon">📏</div>
+                    <div>
+                        <div class="label">Memory hook — three easily-confused words</div>
+                        <div class="phrase">"Measure is the number. Measurement is the act. Metric is the standard."</div>
+                        <div class="decode">These three sound interchangeable but are formally distinct — see the table
+                            below.</div>
+                    </div>
+                </div>
+
+                <table class="cheat-table">
+                    <tr><th>Term</th><th>Formal meaning</th></tr>
+                    <tr><td><b>Measure</b></td><td>Provides a quantitative indication of the size of some product or
+                        process attribute.</td></tr>
+                    <tr><td><b>Measurement</b></td><td>The act of obtaining a measure.</td></tr>
+                    <tr><td><b>Metric</b></td><td>A quantitative measure of the degree to which a system, component, or
+                        process possesses a given attribute.</td></tr>
+                </table>
+
+                <div class="qa-deep" style="margin-top:26px;">
+                    <div class="qa-deep-head">
+                        <h3>Software Metric</h3><span class="qa-tag">any measurement of the system, process, or docs</span>
+                    </div>
+                    <p class="qa-def">Any type of measurement relating to a software system, process, or related
+                        documentation — e.g. lines of code in a program, or number of person-days required to develop a
+                        component. Metrics allow the software and the software process to be quantified; they may be
+                        used to predict product attributes or to control the software process.</p>
+                    <div class="two-col">
+                        <div>
+                            <span class="subhead">Categories</span>
+                            <div class="pattern-chip-row">
+                                <span class="pattern-chip">Product metrics</span>
+                                <span class="pattern-chip">Process &amp; project metrics</span>
+                            </div>
+                            <div class="rule-box" style="margin-top:12px;"><b>Product</b> — assess the quality of the
+                                design and construction of the software product being built.<br><b>Process &amp;
+                                project</b> — quantitative measures that let engineers gain insight into the efficiency
+                                of the process and the projects run inside that framework.</div>
+                        </div>
+                        <div>
+                            <span class="subhead">Direct vs. indirect measures</span>
+                            <div class="rule-box">
+                                <b>Direct (process):</b> cost and effort.<br>
+                                <b>Direct (product):</b> lines of code (LOC), execution speed, memory size, defects
+                                reported over some time period.<br>
+                                <b>Indirect (product):</b> functionality, complexity, efficiency, reliability,
+                                maintainability.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="two-col">
+                    <div>
+                        <span class="subhead">Process Metrics</span>
+                        <div class="rule-box">
+                            <b>Private</b> — e.g. defect rates by individual or module — known only to the individual or
+                            team concerned.<br>
+                            <b>Public</b> — enable organizations to make strategic changes to improve the software
+                            process.<br>
+                            Metrics should <b>not</b> be used to evaluate individual performance. Statistical software
+                            process improvement helps an organization discover where it is strong and where it is weak.
+                        </div>
+                    </div>
+                    <div>
+                        <span class="subhead">Product Metrics</span>
+                        <div class="rule-box">
+                            A quality metric should be a predictor of product quality.<br>
+                            <b>Dynamic</b> — collected by measurements made of a program <i>in execution</i>; help
+                            assess efficiency and reliability.<br>
+                            <b>Static</b> — collected by measurements made of the system's <i>representations</i>; help
+                            assess complexity, understandability, and maintainability.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="qa-deep" style="margin-top:26px;">
+                    <div class="qa-deep-head">
+                        <h3>Project Metrics</h3><span class="qa-tag">inputs, outputs, results</span>
+                    </div>
+                    <p class="qa-def">A software team uses project metrics to adapt project workflow and technical
+                        activities — avoiding schedule delays, mitigating potential risks, and assessing product quality
+                        on an ongoing basis.</p>
+                    <div class="example-strip">Every project should measure its <b>inputs</b> (resources), <b>outputs</b>
+                        (deliverables), and <b>results</b> (effectiveness of deliverables).</div>
+                </div>
+
+                <div class="two-col">
+                    <div>
+                        <span class="subhead">Metrics Assumptions</span>
+                        <div class="rule-box">
+                            A software property can be measured · a relationship exists between what we can measure and
+                            what we want to know · that relationship has been formalized and validated · but it may be
+                            difficult to relate what can be measured to desirable quality attributes.
+                        </div>
+                    </div>
+                    <div>
+                        <span class="subhead">Integrating Metrics With Process</span>
+                        <div class="rule-box">
+                            Many software developers don't collect measures. Without measurement, it's impossible to
+                            determine whether a process is improving. Baseline metrics data should come from a large,
+                            representative sample of past projects — but getting that historic data is very difficult if
+                            previous developers didn't collect it on an ongoing basis.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="qa-deep">
+                    <div class="qa-deep-head">
+                        <h3>The Measurement Process</h3><span class="qa-tag">part of quality control</span>
+                    </div>
+                    <p class="qa-def">A software measurement process may be part of a quality control process. Data
+                        collected during it should be maintained as an organizational resource. Once a measurement
+                        database has been established, comparisons across projects become possible.</p>
+                    <div class="timeline">
+                        <div class="tl-item">
+                            <div class="tl-dot"></div>
+                            <div class="tl-year">STEP 1</div>
+                            <h4>Choose measurements to be made</h4>
+                        </div>
+                        <div class="tl-item">
+                            <div class="tl-dot"></div>
+                            <div class="tl-year">STEP 2</div>
+                            <h4>Select components to be assessed</h4>
+                        </div>
+                        <div class="tl-item">
+                            <div class="tl-dot"></div>
+                            <div class="tl-year">STEP 3</div>
+                            <h4>Measure component characteristics</h4>
+                        </div>
+                        <div class="tl-item">
+                            <div class="tl-dot"></div>
+                            <div class="tl-year">STEP 4</div>
+                            <h4>Identify anomalous measurements</h4>
+                        </div>
+                        <div class="tl-item">
+                            <div class="tl-dot"></div>
+                            <div class="tl-year">STEP 5</div>
+                            <h4>Analyse anomalous components</h4>
+                            <p>Feeds back into choosing what to measure next — this is a cycle, not a one-shot list.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="two-col">
+                    <div>
+                        <span class="subhead">Data Collection</span>
+                        <div class="rule-box">
+                            A metrics program should be based on a set of product and process data. Data should be
+                            collected <b>immediately</b> (not in retrospect) and, if possible, <b>automatically</b>.
+                            Three types of automatic data collection: static product analysis, dynamic product
+                            analysis, process data collation.
+                        </div>
+                    </div>
+                    <div>
+                        <span class="subhead">Data Accuracy</span>
+                        <div class="rule-box">
+                            Don't collect unnecessary data — decide the questions to be answered in advance, and
+                            identify the required data. Tell people why the data is being collected — it should not be
+                            part of personnel evaluation. Don't rely on memory — collect data when it is generated, not
+                            after a project has finished.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="example-strip"><b>What are metrics for, in one loop:</b> Software process → produces
+                    Software product, and feeds → Control measurements → Predictor measurements → inform Management
+                    decisions → which loop back into the Software process.</div>
+
+                <div class="rule-box" style="margin-top:16px;"><b>Analysis is hard:</b> it is not always obvious what
+                    data means — analyzing collected data is genuinely difficult. Professional statisticians should be
+                    consulted if available, and data analysis must take local circumstances into account.</div>
+
+                <div class="mnemonic">
+                    <div class="icon">🧮</div>
+                    <div>
+                        <div class="label">Memory hook</div>
+                        <div class="phrase">"Some Fine Web Products."</div>
+                        <div class="decode"><b>S</b>ize-oriented · <b>F</b>unction-oriented · <b>W</b>eb Engineering ·
+                            <b>P</b>roduct metrics — the four metric-type buckets, with examples below.</div>
+                    </div>
+                </div>
+
+                <table class="cheat-table">
+                    <tr><th>Metric type</th><th>Examples</th></tr>
+                    <tr><td>Size-oriented</td><td>Defects, human effort, Lines of Code (LOC)</td></tr>
+                    <tr><td>Function-oriented</td><td>Function points</td></tr>
+                    <tr><td>Web Engineering</td><td>Number of static web pages (N<sub>sp</sub>), number of dynamic web
+                        pages (N<sub>dp</sub>), Customization Index: <code>C = Nsp / (Ndp + Nsp)</code></td></tr>
+                    <tr><td>Product metrics</td><td>Cyclomatic complexity, fan-in / fan-out</td></tr>
+                </table>
+            </div>
+        </section>
+
+        <!-- CHEAT SHEET -->
+        <section id="cheat">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 07 — CHEAT SHEET</div>
+                    <h2 class="sec-title">The whole chapter, one table at a time</h2>
+                </div>
+                <table class="cheat-table">
+                    <tr><th>Concept</th><th>Core idea</th></tr>
+                    <tr><td>Quality (definition)</td><td>Conformance to explicit requirements + specified standards +
+                        implicit (unwritten) requirements.</td></tr>
+                    <tr><td>Testing</td><td>Full-life-cycle assessment of quality — measures quality, doesn't deliver it.</td></tr>
+                    <tr><td>Quality Assurance</td><td>Framework of activities/standards for performing QC; prevention +
+                        fault-tolerant design + all V&amp;V.</td></tr>
+                    <tr><td>Quality Control</td><td>Monitoring specific results for compliance; performed throughout;
+                        may include corrective actions.</td></tr>
+                    <tr><td>Planning Quality</td><td>Considers Scope, Stakeholders, Risks, Environmental Factors,
+                        Process; must satisfy external + org + customer standards.</td></tr>
+                    <tr><td>SQA Group</td><td>Writes the SQA plan, audits work products, reviews process compliance,
+                        reports noncompliance up the chain.</td></tr>
+                    <tr><td>Project success (real measure)</td><td>Customer satisfaction — schedule/budget/requirements
+                        are proxies, not the goal itself.</td></tr>
+                    <tr><td>Top success factor</td><td>Executive support (secures resources, approvals, cooperation,
+                        leadership).</td></tr>
+                    <tr><td>Measure / Measurement / Metric</td><td>The number / the act of obtaining it / the
+                        standardized quantitative comparison.</td></tr>
+                    <tr><td>Process metrics</td><td>Private (individual) vs. public (organizational); never used to
+                        evaluate individuals.</td></tr>
+                    <tr><td>Product metrics</td><td>Dynamic (execution — efficiency/reliability) vs. static
+                        (representation — complexity/understandability/maintainability).</td></tr>
+                    <tr><td>Measurement process</td><td>Choose → select → measure → identify anomalies → analyse
+                        (cycles back).</td></tr>
+                </table>
+            </div>
+        </section>
+
+        <!-- COMMON MISTAKES -->
+        <section id="mistakes">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 08 — COMMON MISTAKES</div>
+                    <h2 class="sec-title">Where students actually lose marks on this chapter</h2>
+                </div>
+
+                <div class="mistake-box">
+                    <div class="mtitle">1. Swapping QA and QC</div>
+                    <div class="mistake-row"><span class="tag-x">✗ WRONG</span><span>"QC is the framework of standards;
+                        QA checks compliance on a specific deliverable."</span></div>
+                    <div class="mistake-row"><span class="tag-c">✓ RIGHT</span><span>QA provides the <b>framework</b> of
+                        activities and standards. QC does the <b>monitoring</b> of specific results against that
+                        framework, throughout the project.</span></div>
+                </div>
+
+                <div class="mistake-box">
+                    <div class="mtitle">2. Thinking testing delivers quality</div>
+                    <div class="mistake-row"><span class="tag-x">✗ WRONG</span><span>"If we test enough, the product
+                        will become high quality."</span></div>
+                    <div class="mistake-row"><span class="tag-c">✓ RIGHT</span><span>"Quality cannot be tested into a
+                        product." Testing is a measure of quality — the quality itself comes from good process, tools,
+                        methods, and people.</span></div>
+                </div>
+
+                <div class="mistake-box">
+                    <div class="mtitle">3. Believing testing is a budget-mop-up activity</div>
+                    <div class="mistake-row"><span class="tag-x">✗ WRONG</span><span>"Testing exists to use up whatever
+                        budget/schedule is left at the end."</span></div>
+                    <div class="mistake-row"><span class="tag-c">✓ RIGHT</span><span>Testing's purpose is to assess and
+                        evaluate quality of work at each step of development — a full-life-cycle activity, not a leftover
+                        bucket.</span></div>
+                </div>
+
+                <div class="mistake-box">
+                    <div class="mtitle">4. Blurring Measure, Measurement, and Metric</div>
+                    <div class="mistake-row"><span class="tag-x">✗ WRONG</span><span>Using the three terms
+                        interchangeably on an exam answer.</span></div>
+                    <div class="mistake-row"><span class="tag-c">✓ RIGHT</span><span>Measure = the quantitative
+                        indication itself. Measurement = the act of obtaining it. Metric = the quantitative measure of
+                        degree-of-possession of an attribute.</span></div>
+                </div>
+
+                <div class="mistake-box">
+                    <div class="mtitle">5. Using process metrics to grade individuals</div>
+                    <div class="mistake-row"><span class="tag-x">✗ WRONG</span><span>"Let's use each developer's private
+                        defect rate in their performance review."</span></div>
+                    <div class="mistake-row"><span class="tag-c">✓ RIGHT</span><span>Metrics should <b>not</b> be used
+                        to evaluate the performance of individuals — private metrics stay with the individual/team; only
+                        public, aggregated metrics drive organizational change.</span></div>
+                </div>
+
+                <div class="mistake-box">
+                    <div class="mtitle">6. Mixing up static vs. dynamic product metrics</div>
+                    <div class="mistake-row"><span class="tag-x">✗ WRONG</span><span>"Static metrics are collected while
+                        the program is running."</span></div>
+                    <div class="mistake-row"><span class="tag-c">✓ RIGHT</span><span>It's the reverse: <b>dynamic</b>
+                        = measured on a program in execution (efficiency/reliability). <b>Static</b> = measured on system
+                        representations (complexity/understandability/maintainability).</span></div>
+                </div>
+
+                <div class="mistake-box">
+                    <div class="mtitle">7. Assuming "according to requirements" = "high quality"</div>
+                    <div class="mistake-row"><span class="tag-x">✗ WRONG</span><span>"If it meets requirements, it's
+                        automatically high quality."</span></div>
+                    <div class="mistake-row"><span class="tag-c">✓ RIGHT</span><span>The slides explicitly separate
+                        these as items 3 and 4 of success metrics — high quality "may or may not be the same as"
+                        meeting requirements.</span></div>
+                </div>
+
+                <div class="mistake-box">
+                    <div class="mtitle">8. Confusing Analysis Paralysis with Paralysis Paranoia</div>
+                    <div class="mistake-row"><span class="tag-x">✗ WRONG</span><span>Treating both as the same
+                        over-processing problem.</span></div>
+                    <div class="mistake-row"><span class="tag-c">✓ RIGHT</span><span><b>Analysis Paralysis</b> is
+                        actual over-process where nothing gets finished. <b>Paralysis Paranoia</b> is the opposite fear
+                        — avoiding process entirely out of fear of over-processing.</span></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- POP QUIZ -->
+        <section id="quiz">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 09 — POP QUIZ</div>
+                    <h2 class="sec-title">Click a question to reveal the answer</h2>
+                    <p class="sec-desc">Self-check before you move to the practice lab. No reload needed.</p>
+                </div>
+
+                <div class="quiz-item">
+                    <div class="quiz-q" onclick="this.nextElementSibling.classList.toggle('show')">
+                        <span class="qtext">1. (MC) Which process provides the framework of activities and standards
+                            used to perform quality control — QA or QC?</span>
+                        <button class="quiz-reveal" onclick="event.stopPropagation(); this.closest('.quiz-item').querySelector('.quiz-answer').classList.toggle('show')">Reveal</button>
+                    </div>
+                    <div class="quiz-answer"><b>Quality Assurance.</b> QC is the monitoring activity that operates
+                        inside the framework QA provides.</div>
+                </div>
+
+                <div class="quiz-item">
+                    <div class="quiz-q" onclick="this.nextElementSibling.classList.toggle('show')">
+                        <span class="qtext">2. (Short answer) What is the only real measure of project success,
+                            according to the slides?</span>
+                        <button class="quiz-reveal" onclick="event.stopPropagation(); this.closest('.quiz-item').querySelector('.quiz-answer').classList.toggle('show')">Reveal</button>
+                    </div>
+                    <div class="quiz-answer"><b>Customer satisfaction</b> — "Is the customer happy?" On
+                        schedule/budget/requirements/quality are all secondary proxies.</div>
+                </div>
+
+                <div class="quiz-item">
+                    <div class="quiz-q" onclick="this.nextElementSibling.classList.toggle('show')">
+                        <span class="qtext">3. (MC) A defect rate tracked per individual developer, known only to that
+                            developer and their team, is an example of which kind of metric?</span>
+                        <button class="quiz-reveal" onclick="event.stopPropagation(); this.closest('.quiz-item').querySelector('.quiz-answer').classList.toggle('show')">Reveal</button>
+                    </div>
+                    <div class="quiz-answer"><b>A private process metric.</b> Public process metrics, by contrast,
+                        enable organization-wide strategic changes.</div>
+                </div>
+
+                <div class="quiz-item">
+                    <div class="quiz-q" onclick="this.nextElementSibling.classList.toggle('show')">
+                        <span class="qtext">4. (Short answer) Name the three points a definition of software quality
+                            should emphasize.</span>
+                        <button class="quiz-reveal" onclick="event.stopPropagation(); this.closest('.quiz-item').querySelector('.quiz-answer').classList.toggle('show')">Reveal</button>
+                    </div>
+                    <div class="quiz-answer">Conformance to <b>explicit requirements</b>, conformance to
+                        <b>specified development standards</b>, and conformance to <b>implicit (unwritten)
+                        requirements</b> like maintainability.</div>
+                </div>
+
+                <div class="quiz-item">
+                    <div class="quiz-q" onclick="this.nextElementSibling.classList.toggle('show')">
+                        <span class="qtext">5. (MC) Which type of product metric would you use to assess a system's
+                            maintainability and understandability — static or dynamic?</span>
+                        <button class="quiz-reveal" onclick="event.stopPropagation(); this.closest('.quiz-item').querySelector('.quiz-answer').classList.toggle('show')">Reveal</button>
+                    </div>
+                    <div class="quiz-answer"><b>Static metrics</b> — collected from the system's representations, not
+                        from running the program.</div>
+                </div>
+
+                <div class="quiz-item">
+                    <div class="quiz-q" onclick="this.nextElementSibling.classList.toggle('show')">
+                        <span class="qtext">6. (Short answer) What does MBWA stand for, and give one reason a PM would
+                            use it.</span>
+                        <button class="quiz-reveal" onclick="event.stopPropagation(); this.closest('.quiz-item').querySelector('.quiz-answer').classList.toggle('show')">Reveal</button>
+                    </div>
+                    <div class="quiz-answer"><b>Management By Walk About.</b> Any one of: shows involvement day-to-day,
+                        individuals may say more 1-on-1, allows spontaneity, finds personnel problems sooner.</div>
+                </div>
+
+                <div class="quiz-item">
+                    <div class="quiz-q" onclick="this.nextElementSibling.classList.toggle('show')">
+                        <span class="qtext">7. (MC) A site has 40 static pages and 10 dynamic pages. What is its
+                            Customization Index C?</span>
+                        <button class="quiz-reveal" onclick="event.stopPropagation(); this.closest('.quiz-item').querySelector('.quiz-answer').classList.toggle('show')">Reveal</button>
+                    </div>
+                    <div class="quiz-answer">C = N<sub>sp</sub> / (N<sub>dp</sub> + N<sub>sp</sub>) = 40 / (10 + 40) =
+                        <b>0.8</b>.</div>
+                </div>
+
+                <div class="quiz-item">
+                    <div class="quiz-q" onclick="this.nextElementSibling.classList.toggle('show')">
+                        <span class="qtext">8. (Short answer) Name three of the nine factors that make projects
+                            succeed, from different chunking groups (People / Scope / Process).</span>
+                        <button class="quiz-reveal" onclick="event.stopPropagation(); this.closest('.quiz-item').querySelector('.quiz-answer').classList.toggle('show')">Reveal</button>
+                    </div>
+                    <div class="quiz-answer">Any valid combination, e.g.: Executive support (People), Minimized scope
+                        (Scope), Reliable estimates (Process).</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PRACTICE LAB -->
+        <section id="lab">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 10 — PRACTICE LAB</div>
+                    <h2 class="sec-title">Exam-style scenarios, worked through</h2>
+                    <p class="sec-desc">Same shape of question you'll see on a graded exam — grounded directly in this
+                        chapter's content.</p>
+                </div>
+                <div class="examroom">
+                    <div class="practice-q">
+                        <div class="req">1. A PM sets up an org-wide plan defining which audits, reviews, and standards
+                            apply to the project, plus procedures for error reporting and change management — before any
+                            deliverable is checked. Later, a QA staff member checks a specific deliverable against those
+                            standards and finds a defect, then logs a corrective action. Label each activity as QA or
+                            QC.</div>
+                        <div class="ans">→ Setting up the plan/standards = Quality Assurance. Checking a specific
+                            deliverable and taking a corrective action = Quality Control.</div>
+                        <div class="why">Why: QA is the framework of activities/standards; QC is the ongoing monitoring
+                            of specific results against that framework, including corrective actions.</div>
+                    </div>
+                    <div class="practice-q">
+                        <div class="req">2. A project finishes on schedule, under budget, and meets every requirement
+                            in the signed-off spec — yet the customer is unhappy with the delivered product. Was this
+                            project successful?</div>
+                        <div class="ans">→ No — by the chapter's definition, the only real measure of success.</div>
+                        <div class="why">Why: schedule, budget, and requirements are all listed as candidate success
+                            metrics, but the slides explicitly state the only real measure is customer satisfaction —
+                            "is the customer happy?"</div>
+                    </div>
+                    <div class="practice-q">
+                        <div class="req">3. A web project has 60 dynamic pages and 15 static pages. Compute the
+                            Customization Index and interpret whether the site leans static or dynamic.</div>
+                        <div class="ans">→ C = 15 / (60 + 15) = 0.2 — leans heavily dynamic.</div>
+                        <div class="why">Why: C = Nsp / (Ndp + Nsp). A low C (closer to 0) means most pages are
+                            dynamically generated rather than static.</div>
+                    </div>
+                    <div class="practice-q">
+                        <div class="req">4. A team reports "informal, inadequate testing," "manual design and
+                            specification," and "more than 30% creep in user requirements" on their retrospective. Which
+                            category of factor are these, and what outcome do they predict?</div>
+                        <div class="ans">→ Technology factors on unsuccessful projects — predict project failure.</div>
+                        <div class="why">Why: these three items appear verbatim on the "Technologies on Unsuccessful
+                            Projects" list from the State of the Practice slide.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <div>SE423 · Software Project Management · Chapter 06 — Quality</div>
+        <div class="toc-hint">Built as a study aid from lecture slides — always verify against your instructor's exact
+            wording before an exam.</div>
+        <div class="made">Made by <span>Shoug Alomran</span></div>
+    </footer>
+
+    <script>
+        const root = document.documentElement;
+        const sw = document.getElementById('switch');
+        const label = document.getElementById('theme-label');
+
+        function applyTheme(t) {
+            root.setAttribute('data-theme', t);
+            label.textContent = t.toUpperCase();
+        }
+
+        const prefersLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
+        applyTheme(prefersLight ? 'light' : 'dark');
+
+        sw.addEventListener('click', () => {
+            const current = root.getAttribute('data-theme');
+            applyTheme(current === 'dark' ? 'light' : 'dark');
+        });
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,1489 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Software Quality — The HealthCare.gov Autopsy &amp; the V&amp;V Field Manual | SE401 Ch.07</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --radius-sm: 8px;
+            --radius-md: 14px;
+            --radius-lg: 22px;
+            --font-head: 'Sora', sans-serif;
+            --font-body: 'Inter', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+            --maxw: 1180px;
+        }
+
+        html[data-theme="dark"] {
+            --bg: #0b1220;
+            --surface: #121b2b;
+            --surface-2: #182437;
+            --ink: #e7edf5;
+            --ink-dim: #8fa0b6;
+            --line: #243248;
+            --accent: #4f8ff7;
+            --accent-2: #e8a23a;
+            --danger: #f0685f;
+            --ok: #46b88a;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+        }
+
+        html[data-theme="light"] {
+            --bg: #eef1f5;
+            --surface: #ffffff;
+            --surface-2: #f4f6f9;
+            --ink: #101823;
+            --ink-dim: #54627a;
+            --line: #dbe1ea;
+            --accent: #2f6fe0;
+            --accent-2: #b06f16;
+            --danger: #c8433a;
+            --ok: #2c8f6a;
+            --shadow: 0 10px 26px rgba(20, 30, 25, 0.10);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            background:
+                radial-gradient(circle at 1px 1px, var(--line) 1px, transparent 1px) 0 0/26px 26px,
+                var(--bg);
+            color: var(--ink);
+            font-family: var(--font-body);
+            font-size: clamp(15px, 0.4vw + 14px, 17px);
+            line-height: 1.6;
+            transition: background-color .35s ease, color .35s ease;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: var(--font-head);
+            margin: 0;
+            letter-spacing: -0.01em;
+        }
+
+        a { color: inherit; }
+        .mono { font-family: var(--font-mono); }
+
+        .wrap {
+            max-width: var(--maxw);
+            margin: 0 auto;
+            padding: 0 clamp(16px, 4vw, 40px);
+        }
+
+        header.top {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            backdrop-filter: blur(10px);
+            background: color-mix(in srgb, var(--bg) 78%, transparent);
+            border-bottom: 1px solid var(--line);
+        }
+
+        .top-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px clamp(16px, 4vw, 40px);
+            max-width: var(--maxw);
+            margin: 0 auto;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .brand { display: flex; align-items: center; gap: 10px; }
+        .brand .logo-mini { width: 30px; height: 30px; flex: none; }
+        .brand-text { font-family: var(--font-head); font-weight: 700; font-size: 1.05rem; }
+        .brand-text span { color: var(--accent); }
+
+        nav.pillnav { display: flex; gap: 6px; flex-wrap: wrap; }
+
+        nav.pillnav a {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            text-decoration: none;
+            color: var(--ink-dim);
+            padding: 6px 10px;
+            border-radius: 999px;
+            border: 1px solid transparent;
+            white-space: nowrap;
+            transition: all .2s ease;
+        }
+
+        nav.pillnav a:hover { color: var(--ink); border-color: var(--line); background: var(--surface); }
+
+        .theme-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            color: var(--ink-dim);
+        }
+
+        .switch {
+            width: 46px; height: 26px; border-radius: 999px;
+            background: var(--surface-2); border: 1px solid var(--line);
+            position: relative; cursor: pointer; flex: none;
+        }
+
+        .switch .knob {
+            position: absolute; top: 2px; left: 2px; width: 20px; height: 20px;
+            border-radius: 50%; background: var(--accent);
+            transition: left .25s ease, background .25s ease;
+        }
+
+        html[data-theme="light"] .switch .knob { left: 22px; }
+
+        .hero { padding: clamp(40px, 7vw, 80px) 0 clamp(20px, 4vw, 40px); }
+
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: clamp(20px, 4vw, 50px);
+            align-items: center;
+        }
+
+        @media (max-width:820px) { .hero-grid { grid-template-columns: 1fr; } }
+
+        .eyebrow {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--accent-2);
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .eyebrow::before { content: ''; width: 26px; height: 1px; background: var(--accent-2); }
+
+        h1.hero-title { font-size: clamp(2rem, 5vw, 3.5rem); line-height: 1.06; font-weight: 700; }
+        h1.hero-title em { font-style: normal; color: var(--accent); }
+
+        .hero-sub { margin-top: 18px; color: var(--ink-dim); max-width: 56ch; font-size: 1.02rem; }
+
+        .hero-badges { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 22px; }
+
+        .badge {
+            font-family: var(--font-mono); font-size: 0.7rem; padding: 6px 12px;
+            border-radius: 8px; background: var(--surface); border: 1px solid var(--line);
+            color: var(--ink-dim);
+        }
+
+        .dial-wrap { display: flex; justify-content: center; }
+        .dial-wrap svg { width: min(340px, 90%); height: auto; }
+
+        section { padding: clamp(30px, 5vw, 60px) 0; border-top: 1px solid var(--line); }
+        section:first-of-type { border-top: none; }
+
+        .sec-head { margin-bottom: clamp(20px, 3vw, 34px); max-width: 74ch; }
+        .sec-num { font-family: var(--font-mono); color: var(--accent); font-size: 0.76rem; letter-spacing: 0.1em; }
+        .sec-title { font-size: clamp(1.4rem, 3vw, 2rem); margin-top: 6px; }
+        .sec-desc { color: var(--ink-dim); margin-top: 10px; font-size: 0.97rem; }
+
+        .mnemonic {
+            background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 14%, transparent), transparent);
+            border: 1px dashed color-mix(in srgb, var(--accent) 55%, var(--line));
+            border-radius: var(--radius-md);
+            padding: 16px 20px;
+            display: flex; gap: 14px; align-items: flex-start;
+            margin: 18px 0;
+        }
+
+        .mnemonic .icon { font-size: 1.4rem; flex: none; line-height: 1; }
+        .mnemonic .label {
+            font-family: var(--font-mono); font-size: 0.66rem; letter-spacing: 0.1em;
+            text-transform: uppercase; color: var(--accent);
+        }
+        .mnemonic .phrase { font-family: var(--font-head); font-weight: 600; font-size: 1.03rem; margin-top: 3px; }
+        .mnemonic .decode { color: var(--ink-dim); font-size: 0.86rem; margin-top: 4px; }
+
+        .timeline { position: relative; margin-top: 26px; padding-left: 28px; }
+        .timeline::before {
+            content: ''; position: absolute; left: 8px; top: 6px; bottom: 6px; width: 2px; background: var(--line);
+        }
+        .tl-item { position: relative; padding-bottom: 24px; }
+        .tl-item:last-child { padding-bottom: 0; }
+        .tl-dot {
+            position: absolute; left: -28px; top: 2px; width: 18px; height: 18px; border-radius: 50%;
+            background: var(--surface); border: 2px solid var(--accent);
+        }
+        .tl-dot.bad { border-color: var(--danger); }
+        .tl-dot.good { border-color: var(--ok); }
+        .tl-year { font-family: var(--font-mono); font-size: 0.76rem; color: var(--accent); }
+        .tl-item h4 { font-size: 1.02rem; margin-top: 4px; }
+        .tl-item p { color: var(--ink-dim); font-size: 0.87rem; margin-top: 6px; max-width: 70ch; }
+        .tl-item .tl-key { font-size: 0.82rem; margin-top: 6px; color: var(--ink); font-style: italic; }
+
+        .grid5 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 14px;
+            margin-top: 20px;
+        }
+
+        .type-card {
+            background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-md);
+            padding: 18px; transition: transform .2s ease, box-shadow .2s ease;
+        }
+        .type-card:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
+        .type-card .icon { font-size: 1.5rem; }
+        .type-card h4 { font-size: 1rem; margin-top: 8px; }
+        .type-card p { color: var(--ink-dim); font-size: 0.84rem; margin: 8px 0 0; }
+        .type-card .tag {
+            display:inline-block; margin-top:8px; font-family: var(--font-mono); font-size:0.62rem;
+            letter-spacing:0.06em; text-transform:uppercase; color: var(--accent-2);
+        }
+
+        .qa-deep {
+            background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg);
+            padding: clamp(18px, 3vw, 30px); margin-bottom: 22px; position: relative;
+            border-left: 5px solid var(--accent);
+        }
+        .qa-deep-head { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; justify-content: space-between; }
+        .qa-deep h3 { font-size: clamp(1.2rem, 2.4vw, 1.5rem); }
+        .qa-tag {
+            font-family: var(--font-mono); font-size: 0.68rem; padding: 5px 11px; border-radius: 999px;
+            background: var(--surface-2); border: 1px solid var(--line); color: var(--ink-dim);
+        }
+        .qa-def { margin-top: 10px; color: var(--ink); font-size: 0.96rem; max-width: 78ch; }
+
+        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; margin-top: 20px; }
+        @media (max-width:760px) { .two-col { grid-template-columns: 1fr; } }
+
+        .subhead {
+            font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase;
+            color: var(--accent-2); margin-bottom: 10px; display: block;
+        }
+
+        .pattern-chip-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
+        .pattern-chip {
+            font-family: var(--font-mono); font-size: 0.74rem; padding: 5px 12px; border-radius: 999px;
+            background: color-mix(in srgb, var(--accent) 14%, var(--surface-2)); border: 1px solid var(--line);
+        }
+
+        .example-strip {
+            margin-top: 16px; background: color-mix(in srgb, var(--accent-2) 10%, transparent);
+            border: 1px solid color-mix(in srgb, var(--accent-2) 35%, var(--line));
+            border-radius: var(--radius-sm); padding: 12px 14px; font-size: 0.85rem;
+        }
+        .example-strip b { color: var(--accent-2); }
+
+        .rule-box {
+            margin-top: 14px; background: var(--surface-2); border: 1px solid var(--line);
+            border-radius: var(--radius-sm); padding: 12px 14px; font-size: 0.84rem; color: var(--ink-dim);
+        }
+        .rule-box b { color: var(--ink); }
+
+        .cheat-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        .cheat-table th, .cheat-table td {
+            border: 1px solid var(--line); padding: 11px 13px; text-align: left; font-size: 0.85rem;
+        }
+        .cheat-table th {
+            background: var(--surface-2); font-family: var(--font-mono); font-size: 0.68rem;
+            text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent-2);
+        }
+        .cheat-table tr:nth-child(even) td { background: color-mix(in srgb, var(--surface-2) 55%, transparent); }
+
+        .formula-box {
+            font-family: var(--font-mono); background: var(--surface-2); border: 1px solid var(--line);
+            border-radius: var(--radius-sm); padding: 14px 18px; margin-top: 14px; font-size: 0.95rem;
+            text-align: center; color: var(--accent);
+        }
+
+        .stat-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-top: 18px; }
+        .stat-tile {
+            background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-sm);
+            padding: 14px; text-align: center;
+        }
+        .stat-tile .num { font-family: var(--font-head); font-size: 1.5rem; font-weight: 700; color: var(--accent); }
+        .stat-tile .lbl { font-size: 0.72rem; color: var(--ink-dim); margin-top: 4px; }
+
+        .pie-legend { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+        .pie-legend .item { display: flex; align-items: center; gap: 6px; font-size: 0.8rem; color: var(--ink-dim); }
+        .pie-legend .dot { width: 10px; height: 10px; border-radius: 3px; flex: none; }
+
+        .funnel { display: flex; flex-direction: column; gap: 8px; margin-top: 20px; }
+        .funnel-row {
+            display: grid; grid-template-columns: 140px 1fr auto; align-items: center; gap: 12px;
+            font-size: 0.82rem;
+        }
+        .funnel-bar { height: 18px; border-radius: 5px; background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
+        .funnel-label { font-family: var(--font-mono); font-size: 0.72rem; color: var(--ink-dim); }
+        .funnel-val { font-family: var(--font-mono); font-size: 0.78rem; color: var(--ink); }
+
+        .stack-diagram {
+            display: grid; grid-template-columns: 1fr; gap: 0; margin-top: 20px;
+            border: 1px solid var(--line); border-radius: var(--radius-lg); overflow: hidden;
+        }
+        .stack-layer { padding: 16px clamp(16px, 3vw, 24px); position: relative; }
+        .stack-layer:nth-child(odd) { background: color-mix(in srgb, var(--accent) 8%, var(--surface)); border-bottom: 1px dashed var(--line); }
+        .stack-layer:nth-child(even) { background: var(--surface); border-bottom: 1px dashed var(--line); }
+        .stack-layer:last-child { border-bottom: none; }
+        .stack-layer .tag {
+            font-family: var(--font-mono); font-size: 0.66rem; letter-spacing: 0.1em; text-transform: uppercase;
+            color: var(--accent);
+        }
+        .stack-layer h4 { font-size: 1.05rem; margin-top: 6px; }
+        .stack-layer p { color: var(--ink-dim); font-size: 0.87rem; margin-top: 6px; max-width: 72ch; }
+
+        /* mistakes */
+        .mistake-box {
+            border: 1px solid color-mix(in srgb, var(--danger) 40%, var(--line));
+            border-left: 5px solid var(--danger);
+            border-radius: var(--radius-md);
+            background: color-mix(in srgb, var(--danger) 7%, var(--surface));
+            padding: 16px 20px;
+            margin: 16px 0;
+        }
+        .mistake-box h4 { font-size: 1rem; margin-bottom: 10px; }
+        .mistake-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 8px; }
+        @media (max-width:640px) { .mistake-pair { grid-template-columns: 1fr; } }
+        .mistake-wrong, .mistake-right {
+            border-radius: var(--radius-sm); padding: 10px 13px; font-size: 0.85rem;
+        }
+        .mistake-wrong { background: color-mix(in srgb, var(--danger) 14%, var(--surface)); border: 1px solid color-mix(in srgb, var(--danger) 40%, var(--line)); }
+        .mistake-right { background: color-mix(in srgb, var(--ok) 14%, var(--surface)); border: 1px solid color-mix(in srgb, var(--ok) 40%, var(--line)); }
+        .mistake-wrong b { color: var(--danger); }
+        .mistake-right b { color: var(--ok); }
+
+        /* quiz */
+        .quiz-item {
+            border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--surface);
+            padding: 16px 20px; margin: 14px 0;
+        }
+        .quiz-q { font-weight: 600; font-size: 0.96rem; cursor: pointer; display: flex; justify-content: space-between; gap: 12px; align-items: center; }
+        .quiz-q .qtag { font-family: var(--font-mono); font-size: 0.66rem; color: var(--accent-2); text-transform: uppercase; }
+        .quiz-reveal {
+            font-family: var(--font-mono); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.05em;
+            background: var(--surface-2); border: 1px solid var(--line); color: var(--ink-dim);
+            padding: 5px 11px; border-radius: 999px; cursor: pointer; flex: none;
+        }
+        .quiz-reveal:hover { color: var(--ink); border-color: var(--accent); }
+        .quiz-answer {
+            display: none; margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--line);
+            font-size: 0.88rem; color: var(--ink-dim);
+        }
+        .quiz-answer.show { display: block; }
+        .quiz-answer b { color: var(--accent); }
+
+        /* decision tree */
+        .dtree { margin-top: 20px; display: flex; flex-direction: column; gap: 10px; }
+        .dtree-row {
+            display: grid; grid-template-columns: auto 1fr; gap: 12px; align-items: center;
+            background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-sm);
+            padding: 10px 14px; font-size: 0.85rem;
+        }
+        .dtree-row .cond { font-family: var(--font-mono); font-size: 0.72rem; color: var(--accent-2); white-space: nowrap; }
+        .dtree-row .res b { color: var(--accent); }
+
+        .examroom {
+            background: repeating-linear-gradient(180deg, var(--surface) 0px, var(--surface) 27px, var(--surface-2) 28px);
+            border: 1px solid var(--line); border-radius: var(--radius-lg); padding: clamp(18px, 3vw, 28px);
+        }
+        .practice-q {
+            border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface);
+            padding: 14px 16px; margin: 12px 0; font-size: 0.92rem;
+        }
+        .practice-q .req { color: var(--ink); }
+        .practice-q .ans { margin-top: 8px; font-family: var(--font-mono); font-size: 0.78rem; color: var(--accent); }
+        .practice-q .why { margin-top: 6px; color: var(--ink-dim); font-size: 0.82rem; }
+
+        footer {
+            padding: 40px clamp(16px, 4vw, 40px) 60px; text-align: center; color: var(--ink-dim);
+            font-family: var(--font-mono); font-size: 0.78rem;
+        }
+        footer .made { color: var(--ink); font-weight: 600; margin-top: 6px; }
+        footer .made span { color: var(--accent); }
+        .toc-hint { margin-top: 26px; color: var(--ink-dim); font-size: 0.82rem; }
+
+        ::selection { background: var(--accent); color: #fff; }
+    </style>
+
+    <meta name="description" content="Why 39% of software projects succeed, HealthCare.gov's $2B launch failure dissected slide by slide, and the metrics, quality attributes, and V-model test levels that separate a shipped product from a working one.">
+    <link rel="canonical" href="https://shoug-tech.com/academics/software-engineering/se401/slide-breakdowns/07-software-quality/software-quality.html">
+    <meta property="og:title" content="Software Quality — The HealthCare.gov Autopsy &amp; the V&amp;V Field Manual | SE401 Ch.07">
+    <meta property="og:description" content="Why 39% of software projects succeed, HealthCare.gov's $2B launch failure dissected slide by slide, and the metrics, quality attributes, and V-model test levels that separate a shipped product from a working one.">
+    <meta property="og:url" content="https://shoug-tech.com/academics/software-engineering/se401/slide-breakdowns/07-software-quality/software-quality.html">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://shoug-tech.com/logo.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Software Quality — The HealthCare.gov Autopsy &amp; the V&amp;V Field Manual | SE401 Ch.07">
+    <meta name="twitter:description" content="Why 39% of software projects succeed, HealthCare.gov's $2B launch failure dissected slide by slide, and the metrics, quality attributes, and V-model test levels that separate a shipped product from a working one.">
+    <meta name="twitter:image" content="https://shoug-tech.com/logo.png">
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","url":"https://shoug-tech.com/academics/software-engineering/se401/slide-breakdowns/07-software-quality/software-quality.html","name":"Software Quality — The HealthCare.gov Autopsy &amp; the V&amp;V Field Manual | SE401 Ch.07","description":"Why 39% of software projects succeed, HealthCare.gov's $2B launch failure dissected slide by slide, and the metrics, quality attributes, and V-model test levels that separate a shipped product from a working one.","isPartOf":{"@type":"WebSite","name":"Shoug's Digital Garden","url":"https://shoug-tech.com/"}}</script>
+
+    <link rel="alternate" hreflang="en" href="https://shoug-tech.com/academics/software-engineering/se401/slide-breakdowns/07-software-quality/software-quality.html">
+    <link rel="alternate" hreflang="ar" href="https://shoug-tech.com/ar/academics/software-engineering/se401/slide-breakdowns/07-software-quality/software-quality.html">
+    <link rel="alternate" hreflang="x-default" href="https://shoug-tech.com/academics/software-engineering/se401/slide-breakdowns/07-software-quality/software-quality.html">
+</head>
+
+<body>
+
+    <header class="top">
+        <div class="top-inner">
+            <div class="brand">
+                <svg class="logo-mini" viewBox="0 0 40 40">
+                    <circle cx="20" cy="20" r="15" fill="none" stroke="currentColor" stroke-width="2" opacity="0.35" />
+                    <path d="M13 20l5 5 9-11" fill="none" stroke="var(--accent)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+                <div class="brand-text">Quality<span>·</span>Field Manual</div>
+            </div>
+            <nav class="pillnav">
+                <a href="#crisis">Crisis</a>
+                <a href="#healthcare">HealthCare.gov</a>
+                <a href="#reliability">Reliability Metrics</a>
+                <a href="#spectrum">Quality Spectrum</a>
+                <a href="#quality-def">Defining Quality</a>
+                <a href="#defect-cost">Cost of Defects</a>
+                <a href="#vv">V&amp;V</a>
+                <a href="#lifecycle">Test Levels</a>
+                <a href="#cheat">Cheat Sheet</a>
+                <a href="#mistakes">Common Mistakes</a>
+                <a href="#quiz">Pop Quiz</a>
+                <a href="#lab">Practice Lab</a>
+            </nav>
+            <div class="theme-toggle">
+                <span id="theme-label">DARK</span>
+                <div class="switch" id="switch" role="button" aria-label="Toggle theme">
+                    <div class="knob"></div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+
+        <!-- HERO -->
+        <section class="hero">
+            <div class="wrap hero-grid">
+                <div>
+                    <div class="eyebrow">SE401 · Software Quality Assurance and Testing · Chapter 07</div>
+                    <h1 class="hero-title">Working isn't the bar.<br><em>Quality is the bar.</em></h1>
+                    <p class="hero-sub">A system that runs is not the same as a system that's <i>good</i>. This
+                        chapter uses one very expensive, very public disaster — the 2013 launch of HealthCare.gov —
+                        to show what happens when "we'll test it after we build it" meets 50,000 concurrent users.
+                        Then it gives you the vocabulary to actually measure quality: reliability metrics, the full
+                        spectrum of software qualities, the cost curve of a defect left too long, and the V-model of
+                        verification &amp; validation that should have caught all of it.</p>
+                    <div class="hero-badges">
+                        <div class="badge">A $2B case study</div>
+                        <div class="badge">MTBF, MTTF, MTTR</div>
+                        <div class="badge">V&amp;V: right vs. right thing</div>
+                        <div class="badge">4 levels of testing</div>
+                    </div>
+                </div>
+                <div class="dial-wrap">
+                    <svg viewBox="0 0 320 320">
+                        <circle cx="160" cy="160" r="130" fill="none" stroke="var(--line)" stroke-width="2" />
+                        <circle cx="160" cy="160" r="130" fill="none" stroke="var(--danger)" stroke-width="10"
+                            stroke-dasharray="204 612" stroke-linecap="round" transform="rotate(-90 160 160)" />
+                        <circle cx="160" cy="160" r="130" fill="none" stroke="var(--accent-2)" stroke-width="10"
+                            stroke-dasharray="224 612" stroke-dashoffset="-204" stroke-linecap="round"
+                            transform="rotate(-90 160 160)" />
+                        <circle cx="160" cy="160" r="130" fill="none" stroke="var(--ok)" stroke-width="10"
+                            stroke-dasharray="204 612" stroke-dashoffset="-428" stroke-linecap="round"
+                            transform="rotate(-90 160 160)" />
+                        <text x="160" y="148" text-anchor="middle" class="mono" font-family="JetBrains Mono"
+                            font-size="30" font-weight="700" fill="var(--ink)">39%</text>
+                        <text x="160" y="172" text-anchor="middle" class="mono" font-family="JetBrains Mono"
+                            font-size="10" fill="var(--ink-dim)">CHAOS 2012</text>
+                        <text x="160" y="188" text-anchor="middle" class="mono" font-family="JetBrains Mono"
+                            font-size="10" fill="var(--ink-dim)">SUCCESSFUL</text>
+                        <g font-family="JetBrains Mono" font-size="9">
+                            <circle cx="60" cy="270" r="5" fill="var(--ok)" /><text x="72" y="273" fill="var(--ink-dim)">Success 39%</text>
+                            <circle cx="60" cy="288" r="5" fill="var(--accent-2)" /><text x="72" y="291" fill="var(--ink-dim)">Challenged 43%</text>
+                            <circle cx="60" cy="306" r="5" fill="var(--danger)" /><text x="72" y="309" fill="var(--ink-dim)">Impaired 18%</text>
+                        </g>
+                    </svg>
+                </div>
+            </div>
+        </section>
+
+        <!-- CRISIS / SUCCESS & FAILURE -->
+        <section id="crisis">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 01 — FACTORS IN PROJECT SUCCESS &amp; FAILURE</div>
+                    <h2 class="sec-title">Software has a bad track record — and it's not a coincidence</h2>
+                    <p class="sec-desc">Before the "how to fix it," the deck opens with "how bad is it," because
+                        the numbers explain why this course exists.</p>
+                </div>
+
+                <div class="mnemonic">
+                    <div class="icon">💥</div>
+                    <div>
+                        <div class="label">Memory hook</div>
+                        <div class="phrase">"AT&amp;T Broke the Switch, Ariane Blew the Fuse."</div>
+                        <div class="decode">Named software crises to keep straight: <b>1990</b> AT&amp;T long-distance
+                            network down 8+ hours (a missing <code>break</code> in a switch statement) · <b>1996</b>
+                            Ariane 5 rocket exploded 37s after liftoff · <b>2001</b> NYSE trading floor shut down over
+                            an hour · <b>2017</b> British Airways disrupted 75,000 passengers · <b>2020</b> Heathrow
+                            disruption, 100+ flights.</div>
+                    </div>
+                </div>
+
+                <div class="two-col">
+                    <div>
+                        <span class="subhead">1995 CHAOS study (Standish Group)</span>
+                        <div class="stat-row">
+                            <div class="stat-tile"><div class="num">16.2%</div><div class="lbl">IT projects on-time &amp; on-budget</div></div>
+                            <div class="stat-tile"><div class="num">31%+</div><div class="lbl">IT projects canceled outright</div></div>
+                            <div class="stat-tile"><div class="num">$81B</div><div class="lbl">cost of canceled U.S. projects</div></div>
+                        </div>
+                        <div class="rule-box" style="margin-top:16px;">Most projects that <i>do</i> ship are still
+                            late, missing functionality, riddled with major defects, don't do what the customer
+                            wanted, and hard to maintain — "success" is a low bar even when it's hit.</div>
+                    </div>
+                    <div>
+                        <span class="subhead">CHAOS Report — the three outcomes</span>
+                        <table class="cheat-table">
+                            <tr><th>Type</th><th>Definition</th><th>2012</th></tr>
+                            <tr><td><b>1 — Successful</b></td><td>On-time, on-budget, all features/functions as specified</td><td>39%</td></tr>
+                            <tr><td><b>2 — Challenged</b></td><td>Completed &amp; operational, but over-budget, over-time, fewer features</td><td>43%</td></tr>
+                            <tr><td><b>3 — Impaired</b></td><td>Canceled at some point during development</td><td>18%</td></tr>
+                        </table>
+                        <div class="rule-box">Between 1992 and 2017, "completed on-time &amp; within budget" nearly
+                            doubled (16% → 29%) and outright cancellations fell (31% → 19%) — real improvement, but
+                            over half of all projects are <i>still</i> late and over budget.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- HEALTHCARE.GOV -->
+        <section id="healthcare">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 02 — A CASE STUDY</div>
+                    <h2 class="sec-title">The initial launch of HealthCare.gov (2013)</h2>
+                    <p class="sec-desc">This is the deck's centerpiece: a real, government-scale system that failed
+                        publicly because of decisions any of the "quality" concepts below would have caught. Treat
+                        it as the worked example for the whole chapter.</p>
+                </div>
+
+                <div class="mnemonic">
+                    <div class="icon">🏛️</div>
+                    <div>
+                        <div class="label">Memory hook</div>
+                        <div class="phrase">"Four Failures: Test, Requirements, Manage, Rules."</div>
+                        <div class="decode">The postmortem groups the causes into four buckets — <b>T</b>esting was
+                            inadequate, <b>R</b>equirements kept rolling, <b>M</b>anagement expertise was in
+                            contracts not delivery, and government IT procurement <b>R</b>ules were outdated.</div>
+                    </div>
+                </div>
+
+                <div class="timeline">
+                    <div class="tl-item">
+                        <div class="tl-dot"></div>
+                        <div class="tl-year">March 23, 2010 — March 2011</div>
+                        <h4>ACA signed; development contracts awarded</h4>
+                        <p>Affordable Care Act signed into law. HealthCare.gov: a healthcare exchange website —
+                            "one-stop shopping for health insurance." CBO forecast: 7 million users in year one.
+                            Contracts awarded September 2011 as <b>no-bid, cost-plus</b> deals to pre-certified
+                            private contractors — lead contractor <b>CGI Group</b>, with at least 47 companies
+                            involved including QSSI, Equifax, Serco, coordinated by CMS (Centers for Medicare and
+                            Medicaid Services). Total budget: $293 million.</p>
+                    </div>
+                    <div class="tl-item">
+                        <div class="tl-dot bad"></div>
+                        <div class="tl-year">2011 – Summer 2013</div>
+                        <h4>Evolving, rolling requirements</h4>
+                        <p>Regulations and policies were still in flux when contracts were signed and stayed in flux
+                            until summer 2013 — repeated delays to specs, repeated design changes. CGI didn't start
+                            coding until spring 2013. The team followed a
+                            "write-down-all-the-requirements-then-build-to-those-requirements" waterfall approach,
+                            never adopted agile, and committed to an all-or-nothing launch date anyway.</p>
+                    </div>
+                    <div class="tl-item">
+                        <div class="tl-dot bad"></div>
+                        <div class="tl-year">T-minus 2 weeks to T-minus 1 day</div>
+                        <h4>Inadequate testing, compressed to nothing</h4>
+                        <p>"This system just wasn't tested enough." — CMS. Full testing didn't begin until <b>2
+                            weeks</b> before launch. The final "pre-flight checklist" at T-1 week found 41 of 91
+                            functions failing. No end-to-end test existed as late as T-4 days. Stress tests at T-1
+                            day showed performance degrading with only 1,100 concurrent users — against an expected
+                            50,000–60,000. Final top-to-bottom security tests were never finished. No integration
+                            test. No beta test.</p>
+                    </div>
+                    <div class="tl-item">
+                        <div class="tl-dot bad"></div>
+                        <div class="tl-year">October 1, 2013 — Launch</div>
+                        <h4>The site goes live and breaks immediately</h4>
+                        <p>Landing-page response time exceeded 8 seconds ("maddeningly long wait times"). Broken
+                            navigation UI. Availability around 43%, intermittent crashes. Incorrect and incomplete
+                            data returned to users. Per-page error rate around 6%. System capacity capped under
+                            1,100 concurrent users. Enrollment completion rate under 30%.</p>
+                    </div>
+                    <div class="tl-item">
+                        <div class="tl-dot bad"></div>
+                        <div class="tl-year">The McKinsey "Red Team" assessment</div>
+                        <h4>Ideal process vs. what actually happened</h4>
+                        <p>McKinsey's own diagram contrasted the two: the <b>ideal</b> large-scale program has clear
+                            requirements, minimal third-party dependency, sequential requirements→design→build→test
+                            with iteration between phases, full end-to-end testing, and a limited/gradual initial
+                            launch. HealthCare.gov's <b>actual</b> characteristics: evolving requirements, multiple
+                            definitions of success, heavy dependency on external contractors, all phases "stacked"
+                            in parallel instead of sequential, insufficient time and scope for end-to-end testing,
+                            and launch at full volume with no gradual ramp-up.</p>
+                    </div>
+                    <div class="tl-item">
+                        <div class="tl-dot bad"></div>
+                        <div class="tl-year">Management &amp; policy failures</div>
+                        <h4>Contracts over delivery, staffing over substance</h4>
+                        <p>"Management expertise is in getting contracts, not delivering projects." Project quality
+                            was sacrificed for appearances. Three months before launch, only 10 developers were
+                            working on a crucial part of the site, and only <i>one</i> was "at a high enough skill
+                            level." Coordination among the 47+ contractors was poor — unclear responsibilities,
+                            fragmented authority. Underlying policy problem: "the firms that typically get contracts
+                            are the firms that are good at getting contracts, not typically good at executing on
+                            them" — a symptom of outdated, cost-plus, no-bid government IT procurement.</p>
+                    </div>
+                    <div class="tl-item good"></div>
+                </div>
+
+                <div class="two-col" style="margin-top:8px;">
+                    <div>
+                        <span class="subhead">The recovery, quarter by quarter</span>
+                        <div class="funnel">
+                            <div class="funnel-row">
+                                <div class="funnel-label">Dec 2013</div>
+                                <div class="funnel-bar" style="width:90%;"></div>
+                                <div class="funnel-val">Avail. &gt;90%, error &lt;1%, 400+ bug fixes</div>
+                            </div>
+                            <div class="funnel-row">
+                                <div class="funnel-label">Apr 2014</div>
+                                <div class="funnel-bar" style="width:70%;"></div>
+                                <div class="funnel-val">CGI fired (Jan 10); 7.1M signed up</div>
+                            </div>
+                            <div class="funnel-row">
+                                <div class="funnel-label">Feb 2015</div>
+                                <div class="funnel-bar" style="width:100%;"></div>
+                                <div class="funnel-val">11.4M sign-ups, smoother after outages</div>
+                            </div>
+                        </div>
+                        <div class="example-strip">By December 2013, response time on the landing page was under
+                            1 second (down from 8+), system capacity reached ~50,000 concurrent users, and
+                            completion rate hit ~80%. Sign-ups: 27,000 (Oct) → 110,000 (Nov) → 975,000 (Dec).</div>
+                    </div>
+                    <div>
+                        <span class="subhead">The final bill, and the lessons</span>
+                        <div class="rule-box"><b>Accenture</b> took over as lead contractor in Jan 2014 ($175M).
+                            GAO (July 2014): cost through Feb 2014 was $834M; total estimated cost exceeded
+                            <b>$2 billion</b>. GAO: "CMS undertook the development of HealthCare.gov without
+                            effective planning or oversight practices," and found "increased and unnecessary risk of
+                            unauthorized access, use, disclosure, modification or loss" of data. CMS withheld only
+                            $267,000 in fees from CGI — 2% of the contract.</div>
+                        <div class="rule-box" style="margin-top:10px;"><b>Lessons learned (straight from the
+                            slides):</b> adopt software engineering best practices (agile, test early, QA
+                            throughout) · adopt management best practices (clear responsibility/accountability,
+                            performance metrics and progress tracking) · revamp government IT procurement — the
+                            current system is antiquated and has failed; bring government IT into the 21st
+                            century.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- RELIABILITY METRICS -->
+        <section id="reliability">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 03 — SOFTWARE RELIABILITY</div>
+                    <h2 class="sec-title">Turning "it broke" into a number</h2>
+                    <p class="sec-desc">HealthCare.gov's postmortem is full of numbers — 8s response time, 43%
+                        availability, 6% error rate. These are the formal metrics behind those numbers.</p>
+                </div>
+
+                <div class="mnemonic">
+                    <div class="icon">⏱️</div>
+                    <div>
+                        <div class="label">Memory hook — the deck's own note: "Memorize, you'll solve"</div>
+                        <div class="phrase">"Fail, Fix, then Between."</div>
+                        <div class="decode"><b>MTTF</b> (Mean Time <i>To</i> Failure) = average time a system runs
+                            <i>before</i> it fails. <b>MTTR</b> (Mean Time To Repair) = average time to get it back
+                            running. <b>MTBF</b> (Mean Time Between Failures) = the two chained together.</div>
+                    </div>
+                </div>
+
+                <div class="formula-box">MTBF = MTTF + MTTR</div>
+
+                <div class="two-col">
+                    <div>
+                        <span class="subhead">Performance &amp; scalability</span>
+                        <table class="cheat-table">
+                            <tr><th>Term</th><th>Definition</th></tr>
+                            <tr><td><b>Performance</b></td><td>Ability to complete requested functions/services
+                                within the time span users expect. E.g. average response time for a task.</td></tr>
+                            <tr><td><b>Scalability</b></td><td>Capacity of a system to handle increasing load or
+                                demand. E.g. # of concurrent users, transactions/sec, requests/sec.</td></tr>
+                        </table>
+                        <div class="example-strip"><b>HealthCare.gov failed both:</b> response time &gt;8s and
+                            scalability collapsing under 1,100 users (not the 50,000+ expected).</div>
+                    </div>
+                    <div>
+                        <span class="subhead">Availability &amp; reliability, precisely</span>
+                        <div class="formula-box" style="margin-top:0;">Availability = up time ⁄ total time</div>
+                        <div class="formula-box">Reliability = # successful ops ⁄ # attempted ops</div>
+                        <div class="rule-box">Availability = MTTF ⁄ (MTTF + MTTR) × 100%. Five-nines availability
+                            (99.999%) means just <b>5 minutes</b> of downtime a year.</div>
+                    </div>
+                </div>
+
+                <div class="qa-deep" style="margin-top:22px;">
+                    <div class="qa-deep-head"><h3>Error rate vs. completion rate</h3><span class="qa-tag">not the same as success</span></div>
+                    <p class="qa-def">Reliability depends on the <i>unit of operation</i> you measure — and an
+                        operation may consist of multiple steps, so <b>reliability ≠ completion rate</b>.</p>
+                    <div class="two-col">
+                        <div>
+                            <span class="subhead">Error rate (per page)</span>
+                            <p style="color:var(--ink-dim); font-size:0.88rem;">The fraction of pages (the unit of
+                                operation, here) that time out or fail. HealthCare.gov: ≈6% at launch, &lt;1% by
+                                December.</p>
+                        </div>
+                        <div>
+                            <span class="subhead">Completion rate</span>
+                            <p style="color:var(--ink-dim); font-size:0.88rem;">The fraction of all attempted
+                                operations that <i>eventually</i> complete. <b>Completion ≠ success</b> — a user
+                                can finish an enrollment full of wrong data. HealthCare.gov: &lt;30% at launch,
+                                ≈80% by December.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SPECTRUM OF SOFTWARE QUALITY -->
+        <section id="spectrum">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 04 — THE SPECTRUM OF SOFTWARE QUALITY</div>
+                    <h2 class="sec-title">Quality isn't one thing — it's a whole checklist</h2>
+                    <p class="sec-desc">"Quality" has competing definitions before it even gets to software: Crosby
+                        says zero defects, ISO says fitness to satisfy specified/implied needs, Juran says fitness
+                        for purpose, the dictionary just says "degree of excellence." Software breaks quality down
+                        into concrete, individually measurable attributes.</p>
+                </div>
+
+                <div class="mnemonic">
+                    <div class="icon">🧩</div>
+                    <div>
+                        <div class="label">Memory hook</div>
+                        <div class="phrase">"CARPS-USR-MP" — external; "MRPI" — internal.</div>
+                        <div class="decode">External (user-visible): <b>C</b>orrectness, <b>A</b>vailability,
+                            <b>R</b>eliability, <b>P</b>erformance, <b>S</b>calability, <b>U</b>sability,
+                            <b>S</b>ecurity, <b>R</b>obustness, safety. Internal (developer-visible):
+                            <b>M</b>aintainability, <b>R</b>eusability, <b>P</b>ortability,
+                            <b>I</b>nteroperability, efficiency.</div>
+                    </div>
+                </div>
+
+                <div class="grid5">
+                    <div class="type-card"><div class="icon">✅</div><h4>Correctness</h4><p>Whether the system is consistent with its specification.</p><span class="tag">external</span></div>
+                    <div class="type-card"><div class="icon">🟢</div><h4>Availability</h4><p>Fraction of time the system is up and usable.</p><span class="tag">external</span></div>
+                    <div class="type-card"><div class="icon">🎯</div><h4>Reliability</h4><p>Probability the system operates without failure.</p><span class="tag">external</span></div>
+                    <div class="type-card"><div class="icon">⚡</div><h4>Performance</h4><p>Completes requested functions within expected time.</p><span class="tag">external</span></div>
+                    <div class="type-card"><div class="icon">📈</div><h4>Scalability</h4><p>Handles increasing load or demand.</p><span class="tag">external</span></div>
+                    <div class="type-card"><div class="icon">🧮</div><h4>Efficiency</h4><p>Makes maximum, efficient use of system resources.</p><span class="tag">internal</span></div>
+                    <div class="type-card"><div class="icon">🛡️</div><h4>Safety</h4><p>Prevents certain undesirable behaviors — hazards.</p><span class="tag">external</span></div>
+                    <div class="type-card"><div class="icon">🙂</div><h4>Usability</h4><p>Users can use all features without special effort.</p><span class="tag">external</span></div>
+                    <div class="type-card"><div class="icon">🔒</div><h4>Security</h4><p>Maintains integrity of operation and data.</p><span class="tag">external</span></div>
+                    <div class="type-card"><div class="icon">🌪️</div><h4>Robustness</h4><p>Fails or degrades gracefully outside normal parameters.</p><span class="tag">external</span></div>
+                    <div class="type-card"><div class="icon">🔧</div><h4>Maintainability</h4><p>Can be changed, enhanced, adapted, evolved over time.</p><span class="tag">internal</span></div>
+                    <div class="type-card"><div class="icon">♻️</div><h4>Reusability</h4><p>Parts of the system can be reused in other projects.</p><span class="tag">internal</span></div>
+                    <div class="type-card"><div class="icon">📦</div><h4>Portability</h4><p>Can be ported to a different platform or OS.</p><span class="tag">internal</span></div>
+                    <div class="type-card"><div class="icon">🔗</div><h4>Interoperability</h4><p>Works together with other systems.</p><span class="tag">internal</span></div>
+                </div>
+
+                <div class="qa-deep" style="margin-top:26px;">
+                    <div class="qa-deep-head"><h3>Correctness vs. Reliability</h3><span class="qa-tag">expected behavior</span></div>
+                    <div class="two-col">
+                        <div>
+                            <span class="subhead">Correctness</span>
+                            <p style="color:var(--ink-dim); font-size:0.9rem;">Whether a system is consistent with
+                                its <i>specification</i>. It's an <b>all-or-nothing</b> proposition — a program
+                                cannot be "mostly correct" or "30% correct." It is correct on all possible behaviors,
+                                or it is not correct. (Ironically, it's trivially easy to be "correct" against a
+                                very bad spec.) Correctness is a goal to aim for, but is rarely provably achieved.</p>
+                        </div>
+                        <div>
+                            <span class="subhead">Reliability</span>
+                            <p style="color:var(--ink-dim); font-size:0.9rem;">Software is reliable if the user can
+                                depend on it — formally, the probability the software operates as expected over a
+                                specified time interval, relative to its specification <i>and</i> a usage profile.
+                                Reliability is a <b>statistical approximation</b> to correctness:
+                                <code>100% reliable ≈ correct</code>.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="qa-deep">
+                    <div class="qa-deep-head"><h3>Safety vs. Robustness</h3><span class="qa-tag">exceptional behavior</span></div>
+                    <div class="two-col">
+                        <div>
+                            <span class="subhead">Safety</span>
+                            <p style="color:var(--ink-dim); font-size:0.9rem;">The ability of a software system to
+                                <b>prevent</b> certain undesirable behaviors, i.e. <i>hazards</i>.</p>
+                        </div>
+                        <div>
+                            <span class="subhead">Robustness</span>
+                            <p style="color:var(--ink-dim); font-size:0.9rem;">The ability to <b>fail or degrade
+                                gracefully</b> outside normal operating parameters — acceptable (degraded) behavior
+                                under extreme conditions. Correctness and reliability assume normal operating
+                                conditions; software that's "correct" can still fail when those assumptions are
+                                violated — <i>how</i> it fails is what robustness measures.</p>
+                        </div>
+                    </div>
+                    <div class="example-strip"><b>Traffic light worked example:</b> correctness/reliability = "let
+                        traffic pass according to the correct pattern and central scheduling." Robustness/safety =
+                        provide degraded function when possible: never signal conflicting greens; blinking
+                        red/yellow is better than no lights; no lights is better than conflicting greens.</div>
+                </div>
+
+                <div class="qa-deep">
+                    <div class="qa-deep-head"><h3>How the four qualities overlap</h3><span class="qa-tag">Venn relationship</span></div>
+                    <p class="qa-def">Reliable and Robust are two overlapping circles; Correct sits inside Reliable,
+                        Safe sits inside Robust.</p>
+                    <table class="cheat-table">
+                        <tr><th>Region</th><th>Meaning</th></tr>
+                        <tr><td>Reliable, but not correct</td><td>Failures occur — just rarely.</td></tr>
+                        <tr><td>Robust, but not safe</td><td>Catastrophic failures can still occur.</td></tr>
+                        <tr><td>Correct, but not safe/robust</td><td>The specification itself is inadequate.</td></tr>
+                        <tr><td>Safe, but not correct</td><td>Annoying (non-catastrophic) failures can occur.</td></tr>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- DEFINING QUALITY -->
+        <section id="quality-def">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 05 — SOFTWARE QUALITY, DEFINED</div>
+                    <h2 class="sec-title">Conformance to customers' requirements</h2>
+                </div>
+
+                <div class="qa-deep">
+                    <div class="qa-deep-head"><h3>The working definition</h3><span class="qa-tag">from the slides</span></div>
+                    <p class="qa-def">"Conformance to explicitly stated functional and performance requirements,
+                        explicitly documented development standards, and implicit characteristics that are expected
+                        of all professionally developed software." In the narrowest sense, quality is commonly
+                        recognized as the <b>lack of "bugs"</b> in the product — but too many functional defects
+                        means the basic requirement of providing the desired function isn't met either.</p>
+                    <div class="rule-box"><b>Why "lack of bugs" isn't enough on its own:</b> correct operation is
+                        not sufficient by itself — performance, usability by the end-user, and the quality of the
+                        software specifications all matter too.</div>
+                </div>
+
+                <div class="two-col">
+                    <div>
+                        <span class="subhead">Two kinds of quality</span>
+                        <table class="cheat-table">
+                            <tr><th>Quality of design</th><td>Encompasses requirements, specifications, and the
+                                design of the system.</td></tr>
+                            <tr><th>Quality of conformance</th><td>Focused primarily on implementation — does the
+                                build match the design?</td></tr>
+                        </table>
+                        <div class="rule-box">User satisfaction = compliant product + good quality + delivery
+                            within budget and schedule.</div>
+                    </div>
+                    <div>
+                        <span class="subhead">Cost of quality — three buckets</span>
+                        <table class="cheat-table">
+                            <tr><th>Prevention costs</th><td>Quality planning, formal technical reviews, test
+                                equipment, training.</td></tr>
+                            <tr><th>Internal failure costs</th><td>Rework, repair, failure mode analysis.</td></tr>
+                            <tr><th>External failure costs</th><td>Complaint resolution, product return &amp;
+                                replacement, help-line support, warranty work.</td></tr>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="example-strip"><b>On "exceeding customer expectations":</b> the slides pose this as a
+                    trap — chasing ever-rising expectations rather than a fixed, testable set of requirements is
+                    exactly the kind of scope creep that helped sink HealthCare.gov's rolling, never-finalized
+                    requirements.</div>
+            </div>
+        </section>
+
+        <!-- COST OF DEFECTS -->
+        <section id="defect-cost">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 06 — COST OF SOFTWARE DEFECTS</div>
+                    <h2 class="sec-title">The earlier you catch it, the cheaper it is</h2>
+                    <p class="sec-desc">This is the number that justifies "test early" as more than a slogan.</p>
+                </div>
+
+                <div class="mnemonic">
+                    <div class="icon">📉</div>
+                    <div>
+                        <div class="label">Memory hook</div>
+                        <div class="phrase">"Ten Lines, One Bug."</div>
+                        <div class="decode">Even experienced engineers inject roughly one defect for every <b>10
+                            lines of code</b>. Find/fix time ranges from ~3 minutes in code reviews, to 25 minutes
+                            in inspections, up to <b>1,400 minutes</b> in system testing.</div>
+                    </div>
+                </div>
+
+                <div class="qa-deep">
+                    <div class="qa-deep-head"><h3>Cost-to-correct multiplier table</h3><span class="qa-tag">time introduced × time detected</span></div>
+                    <p class="qa-def">A defect's cost depends on both when it was <i>introduced</i> and when it was
+                        <i>detected</i>. Fixing it in the same phase it was introduced costs "1×" — but let it slip
+                        further downstream and the multiplier explodes.</p>
+                    <table class="cheat-table">
+                        <tr><th>Introduced ↓ / Detected →</th><th>Spec</th><th>Design</th><th>Code</th><th>Test</th><th>Post-release</th></tr>
+                        <tr><td><b>Spec</b></td><td>1×</td><td>3×</td><td>5–10×</td><td>15×</td><td>30–100×</td></tr>
+                        <tr><td><b>Design</b></td><td>—</td><td>1×</td><td>10×</td><td>20×</td><td>30–100×</td></tr>
+                        <tr><td><b>Code</b></td><td>—</td><td>—</td><td>1×</td><td>10×</td><td>20–50×</td></tr>
+                    </table>
+                    <div class="rule-box"><b>Rule to memorize:</b> the earlier a defect is discovered, the lower
+                        the cost of fixing it — this is why "test throughout," not "test at the end," is the
+                        whole point of the chapter.</div>
+                </div>
+
+                <div class="two-col">
+                    <div>
+                        <span class="subhead">Where defects are introduced vs. found</span>
+                        <table class="cheat-table">
+                            <tr><th>Introduced (%)</th><th>Total</th></tr>
+                            <tr><td>Specification / design</td><td>70%</td></tr>
+                            <tr><td>Code / unit test</td><td>20%</td></tr>
+                            <tr><td>Integration / system test</td><td>10%</td></tr>
+                        </table>
+                        <table class="cheat-table" style="margin-top:10px;">
+                            <tr><th>Detected (%)</th><th>Total</th></tr>
+                            <tr><td>Spec / design</td><td>3.5%</td></tr>
+                            <tr><td>Code / unit test</td><td>16.5%</td></tr>
+                            <tr><td>Integration / system test</td><td>50.5%</td></tr>
+                            <tr><td>Beta test</td><td>9%</td></tr>
+                            <tr><td>Post-release</td><td>20.5%</td></tr>
+                        </table>
+                        <div class="rule-box">Punchline: the <b>majority of defects are introduced early</b>
+                            (specification/design, 70%) but the <b>majority are discovered late</b> (integration/
+                            system test onward, ~80%) — the exact gap HealthCare.gov's compressed T-2-week testing
+                            schedule made fatal.</div>
+                    </div>
+                    <div>
+                        <span class="subhead">Cost by development phase (where the money actually goes)</span>
+                        <div class="pie-legend">
+                            <div class="item"><span class="dot" style="background:#888;"></span>Maintenance — 67%</div>
+                            <div class="item"><span class="dot" style="background:var(--accent);"></span>Integration — 8%</div>
+                            <div class="item"><span class="dot" style="background:var(--accent-2);"></span>Unit Testing — 7%</div>
+                            <div class="item"><span class="dot" style="background:#c99a3d;"></span>Design — 6%</div>
+                            <div class="item"><span class="dot" style="background:#8a6a2b;"></span>Specification — 5%</div>
+                            <div class="item"><span class="dot" style="background:#6a4f1c;"></span>Coding — 5%</div>
+                            <div class="item"><span class="dot" style="background:var(--danger);"></span>Requirements — 2%</div>
+                        </div>
+                        <div class="rule-box" style="margin-top:14px;">Two-thirds of total lifecycle cost
+                            (<b>67%</b>) is spent on <i>maintenance</i> — after release. Every corner cut during
+                            requirements (2%) or specification (5%) shows up amplified, multiple times over, in
+                            that 67%.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- V&V -->
+        <section id="vv">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 07 — SOFTWARE VERIFICATION AND VALIDATION (V&amp;V)</div>
+                    <h2 class="sec-title">Two questions that sound similar and aren't</h2>
+                </div>
+
+                <div class="mnemonic">
+                    <div class="icon">🍽️</div>
+                    <div>
+                        <div class="label">Memory hook</div>
+                        <div class="phrase">"Verification checks the recipe. Validation checks the taste."</div>
+                        <div class="decode"><b>Verification:</b> "Are we building the software <i>right</i>?" — does
+                            it meet the requirements specification. <b>Validation:</b> "Are we building the
+                            <i>right</i> software?" — does it meet the user's <i>real</i> needs.</div>
+                    </div>
+                </div>
+
+                <div class="stack-diagram">
+                    <div class="stack-layer">
+                        <span class="tag">Verification</span>
+                        <h4>Does the system meet the requirements specification?</h4>
+                        <p>Checked <i>internally</i> against the spec document. Includes: testing (mostly),
+                            inspections, static analysis. Answers: "done correctly?" Test-level examples: unit
+                            test, integration test, automated testing.</p>
+                    </div>
+                    <div class="stack-layer">
+                        <span class="tag">Validation</span>
+                        <h4>Does the system meet the user's real needs?</h4>
+                        <p>Checked <i>externally</i> against actual requirements. Includes: usability testing, user
+                            feedback. Answers: "done the right thing?" Release-level examples: prototype release,
+                            customer release.</p>
+                    </div>
+                </div>
+
+                <div class="two-col" style="margin-top:22px;">
+                    <div>
+                        <span class="subhead">Where they meet</span>
+                        <p style="color:var(--ink-dim); font-size:0.9rem;"><code>Actual Requirements → SW Specs →
+                            System</code>. Validation runs against actual requirements at the front; verification
+                            runs against the SW specs feeding into the system. <b>System test</b> and
+                            <b>qualification measures</b> sit in the overlap — both a verification and a validation
+                            activity.</p>
+                    </div>
+                    <div>
+                        <span class="subhead">Testing inside V&amp;V</span>
+                        <table class="cheat-table">
+                            <tr><th>Verification testing</th><td>Finds defects by executing the program in a
+                                <i>test or simulated</i> environment. E.g. functional test, integration test.</td></tr>
+                            <tr><th>Validation testing</th><td>Finds defects by executing the program in a
+                                <i>real</i> environment or with real users. E.g. usability test, beta test.</td></tr>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="example-strip"><b>HealthCare.gov, reread through V&amp;V:</b> it failed verification
+                    (41 of 91 functions failed the pre-flight checklist, no end-to-end test) <i>and</i> validation
+                    (no beta test — real users only found out the site didn't work on launch day).</div>
+            </div>
+        </section>
+
+        <!-- TESTING IN LIFECYCLE -->
+        <section id="lifecycle">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 08 — SOFTWARE TESTING IN THE DEVELOPMENT LIFE CYCLE</div>
+                    <h2 class="sec-title">Testing is not a phase. It's a lifestyle.</h2>
+                    <p class="sec-desc">The chapter's closing argument: quality cannot be bolted on at the end —
+                        it results from a set of inter-dependent activities integrated throughout the process.</p>
+                </div>
+
+                <div class="mnemonic">
+                    <div class="icon">🏗️</div>
+                    <div>
+                        <div class="label">Memory hook</div>
+                        <div class="phrase">"Units Integrate into Systems that get Accepted."</div>
+                        <div class="decode">The four levels of granularity, in order, small to large: <b>U</b>nit
+                            (component/module) → <b>I</b>ntegration → <b>S</b>ystem → <b>A</b>cceptance. Each level
+                            tests against a different reference document.</div>
+                    </div>
+                </div>
+
+                <div class="qa-deep">
+                    <div class="qa-deep-head"><h3>The Quality Process</h3><span class="qa-tag">a framework, not a checklist</span></div>
+                    <p class="qa-def">A set of activities and responsibilities, focused primarily on ensuring
+                        adequate <i>dependability</i>, but also concerned with project schedule and product
+                        usability. It provides a framework for selecting and arranging activities and considering
+                        interactions/trade-offs with other important goals. For every development activity there is
+                        a corresponding testing activity, each level has objectives specific to that level, and test
+                        design should start as early as possible — applicable to both waterfall and agile
+                        development models.</p>
+                </div>
+
+                <div class="qa-deep">
+                    <div class="qa-deep-head"><h3>The V-Model of Validation &amp; Verification</h3><span class="qa-tag">what tests against what</span></div>
+                    <p class="qa-def">Development moves down the left side of the V (Specs → Subsystem Design →
+                        Unit Specs → Components); testing climbs back up the right side, each level checked
+                        against its matching left-side document, until the whole thing is checked against the
+                        actual needs and constraints that started it.</p>
+                    <table class="cheat-table">
+                        <tr><th>Test level</th><th>Checked against</th><th>V&amp;V</th></tr>
+                        <tr><td>Unit Test</td><td>Unit/Component Specs</td><td>Verification</td></tr>
+                        <tr><td>Integration Test</td><td>Subsystem Design/Specs</td><td>Verification</td></tr>
+                        <tr><td>System Test</td><td>System Specifications</td><td>Verification</td></tr>
+                        <tr><td>User Acceptance (Alpha, Beta)</td><td>Actual Needs and Constraints</td><td>Validation</td></tr>
+                    </table>
+                    <div class="rule-box">Every arrow going back up also feeds a <b>Review/Analysis</b> loop into
+                        the specs one level down, and a final <b>User Review of External Behavior</b> runs the
+                        whole way across the bottom of the V.</div>
+                </div>
+
+                <div class="two-col">
+                    <div>
+                        <span class="subhead">Unit Testing</span>
+                        <p style="color:var(--ink-dim); font-size:0.88rem;">Testing of an individual software
+                            unit/module/component — a.k.a. module or component testing. Focus: functionality,
+                            correctness, accuracy of that one unit. Usually carried out by the developers of the
+                            unit. Basis: component specifications, detailed design and code.</p>
+                    </div>
+                    <div>
+                        <span class="subhead">Integration Testing</span>
+                        <p style="color:var(--ink-dim); font-size:0.88rem;">Exposes defects in the <i>interfaces</i>
+                            and the <i>interactions between</i> integrated sub-systems — focus is on the seams
+                            between modules, not the modules themselves. Usually carried out by the developers of
+                            the sub-systems involved. Basis: system design/architecture, subsystem &amp; interface
+                            specification.</p>
+                    </div>
+                </div>
+                <div class="two-col">
+                    <div>
+                        <span class="subhead">System ("end-to-end") Testing</span>
+                        <p style="color:var(--ink-dim); font-size:0.88rem;">Tests an integrated system to determine
+                            whether it meets <i>the specification</i>, in full — a.k.a. the end-to-end test.
+                            Verifies functional <i>and</i> non-functional requirements. Carried out by developers
+                            <i>and</i> independent testers. Basis: software requirement spec, functional spec.
+                            HealthCare.gov never ran this until 4 days before launch.</p>
+                    </div>
+                    <div>
+                        <span class="subhead">Regression Testing</span>
+                        <p style="color:var(--ink-dim); font-size:0.88rem;">Used whenever a large amount of testing
+                            is needed and small changes can affect many parts of the system. Compiler-development
+                            example: collect examples that exercise each part → add new examples whenever a bug is
+                            found → run the whole collection and capture output → repeat after every code change →
+                            compare against the baseline.</p>
+                    </div>
+                </div>
+
+                <div class="qa-deep">
+                    <div class="qa-deep-head"><h3>Acceptance Testing</h3><span class="qa-tag">the user's verdict</span></div>
+                    <p class="qa-def">Formal testing with respect to <i>user needs, requirements, and business
+                        processes</i>, conducted to determine whether a system satisfies the <b>acceptance
+                        criteria</b> — the <i>exit criteria</i> a component or system must satisfy to be accepted by
+                        a user, customer, or other authorized entity. Focus: customer acceptance. Carried out by
+                        independent testers <i>and</i> the customers. Basis: system/user requirements, use cases,
+                        business processes, risk analysis.</p>
+                    <div class="two-col">
+                        <div>
+                            <span class="subhead">Acceptance testing techniques</span>
+                            <div class="pattern-chip-row">
+                                <span class="pattern-chip">Random (statistical) test</span>
+                                <span class="pattern-chip">Alpha test</span>
+                                <span class="pattern-chip">Beta test</span>
+                            </div>
+                            <p style="color:var(--ink-dim); font-size:0.85rem; margin-top:12px;"><b>Random test:</b>
+                                test cases selected randomly, possibly via a pseudo-random number generation
+                                algorithm, to match an <i>operation/usage profile</i> — not the same thing as
+                                ad hoc testing.</p>
+                        </div>
+                        <div>
+                            <span class="subhead">Alpha vs. Beta, side by side</span>
+                            <table class="cheat-table">
+                                <tr><th>Alpha test</th><td>Simulated operational testing, performed by personnel
+                                    <i>acting as</i> potential users/customers, carried out in a
+                                    <i>controlled</i> environment, observed by the development organization.</td></tr>
+                                <tr><th>Beta test</th><td>Operational testing by <i>real</i> users in their own
+                                    environment, performing actual tasks <i>without interference or close
+                                    monitoring</i>. One form of acceptance testing.</td></tr>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="rule-box">HealthCare.gov skipped this entirely: "No integration test. No beta
+                        test." Real users became, by accident, the beta testers — on launch day, in production.</div>
+                </div>
+
+                <span class="subhead">Extra memorization aid — decide your test level</span>
+                <div class="dtree">
+                    <div class="dtree-row"><span class="cond">IF testing one function/module alone</span><span class="res">→ <b>Unit test</b></span></div>
+                    <div class="dtree-row"><span class="cond">IF testing how two+ modules talk to each other</span><span class="res">→ <b>Integration test</b></span></div>
+                    <div class="dtree-row"><span class="cond">IF testing the whole system against its written spec</span><span class="res">→ <b>System test</b></span></div>
+                    <div class="dtree-row"><span class="cond">IF testing whether the system satisfies real user needs</span><span class="res">→ <b>Acceptance test</b></span></div>
+                    <div class="dtree-row"><span class="cond">IF a small change could ripple across many parts</span><span class="res">→ <b>Regression test</b></span></div>
+                    <div class="dtree-row"><span class="cond">IF using simulated users in a controlled setting</span><span class="res">→ <b>Alpha test</b></span></div>
+                    <div class="dtree-row"><span class="cond">IF using real users in their real environment</span><span class="res">→ <b>Beta test</b></span></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CHEAT SHEET -->
+        <section id="cheat">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 09 — CHEAT SHEET</div>
+                    <h2 class="sec-title">The whole chapter, one table</h2>
+                </div>
+                <table class="cheat-table">
+                    <tr><th>Concept</th><th>Definition / formula</th><th>Watch for</th></tr>
+                    <tr><td>CHAOS outcomes</td><td>Success 39% / Challenged 43% / Impaired 18% (2012)</td><td>Impaired = canceled, not "all failures"</td></tr>
+                    <tr><td>MTBF</td><td>MTBF = MTTF + MTTR</td><td>MTTF ≠ MTBF</td></tr>
+                    <tr><td>Availability</td><td>up time / total time = MTTF/(MTTF+MTTR) × 100%</td><td>Not the same as reliability</td></tr>
+                    <tr><td>Reliability</td><td># successful ops / # attempted ops</td><td>≠ completion rate</td></tr>
+                    <tr><td>Correctness</td><td>Consistency with spec — all-or-nothing</td><td>Rarely provably achieved</td></tr>
+                    <tr><td>Safety vs. Robustness</td><td>Prevent hazards vs. degrade gracefully</td><td>Robust ≠ safe</td></tr>
+                    <tr><td>Verification</td><td>"Building the software right" — vs. spec</td><td>≠ validation</td></tr>
+                    <tr><td>Validation</td><td>"Building the right software" — vs. real needs</td><td>≠ verification</td></tr>
+                    <tr><td>Defect cost multiplier</td><td>1× at origin phase → up to 100× post-release</td><td>Earlier is always cheaper</td></tr>
+                    <tr><td>Cost by phase</td><td>67% of lifecycle cost is Maintenance</td><td>Not "coding"</td></tr>
+                    <tr><td>Unit test</td><td>vs. unit/component specs</td><td>One module only</td></tr>
+                    <tr><td>Integration test</td><td>vs. subsystem design/interface spec</td><td>The seams, not the units</td></tr>
+                    <tr><td>System test</td><td>vs. system specification; "end-to-end"</td><td>HealthCare.gov skipped this until T-4 days</td></tr>
+                    <tr><td>Acceptance test</td><td>vs. actual needs; alpha/beta/random</td><td>HealthCare.gov: no beta test</td></tr>
+                    <tr><td>Alpha test</td><td>Simulated users, controlled environment</td><td>≠ beta test</td></tr>
+                    <tr><td>Beta test</td><td>Real users, real environment, no interference</td><td>≠ alpha test</td></tr>
+                </table>
+            </div>
+        </section>
+
+        <!-- COMMON MISTAKES -->
+        <section id="mistakes">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 10 — COMMON MISTAKES</div>
+                    <h2 class="sec-title">Where students actually lose points</h2>
+                    <p class="sec-desc">Eight confusable pairs the deck sets up almost on purpose — expect at
+                        least one of these on an exam.</p>
+                </div>
+
+                <div class="mistake-box">
+                    <h4>1. Verification vs. Validation</h4>
+                    <div class="mistake-pair">
+                        <div class="mistake-wrong"><b>✗ WRONG</b> — "Verification checks that users like it; validation checks the spec."</div>
+                        <div class="mistake-right"><b>✓ RIGHT</b> — Verification = spec ("building it right"). Validation = real user needs ("building the right thing"). It's easy to swap them — anchor on the mnemonic phrase, not the words alone.</div>
+                    </div>
+                </div>
+
+                <div class="mistake-box">
+                    <h4>2. MTBF vs. MTTF</h4>
+                    <div class="mistake-pair">
+                        <div class="mistake-wrong"><b>✗ WRONG</b> — Treating MTBF and MTTF as interchangeable.</div>
+                        <div class="mistake-right"><b>✓ RIGHT</b> — MTTF is only the "up" time before failure. MTBF = MTTF + MTTR, i.e. it also counts the repair time. MTBF is the simple measure of reliability, not MTTF alone.</div>
+                    </div>
+                </div>
+
+                <div class="mistake-box">
+                    <h4>3. Correctness vs. Reliability</h4>
+                    <div class="mistake-pair">
+                        <div class="mistake-wrong"><b>✗ WRONG</b> — "A reliable program is a correct program."</div>
+                        <div class="mistake-right"><b>✓ RIGHT</b> — Correctness is absolute and binary (all-or-nothing vs. a spec). Reliability is a statistical, probabilistic approximation to correctness. 100% reliable ≈ correct — they converge only at the extreme.</div>
+                    </div>
+                </div>
+
+                <div class="mistake-box">
+                    <h4>4. Robustness vs. Safety</h4>
+                    <div class="mistake-pair">
+                        <div class="mistake-wrong"><b>✗ WRONG</b> — Assuming "robust" automatically means "safe."</div>
+                        <div class="mistake-right"><b>✓ RIGHT</b> — A system can be robust (degrades gracefully) but not safe — catastrophic failures can still occur. Safety specifically prevents hazards; robustness is broader graceful-degradation behavior.</div>
+                    </div>
+                </div>
+
+                <div class="mistake-box">
+                    <h4>5. Completion rate vs. Reliability/Success</h4>
+                    <div class="mistake-pair">
+                        <div class="mistake-wrong"><b>✗ WRONG</b> — "80% completion rate means the system is 80% reliable."</div>
+                        <div class="mistake-right"><b>✓ RIGHT</b> — Completion ≠ success. A user can complete an enrollment with incorrect data (HealthCare.gov's own reported issue). Reliability is about successful operations, not merely finished ones.</div>
+                    </div>
+                </div>
+
+                <div class="mistake-box">
+                    <h4>6. Quality of Design vs. Quality of Conformance</h4>
+                    <div class="mistake-pair">
+                        <div class="mistake-wrong"><b>✗ WRONG</b> — Using the two terms interchangeably.</div>
+                        <div class="mistake-right"><b>✓ RIGHT</b> — Quality of design covers requirements, specs, and design of the system. Quality of conformance is about implementation — did the build match the design?</div>
+                    </div>
+                </div>
+
+                <div class="mistake-box">
+                    <h4>7. Integration Testing vs. System Testing</h4>
+                    <div class="mistake-pair">
+                        <div class="mistake-wrong"><b>✗ WRONG</b> — Calling any test involving multiple components "system testing."</div>
+                        <div class="mistake-right"><b>✓ RIGHT</b> — Integration testing targets interfaces/interactions between specific sub-systems. System testing checks the fully integrated system against the whole specification — it's "end-to-end," a different scope entirely.</div>
+                    </div>
+                </div>
+
+                <div class="mistake-box">
+                    <h4>8. Alpha Testing vs. Beta Testing</h4>
+                    <div class="mistake-pair">
+                        <div class="mistake-wrong"><b>✗ WRONG</b> — "Both are done by real customers in the real world."</div>
+                        <div class="mistake-right"><b>✓ RIGHT</b> — Alpha is simulated: personnel <i>acting as</i> users, in a <i>controlled</i> environment, observed by the developers. Beta is real users, their own environment, no interference or close monitoring.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- POP QUIZ -->
+        <section id="quiz">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 11 — POP QUIZ</div>
+                    <h2 class="sec-title">Click a question to reveal the answer</h2>
+                    <p class="sec-desc">Self-check before the practice lab — no reload needed.</p>
+                </div>
+
+                <div class="quiz-item">
+                    <div class="quiz-q" onclick="this.nextElementSibling.classList.toggle('show')">
+                        <span><span class="qtag">Short answer</span><br>What was the single biggest software-engineering failure in the HealthCare.gov launch?</span>
+                        <span class="quiz-reveal">Reveal</span>
+                    </div>
+                    <div class="quiz-answer"><b>Inadequate testing.</b> Full testing began only 2 weeks before
+                        launch, 41 of 91 functions failed the T-1-week checklist, no end-to-end test existed as
+                        late as T-4 days, stress tests showed collapse at 1,100 users (vs. 50,000+ expected), and
+                        there was no integration test and no beta test at all.</div>
+                </div>
+
+                <div class="quiz-item">
+                    <div class="quiz-q" onclick="this.nextElementSibling.classList.toggle('show')">
+                        <span><span class="qtag">Formula</span><br>If MTTF = 480 hours and MTTR = 20 hours, what is MTBF, and what is availability?</span>
+                        <span class="quiz-reveal">Reveal</span>
+                    </div>
+                    <div class="quiz-answer">MTBF = MTTF + MTTR = 480 + 20 = <b>500 hours</b>. Availability =
+                        MTTF/(MTTF+MTTR) × 100% = 480/500 × 100% = <b>96%</b>.</div>
+                </div>
+
+                <div class="quiz-item">
+                    <div class="quiz-q" onclick="this.nextElementSibling.classList.toggle('show')">
+                        <span><span class="qtag">Multiple choice</span><br>Which best defines Validation? (a) "Are we building the software right?" (b) "Are we building the right software?" (c) Checking code against unit specs (d) Checking interfaces between modules</span>
+                        <span class="quiz-reveal">Reveal</span>
+                    </div>
+                    <div class="quiz-answer">Answer: <b>(b)</b>. Validation asks whether the system meets the
+                        user's real needs. (a) describes verification; (c) is unit testing; (d) is integration
+                        testing.</div>
+                </div>
+
+                <div class="quiz-item">
+                    <div class="quiz-q" onclick="this.nextElementSibling.classList.toggle('show')">
+                        <span><span class="qtag">Short answer</span><br>Per the cost-multiplier table, a defect introduced during spec but not caught until post-release costs how much more to fix than if caught in spec?</span>
+                        <span class="quiz-reveal">Reveal</span>
+                    </div>
+                    <div class="quiz-answer"><b>30–100×</b> more expensive than fixing it right at the spec stage
+                        (the "1×" baseline).</div>
+                </div>
+
+                <div class="quiz-item">
+                    <div class="quiz-q" onclick="this.nextElementSibling.classList.toggle('show')">
+                        <span><span class="qtag">Multiple choice</span><br>A team hires temp staff to pose as customers and test a new banking app in a controlled lab before release. This is: (a) Beta test (b) Alpha test (c) Regression test (d) Unit test</span>
+                        <span class="quiz-reveal">Reveal</span>
+                    </div>
+                    <div class="quiz-answer">Answer: <b>(b) Alpha test</b> — simulated operational testing,
+                        personnel acting as users, in a controlled environment, observed by the development
+                        organization.</div>
+                </div>
+
+                <div class="quiz-item">
+                    <div class="quiz-q" onclick="this.nextElementSibling.classList.toggle('show')">
+                        <span><span class="qtag">Short answer</span><br>Name the three outcomes in the CHAOS Report classification, with their 2012 percentages.</span>
+                        <span class="quiz-reveal">Reveal</span>
+                    </div>
+                    <div class="quiz-answer"><b>Successful</b> (39%) — on-time, on-budget, full scope.
+                        <b>Challenged</b> (43%) — completed but over-budget/over-time/reduced scope.
+                        <b>Impaired</b> (18%) — canceled during development.</div>
+                </div>
+
+                <div class="quiz-item">
+                    <div class="quiz-q" onclick="this.nextElementSibling.classList.toggle('show')">
+                        <span><span class="qtag">Short answer</span><br>Why can a system be "correct" and still fail catastrophically in production?</span>
+                        <span class="quiz-reveal">Reveal</span>
+                    </div>
+                    <div class="quiz-answer">Because correctness and reliability are contingent on <b>normal
+                        operating conditions</b>. Software that's correct with respect to its spec can still fail
+                        when the assumptions of its design are violated (bad input, hardware malfunction). Whether
+                        it fails gracefully is a matter of <b>robustness</b>, not correctness.</div>
+                </div>
+
+                <div class="quiz-item">
+                    <div class="quiz-q" onclick="this.nextElementSibling.classList.toggle('show')">
+                        <span><span class="qtag">Multiple choice</span><br>67% of total software lifecycle cost typically goes to: (a) Coding (b) Requirements (c) Maintenance (d) Unit testing</span>
+                        <span class="quiz-reveal">Reveal</span>
+                    </div>
+                    <div class="quiz-answer">Answer: <b>(c) Maintenance</b> — 67%, dwarfing requirements (2%),
+                        specification (5%), design (6%), coding (5%), unit testing (7%), and integration (8%)
+                        combined.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PRACTICE LAB -->
+        <section id="lab">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 12 — PRACTICE LAB</div>
+                    <h2 class="sec-title">Apply it to a scenario</h2>
+                    <p class="sec-desc">Exam-shaped questions grounded directly in the chapter's HealthCare.gov
+                        case study and the V&amp;V / metrics material.</p>
+                </div>
+                <div class="examroom">
+                    <div class="practice-q">
+                        <div class="req">1. A government contractor delivers a system that technically matches
+                            every line of a 2011-era requirements document, even though the regulations that
+                            document was based on were rewritten repeatedly through 2013. Users find the system
+                            doesn't do what they actually need today. Has the system passed verification,
+                            validation, both, or neither?</div>
+                        <div class="ans">→ Passed verification, failed validation</div>
+                        <div class="why">Why: it's consistent with the (outdated) spec — verification passes. But
+                            it doesn't meet the user's real, current needs — validation fails. This is close to
+                            HealthCare.gov's actual rolling-requirements problem.</div>
+                    </div>
+                    <div class="practice-q">
+                        <div class="req">2. Stress tests one day before launch reveal the system degrades badly
+                            with only 1,100 simultaneous users, against an expected 50,000. Which quality attribute
+                            is failing?</div>
+                        <div class="ans">→ Scalability</div>
+                        <div class="why">Why: scalability is the capacity of a system to handle increasing load or
+                            demand, measured directly in concurrent users — exactly what collapsed.</div>
+                    </div>
+                    <div class="practice-q">
+                        <div class="req">3. A system is up 90% of the time (availability), but of the operations
+                            users attempt while it's up, only 30% actually complete. Are availability and
+                            reliability/completion the same metric here? What's actually happening?</div>
+                        <div class="ans">→ No — they measure different things</div>
+                        <div class="why">Why: availability is the fraction of time the system is <i>up</i>;
+                            completion/reliability is the fraction of <i>attempted operations</i> that succeed once
+                            you're using it. A system can be "up" and still fail most of the work users try to do on
+                            it — precisely HealthCare.gov's October 2013 state (43% availability, &lt;30% completion).</div>
+                    </div>
+                    <div class="practice-q">
+                        <div class="req">4. A bug is introduced during the design phase and isn't caught until
+                            system testing. Roughly what cost multiplier applies, versus catching it during design
+                            itself?</div>
+                        <div class="ans">→ 20×</div>
+                        <div class="why">Why: per the cost table, a defect introduced in design and detected in
+                            test costs about 20× what it would have cost to fix during design (the "1×" baseline
+                            for that row).</div>
+                    </div>
+                    <div class="practice-q">
+                        <div class="req">5. A team ships a feature nobody asked for that also crashes on
+                            edge-case input, but the crash displays a friendly error page instead of losing data.
+                            Classify: is this system correct? Robust? Safe?</div>
+                        <div class="ans">→ Possibly not correct/complete; robust; likely safe</div>
+                        <div class="why">Why: shipping an unrequested feature suggests the spec (or its
+                            fulfillment) is questionable, so correctness is in doubt. But failing gracefully with a
+                            friendly error page — instead of crashing catastrophically or corrupting data — is the
+                            definition of robustness, and if no hazard occurred, it's also safe.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <div>SE401 · Software Quality Assurance and Testing · Chapter 07 — Software Quality</div>
+        <div class="toc-hint">Built as a study aid from lecture slides — always verify against your instructor's
+            exact wording before an exam.</div>
+        <div class="made">Made by <span>Shoug Alomran</span></div>
+    </footer>
+
+    <script>
+        const root = document.documentElement;
+        const sw = document.getElementById('switch');
+        const label = document.getElementById('theme-label');
+
+        function applyTheme(t) {
+            root.setAttribute('data-theme', t);
+            label.textContent = t.toUpperCase();
+        }
+
+        const prefersLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
+        applyTheme(prefersLight ? 'light' : 'dark');
+
+        sw.addEventListener('click', () => {
+            const current = root.getAttribute('data-theme');
+            applyTheme(current === 'dark' ? 'light' : 'dark');
+        });
+    </script>
+
+</body>
+
+</html>

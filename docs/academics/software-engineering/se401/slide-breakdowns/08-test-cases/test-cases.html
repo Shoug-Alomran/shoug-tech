@@ -1,0 +1,1500 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Cases — The Checklist That Proves Nothing (On Purpose) | SE401 Ch.08</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --radius-sm: 8px;
+            --radius-md: 14px;
+            --radius-lg: 22px;
+            --font-head: 'Sora', sans-serif;
+            --font-body: 'Inter', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+            --maxw: 1180px;
+        }
+
+        html[data-theme="dark"] {
+            --bg: #10141c;
+            --surface: #171d28;
+            --surface-2: #1d2531;
+            --ink: #e9edf3;
+            --ink-dim: #98a3b3;
+            --line: #29323f;
+            --accent: #5b8dee;
+            --accent-2: #e0a83e;
+            --bad: #e2685f;
+            --good: #4fae8a;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+        }
+
+        html[data-theme="light"] {
+            --bg: #f0f1ee;
+            --surface: #ffffff;
+            --surface-2: #f5f6f2;
+            --ink: #171c24;
+            --ink-dim: #5a6472;
+            --line: #dadcd6;
+            --accent: #2f5fce;
+            --accent-2: #a9740f;
+            --bad: #c1352b;
+            --good: #227558;
+            --shadow: 0 10px 26px rgba(20, 30, 25, 0.10);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            background:
+                radial-gradient(circle at 1px 1px, var(--line) 1px, transparent 1px) 0 0/26px 26px,
+                var(--bg);
+            color: var(--ink);
+            font-family: var(--font-body);
+            font-size: clamp(15px, 0.4vw + 14px, 17px);
+            line-height: 1.6;
+            transition: background-color .35s ease, color .35s ease;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: var(--font-head);
+            margin: 0;
+            letter-spacing: -0.01em;
+        }
+
+        a { color: inherit; }
+        .mono { font-family: var(--font-mono); }
+
+        .wrap {
+            max-width: var(--maxw);
+            margin: 0 auto;
+            padding: 0 clamp(16px, 4vw, 40px);
+        }
+
+        header.top {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            backdrop-filter: blur(10px);
+            background: color-mix(in srgb, var(--bg) 78%, transparent);
+            border-bottom: 1px solid var(--line);
+        }
+
+        .top-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px clamp(16px, 4vw, 40px);
+            max-width: var(--maxw);
+            margin: 0 auto;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .brand { display: flex; align-items: center; gap: 10px; }
+        .brand .logo-mini { width: 30px; height: 30px; flex: none; }
+        .brand-text { font-family: var(--font-head); font-weight: 700; font-size: 1.05rem; }
+        .brand-text span { color: var(--accent); }
+
+        nav.pillnav { display: flex; gap: 6px; flex-wrap: wrap; }
+        nav.pillnav a {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            text-decoration: none;
+            color: var(--ink-dim);
+            padding: 6px 10px;
+            border-radius: 999px;
+            border: 1px solid transparent;
+            white-space: nowrap;
+            transition: all .2s ease;
+        }
+        nav.pillnav a:hover { color: var(--ink); border-color: var(--line); background: var(--surface); }
+
+        .theme-toggle {
+            display: flex; align-items: center; gap: 8px;
+            font-family: var(--font-mono); font-size: 0.7rem; color: var(--ink-dim);
+        }
+        .switch {
+            width: 46px; height: 26px; border-radius: 999px;
+            background: var(--surface-2); border: 1px solid var(--line);
+            position: relative; cursor: pointer; flex: none;
+        }
+        .switch .knob {
+            position: absolute; top: 2px; left: 2px; width: 20px; height: 20px;
+            border-radius: 50%; background: var(--accent);
+            transition: left .25s ease, background .25s ease;
+        }
+        html[data-theme="light"] .switch .knob { left: 22px; }
+
+        /* HERO */
+        .hero { padding: clamp(40px, 7vw, 80px) 0 clamp(20px, 4vw, 40px); }
+        .hero-grid {
+            display: grid; grid-template-columns: 1.2fr 0.8fr;
+            gap: clamp(20px, 4vw, 50px); align-items: center;
+        }
+        @media (max-width:820px) { .hero-grid { grid-template-columns: 1fr; } }
+
+        .eyebrow {
+            font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.14em;
+            text-transform: uppercase; color: var(--accent-2); margin-bottom: 14px;
+            display: flex; align-items: center; gap: 10px;
+        }
+        .eyebrow::before { content: ''; width: 26px; height: 1px; background: var(--accent-2); }
+
+        h1.hero-title { font-size: clamp(2.1rem, 5vw, 3.6rem); line-height: 1.05; font-weight: 700; }
+        h1.hero-title em { font-style: normal; color: var(--accent); }
+
+        .hero-sub { margin-top: 18px; color: var(--ink-dim); max-width: 54ch; font-size: 1.02rem; }
+        .hero-badges { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 22px; }
+        .badge {
+            font-family: var(--font-mono); font-size: 0.72rem; padding: 6px 12px; border-radius: 8px;
+            background: var(--surface); border: 1px solid var(--line); color: var(--ink-dim);
+        }
+
+        .blueprint-wrap { display: flex; justify-content: center; }
+        .blueprint-wrap svg { width: min(340px, 90%); height: auto; }
+
+        section { padding: clamp(30px, 5vw, 60px) 0; border-top: 1px solid var(--line); }
+        section:first-of-type { border-top: none; }
+
+        .sec-head { margin-bottom: clamp(20px, 3vw, 34px); max-width: 72ch; }
+        .sec-num { font-family: var(--font-mono); color: var(--accent); font-size: 0.78rem; letter-spacing: 0.1em; }
+        .sec-title { font-size: clamp(1.5rem, 3vw, 2.1rem); margin-top: 6px; }
+        .sec-desc { color: var(--ink-dim); margin-top: 10px; font-size: 0.98rem; }
+
+        .mnemonic {
+            background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 14%, transparent), transparent);
+            border: 1px dashed color-mix(in srgb, var(--accent) 55%, var(--line));
+            border-radius: var(--radius-md); padding: 16px 20px;
+            display: flex; gap: 14px; align-items: flex-start; margin: 18px 0;
+        }
+        .mnemonic .icon { font-size: 1.4rem; flex: none; line-height: 1; }
+        .mnemonic .label {
+            font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.1em;
+            text-transform: uppercase; color: var(--accent);
+        }
+        .mnemonic .phrase { font-family: var(--font-head); font-weight: 600; font-size: 1.05rem; margin-top: 3px; }
+        .mnemonic .decode { color: var(--ink-dim); font-size: 0.86rem; margin-top: 4px; }
+
+        /* anatomy stack */
+        .stack-diagram {
+            display: grid; grid-template-columns: 1fr; gap: 0; margin-top: 20px;
+            border: 1px solid var(--line); border-radius: var(--radius-lg); overflow: hidden;
+        }
+        .stack-layer { padding: 16px clamp(16px, 3vw, 26px); position: relative; border-bottom: 1px dashed var(--line); }
+        .stack-layer:last-child { border-bottom: none; }
+        .stack-layer:nth-child(odd) { background: color-mix(in srgb, var(--accent) 8%, var(--surface)); }
+        .stack-layer:nth-child(even) { background: var(--surface); }
+        .stack-layer .tag {
+            font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.1em;
+            text-transform: uppercase; color: var(--accent);
+        }
+        .stack-layer h4 { font-size: 1.05rem; margin-top: 6px; }
+        .stack-layer p { color: var(--ink-dim); font-size: 0.88rem; margin-top: 6px; max-width: 70ch; }
+
+        /* timeline (execution iterations / process steps) */
+        .timeline { position: relative; margin-top: 26px; padding-left: 28px; }
+        .timeline::before {
+            content: ''; position: absolute; left: 8px; top: 6px; bottom: 6px; width: 2px; background: var(--line);
+        }
+        .tl-item { position: relative; padding-bottom: 26px; }
+        .tl-item:last-child { padding-bottom: 0; }
+        .tl-dot {
+            position: absolute; left: -28px; top: 2px; width: 18px; height: 18px; border-radius: 50%;
+            background: var(--surface); border: 2px solid var(--accent);
+        }
+        .tl-year { font-family: var(--font-mono); font-size: 0.78rem; color: var(--accent); }
+        .tl-item h4 { font-size: 1.05rem; margin-top: 4px; }
+        .tl-item p { color: var(--ink-dim); font-size: 0.88rem; margin-top: 6px; max-width: 68ch; }
+        .tl-item .tl-key { font-size: 0.82rem; margin-top: 6px; color: var(--ink); font-style: italic; }
+
+        /* classification grid */
+        .grid5 { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; margin-top: 20px; }
+        .type-card {
+            background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-md);
+            padding: 18px; transition: transform .2s ease, box-shadow .2s ease;
+        }
+        .type-card:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
+        .type-card .icon { font-size: 1.6rem; }
+        .type-card h4 { font-size: 1.02rem; margin-top: 8px; }
+        .type-card p { color: var(--ink-dim); font-size: 0.85rem; margin: 8px 0 0; }
+
+        /* deep dive */
+        .qa-deep {
+            background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg);
+            padding: clamp(18px, 3vw, 30px); margin-bottom: 26px; position: relative;
+            border-left: 5px solid var(--accent);
+        }
+        .qa-deep-head { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; justify-content: space-between; }
+        .qa-deep h3 { font-size: clamp(1.2rem, 2.4vw, 1.6rem); }
+        .qa-tag {
+            font-family: var(--font-mono); font-size: 0.7rem; padding: 5px 11px; border-radius: 999px;
+            background: var(--surface-2); border: 1px solid var(--line); color: var(--ink-dim);
+        }
+        .qa-def { margin-top: 10px; color: var(--ink); font-size: 0.98rem; max-width: 78ch; }
+
+        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; margin-top: 20px; }
+        @media (max-width:760px) { .two-col { grid-template-columns: 1fr; } }
+
+        .subhead {
+            font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase;
+            color: var(--accent-2); margin-bottom: 10px; display: block;
+        }
+
+        .pattern-chip-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
+        .pattern-chip {
+            font-family: var(--font-mono); font-size: 0.75rem; padding: 5px 12px; border-radius: 999px;
+            background: color-mix(in srgb, var(--accent) 14%, var(--surface-2)); border: 1px solid var(--line);
+        }
+
+        .example-strip {
+            margin-top: 16px; background: color-mix(in srgb, var(--accent-2) 10%, transparent);
+            border: 1px solid color-mix(in srgb, var(--accent-2) 35%, var(--line));
+            border-radius: var(--radius-sm); padding: 12px 14px; font-size: 0.86rem;
+        }
+        .example-strip b { color: var(--accent-2); }
+
+        .rule-box {
+            margin-top: 14px; background: var(--surface-2); border: 1px solid var(--line);
+            border-radius: var(--radius-sm); padding: 12px 14px; font-size: 0.84rem; color: var(--ink-dim);
+        }
+        .rule-box b { color: var(--ink); }
+
+        /* code block */
+        pre.code {
+            margin-top: 12px; background: var(--surface-2); border: 1px solid var(--line);
+            border-radius: var(--radius-sm); padding: 12px 14px; font-family: var(--font-mono);
+            font-size: 0.82rem; overflow-x: auto; color: var(--ink);
+        }
+        code { font-family: var(--font-mono); background: var(--surface-2); padding: 1px 5px; border-radius: 4px; font-size: 0.92em; }
+
+        /* cheat table */
+        .cheat-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        .cheat-table th, .cheat-table td { border: 1px solid var(--line); padding: 12px 14px; text-align: left; font-size: 0.86rem; }
+        .cheat-table th {
+            background: var(--surface-2); font-family: var(--font-mono); font-size: 0.7rem;
+            text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent-2);
+        }
+        .cheat-table tr:nth-child(even) td { background: color-mix(in srgb, var(--surface-2) 55%, transparent); }
+        .cheat-table td.mono, .cheat-table th.mono { font-family: var(--font-mono); }
+        .table-scroll { overflow-x: auto; }
+
+        /* mistake boxes */
+        .mistake-box {
+            background: var(--surface); border: 1px solid var(--line); border-left: 5px solid var(--bad);
+            border-radius: var(--radius-md); padding: 16px 20px; margin: 16px 0;
+        }
+        .mistake-box h4 { font-size: 1rem; margin-bottom: 10px; }
+        .mistake-row { display: flex; gap: 10px; align-items: flex-start; margin-top: 8px; font-size: 0.9rem; }
+        .mistake-row .wrong { color: var(--bad); font-weight: 700; font-family: var(--font-mono); flex: none; }
+        .mistake-row .right { color: var(--good); font-weight: 700; font-family: var(--font-mono); flex: none; }
+        .mistake-row p { margin: 0; color: var(--ink-dim); }
+        .mistake-row p b { color: var(--ink); }
+
+        /* pop quiz */
+        .quiz-item {
+            background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-md);
+            padding: 16px 20px; margin: 14px 0;
+        }
+        .quiz-q { display: flex; justify-content: space-between; align-items: center; gap: 14px; cursor: pointer; }
+        .quiz-q p { margin: 0; font-weight: 600; font-size: 0.95rem; }
+        .quiz-reveal {
+            font-family: var(--font-mono); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.06em;
+            background: var(--surface-2); border: 1px solid var(--line); color: var(--accent);
+            padding: 6px 12px; border-radius: 999px; cursor: pointer; flex: none;
+        }
+        .quiz-answer {
+            display: none; margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--line);
+            font-size: 0.88rem; color: var(--ink-dim);
+        }
+        .quiz-answer.show { display: block; }
+        .quiz-answer b { color: var(--good); }
+
+        /* cheat table */
+        .cheat-table + .cheat-table { margin-top: 20px; }
+
+        /* practice lab */
+        .examroom {
+            background: repeating-linear-gradient(180deg, var(--surface) 0px, var(--surface) 27px, var(--surface-2) 28px);
+            border: 1px solid var(--line); border-radius: var(--radius-lg); padding: clamp(18px, 3vw, 28px);
+        }
+        .practice-q {
+            border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface);
+            padding: 14px 16px; margin: 12px 0; font-size: 0.92rem;
+        }
+        .practice-q .req { color: var(--ink); }
+        .practice-q .ans { margin-top: 8px; font-family: var(--font-mono); font-size: 0.78rem; color: var(--accent); }
+        .practice-q .why { margin-top: 6px; color: var(--ink-dim); font-size: 0.82rem; }
+
+        /* chunk table for memorization */
+        .chunk-table { width: 100%; border-collapse: collapse; margin-top: 18px; }
+        .chunk-table th, .chunk-table td {
+            border: 1px solid var(--line); padding: 10px 12px; font-size: 0.85rem; text-align: left;
+        }
+        .chunk-table th { background: var(--surface-2); color: var(--accent); font-family: var(--font-mono); font-size: 0.68rem; text-transform: uppercase; }
+
+        footer {
+            padding: 40px clamp(16px, 4vw, 40px) 60px; text-align: center; color: var(--ink-dim);
+            font-family: var(--font-mono); font-size: 0.78rem;
+        }
+        footer .made { color: var(--ink); font-weight: 600; margin-top: 6px; }
+        footer .made span { color: var(--accent); }
+        .toc-hint { margin-top: 26px; color: var(--ink-dim); font-size: 0.82rem; }
+
+        ::selection { background: var(--accent); color: #fff; }
+    </style>
+
+    <meta name="description" content="A study guide to SE401 Chapter 8: what a test case actually is, its five parts, how to write good ones with the triangle-classification example, scaffolding (drivers/stubs/harnesses), oracles, and test execution.">
+    <link rel="canonical" href="https://shoug-tech.com/academics/software-engineering/se401/slide-breakdowns/08-test-cases/test-cases.html">
+    <meta property="og:title" content="Test Cases — The Checklist That Proves Nothing (On Purpose) | SE401 Ch.08">
+    <meta property="og:description" content="A study guide to SE401 Chapter 8: what a test case actually is, its five parts, how to write good ones with the triangle-classification example, scaffolding, oracles, and test execution.">
+    <meta property="og:url" content="https://shoug-tech.com/academics/software-engineering/se401/slide-breakdowns/08-test-cases/test-cases.html">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://shoug-tech.com/logo.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Test Cases — The Checklist That Proves Nothing (On Purpose) | SE401 Ch.08">
+    <meta name="twitter:description" content="A study guide to SE401 Chapter 8: what a test case actually is, its five parts, how to write good ones with the triangle-classification example, scaffolding, oracles, and test execution.">
+    <meta name="twitter:image" content="https://shoug-tech.com/logo.png">
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","url":"https://shoug-tech.com/academics/software-engineering/se401/slide-breakdowns/08-test-cases/test-cases.html","name":"Test Cases — The Checklist That Proves Nothing (On Purpose) | SE401 Ch.08","description":"A study guide to SE401 Chapter 8: what a test case actually is, its five parts, how to write good ones with the triangle-classification example, scaffolding, oracles, and test execution.","isPartOf":{"@type":"WebSite","name":"Shoug's Digital Garden","url":"https://shoug-tech.com/"}}</script>
+
+    <link rel="alternate" hreflang="en" href="https://shoug-tech.com/academics/software-engineering/se401/slide-breakdowns/08-test-cases/test-cases.html">
+    <link rel="alternate" hreflang="ar" href="https://shoug-tech.com/ar/academics/software-engineering/se401/slide-breakdowns/08-test-cases/test-cases.html">
+    <link rel="alternate" hreflang="x-default" href="https://shoug-tech.com/academics/software-engineering/se401/slide-breakdowns/08-test-cases/test-cases.html">
+</head>
+
+<body>
+
+    <header class="top">
+        <div class="top-inner">
+            <div class="brand">
+                <svg class="logo-mini" viewBox="0 0 40 40">
+                    <rect x="6" y="6" width="28" height="28" rx="6" fill="none" stroke="currentColor" stroke-width="2" opacity="0.35" />
+                    <path d="M14 20l4 4 8-9" fill="none" stroke="var(--accent)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+                <div class="brand-text">Test Cases<span>·</span>Field Guide</div>
+            </div>
+            <nav class="pillnav">
+                <a href="#testing">Testing</a>
+                <a href="#anatomy">Anatomy</a>
+                <a href="#writing">Writing</a>
+                <a href="#good-cases">Good Cases</a>
+                <a href="#triangle">Triangle</a>
+                <a href="#comparisons">Pitfalls</a>
+                <a href="#examples">Good/Bad</a>
+                <a href="#trustworthy">Trustworthy</a>
+                <a href="#execution">Execution</a>
+                <a href="#scaffolding">Scaffolding</a>
+                <a href="#oracles">Oracles</a>
+                <a href="#cheat">Cheat Sheet</a>
+                <a href="#mistakes">Mistakes</a>
+                <a href="#quiz">Pop Quiz</a>
+                <a href="#lab">Practice Lab</a>
+            </nav>
+            <div class="theme-toggle">
+                <span id="theme-label">DARK</span>
+                <div class="switch" id="switch" role="button" aria-label="Toggle theme">
+                    <div class="knob"></div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+
+        <!-- HERO -->
+        <section class="hero">
+            <div class="wrap hero-grid">
+                <div>
+                    <div class="eyebrow">SE401 · Software Quality Assurance and Testing · Chapter 08</div>
+                    <h1 class="hero-title">Test cases:<br><em>the recipe card for finding bugs.</em></h1>
+                    <p class="hero-sub">A test case isn't a magic wand that makes software better — <b>weighing
+                        yourself doesn't reduce your weight</b>, and going to the doctor doesn't make you healthy.
+                        What it does is give you a precise, repeatable recipe: exact inputs, exact steps, exact
+                        expected outcome — so that anyone, any time, can run the same check and get the same answer.
+                        This chapter is about writing that recipe card well.</p>
+                    <div class="hero-badges">
+                        <div class="badge">5-part anatomy</div>
+                        <div class="badge">Triangle worked example</div>
+                        <div class="badge">Scaffolding &amp; oracles</div>
+                        <div class="badge">Exam-tested</div>
+                    </div>
+                </div>
+                <div class="blueprint-wrap">
+                    <svg viewBox="0 0 320 320">
+                        <rect x="24" y="14" width="272" height="292" rx="16" fill="none" stroke="var(--line)" stroke-width="2" />
+                        <rect x="24" y="14" width="272" height="40" rx="16" fill="color-mix(in srgb, var(--accent) 18%, transparent)" />
+                        <text x="160" y="39" text-anchor="middle" class="mono" font-family="JetBrains Mono" font-size="12" fill="var(--accent)">TC-01 · TEST CASE</text>
+                        <g font-family="JetBrains Mono" font-size="9.5" fill="var(--ink-dim)">
+                            <text x="40" y="80">NAME</text>
+                            <rect x="40" y="88" width="240" height="14" rx="3" fill="none" stroke="var(--line)" />
+                            <text x="40" y="120">REQUIREMENT</text>
+                            <rect x="40" y="128" width="240" height="14" rx="3" fill="none" stroke="var(--line)" />
+                            <text x="40" y="160">PRECONDITIONS</text>
+                            <rect x="40" y="168" width="240" height="14" rx="3" fill="none" stroke="var(--line)" />
+                            <text x="40" y="200" fill="var(--accent-2)">STEPS</text>
+                            <rect x="40" y="208" width="240" height="30" rx="3" fill="none" stroke="var(--accent-2)" stroke-dasharray="4 3" />
+                            <text x="40" y="256" fill="var(--good)">EXPECTED RESULT</text>
+                            <rect x="40" y="264" width="240" height="24" rx="3" fill="none" stroke="var(--good)" stroke-dasharray="4 3" />
+                        </g>
+                        <path d="M252 270l8 8 14-16" fill="none" stroke="var(--good)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </div>
+            </div>
+        </section>
+
+        <!-- WHAT TESTING ACTUALLY DOES -->
+        <section id="testing">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 01 — WHAT TESTING ACTUALLY DOES</div>
+                    <h2 class="sec-title">Testing doesn't fix your software</h2>
+                    <p class="sec-desc">Get this uncomfortable truth locked in before anything else — it reframes
+                        everything that follows.</p>
+                </div>
+
+                <div class="mnemonic">
+                    <div class="icon">⚖️</div>
+                    <div>
+                        <div class="label">Memory hook</div>
+                        <div class="phrase">"The scale doesn't diet for you."</div>
+                        <div class="decode">Weighing yourself doesn't reduce your weight. Going to the doctor
+                            doesn't make you healthy. Testing is the same — it doesn't improve the software.
+                            <b>That's the developer's job.</b> Testing just tells you where to look.</div>
+                    </div>
+                </div>
+
+                <div class="qa-deep">
+                    <div class="qa-deep-head">
+                        <h3>The massive misunderstanding</h3><span class="qa-tag">from the slides, verbatim idea</span>
+                    </div>
+                    <p class="qa-def">There is a massive misunderstanding about testing: that it improves software.
+                        It doesn't. What testing (and the scale, and the doctor's visit) actually does is
+                        <b>help identify problems</b> that you might then choose to resolve. Testing does not make
+                        the product better — even though it's part of a larger process that does make a product
+                        better.</p>
+                    <div class="rule-box"><b>Takeaway:</b> testing is the diagnostic step, not the cure. The cure is
+                        whatever the developer does after reading the test results.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ANATOMY -->
+        <section id="anatomy">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 02 — ANATOMY OF A TEST CASE</div>
+                    <h2 class="sec-title">Five parts, one repeatable recipe</h2>
+                    <p class="sec-desc">Three overlapping definitions from the deck, all pointing at the same
+                        thing.</p>
+                </div>
+
+                <div class="two-col">
+                    <div class="rule-box">
+                        <b>Definition 1:</b> a set of conditions under which a tester will determine whether an
+                        application, software system, or one of its features is working as it was originally
+                        established to do.
+                    </div>
+                    <div class="rule-box">
+                        <b>Definition 2:</b> a description of a specific interaction that a tester will have in
+                        order to test a single behavior of the software.
+                    </div>
+                </div>
+                <div class="rule-box" style="margin-top: 14px;">
+                    <b>Definition 3:</b> a set of actions executed to verify a particular feature or functionality
+                    of your software application. Test cases are often called <b>test scripts</b> — especially
+                    once written down and collected into <b>test suites</b>. They're very similar to use cases: both
+                    are step-by-step narratives defining a specific interaction between user and software.
+                </div>
+
+                <div class="mnemonic">
+                    <div class="icon">🧩</div>
+                    <div>
+                        <div class="label">Memory hook</div>
+                        <div class="phrase">"Name, Reason, Ready, Do, Done."</div>
+                        <div class="decode">The five slots of a typical test case table, in order: unique
+                            <b>Name</b>/number → the <b>Requirement</b> it exercises (the reason) → <b>Preconditions</b>
+                            (ready state) → <b>Steps</b> (what you do) → <b>Expected Results</b> (what "done" looks
+                            like).</div>
+                    </div>
+                </div>
+
+                <div class="stack-diagram">
+                    <div class="stack-layer">
+                        <span class="tag">1 · Name / Number</span>
+                        <h4>A unique identifier</h4>
+                        <p>So a specific test case can be referenced, tracked, and re-run — e.g. <code>TC-47</code>.</p>
+                    </div>
+                    <div class="stack-layer">
+                        <span class="tag">2 · Requirement</span>
+                        <h4>The requirement this test case is exercising</h4>
+                        <p>Ties the test back to a documented requirement — e.g. <code>FR-4</code>, "case sensitivity
+                            in search-and-replace."</p>
+                    </div>
+                    <div class="stack-layer">
+                        <span class="tag">3 · Preconditions</span>
+                        <h4>The state of the software before the test</h4>
+                        <p>What must already be true/loaded/set up before step 1 can run — e.g. "test document
+                            TESTDOC.DOC is loaded (base state BS-12)."</p>
+                    </div>
+                    <div class="stack-layer">
+                        <span class="tag">4 · Steps</span>
+                        <h4>The specific steps that make up the interaction</h4>
+                        <p>A numbered, exact sequence of actions — click this, type that — with concrete data, not
+                            vague descriptions.</p>
+                    </div>
+                    <div class="stack-layer">
+                        <span class="tag">5 · Expected Results</span>
+                        <h4>The expected state of the software after execution</h4>
+                        <p>Every test case <b>must</b> have an expected result. No expected result means there's
+                            nothing to compare against — and nothing to call a pass or a fail.</p>
+                    </div>
+                </div>
+
+                <div class="example-strip"><b>Non-negotiable property:</b> test cases must be <b>repeatable</b>.
+                    Good test cases are <b>data-specific</b> — they describe each interaction necessary to repeat the
+                    test exactly, not "enter a name" but "enter <code>This is the Search Term</code>."</div>
+            </div>
+        </section>
+
+        <!-- WRITING TEST CASES (process) -->
+        <section id="writing">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 03 — THE WRITING PROCESS</div>
+                    <h2 class="sec-title">Before you write a single step</h2>
+                </div>
+
+                <div class="two-col">
+                    <div>
+                        <span class="subhead">Prep work</span>
+                        <div class="grid5" style="grid-template-columns: 1fr;">
+                            <div class="type-card">
+                                <div class="icon">🔤</div>
+                                <h4>1. Understand the language fundamentals</h4>
+                                <p>Sizes and limits of variables, platform-specific information.</p>
+                            </div>
+                            <div class="type-card">
+                                <div class="icon">🗺️</div>
+                                <h4>2. Understand the domain</h4>
+                                <p>What real-world problem is this software solving?</p>
+                            </div>
+                            <div class="type-card">
+                                <div class="icon">📄</div>
+                                <h4>3. Read the requirements</h4>
+                                <p>The spec is the ground truth for what "correct" means.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <span class="subhead">Think from three angles</span>
+                        <div class="grid5" style="grid-template-columns: 1fr;">
+                            <div class="type-card">
+                                <div class="icon">🙋</div>
+                                <h4>Think like a user</h4>
+                                <p>What possible things do they want to do?</p>
+                            </div>
+                            <div class="type-card">
+                                <div class="icon">❌</div>
+                                <h4>Think about possible "mistakes"</h4>
+                                <p>i.e. invalid input — what will a careless or confused user type?</p>
+                            </div>
+                            <div class="type-card">
+                                <div class="icon">🚫</div>
+                                <h4>Think about impossible conditions</h4>
+                                <p>Inputs or states that should never legitimately occur — test them anyway.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="qa-deep" style="margin-top: 26px;">
+                    <div class="qa-deep-head">
+                        <h3>What is the testing intended to prove?</h3><span class="qa-tag">3 goals</span>
+                    </div>
+                    <div class="two-col">
+                        <div class="rule-box"><b>Correct operation</b> — gives correct behavior for correct input.</div>
+                        <div class="rule-box"><b>Robustness</b> — responds to incorrect or invalid input with proper
+                            results (doesn't crash, doesn't silently corrupt data).</div>
+                    </div>
+                    <div class="rule-box" style="margin-top: 14px;"><b>User acceptance</b> — handles typical,
+                        realistic user behavior gracefully.</div>
+                    <div class="example-strip" style="margin-top: 16px;">Then, finally: <b>write down the test
+                        cases.</b> Thinking about them isn't enough — an unwritten test case can't be repeated,
+                        assigned, or tracked.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- WRITING GOOD TEST CASES -->
+        <section id="good-cases">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 04 — WRITING <em>GOOD</em> TEST CASES</div>
+                    <h2 class="sec-title">Seven habits of a strong test case</h2>
+                </div>
+
+                <div class="mnemonic">
+                    <div class="icon">🧠</div>
+                    <div>
+                        <div class="label">Memory hook</div>
+                        <div class="phrase">"Simple Users Repeat, Don't Assume — Cover, Identify, Technique."</div>
+                        <div class="decode"><b>S</b>imple &amp; transparent · <b>U</b>ser in mind · avoid
+                            <b>R</b>epetition · <b>D</b>on't assume (stick to spec) · <b>C</b>over 100% ·
+                            <b>I</b>dentifiable · use <b>T</b>echniques (like BVA)</div>
+                    </div>
+                </div>
+
+                <div class="grid5">
+                    <div class="type-card">
+                        <div class="icon">🔍</div>
+                        <h4>Simple &amp; transparent</h4>
+                        <p>Anyone should be able to read it and immediately know what it's checking.</p>
+                    </div>
+                    <div class="type-card">
+                        <div class="icon">🙋‍♀️</div>
+                        <h4>End user in mind</h4>
+                        <p>Write it the way a real user would interact with the system, not just how a developer
+                            would.</p>
+                    </div>
+                    <div class="type-card">
+                        <div class="icon">♻️</div>
+                        <h4>Avoid repetition</h4>
+                        <p>Don't write ten test cases that all test the same thing in slightly different words.</p>
+                    </div>
+                    <div class="type-card">
+                        <div class="icon">📌</div>
+                        <h4>Do not assume</h4>
+                        <p>Stick to the specification documents — don't fill gaps with guesses about intended
+                            behavior.</p>
+                    </div>
+                    <div class="type-card">
+                        <div class="icon">💯</div>
+                        <h4>Ensure 100% coverage</h4>
+                        <p>Every requirement should be traceable to at least one test case.</p>
+                    </div>
+                    <div class="type-card">
+                        <div class="icon">🏷️</div>
+                        <h4>Must be identifiable</h4>
+                        <p>Unique names/numbers so a failing test can be reported and tracked precisely.</p>
+                    </div>
+                </div>
+
+                <div class="qa-deep" style="margin-top: 26px; border-left-color: var(--accent-2);">
+                    <div class="qa-deep-head">
+                        <h3>Implement testing techniques</h3><span class="qa-tag">you can't test everything</span>
+                    </div>
+                    <p class="qa-def">It's not possible to check every possible condition in your software
+                        application. Testing techniques help you select a few test cases with the maximum
+                        possibility of finding a defect.</p>
+                    <div class="pattern-chip-row"><span class="pattern-chip">Boundary Value Analysis (BVA)</span></div>
+                    <div class="example-strip" style="margin-top: 14px;"><b>BVA:</b> testing of boundaries for a
+                        specified range of values — the edges are where off-by-one bugs live.</div>
+                    <div class="rule-box" style="margin-top: 14px;"><b>Repeatable and self-standing:</b> the test
+                        case should generate the same results every time, no matter who runs it.</div>
+                </div>
+
+                <div class="two-col" style="margin-top: 26px;">
+                    <div>
+                        <span class="subhead">What a draft must include</span>
+                        <div class="rule-box">
+                            The description of what requirement is being tested.<br><br>
+                            Inputs and outputs, or actions and expected results — <b>a test case must have an
+                            expected result.</b>
+                        </div>
+                    </div>
+                    <div>
+                        <span class="subhead">Verify the results are correct against 4 lenses</span>
+                        <div class="rule-box">
+                            ✓ Testing normal conditions<br>
+                            ✓ Testing unexpected conditions<br>
+                            ✓ Bad (illegal) input values<br>
+                            ✓ Boundary conditions
+                        </div>
+                    </div>
+                </div>
+
+                <div class="qa-deep" style="margin-top: 26px;">
+                    <div class="qa-deep-head">
+                        <h3>Three angles of coverage, in general</h3><span class="qa-tag">applies to any input</span>
+                    </div>
+                    <div class="grid5" style="grid-template-columns: repeat(3, 1fr);">
+                        <div class="type-card">
+                            <div class="icon">✅</div>
+                            <h4>Cover all valid input</h4>
+                            <p>Try multiple sets of values, not just one. Try permutations of values.</p>
+                        </div>
+                        <div class="type-card">
+                            <div class="icon">📏</div>
+                            <h4>Check boundary conditions</h4>
+                            <p>Check for off-by-one conditions specifically.</p>
+                        </div>
+                        <div class="type-card">
+                            <div class="icon">⛔</div>
+                            <h4>Check invalid input</h4>
+                            <p>Illegal sets of value, illegal input / impossible conditions, and totally bad input
+                                (text vs. numbers, etc.).</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TRIANGLE EXAMPLE -->
+        <section id="triangle">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 05 — WORKED EXAMPLE</div>
+                    <h2 class="sec-title">The triangle-classification problem</h2>
+                    <p class="sec-desc">The deck's running example for applying the three coverage angles above to a
+                        real function: classify a triangle given three side lengths.</p>
+                </div>
+
+                <div class="two-col">
+                    <div class="qa-deep" style="margin: 0;">
+                        <div class="qa-deep-head"><h3>Valid input</h3><span class="qa-tag">cover all 3 shapes</span></div>
+                        <p class="qa-def">All three possible conditions: <b>equilateral, isosceles, scalene.</b>
+                            Try multiple sets of values, and permutations of the same set.</p>
+                        <div class="example-strip"><b>Permutations to try:</b> <code>{3,4,5}</code>,
+                            <code>{4,3,5}</code>, <code>{5,4,3}</code> — same triangle, different argument order.</div>
+                    </div>
+                    <div class="qa-deep" style="margin: 0; border-left-color: var(--accent-2);">
+                        <div class="qa-deep-head"><h3>Boundary conditions</h3><span class="qa-tag">off-by-one</span></div>
+                        <p class="qa-def">Check the off-by-one edges of whatever range the values can take.</p>
+                        <div class="example-strip"><b>Values to try:</b> <code>0</code> and <code>MAX_INT</code> —
+                            the smallest and largest representable side lengths.</div>
+                    </div>
+                </div>
+
+                <div class="qa-deep" style="margin-top: 22px; border-left-color: var(--bad);">
+                    <div class="qa-deep-head"><h3>Invalid input</h3><span class="qa-tag">three distinct flavors</span></div>
+                    <div class="two-col">
+                        <div>
+                            <div class="rule-box"><b>Illegal sets of value</b><br>Wrong format: <code>not integer</code>.
+                                Negative numbers.</div>
+                        </div>
+                        <div>
+                            <div class="rule-box"><b>Illegal input — impossible conditions</b><br>
+                                <code>{2,3,8}</code>, <code>{2,3,5}</code> — these fail the triangle inequality
+                                (the definition of a triangle), so no actual triangle can have these sides.</div>
+                        </div>
+                    </div>
+                    <div class="rule-box" style="margin-top: 14px;"><b>Totally bad input</b> — text vs. numbers,
+                        etc. (e.g. passing the letter "x" where a side length is expected).</div>
+                </div>
+
+                <div class="qa-deep" style="margin-top: 22px;">
+                    <div class="qa-deep-head"><h3>How to actually run it</h3><span class="qa-tag">stdin / stdout</span></div>
+                    <p class="qa-def">Have the code read from <b>standard input</b> and print to <b>standard
+                        output</b>, so the whole test suite can run unattended and get diffed against expected
+                        output.</p>
+                    <pre class="code">java Triangle &lt; testcases.txt
+&nbsp;
+# or interactively:
+java Triangle
+2 3 3
+3 4 5
+&nbsp;
+# print output to a file:
+java Triangle &gt; results.txt
+&nbsp;
+# combine both:
+java Triangle &lt;testcases.txt &gt;results.txt</pre>
+                    <div class="rule-box" style="margin-top: 12px;">This assumes the code reads three numbers per
+                        line, or reads three numbers regardless of whether they're on one line or split across
+                        several — a detail worth pinning down before you write the test file.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- COMPARISON PITFALLS -->
+        <section id="comparisons">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 06 — COMPARISON PITFALLS</div>
+                    <h2 class="sec-title">Beware of problems with comparisons</h2>
+                    <p class="sec-desc">Two comparison bugs that are easy to write and easy to test for once you
+                        know to look.</p>
+                </div>
+
+                <div class="two-col">
+                    <div class="qa-deep" style="margin: 0;">
+                        <div class="qa-deep-head"><h3>Comparing floats</h3><span class="qa-tag">never do this</span></div>
+                        <pre class="code">float a, b;
+...
+if (a == b)   // NEVER</pre>
+                        <p class="qa-def" style="font-size: 0.9rem;">Is it <code>4.0000000</code>, or
+                            <code>3.9999999</code>, or <code>4.0000001</code>? What is your limit of accuracy? Exact
+                            float equality is almost never the right check.</p>
+                    </div>
+                    <div class="qa-deep" style="margin: 0; border-left-color: var(--accent-2);">
+                        <div class="qa-deep-head"><h3>Objects vs. references</h3><span class="qa-tag">OO languages</span></div>
+                        <pre class="code">String a = "Hello world!\n";
+String b = "Hello world!\n";
+if ( a == b )        // reference check
+vs.
+if ( a.equals(b) )   // content check</pre>
+                        <p class="qa-def" style="font-size: 0.9rem;">In object-oriented languages, make sure you
+                            know whether you're comparing the <b>contents</b> of an object or the <b>reference</b> to
+                            an object — they can silently give different answers.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- GOOD VS BAD EXAMPLE -->
+        <section id="examples">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 07 — GOOD VS. BAD, SIDE BY SIDE</div>
+                    <h2 class="sec-title">The same feature, tested two ways</h2>
+                    <p class="sec-desc">Both examples are testing search-and-replace case sensitivity. Only one of
+                        them could actually be repeated by a stranger.</p>
+                </div>
+
+                <div class="qa-deep">
+                    <div class="qa-deep-head"><h3>TC-47 — the good example</h3><span class="qa-tag">✓ data-specific</span></div>
+                    <div class="table-scroll">
+                    <table class="cheat-table">
+                        <tr><th>Name</th><td>TC-47: Verify that lowercase data entry results in lowercase insert</td></tr>
+                        <tr><th>Requirement</th><td>FR-4 (Case sensitivity in search-and-replace), bullet 2</td></tr>
+                        <tr><th>Preconditions</th><td>The test document TESTDOC.DOC is loaded (base state BS-12).</td></tr>
+                        <tr><th>Steps</th><td>1. Click "Search and Replace." 2. Click in "Search Term" field. 3.
+                            Enter <i>This is the Search Term</i>. 4. Click in "Replacement Text" field. 5. Enter
+                            <i>This IS THE Replacement TeRM</i>. 6. Verify "Case Sensitivity" checkbox is unchecked.
+                            7. Click OK.</td></tr>
+                        <tr><th>Expected results</th><td>1. Search-and-replace window is dismissed. 2. Verify that
+                            in line 38, <i>this is the search term</i> has been replaced by <i>this is the
+                            replacement term</i>. 3. Return to base state BS-12.</td></tr>
+                    </table>
+                    </div>
+                </div>
+
+                <div class="qa-deep" style="border-left-color: var(--bad);">
+                    <div class="qa-deep-head"><h3>The bad example</h3><span class="qa-tag">✗ vague, not repeatable</span></div>
+                    <div class="table-scroll">
+                    <table class="cheat-table">
+                        <tr><th>Steps</th><td>1. Bring up search-and-replace. 2. Enter <i>a lowercase word</i> from
+                            the document in the search term field. 3. Enter <i>a mixed-case word</i> in the
+                            replacement field. 4. Verify case sensitivity is not turned on and execute the
+                            search.</td></tr>
+                        <tr><th>Expected results</th><td>1. Verify that <i>the lowercase word</i> has been replaced
+                            with <i>the mixed-case term</i> in lowercase.</td></tr>
+                    </table>
+                    </div>
+                    <div class="rule-box" style="margin-top: 14px;">No name, no requirement traceability, no
+                        preconditions, and — critically — no concrete data. "A lowercase word" isn't a step two
+                        different testers can run identically.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TRUSTWORTHY TESTS -->
+        <section id="trustworthy">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 08 — TRUSTWORTHY TESTS</div>
+                    <h2 class="sec-title">Hygiene rules for the test code itself</h2>
+                </div>
+
+                <div class="mnemonic">
+                    <div class="icon">🎯</div>
+                    <div>
+                        <div class="label">Memory hook</div>
+                        <div class="phrase">"One thing, one assert, no logic."</div>
+                        <div class="decode">Three rules that keep a test trustworthy: test one behavior per test
+                            method, assert as little as possible per method, and keep control-flow logic out of the
+                            test itself.</div>
+                    </div>
+                </div>
+
+                <div class="grid5">
+                    <div class="type-card">
+                        <div class="icon">🧵</div>
+                        <h4>One thing at a time per test method</h4>
+                        <p>10 small tests are much better than 1 test that's 10x as large.</p>
+                    </div>
+                    <div class="type-card">
+                        <div class="icon">☝️</div>
+                        <h4>Few (likely 1) assert statements</h4>
+                        <p>If you assert many things, the first failure stops the test — you won't know whether a
+                            later assertion would also have failed.</p>
+                    </div>
+                    <div class="type-card">
+                        <div class="icon">🧮</div>
+                        <h4>Avoid logic</h4>
+                        <p>Minimize if/else, loops, switch. Avoid try/catch — if it's supposed to throw, use
+                            <code>expected=</code>; if not, let the test framework catch it.</p>
+                    </div>
+                </div>
+
+                <div class="rule-box" style="margin-top: 20px;"><b>Torture tests are okay</b> — but only in
+                    addition to simple tests, never as a replacement for them.</div>
+            </div>
+        </section>
+
+        <!-- TEST EXECUTION -->
+        <section id="execution">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 09 — TEST EXECUTION</div>
+                    <h2 class="sec-title">Running the plan, then running it again</h2>
+                </div>
+
+                <div class="qa-deep">
+                    <div class="qa-deep-head"><h3>When does it start?</h3><span class="qa-tag">the alpha build</span></div>
+                    <p class="qa-def">Software testers begin executing the test plan after the developers deliver
+                        the <b>alpha build</b> — a build they feel is feature-complete. The alpha should already be
+                        high quality: developers should feel it's ready for release and as good as they can get it.
+                    </p>
+                </div>
+
+                <div class="timeline">
+                    <div class="tl-item">
+                        <div class="tl-dot"></div>
+                        <div class="tl-year">Iteration 1 — New functionality</div>
+                        <h4>Focus on what's new</h4>
+                        <p>First pass targets the newly added or changed features.</p>
+                    </div>
+                    <div class="tl-item">
+                        <div class="tl-dot"></div>
+                        <div class="tl-year">Iteration 2+ — Regression testing</div>
+                        <h4>Make sure nothing else broke</h4>
+                        <p>Verify a change to one area of the software hasn't caused problems anywhere else.
+                            Regression testing usually means re-executing <b>all</b> test cases previously executed.
+                            There are typically at least two regression tests for any software project.</p>
+                        <div class="tl-key">Focus: did fixing X quietly break Y?</div>
+                    </div>
+                </div>
+
+                <div class="qa-deep" style="margin-top: 26px; border-left-color: var(--accent-2);">
+                    <div class="qa-deep-head"><h3>When is testing complete?</h3><span class="qa-tag">table 8-6</span></div>
+                    <p class="qa-def">Either <b>no defects are found</b>, or defects meet the acceptance criteria
+                        outlined in the test plan. A representative acceptance-criteria checklist:</p>
+                    <div class="table-scroll">
+                    <table class="cheat-table">
+                        <tr><td>1</td><td>Successful completion of all tasks documented in the test schedule.</td></tr>
+                        <tr><td>2</td><td>Quantity of medium- and low-level defects at an acceptable level, per the QA
+                            team lead.</td></tr>
+                        <tr><td>3</td><td>User interfaces for all features are functionally complete.</td></tr>
+                        <tr><td>4</td><td>Installation documentation and scripts are complete and tested.</td></tr>
+                        <tr><td>5</td><td>Development code reviews complete; all high-priority issues resolved.</td></tr>
+                        <tr><td>6</td><td>All outstanding issues pertinent to this release are resolved and closed.</td></tr>
+                        <tr><td>7</td><td>All code under source control, build process automated, components
+                            labeled with correct version numbers.</td></tr>
+                        <tr><td>8</td><td>All high-priority defects corrected and fully tested prior to release.</td></tr>
+                        <tr><td>9</td><td>Unfixed defects reviewed by stakeholders and confirmed acceptable.</td></tr>
+                        <tr><td>10</td><td>The end-user experience is at an agreed acceptable level.</td></tr>
+                        <tr><td>11</td><td>Operational procedures written for install, setup, error recovery,
+                            escalation.</td></tr>
+                        <tr><td>12</td><td>No adverse effects on already-deployed systems.</td></tr>
+                    </table>
+                    </div>
+                </div>
+
+                <div class="example-strip" style="margin-top: 22px;"><b>Automating test execution:</b> designing
+                    test cases and test suites is <i>creative</i> — a demanding intellectual activity requiring human
+                    judgment, like any design activity. But <i>executing</i> them should be automatic: design once,
+                    execute many times. Automation separates the creative human process from the mechanical process
+                    of execution.</div>
+            </div>
+        </section>
+
+        <!-- SCAFFOLDING -->
+        <section id="scaffolding">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 10 — SCAFFOLDING</div>
+                    <h2 class="sec-title">The code you build to support testing</h2>
+                    <p class="sec-desc">From test case specifications to concrete test cases: test design often
+                        yields specifications ("a large positive number," "a sorted sequence, length &gt; 2") rather
+                        than literal data. Generation turns those into concrete, executable test cases.</p>
+                </div>
+
+                <div class="qa-deep">
+                    <div class="qa-deep-head"><h3>Scaffolding, defined</h3><span class="qa-tag">like construction scaffolding</span></div>
+                    <p class="qa-def">Code produced to support development activities (especially testing) — not
+                        part of the "product" as seen by the end user, and may be temporary, just like scaffolding
+                        around a building under construction. Includes test harnesses, drivers, and stubs.</p>
+                    <div class="example-strip"><b>Real examples:</b> JUnit is a test harness. Eclipse bundles an
+                        IDE, scaffolding, and JUnit built in.</div>
+                </div>
+
+                <div class="grid5">
+                    <div class="type-card">
+                        <div class="icon">🎬</div>
+                        <h4>Test driver</h4>
+                        <p>A "main" program for running a test. May be produced before the "real" main program, and
+                            gives more control — it exists to drive the program under test through its test
+                            cases.</p>
+                    </div>
+                    <div class="type-card">
+                        <div class="icon">🧱</div>
+                        <h4>Test stub</h4>
+                        <p>A substitute for called functions/methods/objects that the code under test depends on,
+                            but that aren't being tested right now.</p>
+                    </div>
+                    <div class="type-card">
+                        <div class="icon">🖥️</div>
+                        <h4>Test harness</h4>
+                        <p>Substitutes for other parts of the deployed environment — e.g. a software simulation of a
+                            hardware device.</p>
+                    </div>
+                </div>
+
+                <div class="two-col" style="margin-top: 22px;">
+                    <div>
+                        <span class="subhead">Stubs — testing "Top" and "A" only</span>
+                        <svg viewBox="0 0 300 200" style="width:100%; height:auto;">
+                            <rect x="115" y="10" width="70" height="34" rx="4" fill="none" stroke="var(--ink)" stroke-width="1.5"/>
+                            <text x="150" y="31" text-anchor="middle" font-family="JetBrains Mono" font-size="11" fill="var(--ink)">Top</text>
+                            <rect x="20" y="90" width="70" height="34" rx="4" fill="none" stroke="var(--ink)" stroke-width="1.5"/>
+                            <text x="55" y="111" text-anchor="middle" font-family="JetBrains Mono" font-size="11" fill="var(--ink)">A</text>
+                            <rect x="115" y="90" width="70" height="34" rx="4" fill="none" stroke="var(--ink-dim)" stroke-width="1.3" stroke-dasharray="4 3"/>
+                            <text x="150" y="111" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="var(--ink-dim)">stub B</text>
+                            <rect x="210" y="90" width="70" height="34" rx="4" fill="none" stroke="var(--ink-dim)" stroke-width="1.3" stroke-dasharray="4 3"/>
+                            <text x="245" y="111" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="var(--ink-dim)">stub C</text>
+                            <rect x="10" y="160" width="70" height="34" rx="4" fill="none" stroke="var(--ink-dim)" stroke-width="1.3" stroke-dasharray="4 3"/>
+                            <text x="45" y="181" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="var(--ink-dim)">stub X</text>
+                            <rect x="95" y="160" width="70" height="34" rx="4" fill="none" stroke="var(--ink-dim)" stroke-width="1.3" stroke-dasharray="4 3"/>
+                            <text x="130" y="181" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="var(--ink-dim)">stub Y</text>
+                            <g stroke="var(--line)" stroke-width="1.3">
+                                <line x1="140" y1="44" x2="70" y2="90"/>
+                                <line x1="150" y1="44" x2="150" y2="90"/>
+                                <line x1="165" y1="44" x2="245" y2="90"/>
+                                <line x1="45" y1="124" x2="45" y2="160"/>
+                                <line x1="65" y1="124" x2="130" y2="160"/>
+                            </g>
+                        </svg>
+                        <p style="color:var(--ink-dim); font-size:0.86rem;">Real modules (solid) surrounded by stubs
+                            (dashed) that stand in for anything not currently under test.</p>
+                    </div>
+                    <div>
+                        <span class="subhead">Drivers — how general should scaffolding be?</span>
+                        <div class="rule-box">Build a driver + stubs for each individual test case…</div>
+                        <div class="rule-box" style="margin-top:10px;">…or factor out common driver/management code
+                            (e.g. <b>JUnit</b>)…</div>
+                        <div class="rule-box" style="margin-top:10px;">…or factor further to drive a large number of
+                            test cases from data (e.g. <b>DDSteps</b>)…</div>
+                        <div class="rule-box" style="margin-top:10px;">…or go further still and generate the data
+                            automatically from a more abstract model (e.g. a network traffic model).</div>
+                        <div class="example-strip" style="margin-top: 14px;">It's a question of <b>cost vs.
+                            reuse</b> — exactly like any other kind of software.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ORACLES -->
+        <section id="oracles">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 11 — ORACLES</div>
+                    <h2 class="sec-title">How do you know it passed or failed?</h2>
+                    <p class="sec-desc">No use running 10,000 test cases automatically if the results still have to
+                        be checked by hand.</p>
+                </div>
+
+                <div class="two-col">
+                    <div class="qa-deep" style="margin: 0;">
+                        <div class="qa-deep-head"><h3>Comparison-based oracle</h3><span class="qa-tag">predicted output</span></div>
+                        <p class="qa-def">Needs a predicted output for every input. The oracle compares actual
+                            output to predicted output and reports failure if they differ. Fine for a small number
+                            of hand-generated test cases — e.g. hand-written JUnit tests, where <code>assert</code>
+                            is the specific oracle coded by hand in each test case.</p>
+                        <svg viewBox="0 0 300 130" style="width:100%; height:auto; margin-top: 10px;">
+                            <rect x="10" y="20" width="80" height="50" rx="4" fill="none" stroke="var(--ink-dim)" stroke-dasharray="3 3"/>
+                            <text x="50" y="14" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="var(--ink-dim)">TEST CASE</text>
+                            <text x="50" y="42" text-anchor="middle" font-family="JetBrains Mono" font-size="8.5" fill="var(--ink)">Test Input</text>
+                            <text x="50" y="58" text-anchor="middle" font-family="JetBrains Mono" font-size="8.5" fill="var(--ink)">Expected Output</text>
+                            <rect x="130" y="10" width="90" height="70" rx="4" fill="none" stroke="var(--accent)"/>
+                            <text x="175" y="24" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="var(--accent)">COMPARE</text>
+                            <rect x="145" y="80" width="60" height="24" rx="4" fill="none" stroke="var(--ink-dim)"/>
+                            <text x="175" y="96" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="var(--ink-dim)">Program</text>
+                            <rect x="250" y="30" width="45" height="30" rx="4" fill="none" stroke="var(--good)" stroke-dasharray="3 3"/>
+                            <text x="272" y="49" text-anchor="middle" font-family="JetBrains Mono" font-size="7.5" fill="var(--good)">Pass/Fail</text>
+                            <g stroke="var(--line)"><line x1="90" y1="30" x2="130" y2="30"/><line x1="90" y1="55" x2="145" y2="80"/><line x1="175" y1="80" x2="175" y2="60"/><line x1="220" y1="45" x2="250" y2="45"/></g>
+                        </svg>
+                    </div>
+                    <div class="qa-deep" style="margin: 0; border-left-color: var(--accent-2);">
+                        <div class="qa-deep-head"><h3>Self-checking code</h3><span class="qa-tag">judge without predicting</span></div>
+                        <p class="qa-def">The oracle is written as self-checks inside the program itself — often
+                            possible to judge correctness without predicting the exact result. Usable with large,
+                            automatically generated test suites, but often only a <b>partial</b> check (e.g.
+                            structural invariants of data structures) — recognizes many or most failures, but not
+                            all.</p>
+                        <svg viewBox="0 0 300 100" style="width:100%; height:auto; margin-top: 10px;">
+                            <rect x="10" y="35" width="60" height="30" rx="4" fill="none" stroke="var(--ink-dim)" stroke-dasharray="3 3"/>
+                            <text x="40" y="54" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="var(--ink)">Test Input</text>
+                            <rect x="100" y="10" width="140" height="80" rx="4" fill="none" stroke="var(--accent-2)"/>
+                            <text x="170" y="24" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="var(--accent-2)">Program Under Test</text>
+                            <rect x="120" y="45" width="100" height="30" rx="4" fill="none" stroke="var(--ink)"/>
+                            <text x="170" y="64" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="var(--ink)">Self-checks</text>
+                            <rect x="255" y="35" width="40" height="30" rx="4" fill="none" stroke="var(--bad)" stroke-dasharray="3 3"/>
+                            <text x="275" y="50" text-anchor="middle" font-family="JetBrains Mono" font-size="6.8" fill="var(--bad)">Failure</text>
+                            <text x="275" y="60" text-anchor="middle" font-family="JetBrains Mono" font-size="6.8" fill="var(--bad)">Notif.</text>
+                            <g stroke="var(--line)"><line x1="70" y1="50" x2="100" y2="50"/><line x1="240" y1="50" x2="255" y2="50"/></g>
+                        </svg>
+                    </div>
+                </div>
+
+                <div class="rule-box" style="margin-top: 22px;">Range of specific to general applies here too — from
+                    a hand-coded assert per test case, up through a general comparison-based oracle with predicted
+                    output, up to self-checking code. None of these is "the only approach."</div>
+            </div>
+
+            <div class="wrap" style="margin-top: 34px;">
+                <div class="two-col">
+                    <div class="qa-deep" style="margin: 0;">
+                        <div class="qa-deep-head"><h3>Capture and replay</h3><span class="qa-tag">for GUI testing</span></div>
+                        <p class="qa-def">Sometimes there's no alternative to human input and observation — even
+                            after separating program functionality from the GUI, some GUI testing is still required.
+                            You can at least cut the <i>repetition</i> of human testing: <b>capture</b> a manually
+                            run test case, then <b>replay</b> it automatically.</p>
+                        <div class="rule-box">With a comparison-based test oracle, "behavior same as previously
+                            accepted behavior." Reusable only until a program change invalidates it — lifetime
+                            depends on the abstraction level of the input and output.</div>
+                    </div>
+                    <div>
+                        <div class="qa-deep" style="margin: 0 0 22px 0;">
+                            <div class="qa-deep-head"><h3>Defect tracking</h3><span class="qa-tag">workflow</span></div>
+                            <p class="qa-def">A defect tracking system records and tracks defects. It routes each
+                                defect between testers, developers, the project manager, and others, following a
+                                workflow designed to ensure the defect is verified and repaired.</p>
+                        </div>
+                        <div class="qa-deep" style="margin: 0; border-left-color: var(--accent-2);">
+                            <div class="qa-deep-head"><h3>Smoke tests</h3><span class="qa-tag">shallow but fast</span></div>
+                            <p class="qa-def">A subset of test cases typically representative of the overall test
+                                plan. Good for verifying proper deployment or other non-invasive changes, and for
+                                confirming a build is ready to send to test. <b>Not</b> a substitute for actual
+                                functional testing.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CHEAT SHEET -->
+        <section id="cheat">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 12 — CHEAT SHEET</div>
+                    <h2 class="sec-title">The whole chapter in two tables</h2>
+                </div>
+
+                <div class="table-scroll">
+                <table class="cheat-table">
+                    <tr><th>Concept</th><th>What it means</th><th>Anchor example</th></tr>
+                    <tr><td>Test case</td><td>Set of conditions/steps a tester runs to check one behavior against
+                        expected results</td><td>TC-47</td></tr>
+                    <tr><td>5 parts</td><td>Name · Requirement · Preconditions · Steps · Expected Results</td>
+                        <td>TC-47 table</td></tr>
+                    <tr><td>BVA</td><td>Testing the boundaries of a value range</td><td>0, MAX_INT triangle sides</td></tr>
+                    <tr><td>Scaffolding</td><td>Support code: drivers, stubs, harness — not shipped to users</td>
+                        <td>JUnit, Eclipse</td></tr>
+                    <tr><td>Test driver</td><td>"Main" program that drives code under test through test cases</td>
+                        <td>Custom main / JUnit runner</td></tr>
+                    <tr><td>Test stub</td><td>Stand-in for a called function/method/object not under test</td>
+                        <td>stub B, stub X</td></tr>
+                    <tr><td>Oracle</td><td>Decides pass/fail — comparison-based (predicted output) or self-checking
+                        (invariants)</td><td>assert vs. structural checks</td></tr>
+                    <tr><td>Capture &amp; replay</td><td>Record a manual GUI test once, replay automatically</td>
+                        <td>Comparison-based replay</td></tr>
+                    <tr><td>Regression testing</td><td>Re-run all previously-passed tests after a change</td>
+                        <td>≥ 2 rounds per project</td></tr>
+                    <tr><td>Smoke test</td><td>Representative subset confirming a build is deployable</td>
+                        <td>Not a full functional pass</td></tr>
+                </table>
+                </div>
+
+                <table class="cheat-table" style="margin-top: 22px;">
+                    <tr><th>Invalid-input flavor</th><th>Means</th><th>Triangle example</th></tr>
+                    <tr><td>Illegal sets of value</td><td>Wrong format or negative numbers</td><td>"not integer",
+                        <code>-3</code></td></tr>
+                    <tr><td>Illegal input</td><td>Impossible conditions</td><td><code>{2,3,8}</code>,
+                        <code>{2,3,5}</code></td></tr>
+                    <tr><td>Totally bad input</td><td>Wrong type entirely</td><td>Text vs. numbers</td></tr>
+                </table>
+            </div>
+        </section>
+
+        <!-- COMMON MISTAKES -->
+        <section id="mistakes">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 13 — COMMON MISTAKES</div>
+                    <h2 class="sec-title">Where students actually lose points</h2>
+                    <p class="sec-desc">Every one of these is a real mix-up the slide content sets up directly.</p>
+                </div>
+
+                <div class="mistake-box">
+                    <h4>1. "Testing improves the software"</h4>
+                    <div class="mistake-row"><span class="wrong">✗ WRONG</span><p>Running more tests makes the
+                        product better on its own.</p></div>
+                    <div class="mistake-row"><span class="right">✓ RIGHT</span><p><b>Testing only identifies
+                        problems.</b> It's part of a process (design → fix → retest) that improves the product — the
+                        testing step itself doesn't. Like the scale not reducing your weight.</p></div>
+                </div>
+
+                <div class="mistake-box">
+                    <h4>2. A test case without an expected result</h4>
+                    <div class="mistake-row"><span class="wrong">✗ WRONG</span><p>Writing steps and calling it done
+                        — "click OK, see what happens."</p></div>
+                    <div class="mistake-row"><span class="right">✓ RIGHT</span><p>A test case <b>must have an
+                        expected result</b>. Without one there's nothing to compare the actual outcome to, and no
+                        way to call it pass/fail.</p></div>
+                </div>
+
+                <div class="mistake-box">
+                    <h4>3. Vague, non-data-specific steps</h4>
+                    <div class="mistake-row"><span class="wrong">✗ WRONG</span><p>"Enter a lowercase word" or "a
+                        mixed-case word" (the bad TC example).</p></div>
+                    <div class="mistake-row"><span class="right">✓ RIGHT</span><p>Good test cases are
+                        <b>data-specific</b>: "Enter <i>This is the Search Term</i>." Two different testers running
+                        vague steps can get different results — that breaks repeatability.</p></div>
+                </div>
+
+                <div class="mistake-box">
+                    <h4>4. <code>float a == b</code></h4>
+                    <div class="mistake-row"><span class="wrong">✗ WRONG</span><p>Comparing two floating-point
+                        numbers with <code>==</code> and expecting a reliable true/false.</p></div>
+                    <div class="mistake-row"><span class="right">✓ RIGHT</span><p>Floats accumulate rounding error
+                        (<code>4.0000000</code> vs <code>3.9999999</code>) — compare within a tolerance / limit of
+                        accuracy instead.</p></div>
+                </div>
+
+                <div class="mistake-box">
+                    <h4>5. <code>a == b</code> on objects when you meant content equality</h4>
+                    <div class="mistake-row"><span class="wrong">✗ WRONG</span><p>Using <code>==</code> on two
+                        <code>String</code>/object variables to check if their contents match.</p></div>
+                    <div class="mistake-row"><span class="right">✓ RIGHT</span><p><code>==</code> checks the
+                        <b>reference</b>; <code>a.equals(b)</code> checks the <b>content</b>. Know which one your
+                        test actually needs.</p></div>
+                </div>
+
+                <div class="mistake-box">
+                    <h4>6. Confusing "illegal input" with "illegal set of values"</h4>
+                    <div class="mistake-row"><span class="wrong">✗ WRONG</span><p>Treating <code>{2,3,8}</code>
+                        (impossible triangle) the same as <code>-3</code> or "not integer" (illegal format).</p></div>
+                    <div class="mistake-row"><span class="right">✓ RIGHT</span><p>They're different flavors:
+                        <b>illegal set of values</b> = wrong format/negative; <b>illegal input</b> = values that are
+                        individually fine but together violate a domain rule (impossible condition, like the
+                        triangle inequality); <b>totally bad input</b> = wrong type entirely (text vs. numbers).</p></div>
+                </div>
+
+                <div class="mistake-box">
+                    <h4>7. Stuffing many asserts into one test method</h4>
+                    <div class="mistake-row"><span class="wrong">✗ WRONG</span><p>One giant test method with five
+                        asserts chained together.</p></div>
+                    <div class="mistake-row"><span class="right">✓ RIGHT</span><p>If the first assert fails, the
+                        rest never run — you won't know if a later assertion would also have failed. Prefer few
+                        (likely 1) asserts per test, and 10 small tests over 1 test that's 10x as large.</p></div>
+                </div>
+
+                <div class="mistake-box">
+                    <h4>8. Comparison-based oracle assumed to scale to any suite size</h4>
+                    <div class="mistake-row"><span class="wrong">✗ WRONG</span><p>Assuming you always need a
+                        predicted output for every input, even for 10,000 auto-generated test cases.</p></div>
+                    <div class="mistake-row"><span class="right">✓ RIGHT</span><p>Comparison-based oracles fit small,
+                        hand-written suites. Large, auto-generated suites usually need <b>self-checking code</b>
+                        instead — which is often only a partial check, but scales.</p></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- POP QUIZ -->
+        <section id="quiz">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 14 — POP QUIZ</div>
+                    <h2 class="sec-title">Quick self-check</h2>
+                    <p class="sec-desc">Click any question to reveal the answer.</p>
+                </div>
+
+                <div class="quiz-item">
+                    <div class="quiz-q" onclick="this.nextElementSibling.classList.toggle('show')">
+                        <p>1. Does testing improve software?</p>
+                        <span class="quiz-reveal">Reveal</span>
+                    </div>
+                    <div class="quiz-answer"><b>No.</b> Testing only helps identify problems you might choose to
+                        resolve. Making the product better is part of a larger process the developer performs after
+                        testing — testing itself doesn't fix anything (just like weighing yourself doesn't reduce
+                        your weight).</div>
+                </div>
+
+                <div class="quiz-item">
+                    <div class="quiz-q" onclick="this.nextElementSibling.classList.toggle('show')">
+                        <p>2. Name the five parts of a typical test case table.</p>
+                        <span class="quiz-reveal">Reveal</span>
+                    </div>
+                    <div class="quiz-answer"><b>Name/number, Requirement, Preconditions, Steps, Expected
+                        Results.</b> A test case is not valid without an expected result.</div>
+                </div>
+
+                <div class="quiz-item">
+                    <div class="quiz-q" onclick="this.nextElementSibling.classList.toggle('show')">
+                        <p>3. Short answer: for the triangle problem, give one example each of a boundary value and
+                            an "illegal input / impossible condition."</p>
+                        <span class="quiz-reveal">Reveal</span>
+                    </div>
+                    <div class="quiz-answer"><b>Boundary:</b> <code>0</code> or <code>MAX_INT</code> as a side
+                        length. <b>Illegal input / impossible condition:</b> <code>{2,3,8}</code> or
+                        <code>{2,3,5}</code> — these violate the triangle inequality, so no triangle can have those
+                        sides.</div>
+                </div>
+
+                <div class="quiz-item">
+                    <div class="quiz-q" onclick="this.nextElementSibling.classList.toggle('show')">
+                        <p>4. Multiple choice: which of these is the safest way to compare two floats for
+                            equality? (a) <code>a == b</code> (b) compare within a tolerance/accuracy limit (c)
+                            <code>a.equals(b)</code></p>
+                        <span class="quiz-reveal">Reveal</span>
+                    </div>
+                    <div class="quiz-answer"><b>(b).</b> Never use <code>==</code> on floats — rounding error means
+                        <code>4.0000000</code>, <code>3.9999999</code>, and <code>4.0000001</code> may all "mean"
+                        4.0. <code>.equals()</code> is for object content comparison, not float precision.</div>
+                </div>
+
+                <div class="quiz-item">
+                    <div class="quiz-q" onclick="this.nextElementSibling.classList.toggle('show')">
+                        <p>5. What's the difference between a test stub and a test driver?</p>
+                        <span class="quiz-reveal">Reveal</span>
+                    </div>
+                    <div class="quiz-answer"><b>A driver</b> is a "main" program that drives the code under test
+                        through its test cases (it calls in). <b>A stub</b> is a substitute for a called
+                        function/method/object that the code under test depends on (it's called by the code being
+                        tested).</div>
+                </div>
+
+                <div class="quiz-item">
+                    <div class="quiz-q" onclick="this.nextElementSibling.classList.toggle('show')">
+                        <p>6. True or False: a comparison-based oracle is the only way to automatically judge
+                            pass/fail.</p>
+                        <span class="quiz-reveal">Reveal</span>
+                    </div>
+                    <div class="quiz-answer"><b>False.</b> Self-checking code is another approach — the program
+                        judges its own correctness (e.g. structural invariants) without needing a predicted output,
+                        though it's often only a partial check.</div>
+                </div>
+
+                <div class="quiz-item">
+                    <div class="quiz-q" onclick="this.nextElementSibling.classList.toggle('show')">
+                        <p>7. Why is a smoke test not a substitute for functional testing?</p>
+                        <span class="quiz-reveal">Reveal</span>
+                    </div>
+                    <div class="quiz-answer">A smoke test is just a representative <b>subset</b> of test cases —
+                        good for confirming a build deploys cleanly or is ready to send to test, but it doesn't
+                        exercise the full breadth of functionality a real functional pass would.</div>
+                </div>
+
+                <div class="quiz-item">
+                    <div class="quiz-q" onclick="this.nextElementSibling.classList.toggle('show')">
+                        <p>8. Why should a test method have "few (likely 1)" assert statements?</p>
+                        <span class="quiz-reveal">Reveal</span>
+                    </div>
+                    <div class="quiz-answer">Because the first failing assert stops the method — later asserts never
+                        run, so you can't tell whether they would also have failed. Fewer asserts per test keeps
+                        failure diagnosis precise.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PRACTICE LAB -->
+        <section id="lab">
+            <div class="wrap">
+                <div class="sec-head">
+                    <div class="sec-num">§ 15 — PRACTICE LAB</div>
+                    <h2 class="sec-title">Apply the coverage angles</h2>
+                    <p class="sec-desc">Realistic scenario questions grounded in the deck's own triangle and
+                        search-and-replace examples.</p>
+                </div>
+                <div class="examroom">
+                    <div class="practice-q">
+                        <div class="req">1. You're testing a function that classifies a triangle from three integer
+                            side lengths. List one test input for each: a valid case, a boundary case, and an
+                            "impossible condition" case.</div>
+                        <div class="ans">→ Valid: {3,4,5} (scalene). Boundary: side length 0 or MAX_INT. Impossible
+                            condition: {2,3,8} (fails the triangle inequality).</div>
+                        <div class="why">Why: this directly mirrors the deck's three coverage angles — valid input,
+                            boundary conditions, and illegal input (impossible conditions) — applied to the same
+                            example used in lecture.</div>
+                    </div>
+                    <div class="practice-q">
+                        <div class="req">2. A teammate writes this test case: "Steps: enter some text into the
+                            username field. Expected results: it should probably work." What's wrong with it, and
+                            how would you fix it per the deck's rules for writing test cases?</div>
+                        <div class="ans">→ Not data-specific ("some text") and expected result is vague ("probably
+                            work"). Fix: specify the exact input (e.g. "enter <code>shoug_a</code>") and a precise,
+                            verifiable expected result (e.g. "account is created and the dashboard loads").</div>
+                        <div class="why">Why: test cases must be repeatable and data-specific, and every test case
+                            must have a concrete expected result — this is exactly the good-vs-bad TC-47 contrast
+                            from the slides.</div>
+                    </div>
+                    <div class="practice-q">
+                        <div class="req">3. You need to run 5,000 auto-generated test cases overnight with no human
+                            involvement in checking results. Which type of oracle fits better, and why?</div>
+                        <div class="ans">→ Self-checking code, generally — a comparison-based oracle needs a
+                            hand-predicted output for every one of the 5,000 inputs, which doesn't scale; a
+                            self-checking oracle can judge correctness (even if only partially) without predicted
+                            outputs.</div>
+                        <div class="why">Why: "no use running 10,000 test cases automatically if the results must be
+                            checked by hand" — comparison-based oracles fit small, hand-generated suites; large
+                            auto-generated suites lean on self-checks.</div>
+                    </div>
+                    <div class="practice-q">
+                        <div class="req">4. Explain, using the "weighing yourself" analogy, why "we ran 500 test
+                            cases and they all passed" does not by itself mean the software is high quality.</div>
+                        <div class="ans">→ Running tests only reveals whether problems exist within what was tested
+                            — it doesn't fix anything and doesn't guarantee untested behavior is correct. Quality
+                            comes from the full process (design, coding, fixing found defects), not from the act of
+                            testing itself.</div>
+                        <div class="why">Why: "testing does not make the product better, even though it's part of a
+                            process that does" — the deck's opening and most-tested conceptual point.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <div>SE401 · Software Quality Assurance and Testing · Chapter 08 — Test Cases</div>
+        <div class="toc-hint">Built as a study aid from lecture slides — always verify against your instructor's
+            exact wording before an exam.</div>
+        <div class="made">Made by <span>Shoug Alomran</span></div>
+    </footer>
+
+    <script>
+        const root = document.documentElement;
+        const sw = document.getElementById('switch');
+        const label = document.getElementById('theme-label');
+
+        function applyTheme(t) {
+            root.setAttribute('data-theme', t);
+            label.textContent = t.toUpperCase();
+        }
+
+        const prefersLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
+        applyTheme(prefersLight ? 'light' : 'dark');
+
+        sw.addEventListener('click', () => {
+            const current = root.getAttribute('data-theme');
+            applyTheme(current === 'dark' ? 'light' : 'dark');
+        });
+    </script>
+
+</body>
+
+</html>
