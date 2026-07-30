@@ -21,6 +21,10 @@ SITE_DESCRIPTION = (
     "documentation across software development, cybersecurity, and computer science."
 )
 SEO_IMAGE = f"{SITE_URL}logo.png"
+CLARITY_ASSETS = (
+    '    <link rel="stylesheet" href="/styles/clarity-consent.css">\n'
+    '    <script src="/javascripts/clarity-consent.js"></script>'
+)
 
 
 LOGO_SIZE = 'width="1022" height="385"'
@@ -292,6 +296,13 @@ def add_alternates(html: str, path: Path) -> str:
     return insert_before_head_close(html, "\n" + links.rstrip())
 
 
+def add_clarity(html: str) -> str:
+    """Install the consent-aware Clarity loader once on every HTML page."""
+    if "/javascripts/clarity-consent.js" in html:
+        return html
+    return insert_before_head_close(html, "\n" + CLARITY_ASSETS)
+
+
 def patch_accessibility(html: str) -> str:
     html = html.replace(
         '<div class="md-search" data-md-component="search" role="dialog">',
@@ -377,6 +388,7 @@ def main() -> int:
         html = optimize_images(html)
         html = ensure_meta(html, path)
         html = add_alternates(html, path)
+        html = add_clarity(html)
 
         if html != original:
             path.write_text(html, encoding="utf-8")
