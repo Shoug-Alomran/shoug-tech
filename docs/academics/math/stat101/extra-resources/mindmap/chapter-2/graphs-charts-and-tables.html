@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="en">
+<script>!function () { var t = localStorage.getItem("shoug-theme"); if (t) document.documentElement.setAttribute("data-theme", t); }();</script>
+
+<head>
+    <link rel="icon" type="image/png" href="/assets/favicon.png?v=2">
+    <link rel="shortcut icon" href="/assets/favicon.png?v=2">
+    <link rel="apple-touch-icon" href="/assets/favicon.png?v=2">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STAT101 Mindmap — Chapter 2: Graphs, Charts & Tables</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg: #0b1120;
+            --bg2: #111827;
+            --bg3: #1e293b;
+            --panel: #0f172a;
+            --border: #2d3a5e;
+            --border2: #374151;
+            --text: #e2e8f0;
+            --text2: #94a3b8;
+            --text3: #64748b;
+            --accent: #8b5cf6;
+            --accent2: #a78bfa;
+            --accent-dim: rgba(139, 92, 246, 0.12);
+            --line: rgba(167, 139, 250, 0.4);
+            --node-root-bg: #2e1a5e;
+            --node-root-b: #8b5cf6;
+            --node-root-t: #c4b5fd;
+            --node-l1-bg: #1a2f3a;
+            --node-l1-b: #22d3ee;
+            --node-l1-t: #67e8f9;
+            --node-l2-bg: #2a1f2f;
+            --node-l2-b: #f472b6;
+            --node-l2-t: #fbcfe8;
+            --node-l3-bg: #2a2520;
+            --node-l3-b: #facc15;
+            --node-l3-t: #fef08a;
+            --highlight-b: #facc15;
+            --shadow: 0 8px 28px rgba(0, 0, 0, 0.6);
+            --toolbar-h: 56px;
+            --footer-h: 36px;
+            --tr: 0.25s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+        }
+
+        [data-theme="light"] {
+            --bg: #fef9f0;
+            --bg2: #ffffff;
+            --bg3: #f1f5f9;
+            --panel: #ffffff;
+            --border: #e2e8f0;
+            --border2: #cbd5e1;
+            --text: #1e293b;
+            --text2: #334155;
+            --text3: #94a3b8;
+            --accent: #6d28d9;
+            --accent2: #7c3aed;
+            --accent-dim: rgba(109, 40, 217, 0.08);
+            --line: rgba(124, 58, 237, 0.35);
+            --node-root-bg: #ede9fe;
+            --node-root-b: #6d28d9;
+            --node-root-t: #4c1d95;
+            --node-l1-bg: #e0f2fe;
+            --node-l1-b: #0891b2;
+            --node-l1-t: #0e7490;
+            --node-l2-bg: #fce7f3;
+            --node-l2-b: #db2777;
+            --node-l2-t: #be185d;
+            --node-l3-bg: #fef3c7;
+            --node-l3-b: #d97706;
+            --node-l3-t: #b45309;
+            --highlight-b: #eab308;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            transition: background var(--tr), color var(--tr);
+        }
+
+        #toolbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: var(--toolbar-h);
+            background: var(--bg2);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 0 20px;
+            z-index: 100;
+            backdrop-filter: blur(2px);
+        }
+
+        .tb-logo {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--accent2);
+            white-space: nowrap;
+            letter-spacing: -0.2px;
+            background: var(--accent-dim);
+            padding: 5px 10px;
+            border-radius: 28px;
+        }
+
+        .tb-sep {
+            width: 1px;
+            height: 28px;
+            background: var(--border);
+            margin: 0 6px;
+        }
+
+        #search-wrap {
+            position: relative;
+            flex: 1;
+            max-width: 260px;
+        }
+
+        #search {
+            width: 100%;
+            height: 36px;
+            background: var(--bg3);
+            border: 1px solid var(--border);
+            border-radius: 32px;
+            color: var(--text);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 13px;
+            padding: 0 12px 0 34px;
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        #search:focus {
+            border-color: var(--accent);
+            background: var(--bg2);
+            box-shadow: 0 0 0 2px var(--accent-dim);
+        }
+
+        .si {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text3);
+            font-size: 14px;
+        }
+
+        #sr {
+            position: absolute;
+            top: 44px;
+            left: 0;
+            right: 0;
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            z-index: 200;
+            max-height: 260px;
+            overflow-y: auto;
+            display: none;
+        }
+
+        #sr.v {
+            display: block;
+        }
+
+        .sri {
+            padding: 10px 16px;
+            cursor: pointer;
+            font-size: 13px;
+            color: var(--text2);
+            border-bottom: 1px solid var(--border);
+            transition: all 0.15s;
+        }
+
+        .sri:last-child {
+            border-bottom: none;
+        }
+
+        .sri:hover {
+            background: var(--accent-dim);
+            color: var(--accent2);
+        }
+
+        .sri mark {
+            background: none;
+            color: var(--accent2);
+            font-weight: 500;
+        }
+
+        .tb-btn {
+            height: 34px;
+            padding: 0 12px;
+            background: var(--bg3);
+            border: 1px solid var(--border);
+            border-radius: 28px;
+            color: var(--text2);
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+
+        .tb-btn:hover {
+            background: var(--accent-dim);
+            color: var(--text);
+            border-color: var(--accent);
+        }
+
+        .spacer {
+            flex: 1;
+        }
+
+        #cw {
+            position: fixed;
+            top: var(--toolbar-h);
+            left: 0;
+            right: 0;
+            bottom: var(--footer-h);
+            overflow: hidden;
+            cursor: grab;
+        }
+
+        #cw.panning {
+            cursor: grabbing;
+        }
+
+        #canvas {
+            position: absolute;
+            transform-origin: 0 0;
+            will-change: transform;
+        }
+
+        svg#lines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            overflow: visible;
+        }
+
+        .node {
+            position: absolute;
+            border-radius: 20px;
+            padding: 10px 18px;
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.2s ease;
+            border: 1.5px solid;
+            min-width: 150px;
+            max-width: 210px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            word-break: break-word;
+            backdrop-filter: blur(2px);
+        }
+
+        .node:hover {
+            transform: translateY(-2px) scale(1.02);
+            filter: brightness(1.02);
+            border-color: var(--accent2);
+        }
+
+        .node.root {
+            background: var(--node-root-bg);
+            border-color: var(--node-root-b);
+            padding: 14px 24px;
+            min-width: 190px;
+            border-radius: 28px;
+        }
+
+        .node.root .nl {
+            color: var(--node-root-t);
+            font-size: 15px;
+            font-weight: 700;
+        }
+
+        .node.l1 {
+            background: var(--node-l1-bg);
+            border-color: var(--node-l1-b);
+        }
+
+        .node.l1 .nl {
+            color: var(--node-l1-t);
+            font-weight: 600;
+        }
+
+        .node.l2 {
+            background: var(--node-l2-bg);
+            border-color: var(--node-l2-b);
+        }
+
+        .node.l3 {
+            background: var(--node-l3-bg);
+            border-color: var(--node-l3-b);
+        }
+
+        .node.selected {
+            box-shadow: 0 0 0 3px var(--accent), var(--shadow);
+        }
+
+        .node.highlighted {
+            outline: 2px solid var(--highlight-b);
+            outline-offset: 2px;
+        }
+
+        .nl {
+            flex: 1;
+            line-height: 1.4;
+            font-size: 12.5px;
+            font-weight: 500;
+        }
+
+        .chev {
+            width: 16px;
+            height: 16px;
+            transition: transform 0.25s;
+            opacity: 0.7;
+        }
+
+        .chev.open {
+            transform: rotate(90deg);
+        }
+
+        .li {
+            width: 12px;
+            height: 12px;
+            opacity: 0.5;
+        }
+
+        .node.entering {
+            animation: nIn 0.35s cubic-bezier(0.34, 1.2, 0.64, 1) forwards;
+        }
+
+        @keyframes nIn {
+            from {
+                opacity: 0;
+                transform: scale(0.75) translateX(-12px);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1) translateX(0);
+            }
+        }
+
+        #panel {
+            position: fixed;
+            top: var(--toolbar-h);
+            right: 0;
+            bottom: var(--footer-h);
+            width: 380px;
+            background: var(--panel);
+            border-left: 1px solid var(--border);
+            transform: translateX(100%);
+            transition: transform 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            z-index: 90;
+            display: flex;
+            flex-direction: column;
+            box-shadow: -5px 0 28px rgba(0, 0, 0, 0.4);
+        }
+
+        #panel.open {
+            transform: translateX(0);
+        }
+
+        #ph {
+            padding: 20px 20px 12px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        #ptag {
+            display: inline-flex;
+            padding: 4px 12px;
+            border-radius: 40px;
+            font-size: 10px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            letter-spacing: 0.3px;
+        }
+
+        .tag-concept {
+            background: rgba(139, 92, 246, 0.2);
+            color: #a78bfa;
+        }
+
+        .tag-formula {
+            background: rgba(250, 204, 21, 0.2);
+            color: #fde68a;
+        }
+
+        .tag-example {
+            background: rgba(34, 211, 238, 0.2);
+            color: #67e8f9;
+        }
+
+        .tag-pitfall {
+            background: rgba(244, 63, 94, 0.2);
+            color: #fda4af;
+        }
+
+        #ptitle {
+            flex: 1;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text);
+            line-height: 1.3;
+        }
+
+        #pc {
+            width: 32px;
+            height: 32px;
+            border-radius: 40px;
+            background: var(--bg3);
+            border: none;
+            color: var(--text2);
+            cursor: pointer;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        #pc:hover {
+            background: var(--accent-dim);
+            color: var(--accent2);
+        }
+
+        #pb {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            line-height: 1.7;
+            font-size: 13.5px;
+            color: var(--text2);
+            scrollbar-width: thin;
+        }
+
+        #pb h4 {
+            color: var(--accent2);
+            font-size: 13px;
+            font-weight: 600;
+            margin: 16px 0 6px;
+            letter-spacing: 0.3px;
+        }
+
+        #pb p,
+        #pb li {
+            margin-bottom: 8px;
+        }
+
+        #pb strong {
+            color: var(--text);
+        }
+
+        #zc {
+            position: fixed;
+            bottom: calc(var(--footer-h) + 16px);
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            z-index: 80;
+        }
+
+        .zb {
+            width: 38px;
+            height: 38px;
+            border-radius: 28px;
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            color: var(--text2);
+            cursor: pointer;
+            font-size: 20px;
+            font-weight: 500;
+            transition: 0.2s;
+            box-shadow: var(--shadow);
+        }
+
+        .zb:hover {
+            background: var(--accent-dim);
+            color: var(--accent);
+        }
+
+        #zl {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 6px 8px;
+            font-size: 11px;
+            font-family: monospace;
+            text-align: center;
+        }
+
+        .pl {
+            fill: none;
+            stroke: var(--line);
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-dasharray: 3 2;
+        }
+
+        footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: var(--footer-h);
+            background: var(--bg2);
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            color: var(--text3);
+            font-family: monospace;
+            z-index: 100;
+        }
+    </style>
+
+    <meta name="description"
+        content="An interactive mindmap for STAT101 Chapter 2 — frequency distributions, histograms, bar/pie charts, stem-and-leaf diagrams, line charts, scatter diagrams, and Pareto charts, with formulas and worked examples.">
+    <link rel="canonical"
+        href="https://shoug-tech.com/academics/math/stat101/extra-resources/mindmap/chapter-2/graphs-charts-and-tables.html">
+    <meta property="og:title" content="STAT101 Mindmap — Chapter 2: Graphs, Charts &amp; Tables">
+    <meta property="og:description"
+        content="An interactive mindmap for STAT101 Chapter 2 — frequency distributions, histograms, bar/pie charts, stem-and-leaf diagrams, line charts, scatter diagrams, and Pareto charts, with formulas and worked examples.">
+    <meta property="og:url"
+        content="https://shoug-tech.com/academics/math/stat101/extra-resources/mindmap/chapter-2/graphs-charts-and-tables.html">
+    <meta property="og:type" content="article">
+    <meta property="og:image" content="https://shoug-tech.com/assets/og-banner.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="STAT101 Mindmap — Chapter 2: Graphs, Charts &amp; Tables">
+    <meta name="twitter:description"
+        content="An interactive mindmap for STAT101 Chapter 2 — frequency distributions, histograms, bar/pie charts, stem-and-leaf diagrams, line charts, scatter diagrams, and Pareto charts, with formulas and worked examples.">
+    <meta name="twitter:image" content="https://shoug-tech.com/assets/og-banner.png">
+    <script
+        type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","url":"https://shoug-tech.com/academics/math/stat101/extra-resources/mindmap/chapter-2/graphs-charts-and-tables.html","name":"STAT101 Mindmap — Chapter 2: Graphs, Charts &amp; Tables","description":"An interactive mindmap for STAT101 Chapter 2 — frequency distributions, histograms, bar/pie charts, stem-and-leaf diagrams, line charts, scatter diagrams, and Pareto charts, with formulas and worked examples.","isPartOf":{"@type":"WebSite","name":"Shoug's Digital Garden","url":"https://shoug-tech.com/"}}</script>
+
+    <link rel="alternate" hreflang="en"
+        href="https://shoug-tech.com/academics/math/stat101/extra-resources/mindmap/chapter-2/graphs-charts-and-tables.html">
+    <link rel="alternate" hreflang="ar"
+        href="https://shoug-tech.com/ar/academics/math/stat101/extra-resources/mindmap/chapter-2/graphs-charts-and-tables.html">
+    <link rel="alternate" hreflang="x-default"
+        href="https://shoug-tech.com/academics/math/stat101/extra-resources/mindmap/chapter-2/graphs-charts-and-tables.html">
+
+    <!-- Microsoft Clarity tracking code for https://shoug-tech.com/ -->
+    <script type="text/javascript">
+        (function (c, l, a, r, i, t, y) {
+            c[a] = c[a] || function () { (c[a].q = c[a].q || []).push(arguments) };
+            t = l.createElement(r); t.async = 1; t.src = "https://www.clarity.ms/tag/" + i;
+            y = l.getElementsByTagName(r)[0]; y.parentNode.insertBefore(t, y);
+        })(window, document, "clarity", "script", "xub0eqmvs9");
+    </script>
+</head>
+
+<body>
+
+
+    <div id="toolbar">
+        <span class="tb-logo">📊 Graphs, Charts & Tables</span>
+        <div class="tb-sep"></div>
+        <div id="search-wrap">
+            <span class="si">🔎</span>
+            <input id="search" type="text" placeholder="Search concepts…">
+            <div id="sr"></div>
+        </div>
+        <button class="tb-btn" id="eab">📂 Expand All</button>
+        <button class="tb-btn" id="cab">📁 Collapse</button>
+        <div class="spacer"></div>
+        <button class="tb-btn" id="rb">⟳ Reset View</button>
+        <button class="tb-btn" id="tb" title="Theme">🌙</button>
+    </div>
+
+    <div id="cw">
+        <div id="canvas"><svg id="lines"></svg></div>
+    </div>
+
+    <div id="panel">
+        <div id="ph">
+            <div style="flex:1">
+                <div id="ptag"></div>
+                <div id="ptitle"></div>
+            </div>
+            <button id="pc">✕</button>
+        </div>
+        <div id="pb"></div>
+    </div>
+    <div id="zc"><button class="zb" id="zi">+</button>
+        <div id="zl">100%</div><button class="zb" id="zo">−</button>
+    </div>
+    <footer>STAT101 · Chapter 2 — Graphs, Charts & Tables</footer>
+
+    <script>
+        // DATA based on STAT101 Chapter 2: Graphs, Charts, and Tables — Describing Your Data
+        const DATA = {
+            id: 'stat_root', label: 'Graphs, Charts & Tables', level: 0,
+            children: [
+                {
+                    id: 'sec1', label: '2.1 Frequency Distributions & Histograms', level: 1, tag: 'concept',
+                    children: [
+                        { id: 'freq_def', label: 'Frequency Distribution', level: 2, tag: 'concept', leaf: true, content: '<h4>Definition</h4><p>A <strong>frequency distribution</strong> is a summary of a data set that displays the number of observations (the <strong>frequency</strong>) in each of the distribution\'s distinct categories or classes.</p><p>In plain words: instead of staring at hundreds of raw numbers, you count how many times each value (or range of values) shows up and put that count in a table — an organized head-count.</p>' },
+                        { id: 'disc_cont', label: 'Discrete vs. Continuous Data', level: 2, tag: 'concept', leaf: true, content: '<h4>Two Data Types</h4><p><strong>Discrete data:</strong> takes on a countable number of possible values, usually whole numbers you can list out (e.g., number of late deliveries, touchdowns per game).</p><p><strong>Continuous data:</strong> possible values are uncountable and can be any value in an interval (e.g., weight, time, response time in seconds).</p><p><strong>Tip:</strong> if a variable has few distinct values (under ~10), build a simple frequency distribution with one row per value. If it\'s continuous or has many possible values (income, GPA), you must <em>group</em> the data into class intervals first.</p>' },
+                        { id: 'build_discrete', label: 'Building a Distribution (Discrete)', level: 2, tag: 'concept', leaf: true, content: '<h4>3 Steps for Few-Value Data</h4><p><strong>Step 1:</strong> List the possible values.<br><strong>Step 2:</strong> Count the number of occurrences at each value (the frequency).<br><strong>Step 3:</strong> Compute the relative frequency for each value.</p>' },
+                        { id: 'rel_freq', label: 'Relative Frequency Formula', level: 2, tag: 'formula', leaf: true, content: '<h4>Relative Frequency</h4><p>The proportion of total observations that fall in a given category or class.</p><p style="font-family:monospace;background:var(--bg3);padding:10px;border-radius:6px;">Relative Frequency of class i = f<sub>i</sub> / n</p><p>where f<sub>i</sub> = frequency of the i-th value/class, n = total number of observations.</p><p><strong>Self-check tip:</strong> all relative frequencies in a table must sum to 1.00 (100%). If they don\'t, you made an arithmetic mistake somewhere.</p>' },
+                        { id: 'ex_late_deliveries', label: 'Worked Example: Late Deliveries', level: 2, tag: 'example', leaf: true, content: '<h4>Number of Late Deliveries per Month (n = 30)</h4><p>Raw data: 2,1,3,2,1,0,3,5,2,1,2,3,0,3,2,2,2,4,4,2,0,1,2,3,3,2,1,3,2,0</p><table style="width:100%;border-collapse:collapse;font-size:12px;margin-top:8px;"><tr style="background:var(--bg3);"><th style="padding:4px;text-align:left;">Value</th><th style="padding:4px;">Freq.</th><th style="padding:4px;">Rel. Freq.</th></tr><tr><td style="padding:4px;">0</td><td style="padding:4px;">4</td><td style="padding:4px;">0.133</td></tr><tr><td style="padding:4px;">1</td><td style="padding:4px;">5</td><td style="padding:4px;">0.167</td></tr><tr><td style="padding:4px;">2</td><td style="padding:4px;">11</td><td style="padding:4px;">0.367</td></tr><tr><td style="padding:4px;">3</td><td style="padding:4px;">7</td><td style="padding:4px;">0.233</td></tr><tr><td style="padding:4px;">4</td><td style="padding:4px;">2</td><td style="padding:4px;">0.067</td></tr><tr><td style="padding:4px;">5</td><td style="padding:4px;">1</td><td style="padding:4px;">0.033</td></tr></table><p style="margin-top:8px;"><strong>Interpretation:</strong> during 13.3% of months there were 0 late deliveries; during 36.7% of months there were exactly 2.</p>' },
+                        { id: 'class_criteria', label: 'Criteria for Good Classes', level: 2, tag: 'concept', leaf: true, content: '<h4>Grouping Continuous Data</h4><p>When data is continuous (or has too many distinct values), group it into <strong>classes</strong> — non-overlapping intervals covering the whole range. Good classes are:</p><ul><li><strong>Mutually exclusive</strong> — no overlap; every value belongs to exactly one class.</li><li><strong>All-inclusive</strong> — every possible value falls into some class, no gaps.</li><li><strong>Equal width</strong> — classes span the same distance when possible.</li><li><strong>No empty classes</strong> — avoid zero-frequency classes; they hide the shape of the data.</li></ul>' },
+                        { id: 'four_steps', label: '4 Steps to Build a Grouped Distribution', level: 2, tag: 'concept', leaf: true, content: '<h4>The Process</h4><p><strong>Step 1:</strong> Determine the number of classes (k).<br><strong>Step 2:</strong> Establish the class width (W).<br><strong>Step 3:</strong> Determine the class boundaries (upper and lower limits) for each class.<br><strong>Step 4:</strong> Determine the class frequency for each class by counting the data points that fall in it.</p>' },
+                        { id: 'k_rule', label: 'Number of Classes: 2^k ≥ n Rule', level: 2, tag: 'formula', leaf: true, content: '<h4>Choosing k</h4><p><strong>Rule of thumb:</strong> use between 5 and 20 classes.</p><p style="font-family:monospace;background:var(--bg3);padding:10px;border-radius:6px;">Find smallest k such that 2<sup>k</sup> ≥ n</p><p><strong>Fast method:</strong> try powers of 2 until you clear n. For n = 72: 2<sup>6</sup>=64 (too small), 2<sup>7</sup>=128 ≥ 72 ✓, so k = 7. Memorize: 2<sup>5</sup>=32, 2<sup>6</sup>=64, 2<sup>7</sup>=128, 2<sup>8</sup>=256, 2<sup>9</sup>=512, 2<sup>10</sup>=1024.</p>' },
+                        { id: 'width_rule', label: 'Class Width Formula & Rounding-Up Rule', level: 2, tag: 'formula', leaf: true, content: '<h4>Class Width</h4><p style="font-family:monospace;background:var(--bg3);padding:10px;border-radius:6px;">W = (Largest Value − Smallest Value) / Number of Classes</p><p>Then <strong>round the result UP</strong> to a convenient ("nicer") number — never round down, and never round to the nearest value.</p>' },
+                        { id: 'width_pitfall', label: 'Pitfall: Rounding Class Width Down', level: 2, tag: 'pitfall', leaf: true, content: '<h4>Common Mistake</h4><p>Students very often round class width to the nearest whole number instead of always rounding <strong>up</strong>. If you round down (or even round normally), your classes will not cover the full range of the data and you\'ll lose the largest value(s).</p><p><strong>Rule:</strong> class width must always round up — no exceptions.</p>' },
+                        { id: 'ex_response_time', label: 'Worked Example: 72 Cities, Class Width', level: 2, tag: 'example', leaf: true, content: '<h4>Emergency Response Communication Links</h4><p>Data = time (seconds) to link emergency systems in 72 cities. Low = 35, High = 1,492.</p><p><strong>Step 1:</strong> n = 72; smallest k with 2<sup>k</sup>≥72 is k = 7 (2<sup>7</sup>=128).</p><p><strong>Step 2:</strong> W = (1,492 − 35) / 7 = 208.14 → round up to a nicer number, <strong>W = 225</strong>.</p><p><strong>Step 3 (classes of width 225 starting at 0):</strong> 0–225 (f=9), 225–450 (f=6), 450–675 (f=12), 675–900 (f=13), 900–1,125 (f=14), 1,125–1,350 (f=11), 1,350–1,575 (f=7). Total = 72.</p>' },
+                        { id: 'ex_exam_scores', label: 'Worked Example: Limits, Boundaries & Midpoints', level: 2, tag: 'example', leaf: true, content: '<h4>Exam Scores of 25 Students</h4><p>Data: 54,61,65,68,70,71,72,74,75,76,77,78,79,80,81,82,83,84,85,87,88,90,91,95,99</p><p>n=25 → k=5 (2<sup>5</sup>=32≥25). W = (99−54)/5 = 9.0 → round up, W = 10.</p><table style="width:100%;border-collapse:collapse;font-size:11px;margin-top:8px;"><tr style="background:var(--bg3);"><th style="padding:3px;">Limits</th><th style="padding:3px;">Boundaries</th><th style="padding:3px;">Mid.</th><th style="padding:3px;">f</th><th style="padding:3px;">Cum.f</th></tr><tr><td style="padding:3px;">50–59</td><td style="padding:3px;">49.5–59.5</td><td style="padding:3px;">54.5</td><td style="padding:3px;">1</td><td style="padding:3px;">1</td></tr><tr><td style="padding:3px;">60–69</td><td style="padding:3px;">59.5–69.5</td><td style="padding:3px;">64.5</td><td style="padding:3px;">3</td><td style="padding:3px;">4</td></tr><tr><td style="padding:3px;">70–79</td><td style="padding:3px;">69.5–79.5</td><td style="padding:3px;">74.5</td><td style="padding:3px;">10</td><td style="padding:3px;">14</td></tr><tr><td style="padding:3px;">80–89</td><td style="padding:3px;">79.5–89.5</td><td style="padding:3px;">84.5</td><td style="padding:3px;">8</td><td style="padding:3px;">22</td></tr><tr><td style="padding:3px;">90–99</td><td style="padding:3px;">89.5–99.5</td><td style="padding:3px;">94.5</td><td style="padding:3px;">3</td><td style="padding:3px;">25</td></tr></table><p style="margin-top:8px;"><strong>Note:</strong> class limits are the stated boundaries you write on the table; class boundaries are the true dividing midpoints between classes so they never overlap; the midpoint stands in for every observation in that class.</p>' },
+                        { id: 'cum_freq', label: 'Cumulative Frequency Formulas', level: 2, tag: 'formula', leaf: true, content: '<h4>Running Totals</h4><p><strong>Cumulative Frequency Distribution:</strong> number of observations with values less than or equal to the upper limit of each class.</p><p style="font-family:monospace;background:var(--bg3);padding:10px;border-radius:6px;">Cumulative Freq. of class i = frequency of class i + all frequencies of classes before it</p><p><strong>Cumulative Relative Frequency Distribution:</strong> the proportion (not count) of observations ≤ the upper limit of each class.</p><p style="font-family:monospace;background:var(--bg3);padding:10px;border-radius:6px;">Cumulative Rel. Freq. of class i = (Cumulative Freq. of class i) / n</p>' },
+                        { id: 'histogram', label: 'The Histogram', level: 2, tag: 'concept', leaf: true, content: '<h4>Definition</h4><p>A <strong>frequency histogram</strong> graphs a frequency distribution: the horizontal axis shows the class intervals, the vertical axis shows frequency. Bars are drawn as <strong>touching rectangles with no gaps</strong> — this visually distinguishes a histogram from a bar chart.</p><p>A histogram\'s shape reveals three things: <strong>center</strong> (where data concentrates), <strong>spread</strong> (how wide the range is), and <strong>shape</strong> (symmetric, skewed left/right, uniform, or bimodal).</p><p><strong>Too many classes:</strong> jagged, noisy picture with empty-class gaps. <strong>Too few classes:</strong> "blocky" distribution that obscures patterns.</p>' },
+                        { id: 'poly_ogive', label: 'Frequency Polygon & Ogive', level: 2, tag: 'concept', leaf: true, content: '<h4>Two Line-Based Alternatives</h4><p>A <strong>relative frequency histogram</strong> looks like a regular histogram but the y-axis shows proportions instead of counts — useful for comparing datasets of different sizes.</p><p>A <strong>frequency polygon</strong> plots a point at each class\'s midpoint at a height equal to its frequency, then connects the points with straight lines — a smooth outline version of a histogram.</p><p>An <strong>ogive</strong> is a graph of the cumulative relative frequency distribution: points are plotted at each class\'s upper boundary vs. cumulative relative frequency, connected with straight lines. It always rises left to right, ending at 1.0.</p><p><strong>Don\'t mix them up:</strong> histogram = frequency of each class; polygon = same frequencies as a line; ogive = running cumulative total. If a question asks "what % fall below X," you want the ogive.</p>' },
+                        { id: 'joint_freq', label: 'Joint Frequency Distributions', level: 2, tag: 'concept', leaf: true, content: '<h4>Two Variables at Once</h4><p>A <strong>joint frequency distribution</strong> summarizes data characterized by more than one variable simultaneously (e.g., payment method AND parking garage used).</p><p><strong>Steps:</strong> (1) obtain the data, (2) build rows/columns — one variable\'s categories as rows, the other\'s as columns, (3) count joint occurrences per cell, (4) calculate row and column totals (called <strong>marginal frequencies</strong>).</p><p><strong>Example (80 customers):</strong> Charge/Garage 1 = 40, Charge/Garage 2 = 20 (Charge total = 60); Cash/Garage 1 = 10, Cash/Garage 2 = 10 (Cash total = 20). Garage totals: 50 and 30.</p>' }
+                    ]
+                },
+                {
+                    id: 'sec2', label: '2.2 Bar, Pie & Stem-and-Leaf', level: 1, tag: 'concept',
+                    children: [
+                        { id: 'bar_chart', label: 'Bar Charts', level: 2, tag: 'concept', leaf: true, content: '<h4>Definition</h4><p>A <strong>bar chart</strong> is a graphical representation of categorical data where a rectangle (bar) is drawn over each category or class. Bar length/height represents frequency, percentage, or another measure.</p><p>Bars can be vertical or horizontal, and unlike a histogram, <strong>there are gaps between the bars</strong> because categories are not on a continuous numeric scale.</p><p><strong>Side-by-side (clustered) bar charts:</strong> use when comparing two groups across the same categories (e.g., male vs. female salaries by year) — one pair of bars per category, color-coded by group.</p>' },
+                        { id: 'pie_chart', label: 'Pie Charts', level: 2, tag: 'concept', leaf: true, content: '<h4>Definition</h4><p>A <strong>pie chart</strong> is a circular graph showing the parts of a total. The circle is divided into slices per category, with slice size (central angle) proportional to that category\'s share of the whole.</p><p><strong>Steps:</strong> (1) define categories, (2) compute each category\'s proportion of the total, (3) draw each slice sized at proportion × 360°.</p><p>Only valid when categories are genuine <strong>parts of one meaningful whole</strong> that sum to 100%.</p>' },
+                        { id: 'pie_pitfall', label: 'Pitfall: Misleading Pie Chart', level: 2, tag: 'pitfall', leaf: true, content: '<h4>Common Mistake: Wrong Data for a Pie Chart</h4><p>Classic exam trap: a table shows "Tax Dollars Per Student" at four universities ($7,143, $5,900, $6,320, $5,410). Building a pie chart from these is <strong>wrong</strong> — a pie chart implies slices are parts of one meaningful total (should sum to something whole, like 100% of a budget).</p><p>These four numbers are separate, independent averages that don\'t sum to any meaningful total. A <strong>bar chart</strong> should be used instead to compare them side by side.</p><p><strong>Master rule:</strong> use a pie chart only when categories are truly "parts of a whole"; otherwise use a bar chart.</p>' },
+                        { id: 'bar_vs_pie_vs_stem', label: 'Bar vs. Pie vs. Stem-and-Leaf: When to Use Each', level: 2, tag: 'concept', leaf: true, content: '<h4>Choosing Among the Three</h4><p><strong>Bar chart:</strong> comparing frequencies/magnitudes across independent categories (gaps between bars).</p><p><strong>Pie chart:</strong> showing how categories make up parts of one meaningful whole (must sum to 100%).</p><p><strong>Stem-and-leaf diagram:</strong> quantitative data, small/medium n, when you want to see the distribution\'s shape while keeping every exact original value visible. Use a histogram instead once the dataset is large — a stem-and-leaf becomes unreadable with hundreds of values.</p>' },
+                        { id: 'stem_leaf', label: 'Stem-and-Leaf Diagrams', level: 2, tag: 'concept', leaf: true, content: '<h4>Definition</h4><p>A <strong>stem-and-leaf diagram</strong> splits each data value into a <strong>leaf</strong> (rightmost/units digit) and a <strong>stem</strong> (all digits to the left). It works like a sideways histogram but keeps every original value visible.</p><p><strong>Steps:</strong> (1) sort data low to high, (2) split each value into stem and leaf (e.g., 113 → stem 11, leaf 3), (3) list all possible stems lowest to highest (even empty ones), (4) itemize leaves next to their matching stem, lowest to highest.</p><p><strong>Example:</strong> data 44,53,57,59,62,62,63,66,67,69,72,76,79,80,81,85,87,88 → row "6 | 2 2 3 6 7 9" represents 62,62,63,66,67,69. Rotate it 90° and it looks like a histogram, but every exact value is still readable.</p>' },
+                        { id: 'ex_bar_pie_demo', label: 'Worked Example: Sales & Survey Data', level: 2, tag: 'example', leaf: true, content: '<h4>Bar Chart: 2015 New Car Sales</h4><p>General Motors 3.08M, Ford 2.60M, Toyota 2.50M, Honda 1.59M, BMW 0.41M — compared with gapped vertical bars.</p><h4>Pie Chart: Golf Equipment Impact Survey</h4><p>Golf Ball 27%, Club Head Material 22%, Shaft Material 21%, Club Head Size 21%, Other 9% — these sum to 100%, so a pie chart is valid here (unlike the tuition example).</p>' }
+                    ]
+                },
+                {
+                    id: 'sec3', label: '2.3 Line, Scatter & Pareto Charts', level: 1, tag: 'concept',
+                    children: [
+                        { id: 'line_chart', label: 'Line Charts', level: 2, tag: 'concept', leaf: true, content: '<h4>Definition</h4><p>A <strong>line chart</strong> is a two-dimensional chart showing time on the horizontal axis and the variable of interest on the vertical axis. Used specifically for <strong>time-series data</strong> — values of one variable recorded at successive time points — to visualize trends.</p><p><strong>Steps:</strong> (1) identify the time-series variable and its value/time range, (2) construct the time axis and a scaled value axis, (3) plot points and connect them with straight lines.</p><p><strong>Tip:</strong> when comparing two variables with very different scales (e.g., sales in tens of thousands vs. profit in thousands), plot both on the same chart using two different vertical axes rather than squeezing both onto one — otherwise the smaller-scale variable looks flat near zero and its trend gets lost.</p>' },
+                        { id: 'scatter_def', label: 'Scatter Diagrams', level: 2, tag: 'concept', leaf: true, content: '<h4>Definition</h4><p>A <strong>scatter diagram</strong> is a two-dimensional graph of plotted points showing the relationship between <strong>two quantitative variables</strong>. Unlike a line chart, points are <strong>never connected</strong> — each point represents one paired observation.</p><p><strong>Dependent variable (y-axis):</strong> the variable whose values are thought to be caused/predicted by the other.<br><strong>Independent variable (x-axis):</strong> the variable thought to impact the dependent variable.</p><p><strong>Steps:</strong> (1) identify dependent/independent variables, (2) collect paired values, (3) build axes, (4) plot points without connecting them.</p>' },
+                        { id: 'scatter_relationships', label: 'Relationship Types', level: 2, tag: 'concept', leaf: true, content: '<h4>What Patterns Reveal</h4><p><strong>Positive linear:</strong> points trend upward in a roughly straight line, lower-left to upper-right — as x increases, y tends to increase.</p><p><strong>Negative linear:</strong> points trend downward in a straight line, upper-left to lower-right — as x increases, y tends to decrease.</p><p><strong>Curvilinear:</strong> points follow a curved (non-straight) pattern — a relationship exists but isn\'t linear.</p><p><strong>No relationship:</strong> points scattered with no visible pattern or a flat horizontal cloud — changes in x tell you nothing about y.</p>' },
+                        { id: 'ex_scatter', label: 'Worked Example: Volume vs. Cost', level: 2, tag: 'example', leaf: true, content: '<h4>Production Volume vs. Cost per Day</h4><p>Volume: 23, 33, 42, 55, 60 → Cost: $125, $160, $170, $195, $200.</p><p>As Volume per Day (independent, x-axis) increases, Cost per Day (dependent, y-axis) also increases in a fairly straight-line pattern — a <strong>positive linear relationship</strong>. Makes sense: producing more units costs more.</p>' },
+                        { id: 'scatter_pitfall', label: 'Pitfall: Mixing Up Dependent/Independent', level: 2, tag: 'pitfall', leaf: true, content: '<h4>Common Mistake</h4><p>Always ask "which variable is caused by or predicted from the other?" Cost depends on volume, not the reverse, so Cost is dependent (y-axis) and Volume is independent (x-axis).</p><p>Swapping the axes doesn\'t change the underlying math, but it will cost you marks if a question specifically asks which is which.</p>' },
+                        { id: 'pareto_def', label: 'Pareto Charts', level: 2, tag: 'concept', leaf: true, content: '<h4>Definition</h4><p>A <strong>Pareto chart</strong> is a special bar chart used to separate the "<strong>vital few</strong>" from the "<strong>trivial many</strong>." Bars represent categorical values and are always organized from <strong>highest to lowest</strong> (left to right), making it immediately obvious which few categories account for most of the problem.</p><p>A Pareto chart <em>is</em> a bar chart — the only difference is the mandatory descending sort order by frequency/magnitude.</p>' },
+                        { id: 'ex_pareto', label: 'Worked Example: Machine Downtime', level: 2, tag: 'example', leaf: true, content: '<h4>Downtime by Cause (sorted descending)</h4><p>Waiting on Material 400 min, Maintenance 280 min, Operator Error 160 min, Broken Belt 135 min, Electric Issue 90 min, Other 40 min. Total = 1,105 minutes.</p><p><strong>Reading it:</strong> "Waiting on Material" and "Maintenance" together account for 680 of 1,105 minutes (~61.5%) — the "vital few" causes a manager should tackle first, rather than spreading effort evenly across all six categories.</p>' },
+                        { id: 'chart_decision', label: 'Chart-Selection Decision Guide', level: 2, tag: 'concept', leaf: true, content: '<h4>Choosing the Right Chart/Table</h4><ul><li><strong>Frequency Distribution / Histogram:</strong> quantitative data — shape, center, spread of one numeric variable.</li><li><strong>Ogive:</strong> quantitative, cumulative — "what % of values are below X."</li><li><strong>Bar Chart:</strong> qualitative — comparing frequencies across distinct categories.</li><li><strong>Pareto Chart:</strong> qualitative — identifying the few categories responsible for most of a total.</li><li><strong>Pie Chart:</strong> qualitative — categories as parts of one meaningful whole (sums to 100%).</li><li><strong>Stem-and-Leaf:</strong> quantitative, small/medium n — shape while preserving exact values.</li><li><strong>Line Chart:</strong> quantitative, time-based — trend of one variable over time.</li><li><strong>Scatter Diagram:</strong> two quantitative variables — relationship (or lack of one) between them.</li></ul>' },
+                        { id: 'histogram_bar_pitfall', label: 'Pitfall: Histogram vs. Bar Chart Gaps', level: 2, tag: 'pitfall', leaf: true, content: '<h4>The #1 Chart-Selection Mistake</h4><p>Using a pie chart or bar chart interchangeably without checking whether the data is truly "parts of a whole" (pie) vs. "independent category comparisons" (bar) is the single most common conceptual error in this chapter.</p><p>Also remember: <strong>histograms have no gaps</strong> between bars (continuous data), while <strong>bar charts do have gaps</strong> (categorical data) — a favorite true/false exam question.</p>' }
+                    ]
+                }
+            ]
+        };
+
+        let nodes = {}, expanded = new Set(['stat_root']);
+        let selectedId = null;
+        let tf = { x: 70, y: 80, scale: 0.85 }, isPanning = false, panStart = {};
+        const cw = document.getElementById('cw'), canvas = document.getElementById('canvas'), linesEl = document.getElementById('lines');
+        const NW = 185, NH = 58, HG = 270, VG = 76;
+
+        function flatten(n, d = 0) { nodes[n.id] = { ...n, depth: d }; if (n.children) n.children.forEach(c => flatten(c, d + 1)); }
+        flatten(DATA);
+
+        function countH(n) {
+            if (!n.children || !expanded.has(n.id)) return 1;
+            let total = 0;
+            n.children.forEach(c => total += countH(nodes[c.id] || c));
+            return Math.max(total, 1);
+        }
+
+        function layout() {
+            let pos = {};
+            function assign(n, x, yOff) {
+                pos[n.id] = { x, yOff, y: 0 };
+                if (n.children && expanded.has(n.id)) {
+                    let sy = yOff;
+                    n.children.forEach(c => {
+                        let cn = nodes[c.id] || c;
+                        let ch = countH(cn);
+                        assign(cn, x + HG, sy);
+                        sy += ch;
+                    });
+                }
+            }
+            assign(DATA, 0, 0);
+            function computeY(n) {
+                if (!n.children || !expanded.has(n.id)) { pos[n.id].y = pos[n.id].yOff * VG; return; }
+                n.children.forEach(c => computeY(nodes[c.id] || c));
+                let childs = n.children.map(c => nodes[c.id] || c);
+                let topY = pos[childs[0].id].y, botY = pos[childs[childs.length - 1].id].y;
+                pos[n.id].y = (topY + botY) / 2;
+            }
+            computeY(DATA);
+            return pos;
+        }
+
+        function render() {
+            let pos = layout();
+            let existing = {};
+            canvas.querySelectorAll('.node').forEach(el => { existing[el.dataset.id] = el; });
+            let vis = new Set();
+            function collect(n) { vis.add(n.id); if (n.children && expanded.has(n.id)) n.children.forEach(c => collect(nodes[c.id] || c)); }
+            collect(DATA);
+            Object.keys(existing).forEach(id => { if (!vis.has(id)) existing[id].remove(); });
+            vis.forEach(id => {
+                let nd = nodes[id], p = pos[id];
+                if (!p) return;
+                let el = existing[id];
+                let isNew = !el;
+                if (isNew) { el = document.createElement('div'); el.className = 'node'; el.dataset.id = id; canvas.appendChild(el); }
+                let lvlClass = id === 'stat_root' ? 'root' : (nd.level === 1 ? 'l1' : (nd.level === 2 ? 'l2' : 'l3'));
+                el.className = `node ${lvlClass} ${selectedId === id ? 'selected' : ''}`;
+                el.style.left = p.x + 'px';
+                el.style.top = (p.y - NH / 2) + 'px';
+                el.style.width = NW + 'px';
+                el.style.minHeight = NH + 'px';
+                let hasChildren = nd.children && nd.children.length > 0 && !nd.leaf;
+                let icon = hasChildren ? `<svg class="chev ${expanded.has(id) ? 'open' : ''}" viewBox="0 0 16 16" fill="none" stroke="currentColor"><path d="M6 4l4 4-4 4" stroke-width="2"/></svg>` : (nd.leaf ? `<svg class="li" viewBox="0 0 16 16" fill="none" stroke="currentColor"><circle cx="8" cy="8" r="4"/></svg>` : '');
+                el.innerHTML = `<span class="nl">${nd.label.replace(/\n/g, '<br>')}</span>${icon}`;
+                if (isNew) el.classList.add('entering');
+                el.onclick = (e) => { e.stopPropagation(); onClick(id); };
+            });
+            drawLines(pos, vis);
+        }
+
+        function drawLines(pos, vis) {
+            let paths = [];
+            vis.forEach(id => {
+                let nd = nodes[id];
+                if (!nd.children || !expanded.has(id)) return;
+                nd.children.forEach(c => {
+                    let cid = (nodes[c.id] || c).id;
+                    if (!vis.has(cid)) return;
+                    let p1 = pos[id], p2 = pos[cid];
+                    if (!p1 || !p2) return;
+                    let x1 = p1.x + NW, y1 = p1.y;
+                    let x2 = p2.x, y2 = p2.y;
+                    let mx = x1 + (x2 - x1) * 0.5;
+                    paths.push(`<path class="pl" d="M${x1},${y1} C${mx},${y1} ${mx},${y2} ${x2},${y2}"/>`);
+                });
+            });
+            linesEl.innerHTML = paths.join('');
+        }
+
+        function onClick(id) {
+            let nd = nodes[id];
+            if (nd.leaf || (nd.children && nd.children.length === 0)) { selectedId = id; openPanel(id); render(); return; }
+            if (nd.children && nd.children.length) {
+                expanded.has(id) ? expanded.delete(id) : expanded.add(id);
+                render();
+            }
+        }
+
+        function openPanel(id) {
+            let nd = nodes[id];
+            document.getElementById('ptitle').innerHTML = nd.label.replace(/\n/g, ' ');
+            let tagDiv = document.getElementById('ptag');
+            let tagMap = { concept: 'CONCEPT', formula: 'FORMULA', example: 'EXAMPLE', pitfall: 'PITFALL' };
+            let cls = tagMap[nd.tag] || 'CONCEPT';
+            tagDiv.textContent = cls;
+            tagDiv.className = `tag-${(nd.tag === 'concept' ? 'concept' : (nd.tag === 'formula' ? 'formula' : (nd.tag === 'example' ? 'example' : 'pitfall')))}`;
+            tagDiv.style.display = 'inline-flex';
+            document.getElementById('pb').innerHTML = nd.content || '<p>Core concept from STAT101 Chapter 2.</p>';
+            document.getElementById('panel').classList.add('open');
+        }
+
+        document.getElementById('pc').onclick = () => { document.getElementById('panel').classList.remove('open'); selectedId = null; render(); };
+        cw.addEventListener('mousedown', e => { if (e.target.closest('.node') || e.target.closest('#panel')) return; isPanning = true; cw.classList.add('panning'); panStart = { x: e.clientX - tf.x, y: e.clientY - tf.y }; });
+        window.addEventListener('mousemove', e => { if (!isPanning) return; tf.x = e.clientX - panStart.x; tf.y = e.clientY - panStart.y; applyTf(); });
+        window.addEventListener('mouseup', () => { isPanning = false; cw.classList.remove('panning'); });
+        cw.addEventListener('wheel', e => { e.preventDefault(); let delta = -e.deltaY * 0.001; let ns = Math.min(2.2, Math.max(0.3, tf.scale + delta)); let rect = cw.getBoundingClientRect(); let mx = e.clientX - rect.left, my = e.clientY - rect.top; tf.x = mx - (mx - tf.x) * (ns / tf.scale); tf.y = my - (my - tf.y) * (ns / tf.scale); tf.scale = ns; applyTf(); }, { passive: false });
+        function applyTf() {
+            canvas.style.transform = `translate(${tf.x}px, ${tf.y}px) scale(${tf.scale})`;
+            document.getElementById('zl').innerText = Math.round(tf.scale * 100) + '%';
+        }
+
+        function zoom(delta) {
+            tf.scale = Math.min(2.2, Math.max(0.3, tf.scale + delta));
+            applyTf();
+        }
+
+        function resetView() {
+            tf = { x: 70, y: 80, scale: 0.85 };
+            applyTf();
+        }
+
+        function collectIds(node, ids = []) {
+            ids.push(node.id);
+            if (node.children) node.children.forEach(child => collectIds(child, ids));
+            return ids;
+        }
+
+        function expandAll() {
+            collectIds(DATA).forEach(id => expanded.add(id));
+            render();
+        }
+
+        function collapseAll() {
+            expanded.clear();
+            expanded.add('stat_root');
+            render();
+        }
+
+        document.getElementById('zi').onclick = () => zoom(0.12);
+        document.getElementById('zo').onclick = () => zoom(-0.12);
+        document.getElementById('rb').onclick = resetView;
+        document.getElementById('eab').onclick = expandAll;
+        document.getElementById('cab').onclick = collapseAll;
+        document.getElementById('tb').onclick = () => {
+            const body = document.body;
+            const next = body.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+            body.setAttribute('data-theme', next);
+            document.getElementById('tb').textContent = next === 'light' ? '☀️' : '🌙';
+        };
+
+        const searchInput = document.getElementById('search');
+        const searchResults = document.getElementById('sr');
+
+        function flatNodes(node, path = [], out = []) {
+            out.push({ node, path: [...path, node.label] });
+            if (node.children) node.children.forEach(child => flatNodes(child, [...path, node.label], out));
+            return out;
+        }
+
+        function selectNode(id) {
+            function findPath(node, target, path = []) {
+                if (node.id === target) return [...path, node.id];
+                if (!node.children) return null;
+                for (const child of node.children) {
+                    const found = findPath(child, target, [...path, node.id]);
+                    if (found) return found;
+                }
+                return null;
+            }
+
+            const path = findPath(DATA, id);
+            if (path) path.forEach(pid => expanded.add(pid));
+            selectedId = id;
+            render();
+            setTimeout(() => {
+                const el = canvas.querySelector(`[data-id="${id}"]`);
+                if (!el) return;
+                const r = el.getBoundingClientRect();
+                const wr = cw.getBoundingClientRect();
+                tf.x += (wr.width / 2) - (r.left + r.width / 2 - wr.left);
+                tf.y += (wr.height / 2) - (r.top + r.height / 2 - wr.top);
+                applyTf();
+                if (nodes[id] && nodes[id].leaf) openPanel(id);
+            }, 100);
+        }
+
+        searchInput.addEventListener('input', () => {
+            const q = searchInput.value.trim().toLowerCase();
+            if (!q) {
+                searchResults.style.display = 'none';
+                return;
+            }
+
+            const matches = flatNodes(DATA).filter(({ node }) => node.label.toLowerCase().includes(q)).slice(0, 10);
+            searchResults.innerHTML = matches.map(({ node, path }) => {
+                const trail = path.slice(0, -1).join(' › ');
+                return `<div class="sr-item" data-id="${node.id}"><div>${node.label}</div>${trail ? `<div class="sr-path">${trail}</div>` : ''}</div>`;
+            }).join('');
+            searchResults.style.display = matches.length ? 'block' : 'none';
+            searchResults.querySelectorAll('.sr-item').forEach(item => {
+                item.onclick = () => {
+                    searchResults.style.display = 'none';
+                    searchInput.value = '';
+                    selectNode(item.dataset.id);
+                };
+            });
+        });
+
+        document.addEventListener('click', event => {
+            if (!event.target.closest('#search-wrap')) searchResults.style.display = 'none';
+        });
+
+        render();
+        applyTf();
+    </script>
+
+    <script src="/javascripts/mindmap-controls.js"></script>
+</body>
+
+</html>

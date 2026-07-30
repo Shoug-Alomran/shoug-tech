@@ -5,9 +5,10 @@
     var sectionList = document.querySelector('.academic-sidebar .section-children');
     if (!sectionList) return;
 
-    var courseMatch = window.location.pathname.match(/^\/academics\/other-courses\/([^/]+)\//i);
+    var courseMatch = window.location.pathname.match(/^\/academics\/(?:other-courses|math)\/([^/]+)\//i);
     if (!courseMatch) return;
-    var base = '/academics/other-courses/' + courseMatch[1].toLowerCase() + '/';
+    var isMathCourse = window.location.pathname.indexOf('/academics/math/') === 0;
+    var base = '/academics/' + (isMathCourse ? 'math' : 'other-courses') + '/' + courseMatch[1].toLowerCase() + '/';
     var order = [
       base,
       base + 'slide-breakdowns/',

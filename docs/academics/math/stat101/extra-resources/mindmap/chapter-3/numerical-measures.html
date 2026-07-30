@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="en">
+<script>!function () { var t = localStorage.getItem("shoug-theme"); if (t) document.documentElement.setAttribute("data-theme", t); }();</script>
+
+<head>
+    <link rel="icon" type="image/png" href="/assets/favicon.png?v=2">
+    <link rel="shortcut icon" href="/assets/favicon.png?v=2">
+    <link rel="apple-touch-icon" href="/assets/favicon.png?v=2">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STAT101 Mindmap — Chapter 3: Numerical Measures</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg: #0b1120;
+            --bg2: #111827;
+            --bg3: #1e293b;
+            --panel: #0f172a;
+            --border: #2d3a5e;
+            --border2: #374151;
+            --text: #e2e8f0;
+            --text2: #94a3b8;
+            --text3: #64748b;
+            --accent: #8b5cf6;
+            --accent2: #a78bfa;
+            --accent-dim: rgba(139, 92, 246, 0.12);
+            --line: rgba(167, 139, 250, 0.4);
+            --node-root-bg: #2e1a5e;
+            --node-root-b: #8b5cf6;
+            --node-root-t: #c4b5fd;
+            --node-l1-bg: #1a2f3a;
+            --node-l1-b: #22d3ee;
+            --node-l1-t: #67e8f9;
+            --node-l2-bg: #2a1f2f;
+            --node-l2-b: #f472b6;
+            --node-l2-t: #fbcfe8;
+            --node-l3-bg: #2a2520;
+            --node-l3-b: #facc15;
+            --node-l3-t: #fef08a;
+            --highlight-b: #facc15;
+            --shadow: 0 8px 28px rgba(0, 0, 0, 0.6);
+            --toolbar-h: 56px;
+            --footer-h: 36px;
+            --tr: 0.25s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+        }
+
+        [data-theme="light"] {
+            --bg: #fef9f0;
+            --bg2: #ffffff;
+            --bg3: #f1f5f9;
+            --panel: #ffffff;
+            --border: #e2e8f0;
+            --border2: #cbd5e1;
+            --text: #1e293b;
+            --text2: #334155;
+            --text3: #94a3b8;
+            --accent: #6d28d9;
+            --accent2: #7c3aed;
+            --accent-dim: rgba(109, 40, 217, 0.08);
+            --line: rgba(124, 58, 237, 0.35);
+            --node-root-bg: #ede9fe;
+            --node-root-b: #6d28d9;
+            --node-root-t: #4c1d95;
+            --node-l1-bg: #e0f2fe;
+            --node-l1-b: #0891b2;
+            --node-l1-t: #0e7490;
+            --node-l2-bg: #fce7f3;
+            --node-l2-b: #db2777;
+            --node-l2-t: #be185d;
+            --node-l3-bg: #fef3c7;
+            --node-l3-b: #d97706;
+            --node-l3-t: #b45309;
+            --highlight-b: #eab308;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            transition: background var(--tr), color var(--tr);
+        }
+
+        #toolbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: var(--toolbar-h);
+            background: var(--bg2);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 0 20px;
+            z-index: 100;
+            backdrop-filter: blur(2px);
+        }
+
+        .tb-logo {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--accent2);
+            white-space: nowrap;
+            letter-spacing: -0.2px;
+            background: var(--accent-dim);
+            padding: 5px 10px;
+            border-radius: 28px;
+        }
+
+        .tb-sep {
+            width: 1px;
+            height: 28px;
+            background: var(--border);
+            margin: 0 6px;
+        }
+
+        #search-wrap {
+            position: relative;
+            flex: 1;
+            max-width: 260px;
+        }
+
+        #search {
+            width: 100%;
+            height: 36px;
+            background: var(--bg3);
+            border: 1px solid var(--border);
+            border-radius: 32px;
+            color: var(--text);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 13px;
+            padding: 0 12px 0 34px;
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        #search:focus {
+            border-color: var(--accent);
+            background: var(--bg2);
+            box-shadow: 0 0 0 2px var(--accent-dim);
+        }
+
+        .si {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text3);
+            font-size: 14px;
+        }
+
+        #sr {
+            position: absolute;
+            top: 44px;
+            left: 0;
+            right: 0;
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            z-index: 200;
+            max-height: 260px;
+            overflow-y: auto;
+            display: none;
+        }
+
+        #sr.v {
+            display: block;
+        }
+
+        .sri {
+            padding: 10px 16px;
+            cursor: pointer;
+            font-size: 13px;
+            color: var(--text2);
+            border-bottom: 1px solid var(--border);
+            transition: all 0.15s;
+        }
+
+        .sri:last-child {
+            border-bottom: none;
+        }
+
+        .sri:hover {
+            background: var(--accent-dim);
+            color: var(--accent2);
+        }
+
+        .sri mark {
+            background: none;
+            color: var(--accent2);
+            font-weight: 500;
+        }
+
+        .tb-btn {
+            height: 34px;
+            padding: 0 12px;
+            background: var(--bg3);
+            border: 1px solid var(--border);
+            border-radius: 28px;
+            color: var(--text2);
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+
+        .tb-btn:hover {
+            background: var(--accent-dim);
+            color: var(--text);
+            border-color: var(--accent);
+        }
+
+        .spacer {
+            flex: 1;
+        }
+
+        #cw {
+            position: fixed;
+            top: var(--toolbar-h);
+            left: 0;
+            right: 0;
+            bottom: var(--footer-h);
+            overflow: hidden;
+            cursor: grab;
+        }
+
+        #cw.panning {
+            cursor: grabbing;
+        }
+
+        #canvas {
+            position: absolute;
+            transform-origin: 0 0;
+            will-change: transform;
+        }
+
+        svg#lines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            overflow: visible;
+        }
+
+        .node {
+            position: absolute;
+            border-radius: 20px;
+            padding: 10px 18px;
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.2s ease;
+            border: 1.5px solid;
+            min-width: 150px;
+            max-width: 210px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            word-break: break-word;
+            backdrop-filter: blur(2px);
+        }
+
+        .node:hover {
+            transform: translateY(-2px) scale(1.02);
+            filter: brightness(1.02);
+            border-color: var(--accent2);
+        }
+
+        .node.root {
+            background: var(--node-root-bg);
+            border-color: var(--node-root-b);
+            padding: 14px 24px;
+            min-width: 190px;
+            border-radius: 28px;
+        }
+
+        .node.root .nl {
+            color: var(--node-root-t);
+            font-size: 15px;
+            font-weight: 700;
+        }
+
+        .node.l1 {
+            background: var(--node-l1-bg);
+            border-color: var(--node-l1-b);
+        }
+
+        .node.l1 .nl {
+            color: var(--node-l1-t);
+            font-weight: 600;
+        }
+
+        .node.l2 {
+            background: var(--node-l2-bg);
+            border-color: var(--node-l2-b);
+        }
+
+        .node.l3 {
+            background: var(--node-l3-bg);
+            border-color: var(--node-l3-b);
+        }
+
+        .node.selected {
+            box-shadow: 0 0 0 3px var(--accent), var(--shadow);
+        }
+
+        .node.highlighted {
+            outline: 2px solid var(--highlight-b);
+            outline-offset: 2px;
+        }
+
+        .nl {
+            flex: 1;
+            line-height: 1.4;
+            font-size: 12.5px;
+            font-weight: 500;
+        }
+
+        .chev {
+            width: 16px;
+            height: 16px;
+            transition: transform 0.25s;
+            opacity: 0.7;
+        }
+
+        .chev.open {
+            transform: rotate(90deg);
+        }
+
+        .li {
+            width: 12px;
+            height: 12px;
+            opacity: 0.5;
+        }
+
+        .node.entering {
+            animation: nIn 0.35s cubic-bezier(0.34, 1.2, 0.64, 1) forwards;
+        }
+
+        @keyframes nIn {
+            from {
+                opacity: 0;
+                transform: scale(0.75) translateX(-12px);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1) translateX(0);
+            }
+        }
+
+        #panel {
+            position: fixed;
+            top: var(--toolbar-h);
+            right: 0;
+            bottom: var(--footer-h);
+            width: 380px;
+            background: var(--panel);
+            border-left: 1px solid var(--border);
+            transform: translateX(100%);
+            transition: transform 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            z-index: 90;
+            display: flex;
+            flex-direction: column;
+            box-shadow: -5px 0 28px rgba(0, 0, 0, 0.4);
+        }
+
+        #panel.open {
+            transform: translateX(0);
+        }
+
+        #ph {
+            padding: 20px 20px 12px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        #ptag {
+            display: inline-flex;
+            padding: 4px 12px;
+            border-radius: 40px;
+            font-size: 10px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            letter-spacing: 0.3px;
+        }
+
+        .tag-concept {
+            background: rgba(139, 92, 246, 0.2);
+            color: #a78bfa;
+        }
+
+        .tag-formula {
+            background: rgba(250, 204, 21, 0.2);
+            color: #fde68a;
+        }
+
+        .tag-example {
+            background: rgba(34, 211, 238, 0.2);
+            color: #67e8f9;
+        }
+
+        .tag-pitfall {
+            background: rgba(244, 63, 94, 0.2);
+            color: #fda4af;
+        }
+
+        #ptitle {
+            flex: 1;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text);
+            line-height: 1.3;
+        }
+
+        #pc {
+            width: 32px;
+            height: 32px;
+            border-radius: 40px;
+            background: var(--bg3);
+            border: none;
+            color: var(--text2);
+            cursor: pointer;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        #pc:hover {
+            background: var(--accent-dim);
+            color: var(--accent2);
+        }
+
+        #pb {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            line-height: 1.7;
+            font-size: 13.5px;
+            color: var(--text2);
+            scrollbar-width: thin;
+        }
+
+        #pb h4 {
+            color: var(--accent2);
+            font-size: 13px;
+            font-weight: 600;
+            margin: 16px 0 6px;
+            letter-spacing: 0.3px;
+        }
+
+        #pb p,
+        #pb li {
+            margin-bottom: 8px;
+        }
+
+        #pb strong {
+            color: var(--text);
+        }
+
+        #zc {
+            position: fixed;
+            bottom: calc(var(--footer-h) + 16px);
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            z-index: 80;
+        }
+
+        .zb {
+            width: 38px;
+            height: 38px;
+            border-radius: 28px;
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            color: var(--text2);
+            cursor: pointer;
+            font-size: 20px;
+            font-weight: 500;
+            transition: 0.2s;
+            box-shadow: var(--shadow);
+        }
+
+        .zb:hover {
+            background: var(--accent-dim);
+            color: var(--accent);
+        }
+
+        #zl {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 6px 8px;
+            font-size: 11px;
+            font-family: monospace;
+            text-align: center;
+        }
+
+        .pl {
+            fill: none;
+            stroke: var(--line);
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-dasharray: 3 2;
+        }
+
+        footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: var(--footer-h);
+            background: var(--bg2);
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            color: var(--text3);
+            font-family: monospace;
+            z-index: 100;
+        }
+    </style>
+
+    <meta name="description"
+        content="Interactive mindmap for STAT101 Chapter 3: mean, median, mode, weighted mean, percentiles, quartiles, IQR, box plots, skewness, range, variance, standard deviation, coefficient of variation, z-scores, Chebyshev's Theorem and the Empirical Rule.">
+    <link rel="canonical"
+        href="https://shoug-tech.com/academics/math/stat101/extra-resources/mindmap/chapter-3/numerical-measures.html">
+    <meta property="og:title" content="STAT101 Mindmap — Chapter 3: Numerical Measures">
+    <meta property="og:description"
+        content="Interactive mindmap for STAT101 Chapter 3: mean, median, mode, weighted mean, percentiles, quartiles, IQR, box plots, skewness, range, variance, standard deviation, coefficient of variation, z-scores, Chebyshev's Theorem and the Empirical Rule.">
+    <meta property="og:url"
+        content="https://shoug-tech.com/academics/math/stat101/extra-resources/mindmap/chapter-3/numerical-measures.html">
+    <meta property="og:type" content="article">
+    <meta property="og:image" content="https://shoug-tech.com/assets/og-banner.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="STAT101 Mindmap — Chapter 3: Numerical Measures">
+    <meta name="twitter:description"
+        content="Interactive mindmap for STAT101 Chapter 3: mean, median, mode, weighted mean, percentiles, quartiles, IQR, box plots, skewness, range, variance, standard deviation, coefficient of variation, z-scores, Chebyshev's Theorem and the Empirical Rule.">
+    <meta name="twitter:image" content="https://shoug-tech.com/assets/og-banner.png">
+    <script
+        type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","url":"https://shoug-tech.com/academics/math/stat101/extra-resources/mindmap/chapter-3/numerical-measures.html","name":"STAT101 Mindmap — Chapter 3: Numerical Measures","description":"Interactive mindmap for STAT101 Chapter 3: mean, median, mode, weighted mean, percentiles, quartiles, IQR, box plots, skewness, range, variance, standard deviation, coefficient of variation, z-scores, Chebyshev's Theorem and the Empirical Rule.","isPartOf":{"@type":"WebSite","name":"Shoug's Digital Garden","url":"https://shoug-tech.com/"}}</script>
+
+    <link rel="alternate" hreflang="en"
+        href="https://shoug-tech.com/academics/math/stat101/extra-resources/mindmap/chapter-3/numerical-measures.html">
+    <link rel="alternate" hreflang="ar"
+        href="https://shoug-tech.com/ar/academics/math/stat101/extra-resources/mindmap/chapter-3/numerical-measures.html">
+    <link rel="alternate" hreflang="x-default"
+        href="https://shoug-tech.com/academics/math/stat101/extra-resources/mindmap/chapter-3/numerical-measures.html">
+
+    <!-- Microsoft Clarity tracking code for https://shoug-tech.com/ -->
+    <script type="text/javascript">
+        (function (c, l, a, r, i, t, y) {
+            c[a] = c[a] || function () { (c[a].q = c[a].q || []).push(arguments) };
+            t = l.createElement(r); t.async = 1; t.src = "https://www.clarity.ms/tag/" + i;
+            y = l.getElementsByTagName(r)[0]; y.parentNode.insertBefore(t, y);
+        })(window, document, "clarity", "script", "xub0eqmvs9");
+    </script>
+</head>
+
+<body>
+
+
+    <div id="toolbar">
+        <span class="tb-logo">📊 Numerical Measures</span>
+        <div class="tb-sep"></div>
+        <div id="search-wrap">
+            <span class="si">🔎</span>
+            <input id="search" type="text" placeholder="Search concepts…">
+            <div id="sr"></div>
+        </div>
+        <button class="tb-btn" id="eab">📂 Expand All</button>
+        <button class="tb-btn" id="cab">📁 Collapse</button>
+        <div class="spacer"></div>
+        <button class="tb-btn" id="rb">⟳ Reset View</button>
+        <button class="tb-btn" id="tb" title="Theme">🌙</button>
+    </div>
+
+    <div id="cw">
+        <div id="canvas"><svg id="lines"></svg></div>
+    </div>
+
+    <div id="panel">
+        <div id="ph">
+            <div style="flex:1">
+                <div id="ptag"></div>
+                <div id="ptitle"></div>
+            </div>
+            <button id="pc">✕</button>
+        </div>
+        <div id="pb"></div>
+    </div>
+    <div id="zc"><button class="zb" id="zi">+</button>
+        <div id="zl">100%</div><button class="zb" id="zo">−</button>
+    </div>
+    <footer>STAT101 – Chapter 3: Numerical Measures</footer>
+
+    <script>
+        // DATA based on STAT101 Chapter 3 — Describing Data Using Numerical Measures
+        const DATA = {
+            id: 'nm_root', label: 'Numerical Measures', level: 0,
+            children: [
+                {
+                    id: 'sec31', label: '3.1 Measures of Center & Location', level: 1, tag: 'concept',
+                    children: [
+                        {
+                            id: 'param_stat', label: 'Parameter vs. Statistic', level: 2, tag: 'concept', leaf: true,
+                            content: '<h4>Parameter vs. Statistic</h4><p>A <strong>parameter</strong> is computed from the entire population (Greek letters: &mu;, &sigma;, &sigma;&sup2;) and is fixed. A <strong>statistic</strong> is computed from a sample (Roman letters: x&#772;, s, s&sup2;) and varies from sample to sample.</p><p>Every measure in this chapter has both a population version and a sample version — same idea, different notation, and for variance/std. dev. a different denominator too.</p>'
+                        },
+                        {
+                            id: 'mean', label: 'Mean (μ / x̄)', level: 2, tag: 'formula', leaf: true,
+                            content: '<h4>Population Mean</h4><p>&mu; = ( &Sigma; x ) / N</p><h4>Sample Mean</h4><p>x&#772; = ( &Sigma; x ) / n</p><p>The mean is the arithmetic average — the "balance point" of the data. The sum of deviations from the mean always equals zero: &Sigma;(x &minus; &mu;) = 0.</p>'
+                        },
+                        {
+                            id: 'mean_example', label: 'Worked Example: Sample Mean', level: 2, tag: 'example', leaf: true,
+                            content: '<h4>Sample Mean of Starting Salaries</h4><p>Data (n = 7): 39,000, 44,000, 46,000, 52,000, 56,000, 60,000, 61,000</p><p>x&#772; = 358,000 / 7 = <strong>$51,142.86 ≈ $51,143</strong></p><p>This same dataset is reused throughout the whole chapter for median, quartiles, variance, standard deviation, and z-scores.</p>'
+                        },
+                        {
+                            id: 'mean_pitfall', label: 'Mean Is Not Always "Best"', level: 2, tag: 'pitfall', leaf: true,
+                            content: '<h4>Common Mistake: Assuming the Mean Is Always the Best Center</h4><p>The mean uses every data value, which is also its weakness: it is very sensitive to outliers. Add one NFL draft pick earning $2,300,000 to our 7 graduates and the mean explodes from $51,143 to $332,250 — even though 7 of 8 people still earn about $50,000.</p><p>One extreme value can make the mean meaningless as a "typical" value. This is exactly why the median exists.</p>'
+                        },
+                        {
+                            id: 'median', label: 'Median', level: 2, tag: 'concept', leaf: true,
+                            content: '<h4>The Median (Md)</h4><p>The middle value of a sorted data array. Splits the distribution exactly in half: 50% at or below, 50% at or above. Unlike the mean, it is <strong>not affected by extreme values</strong>.</p><p><strong>Step 1</strong> sort the data. <strong>Step 2</strong> compute index i = (n+1)/2. <strong>Step 3</strong> if n is odd, median = value at position (n+1)/2; if n is even, median = average of the two middle values.</p>'
+                        },
+                        {
+                            id: 'median_example', label: 'Worked Example: Median', level: 2, tag: 'example', leaf: true,
+                            content: '<h4>Median of Starting Salaries</h4><p>Sorted (n = 7, odd): 39,000, 44,000, 46,000, <strong>52,000</strong>, 56,000, 60,000, 61,000</p><p>Position = (7+1)/2 = 4th value → Md = <strong>$52,000</strong></p><p>Mean ($51,143) vs. median ($52,000) are very close — the sample is roughly symmetric with no outliers pulling the mean away.</p>'
+                        },
+                        {
+                            id: 'median_pitfall', label: 'Misapplying the Index Rule', level: 2, tag: 'pitfall', leaf: true,
+                            content: '<h4>Common Mistake: Rounding the Wrong Way</h4><p>For medians and percentiles alike: compute the index i. If i is <strong>not</strong> an integer, round UP to the next highest integer and take that position. If i <strong>is</strong> an integer, the answer is the average of the values at position i and i+1.</p><p>Students often round to the "nearest" integer instead of always rounding up — that gives the wrong position whenever i has a decimal like .5 that would round down.</p>'
+                        },
+                        {
+                            id: 'mode', label: 'Mode', level: 2, tag: 'concept', leaf: true,
+                            content: '<h4>The Mode</h4><p>The value that occurs most frequently. It is the only measure of center that works on any level of data, including nominal (category) data. A dataset can have no mode, one mode (unimodal), two modes (bimodal), or more.</p><p><strong>Example:</strong> Every value in our 7-salary dataset appears once → no mode. In 5,10,15,20,20,20,30,40,50,90, 20 appears three times → Mode = 20.</p>'
+                        },
+                        {
+                            id: 'center_shortcuts', label: 'Mean vs. Median vs. Mode', level: 2, tag: 'concept', leaf: true,
+                            content: '<h4>Quick Shortcuts</h4><ul><li><strong>Mean</strong> — symmetric, ratio/interval data, no major outliers. Sensitive to extremes.</li><li><strong>Median</strong> — outliers or skew present, or ordinal data. Resistant to extremes.</li><li><strong>Mode</strong> — categorical (nominal) data, or "most common" answer. Can be weak or non-existent.</li></ul>'
+                        },
+                        {
+                            id: 'weighted_mean', label: 'Weighted Mean', level: 2, tag: 'formula', leaf: true,
+                            content: '<h4>Weighted Mean</h4><p>x&#772;<sub>w</sub> = &Sigma;(w&middot;x) / &Sigma;w</p><p>Used when some values matter more than others (different shares, class sizes, quantities). w = the weight assigned to each x.</p>'
+                        },
+                        {
+                            id: 'weighted_mean_example', label: 'Worked Example: Portfolio', level: 2, tag: 'example', leaf: true,
+                            content: '<h4>Financial Portfolio Weighted Mean</h4><p>Fidelity: 7.2% return, 2,000 shares. Vanguard: 8.3%, 5,000 shares. Dimensional: 5.4%, 12,000 shares.</p><p>&Sigma;(w&middot;x) = 14,400 + 41,500 + 64,800 = 120,700. &Sigma;w = 19,000.</p><p>x&#772;<sub>w</sub> = 120,700 / 19,000 = <strong>6.35%</strong></p><p>The plain average of 7.2, 8.3, 5.4 would be 6.97% — noticeably different, since the weighted mean correctly gives Dimensional (most shares) more influence.</p>'
+                        },
+                        {
+                            id: 'percentiles', label: 'Percentiles & Quartiles', level: 2, tag: 'concept', leaf: true,
+                            content: '<h4>Percentiles and Quartiles</h4><p>The p-th percentile is the value below which p% of the sorted data falls. Quartiles are specific percentiles: <strong>Q1</strong> = 25th percentile, <strong>Q2</strong> = 50th percentile = the median, <strong>Q3</strong> = 75th percentile.</p>'
+                        },
+                        {
+                            id: 'percentile_formula', label: 'Percentile Location Index', level: 2, tag: 'formula', leaf: true,
+                            content: '<h4>Percentile Location Index</h4><p>i = (p / 100) &middot; n</p><p>Sort the data. Compute i. If i is not an integer, round UP — that position\'s value is the p-th percentile. If i is an integer, average the values at position i and i+1.</p>'
+                        },
+                        {
+                            id: 'percentile_example', label: 'Worked Example: 80th Percentile', level: 2, tag: 'example', leaf: true,
+                            content: '<h4>80th Percentile of Travel Distances (n = 30)</h4><p>i = (80/100)(30) = 24 (an integer!)</p><p>Because i = 24 is an integer, the 80th percentile is the average of the 24th and 25th sorted values: (20.5 + 21.4)/2 = <strong>20.95 miles</strong>.</p><p>Interpretation: 80% of moving jobs traveled about 21 miles or less. Always double-check your sort order against the printed data table.</p>'
+                        },
+                        {
+                            id: 'quartile_example', label: 'Worked Example: Q1, Q3, IQR', level: 2, tag: 'example', leaf: true,
+                            content: '<h4>Quartiles & IQR of Starting Salaries</h4><p>Sorted (n = 7): 39,000, 44,000, 46,000, 52,000, 56,000, 60,000, 61,000</p><p>Q1 index = (25/100)(7) = 1.75 → round up to position 2 → Q1 = <strong>$44,000</strong></p><p>Q2 (median) = position 4 → Q2 = $52,000</p><p>Q3 index = (75/100)(7) = 5.25 → round up to position 6 → Q3 = <strong>$60,000</strong></p><p>IQR = Q3 − Q1 = 60,000 − 44,000 = <strong>$16,000</strong></p>'
+                        },
+                        {
+                            id: 'iqr_formula', label: 'IQR = Q3 − Q1', level: 2, tag: 'formula', leaf: true,
+                            content: '<h4>Interquartile Range</h4><p>IQR = Q3 &minus; Q1</p><p>Because IQR only looks at the middle 50% of the data, it eliminates the influence of the most extreme high and low values — a more robust measure of spread than the range.</p>'
+                        },
+                        {
+                            id: 'boxplot', label: 'Five-Number Summary & Box Plot', level: 2, tag: 'concept', leaf: true,
+                            content: '<h4>Box-and-Whisker Plot</h4><p>Built from the <strong>five-number summary</strong>: minimum, Q1, median, Q3, maximum.</p><ol><li>Sort the values.</li><li>Find Q1, Q2, Q3.</li><li>Draw a box from Q1 to Q3 (width = IQR).</li><li>Draw a line through the box at the median.</li><li>Limits: Lower = Q1 − 1.5(IQR); Upper = Q3 + 1.5(IQR).</li><li>Extend whiskers to the extreme values within those limits.</li><li>Plot values outside the limits as individual outlier points.</li></ol>'
+                        },
+                        {
+                            id: 'boxplot_example', label: 'Worked Example: Box Plot Limits', level: 2, tag: 'example', leaf: true,
+                            content: '<h4>Box Plot Limits for Starting Salaries</h4><p>Lower Limit = Q1 − 1.5(IQR) = 44,000 − 24,000 = <strong>$20,000</strong></p><p>Upper Limit = Q3 + 1.5(IQR) = 60,000 + 24,000 = <strong>$84,000</strong></p><p>Every salary (39,000–61,000) falls comfortably inside [$20,000, $84,000] → no outliers by the box-plot rule.</p>'
+                        },
+                        {
+                            id: 'skewness', label: 'Skewness', level: 2, tag: 'concept', leaf: true,
+                            content: '<h4>Reading the Shape of a Distribution</h4><p><strong>Symmetric:</strong> Mean = Median = Mode.</p><p><strong>Left-skewed (negative):</strong> Mean &lt; Median &lt; Mode — a tail of low extreme values pulls the mean down.</p><p><strong>Right-skewed (positive):</strong> Mode &lt; Median &lt; Mean — a tail of high extreme values pulls the mean up.</p><p><strong>Fast check:</strong> Mean &gt; Median → right-skewed. Mean &lt; Median → left-skewed. Mean ≈ Median → roughly symmetric. Our salary sample: mean ($51,143) just barely below median ($52,000) → essentially symmetric.</p>'
+                        },
+                        {
+                            id: 'data_levels_pitfall', label: 'Mean on Ordinal/Nominal Data', level: 2, tag: 'pitfall', leaf: true,
+                            content: '<h4>Common Mistake: Computing a Mean on the Wrong Data Level</h4><p>Excel will happily average category codes — e.g., Marital Status coded 1=Single, 2=Married, 3=Divorced, 4=Widowed. A "mean" of 1.93 does not mean "almost married"; the numbers are just labels. Same caution applies to Likert-scale survey data, since the mean assumes equal spacing between categories.</p><p>Mean: appropriate for ratio/interval only. Median: OK for ratio/interval and ordinal. Mode: works on any level, the only option for nominal data.</p>'
+                        }
+                    ]
+                },
+                {
+                    id: 'sec32', label: '3.2 Measures of Variation', level: 1, tag: 'formula',
+                    children: [
+                        {
+                            id: 'variation_intro', label: 'Why Spread Matters', level: 2, tag: 'concept', leaf: true,
+                            content: '<h4>Measures of Variation (Dispersion)</h4><p>Two datasets can share the same mean and median yet look completely different because they differ in spread. Measures of variation quantify that spread: Range, IQR, Variance, Standard Deviation, and Coefficient of Variation.</p>'
+                        },
+                        {
+                            id: 'range', label: 'Range', level: 2, tag: 'formula', leaf: true,
+                            content: '<h4>Range</h4><p>R = Maximum Value &minus; Minimum Value</p><p><strong>Example:</strong> R = 61,000 − 39,000 = <strong>$22,000</strong></p><p>Very easy to compute, but uses only two values and ignores everything in between — extremely sensitive to outliers.</p>'
+                        },
+                        {
+                            id: 'pop_var', label: 'Population Variance & Std. Dev.', level: 2, tag: 'formula', leaf: true,
+                            content: '<h4>Population Variance</h4><p>&sigma;&sup2; = &Sigma;(x &minus; &mu;)&sup2; / N</p><h4>Population Standard Deviation</h4><p>&sigma; = &radic;(&sigma;&sup2;)</p><p>Variance is the average of the squared distances of each value from the mean; we square because raw deviations always sum to zero.</p>'
+                        },
+                        {
+                            id: 'sample_var', label: 'Sample Variance & Std. Dev.', level: 2, tag: 'formula', leaf: true,
+                            content: '<h4>Sample Variance</h4><p>s&sup2; = &Sigma;(x &minus; x&#772;)&sup2; / (n &minus; 1)</p><h4>Sample Standard Deviation</h4><p>s = &radic;(s&sup2;)</p><p>Dividing by n − 1 instead of n is called <strong>Bessel\'s correction</strong>.</p>'
+                        },
+                        {
+                            id: 'n_vs_n1_pitfall', label: 'N vs. n−1 (THE #1 Mistake)', level: 2, tag: 'pitfall', leaf: true,
+                            content: '<h4>THE #1 Mistake in This Entire Chapter</h4><p>Population variance divides by <strong>N</strong>. Sample variance divides by <strong>n &minus; 1</strong>, NOT n. This is Bessel\'s correction: a sample\'s own mean is, by construction, closer to its own data points than the true population mean would be, so dividing by n alone would underestimate the true population variance.</p><p><strong>Before computing any variance/std. dev., always ask first: population (÷N) or sample (÷n−1)?</strong> Getting this backwards is the single most common point-loss on this chapter.</p>'
+                        },
+                        {
+                            id: 'var_example', label: 'Worked Example: s² and s', level: 2, tag: 'example', leaf: true,
+                            content: '<h4>Sample Variance & Standard Deviation of Starting Salaries</h4><p>x&#772; = $51,142.86 (n = 7, sample → divide by n−1 = 6)</p><p>&Sigma;(x − x&#772;)&sup2; = 424,857,000</p><p>s&sup2; = 424,857,000 / 6 = <strong>70,809,500</strong></p><p>s = &radic;70,809,500 ≈ <strong>$8,415</strong> (matches Excel\'s STDEV.S exactly). The deviation column sums to approximately zero, confirming the balance-point property.</p>'
+                        },
+                        {
+                            id: 'units_pitfall', label: 'Variance vs. Std. Dev. Units', level: 2, tag: 'pitfall', leaf: true,
+                            content: '<h4>Common Mistake: Confusing Variance and Standard Deviation Units</h4><p>Variance is in <strong>squared units</strong> (e.g., dollars&sup2;), meaningless to interpret directly. Standard deviation is the square root of variance, returning to <strong>original units</strong> — which is why we use std. dev., not variance, to describe "typical distance from the mean."</p><p>Remember: s = &radic;(s&sup2;) and s&sup2; = s &times; s.</p>'
+                        },
+                        {
+                            id: 'spread_measures_pitfall', label: 'Range vs. IQR vs. Std. Dev.', level: 2, tag: 'pitfall', leaf: true,
+                            content: '<h4>Common Mistake: Treating Spread Measures as Interchangeable</h4><p><strong>Range</strong> uses only max and min (very sensitive to outliers). <strong>IQR</strong> uses only Q1 and Q3 (resistant to outliers, ignores outer 50%). <strong>Standard deviation</strong> uses every data point (most information, still sensitive to extremes due to squaring). They answer different questions — don\'t substitute one for another on an exam.</p>'
+                        },
+                        {
+                            id: 'cv', label: 'Coefficient of Variation', level: 2, tag: 'formula', leaf: true,
+                            content: '<h4>Coefficient of Variation</h4><p>CV = ( S / x&#772; ) &times; 100% &nbsp; (population: CV = (&sigma;/&mu;) &times; 100%)</p><p>Standard deviation alone can\'t compare variation between datasets in different units or scales. CV solves this by expressing std. dev. as a percentage of the mean — a unit-free measure of relative variation.</p>'
+                        },
+                        {
+                            id: 'cv_example', label: 'Worked Example: Comparing Stocks', level: 2, tag: 'example', leaf: true,
+                            content: '<h4>Comparing Two Stocks</h4><p>Stock A: mean = $50, s = $5. Stock B: mean = $100, s = $5.</p><p>CV(A) = (5/50)×100% = <strong>10%</strong> &nbsp; CV(B) = (5/100)×100% = <strong>5%</strong></p><p>Same raw std. dev., but Stock A is twice as variable relative to its price. <strong>Salary data CV:</strong> (8,415 / 51,143) × 100% ≈ <strong>16.5%</strong>.</p>'
+                        }
+                    ]
+                },
+                {
+                    id: 'sec33', label: '3.3 Mean & Std. Dev. Together', level: 1, tag: 'example',
+                    children: [
+                        {
+                            id: 'zscore', label: 'Z-Score', level: 2, tag: 'formula', leaf: true,
+                            content: '<h4>Standardized Values (Z-Scores)</h4><p>Population: z = (x &minus; &mu;) / &sigma; &nbsp; Sample: z = (x &minus; x&#772;) / s</p><p>A z-score tells you how many standard deviations a value is above or below the mean, standardizing data onto a common scale so you can compare values from different distributions.</p>'
+                        },
+                        {
+                            id: 'zscore_example', label: 'Worked Example: IQ & Test Scores', level: 2, tag: 'example', leaf: true,
+                            content: '<h4>IQ Score Standardization</h4><p>IQ: bell-shaped, &mu; = 100, &sigma; = 15. Person\'s IQ = 121.</p><p>z = (121 − 100)/15 = <strong>1.40</strong> standard deviations above the mean.</p><h4>Comparing Scores Across Different Scales</h4><p>University A: &mu;=70, &sigma;=10, you scored 88 → z = 1.8. University B: &mu;=750, &sigma;=70, you scored 798 → z = 0.69.</p><p>Even though 798 is a bigger raw number, z-scores show your relative performance was stronger at University A.</p>'
+                        },
+                        {
+                            id: 'zscore_salary_example', label: 'Worked Example: Salary Z-Scores', level: 2, tag: 'example', leaf: true,
+                            content: '<h4>Z-Scores for the Salary Dataset</h4><p>x&#772; = $51,142.86, s = $8,415</p><p>z(39,000) = (39,000 − 51,143)/8,415 = <strong>−1.44</strong></p><p>z(61,000) = (61,000 − 51,143)/8,415 = <strong>1.17</strong></p><p>Every salary has |z| well under 2 — another confirmation this sample has no outliers.</p>'
+                        },
+                        {
+                            id: 'chebyshev', label: "Chebyshev's Theorem", level: 2, tag: 'concept', leaf: true,
+                            content: '<h4>Chebyshev\'s Theorem</h4><p>At least (1 &minus; 1/k&sup2;) of the data lies within k standard deviations of the mean — and works for <strong>ANY distribution shape</strong> (skewed, bimodal, bell-shaped), as long as k &gt; 1.</p><p>k = 2 → at least 75%. k = 3 → at least 88.9%.</p>'
+                        },
+                        {
+                            id: 'empirical_rule', label: 'The Empirical Rule (68-95-99.7)', level: 2, tag: 'concept', leaf: true,
+                            content: '<h4>The Empirical Rule</h4><p>Much more specific than Chebyshev, but only applies to <strong>bell-shaped (approximately normal)</strong> data:</p><p>&mu; ± 1&sigma; ≈ 68% of values. &mu; ± 2&sigma; ≈ 95%. &mu; ± 3&sigma; ≈ 99.7% (virtually all).</p>'
+                        },
+                        {
+                            id: 'empirical_example', label: 'Worked Example: Uber Distances', level: 2, tag: 'example', leaf: true,
+                            content: '<h4>Uber Travel Distances</h4><p>Bell-shaped, mean = 15.1 miles, s = 3.1 miles.</p><p>68% between 12.0 and 18.2 miles. 95% between 8.9 and 21.3 miles. 99.7% between 5.8 and 24.4 miles.</p>'
+                        },
+                        {
+                            id: 'chebyshev_vs_empirical_pitfall', label: 'Chebyshev vs. Empirical: Which to Use?', level: 2, tag: 'pitfall', leaf: true,
+                            content: '<h4>Exam Tip: Choosing the Right Rule</h4><p>If the question says or implies "bell-shaped" / "normal" / "symmetric mound-shaped" — use the <strong>Empirical Rule</strong> for a tighter answer. If the shape is unknown, skewed, or the question says "regardless of shape" — use <strong>Chebyshev\'s Theorem</strong>.</p><p>Chebyshev is the safe fallback that always works (k=2 → at least 75%); the Empirical Rule is the sharper tool only usable when the data is known to be bell-shaped (k=2 → ≈95%). Confusing the two, or using the Empirical Rule on skewed data, is a common exam error.</p>'
+                        },
+                        {
+                            id: 'outliers', label: 'Detecting Outliers', level: 2, tag: 'concept', leaf: true,
+                            content: '<h4>Two Standard Outlier-Detection Methods</h4><ul><li><strong>Z-score method:</strong> flag any value with |z| &gt; 2 (moderately unusual) or |z| &gt; 3 (extreme outlier).</li><li><strong>1.5 × IQR method:</strong> flag any value below Q1 − 1.5(IQR) or above Q3 + 1.5(IQR).</li></ul><p>If the two methods disagree sharply, double-check your arithmetic — on well-behaved data they generally agree.</p>'
+                        },
+                        {
+                            id: 'outlier_example', label: 'Worked Example: Outlier Check', level: 2, tag: 'example', leaf: true,
+                            content: '<h4>Outlier Check on Starting Salaries (Both Methods)</h4><p><strong>Z-score method:</strong> largest |z| = 1.44 (for $39,000) — well under 2. <strong>No outliers.</strong></p><p><strong>1.5×IQR method:</strong> Lower Limit = $20,000, Upper Limit = $84,000. All 7 salaries fall inside. <strong>No outliers.</strong></p><p>Both methods agree — a well-behaved, roughly symmetric sample, consistent with mean and median being so close earlier.</p>'
+                        }
+                    ]
+                }
+            ]
+        };
+
+        let nodes = {}, expanded = new Set(['nm_root']);
+        let selectedId = null;
+        let tf = { x: 70, y: 80, scale: 0.85 }, isPanning = false, panStart = {};
+        const cw = document.getElementById('cw'), canvas = document.getElementById('canvas'), linesEl = document.getElementById('lines');
+        const NW = 185, NH = 58, HG = 270, VG = 76;
+
+        function flatten(n, d = 0) { nodes[n.id] = { ...n, depth: d }; if (n.children) n.children.forEach(c => flatten(c, d + 1)); }
+        flatten(DATA);
+
+        function countH(n) {
+            if (!n.children || !expanded.has(n.id)) return 1;
+            let total = 0;
+            n.children.forEach(c => total += countH(nodes[c.id] || c));
+            return Math.max(total, 1);
+        }
+
+        function layout() {
+            let pos = {};
+            function assign(n, x, yOff) {
+                pos[n.id] = { x, yOff, y: 0 };
+                if (n.children && expanded.has(n.id)) {
+                    let sy = yOff;
+                    n.children.forEach(c => {
+                        let cn = nodes[c.id] || c;
+                        let ch = countH(cn);
+                        assign(cn, x + HG, sy);
+                        sy += ch;
+                    });
+                }
+            }
+            assign(DATA, 0, 0);
+            function computeY(n) {
+                if (!n.children || !expanded.has(n.id)) { pos[n.id].y = pos[n.id].yOff * VG; return; }
+                n.children.forEach(c => computeY(nodes[c.id] || c));
+                let childs = n.children.map(c => nodes[c.id] || c);
+                let topY = pos[childs[0].id].y, botY = pos[childs[childs.length - 1].id].y;
+                pos[n.id].y = (topY + botY) / 2;
+            }
+            computeY(DATA);
+            return pos;
+        }
+
+        function render() {
+            let pos = layout();
+            let existing = {};
+            canvas.querySelectorAll('.node').forEach(el => { existing[el.dataset.id] = el; });
+            let vis = new Set();
+            function collect(n) { vis.add(n.id); if (n.children && expanded.has(n.id)) n.children.forEach(c => collect(nodes[c.id] || c)); }
+            collect(DATA);
+            Object.keys(existing).forEach(id => { if (!vis.has(id)) existing[id].remove(); });
+            vis.forEach(id => {
+                let nd = nodes[id], p = pos[id];
+                if (!p) return;
+                let el = existing[id];
+                let isNew = !el;
+                if (isNew) { el = document.createElement('div'); el.className = 'node'; el.dataset.id = id; canvas.appendChild(el); }
+                let lvlClass = id === 'nm_root' ? 'root' : (nd.level === 1 ? 'l1' : (nd.level === 2 ? 'l2' : 'l3'));
+                el.className = `node ${lvlClass} ${selectedId === id ? 'selected' : ''}`;
+                el.style.left = p.x + 'px';
+                el.style.top = (p.y - NH / 2) + 'px';
+                el.style.width = NW + 'px';
+                el.style.minHeight = NH + 'px';
+                let hasChildren = nd.children && nd.children.length > 0 && !nd.leaf;
+                let icon = hasChildren ? `<svg class="chev ${expanded.has(id) ? 'open' : ''}" viewBox="0 0 16 16" fill="none" stroke="currentColor"><path d="M6 4l4 4-4 4" stroke-width="2"/></svg>` : (nd.leaf ? `<svg class="li" viewBox="0 0 16 16" fill="none" stroke="currentColor"><circle cx="8" cy="8" r="4"/></svg>` : '');
+                el.innerHTML = `<span class="nl">${nd.label.replace(/\n/g, '<br>')}</span>${icon}`;
+                if (isNew) el.classList.add('entering');
+                el.onclick = (e) => { e.stopPropagation(); onClick(id); };
+            });
+            drawLines(pos, vis);
+        }
+
+        function drawLines(pos, vis) {
+            let paths = [];
+            vis.forEach(id => {
+                let nd = nodes[id];
+                if (!nd.children || !expanded.has(id)) return;
+                nd.children.forEach(c => {
+                    let cid = (nodes[c.id] || c).id;
+                    if (!vis.has(cid)) return;
+                    let p1 = pos[id], p2 = pos[cid];
+                    if (!p1 || !p2) return;
+                    let x1 = p1.x + NW, y1 = p1.y;
+                    let x2 = p2.x, y2 = p2.y;
+                    let mx = x1 + (x2 - x1) * 0.5;
+                    paths.push(`<path class="pl" d="M${x1},${y1} C${mx},${y1} ${mx},${y2} ${x2},${y2}"/>`);
+                });
+            });
+            linesEl.innerHTML = paths.join('');
+        }
+
+        function onClick(id) {
+            let nd = nodes[id];
+            if (nd.leaf || (nd.children && nd.children.length === 0)) { selectedId = id; openPanel(id); render(); return; }
+            if (nd.children && nd.children.length) {
+                expanded.has(id) ? expanded.delete(id) : expanded.add(id);
+                render();
+            }
+        }
+
+        function openPanel(id) {
+            let nd = nodes[id];
+            document.getElementById('ptitle').innerHTML = nd.label.replace(/\n/g, ' ');
+            let tagDiv = document.getElementById('ptag');
+            let tagMap = { concept: 'CONCEPT', formula: 'FORMULA', example: 'EXAMPLE', pitfall: 'PITFALL' };
+            let cls = tagMap[nd.tag] || 'CONCEPT';
+            tagDiv.textContent = cls;
+            tagDiv.className = `tag-${(nd.tag === 'concept' ? 'concept' : (nd.tag === 'formula' ? 'formula' : (nd.tag === 'example' ? 'example' : 'pitfall')))}`;
+            tagDiv.style.display = 'inline-flex';
+            document.getElementById('pb').innerHTML = nd.content || '<p>Core concept from STAT101 Chapter 3.</p>';
+            document.getElementById('panel').classList.add('open');
+        }
+
+        document.getElementById('pc').onclick = () => { document.getElementById('panel').classList.remove('open'); selectedId = null; render(); };
+        cw.addEventListener('mousedown', e => { if (e.target.closest('.node') || e.target.closest('#panel')) return; isPanning = true; cw.classList.add('panning'); panStart = { x: e.clientX - tf.x, y: e.clientY - tf.y }; });
+        window.addEventListener('mousemove', e => { if (!isPanning) return; tf.x = e.clientX - panStart.x; tf.y = e.clientY - panStart.y; applyTf(); });
+        window.addEventListener('mouseup', () => { isPanning = false; cw.classList.remove('panning'); });
+        cw.addEventListener('wheel', e => { e.preventDefault(); let delta = -e.deltaY * 0.001; let ns = Math.min(2.2, Math.max(0.3, tf.scale + delta)); let rect = cw.getBoundingClientRect(); let mx = e.clientX - rect.left, my = e.clientY - rect.top; tf.x = mx - (mx - tf.x) * (ns / tf.scale); tf.y = my - (my - tf.y) * (ns / tf.scale); tf.scale = ns; applyTf(); }, { passive: false });
+        function applyTf() {
+            canvas.style.transform = `translate(${tf.x}px, ${tf.y}px) scale(${tf.scale})`;
+            document.getElementById('zl').innerText = Math.round(tf.scale * 100) + '%';
+        }
+
+        function zoom(delta) {
+            tf.scale = Math.min(2.2, Math.max(0.3, tf.scale + delta));
+            applyTf();
+        }
+
+        function resetView() {
+            tf = { x: 70, y: 80, scale: 0.85 };
+            applyTf();
+        }
+
+        function collectIds(node, ids = []) {
+            ids.push(node.id);
+            if (node.children) node.children.forEach(child => collectIds(child, ids));
+            return ids;
+        }
+
+        function expandAll() {
+            collectIds(DATA).forEach(id => expanded.add(id));
+            render();
+        }
+
+        function collapseAll() {
+            expanded.clear();
+            expanded.add('nm_root');
+            render();
+        }
+
+        document.getElementById('zi').onclick = () => zoom(0.12);
+        document.getElementById('zo').onclick = () => zoom(-0.12);
+        document.getElementById('rb').onclick = resetView;
+        document.getElementById('eab').onclick = expandAll;
+        document.getElementById('cab').onclick = collapseAll;
+        document.getElementById('tb').onclick = () => {
+            const body = document.body;
+            const next = body.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+            body.setAttribute('data-theme', next);
+            document.getElementById('tb').textContent = next === 'light' ? '☀️' : '🌙';
+        };
+
+        const searchInput = document.getElementById('search');
+        const searchResults = document.getElementById('sr');
+
+        function flatNodes(node, path = [], out = []) {
+            out.push({ node, path: [...path, node.label] });
+            if (node.children) node.children.forEach(child => flatNodes(child, [...path, node.label], out));
+            return out;
+        }
+
+        function selectNode(id) {
+            function findPath(node, target, path = []) {
+                if (node.id === target) return [...path, node.id];
+                if (!node.children) return null;
+                for (const child of node.children) {
+                    const found = findPath(child, target, [...path, node.id]);
+                    if (found) return found;
+                }
+                return null;
+            }
+
+            const path = findPath(DATA, id);
+            if (path) path.forEach(pid => expanded.add(pid));
+            selectedId = id;
+            render();
+            setTimeout(() => {
+                const el = canvas.querySelector(`[data-id="${id}"]`);
+                if (!el) return;
+                const r = el.getBoundingClientRect();
+                const wr = cw.getBoundingClientRect();
+                tf.x += (wr.width / 2) - (r.left + r.width / 2 - wr.left);
+                tf.y += (wr.height / 2) - (r.top + r.height / 2 - wr.top);
+                applyTf();
+                if (nodes[id] && nodes[id].leaf) openPanel(id);
+            }, 100);
+        }
+
+        searchInput.addEventListener('input', () => {
+            const q = searchInput.value.trim().toLowerCase();
+            if (!q) {
+                searchResults.style.display = 'none';
+                return;
+            }
+
+            const matches = flatNodes(DATA).filter(({ node }) => node.label.toLowerCase().includes(q)).slice(0, 10);
+            searchResults.innerHTML = matches.map(({ node, path }) => {
+                const trail = path.slice(0, -1).join(' › ');
+                return `<div class="sr-item" data-id="${node.id}"><div>${node.label}</div>${trail ? `<div class="sr-path">${trail}</div>` : ''}</div>`;
+            }).join('');
+            searchResults.style.display = matches.length ? 'block' : 'none';
+            searchResults.querySelectorAll('.sr-item').forEach(item => {
+                item.onclick = () => {
+                    searchResults.style.display = 'none';
+                    searchInput.value = '';
+                    selectNode(item.dataset.id);
+                };
+            });
+        });
+
+        document.addEventListener('click', event => {
+            if (!event.target.closest('#search-wrap')) searchResults.style.display = 'none';
+        });
+
+        render();
+        applyTf();
+    </script>
+
+    <script src="/javascripts/mindmap-controls.js"></script>
+</body>
+
+</html>

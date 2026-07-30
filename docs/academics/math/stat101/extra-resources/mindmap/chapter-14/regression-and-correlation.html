@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="en">
+<script>!function () { var t = localStorage.getItem("shoug-theme"); if (t) document.documentElement.setAttribute("data-theme", t); }();</script>
+
+<head>
+    <link rel="icon" type="image/png" href="/assets/favicon.png?v=2">
+    <link rel="shortcut icon" href="/assets/favicon.png?v=2">
+    <link rel="apple-touch-icon" href="/assets/favicon.png?v=2">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STAT101 Mindmap — Chapter 14: Regression & Correlation</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg: #0b1120;
+            --bg2: #111827;
+            --bg3: #1e293b;
+            --panel: #0f172a;
+            --border: #2d3a5e;
+            --border2: #374151;
+            --text: #e2e8f0;
+            --text2: #94a3b8;
+            --text3: #64748b;
+            --accent: #8b5cf6;
+            --accent2: #a78bfa;
+            --accent-dim: rgba(139, 92, 246, 0.12);
+            --line: rgba(167, 139, 250, 0.4);
+            --node-root-bg: #2e1a5e;
+            --node-root-b: #8b5cf6;
+            --node-root-t: #c4b5fd;
+            --node-l1-bg: #1a2f3a;
+            --node-l1-b: #22d3ee;
+            --node-l1-t: #67e8f9;
+            --node-l2-bg: #2a1f2f;
+            --node-l2-b: #f472b6;
+            --node-l2-t: #fbcfe8;
+            --node-l3-bg: #2a2520;
+            --node-l3-b: #facc15;
+            --node-l3-t: #fef08a;
+            --highlight-b: #facc15;
+            --shadow: 0 8px 28px rgba(0, 0, 0, 0.6);
+            --toolbar-h: 56px;
+            --footer-h: 36px;
+            --tr: 0.25s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+        }
+
+        [data-theme="light"] {
+            --bg: #fef9f0;
+            --bg2: #ffffff;
+            --bg3: #f1f5f9;
+            --panel: #ffffff;
+            --border: #e2e8f0;
+            --border2: #cbd5e1;
+            --text: #1e293b;
+            --text2: #334155;
+            --text3: #94a3b8;
+            --accent: #6d28d9;
+            --accent2: #7c3aed;
+            --accent-dim: rgba(109, 40, 217, 0.08);
+            --line: rgba(124, 58, 237, 0.35);
+            --node-root-bg: #ede9fe;
+            --node-root-b: #6d28d9;
+            --node-root-t: #4c1d95;
+            --node-l1-bg: #e0f2fe;
+            --node-l1-b: #0891b2;
+            --node-l1-t: #0e7490;
+            --node-l2-bg: #fce7f3;
+            --node-l2-b: #db2777;
+            --node-l2-t: #be185d;
+            --node-l3-bg: #fef3c7;
+            --node-l3-b: #d97706;
+            --node-l3-t: #b45309;
+            --highlight-b: #eab308;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            transition: background var(--tr), color var(--tr);
+        }
+
+        #toolbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: var(--toolbar-h);
+            background: var(--bg2);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 0 20px;
+            z-index: 100;
+            backdrop-filter: blur(2px);
+        }
+
+        .tb-logo {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--accent2);
+            white-space: nowrap;
+            letter-spacing: -0.2px;
+            background: var(--accent-dim);
+            padding: 5px 10px;
+            border-radius: 28px;
+        }
+
+        .tb-sep {
+            width: 1px;
+            height: 28px;
+            background: var(--border);
+            margin: 0 6px;
+        }
+
+        #search-wrap {
+            position: relative;
+            flex: 1;
+            max-width: 260px;
+        }
+
+        #search {
+            width: 100%;
+            height: 36px;
+            background: var(--bg3);
+            border: 1px solid var(--border);
+            border-radius: 32px;
+            color: var(--text);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 13px;
+            padding: 0 12px 0 34px;
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        #search:focus {
+            border-color: var(--accent);
+            background: var(--bg2);
+            box-shadow: 0 0 0 2px var(--accent-dim);
+        }
+
+        .si {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text3);
+            font-size: 14px;
+        }
+
+        #sr {
+            position: absolute;
+            top: 44px;
+            left: 0;
+            right: 0;
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            z-index: 200;
+            max-height: 260px;
+            overflow-y: auto;
+            display: none;
+        }
+
+        #sr.v {
+            display: block;
+        }
+
+        .sri {
+            padding: 10px 16px;
+            cursor: pointer;
+            font-size: 13px;
+            color: var(--text2);
+            border-bottom: 1px solid var(--border);
+            transition: all 0.15s;
+        }
+
+        .sri:last-child {
+            border-bottom: none;
+        }
+
+        .sri:hover {
+            background: var(--accent-dim);
+            color: var(--accent2);
+        }
+
+        .sri mark {
+            background: none;
+            color: var(--accent2);
+            font-weight: 500;
+        }
+
+        .tb-btn {
+            height: 34px;
+            padding: 0 12px;
+            background: var(--bg3);
+            border: 1px solid var(--border);
+            border-radius: 28px;
+            color: var(--text2);
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+
+        .tb-btn:hover {
+            background: var(--accent-dim);
+            color: var(--text);
+            border-color: var(--accent);
+        }
+
+        .spacer {
+            flex: 1;
+        }
+
+        #cw {
+            position: fixed;
+            top: var(--toolbar-h);
+            left: 0;
+            right: 0;
+            bottom: var(--footer-h);
+            overflow: hidden;
+            cursor: grab;
+        }
+
+        #cw.panning {
+            cursor: grabbing;
+        }
+
+        #canvas {
+            position: absolute;
+            transform-origin: 0 0;
+            will-change: transform;
+        }
+
+        svg#lines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            overflow: visible;
+        }
+
+        .node {
+            position: absolute;
+            border-radius: 20px;
+            padding: 10px 18px;
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.2s ease;
+            border: 1.5px solid;
+            min-width: 150px;
+            max-width: 210px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            word-break: break-word;
+            backdrop-filter: blur(2px);
+        }
+
+        .node:hover {
+            transform: translateY(-2px) scale(1.02);
+            filter: brightness(1.02);
+            border-color: var(--accent2);
+        }
+
+        .node.root {
+            background: var(--node-root-bg);
+            border-color: var(--node-root-b);
+            padding: 14px 24px;
+            min-width: 190px;
+            border-radius: 28px;
+        }
+
+        .node.root .nl {
+            color: var(--node-root-t);
+            font-size: 15px;
+            font-weight: 700;
+        }
+
+        .node.l1 {
+            background: var(--node-l1-bg);
+            border-color: var(--node-l1-b);
+        }
+
+        .node.l1 .nl {
+            color: var(--node-l1-t);
+            font-weight: 600;
+        }
+
+        .node.l2 {
+            background: var(--node-l2-bg);
+            border-color: var(--node-l2-b);
+        }
+
+        .node.l3 {
+            background: var(--node-l3-bg);
+            border-color: var(--node-l3-b);
+        }
+
+        .node.selected {
+            box-shadow: 0 0 0 3px var(--accent), var(--shadow);
+        }
+
+        .node.highlighted {
+            outline: 2px solid var(--highlight-b);
+            outline-offset: 2px;
+        }
+
+        .nl {
+            flex: 1;
+            line-height: 1.4;
+            font-size: 12.5px;
+            font-weight: 500;
+        }
+
+        .chev {
+            width: 16px;
+            height: 16px;
+            transition: transform 0.25s;
+            opacity: 0.7;
+        }
+
+        .chev.open {
+            transform: rotate(90deg);
+        }
+
+        .li {
+            width: 12px;
+            height: 12px;
+            opacity: 0.5;
+        }
+
+        .node.entering {
+            animation: nIn 0.35s cubic-bezier(0.34, 1.2, 0.64, 1) forwards;
+        }
+
+        @keyframes nIn {
+            from {
+                opacity: 0;
+                transform: scale(0.75) translateX(-12px);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1) translateX(0);
+            }
+        }
+
+        #panel {
+            position: fixed;
+            top: var(--toolbar-h);
+            right: 0;
+            bottom: var(--footer-h);
+            width: 380px;
+            background: var(--panel);
+            border-left: 1px solid var(--border);
+            transform: translateX(100%);
+            transition: transform 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            z-index: 90;
+            display: flex;
+            flex-direction: column;
+            box-shadow: -5px 0 28px rgba(0, 0, 0, 0.4);
+        }
+
+        #panel.open {
+            transform: translateX(0);
+        }
+
+        #ph {
+            padding: 20px 20px 12px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        #ptag {
+            display: inline-flex;
+            padding: 4px 12px;
+            border-radius: 40px;
+            font-size: 10px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            letter-spacing: 0.3px;
+        }
+
+        .tag-concept {
+            background: rgba(139, 92, 246, 0.2);
+            color: #a78bfa;
+        }
+
+        .tag-formula {
+            background: rgba(250, 204, 21, 0.2);
+            color: #fde68a;
+        }
+
+        .tag-example {
+            background: rgba(34, 211, 238, 0.2);
+            color: #67e8f9;
+        }
+
+        .tag-pitfall {
+            background: rgba(244, 63, 94, 0.2);
+            color: #fda4af;
+        }
+
+        #ptitle {
+            flex: 1;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text);
+            line-height: 1.3;
+        }
+
+        #pc {
+            width: 32px;
+            height: 32px;
+            border-radius: 40px;
+            background: var(--bg3);
+            border: none;
+            color: var(--text2);
+            cursor: pointer;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        #pc:hover {
+            background: var(--accent-dim);
+            color: var(--accent2);
+        }
+
+        #pb {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            line-height: 1.7;
+            font-size: 13.5px;
+            color: var(--text2);
+            scrollbar-width: thin;
+        }
+
+        #pb h4 {
+            color: var(--accent2);
+            font-size: 13px;
+            font-weight: 600;
+            margin: 16px 0 6px;
+            letter-spacing: 0.3px;
+        }
+
+        #pb p,
+        #pb li {
+            margin-bottom: 8px;
+        }
+
+        #pb strong {
+            color: var(--text);
+        }
+
+        #zc {
+            position: fixed;
+            bottom: calc(var(--footer-h) + 16px);
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            z-index: 80;
+        }
+
+        .zb {
+            width: 38px;
+            height: 38px;
+            border-radius: 28px;
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            color: var(--text2);
+            cursor: pointer;
+            font-size: 20px;
+            font-weight: 500;
+            transition: 0.2s;
+            box-shadow: var(--shadow);
+        }
+
+        .zb:hover {
+            background: var(--accent-dim);
+            color: var(--accent);
+        }
+
+        #zl {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 6px 8px;
+            font-size: 11px;
+            font-family: monospace;
+            text-align: center;
+        }
+
+        .pl {
+            fill: none;
+            stroke: var(--line);
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-dasharray: 3 2;
+        }
+
+        footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: var(--footer-h);
+            background: var(--bg2);
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            color: var(--text3);
+            font-family: monospace;
+            z-index: 100;
+        }
+    </style>
+
+    <meta name="description"
+        content="An interactive mindmap for STAT101 Chapter 14 covering scatter plots, the correlation coefficient r, simple linear regression, least squares, the coefficient of determination r², model assumptions, and common misuses like extrapolation.">
+    <link rel="canonical"
+        href="https://shoug-tech.com/academics/math/stat101/extra-resources/mindmap/chapter-14/regression-and-correlation.html">
+    <meta property="og:title" content="STAT101 Mindmap — Chapter 14: Regression &amp; Correlation">
+    <meta property="og:description"
+        content="An interactive mindmap for STAT101 Chapter 14 covering scatter plots, the correlation coefficient r, simple linear regression, least squares, the coefficient of determination r², model assumptions, and common misuses like extrapolation.">
+    <meta property="og:url"
+        content="https://shoug-tech.com/academics/math/stat101/extra-resources/mindmap/chapter-14/regression-and-correlation.html">
+    <meta property="og:type" content="article">
+    <meta property="og:image" content="https://shoug-tech.com/assets/og-banner.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="STAT101 Mindmap — Chapter 14: Regression &amp; Correlation">
+    <meta name="twitter:description"
+        content="An interactive mindmap for STAT101 Chapter 14 covering scatter plots, the correlation coefficient r, simple linear regression, least squares, the coefficient of determination r², model assumptions, and common misuses like extrapolation.">
+    <meta name="twitter:image" content="https://shoug-tech.com/assets/og-banner.png">
+    <script
+        type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","url":"https://shoug-tech.com/academics/math/stat101/extra-resources/mindmap/chapter-14/regression-and-correlation.html","name":"STAT101 Mindmap — Chapter 14: Regression &amp; Correlation","description":"An interactive mindmap for STAT101 Chapter 14 covering scatter plots, the correlation coefficient r, simple linear regression, least squares, the coefficient of determination r², model assumptions, and common misuses like extrapolation.","isPartOf":{"@type":"WebSite","name":"Shoug's Digital Garden","url":"https://shoug-tech.com/"}}</script>
+
+    <link rel="alternate" hreflang="en"
+        href="https://shoug-tech.com/academics/math/stat101/extra-resources/mindmap/chapter-14/regression-and-correlation.html">
+    <link rel="alternate" hreflang="ar"
+        href="https://shoug-tech.com/ar/academics/math/stat101/extra-resources/mindmap/chapter-14/regression-and-correlation.html">
+    <link rel="alternate" hreflang="x-default"
+        href="https://shoug-tech.com/academics/math/stat101/extra-resources/mindmap/chapter-14/regression-and-correlation.html">
+
+    <!-- Microsoft Clarity tracking code for https://shoug-tech.com/ -->
+    <script type="text/javascript">
+        (function (c, l, a, r, i, t, y) {
+            c[a] = c[a] || function () { (c[a].q = c[a].q || []).push(arguments) };
+            t = l.createElement(r); t.async = 1; t.src = "https://www.clarity.ms/tag/" + i;
+            y = l.getElementsByTagName(r)[0]; y.parentNode.insertBefore(t, y);
+        })(window, document, "clarity", "script", "xub0eqmvs9");
+    </script>
+</head>
+
+<body>
+
+
+    <div id="toolbar">
+        <span class="tb-logo">📈 Regression & Correlation</span>
+        <div class="tb-sep"></div>
+        <div id="search-wrap">
+            <span class="si">🔎</span>
+            <input id="search" type="text" placeholder="Search concepts…">
+            <div id="sr"></div>
+        </div>
+        <button class="tb-btn" id="eab">📂 Expand All</button>
+        <button class="tb-btn" id="cab">📁 Collapse</button>
+        <div class="spacer"></div>
+        <button class="tb-btn" id="rb">⟳ Reset View</button>
+        <button class="tb-btn" id="tb" title="Theme">🌙</button>
+    </div>
+
+    <div id="cw">
+        <div id="canvas"><svg id="lines"></svg></div>
+    </div>
+
+    <div id="panel">
+        <div id="ph">
+            <div style="flex:1">
+                <div id="ptag"></div>
+                <div id="ptitle"></div>
+            </div>
+            <button id="pc">✕</button>
+        </div>
+        <div id="pb"></div>
+    </div>
+    <div id="zc"><button class="zb" id="zi">+</button>
+        <div id="zl">100%</div><button class="zb" id="zo">−</button>
+    </div>
+    <footer>STAT101 Chapter 14 – Regression &amp; Correlation Framework</footer>
+
+    <script>
+        // DATA based on STAT101 Chapter 14: Introduction to Linear Regression and Correlation Analysis
+        const DATA = {
+            id: 'reg_root', label: 'Regression & Correlation', level: 0,
+            children: [
+                {
+                    id: 'scatter_corr', label: 'Scatter Plots & Correlation', level: 1, tag: 'concept',
+                    children: [
+                        { id: 'scatter_def', label: 'Scatter Plot', level: 2, tag: 'concept', leaf: true, content: '<h4>Scatter Plot (Scatter Diagram)</h4><p>A two-dimensional plot showing the joint occurrence of two quantitative variables — one variable on the x-axis, one on the y-axis, one dot per observation.</p><p>It is always the <strong>first thing you do</strong> before calculating anything, because it tells you whether a straight-line model even makes sense for the data.</p>' },
+                        { id: 'corr_coef', label: 'Correlation Coefficient r', level: 2, tag: 'concept', leaf: true, content: '<h4>Correlation Coefficient (r)</h4><p>A quantitative measure of the <strong>strength and direction</strong> of the linear relationship between two variables.</p><p><strong>Range:</strong> -1.0 ≤ r ≤ +1.0</p><ul><li><strong>r close to +1.0</strong> → strong <em>positive</em> linear relationship</li><li><strong>r close to -1.0</strong> → strong <em>negative</em> linear relationship</li><li><strong>r close to 0.0</strong> → weak (or no) linear relationship</li><li><strong>r = ±1.0</strong> → a perfect linear relationship (every point sits exactly on a line)</li></ul>' },
+                        { id: 'corr_formula', label: 'Correlation Formula', level: 2, tag: 'formula', leaf: true, content: '<h4>Correlation Coefficient Formula (Eq. 14.1)</h4><p><strong>Deviation form:</strong></p><p>r = Σ(x - x̄)(y - ȳ) ÷ √[ Σ(x - x̄)² × Σ(y - ȳ)² ]</p><p><strong>Algebraic (raw-score) form — easier for calculators:</strong></p><p>r = [nΣxy - (Σx)(Σy)] ÷ √{ [nΣx² - (Σx)²] × [nΣy² - (Σy)²] }</p><p>where n = sample size, x = independent variable, y = dependent variable.</p>' },
+                        { id: 'shapes', label: 'Linear vs Curvilinear vs None', level: 2, tag: 'concept', leaf: true, content: '<h4>Shapes You Must Recognize</h4><ul><li><strong>Linear (positive)</strong> — points trend up and to the right in a fairly straight band; r is a large positive number (0.7–1.0).</li><li><strong>Linear (negative)</strong> — points trend down and to the right; r is a large negative number (-0.7 to -1.0).</li><li><strong>Curvilinear</strong> — points bend into a curve (U-shape, S-shape); r can be small or even near 0, even though a strong <em>nonlinear</em> relationship exists!</li><li><strong>No relationship</strong> — points scattered with no visible pattern; r near 0.</li></ul>' },
+                        { id: 'causation', label: 'Correlation ≠ Causation', level: 2, tag: 'pitfall', leaf: true, content: '<h4>Correlation Does Not Prove Causation</h4><p>A strong, significant r just means x and y move together. It never proves x <em>causes</em> y — a third, unmeasured "lurking" variable could be driving both.</p><p><strong>Classic example:</strong> ice cream sales and drowning deaths correlate strongly — because both rise in summer heat, not because ice cream causes drowning.</p>' },
+                        { id: 'r_zero_myth', label: '"r ≈ 0 Means Unrelated" Myth', level: 2, tag: 'pitfall', leaf: true, content: '<h4>Common Mistake: "r ≈ 0 means the variables are unrelated"</h4><p>Not necessarily! r only measures <strong>linear</strong> association. Two variables can have a very strong <em>curved</em> relationship and still produce a small r, because a straight line is simply the wrong shape to draw through them.</p><p><strong>Always look at the scatter plot first</strong> — don\'t just trust the number.</p>' }
+                    ]
+                },
+                {
+                    id: 'simple_reg', label: 'Simple Linear Regression', level: 1, tag: 'formula',
+                    children: [
+                        { id: 'reg_model', label: 'Regression Model ŷ=b0+b1x', level: 2, tag: 'formula', leaf: true, content: '<h4>The Regression Model</h4><p><strong>Population model:</strong> y = β₀ + β₁x + ε</p><p><strong>Estimated (sample) regression equation:</strong> ŷ = b₀ + b₁x</p><p>ŷ = predicted value of y for a given x | b₁ = estimate of the true slope β₁ | b₀ = estimate of the true y-intercept β₀.</p><p>Simple regression: only one dependent variable (y) and one independent variable (x). Simple <em>linear</em> regression: the relationship is modeled as a straight line.</p>' },
+                        { id: 'slope_intercept', label: 'Interpreting Slope & Intercept', level: 2, tag: 'concept', leaf: true, content: '<h4>Meaning of the Regression Coefficients</h4><p><strong>Slope, b₁</strong> — the average change in the dependent variable (y) for a one-unit increase in the independent variable (x).</p><p><strong>Intercept, b₀</strong> — the predicted value of y when x = 0, only meaningful if x = 0 is actually a realistic/observed value in the data.</p><p><strong>Tip:</strong> the sign of b₁ always matches the sign of r — if the correlation is positive, the slope is positive, and vice versa. Then always ask: does this slope\'s real-world direction make sense?</p>' },
+                        { id: 'least_squares', label: 'Least Squares Method', level: 2, tag: 'concept', leaf: true, content: '<h4>Least Squares Criterion</h4><p><strong>Residual:</strong> the difference between an actual y value and the value the regression line predicts, y - ŷ.</p><p>The least squares criterion finds the one line that minimizes the <em>sum of the squared</em> residuals — squaring stops positive and negative errors from canceling out and penalizes big misses much more than small ones.</p><p>minimize Σ(y - ŷ)²</p><p>b₁ = Σ(x - x̄)(y - ȳ) ÷ Σ(x - x̄)² &nbsp; and &nbsp; b₀ = ȳ - b₁x̄</p>' },
+                        { id: 'worked_example', label: 'Worked Example: Midwest Reps', level: 2, tag: 'example', leaf: true, content: '<h4>Worked Example: Midwest Distribution Company (n = 12 reps)</h4><p>x = years with company, y = annual sales ($000). Building-block sums:</p><p>Σx = 55, Σy = 4,855, Σxy = 26,091, Σx² = 329, n = 12</p><p><strong>Step 1 — Slope:</strong></p><p>b₁ = [nΣxy - (Σx)(Σy)] ÷ [nΣx² - (Σx)²] = [12(26,091) - (55)(4,855)] ÷ [12(329) - 55²]</p><p>b₁ = (313,092 - 267,025) ÷ (3,948 - 3,025) = 46,067 ÷ 923 = <strong>49.91</strong></p><p><strong>Step 2 — Intercept:</strong></p><p>b₀ = ȳ - b₁x̄ = 404.583 - (49.91)(4.583) = 404.583 - 228.75 = <strong>175.83</strong></p><p><strong>Step 3 — Regression equation:</strong> ŷ = 175.83 + 49.91x</p><p><strong>Interpretation:</strong> for every additional year a rep stays with the company, average annual sales rise by about $49,910 (b₁). A brand-new rep (0 years) is predicted to start at about $175,830 (b₀) — but x = 0 is outside the observed range of 1–9 years.</p><p><strong>Step 4 — Prediction at x = 10 years:</strong></p><p>ŷ = 175.83 + 49.91(10) = 175.83 + 499.10 = <strong>$674.93 thousand</strong></p><p>Also, correlation for this data: r = 0.8325 (strong positive linear relationship, statistically significant, t = 4.752 > critical 2.228).</p>' }
+                    ]
+                },
+                {
+                    id: 'coef_det', label: 'Coefficient of Determination', level: 1, tag: 'formula',
+                    children: [
+                        { id: 'r_squared', label: 'r² = Proportion Explained', level: 2, tag: 'formula', leaf: true, content: '<h4>Coefficient of Determination, r²</h4><p>r² is the <strong>proportion of the total variation in y that is explained</strong> by its linear relationship with x. For simple (one-x) regression, r² is simply r squared.</p><p>R² = SSR ÷ SST = (r)²</p><p><strong>Midwest example:</strong> R² = 191,600.62 ÷ 276,434.92 = 0.6931 (matches 0.8325² = 0.6931). About 69.3% of the variation in sales among these reps is explained by years with the company; the remaining 30.7% is due to other factors (skill, territory, luck, etc.).</p>' },
+                        { id: 'sum_squares', label: 'SST = SSR + SSE', level: 2, tag: 'concept', leaf: true, content: '<h4>Breaking Down the Variation</h4><p>SST = SSR + SSE</p><p><strong>SST</strong> (Total Sum of Squares) = Σ(y - ȳ)² — total variation in y.<br><strong>SSR</strong> (Sum of Squares Regression) = variation in y <em>explained</em> by the regression line.<br><strong>SSE</strong> (Sum of Squares Error) = variation in y <em>left unexplained</em> (the residuals).</p><p>For the Midwest data: SST = 276,434.92, SSE = 84,834.29, so SSR = 191,600.62.</p>' },
+                        { id: 'r2_reading', label: 'Reading r² in Context', level: 2, tag: 'concept', leaf: true, content: '<h4>Tip: Reading r² at a Glance</h4><p>r² close to 1.0 → the line fits the data very tightly, strong explanatory power. r² close to 0.0 → the line barely explains anything about y.</p><p>There\'s no universal "good" cutoff — 0.3 might be impressive in social science data, unimpressive in engineering data — so always interpret r² in the context of the field.</p>' }
+                    ]
+                },
+                {
+                    id: 'assumptions_misuse', label: 'Assumptions & Misuses', level: 1, tag: 'pitfall',
+                    children: [
+                        { id: 'assumptions', label: 'Model Assumptions', level: 2, tag: 'concept', leaf: true, content: '<h4>Linear Regression Assumptions</h4><ol><li>The random errors (ε) are statistically <strong>independent</strong>.</li><li>For each value of x, the distribution of possible y values is <strong>normally distributed</strong>.</li><li>The distributions of the errors have <strong>equal variances</strong> for all levels of x — this is called <strong>homoscedasticity</strong>.</li><li>A straight line (the population regression model) passes through the <strong>mean</strong> of the possible y values for every level of x — i.e., the relationship really is linear.</li></ol>' },
+                        { id: 'extrapolation', label: 'Extrapolation', level: 2, tag: 'pitfall', leaf: true, content: '<h4>Common Mistake: Extrapolation</h4><p>Using a regression equation to predict y for x values <strong>outside</strong> the range of x actually observed in the sample.</p><p>The Midwest sample only contains reps with 1–9 years of tenure. Predicting at x = 10 is already a small step outside the observed range — we have zero data confirming the relationship stays linear beyond x = 9. Predicting for a 25-year veteran using the same equation would be far worse: the line might curve, plateau, or reverse entirely outside the observed range.</p><p><strong>Never trust a regression prediction far outside the range of x used to build the model.</strong></p>' },
+                        { id: 'curvilinear_misuse', label: 'Fitting a Line to Curvilinear Data', level: 2, tag: 'pitfall', leaf: true, content: '<h4>Fitting a Straight Line to Curved Data</h4><p>If the scatter plot clearly bends, a straight line is the wrong model — even a "significant" linear fit can badly misrepresent the true (curved) relationship and produce systematically wrong predictions in different regions of x.</p><p>Always inspect the scatter plot before committing to a linear regression model.</p>' },
+                        { id: 'small_sample_r2', label: 'Over-trusting High r² (Small n)', level: 2, tag: 'pitfall', leaf: true, content: '<h4>Over-trusting r² with a Small Sample</h4><p>A high r² from a tiny sample (say n = 5) is far less reliable than the same r² from a large sample — one or two unusual points can swing it dramatically.</p><p>Always check the sample size and look for influential outliers before trusting the fit. A single extreme (x, y) point far from the rest of the data can pull the entire regression line toward it, distorting both the slope and r².</p>' }
+                    ]
+                }
+            ]
+        };
+
+        let nodes = {}, expanded = new Set(['reg_root']);
+        let selectedId = null;
+        let tf = { x: 70, y: 80, scale: 0.85 }, isPanning = false, panStart = {};
+        const cw = document.getElementById('cw'), canvas = document.getElementById('canvas'), linesEl = document.getElementById('lines');
+        const NW = 185, NH = 58, HG = 270, VG = 76;
+
+        function flatten(n, d = 0) { nodes[n.id] = { ...n, depth: d }; if (n.children) n.children.forEach(c => flatten(c, d + 1)); }
+        flatten(DATA);
+
+        function countH(n) {
+            if (!n.children || !expanded.has(n.id)) return 1;
+            let total = 0;
+            n.children.forEach(c => total += countH(nodes[c.id] || c));
+            return Math.max(total, 1);
+        }
+
+        function layout() {
+            let pos = {};
+            function assign(n, x, yOff) {
+                pos[n.id] = { x, yOff, y: 0 };
+                if (n.children && expanded.has(n.id)) {
+                    let sy = yOff;
+                    n.children.forEach(c => {
+                        let cn = nodes[c.id] || c;
+                        let ch = countH(cn);
+                        assign(cn, x + HG, sy);
+                        sy += ch;
+                    });
+                }
+            }
+            assign(DATA, 0, 0);
+            function computeY(n) {
+                if (!n.children || !expanded.has(n.id)) { pos[n.id].y = pos[n.id].yOff * VG; return; }
+                n.children.forEach(c => computeY(nodes[c.id] || c));
+                let childs = n.children.map(c => nodes[c.id] || c);
+                let topY = pos[childs[0].id].y, botY = pos[childs[childs.length - 1].id].y;
+                pos[n.id].y = (topY + botY) / 2;
+            }
+            computeY(DATA);
+            return pos;
+        }
+
+        function render() {
+            let pos = layout();
+            let existing = {};
+            canvas.querySelectorAll('.node').forEach(el => { existing[el.dataset.id] = el; });
+            let vis = new Set();
+            function collect(n) { vis.add(n.id); if (n.children && expanded.has(n.id)) n.children.forEach(c => collect(nodes[c.id] || c)); }
+            collect(DATA);
+            Object.keys(existing).forEach(id => { if (!vis.has(id)) existing[id].remove(); });
+            vis.forEach(id => {
+                let nd = nodes[id], p = pos[id];
+                if (!p) return;
+                let el = existing[id];
+                let isNew = !el;
+                if (isNew) { el = document.createElement('div'); el.className = 'node'; el.dataset.id = id; canvas.appendChild(el); }
+                let lvlClass = id === 'reg_root' ? 'root' : (nd.level === 1 ? 'l1' : (nd.level === 2 ? 'l2' : 'l3'));
+                el.className = `node ${lvlClass} ${selectedId === id ? 'selected' : ''}`;
+                el.style.left = p.x + 'px';
+                el.style.top = (p.y - NH / 2) + 'px';
+                el.style.width = NW + 'px';
+                el.style.minHeight = NH + 'px';
+                let hasChildren = nd.children && nd.children.length > 0 && !nd.leaf;
+                let icon = hasChildren ? `<svg class="chev ${expanded.has(id) ? 'open' : ''}" viewBox="0 0 16 16" fill="none" stroke="currentColor"><path d="M6 4l4 4-4 4" stroke-width="2"/></svg>` : (nd.leaf ? `<svg class="li" viewBox="0 0 16 16" fill="none" stroke="currentColor"><circle cx="8" cy="8" r="4"/></svg>` : '');
+                el.innerHTML = `<span class="nl">${nd.label.replace(/\n/g, '<br>')}</span>${icon}`;
+                if (isNew) el.classList.add('entering');
+                el.onclick = (e) => { e.stopPropagation(); onClick(id); };
+            });
+            drawLines(pos, vis);
+        }
+
+        function drawLines(pos, vis) {
+            let paths = [];
+            vis.forEach(id => {
+                let nd = nodes[id];
+                if (!nd.children || !expanded.has(id)) return;
+                nd.children.forEach(c => {
+                    let cid = (nodes[c.id] || c).id;
+                    if (!vis.has(cid)) return;
+                    let p1 = pos[id], p2 = pos[cid];
+                    if (!p1 || !p2) return;
+                    let x1 = p1.x + NW, y1 = p1.y;
+                    let x2 = p2.x, y2 = p2.y;
+                    let mx = x1 + (x2 - x1) * 0.5;
+                    paths.push(`<path class="pl" d="M${x1},${y1} C${mx},${y1} ${mx},${y2} ${x2},${y2}"/>`);
+                });
+            });
+            linesEl.innerHTML = paths.join('');
+        }
+
+        function onClick(id) {
+            let nd = nodes[id];
+            if (nd.leaf || (nd.children && nd.children.length === 0)) { selectedId = id; openPanel(id); render(); return; }
+            if (nd.children && nd.children.length) {
+                expanded.has(id) ? expanded.delete(id) : expanded.add(id);
+                render();
+            }
+        }
+
+        function openPanel(id) {
+            let nd = nodes[id];
+            document.getElementById('ptitle').innerHTML = nd.label.replace(/\n/g, ' ');
+            let tagDiv = document.getElementById('ptag');
+            let tagMap = { concept: 'CONCEPT', formula: 'FORMULA', example: 'EXAMPLE', pitfall: 'PITFALL' };
+            let cls = tagMap[nd.tag] || 'CONCEPT';
+            tagDiv.textContent = cls;
+            tagDiv.className = `tag-${(nd.tag === 'concept' ? 'concept' : (nd.tag === 'formula' ? 'formula' : (nd.tag === 'example' ? 'example' : 'pitfall')))}`;
+            tagDiv.style.display = 'inline-flex';
+            document.getElementById('pb').innerHTML = nd.content || '<p>Core concept from regression and correlation analysis.</p>';
+            document.getElementById('panel').classList.add('open');
+        }
+
+        document.getElementById('pc').onclick = () => { document.getElementById('panel').classList.remove('open'); selectedId = null; render(); };
+        cw.addEventListener('mousedown', e => { if (e.target.closest('.node') || e.target.closest('#panel')) return; isPanning = true; cw.classList.add('panning'); panStart = { x: e.clientX - tf.x, y: e.clientY - tf.y }; });
+        window.addEventListener('mousemove', e => { if (!isPanning) return; tf.x = e.clientX - panStart.x; tf.y = e.clientY - panStart.y; applyTf(); });
+        window.addEventListener('mouseup', () => { isPanning = false; cw.classList.remove('panning'); });
+        cw.addEventListener('wheel', e => { e.preventDefault(); let delta = -e.deltaY * 0.001; let ns = Math.min(2.2, Math.max(0.3, tf.scale + delta)); let rect = cw.getBoundingClientRect(); let mx = e.clientX - rect.left, my = e.clientY - rect.top; tf.x = mx - (mx - tf.x) * (ns / tf.scale); tf.y = my - (my - tf.y) * (ns / tf.scale); tf.scale = ns; applyTf(); }, { passive: false });
+        function applyTf() {
+            canvas.style.transform = `translate(${tf.x}px, ${tf.y}px) scale(${tf.scale})`;
+            document.getElementById('zl').innerText = Math.round(tf.scale * 100) + '%';
+        }
+
+        function zoom(delta) {
+            tf.scale = Math.min(2.2, Math.max(0.3, tf.scale + delta));
+            applyTf();
+        }
+
+        function resetView() {
+            tf = { x: 70, y: 80, scale: 0.85 };
+            applyTf();
+        }
+
+        function collectIds(node, ids = []) {
+            ids.push(node.id);
+            if (node.children) node.children.forEach(child => collectIds(child, ids));
+            return ids;
+        }
+
+        function expandAll() {
+            collectIds(DATA).forEach(id => expanded.add(id));
+            render();
+        }
+
+        function collapseAll() {
+            expanded.clear();
+            expanded.add('reg_root');
+            render();
+        }
+
+        document.getElementById('zi').onclick = () => zoom(0.12);
+        document.getElementById('zo').onclick = () => zoom(-0.12);
+        document.getElementById('rb').onclick = resetView;
+        document.getElementById('eab').onclick = expandAll;
+        document.getElementById('cab').onclick = collapseAll;
+        document.getElementById('tb').onclick = () => {
+            const body = document.body;
+            const next = body.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+            body.setAttribute('data-theme', next);
+            document.getElementById('tb').textContent = next === 'light' ? '☀️' : '🌙';
+        };
+
+        const searchInput = document.getElementById('search');
+        const searchResults = document.getElementById('sr');
+
+        function flatNodes(node, path = [], out = []) {
+            out.push({ node, path: [...path, node.label] });
+            if (node.children) node.children.forEach(child => flatNodes(child, [...path, node.label], out));
+            return out;
+        }
+
+        function selectNode(id) {
+            function findPath(node, target, path = []) {
+                if (node.id === target) return [...path, node.id];
+                if (!node.children) return null;
+                for (const child of node.children) {
+                    const found = findPath(child, target, [...path, node.id]);
+                    if (found) return found;
+                }
+                return null;
+            }
+
+            const path = findPath(DATA, id);
+            if (path) path.forEach(pid => expanded.add(pid));
+            selectedId = id;
+            render();
+            setTimeout(() => {
+                const el = canvas.querySelector(`[data-id="${id}"]`);
+                if (!el) return;
+                const r = el.getBoundingClientRect();
+                const wr = cw.getBoundingClientRect();
+                tf.x += (wr.width / 2) - (r.left + r.width / 2 - wr.left);
+                tf.y += (wr.height / 2) - (r.top + r.height / 2 - wr.top);
+                applyTf();
+                if (nodes[id] && nodes[id].leaf) openPanel(id);
+            }, 100);
+        }
+
+        searchInput.addEventListener('input', () => {
+            const q = searchInput.value.trim().toLowerCase();
+            if (!q) {
+                searchResults.style.display = 'none';
+                return;
+            }
+
+            const matches = flatNodes(DATA).filter(({ node }) => node.label.toLowerCase().includes(q)).slice(0, 10);
+            searchResults.innerHTML = matches.map(({ node, path }) => {
+                const trail = path.slice(0, -1).join(' › ');
+                return `<div class="sr-item" data-id="${node.id}"><div>${node.label}</div>${trail ? `<div class="sr-path">${trail}</div>` : ''}</div>`;
+            }).join('');
+            searchResults.style.display = matches.length ? 'block' : 'none';
+            searchResults.querySelectorAll('.sr-item').forEach(item => {
+                item.onclick = () => {
+                    searchResults.style.display = 'none';
+                    searchInput.value = '';
+                    selectNode(item.dataset.id);
+                };
+            });
+        });
+
+        document.addEventListener('click', event => {
+            if (!event.target.closest('#search-wrap')) searchResults.style.display = 'none';
+        });
+
+        render();
+        applyTf();
+    </script>
+
+    <script src="/javascripts/mindmap-controls.js"></script>
+</body>
+
+</html>
