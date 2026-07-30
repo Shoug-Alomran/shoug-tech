@@ -3117,7 +3117,7 @@ var COURSE_PAGES = [
   },
   {
     "url": "/academics/other-courses/ethcs303/extra-resources/final-exam-listing/",
-    "title": "ETHCS303 | Final Exam — The Listing Vault",
+    "title": "ETHCS303 | Summer Final Exam Scope",
     "track": "other-courses",
     "course": "ethcs303",
     "section": "extra-resources",
