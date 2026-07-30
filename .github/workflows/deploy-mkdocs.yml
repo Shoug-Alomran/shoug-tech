@@ -50,3 +50,21 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v5
+
+  indexnow:
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.x"
+
+      - name: Notify IndexNow of changed URLs
+        run: >-
+          python3 scripts/submit_indexnow.py
+          --before "${{ github.event.before }}"
+          --after "${{ github.sha }}"
