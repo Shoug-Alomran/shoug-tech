@@ -505,7 +505,11 @@
     });
   }
 
+  var _booted = false;
+
   function boot() {
+    if (_booted) return;
+    _booted = true;
     if (!firebase.apps.length) firebase.initializeApp(FB_CONFIG);
 
     document.getElementById("open-signin-btn").addEventListener("click", function() {
@@ -557,17 +561,57 @@
     });
   }
 
-  function loadScript(src, cb) {
+  function firebaseReady() {
+    return !!(window.firebase && firebase.apps && firebase.auth && firebase.firestore);
+  }
+
+  function loadScript(src, cb, err) {
+    var existing = Array.from(document.scripts).filter(function(script) {
+      return script.src === src;
+    })[0];
+    if (existing) {
+      existing.addEventListener("load", cb, { once: true });
+      existing.addEventListener("error", err, { once: true });
+      setTimeout(function(){ if (firebaseReady()) cb(); }, 0);
+      return;
+    }
     var s = document.createElement("script");
-    s.src = src; s.onload = cb;
+    s.src = src;
+    s.onload = cb;
+    s.onerror = err;
     document.head.appendChild(s);
   }
 
-  loadScript(FB_BASE + "app-compat.js", function() {
-    loadScript(FB_BASE + "auth-compat.js", function() {
-      loadScript(FB_BASE + "firestore-compat.js", boot);
-    });
-  });
+  function loadFirebaseFallback() {
+    if (firebaseReady()) { boot(); return; }
+    var fail = function(){ show("error-state"); };
+    loadScript(FB_BASE + "app-compat.js", function() {
+      var pending = 2;
+      function done() { if (--pending === 0) boot(); }
+      loadScript(FB_BASE + "auth-compat.js", done, fail);
+      loadScript(FB_BASE + "firestore-compat.js", done, fail);
+    }, fail);
+  }
+
+  function ensureFirebaseReady() {
+    if (firebaseReady()) { boot(); return; }
+
+    window.addEventListener("shoug:fb", function() {
+      if (firebaseReady()) boot();
+    }, { once: true });
+
+    window.dispatchEvent(new CustomEvent("shoug:load-account", { detail: { open: false } }));
+
+    setTimeout(function() {
+      if (!_booted) loadFirebaseFallback();
+    }, 1200);
+
+    setTimeout(function() {
+      if (!_booted) show("error-state");
+    }, 15000);
+  }
+
+  ensureFirebaseReady();
 })();
 </script>
 </body>
