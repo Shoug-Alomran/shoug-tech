@@ -8,8 +8,6 @@ import json
 import subprocess
 import sys
 import time
-import urllib.error
-import urllib.request
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
@@ -23,6 +21,7 @@ KEY_FILE = DOCS / f"{KEY}.txt"
 KEY_URL = f"{SITE_URL}/{KEY}.txt"
 ENDPOINT = "https://api.indexnow.org/indexnow"
 MAX_BATCH = 10_000
+NON_FATAL_HTTP_STATUSES = {403, 429}
 
 
 def run_git(*args: str) -> str:
@@ -92,14 +91,23 @@ def verify_live_key(attempts: int = 6) -> None:
         raise RuntimeError("Local IndexNow key file content does not match its filename")
 
     for attempt in range(1, attempts + 1):
-        try:
-            with urllib.request.urlopen(KEY_URL, timeout=15) as response:
-                actual = response.read().decode("utf-8").strip()
-            if actual == KEY:
-                print(f"[ok] verified live IndexNow key: {KEY_URL}")
-                return
-        except (urllib.error.URLError, TimeoutError):
-            pass
+        result = subprocess.run(
+            [
+                "curl",
+                "--fail",
+                "--silent",
+                "--show-error",
+                "--location",
+                "--max-time",
+                "20",
+                KEY_URL,
+            ],
+            capture_output=True,
+        )
+        actual = result.stdout.decode("utf-8", errors="replace").strip()
+        if result.returncode == 0 and actual == KEY:
+            print(f"[ok] verified live IndexNow key: {KEY_URL}")
+            return
         if attempt < attempts:
             print(f"[wait] IndexNow key is not live yet ({attempt}/{attempts})")
             time.sleep(10)
@@ -130,19 +138,37 @@ def submit(urls: list[str], dry_run: bool) -> None:
                 "urlList": batch,
             }
         ).encode("utf-8")
-        request = urllib.request.Request(
-            ENDPOINT,
-            data=payload,
-            headers={"Content-Type": "application/json; charset=utf-8"},
-            method="POST",
+        result = subprocess.run(
+            [
+                "curl",
+                "--silent",
+                "--show-error",
+                "--output",
+                "/dev/null",
+                "--write-out",
+                "%{http_code}",
+                "--request",
+                "POST",
+                "--header",
+                "Content-Type: application/json; charset=utf-8",
+                "--data-binary",
+                "@-",
+                ENDPOINT,
+            ],
+            input=payload,
+            capture_output=True,
         )
-        try:
-            with urllib.request.urlopen(request, timeout=30) as response:
-                status = response.status
-        except urllib.error.HTTPError as error:
-            status = error.code
-            if status not in {200, 202}:
-                raise
+        if result.returncode != 0:
+            error = result.stderr.decode("utf-8", errors="replace").strip()
+            raise RuntimeError(f"IndexNow request failed: {error}")
+        status_text = result.stdout.decode("ascii", errors="replace").strip()
+        status = int(status_text) if status_text.isdigit() else 0
+        if status in NON_FATAL_HTTP_STATUSES:
+            print(
+                f"[warn] IndexNow returned HTTP {status}; "
+                "skipping notification without failing deploy"
+            )
+            continue
         if status not in {200, 202}:
             raise RuntimeError(f"IndexNow returned unexpected HTTP {status}")
         print(f"[ok] IndexNow accepted {len(batch)} URL(s): HTTP {status}")
