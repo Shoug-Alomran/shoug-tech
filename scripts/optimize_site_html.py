@@ -22,8 +22,14 @@ SITE_DESCRIPTION = (
 )
 SEO_IMAGE = f"{SITE_URL}logo.png"
 CLARITY_ASSETS = (
-    '    <link rel="stylesheet" href="/styles/clarity-consent.css">\n'
-    '    <script src="/javascripts/clarity-consent.js"></script>'
+    '    <!-- Microsoft Clarity tracking code for https://shoug-tech.com/ -->\n'
+    '    <script type="text/javascript">\n'
+    '        (function(c,l,a,r,i,t,y){\n'
+    '            c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};\n'
+    '            t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;\n'
+    '            y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);\n'
+    '        })(window, document, "clarity", "script", "xub0eqmvs9");\n'
+    '    </script>'
 )
 
 
@@ -297,8 +303,8 @@ def add_alternates(html: str, path: Path) -> str:
 
 
 def add_clarity(html: str) -> str:
-    """Install the consent-aware Clarity loader once on every HTML page."""
-    if "/javascripts/clarity-consent.js" in html:
+    """Install Microsoft's official Clarity snippet once on every HTML page."""
+    if "www.clarity.ms/tag/" in html and "xub0eqmvs9" in html:
         return html
     return insert_before_head_close(html, "\n" + CLARITY_ASSETS)
 
