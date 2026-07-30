@@ -172,8 +172,49 @@
 // load Firebase on account intent (or shortly after the initial render).
 (function () {
   var loaded = false;
+
+  function loadFirebase(openWhenReady) {
+    if (loaded) {
+      if (openWhenReady) {
+        if (typeof window.__shougOpenAuthModal === "function") {
+          window.__shougOpenAuthModal();
+        } else {
+          window.addEventListener("shoug:fb", function () {
+            if (typeof window.__shougOpenAuthModal === "function") window.__shougOpenAuthModal();
+          }, { once: true });
+        }
+      }
+      return;
+    }
+    loaded = true;
+    try { localStorage.setItem("shoug-account-activated", "true"); } catch (error) { }
+    if (openWhenReady) {
+      window.addEventListener("shoug:fb", function () {
+        setTimeout(function () {
+          if (typeof window.__shougOpenAuthModal === "function") {
+            window.__shougOpenAuthModal();
+            return;
+          }
+          var readyButton = document.getElementById("shoug-fb-user");
+          if (readyButton && !readyButton.hasAttribute("data-account-loader")) readyButton.click();
+        }, 0);
+      }, { once: true });
+    }
+    var s = document.createElement("script");
+    s.src = "/javascripts/firebase-auth.js?v=61";
+    s.async = true;
+    document.head.appendChild(s);
+  }
+  window.__shougLoadFirebaseAuth = loadFirebase;
+  window.addEventListener("shoug:load-account", function (event) {
+    loadFirebase(!!(event.detail && event.detail.open));
+  });
+
   var actions = document.querySelector(".shoug-header-actions");
-  if (!actions) return;
+  if (!actions) {
+    if (/^\/(?:account|community|bookmarks)(?:\/|$)/.test(window.location.pathname)) loadFirebase(false);
+    return;
+  }
   var accountActivated = false;
   try { accountActivated = localStorage.getItem("shoug-account-activated") === "true"; } catch (error) { }
 
@@ -196,28 +237,9 @@
   }
   accountButton.setAttribute("data-account-loader", "");
 
-  function loadFirebase(openWhenReady) {
-    if (loaded) return;
-    loaded = true;
-    try { localStorage.setItem("shoug-account-activated", "true"); } catch (error) { }
-    if (openWhenReady) {
-      window.addEventListener("shoug:fb", function () {
-        setTimeout(function () {
-          var readyButton = document.getElementById("shoug-fb-user");
-          if (readyButton && !readyButton.hasAttribute("data-account-loader")) readyButton.click();
-        }, 0);
-      }, { once: true });
-    }
-    var s = document.createElement("script");
-    s.src = "/javascripts/firebase-auth.js?v=59";
-    s.async = true;
-    document.head.appendChild(s);
-  }
-
   accountButton.addEventListener("click", function () { loadFirebase(true); }, { once: true });
   actions.addEventListener("pointerover", function () { loadFirebase(false); }, { once: true, passive: true });
   actions.addEventListener("focusin", function () { loadFirebase(false); }, { once: true });
-  window.addEventListener("shoug:load-account", function () { loadFirebase(false); }, { once: true });
   if (accountActivated) {
     loadFirebase(false);
   } else {

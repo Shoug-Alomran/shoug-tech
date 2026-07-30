@@ -456,6 +456,8 @@
     document.body.style.overflow = "hidden";
     setTimeout(function () { emailInput && emailInput.focus(); }, 60);
   }
+  window.__shougOpenAuthModal = openModal;
+  window.addEventListener("shoug:open-auth", openModal);
 
   function closeModal() {
     if (!modal) return;

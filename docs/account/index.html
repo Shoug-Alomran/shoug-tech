@@ -233,7 +233,7 @@
 </head>
 <body>
 <script>if(localStorage.getItem('shoug-theme')==='light')document.body.classList.add('shoug-light-mode');</script>
-<script src="/javascripts/mobile-navigation.js?v=59" defer></script>
+<script src="/javascripts/mobile-navigation.js?v=61" defer></script>
 <script src="/javascripts/arabic-localization.js" defer></script>
 
 <button class="shoug-lang-btn" type="button" data-lang-toggle aria-label="Switch to Arabic">AR</button>
@@ -806,10 +806,6 @@
     // User confirmed signed in — load and render dashboard
     if (_shown) return;
     _shown = true;
-    var signinBtn = document.getElementById("open-signin-btn");
-    if (signinBtn) signinBtn.addEventListener("click", function(){
-      var btn = document.getElementById("shoug-fb-user"); if (btn) btn.click();
-    });
     var coursePages = Array.isArray(window.COURSE_PAGES) ? window.COURSE_PAGES : [];
     var validPageUrls = {};
     coursePages.forEach(function(p){ validPageUrls[p.url]=true; });
@@ -890,6 +886,12 @@
     // Wait 1 second: if a user fires within that window, onUser() wins. Otherwise show sign-in.
     setTimeout(function(){ if (!_shown) { _shown=true; show("signed-out-state"); } }, 1000);
   }
+
+  var signinBtn = document.getElementById("open-signin-btn");
+  if (signinBtn) signinBtn.addEventListener("click", function(){
+    if (typeof window.__shougOpenAuthModal === "function") { window.__shougOpenAuthModal(); return; }
+    window.dispatchEvent(new CustomEvent("shoug:load-account", { detail: { open: true } }));
+  });
 
   // ── Strategy 1: hook called by new firebase-auth.js (most direct) ─────
   window.__shoug_onAuth = function(user){ if (user) onUser(user); else onNull(); };
