@@ -778,8 +778,8 @@
     } catch (e) { }
     new Notification("Exam Reminder - " + (exam.course || "Exam"), {
       body: (exam.course || "Exam") + " " + examTypeLabel(exam.type) + " is " + examWhenLabel(days).toLowerCase() + " (" + examDateLabel(exam.date) + ")",
-      icon: "/assets/favicon.png?v=2",
-      badge: "/assets/favicon.png?v=2",
+      icon: "/assets/shoug-favicon-v3.png",
+      badge: "/assets/shoug-favicon-v3.png",
       tag: key
     });
   }

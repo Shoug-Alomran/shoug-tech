@@ -21,6 +21,7 @@ SITE_DESCRIPTION = (
     "documentation across software development, cybersecurity, and computer science."
 )
 SEO_IMAGE = f"{SITE_URL}logo.png"
+BRAND_FAVICON = "/assets/shoug-favicon-v3.png"
 CLARITY_ASSETS = (
     '    <!-- Microsoft Clarity tracking code for https://shoug-tech.com/ -->\n'
     '    <script type="text/javascript">\n'
@@ -265,6 +266,16 @@ def optimize_images(html: str) -> str:
     return re.sub(r"<img\b[^>]*>", patch_img, html)
 
 
+def update_brand_favicon(html: str) -> str:
+    """Use a uniquely named brand favicon so Safari drops stale icon caches."""
+    return re.sub(
+        r"/assets/favicon\.png(?:\?v=\d+)?",
+        BRAND_FAVICON,
+        html,
+        flags=re.IGNORECASE,
+    )
+
+
 def page_variants(path: Path) -> tuple[str, str]:
     rel = path.relative_to(SITE).as_posix()
     is_ar = rel.startswith("ar/")
@@ -391,6 +402,7 @@ def main() -> int:
             continue
         original = path.read_text(encoding="utf-8")
         html = patch_accessibility(original)
+        html = update_brand_favicon(html)
         html = optimize_images(html)
         html = ensure_meta(html, path)
         html = add_alternates(html, path)
