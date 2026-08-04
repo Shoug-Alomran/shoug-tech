@@ -21,7 +21,8 @@ SITE_DESCRIPTION = (
     "documentation across software development, cybersecurity, and computer science."
 )
 SEO_IMAGE = f"{SITE_URL}logo.png"
-BRAND_FAVICON = "/assets/shoug-favicon-v3.png"
+BRAND_FAVICON = "/assets/shoug-favicon-v4.png"
+BRAND_APPLE_TOUCH_ICON = "/assets/shoug-apple-touch-icon-v4.png"
 CLARITY_ASSETS = (
     '    <!-- Microsoft Clarity tracking code for https://shoug-tech.com/ -->\n'
     '    <script type="text/javascript">\n'
@@ -267,11 +268,29 @@ def optimize_images(html: str) -> str:
 
 
 def update_brand_favicon(html: str) -> str:
-    """Use a uniquely named brand favicon so Safari drops stale icon caches."""
-    return re.sub(
-        r"/assets/favicon\.png(?:\?v=\d+)?",
-        BRAND_FAVICON,
+    """Give every page one identical, cache-busted set of brand icons."""
+    icon_links = re.compile(
+        r"^[ \t]*<link\b[^>]*\brel=[\"'][^\"']*(?:icon|apple-touch-icon)[^\"']*[\"'][^>]*>[ \t]*(?:\r?\n)?",
+        flags=re.IGNORECASE | re.MULTILINE,
+    )
+    html = icon_links.sub("", html)
+    html = re.sub(
+        r"(<head\b[^>]*>)[ \t]*(?:\r?\n[ \t]*)*",
+        r"\1",
         html,
+        count=1,
+        flags=re.IGNORECASE,
+    )
+    icon_block = (
+        f'\n    <link rel="icon" type="image/png" sizes="256x256" href="{BRAND_FAVICON}">\n'
+        f'    <link rel="shortcut icon" type="image/png" href="{BRAND_FAVICON}">\n'
+        f'    <link rel="apple-touch-icon" sizes="180x180" href="{BRAND_APPLE_TOUCH_ICON}">\n'
+    )
+    return re.sub(
+        r"(<head\b[^>]*>)",
+        lambda match: match.group(1) + icon_block,
+        html,
+        count=1,
         flags=re.IGNORECASE,
     )
 
