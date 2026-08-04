@@ -1,0 +1,1486 @@
+<!DOCTYPE html>
+<html lang="en">
+<script>!function(){var t=localStorage.getItem("shoug-theme");if(t)document.documentElement.setAttribute("data-theme",t);}();</script>
+
+<head>
+    <link rel="icon" type="image/png" href="/assets/shoug-favicon-v3.png">
+    <link rel="shortcut icon" href="/assets/shoug-favicon-v3.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/shoug-apple-touch-icon-v3.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Security At Rest, In Use, In Transit — CYS406 Mindmap</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0d1117;
+            --surface: #161b22;
+            --surface2: #1f2937;
+            --border: #30363d;
+            --text: #e6edf3;
+            --text-muted: #8b949e;
+            --accent: #58a6ff;
+            --accent2: #3fb950;
+            --accent3: #d2a8ff;
+            --accent4: #ffa657;
+            --accent5: #ff7b72;
+            --accent6: #79c0ff;
+            --node-root: #1a2744;
+            --node-root-border: #58a6ff;
+            --node-l1: #1a2a1e;
+            --node-l1-border: #3fb950;
+            --node-l2: #2a1f3d;
+            --node-l2-border: #d2a8ff;
+            --node-l3: #2a1f18;
+            --node-l3-border: #ffa657;
+            --node-selected: #0d2442;
+            --node-selected-border: #58a6ff;
+            --shadow: rgba(0, 0, 0, 0.5);
+            --connector: #30363d;
+            --panel-bg: #161b22;
+            --panel-border: #30363d;
+            --toolbar-bg: rgba(13, 17, 23, 0.92);
+            --search-bg: #21262d;
+            --search-border: #30363d;
+            --transition: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        [data-theme="light"] {
+            --bg: #f6f8fa;
+            --surface: #ffffff;
+            --surface2: #f0f2f5;
+            --border: #d0d7de;
+            --text: #1f2328;
+            --text-muted: #656d76;
+            --accent: #0969da;
+            --accent2: #1a7f37;
+            --accent3: #8250df;
+            --accent4: #bc4c00;
+            --accent5: #cf222e;
+            --accent6: #0550ae;
+            --node-root: #dbeafe;
+            --node-root-border: #0969da;
+            --node-l1: #dcfce7;
+            --node-l1-border: #1a7f37;
+            --node-l2: #ede9fe;
+            --node-l2-border: #8250df;
+            --node-l3: #fff7ed;
+            --node-l3-border: #bc4c00;
+            --node-selected: #bfdbfe;
+            --node-selected-border: #0969da;
+            --shadow: rgba(0, 0, 0, 0.12);
+            --connector: #c8d1da;
+            --panel-bg: #ffffff;
+            --panel-border: #d0d7de;
+            --toolbar-bg: rgba(246, 248, 250, 0.92);
+            --search-bg: #f6f8fa;
+            --search-border: #d0d7de;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            height: 100vh;
+            overflow: hidden;
+            transition: background var(--transition), color var(--transition);
+            user-select: none;
+        }
+
+        /* TOOLBAR */
+        #toolbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            background: var(--toolbar-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            height: 56px;
+            transition: background var(--transition), border-color var(--transition);
+        }
+
+        .toolbar-brand {
+            font-family: 'DM Serif Display', serif;
+            font-size: 16px;
+            color: var(--text);
+            white-space: nowrap;
+            margin-right: 8px;
+            letter-spacing: -0.3px;
+        }
+
+        .toolbar-brand span {
+            color: var(--accent);
+        }
+
+        .toolbar-sep {
+            width: 1px;
+            height: 24px;
+            background: var(--border);
+            margin: 0 4px;
+        }
+
+        #search-wrap {
+            position: relative;
+            flex: 1;
+            max-width: 280px;
+        }
+
+        #search-wrap svg {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        #search {
+            width: 100%;
+            background: var(--search-bg);
+            border: 1px solid var(--search-border);
+            border-radius: 8px;
+            padding: 6px 12px 6px 34px;
+            color: var(--text);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 13px;
+            outline: none;
+            transition: border-color 0.2s, background var(--transition);
+        }
+
+        #search:focus {
+            border-color: var(--accent);
+        }
+
+        #search::placeholder {
+            color: var(--text-muted);
+        }
+
+        .tb-btn {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 6px 11px;
+            color: var(--text);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s, border-color 0.2s, transform 0.1s;
+            white-space: nowrap;
+        }
+
+        .tb-btn:hover {
+            background: var(--border);
+            transform: translateY(-1px);
+        }
+
+        .tb-btn:active {
+            transform: translateY(0);
+        }
+
+        .tb-btn svg {
+            flex-shrink: 0;
+        }
+
+        #theme-toggle {
+            font-size: 16px;
+            padding: 6px 10px;
+        }
+
+        #search-results {
+            position: absolute;
+            top: calc(100% + 6px);
+            left: 0;
+            right: 0;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            box-shadow: 0 8px 32px var(--shadow);
+            z-index: 200;
+            max-height: 260px;
+            overflow-y: auto;
+            display: none;
+        }
+
+        .sr-item {
+            padding: 9px 14px;
+            font-size: 13px;
+            cursor: pointer;
+            border-bottom: 1px solid var(--border);
+            transition: background 0.15s;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .sr-item:last-child {
+            border-bottom: none;
+        }
+
+        .sr-item:hover {
+            background: var(--surface2);
+        }
+
+        .sr-item .sr-path {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .sr-item mark {
+            background: transparent;
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        /* CANVAS */
+        #canvas-wrap {
+            position: fixed;
+            top: 56px;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            overflow: hidden;
+            cursor: grab;
+        }
+
+        #canvas-wrap.grabbing {
+            cursor: grabbing;
+        }
+
+        #canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4000px;
+            height: 4000px;
+            transform-origin: 0 0;
+        }
+
+        #svg-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        /* NODES */
+        .node {
+            position: absolute;
+            border-radius: 14px;
+            border: 2px solid;
+            cursor: pointer;
+            transition:
+                box-shadow 0.25s,
+                transform 0.25s,
+                background 0.25s,
+                border-color 0.25s,
+                opacity 0.25s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            max-width: 220px;
+            min-width: 120px;
+        }
+
+        .node:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 8px 24px var(--shadow);
+            z-index: 10;
+        }
+
+        .node.root {
+            background: var(--node-root);
+            border-color: var(--node-root-border);
+            font-family: 'DM Serif Display', serif;
+            font-size: 15px;
+            min-width: 160px;
+            max-width: 240px;
+            box-shadow: 0 0 0 4px rgba(88, 166, 255, 0.15), 0 4px 20px var(--shadow);
+        }
+
+        .node.level-1 {
+            background: var(--node-l1);
+            border-color: var(--node-l1-border);
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .node.level-2 {
+            background: var(--node-l2);
+            border-color: var(--node-l2-border);
+            font-size: 12.5px;
+        }
+
+        .node.level-3 {
+            background: var(--node-l3);
+            border-color: var(--node-l3-border);
+            font-size: 12px;
+        }
+
+        .node.selected {
+            background: var(--node-selected) !important;
+            border-color: var(--node-selected-border) !important;
+            box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.3), 0 6px 24px var(--shadow) !important;
+            z-index: 20;
+        }
+
+        .node.highlighted {
+            box-shadow: 0 0 0 3px var(--accent4), 0 4px 16px var(--shadow) !important;
+        }
+
+        .node-text {
+            flex: 1;
+            line-height: 1.35;
+            word-break: break-word;
+        }
+
+        .chevron {
+            flex-shrink: 0;
+            width: 16px;
+            height: 16px;
+            opacity: 0.6;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s;
+        }
+
+        .node.expanded .chevron {
+            transform: rotate(90deg);
+            opacity: 1;
+        }
+
+        .leaf-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--text-muted);
+            flex-shrink: 0;
+            transition: background 0.2s;
+        }
+
+        .node.selected .leaf-dot,
+        .node:hover .leaf-dot {
+            background: var(--accent);
+        }
+
+        /* CONNECTOR LINES */
+        .connector {
+            fill: none;
+            stroke: var(--connector);
+            stroke-width: 1.5;
+            transition: stroke var(--transition);
+        }
+
+        /* PANEL */
+        #panel {
+            position: fixed;
+            top: 56px;
+            right: -440px;
+            width: 420px;
+            bottom: 0;
+            background: var(--panel-bg);
+            border-left: 1px solid var(--panel-border);
+            z-index: 90;
+            display: flex;
+            flex-direction: column;
+            transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1), background var(--transition), border-color var(--transition);
+            box-shadow: -8px 0 40px var(--shadow);
+        }
+
+        #panel.open {
+            right: 0;
+        }
+
+        #panel-header {
+            padding: 20px 20px 16px;
+            border-bottom: 1px solid var(--panel-border);
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        #panel-title {
+            font-family: 'DM Serif Display', serif;
+            font-size: 20px;
+            line-height: 1.3;
+            flex: 1;
+            color: var(--text);
+        }
+
+        #panel-close {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 6px;
+            transition: color 0.2s, background 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        #panel-close:hover {
+            color: var(--text);
+            background: var(--surface2);
+        }
+
+        #panel-body {
+            padding: 20px;
+            overflow-y: auto;
+            flex: 1;
+            line-height: 1.75;
+            font-size: 14px;
+            color: var(--text);
+        }
+
+        #panel-body p {
+            margin-bottom: 14px;
+        }
+
+        #panel-body strong {
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        #panel-body em {
+            color: var(--accent3);
+            font-style: italic;
+        }
+
+        .panel-tag {
+            display: inline-block;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 3px 10px;
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--text-muted);
+            margin-bottom: 14px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        /* ZOOM BADGE */
+        #zoom-badge {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 5px 14px;
+            font-size: 12px;
+            color: var(--text-muted);
+            z-index: 50;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        /* FOOTER */
+        #footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--toolbar-bg);
+            backdrop-filter: blur(12px);
+            border-top: 1px solid var(--border);
+            z-index: 100;
+            font-size: 12px;
+            color: var(--text-muted);
+            gap: 6px;
+            transition: background var(--transition), border-color var(--transition);
+        }
+
+        #footer span {
+            font-weight: 600;
+            color: var(--text);
+            font-family: 'DM Serif Display', serif;
+            letter-spacing: 0.2px;
+        }
+
+        /* SCROLLBAR */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 3px;
+        }
+
+        /* NODE ANIMATION */
+        @keyframes nodeIn {
+            from {
+                opacity: 0;
+                transform: translateX(-12px) scale(0.95);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0) scale(1);
+            }
+        }
+
+        .node {
+            animation: nodeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) both;
+        }
+    </style>
+
+    <meta name="description" content="Interactive CYS406 Chapter 16 Data Security At Rest, In Use, In Transit mindmap with expandable concepts, search, zoom, pan, details, and PNG export.">
+    <link rel="canonical" href="https://shoug-tech.com/Academics/other-courses/ethcs303/extra-resources/mindmap/01-moral-systems-ethical-concepts-and-theories/moral-systems-ethical-concepts-and-theories.html">
+    <meta property="og:title" content="Data Security At Rest, In Use, In Transit — CYS406 Mindmap">
+    <meta property="og:description" content="Interactive CYS406 Chapter 16 Data Security At Rest, In Use, In Transit mindmap with expandable concepts, search, zoom, pan, details, and PNG export.">
+    <meta property="og:url" content="https://shoug-tech.com/Academics/other-courses/ethcs303/extra-resources/mindmap/01-moral-systems-ethical-concepts-and-theories/moral-systems-ethical-concepts-and-theories.html">
+    <meta property="og:type" content="article">
+    <meta property="og:image" content="https://shoug-tech.com/assets/og-banner.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Data Security At Rest, In Use, In Transit — CYS406 Mindmap">
+    <meta name="twitter:description" content="Interactive CYS406 Chapter 16 Data Security At Rest, In Use, In Transit mindmap with expandable concepts, search, zoom, pan, details, and PNG export.">
+    <meta name="twitter:image" content="https://shoug-tech.com/assets/og-banner.png">
+    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebPage", "url": "https://shoug-tech.com/academics/cybersecurity/cys406/extra-resources/mindmaps/16-data-security-at-rest-in-use-in-transit/data-security-at-rest-in-use-in-transit.html", "name": "Data Security At Rest, In Use, In Transit \u2014 CYS406 Mindmap", "description": "Interactive CYS406 Chapter 16 Data Security At Rest, In Use, In Transit mindmap with expandable concepts, search, zoom, pan, details, and PNG export.", "isPartOf": {"@type": "WebSite", "name": "Shoug's Digital Garden", "url": "https://shoug-tech.com/"}}</script>
+
+      <link rel="alternate" hreflang="en" href="https://shoug-tech.com/Academics/other-courses/ethcs303/extra-resources/mindmap/01-moral-systems-ethical-concepts-and-theories/moral-systems-ethical-concepts-and-theories.html">
+      <link rel="alternate" hreflang="ar" href="https://shoug-tech.com/ar/Academics/other-courses/ethcs303/extra-resources/mindmap/01-moral-systems-ethical-concepts-and-theories/moral-systems-ethical-concepts-and-theories.html">
+      <link rel="alternate" hreflang="x-default" href="https://shoug-tech.com/Academics/other-courses/ethcs303/extra-resources/mindmap/01-moral-systems-ethical-concepts-and-theories/moral-systems-ethical-concepts-and-theories.html">
+
+    <!-- Microsoft Clarity tracking code for https://shoug-tech.com/ -->
+    <script type="text/javascript">
+        (function(c,l,a,r,i,t,y){
+            c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+            t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+            y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+        })(window, document, "clarity", "script", "xub0eqmvs9");
+    </script>
+</head>
+
+<body data-theme="dark">
+
+    <!-- TOOLBAR -->
+    <div id="toolbar">
+        <div class="toolbar-brand">Mind<span>Map</span></div>
+        <div class="toolbar-sep"></div>
+
+        <div id="search-wrap">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+            <input id="search" type="text" placeholder="Search topics…" autocomplete="off">
+            <div id="search-results"></div>
+        </div>
+
+        <div class="toolbar-sep"></div>
+
+        <button class="tb-btn" id="theme-toggle" title="Toggle theme">🌙</button>
+        <button class="tb-btn" onclick="zoom(0.15)" title="Zoom in">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                <line x1="11" y1="8" x2="11" y2="14" />
+                <line x1="8" y1="11" x2="14" y2="11" />
+            </svg>
+            Zoom In
+        </button>
+        <button class="tb-btn" onclick="zoom(-0.15)" title="Zoom out">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                <line x1="8" y1="11" x2="14" y2="11" />
+            </svg>
+            Zoom Out
+        </button>
+        <button class="tb-btn" onclick="resetView()" title="Reset view">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polyline points="1 4 1 10 7 10" />
+                <path d="M3.51 15a9 9 0 1 0 .49-4.87" />
+            </svg>
+            Reset
+        </button>
+        <button class="tb-btn" onclick="expandAll()" title="Expand all">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polyline points="7 13 12 18 17 13" />
+                <polyline points="7 6 12 11 17 6" />
+            </svg>
+            Expand All
+        </button>
+        <button class="tb-btn" onclick="collapseAll()" title="Collapse all">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polyline points="7 11 12 6 17 11" />
+                <polyline points="7 18 12 13 17 18" />
+            </svg>
+            Collapse All
+        </button>
+        <button class="tb-btn" onclick="exportPNG()" title="Export PNG">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="7 10 12 15 17 10" />
+                <line x1="12" y1="15" x2="12" y2="3" />
+            </svg>
+            Export
+        </button>
+    </div>
+
+    <!-- CANVAS -->
+    <div id="canvas-wrap">
+        <div id="canvas">
+            <svg id="svg-layer"></svg>
+        </div>
+    </div>
+
+    <!-- PANEL -->
+    <div id="panel">
+        <div id="panel-header">
+            <div id="panel-title">Node Title</div>
+            <button id="panel-close" onclick="closePanel()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <line x1="18" y1="6" x2="6" y2="18" />
+                    <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+            </button>
+        </div>
+        <div id="panel-body"></div>
+    </div>
+
+    <!-- ZOOM BADGE -->
+    <div id="zoom-badge">100%</div>
+
+    <!-- FOOTER -->
+    <div id="footer">
+        Made by <span>Shoug Alomran</span> &nbsp;·&nbsp; Data Security At Rest, In Use, In Transit Mindmap
+    </div>
+
+    <script>
+        // ─────────────────────────────────────────────
+        // DATA
+        // ─────────────────────────────────────────────
+        const DATA = {
+    "id": "root",
+    "label": "Data Security At Rest, In Use, In Transit",
+    "desc": "<span class=\"panel-tag\">CYS406 · Chapter 16</span><p>A comprehensive concept map for <strong>Data Security At Rest, In Use, In Transit</strong>. Expand branches, select a node for detail, search topics, zoom, pan, or export the full map.</p>",
+    "children": [
+        {
+            "id": "branch-1",
+            "label": "Why Data Security Matters",
+            "desc": "<span class=\"panel-tag\">Core Concept</span><p>Data is the heart of any organization. Critical (business-critical) data is information that is important for business operations — identifying and classifying it is the first step in securing an organization&#x27;s data.</p>",
+            "children": [
+                {
+                    "id": "branch-1-detail-1",
+                    "label": "Examples of Critical Data",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Examples of Critical Data</p>"
+                },
+                {
+                    "id": "branch-1-detail-2",
+                    "label": "Need for Data Security: Data is an…",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Need for Data Security: Data is an organization&#x27;s ultimate asset, and attackers are interested in it. If an organization&#x27;s data is exposed or lost by any means, it can severely damage business and reputation.</p>"
+                },
+                {
+                    "id": "branch-1-detail-3",
+                    "label": "Accounting files: Core financial records of the…",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Accounting files: Core financial records of the organization.</p>"
+                },
+                {
+                    "id": "branch-1-detail-4",
+                    "label": "Databases / business data: Any business-related data…",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Databases / business data: Any business-related data held in databases.</p>"
+                },
+                {
+                    "id": "branch-1-detail-5",
+                    "label": "OS files & purchased software: OS files…",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>OS files &amp; purchased software: OS files that came with a computer, CDs, purchased software, etc.</p>"
+                },
+                {
+                    "id": "branch-1-detail-6",
+                    "label": "Office documents: Important office documents, spreadsheets, etc",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Office documents: Important office documents, spreadsheets, etc.</p>"
+                },
+                {
+                    "id": "branch-1-detail-7",
+                    "label": "Downloaded software: Software downloaded (purchased) from the…",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Downloaded software: Software downloaded (purchased) from the Internet.</p>"
+                },
+                {
+                    "id": "branch-1-detail-8",
+                    "label": "Contact information: Email address books and similar…",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Contact information: Email address books and similar contact data.</p>"
+                }
+            ]
+        },
+        {
+            "id": "branch-2",
+            "label": "The Three Critical States of Data",
+            "desc": "<span class=\"panel-tag\">Core Concept</span><p>Data security involves applying various data security controls to prevent any intentional or unintentional act of data misuse, data destruction, and data modification. Every piece of data an organization holds is, at any moment, in exactly one of three states.</p>",
+            "children": [
+                {
+                    "id": "branch-2-detail-1",
+                    "label": "Data at Rest vs Data in Use…",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Data at Rest vs Data in Use vs Data in Transit: Proper implementation of data security measures is required in each state to proactively enhance data security — a control that protects data at rest (like disk encryption) does nothing to protect the same data once it&#x27;s in transit.</p>"
+                },
+                {
+                    "id": "branch-2-detail-2",
+                    "label": "One control does not cover all three…",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>One control does not cover all three states: Full disk encryption protects data at rest but is useless once that data is decrypted into RAM (in use) or sent over email (in transit). Always ask &quot;which state is this data in right now?&quot; before picking a control.</p>"
+                }
+            ]
+        },
+        {
+            "id": "branch-3",
+            "label": "Data Security Technologies",
+            "desc": "<span class=\"panel-tag\">Core Concept</span><p>Six core technology categories work together to secure data across its lifecycle and states.</p>",
+            "children": [
+                {
+                    "id": "branch-3-detail-1",
+                    "label": "Six core technology categories work together to…",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Six core technology categories work together to secure data across its lifecycle and states.</p>"
+                }
+            ]
+        },
+        {
+            "id": "branch-4",
+            "label": "Data Encryption Techniques",
+            "desc": "<span class=\"panel-tag\">Core Concept</span><p>Data encryption for data at rest breaks down into three layers, from broadest to narrowest scope.</p>",
+            "children": [
+                {
+                    "id": "branch-4-detail-1",
+                    "label": "Disk Encryption: Full disk encryption is the…",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Disk Encryption: Full disk encryption is the encryption of all data in a disk except the master boot record (MBR).</p>"
+                },
+                {
+                    "id": "branch-4-detail-2",
+                    "label": "File-level Encryption: Encryption occurs at a filesystem…",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>File-level Encryption: Encryption occurs at a filesystem level; combined with a cryptographic algorithm, the encrypted data is extremely secure.</p>"
+                },
+                {
+                    "id": "branch-4-detail-3",
+                    "label": "Removable Media Encryption: Prevents removable media devices…",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Removable Media Encryption: Prevents removable media devices — USB flash drives, portable hard disks, digital cameras, smartphones, tablets, etc. — from unauthorized access.</p>"
+                },
+                {
+                    "id": "branch-4-detail-4",
+                    "label": "Implementing Built-in Disk Encryption on Windows: Start…",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Implementing Built-in Disk Encryption on Windows: Start → Settings → Update &amp; Security → Device Encryption → turn on the Device Encryption option.</p>"
+                },
+                {
+                    "id": "branch-4-detail-5",
+                    "label": "Disk Encryption Tools: Software for establishing and…",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Disk Encryption Tools: Software for establishing and maintaining an on-the-fly-encrypted volume (data storage device). On-the-fly encryption means data is automatically encrypted immediately before it&#x27;s saved and decrypted immediately after it&#x27;s loaded — without any user intervention.</p>"
+                },
+                {
+                    "id": "branch-4-detail-6",
+                    "label": "File-level Encryption: Windows provides the Encrypting File…",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>File-level Encryption: Windows provides the Encrypting File System (EFS) for built-in file system-level encryption.</p>"
+                },
+                {
+                    "id": "branch-4-detail-7",
+                    "label": "Removable Media Encryption: To implement in Windows:…",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Removable Media Encryption: To implement in Windows: Plug the removable media device into a USB port, then go to Start → Control Panel → System and Security → BitLocker Drive Encryption (Manage BitLocker).</p>"
+                }
+            ]
+        },
+        {
+            "id": "branch-5",
+            "label": "Data Backup",
+            "desc": "<span class=\"panel-tag\">Core Concept</span><p>Data backup is the process of making a duplicate copy of critical data, such as physical (paper) and computer records. It&#x27;s mainly used for two purposes: to reinstate a system to its normal working state after damage, or to recover data and information following data loss or corruption. A successful data backup strategy is necessary to avoid severe damage to an organization&#x27;s assets.</p>",
+            "children": [
+                {
+                    "id": "branch-5-detail-1",
+                    "label": "Data Backup Strategy/Plan — 8 Steps",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Data Backup Strategy/Plan — 8 Steps</p>"
+                },
+                {
+                    "id": "branch-5-detail-2",
+                    "label": "Identify the critical business data: Know what…",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Identify the critical business data: Know what actually needs backing up before choosing how.</p>"
+                },
+                {
+                    "id": "branch-5-detail-3",
+                    "label": "Select the backup media: Optical disks, portable…",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Select the backup media: Optical disks, portable hard drives/USB, or tape drives.</p>"
+                },
+                {
+                    "id": "branch-5-detail-4",
+                    "label": "Select a backup technology: e.g. SAN, NAS,…",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Select a backup technology: e.g. SAN, NAS, cloud, local.</p>"
+                },
+                {
+                    "id": "branch-5-detail-5",
+                    "label": "Select the appropriate RAID levels: RAID 0,…",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Select the appropriate RAID levels: RAID 0, 1, 3, 5, 10, or 50 based on redundancy/performance needs.</p>"
+                },
+                {
+                    "id": "branch-5-detail-6",
+                    "label": "Select an appropriate backup method: Hot (online),…",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Select an appropriate backup method: Hot (online), cold (offline), or warm (nearline).</p>"
+                },
+                {
+                    "id": "branch-5-detail-7",
+                    "label": "Select the backup types: Full, differential, or…",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Select the backup types: Full, differential, or incremental.</p>"
+                },
+                {
+                    "id": "branch-5-detail-8",
+                    "label": "Choose the right backup solution: Pick a…",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Choose the right backup solution: Pick a tool/vendor that fits the plan.</p>"
+                }
+            ]
+        },
+        {
+            "id": "branch-6",
+            "label": "RAID — Redundant Array of Independent Disks",
+            "desc": "<span class=\"panel-tag\">Core Concept</span><p>RAID is a method of combining multiple hard drives into a single unit and writing data across several disk drives, offering fault tolerance — if one drive fails, the system can continue operating. Placing data on RAID disks enables a balanced overlap of I/O operations, improving system performance, simplifying storage management, and protecting against data loss. RAID represents a portion of computer storage that can divide and replicate data among several drives, working as secondary storage.</p>",
+            "children": [
+                {
+                    "id": "branch-6-detail-1",
+                    "label": "RAID Levels Compared",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>RAID Levels Compared</p>"
+                },
+                {
+                    "id": "branch-6-detail-2",
+                    "label": "RAID Storage Architecture — Core Components",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>RAID Storage Architecture — Core Components</p>"
+                },
+                {
+                    "id": "branch-6-detail-3",
+                    "label": "RAID Controller: Manages an array of physical…",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>RAID Controller: Manages an array of physical disk drives and presents them to the computer as logical units.</p>"
+                },
+                {
+                    "id": "branch-6-detail-4",
+                    "label": "IDE, SATA, or SCSI Interface: Internal drives…",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>IDE, SATA, or SCSI Interface: Internal drives connect via these interfaces; connection to the server is also through one of these.</p>"
+                },
+                {
+                    "id": "branch-6-detail-5",
+                    "label": "Multiport Memory Controller: Provides access to a…",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Multiport Memory Controller: Provides access to a memory bank and helps achieve high efficiency with random address accesses.</p>"
+                },
+                {
+                    "id": "branch-6-detail-6",
+                    "label": "SDRAM: Dynamic RAM synchronized with the CPU…",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>SDRAM: Dynamic RAM synchronized with the CPU clock speed.</p>"
+                },
+                {
+                    "id": "branch-6-detail-7",
+                    "label": "Primary RAID Memory Cache: Used to write…",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Primary RAID Memory Cache: Used to write data in transition — a RAID system uses a cache to speed up I/O performance on the storage system.</p>"
+                },
+                {
+                    "id": "branch-6-detail-8",
+                    "label": "nvSRAM / NAND Flash / Disk: nvSRAM…",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>nvSRAM / NAND Flash / Disk: nvSRAM is the fastest nonvolatile RAM (≈20 ns read/write); NAND Flash gives nonvolatile storage for the primary cache; the hardware presents the whole RAID to the host system as one single, large disk.</p>"
+                }
+            ]
+        },
+        {
+            "id": "branch-7",
+            "label": "SAN vs NAS",
+            "desc": "<span class=\"panel-tag\">Core Concept</span><p>Beyond a single machine&#x27;s RAID array, organizations connect storage across the network using either a SAN or a NAS.</p>",
+            "children": [
+                {
+                    "id": "branch-7-detail-1",
+                    "label": "Advantages of SAN: Storage consolidation",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Advantages of SAN: Storage consolidation</p>"
+                },
+                {
+                    "id": "branch-7-detail-2",
+                    "label": "NAS — Advantages & Disadvantages",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>NAS — Advantages &amp; Disadvantages</p>"
+                },
+                {
+                    "id": "branch-7-detail-3",
+                    "label": "Users with different OSes can share files…",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Users with different OSes can share files with no compatibility issues</p>"
+                },
+                {
+                    "id": "branch-7-detail-4",
+                    "label": "A NAS can be connected to a…",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>A NAS can be connected to a LAN using plug-and-play</p>"
+                },
+                {
+                    "id": "branch-7-detail-5",
+                    "label": "Minimal administration required, unlike Unix/NT file servers",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Minimal administration required, unlike Unix/NT file servers</p>"
+                },
+                {
+                    "id": "branch-7-detail-6",
+                    "label": "Bandwidth-heavy applications significantly reduce network performance",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Bandwidth-heavy applications significantly reduce network performance</p>"
+                },
+                {
+                    "id": "branch-7-detail-7",
+                    "label": "Data transfer is inefficient — uses TCP/IP…",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Data transfer is inefficient — uses TCP/IP instead of a specialized data transfer protocol</p>"
+                }
+            ]
+        },
+        {
+            "id": "branch-8",
+            "label": "Backup Methods, Locations & Types",
+            "desc": "<span class=\"panel-tag\">Core Concept</span><p>Core concepts, distinctions, and defensive implications of Backup Methods, Locations &amp; Types.</p>",
+            "children": [
+                {
+                    "id": "branch-8-detail-1",
+                    "label": "Selecting an Appropriate Backup Method: Select a…",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Selecting an Appropriate Backup Method: Select a backup method based on cost and ability, according to the organization&#x27;s requirements.</p>"
+                },
+                {
+                    "id": "branch-8-detail-2",
+                    "label": "Choosing the Backup Location",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Choosing the Backup Location</p>"
+                },
+                {
+                    "id": "branch-8-detail-3",
+                    "label": "Onsite Data Backup: Storing backup data at…",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Onsite Data Backup: Storing backup data at onsite data storage only. Advantage: easily accessed and restored; less expensive. Disadvantage: greater data loss risk.</p>"
+                },
+                {
+                    "id": "branch-8-detail-4",
+                    "label": "Offsite Data Backup: Storing backup data in…",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Offsite Data Backup: Storing backup data in remote locations in fire-proof, indestructible safes. Advantage: secured from physical threats (fire, floods, etc.). Disadvantage: problems with a regular backup schedule.</p>"
+                },
+                {
+                    "id": "branch-8-detail-5",
+                    "label": "Cloud Data Backup: Storing backup data on…",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Cloud Data Backup: Storing backup data on storage provided by an online backup provider. Advantages: encrypted and free from physical threats; accessible from anywhere. Disadvantages: no direct control of the backup data; more time to back up.</p>"
+                },
+                {
+                    "id": "branch-8-detail-6",
+                    "label": "Types of Backup",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Types of Backup</p>"
+                },
+                {
+                    "id": "branch-8-detail-7",
+                    "label": "Full / Normal Data Backup: All system…",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Full / Normal Data Backup: All system data is copied to the backup media.</p>"
+                },
+                {
+                    "id": "branch-8-detail-8",
+                    "label": "Differential Data Backup: All data changed since…",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Differential Data Backup: All data changed since the last full backup is copied to the backup media.</p>"
+                }
+            ]
+        },
+        {
+            "id": "branch-9",
+            "label": "Data Backup Retention",
+            "desc": "<span class=\"panel-tag\">Core Concept</span><p>Core concepts, distinctions, and defensive implications of Data Backup Retention.</p>",
+            "children": [
+                {
+                    "id": "branch-9-detail-1",
+                    "label": "Steps for Developing a Data Retention Policy",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Steps for Developing a Data Retention Policy</p>"
+                },
+                {
+                    "id": "branch-9-detail-2",
+                    "label": "Build a data retention policy development team",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Build a data retention policy development team</p>"
+                },
+                {
+                    "id": "branch-9-detail-3",
+                    "label": "Understand applicable legal requirements: Determine the organization's…",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Understand applicable legal requirements: Determine the organization&#x27;s applicable legal requirements.</p>"
+                },
+                {
+                    "id": "branch-9-detail-4",
+                    "label": "Identify and classify the data: Determine what…",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Identify and classify the data: Determine what data is to be included in the retention policy.</p>"
+                },
+                {
+                    "id": "branch-9-detail-5",
+                    "label": "Develop the data retention policy",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Develop the data retention policy</p>"
+                },
+                {
+                    "id": "branch-9-detail-6",
+                    "label": "Ensure all employees understand it: Make sure…",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Ensure all employees understand it: Make sure every employee understands the organization&#x27;s data retention policy.</p>"
+                },
+                {
+                    "id": "branch-9-detail-7",
+                    "label": "Data Retention Policy Best Practices (8): Create…",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Data Retention Policy Best Practices (8): Create a policy that fulfils legal and business requirements</p>"
+                },
+                {
+                    "id": "branch-9-detail-8",
+                    "label": "Data Retention: The process of storing and…",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Data Retention: The process of storing and maintaining important information to meet compliance and business data archival requirements.</p>"
+                }
+            ]
+        },
+        {
+            "id": "branch-10",
+            "label": "Data Loss Prevention (DLP)",
+            "desc": "<span class=\"panel-tag\">Core Concept</span><p>Data Loss Prevention (DLP) includes a set of software products and processes that do not allow users to send confidential corporate data outside the organization.</p>",
+            "children": [
+                {
+                    "id": "branch-10-detail-1",
+                    "label": "Organizations use DLP to:",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Organizations use DLP to:</p>"
+                },
+                {
+                    "id": "branch-10-detail-2",
+                    "label": "Types of DLP Solutions — By Data…",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Types of DLP Solutions — By Data State: Notice how the three DLP solution types map exactly onto the three data states from Section 2.</p>"
+                },
+                {
+                    "id": "branch-10-detail-3",
+                    "label": "DLP Solutions — Examples: Has an endpoint…",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>DLP Solutions — Examples: Has an endpoint DLP capability that helps protect local data at rest on endpoint devices. WIP can be configured to store business data only on approved devices / within approved applications.</p>"
+                },
+                {
+                    "id": "branch-10-detail-4",
+                    "label": "Best Practices for a Successful DLP Implementation",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Best Practices for a Successful DLP Implementation</p>"
+                },
+                {
+                    "id": "branch-10-detail-5",
+                    "label": "Identify the main objective of DLP",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Identify the main objective of DLP</p>"
+                },
+                {
+                    "id": "branch-10-detail-6",
+                    "label": "Identify sensitive data for protection",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Identify sensitive data for protection</p>"
+                },
+                {
+                    "id": "branch-10-detail-7",
+                    "label": "Evaluate available DLP vendors",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Evaluate available DLP vendors</p>"
+                },
+                {
+                    "id": "branch-10-detail-8",
+                    "label": "Ensure product compatibility: The selected DLP product…",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Ensure product compatibility: The selected DLP product must be compatible and support the required data types and data stores.</p>"
+                }
+            ]
+        }
+    ]
+};
+
+        // ─────────────────────────────────────────────
+        // STATE
+        // ─────────────────────────────────────────────
+        const state = {
+            expanded: new Set(['root']),
+            selected: null,
+            panX: 0,
+            panY: 0,
+            scale: 1,
+            dragging: false,
+            dragStartX: 0,
+            dragStartY: 0,
+            dragStartPanX: 0,
+            dragStartPanY: 0
+        };
+
+        const NODE_W = 200;
+        const NODE_H = 44;
+        const H_GAP = 80;
+        const V_GAP = 28;
+
+        function estimateNodeHeight(node) {
+            const text = String(node.label || "");
+            const charsPerLine = node._level === 0 ? 22 : 18;
+            const lines = Math.max(1, Math.ceil(text.length / charsPerLine));
+            return Math.max(NODE_H, 24 + lines * 22);
+        }
+
+        // ─────────────────────────────────────────────
+        // LAYOUT ENGINE
+        // ─────────────────────────────────────────────
+        function shiftSubtree(node, deltaY) {
+            node._y += deltaY;
+            if (node.children && state.expanded.has(node.id)) {
+                node.children.forEach(child => shiftSubtree(child, deltaY));
+            }
+        }
+
+        function computeLayout(node, level = 0, x = 100, y = 0) {
+            node._level = level;
+            node._x = x;
+            node._y = y;
+            node._w = NODE_W;
+            node._h = estimateNodeHeight(node);
+
+            if (!node.children || !state.expanded.has(node.id)) {
+                node._subtreeH = node._h;
+                return node._subtreeH;
+            }
+
+            const childX = x + NODE_W + H_GAP;
+            let totalH = 0;
+            node.children.forEach(child => {
+                totalH += computeLayout(child, level + 1, childX, 0);
+                totalH += V_GAP;
+            });
+            totalH -= V_GAP;
+
+            let cy = y + (node._h / 2) - (totalH / 2);
+            node.children.forEach(child => {
+                const nextY = cy + (child._subtreeH / 2) - (child._h / 2);
+                shiftSubtree(child, nextY - child._y);
+                cy += child._subtreeH + V_GAP;
+            });
+
+            node._subtreeH = Math.max(node._h, totalH);
+            return node._subtreeH;
+        }
+
+        // ─────────────────────────────────────────────
+        // RENDER
+        // ─────────────────────────────────────────────
+        const canvas = document.getElementById('canvas');
+        const svgLayer = document.getElementById('svg-layer');
+        let nodeEls = {};
+
+        function render() {
+            computeLayout(DATA, 0, 100, 2000);
+            renderNodes(DATA);
+            renderConnectors(DATA);
+        }
+
+        function renderNodes(node) {
+            let el = nodeEls[node.id];
+            if (!el) {
+                el = document.createElement('div');
+                el.className = 'node';
+                el.dataset.id = node.id;
+                el.innerHTML = buildNodeHTML(node);
+                el.addEventListener('click', () => onNodeClick(node));
+                canvas.appendChild(el);
+                nodeEls[node.id] = el;
+            }
+
+            const levelClass = node._level === 0 ? 'root' : `level-${Math.min(node._level, 3)}`;
+            el.className = `node ${levelClass}${state.selected === node.id ? ' selected' : ''}${state.expanded.has(node.id) ? ' expanded' : ''}`;
+            el.style.left = node._x + 'px';
+            el.style.top = node._y + 'px';
+            el.style.width = node._w + 'px';
+            el.style.minHeight = node._h + 'px';
+            el.style.display = 'flex';
+
+            if (node.children && state.expanded.has(node.id)) {
+                node.children.forEach(renderNodes);
+            }
+
+            // Remove orphaned children
+            if (!node.children || !state.expanded.has(node.id)) {
+                collapseChildren(node);
+            }
+        }
+
+        function buildNodeHTML(node) {
+            const isParent = node.children && node.children.length > 0;
+            const icon = isParent
+                ? `<svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>`
+                : `<div class="leaf-dot"></div>`;
+            return `<div class="node-text">${node.label}</div>${icon}`;
+        }
+
+        function collapseChildren(node) {
+            if (!node.children) return;
+            node.children.forEach(child => {
+                if (nodeEls[child.id]) {
+                    nodeEls[child.id].style.display = 'none';
+                }
+                collapseChildren(child);
+            });
+        }
+
+        function renderConnectors(node) {
+            svgLayer.innerHTML = '';
+            drawConnectors(node);
+        }
+
+        function drawConnectors(node) {
+            if (!node.children || !state.expanded.has(node.id)) return;
+            node.children.forEach(child => {
+                const x1 = node._x + node._w;
+                const y1 = node._y + node._h / 2;
+                const x2 = child._x;
+                const y2 = child._y + child._h / 2;
+                const cx1 = x1 + (x2 - x1) * 0.55;
+                const cx2 = x2 - (x2 - x1) * 0.55;
+                const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                path.setAttribute('class', 'connector');
+                path.setAttribute('d', `M${x1},${y1} C${cx1},${y1} ${cx2},${y2} ${x2},${y2}`);
+                svgLayer.appendChild(path);
+                drawConnectors(child);
+            });
+        }
+
+        // ─────────────────────────────────────────────
+        // INTERACTION
+        // ─────────────────────────────────────────────
+        function onNodeClick(node) {
+            if (node.children && node.children.length > 0) {
+                if (state.expanded.has(node.id)) {
+                    state.expanded.delete(node.id);
+                } else {
+                    state.expanded.add(node.id);
+                }
+                state.selected = node.id;
+                render();
+            } else {
+                state.selected = node.id;
+                render();
+                openPanel(node);
+            }
+        }
+
+        function openPanel(node) {
+            document.getElementById('panel-title').textContent = node.label;
+            document.getElementById('panel-body').innerHTML = node.desc || `<p>No description available.</p>`;
+            document.getElementById('panel').classList.add('open');
+        }
+
+        function closePanel() {
+            document.getElementById('panel').classList.remove('open');
+            state.selected = null;
+            render();
+        }
+
+        // ─────────────────────────────────────────────
+        // PAN & ZOOM
+        // ─────────────────────────────────────────────
+        const wrap = document.getElementById('canvas-wrap');
+
+        function applyTransform() {
+            canvas.style.transform = `translate(${state.panX}px, ${state.panY}px) scale(${state.scale})`;
+            document.getElementById('zoom-badge').textContent = Math.round(state.scale * 100) + '%';
+        }
+
+        wrap.addEventListener('mousedown', e => {
+            if (e.target.closest('.node')) return;
+            state.dragging = true;
+            state.dragStartX = e.clientX;
+            state.dragStartY = e.clientY;
+            state.dragStartPanX = state.panX;
+            state.dragStartPanY = state.panY;
+            wrap.classList.add('grabbing');
+        });
+
+        window.addEventListener('mousemove', e => {
+            if (!state.dragging) return;
+            state.panX = state.dragStartPanX + (e.clientX - state.dragStartX);
+            state.panY = state.dragStartPanY + (e.clientY - state.dragStartY);
+            applyTransform();
+        });
+
+        window.addEventListener('mouseup', () => {
+            state.dragging = false;
+            wrap.classList.remove('grabbing');
+        });
+
+        wrap.addEventListener('wheel', e => {
+            e.preventDefault();
+            const delta = e.deltaY < 0 ? 0.1 : -0.1;
+            state.scale = Math.max(0.2, Math.min(2.5, state.scale + delta));
+            applyTransform();
+        }, { passive: false });
+
+        function zoom(delta) {
+            state.scale = Math.max(0.2, Math.min(2.5, state.scale + delta));
+            applyTransform();
+        }
+
+        function resetView() {
+            state.panX = 0;
+            state.panY = 0;
+            state.scale = 1;
+            applyTransform();
+        }
+
+        // ─────────────────────────────────────────────
+        // EXPAND / COLLAPSE ALL
+        // ─────────────────────────────────────────────
+        function collectIds(node, ids = []) {
+            ids.push(node.id);
+            if (node.children) node.children.forEach(c => collectIds(c, ids));
+            return ids;
+        }
+
+        function expandAll() {
+            collectIds(DATA).forEach(id => state.expanded.add(id));
+            render();
+        }
+
+        function collapseAll() {
+            state.expanded.clear();
+            state.expanded.add('root');
+            render();
+        }
+
+        // ─────────────────────────────────────────────
+        // SEARCH
+        // ─────────────────────────────────────────────
+        const searchInput = document.getElementById('search');
+        const searchResults = document.getElementById('search-results');
+
+        function flatNodes(node, path = [], results = []) {
+            results.push({ node, path: [...path, node.label] });
+            if (node.children) node.children.forEach(c => flatNodes(c, [...path, node.label], results));
+            return results;
+        }
+
+        const allNodes = flatNodes(DATA);
+
+        searchInput.addEventListener('input', () => {
+            const q = searchInput.value.trim().toLowerCase();
+            // Clear highlights
+            Object.values(nodeEls).forEach(el => el.classList.remove('highlighted'));
+
+            if (!q) {
+                searchResults.style.display = 'none';
+                return;
+            }
+
+            const matches = allNodes.filter(({ node }) => node.label.toLowerCase().includes(q));
+            if (matches.length === 0) {
+                searchResults.innerHTML = '<div class="sr-item" style="cursor:default;color:var(--text-muted)">No results found</div>';
+                searchResults.style.display = 'block';
+                return;
+            }
+
+            searchResults.innerHTML = matches.slice(0, 10).map(({ node, path }) => {
+                const hl = node.label.replace(new RegExp(`(${q})`, 'gi'), '<mark>$1</mark>');
+                const trail = path.slice(0, -1).join(' › ');
+                return `<div class="sr-item" data-id="${node.id}"><div>${hl}</div>${trail ? `<div class="sr-path">${trail}</div>` : ''}</div>`;
+            }).join('');
+
+            searchResults.querySelectorAll('.sr-item[data-id]').forEach(el => {
+                el.addEventListener('click', () => {
+                    const id = el.dataset.id;
+                    navigateTo(id);
+                    searchResults.style.display = 'none';
+                    searchInput.value = '';
+                });
+            });
+
+            matches.forEach(({ node }) => {
+                if (nodeEls[node.id]) nodeEls[node.id].classList.add('highlighted');
+            });
+
+            searchResults.style.display = 'block';
+        });
+
+        document.addEventListener('click', e => {
+            if (!e.target.closest('#search-wrap')) searchResults.style.display = 'none';
+        });
+
+        function navigateTo(id) {
+            // Expand path to node
+            function findPath(node, targetId, path = []) {
+                if (node.id === targetId) return [...path, node.id];
+                if (node.children) {
+                    for (const c of node.children) {
+                        const r = findPath(c, targetId, [...path, node.id]);
+                        if (r) return r;
+                    }
+                }
+                return null;
+            }
+            const path = findPath(DATA, id);
+            if (path) path.forEach(pid => state.expanded.add(pid));
+            state.selected = id;
+            render();
+            // Center on node
+            setTimeout(() => {
+                function findNode(node, id) {
+                    if (node.id === id) return node;
+                    if (node.children) for (const c of node.children) { const r = findNode(c, id); if (r) return r; }
+                    return null;
+                }
+                const n = findNode(DATA, id);
+                if (n) {
+                    const vpW = wrap.clientWidth;
+                    const vpH = wrap.clientHeight;
+                    state.panX = vpW / 2 - (n._x + n._w / 2) * state.scale;
+                    state.panY = vpH / 2 - (n._y + n._h / 2) * state.scale;
+                    applyTransform();
+                }
+            }, 100);
+        }
+
+        // ─────────────────────────────────────────────
+        // THEME
+        // ─────────────────────────────────────────────
+        const themeBtn = document.getElementById('theme-toggle');
+        let isDark = true;
+
+        function applyTheme(dark) {
+            document.body.dataset.theme = dark ? 'dark' : 'light';
+            themeBtn.textContent = dark ? '🌙' : '☀️';
+            localStorage.setItem('mm-theme', dark ? 'dark' : 'light');
+            try { localStorage.setItem('shoug-theme', dark ? 'dark' : 'light'); } catch(_e) {}
+        }
+
+        themeBtn.addEventListener('click', () => {
+            isDark = !isDark;
+            applyTheme(isDark);
+        });
+
+        // Restore
+        const saved = localStorage.getItem('shoug-theme') || localStorage.getItem('mm-theme');
+        if (saved === 'light') { isDark = false; applyTheme(false); }
+
+        // ─────────────────────────────────────────────
+        // EXPORT PNG
+        // ─────────────────────────────────────────────
+        async function exportPNG() {
+            const msg = document.createElement('div');
+            msg.style.cssText = 'position:fixed;top:70px;left:50%;transform:translateX(-50%);background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 20px;font-size:13px;z-index:999;';
+            msg.textContent = 'Preparing export… (open browser print for full export)';
+            document.body.appendChild(msg);
+            setTimeout(() => msg.remove(), 3000);
+            window.print();
+        }
+
+        // ─────────────────────────────────────────────
+        // INIT
+        // ─────────────────────────────────────────────
+        function init() {
+            state.panX = 40;
+            state.panY = -1820;
+            applyTransform();
+            render();
+        }
+
+        init();
+    </script>
+
+
+    <script src="/javascripts/mindmap-controls.js"></script>
+</body>
+
+</html>

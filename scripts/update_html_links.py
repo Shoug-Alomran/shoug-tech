@@ -77,8 +77,8 @@ all_replacements = [
     # E. study-material -> extra-resources
     ("/study-material/", "/extra-resources/"),
     # F. quizez -> quizzes
-    ("/quizez/",  "/quizzes/"),
-    ("/Quizez/",  "/quizzes/"),
+    ("/quizez/",  "/exams/"),
+    ("/Quizez/",  "/exams/"),
     # Fix extra-resorces typo in links
     ("/extra-resorces/", "/extra-resources/"),
 ]

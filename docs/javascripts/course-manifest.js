@@ -596,6 +596,78 @@ var COURSE_PAGES = [
     "courseTitle": "CS285 // Discrete Math for Computing"
   },
   {
+    "url": "/academics/computer-science/cs330/exams/01-chapter-1-quiz/",
+    "title": "CS330 | Chapter 1 Quiz",
+    "track": "computer-science",
+    "course": "cs330",
+    "section": "exams",
+    "courseUrl": "/academics/computer-science/cs330/",
+    "courseTitle": "CS330 // Introduction to Operating Systems"
+  },
+  {
+    "url": "/academics/computer-science/cs330/exams/02-chapter-2-quiz/",
+    "title": "CS330 | Chapter 2 Quiz",
+    "track": "computer-science",
+    "course": "cs330",
+    "section": "exams",
+    "courseUrl": "/academics/computer-science/cs330/",
+    "courseTitle": "CS330 // Introduction to Operating Systems"
+  },
+  {
+    "url": "/academics/computer-science/cs330/exams/03-chapter-3-quiz/",
+    "title": "CS330 | Chapter 3 Quiz",
+    "track": "computer-science",
+    "course": "cs330",
+    "section": "exams",
+    "courseUrl": "/academics/computer-science/cs330/",
+    "courseTitle": "CS330 // Introduction to Operating Systems"
+  },
+  {
+    "url": "/academics/computer-science/cs330/exams/04-chapter-4-quiz/",
+    "title": "CS330 | Chapter 4 Quiz",
+    "track": "computer-science",
+    "course": "cs330",
+    "section": "exams",
+    "courseUrl": "/academics/computer-science/cs330/",
+    "courseTitle": "CS330 // Introduction to Operating Systems"
+  },
+  {
+    "url": "/academics/computer-science/cs330/exams/05-chapter-5-quiz/",
+    "title": "CS330 | Chapter 5 Quiz",
+    "track": "computer-science",
+    "course": "cs330",
+    "section": "exams",
+    "courseUrl": "/academics/computer-science/cs330/",
+    "courseTitle": "CS330 // Introduction to Operating Systems"
+  },
+  {
+    "url": "/academics/computer-science/cs330/exams/06-chapter-6-quiz/",
+    "title": "CS330 | Chapter 6 Quiz",
+    "track": "computer-science",
+    "course": "cs330",
+    "section": "exams",
+    "courseUrl": "/academics/computer-science/cs330/",
+    "courseTitle": "CS330 // Introduction to Operating Systems"
+  },
+  {
+    "url": "/academics/computer-science/cs330/exams/07-chapter-8-quiz/",
+    "title": "CS330 | Chapter 8 Quiz",
+    "track": "computer-science",
+    "course": "cs330",
+    "section": "exams",
+    "courseUrl": "/academics/computer-science/cs330/",
+    "courseTitle": "CS330 // Introduction to Operating Systems"
+  },
+  {
+    "url": "/academics/computer-science/cs330/exams/08-quiz-1-ch-1-and-2/",
+    "title": "CS330 | Quiz 1 (Ch. 1 & 2)",
+    "track": "computer-science",
+    "course": "cs330",
+    "section": "exams",
+    "courseUrl": "/academics/computer-science/cs330/",
+    "courseTitle": "CS330 // Introduction to Operating Systems"
+  },
+  {
     "url": "/academics/computer-science/cs330/extra-resources/01-cheat-sheet/",
     "title": "CS330 | Cheat Sheet",
     "track": "computer-science",
@@ -637,78 +709,6 @@ var COURSE_PAGES = [
     "track": "computer-science",
     "course": "cs330",
     "section": "extra-resources",
-    "courseUrl": "/academics/computer-science/cs330/",
-    "courseTitle": "CS330 // Introduction to Operating Systems"
-  },
-  {
-    "url": "/academics/computer-science/cs330/quizzes/01-chapter-1-quiz/",
-    "title": "CS330 | Chapter 1 Quiz",
-    "track": "computer-science",
-    "course": "cs330",
-    "section": "quizzes",
-    "courseUrl": "/academics/computer-science/cs330/",
-    "courseTitle": "CS330 // Introduction to Operating Systems"
-  },
-  {
-    "url": "/academics/computer-science/cs330/quizzes/02-chapter-2-quiz/",
-    "title": "CS330 | Chapter 2 Quiz",
-    "track": "computer-science",
-    "course": "cs330",
-    "section": "quizzes",
-    "courseUrl": "/academics/computer-science/cs330/",
-    "courseTitle": "CS330 // Introduction to Operating Systems"
-  },
-  {
-    "url": "/academics/computer-science/cs330/quizzes/03-chapter-3-quiz/",
-    "title": "CS330 | Chapter 3 Quiz",
-    "track": "computer-science",
-    "course": "cs330",
-    "section": "quizzes",
-    "courseUrl": "/academics/computer-science/cs330/",
-    "courseTitle": "CS330 // Introduction to Operating Systems"
-  },
-  {
-    "url": "/academics/computer-science/cs330/quizzes/04-chapter-4-quiz/",
-    "title": "CS330 | Chapter 4 Quiz",
-    "track": "computer-science",
-    "course": "cs330",
-    "section": "quizzes",
-    "courseUrl": "/academics/computer-science/cs330/",
-    "courseTitle": "CS330 // Introduction to Operating Systems"
-  },
-  {
-    "url": "/academics/computer-science/cs330/quizzes/05-chapter-5-quiz/",
-    "title": "CS330 | Chapter 5 Quiz",
-    "track": "computer-science",
-    "course": "cs330",
-    "section": "quizzes",
-    "courseUrl": "/academics/computer-science/cs330/",
-    "courseTitle": "CS330 // Introduction to Operating Systems"
-  },
-  {
-    "url": "/academics/computer-science/cs330/quizzes/06-chapter-6-quiz/",
-    "title": "CS330 | Chapter 6 Quiz",
-    "track": "computer-science",
-    "course": "cs330",
-    "section": "quizzes",
-    "courseUrl": "/academics/computer-science/cs330/",
-    "courseTitle": "CS330 // Introduction to Operating Systems"
-  },
-  {
-    "url": "/academics/computer-science/cs330/quizzes/07-chapter-8-quiz/",
-    "title": "CS330 | Chapter 8 Quiz",
-    "track": "computer-science",
-    "course": "cs330",
-    "section": "quizzes",
-    "courseUrl": "/academics/computer-science/cs330/",
-    "courseTitle": "CS330 // Introduction to Operating Systems"
-  },
-  {
-    "url": "/academics/computer-science/cs330/quizzes/08-quiz-1-ch-1-and-2/",
-    "title": "CS330 | Quiz 1 (Ch. 1 & 2)",
-    "track": "computer-science",
-    "course": "cs330",
-    "section": "quizzes",
     "courseUrl": "/academics/computer-science/cs330/",
     "courseTitle": "CS330 // Introduction to Operating Systems"
   },
@@ -1325,6 +1325,87 @@ var COURSE_PAGES = [
     "courseTitle": "CS331 // Data Communications and Computer Networks"
   },
   {
+    "url": "/academics/computer-science/cs340/exams/01-chapter-1-quiz/",
+    "title": "CS340 | Chapter 1 Quiz",
+    "track": "computer-science",
+    "course": "cs340",
+    "section": "exams",
+    "courseUrl": "/academics/computer-science/cs340/",
+    "courseTitle": "CS340 // Introduction to Database Systems"
+  },
+  {
+    "url": "/academics/computer-science/cs340/exams/02-chapter-2-quiz/",
+    "title": "CS340 | Chapter 2 Quiz",
+    "track": "computer-science",
+    "course": "cs340",
+    "section": "exams",
+    "courseUrl": "/academics/computer-science/cs340/",
+    "courseTitle": "CS340 // Introduction to Database Systems"
+  },
+  {
+    "url": "/academics/computer-science/cs340/exams/03-chapter-3-quiz/",
+    "title": "CS340 | Chapter 3 Quiz",
+    "track": "computer-science",
+    "course": "cs340",
+    "section": "exams",
+    "courseUrl": "/academics/computer-science/cs340/",
+    "courseTitle": "CS340 // Introduction to Database Systems"
+  },
+  {
+    "url": "/academics/computer-science/cs340/exams/04-chapter-4-quiz/",
+    "title": "CS340 | Chapter 4 Quiz",
+    "track": "computer-science",
+    "course": "cs340",
+    "section": "exams",
+    "courseUrl": "/academics/computer-science/cs340/",
+    "courseTitle": "CS340 // Introduction to Database Systems"
+  },
+  {
+    "url": "/academics/computer-science/cs340/exams/05-chapter-5-quiz/",
+    "title": "CS340 | Chapter 5 Quiz",
+    "track": "computer-science",
+    "course": "cs340",
+    "section": "exams",
+    "courseUrl": "/academics/computer-science/cs340/",
+    "courseTitle": "CS340 // Introduction to Database Systems"
+  },
+  {
+    "url": "/academics/computer-science/cs340/exams/06-chapter-7-quiz/",
+    "title": "CS340 | Chapter 7 Quiz",
+    "track": "computer-science",
+    "course": "cs340",
+    "section": "exams",
+    "courseUrl": "/academics/computer-science/cs340/",
+    "courseTitle": "CS340 // Introduction to Database Systems"
+  },
+  {
+    "url": "/academics/computer-science/cs340/exams/07-chapter-9-quiz/",
+    "title": "CS340 | Chapter 9 Quiz",
+    "track": "computer-science",
+    "course": "cs340",
+    "section": "exams",
+    "courseUrl": "/academics/computer-science/cs340/",
+    "courseTitle": "CS340 // Introduction to Database Systems"
+  },
+  {
+    "url": "/academics/computer-science/cs340/exams/08-final-exam-251-practice/",
+    "title": "CS340 | Final Exam 251 Practice",
+    "track": "computer-science",
+    "course": "cs340",
+    "section": "exams",
+    "courseUrl": "/academics/computer-science/cs340/",
+    "courseTitle": "CS340 // Introduction to Database Systems"
+  },
+  {
+    "url": "/academics/computer-science/cs340/exams/09-midterm-exam/",
+    "title": "CS340 | Midterm Exam",
+    "track": "computer-science",
+    "course": "cs340",
+    "section": "exams",
+    "courseUrl": "/academics/computer-science/cs340/",
+    "courseTitle": "CS340 // Introduction to Database Systems"
+  },
+  {
     "url": "/academics/computer-science/cs340/extra-resources/01-cheat-sheet/",
     "title": "CS340 | Cheat Sheet",
     "track": "computer-science",
@@ -1393,87 +1474,6 @@ var COURSE_PAGES = [
     "track": "computer-science",
     "course": "cs340",
     "section": "extra-resources",
-    "courseUrl": "/academics/computer-science/cs340/",
-    "courseTitle": "CS340 // Introduction to Database Systems"
-  },
-  {
-    "url": "/academics/computer-science/cs340/quizzes/01-chapter-1-quiz/",
-    "title": "CS340 | Chapter 1 Quiz",
-    "track": "computer-science",
-    "course": "cs340",
-    "section": "quizzes",
-    "courseUrl": "/academics/computer-science/cs340/",
-    "courseTitle": "CS340 // Introduction to Database Systems"
-  },
-  {
-    "url": "/academics/computer-science/cs340/quizzes/02-chapter-2-quiz/",
-    "title": "CS340 | Chapter 2 Quiz",
-    "track": "computer-science",
-    "course": "cs340",
-    "section": "quizzes",
-    "courseUrl": "/academics/computer-science/cs340/",
-    "courseTitle": "CS340 // Introduction to Database Systems"
-  },
-  {
-    "url": "/academics/computer-science/cs340/quizzes/03-chapter-3-quiz/",
-    "title": "CS340 | Chapter 3 Quiz",
-    "track": "computer-science",
-    "course": "cs340",
-    "section": "quizzes",
-    "courseUrl": "/academics/computer-science/cs340/",
-    "courseTitle": "CS340 // Introduction to Database Systems"
-  },
-  {
-    "url": "/academics/computer-science/cs340/quizzes/04-chapter-4-quiz/",
-    "title": "CS340 | Chapter 4 Quiz",
-    "track": "computer-science",
-    "course": "cs340",
-    "section": "quizzes",
-    "courseUrl": "/academics/computer-science/cs340/",
-    "courseTitle": "CS340 // Introduction to Database Systems"
-  },
-  {
-    "url": "/academics/computer-science/cs340/quizzes/05-chapter-5-quiz/",
-    "title": "CS340 | Chapter 5 Quiz",
-    "track": "computer-science",
-    "course": "cs340",
-    "section": "quizzes",
-    "courseUrl": "/academics/computer-science/cs340/",
-    "courseTitle": "CS340 // Introduction to Database Systems"
-  },
-  {
-    "url": "/academics/computer-science/cs340/quizzes/06-chapter-7-quiz/",
-    "title": "CS340 | Chapter 7 Quiz",
-    "track": "computer-science",
-    "course": "cs340",
-    "section": "quizzes",
-    "courseUrl": "/academics/computer-science/cs340/",
-    "courseTitle": "CS340 // Introduction to Database Systems"
-  },
-  {
-    "url": "/academics/computer-science/cs340/quizzes/07-chapter-9-quiz/",
-    "title": "CS340 | Chapter 9 Quiz",
-    "track": "computer-science",
-    "course": "cs340",
-    "section": "quizzes",
-    "courseUrl": "/academics/computer-science/cs340/",
-    "courseTitle": "CS340 // Introduction to Database Systems"
-  },
-  {
-    "url": "/academics/computer-science/cs340/quizzes/08-final-exam-251-practice/",
-    "title": "CS340 | Final Exam 251 Practice",
-    "track": "computer-science",
-    "course": "cs340",
-    "section": "quizzes",
-    "courseUrl": "/academics/computer-science/cs340/",
-    "courseTitle": "CS340 // Introduction to Database Systems"
-  },
-  {
-    "url": "/academics/computer-science/cs340/quizzes/09-midterm-exam/",
-    "title": "CS340 | Midterm Exam",
-    "track": "computer-science",
-    "course": "cs340",
-    "section": "quizzes",
     "courseUrl": "/academics/computer-science/cs340/",
     "courseTitle": "CS340 // Introduction to Database Systems"
   },
@@ -1649,74 +1649,74 @@ var COURSE_PAGES = [
     "courseTitle": "CS340 // Introduction to Database Systems"
   },
   {
+    "url": "/academics/cybersecurity/cys401/exams/01-chapter-1-quiz/",
+    "title": "CYS401 | Chapter 1 Quiz",
+    "track": "cybersecurity",
+    "course": "cys401",
+    "section": "exams",
+    "courseUrl": "/academics/cybersecurity/cys401/",
+    "courseTitle": "CYS401 // Fundamentals of Cybersecurity"
+  },
+  {
+    "url": "/academics/cybersecurity/cys401/exams/02-chapter-2-quiz/",
+    "title": "CYS401 | Chapter 2 Quiz",
+    "track": "cybersecurity",
+    "course": "cys401",
+    "section": "exams",
+    "courseUrl": "/academics/cybersecurity/cys401/",
+    "courseTitle": "CYS401 // Fundamentals of Cybersecurity"
+  },
+  {
+    "url": "/academics/cybersecurity/cys401/exams/03-chapter-3-quiz/",
+    "title": "CYS401 | Chapter 3 Quiz",
+    "track": "cybersecurity",
+    "course": "cys401",
+    "section": "exams",
+    "courseUrl": "/academics/cybersecurity/cys401/",
+    "courseTitle": "CYS401 // Fundamentals of Cybersecurity"
+  },
+  {
+    "url": "/academics/cybersecurity/cys401/exams/04-chapter-4-quiz/",
+    "title": "CYS401 | Chapter 4 Quiz",
+    "track": "cybersecurity",
+    "course": "cys401",
+    "section": "exams",
+    "courseUrl": "/academics/cybersecurity/cys401/",
+    "courseTitle": "CYS401 // Fundamentals of Cybersecurity"
+  },
+  {
+    "url": "/academics/cybersecurity/cys401/exams/05-chapter-5-quiz/",
+    "title": "CYS401 | Chapter 5 Quiz",
+    "track": "cybersecurity",
+    "course": "cys401",
+    "section": "exams",
+    "courseUrl": "/academics/cybersecurity/cys401/",
+    "courseTitle": "CYS401 // Fundamentals of Cybersecurity"
+  },
+  {
+    "url": "/academics/cybersecurity/cys401/exams/06-chapter-6-quiz/",
+    "title": "CYS401 | Chapter 6 Quiz",
+    "track": "cybersecurity",
+    "course": "cys401",
+    "section": "exams",
+    "courseUrl": "/academics/cybersecurity/cys401/",
+    "courseTitle": "CYS401 // Fundamentals of Cybersecurity"
+  },
+  {
+    "url": "/academics/cybersecurity/cys401/exams/07-chapter-7-quiz/",
+    "title": "CYS401 | Chapter 7 Quiz",
+    "track": "cybersecurity",
+    "course": "cys401",
+    "section": "exams",
+    "courseUrl": "/academics/cybersecurity/cys401/",
+    "courseTitle": "CYS401 // Fundamentals of Cybersecurity"
+  },
+  {
     "url": "/academics/cybersecurity/cys401/extra-resources/summary/",
     "title": "CYS401 Summary",
     "track": "cybersecurity",
     "course": "cys401",
     "section": "extra-resources",
-    "courseUrl": "/academics/cybersecurity/cys401/",
-    "courseTitle": "CYS401 // Fundamentals of Cybersecurity"
-  },
-  {
-    "url": "/academics/cybersecurity/cys401/quizzes/01-chapter-1-quiz/",
-    "title": "CYS401 | Chapter 1 Quiz",
-    "track": "cybersecurity",
-    "course": "cys401",
-    "section": "quizzes",
-    "courseUrl": "/academics/cybersecurity/cys401/",
-    "courseTitle": "CYS401 // Fundamentals of Cybersecurity"
-  },
-  {
-    "url": "/academics/cybersecurity/cys401/quizzes/02-chapter-2-quiz/",
-    "title": "CYS401 | Chapter 2 Quiz",
-    "track": "cybersecurity",
-    "course": "cys401",
-    "section": "quizzes",
-    "courseUrl": "/academics/cybersecurity/cys401/",
-    "courseTitle": "CYS401 // Fundamentals of Cybersecurity"
-  },
-  {
-    "url": "/academics/cybersecurity/cys401/quizzes/03-chapter-3-quiz/",
-    "title": "CYS401 | Chapter 3 Quiz",
-    "track": "cybersecurity",
-    "course": "cys401",
-    "section": "quizzes",
-    "courseUrl": "/academics/cybersecurity/cys401/",
-    "courseTitle": "CYS401 // Fundamentals of Cybersecurity"
-  },
-  {
-    "url": "/academics/cybersecurity/cys401/quizzes/04-chapter-4-quiz/",
-    "title": "CYS401 | Chapter 4 Quiz",
-    "track": "cybersecurity",
-    "course": "cys401",
-    "section": "quizzes",
-    "courseUrl": "/academics/cybersecurity/cys401/",
-    "courseTitle": "CYS401 // Fundamentals of Cybersecurity"
-  },
-  {
-    "url": "/academics/cybersecurity/cys401/quizzes/05-chapter-5-quiz/",
-    "title": "CYS401 | Chapter 5 Quiz",
-    "track": "cybersecurity",
-    "course": "cys401",
-    "section": "quizzes",
-    "courseUrl": "/academics/cybersecurity/cys401/",
-    "courseTitle": "CYS401 // Fundamentals of Cybersecurity"
-  },
-  {
-    "url": "/academics/cybersecurity/cys401/quizzes/06-chapter-6-quiz/",
-    "title": "CYS401 | Chapter 6 Quiz",
-    "track": "cybersecurity",
-    "course": "cys401",
-    "section": "quizzes",
-    "courseUrl": "/academics/cybersecurity/cys401/",
-    "courseTitle": "CYS401 // Fundamentals of Cybersecurity"
-  },
-  {
-    "url": "/academics/cybersecurity/cys401/quizzes/07-chapter-7-quiz/",
-    "title": "CYS401 | Chapter 7 Quiz",
-    "track": "cybersecurity",
-    "course": "cys401",
-    "section": "quizzes",
     "courseUrl": "/academics/cybersecurity/cys401/",
     "courseTitle": "CYS401 // Fundamentals of Cybersecurity"
   },
@@ -1908,6 +1908,204 @@ var COURSE_PAGES = [
     "section": "slides",
     "courseUrl": "/academics/cybersecurity/cys401/",
     "courseTitle": "CYS401 // Fundamentals of Cybersecurity"
+  },
+  {
+    "url": "/academics/cybersecurity/cys405/exams/01-introduction-to-ethical-hacking-and-penetration-testing-quiz/",
+    "title": "CYS405 | Chapter 1 Quiz",
+    "track": "cybersecurity",
+    "course": "cys405",
+    "section": "exams",
+    "courseUrl": "/academics/cybersecurity/cys405/",
+    "courseTitle": "CYS405 // Penetration Testing and Ethical Hacking"
+  },
+  {
+    "url": "/academics/cybersecurity/cys405/exams/02-information-gathering-footprinting-and-reconnaissance-quiz/",
+    "title": "CYS405 | Chapter 2 Quiz",
+    "track": "cybersecurity",
+    "course": "cys405",
+    "section": "exams",
+    "courseUrl": "/academics/cybersecurity/cys405/",
+    "courseTitle": "CYS405 // Penetration Testing and Ethical Hacking"
+  },
+  {
+    "url": "/academics/cybersecurity/cys405/exams/03-scanning-quiz/",
+    "title": "CYS405 | Chapter 3 Quiz",
+    "track": "cybersecurity",
+    "course": "cys405",
+    "section": "exams",
+    "courseUrl": "/academics/cybersecurity/cys405/",
+    "courseTitle": "CYS405 // Penetration Testing and Ethical Hacking"
+  },
+  {
+    "url": "/academics/cybersecurity/cys405/exams/04-enumeration-quiz/",
+    "title": "CYS405 | Chapter 4 Quiz",
+    "track": "cybersecurity",
+    "course": "cys405",
+    "section": "exams",
+    "courseUrl": "/academics/cybersecurity/cys405/",
+    "courseTitle": "CYS405 // Penetration Testing and Ethical Hacking"
+  },
+  {
+    "url": "/academics/cybersecurity/cys405/exams/05-vulnerability-analysis-quiz/",
+    "title": "CYS405 | Chapter 5 Quiz",
+    "track": "cybersecurity",
+    "course": "cys405",
+    "section": "exams",
+    "courseUrl": "/academics/cybersecurity/cys405/",
+    "courseTitle": "CYS405 // Penetration Testing and Ethical Hacking"
+  },
+  {
+    "url": "/academics/cybersecurity/cys405/exams/06-system-hacking-quiz/",
+    "title": "CYS405 | Chapter 6 Quiz",
+    "track": "cybersecurity",
+    "course": "cys405",
+    "section": "exams",
+    "courseUrl": "/academics/cybersecurity/cys405/",
+    "courseTitle": "CYS405 // Penetration Testing and Ethical Hacking"
+  },
+  {
+    "url": "/academics/cybersecurity/cys405/exams/07-malware-quiz/",
+    "title": "CYS405 | Chapter 7 Quiz",
+    "track": "cybersecurity",
+    "course": "cys405",
+    "section": "exams",
+    "courseUrl": "/academics/cybersecurity/cys405/",
+    "courseTitle": "CYS405 // Penetration Testing and Ethical Hacking"
+  },
+  {
+    "url": "/academics/cybersecurity/cys405/exams/08-web-and-database-hacking-quiz/",
+    "title": "CYS405 | Chapter 8 Quiz",
+    "track": "cybersecurity",
+    "course": "cys405",
+    "section": "exams",
+    "courseUrl": "/academics/cybersecurity/cys405/",
+    "courseTitle": "CYS405 // Penetration Testing and Ethical Hacking"
+  },
+  {
+    "url": "/academics/cybersecurity/cys405/exams/09-social-engineering-quiz/",
+    "title": "CYS405 | Chapter 9 Quiz",
+    "track": "cybersecurity",
+    "course": "cys405",
+    "section": "exams",
+    "courseUrl": "/academics/cybersecurity/cys405/",
+    "courseTitle": "CYS405 // Penetration Testing and Ethical Hacking"
+  },
+  {
+    "url": "/academics/cybersecurity/cys405/exams/10-sniffing-and-dos-attacks-quiz/",
+    "title": "CYS405 | Chapter 10 Quiz",
+    "track": "cybersecurity",
+    "course": "cys405",
+    "section": "exams",
+    "courseUrl": "/academics/cybersecurity/cys405/",
+    "courseTitle": "CYS405 // Penetration Testing and Ethical Hacking"
+  },
+  {
+    "url": "/academics/cybersecurity/cys405/exams/11-wireless-network-hacking-quiz/",
+    "title": "CYS405 | Chapter 11 Quiz",
+    "track": "cybersecurity",
+    "course": "cys405",
+    "section": "exams",
+    "courseUrl": "/academics/cybersecurity/cys405/",
+    "courseTitle": "CYS405 // Penetration Testing and Ethical Hacking"
+  },
+  {
+    "url": "/academics/cybersecurity/cys405/extra-resources/mindmaps/01-introduction-to-ethical-hacking-and-penetration-testing/",
+    "title": "CYS405 | Chapter 1 Mindmap",
+    "track": "cybersecurity",
+    "course": "cys405",
+    "section": "extra-resources",
+    "courseUrl": "/academics/cybersecurity/cys405/",
+    "courseTitle": "CYS405 // Penetration Testing and Ethical Hacking"
+  },
+  {
+    "url": "/academics/cybersecurity/cys405/extra-resources/mindmaps/02-information-gathering-footprinting-and-reconnaissance/",
+    "title": "CYS405 | Chapter 2 Mindmap",
+    "track": "cybersecurity",
+    "course": "cys405",
+    "section": "extra-resources",
+    "courseUrl": "/academics/cybersecurity/cys405/",
+    "courseTitle": "CYS405 // Penetration Testing and Ethical Hacking"
+  },
+  {
+    "url": "/academics/cybersecurity/cys405/extra-resources/mindmaps/03-scanning/",
+    "title": "CYS405 | Chapter 3 Mindmap",
+    "track": "cybersecurity",
+    "course": "cys405",
+    "section": "extra-resources",
+    "courseUrl": "/academics/cybersecurity/cys405/",
+    "courseTitle": "CYS405 // Penetration Testing and Ethical Hacking"
+  },
+  {
+    "url": "/academics/cybersecurity/cys405/extra-resources/mindmaps/04-enumeration/",
+    "title": "CYS405 | Chapter 4 Mindmap",
+    "track": "cybersecurity",
+    "course": "cys405",
+    "section": "extra-resources",
+    "courseUrl": "/academics/cybersecurity/cys405/",
+    "courseTitle": "CYS405 // Penetration Testing and Ethical Hacking"
+  },
+  {
+    "url": "/academics/cybersecurity/cys405/extra-resources/mindmaps/05-vulnerability-analysis/",
+    "title": "CYS405 | Chapter 5 Mindmap",
+    "track": "cybersecurity",
+    "course": "cys405",
+    "section": "extra-resources",
+    "courseUrl": "/academics/cybersecurity/cys405/",
+    "courseTitle": "CYS405 // Penetration Testing and Ethical Hacking"
+  },
+  {
+    "url": "/academics/cybersecurity/cys405/extra-resources/mindmaps/06-system-hacking/",
+    "title": "CYS405 | Chapter 6 Mindmap",
+    "track": "cybersecurity",
+    "course": "cys405",
+    "section": "extra-resources",
+    "courseUrl": "/academics/cybersecurity/cys405/",
+    "courseTitle": "CYS405 // Penetration Testing and Ethical Hacking"
+  },
+  {
+    "url": "/academics/cybersecurity/cys405/extra-resources/mindmaps/07-malware/",
+    "title": "CYS405 | Chapter 7 Mindmap",
+    "track": "cybersecurity",
+    "course": "cys405",
+    "section": "extra-resources",
+    "courseUrl": "/academics/cybersecurity/cys405/",
+    "courseTitle": "CYS405 // Penetration Testing and Ethical Hacking"
+  },
+  {
+    "url": "/academics/cybersecurity/cys405/extra-resources/mindmaps/08-web-and-database-hacking/",
+    "title": "CYS405 | Chapter 8 Mindmap",
+    "track": "cybersecurity",
+    "course": "cys405",
+    "section": "extra-resources",
+    "courseUrl": "/academics/cybersecurity/cys405/",
+    "courseTitle": "CYS405 // Penetration Testing and Ethical Hacking"
+  },
+  {
+    "url": "/academics/cybersecurity/cys405/extra-resources/mindmaps/09-social-engineering/",
+    "title": "CYS405 | Chapter 9 Mindmap",
+    "track": "cybersecurity",
+    "course": "cys405",
+    "section": "extra-resources",
+    "courseUrl": "/academics/cybersecurity/cys405/",
+    "courseTitle": "CYS405 // Penetration Testing and Ethical Hacking"
+  },
+  {
+    "url": "/academics/cybersecurity/cys405/extra-resources/mindmaps/10-sniffing-and-dos-attacks/",
+    "title": "CYS405 | Chapter 10 Mindmap",
+    "track": "cybersecurity",
+    "course": "cys405",
+    "section": "extra-resources",
+    "courseUrl": "/academics/cybersecurity/cys405/",
+    "courseTitle": "CYS405 // Penetration Testing and Ethical Hacking"
+  },
+  {
+    "url": "/academics/cybersecurity/cys405/extra-resources/mindmaps/11-wireless-network-hacking/",
+    "title": "CYS405 | Chapter 11 Mindmap",
+    "track": "cybersecurity",
+    "course": "cys405",
+    "section": "extra-resources",
+    "courseUrl": "/academics/cybersecurity/cys405/",
+    "courseTitle": "CYS405 // Penetration Testing and Ethical Hacking"
   },
   {
     "url": "/academics/cybersecurity/cys405/slide-breakdowns/01-chapter-1-introduction-to-ethical-hacking-and-penetration-testing/",
@@ -2106,6 +2304,294 @@ var COURSE_PAGES = [
     "section": "slides",
     "courseUrl": "/academics/cybersecurity/cys405/",
     "courseTitle": "CYS405 // Penetration Testing and Ethical Hacking"
+  },
+  {
+    "url": "/academics/cybersecurity/cys406/exams/01-network-security-fundamentals-quiz/",
+    "title": "CYS406 | Chapter 1 Quiz",
+    "track": "cybersecurity",
+    "course": "cys406",
+    "section": "exams",
+    "courseUrl": "/academics/cybersecurity/cys406/",
+    "courseTitle": "CYS406 // Data and Network Security"
+  },
+  {
+    "url": "/academics/cybersecurity/cys406/exams/02-identification-authentication-and-authorization-quiz/",
+    "title": "CYS406 | Chapter 2 Quiz",
+    "track": "cybersecurity",
+    "course": "cys406",
+    "section": "exams",
+    "courseUrl": "/academics/cybersecurity/cys406/",
+    "courseTitle": "CYS406 // Data and Network Security"
+  },
+  {
+    "url": "/academics/cybersecurity/cys406/exams/03-cryptography-basics-des-and-aes-quiz/",
+    "title": "CYS406 | Chapter 3 Quiz",
+    "track": "cybersecurity",
+    "course": "cys406",
+    "section": "exams",
+    "courseUrl": "/academics/cybersecurity/cys406/",
+    "courseTitle": "CYS406 // Data and Network Security"
+  },
+  {
+    "url": "/academics/cybersecurity/cys406/exams/04-public-key-cryptography-and-rsa-quiz/",
+    "title": "CYS406 | Chapter 4 Quiz",
+    "track": "cybersecurity",
+    "course": "cys406",
+    "section": "exams",
+    "courseUrl": "/academics/cybersecurity/cys406/",
+    "courseTitle": "CYS406 // Data and Network Security"
+  },
+  {
+    "url": "/academics/cybersecurity/cys406/exams/05-elliptic-curve-cryptography-quiz/",
+    "title": "CYS406 | Chapter 5 Quiz",
+    "track": "cybersecurity",
+    "course": "cys406",
+    "section": "exams",
+    "courseUrl": "/academics/cybersecurity/cys406/",
+    "courseTitle": "CYS406 // Data and Network Security"
+  },
+  {
+    "url": "/academics/cybersecurity/cys406/exams/06-rc4-and-modes-of-operation-quiz/",
+    "title": "CYS406 | Chapter 6 Quiz",
+    "track": "cybersecurity",
+    "course": "cys406",
+    "section": "exams",
+    "courseUrl": "/academics/cybersecurity/cys406/",
+    "courseTitle": "CYS406 // Data and Network Security"
+  },
+  {
+    "url": "/academics/cybersecurity/cys406/exams/07-hash-functions-quiz/",
+    "title": "CYS406 | Chapter 7 Quiz",
+    "track": "cybersecurity",
+    "course": "cys406",
+    "section": "exams",
+    "courseUrl": "/academics/cybersecurity/cys406/",
+    "courseTitle": "CYS406 // Data and Network Security"
+  },
+  {
+    "url": "/academics/cybersecurity/cys406/exams/08-diffie-hellman-key-exchange-quiz/",
+    "title": "CYS406 | Chapter 8 Quiz",
+    "track": "cybersecurity",
+    "course": "cys406",
+    "section": "exams",
+    "courseUrl": "/academics/cybersecurity/cys406/",
+    "courseTitle": "CYS406 // Data and Network Security"
+  },
+  {
+    "url": "/academics/cybersecurity/cys406/exams/09-key-distribution-and-management-quiz/",
+    "title": "CYS406 | Chapter 9 Quiz",
+    "track": "cybersecurity",
+    "course": "cys406",
+    "section": "exams",
+    "courseUrl": "/academics/cybersecurity/cys406/",
+    "courseTitle": "CYS406 // Data and Network Security"
+  },
+  {
+    "url": "/academics/cybersecurity/cys406/exams/10-network-security-protocols-quiz/",
+    "title": "CYS406 | Chapter 10 Quiz",
+    "track": "cybersecurity",
+    "course": "cys406",
+    "section": "exams",
+    "courseUrl": "/academics/cybersecurity/cys406/",
+    "courseTitle": "CYS406 // Data and Network Security"
+  },
+  {
+    "url": "/academics/cybersecurity/cys406/exams/11-network-segmentation-and-firewalls-quiz/",
+    "title": "CYS406 | Chapter 11 Quiz",
+    "track": "cybersecurity",
+    "course": "cys406",
+    "section": "exams",
+    "courseUrl": "/academics/cybersecurity/cys406/",
+    "courseTitle": "CYS406 // Data and Network Security"
+  },
+  {
+    "url": "/academics/cybersecurity/cys406/exams/12-ids-and-ips-quiz/",
+    "title": "CYS406 | Chapter 12 Quiz",
+    "track": "cybersecurity",
+    "course": "cys406",
+    "section": "exams",
+    "courseUrl": "/academics/cybersecurity/cys406/",
+    "courseTitle": "CYS406 // Data and Network Security"
+  },
+  {
+    "url": "/academics/cybersecurity/cys406/exams/13-vpn-fundamentals-quiz/",
+    "title": "CYS406 | Chapter 13 Quiz",
+    "track": "cybersecurity",
+    "course": "cys406",
+    "section": "exams",
+    "courseUrl": "/academics/cybersecurity/cys406/",
+    "courseTitle": "CYS406 // Data and Network Security"
+  },
+  {
+    "url": "/academics/cybersecurity/cys406/exams/14-honeypots-and-proxy-servers-quiz/",
+    "title": "CYS406 | Chapter 14 Quiz",
+    "track": "cybersecurity",
+    "course": "cys406",
+    "section": "exams",
+    "courseUrl": "/academics/cybersecurity/cys406/",
+    "courseTitle": "CYS406 // Data and Network Security"
+  },
+  {
+    "url": "/academics/cybersecurity/cys406/exams/15-siem-and-uba-quiz/",
+    "title": "CYS406 | Chapter 15 Quiz",
+    "track": "cybersecurity",
+    "course": "cys406",
+    "section": "exams",
+    "courseUrl": "/academics/cybersecurity/cys406/",
+    "courseTitle": "CYS406 // Data and Network Security"
+  },
+  {
+    "url": "/academics/cybersecurity/cys406/exams/16-data-security-quiz/",
+    "title": "CYS406 | Chapter 16 Quiz",
+    "track": "cybersecurity",
+    "course": "cys406",
+    "section": "exams",
+    "courseUrl": "/academics/cybersecurity/cys406/",
+    "courseTitle": "CYS406 // Data and Network Security"
+  },
+  {
+    "url": "/academics/cybersecurity/cys406/extra-resources/mindmaps/01-network-security-fundamentals/",
+    "title": "CYS406 | Chapter 1 Mindmap",
+    "track": "cybersecurity",
+    "course": "cys406",
+    "section": "extra-resources",
+    "courseUrl": "/academics/cybersecurity/cys406/",
+    "courseTitle": "CYS406 // Data and Network Security"
+  },
+  {
+    "url": "/academics/cybersecurity/cys406/extra-resources/mindmaps/02-identification-authentication-and-authorization/",
+    "title": "CYS406 | Chapter 2 Mindmap",
+    "track": "cybersecurity",
+    "course": "cys406",
+    "section": "extra-resources",
+    "courseUrl": "/academics/cybersecurity/cys406/",
+    "courseTitle": "CYS406 // Data and Network Security"
+  },
+  {
+    "url": "/academics/cybersecurity/cys406/extra-resources/mindmaps/03-cryptography-basics-des-and-aes/",
+    "title": "CYS406 | Chapter 3 Mindmap",
+    "track": "cybersecurity",
+    "course": "cys406",
+    "section": "extra-resources",
+    "courseUrl": "/academics/cybersecurity/cys406/",
+    "courseTitle": "CYS406 // Data and Network Security"
+  },
+  {
+    "url": "/academics/cybersecurity/cys406/extra-resources/mindmaps/04-public-key-cryptography-and-rsa/",
+    "title": "CYS406 | Chapter 4 Mindmap",
+    "track": "cybersecurity",
+    "course": "cys406",
+    "section": "extra-resources",
+    "courseUrl": "/academics/cybersecurity/cys406/",
+    "courseTitle": "CYS406 // Data and Network Security"
+  },
+  {
+    "url": "/academics/cybersecurity/cys406/extra-resources/mindmaps/05-elliptic-curve-cryptography/",
+    "title": "CYS406 | Chapter 5 Mindmap",
+    "track": "cybersecurity",
+    "course": "cys406",
+    "section": "extra-resources",
+    "courseUrl": "/academics/cybersecurity/cys406/",
+    "courseTitle": "CYS406 // Data and Network Security"
+  },
+  {
+    "url": "/academics/cybersecurity/cys406/extra-resources/mindmaps/06-rc4-and-modes-of-operation/",
+    "title": "CYS406 | Chapter 6 Mindmap",
+    "track": "cybersecurity",
+    "course": "cys406",
+    "section": "extra-resources",
+    "courseUrl": "/academics/cybersecurity/cys406/",
+    "courseTitle": "CYS406 // Data and Network Security"
+  },
+  {
+    "url": "/academics/cybersecurity/cys406/extra-resources/mindmaps/07-hash-functions/",
+    "title": "CYS406 | Chapter 7 Mindmap",
+    "track": "cybersecurity",
+    "course": "cys406",
+    "section": "extra-resources",
+    "courseUrl": "/academics/cybersecurity/cys406/",
+    "courseTitle": "CYS406 // Data and Network Security"
+  },
+  {
+    "url": "/academics/cybersecurity/cys406/extra-resources/mindmaps/08-diffie-hellman-key-exchange/",
+    "title": "CYS406 | Chapter 8 Mindmap",
+    "track": "cybersecurity",
+    "course": "cys406",
+    "section": "extra-resources",
+    "courseUrl": "/academics/cybersecurity/cys406/",
+    "courseTitle": "CYS406 // Data and Network Security"
+  },
+  {
+    "url": "/academics/cybersecurity/cys406/extra-resources/mindmaps/09-key-distribution-and-management/",
+    "title": "CYS406 | Chapter 9 Mindmap",
+    "track": "cybersecurity",
+    "course": "cys406",
+    "section": "extra-resources",
+    "courseUrl": "/academics/cybersecurity/cys406/",
+    "courseTitle": "CYS406 // Data and Network Security"
+  },
+  {
+    "url": "/academics/cybersecurity/cys406/extra-resources/mindmaps/10-network-security-protocols/",
+    "title": "CYS406 | Chapter 10 Mindmap",
+    "track": "cybersecurity",
+    "course": "cys406",
+    "section": "extra-resources",
+    "courseUrl": "/academics/cybersecurity/cys406/",
+    "courseTitle": "CYS406 // Data and Network Security"
+  },
+  {
+    "url": "/academics/cybersecurity/cys406/extra-resources/mindmaps/11-network-segmentation-and-firewalls/",
+    "title": "CYS406 | Chapter 11 Mindmap",
+    "track": "cybersecurity",
+    "course": "cys406",
+    "section": "extra-resources",
+    "courseUrl": "/academics/cybersecurity/cys406/",
+    "courseTitle": "CYS406 // Data and Network Security"
+  },
+  {
+    "url": "/academics/cybersecurity/cys406/extra-resources/mindmaps/12-ids-and-ips/",
+    "title": "CYS406 | Chapter 12 Mindmap",
+    "track": "cybersecurity",
+    "course": "cys406",
+    "section": "extra-resources",
+    "courseUrl": "/academics/cybersecurity/cys406/",
+    "courseTitle": "CYS406 // Data and Network Security"
+  },
+  {
+    "url": "/academics/cybersecurity/cys406/extra-resources/mindmaps/13-vpn-fundamentals/",
+    "title": "CYS406 | Chapter 13 Mindmap",
+    "track": "cybersecurity",
+    "course": "cys406",
+    "section": "extra-resources",
+    "courseUrl": "/academics/cybersecurity/cys406/",
+    "courseTitle": "CYS406 // Data and Network Security"
+  },
+  {
+    "url": "/academics/cybersecurity/cys406/extra-resources/mindmaps/14-honeypots-and-proxy-servers/",
+    "title": "CYS406 | Chapter 14 Mindmap",
+    "track": "cybersecurity",
+    "course": "cys406",
+    "section": "extra-resources",
+    "courseUrl": "/academics/cybersecurity/cys406/",
+    "courseTitle": "CYS406 // Data and Network Security"
+  },
+  {
+    "url": "/academics/cybersecurity/cys406/extra-resources/mindmaps/15-siem-and-uba/",
+    "title": "CYS406 | Chapter 15 Mindmap",
+    "track": "cybersecurity",
+    "course": "cys406",
+    "section": "extra-resources",
+    "courseUrl": "/academics/cybersecurity/cys406/",
+    "courseTitle": "CYS406 // Data and Network Security"
+  },
+  {
+    "url": "/academics/cybersecurity/cys406/extra-resources/mindmaps/16-data-security/",
+    "title": "CYS406 | Chapter 16 Mindmap",
+    "track": "cybersecurity",
+    "course": "cys406",
+    "section": "extra-resources",
+    "courseUrl": "/academics/cybersecurity/cys406/",
+    "courseTitle": "CYS406 // Data and Network Security"
   },
   {
     "url": "/academics/cybersecurity/cys406/slide-breakdowns/01-chapter-1-network-security-fundamentals/",
@@ -2396,6 +2882,681 @@ var COURSE_PAGES = [
     "courseTitle": "CYS406 // Data and Network Security"
   },
   {
+    "url": "/academics/math/math221/extra-resources/rules/",
+    "title": "MATH221 | Rules",
+    "track": "math",
+    "course": "math221",
+    "section": "extra-resources",
+    "courseUrl": "/academics/math/math221/",
+    "courseTitle": "MATH221 // Linear Algebra"
+  },
+  {
+    "url": "/academics/math/math221/extra-resources/worksheets/1-3/",
+    "title": "MATH221 | 1.3",
+    "track": "math",
+    "course": "math221",
+    "section": "extra-resources",
+    "courseUrl": "/academics/math/math221/",
+    "courseTitle": "MATH221 // Linear Algebra"
+  },
+  {
+    "url": "/academics/math/math221/extra-resources/worksheets/2-1/",
+    "title": "MATH221 | 2.1",
+    "track": "math",
+    "course": "math221",
+    "section": "extra-resources",
+    "courseUrl": "/academics/math/math221/",
+    "courseTitle": "MATH221 // Linear Algebra"
+  },
+  {
+    "url": "/academics/math/math221/extra-resources/worksheets/2-2/",
+    "title": "MATH221 | 2.2",
+    "track": "math",
+    "course": "math221",
+    "section": "extra-resources",
+    "courseUrl": "/academics/math/math221/",
+    "courseTitle": "MATH221 // Linear Algebra"
+  },
+  {
+    "url": "/academics/math/math221/extra-resources/worksheets/2-3/",
+    "title": "MATH221 | 2.3",
+    "track": "math",
+    "course": "math221",
+    "section": "extra-resources",
+    "courseUrl": "/academics/math/math221/",
+    "courseTitle": "MATH221 // Linear Algebra"
+  },
+  {
+    "url": "/academics/math/math221/extra-resources/worksheets/2-4/",
+    "title": "MATH221 | 2.4",
+    "track": "math",
+    "course": "math221",
+    "section": "extra-resources",
+    "courseUrl": "/academics/math/math221/",
+    "courseTitle": "MATH221 // Linear Algebra"
+  },
+  {
+    "url": "/academics/math/math221/extra-resources/worksheets/2-5/",
+    "title": "MATH221 | 2.5",
+    "track": "math",
+    "course": "math221",
+    "section": "extra-resources",
+    "courseUrl": "/academics/math/math221/",
+    "courseTitle": "MATH221 // Linear Algebra"
+  },
+  {
+    "url": "/academics/math/math221/extra-resources/worksheets/2-6/",
+    "title": "MATH221 | 2.6",
+    "track": "math",
+    "course": "math221",
+    "section": "extra-resources",
+    "courseUrl": "/academics/math/math221/",
+    "courseTitle": "MATH221 // Linear Algebra"
+  },
+  {
+    "url": "/academics/math/math221/extra-resources/worksheets/3-1/",
+    "title": "MATH221 | 3.1",
+    "track": "math",
+    "course": "math221",
+    "section": "extra-resources",
+    "courseUrl": "/academics/math/math221/",
+    "courseTitle": "MATH221 // Linear Algebra"
+  },
+  {
+    "url": "/academics/math/math221/extra-resources/worksheets/3-2/",
+    "title": "MATH221 | 3.2",
+    "track": "math",
+    "course": "math221",
+    "section": "extra-resources",
+    "courseUrl": "/academics/math/math221/",
+    "courseTitle": "MATH221 // Linear Algebra"
+  },
+  {
+    "url": "/academics/math/math221/extra-resources/worksheets/3-3/",
+    "title": "MATH221 | 3.3",
+    "track": "math",
+    "course": "math221",
+    "section": "extra-resources",
+    "courseUrl": "/academics/math/math221/",
+    "courseTitle": "MATH221 // Linear Algebra"
+  },
+  {
+    "url": "/academics/math/math221/extra-resources/worksheets/3-4/",
+    "title": "MATH221 | 3.4",
+    "track": "math",
+    "course": "math221",
+    "section": "extra-resources",
+    "courseUrl": "/academics/math/math221/",
+    "courseTitle": "MATH221 // Linear Algebra"
+  },
+  {
+    "url": "/academics/math/math221/extra-resources/worksheets/3-5/",
+    "title": "MATH221 | 3.5",
+    "track": "math",
+    "course": "math221",
+    "section": "extra-resources",
+    "courseUrl": "/academics/math/math221/",
+    "courseTitle": "MATH221 // Linear Algebra"
+  },
+  {
+    "url": "/academics/math/math221/extra-resources/worksheets/4-1/",
+    "title": "MATH221 | 4.1",
+    "track": "math",
+    "course": "math221",
+    "section": "extra-resources",
+    "courseUrl": "/academics/math/math221/",
+    "courseTitle": "MATH221 // Linear Algebra"
+  },
+  {
+    "url": "/academics/math/math221/extra-resources/worksheets/4-3/",
+    "title": "MATH221 | 4.3",
+    "track": "math",
+    "course": "math221",
+    "section": "extra-resources",
+    "courseUrl": "/academics/math/math221/",
+    "courseTitle": "MATH221 // Linear Algebra"
+  },
+  {
+    "url": "/academics/math/math221/extra-resources/worksheets/4-4/",
+    "title": "MATH221 | 4.4",
+    "track": "math",
+    "course": "math221",
+    "section": "extra-resources",
+    "courseUrl": "/academics/math/math221/",
+    "courseTitle": "MATH221 // Linear Algebra"
+  },
+  {
+    "url": "/academics/math/math221/slides/1-1/",
+    "title": "MATH221 | 1.1",
+    "track": "math",
+    "course": "math221",
+    "section": "slides",
+    "courseUrl": "/academics/math/math221/",
+    "courseTitle": "MATH221 // Linear Algebra"
+  },
+  {
+    "url": "/academics/math/math221/slides/1-2-1-3/",
+    "title": "MATH221 | 1.2, 1.3",
+    "track": "math",
+    "course": "math221",
+    "section": "slides",
+    "courseUrl": "/academics/math/math221/",
+    "courseTitle": "MATH221 // Linear Algebra"
+  },
+  {
+    "url": "/academics/math/math221/slides/2-1/",
+    "title": "MATH221 | 2.1",
+    "track": "math",
+    "course": "math221",
+    "section": "slides",
+    "courseUrl": "/academics/math/math221/",
+    "courseTitle": "MATH221 // Linear Algebra"
+  },
+  {
+    "url": "/academics/math/math221/slides/2-3/",
+    "title": "MATH221 | 2.3",
+    "track": "math",
+    "course": "math221",
+    "section": "slides",
+    "courseUrl": "/academics/math/math221/",
+    "courseTitle": "MATH221 // Linear Algebra"
+  },
+  {
+    "url": "/academics/math/math221/slides/2-4/",
+    "title": "MATH221 | 2.4",
+    "track": "math",
+    "course": "math221",
+    "section": "slides",
+    "courseUrl": "/academics/math/math221/",
+    "courseTitle": "MATH221 // Linear Algebra"
+  },
+  {
+    "url": "/academics/math/math221/slides/2-5/",
+    "title": "MATH221 | 2.5",
+    "track": "math",
+    "course": "math221",
+    "section": "slides",
+    "courseUrl": "/academics/math/math221/",
+    "courseTitle": "MATH221 // Linear Algebra"
+  },
+  {
+    "url": "/academics/math/math221/slides/3-1/",
+    "title": "MATH221 | 3.1",
+    "track": "math",
+    "course": "math221",
+    "section": "slides",
+    "courseUrl": "/academics/math/math221/",
+    "courseTitle": "MATH221 // Linear Algebra"
+  },
+  {
+    "url": "/academics/math/math221/slides/3-2/",
+    "title": "MATH221 | 3.2",
+    "track": "math",
+    "course": "math221",
+    "section": "slides",
+    "courseUrl": "/academics/math/math221/",
+    "courseTitle": "MATH221 // Linear Algebra"
+  },
+  {
+    "url": "/academics/math/math221/slides/3-3/",
+    "title": "MATH221 | 3.3",
+    "track": "math",
+    "course": "math221",
+    "section": "slides",
+    "courseUrl": "/academics/math/math221/",
+    "courseTitle": "MATH221 // Linear Algebra"
+  },
+  {
+    "url": "/academics/math/math221/slides/3-4/",
+    "title": "MATH221 | 3.4",
+    "track": "math",
+    "course": "math221",
+    "section": "slides",
+    "courseUrl": "/academics/math/math221/",
+    "courseTitle": "MATH221 // Linear Algebra"
+  },
+  {
+    "url": "/academics/math/math221/slides/3-5/",
+    "title": "MATH221 | 3.5",
+    "track": "math",
+    "course": "math221",
+    "section": "slides",
+    "courseUrl": "/academics/math/math221/",
+    "courseTitle": "MATH221 // Linear Algebra"
+  },
+  {
+    "url": "/academics/math/math221/slides/4-1/",
+    "title": "MATH221 | 4.1",
+    "track": "math",
+    "course": "math221",
+    "section": "slides",
+    "courseUrl": "/academics/math/math221/",
+    "courseTitle": "MATH221 // Linear Algebra"
+  },
+  {
+    "url": "/academics/math/math221/slides/4-3/",
+    "title": "MATH221 | 4.3",
+    "track": "math",
+    "course": "math221",
+    "section": "slides",
+    "courseUrl": "/academics/math/math221/",
+    "courseTitle": "MATH221 // Linear Algebra"
+  },
+  {
+    "url": "/academics/math/math221/slides/4-4/",
+    "title": "MATH221 | 4.4",
+    "track": "math",
+    "course": "math221",
+    "section": "slides",
+    "courseUrl": "/academics/math/math221/",
+    "courseTitle": "MATH221 // Linear Algebra"
+  },
+  {
+    "url": "/academics/math/math221/slides/5-1/",
+    "title": "MATH221 | 5.1",
+    "track": "math",
+    "course": "math221",
+    "section": "slides",
+    "courseUrl": "/academics/math/math221/",
+    "courseTitle": "MATH221 // Linear Algebra"
+  },
+  {
+    "url": "/academics/math/math221/slides/5-2/",
+    "title": "MATH221 | 5.2",
+    "track": "math",
+    "course": "math221",
+    "section": "slides",
+    "courseUrl": "/academics/math/math221/",
+    "courseTitle": "MATH221 // Linear Algebra"
+  },
+  {
+    "url": "/academics/math/math221/slides/5-3/",
+    "title": "MATH221 | 5.3",
+    "track": "math",
+    "course": "math221",
+    "section": "slides",
+    "courseUrl": "/academics/math/math221/",
+    "courseTitle": "MATH221 // Linear Algebra"
+  },
+  {
+    "url": "/academics/math/math221/slides/6-1/",
+    "title": "MATH221 | 6.1",
+    "track": "math",
+    "course": "math221",
+    "section": "slides",
+    "courseUrl": "/academics/math/math221/",
+    "courseTitle": "MATH221 // Linear Algebra"
+  },
+  {
+    "url": "/academics/math/math221/slides/6-2/",
+    "title": "MATH221 | 6.2",
+    "track": "math",
+    "course": "math221",
+    "section": "slides",
+    "courseUrl": "/academics/math/math221/",
+    "courseTitle": "MATH221 // Linear Algebra"
+  },
+  {
+    "url": "/academics/math/math221/slides/6-3/",
+    "title": "MATH221 | 6.3",
+    "track": "math",
+    "course": "math221",
+    "section": "slides",
+    "courseUrl": "/academics/math/math221/",
+    "courseTitle": "MATH221 // Linear Algebra"
+  },
+  {
+    "url": "/academics/math/math221/slides/7-1/",
+    "title": "MATH221 | 7.1",
+    "track": "math",
+    "course": "math221",
+    "section": "slides",
+    "courseUrl": "/academics/math/math221/",
+    "courseTitle": "MATH221 // Linear Algebra"
+  },
+  {
+    "url": "/academics/math/math221/slides/7-2/",
+    "title": "MATH221 | 7.2",
+    "track": "math",
+    "course": "math221",
+    "section": "slides",
+    "courseUrl": "/academics/math/math221/",
+    "courseTitle": "MATH221 // Linear Algebra"
+  },
+  {
+    "url": "/academics/math/math221/slides/7-3/",
+    "title": "MATH221 | 7.3",
+    "track": "math",
+    "course": "math221",
+    "section": "slides",
+    "courseUrl": "/academics/math/math221/",
+    "courseTitle": "MATH221 // Linear Algebra"
+  },
+  {
+    "url": "/academics/math/phy105/extra-resources/final-experiments-summary/",
+    "title": "PHY105 Final Experiments Summary",
+    "track": "math",
+    "course": "phy105",
+    "section": "extra-resources",
+    "courseUrl": "/academics/math/phy105/",
+    "courseTitle": "PHY105 // Physics I"
+  },
+  {
+    "url": "/academics/math/phy105/extra-resources/formula-sheet/",
+    "title": "PHY105 Formula Sheet",
+    "track": "math",
+    "course": "phy105",
+    "section": "extra-resources",
+    "courseUrl": "/academics/math/phy105/",
+    "courseTitle": "PHY105 // Physics I"
+  },
+  {
+    "url": "/academics/math/phy105/extra-resources/formulas/",
+    "title": "PHY105 Formulas",
+    "track": "math",
+    "course": "phy105",
+    "section": "extra-resources",
+    "courseUrl": "/academics/math/phy105/",
+    "courseTitle": "PHY105 // Physics I"
+  },
+  {
+    "url": "/academics/math/phy105/extra-resources/pasco-setting/",
+    "title": "PHY105 Pasco Setting",
+    "track": "math",
+    "course": "phy105",
+    "section": "extra-resources",
+    "courseUrl": "/academics/math/phy105/",
+    "courseTitle": "PHY105 // Physics I"
+  },
+  {
+    "url": "/academics/math/phy105/extra-resources/phy105-all-experiments/",
+    "title": "PHY105 PHY105 All Experiments",
+    "track": "math",
+    "course": "phy105",
+    "section": "extra-resources",
+    "courseUrl": "/academics/math/phy105/",
+    "courseTitle": "PHY105 // Physics I"
+  },
+  {
+    "url": "/academics/math/phy105/slides/chapter-1-introduction/",
+    "title": "PHY105 Chapter 1 Introduction",
+    "track": "math",
+    "course": "phy105",
+    "section": "slides",
+    "courseUrl": "/academics/math/phy105/",
+    "courseTitle": "PHY105 // Physics I"
+  },
+  {
+    "url": "/academics/math/phy105/slides/chapter-16-temperature/",
+    "title": "PHY105 Chapter 16 Temperature",
+    "track": "math",
+    "course": "phy105",
+    "section": "slides",
+    "courseUrl": "/academics/math/phy105/",
+    "courseTitle": "PHY105 // Physics I"
+  },
+  {
+    "url": "/academics/math/phy105/slides/chapter-2-vectors/",
+    "title": "PHY105 Chapter 2 Vectors",
+    "track": "math",
+    "course": "phy105",
+    "section": "slides",
+    "courseUrl": "/academics/math/phy105/",
+    "courseTitle": "PHY105 // Physics I"
+  },
+  {
+    "url": "/academics/math/phy105/slides/chapter-3-motion-in-two-and-three-dimensions/",
+    "title": "PHY105 Chapter 3 Motion in Two and Three Dimensions",
+    "track": "math",
+    "course": "phy105",
+    "section": "slides",
+    "courseUrl": "/academics/math/phy105/",
+    "courseTitle": "PHY105 // Physics I"
+  },
+  {
+    "url": "/academics/math/phy105/slides/chapter-4-projectile-motion/",
+    "title": "PHY105 Chapter 4 Projectile Motion",
+    "track": "math",
+    "course": "phy105",
+    "section": "slides",
+    "courseUrl": "/academics/math/phy105/",
+    "courseTitle": "PHY105 // Physics I"
+  },
+  {
+    "url": "/academics/math/phy105/slides/chapter-5-forces-and-motion/",
+    "title": "PHY105 Chapter 5 Forces and Motion",
+    "track": "math",
+    "course": "phy105",
+    "section": "slides",
+    "courseUrl": "/academics/math/phy105/",
+    "courseTitle": "PHY105 // Physics I"
+  },
+  {
+    "url": "/academics/math/phy105/slides/chapter-6-force-and-motion-ii/",
+    "title": "PHY105 Chapter 6 Force and Motion II",
+    "track": "math",
+    "course": "phy105",
+    "section": "slides",
+    "courseUrl": "/academics/math/phy105/",
+    "courseTitle": "PHY105 // Physics I"
+  },
+  {
+    "url": "/academics/math/phy105/slides/chapter-7-work-and-kinetic-energy/",
+    "title": "PHY105 Chapter 7 Work and Kinetic Energy",
+    "track": "math",
+    "course": "phy105",
+    "section": "slides",
+    "courseUrl": "/academics/math/phy105/",
+    "courseTitle": "PHY105 // Physics I"
+  },
+  {
+    "url": "/academics/math/phy105/slides/chapter-8-potential-energy/",
+    "title": "PHY105 Chapter 8 Potential Energy",
+    "track": "math",
+    "course": "phy105",
+    "section": "slides",
+    "courseUrl": "/academics/math/phy105/",
+    "courseTitle": "PHY105 // Physics I"
+  },
+  {
+    "url": "/academics/math/phy105/slides/chapter-9-momentum/",
+    "title": "PHY105 Chapter 9 Momentum",
+    "track": "math",
+    "course": "phy105",
+    "section": "slides",
+    "courseUrl": "/academics/math/phy105/",
+    "courseTitle": "PHY105 // Physics I"
+  },
+  {
+    "url": "/academics/math/phy105/syllabus/lab-syllabus/",
+    "title": "PHY105 Lab Syllabus",
+    "track": "math",
+    "course": "phy105",
+    "section": "syllabus",
+    "courseUrl": "/academics/math/phy105/",
+    "courseTitle": "PHY105 // Physics I"
+  },
+  {
+    "url": "/academics/math/phy105/syllabus/lecture-syllabus/",
+    "title": "PHY105 Lecture Syllabus",
+    "track": "math",
+    "course": "phy105",
+    "section": "syllabus",
+    "courseUrl": "/academics/math/phy105/",
+    "courseTitle": "PHY105 // Physics I"
+  },
+  {
+    "url": "/academics/math/phy205/slides/phy205-chapter-21-electric-charge-halliday/",
+    "title": "PHY205 | Chapter 21 Electric Charge Halliday",
+    "track": "math",
+    "course": "phy205",
+    "section": "slides",
+    "courseUrl": "/academics/math/phy205/",
+    "courseTitle": "PHY205 // Physics II"
+  },
+  {
+    "url": "/academics/math/phy205/slides/phy205-chapter-22-electric-fields-halliday/",
+    "title": "PHY205 | Chapter 22 Electric Fields Halliday",
+    "track": "math",
+    "course": "phy205",
+    "section": "slides",
+    "courseUrl": "/academics/math/phy205/",
+    "courseTitle": "PHY205 // Physics II"
+  },
+  {
+    "url": "/academics/math/phy205/slides/phy205-chapter-23-gauss-law-halliday/",
+    "title": "PHY205 | Chapter 23 Gauss Law Halliday",
+    "track": "math",
+    "course": "phy205",
+    "section": "slides",
+    "courseUrl": "/academics/math/phy205/",
+    "courseTitle": "PHY205 // Physics II"
+  },
+  {
+    "url": "/academics/math/phy205/slides/phy205-chapter-24-electric-potential-halliday/",
+    "title": "PHY205 | Chapter 24 Electric Potential Halliday",
+    "track": "math",
+    "course": "phy205",
+    "section": "slides",
+    "courseUrl": "/academics/math/phy205/",
+    "courseTitle": "PHY205 // Physics II"
+  },
+  {
+    "url": "/academics/math/phy205/slides/phy205-chapter-25-capacitance-halliday/",
+    "title": "PHY205 | Chapter 25 Capacitance Halliday",
+    "track": "math",
+    "course": "phy205",
+    "section": "slides",
+    "courseUrl": "/academics/math/phy205/",
+    "courseTitle": "PHY205 // Physics II"
+  },
+  {
+    "url": "/academics/math/phy205/slides/phy205-chapter-26-current-and-resistance-halliday/",
+    "title": "PHY205 | Chapter 26 Current And Resistance Halliday",
+    "track": "math",
+    "course": "phy205",
+    "section": "slides",
+    "courseUrl": "/academics/math/phy205/",
+    "courseTitle": "PHY205 // Physics II"
+  },
+  {
+    "url": "/academics/math/phy205/slides/phy205-chapter-27-circuits-halliday/",
+    "title": "PHY205 | Chapter 27 Circuits Halliday",
+    "track": "math",
+    "course": "phy205",
+    "section": "slides",
+    "courseUrl": "/academics/math/phy205/",
+    "courseTitle": "PHY205 // Physics II"
+  },
+  {
+    "url": "/academics/math/phy205/slides/phy205-chapters-28-29-30-magnetic-fields-and-induction-halliday/",
+    "title": "PHY205 | Chapters 28, 29, 30, Magnetic Fields And Induction Halliday",
+    "track": "math",
+    "course": "phy205",
+    "section": "slides",
+    "courseUrl": "/academics/math/phy205/",
+    "courseTitle": "PHY205 // Physics II"
+  },
+  {
+    "url": "/academics/math/sci101/slides/sci101-chapter-1-patterns-of-motion-and-equilibrium/",
+    "title": "SCI101 | Chapter 1 Patterns of Motion and Equilibrium",
+    "track": "math",
+    "course": "sci101",
+    "section": "slides",
+    "courseUrl": "/academics/math/sci101/",
+    "courseTitle": "SCI101 Overview"
+  },
+  {
+    "url": "/academics/math/sci101/slides/sci101-chapter-10/",
+    "title": "SCI101 | Chapter 10",
+    "track": "math",
+    "course": "sci101",
+    "section": "slides",
+    "courseUrl": "/academics/math/sci101/",
+    "courseTitle": "SCI101 Overview"
+  },
+  {
+    "url": "/academics/math/sci101/slides/sci101-chapter-2-newtons-laws-of-motion/",
+    "title": "SCI101 | Chapter 2 Newton's Laws of Motion",
+    "track": "math",
+    "course": "sci101",
+    "section": "slides",
+    "courseUrl": "/academics/math/sci101/",
+    "courseTitle": "SCI101 Overview"
+  },
+  {
+    "url": "/academics/math/sci101/slides/sci101-chapter-3-momentum-and-energy/",
+    "title": "SCI101 | Chapter 3 Momentum and Energy",
+    "track": "math",
+    "course": "sci101",
+    "section": "slides",
+    "courseUrl": "/academics/math/sci101/",
+    "courseTitle": "SCI101 Overview"
+  },
+  {
+    "url": "/academics/math/sci101/slides/sci101-chapter-4-gravity/",
+    "title": "SCI101 | Chapter 4 Gravity",
+    "track": "math",
+    "course": "sci101",
+    "section": "slides",
+    "courseUrl": "/academics/math/sci101/",
+    "courseTitle": "SCI101 Overview"
+  },
+  {
+    "url": "/academics/math/sci101/slides/sci101-chapter-5-fluid-mechanics/",
+    "title": "SCI101 | Chapter 5 Fluid Mechanics",
+    "track": "math",
+    "course": "sci101",
+    "section": "slides",
+    "courseUrl": "/academics/math/sci101/",
+    "courseTitle": "SCI101 Overview"
+  },
+  {
+    "url": "/academics/math/sci101/slides/sci101-chapter-6-thermal-energy-and-thermodynamics/",
+    "title": "SCI101 | Chapter 6 Thermal Energy and Thermodynamics",
+    "track": "math",
+    "course": "sci101",
+    "section": "slides",
+    "courseUrl": "/academics/math/sci101/",
+    "courseTitle": "SCI101 Overview"
+  },
+  {
+    "url": "/academics/math/sci101/slides/sci101-chapter-7/",
+    "title": "SCI101 | Chapter 7",
+    "track": "math",
+    "course": "sci101",
+    "section": "slides",
+    "courseUrl": "/academics/math/sci101/",
+    "courseTitle": "SCI101 Overview"
+  },
+  {
+    "url": "/academics/math/sci101/slides/sci101-chapters-12-and-15/",
+    "title": "SCI101 | Chapters 12 and 15",
+    "track": "math",
+    "course": "sci101",
+    "section": "slides",
+    "courseUrl": "/academics/math/sci101/",
+    "courseTitle": "SCI101 Overview"
+  },
+  {
+    "url": "/academics/math/stat101/extra-resources/mindmap/",
+    "title": "STAT101 Mindmaps",
+    "track": "math",
+    "course": "stat101",
+    "section": "extra-resources",
+    "courseUrl": "/academics/math/stat101/",
+    "courseTitle": "STAT101 Overview"
+  },
+  {
+    "url": "/academics/math/stat101/extra-resources/worksheets/",
+    "title": "STAT101 Worksheets",
+    "track": "math",
+    "course": "stat101",
+    "section": "extra-resources",
+    "courseUrl": "/academics/math/stat101/",
+    "courseTitle": "STAT101 Overview"
+  },
+  {
     "url": "/academics/other-courses/com201/exams/examplify-practice-questions/part-1/",
     "title": "COM201 | Extensive Final Review — Part 1",
     "track": "other-courses",
@@ -2495,6 +3656,78 @@ var COURSE_PAGES = [
     "courseTitle": "COM201 // Introduction to Communication Skills"
   },
   {
+    "url": "/academics/other-courses/com201/extra-resources/mindmaps/01-introduction-to-human-communication/",
+    "title": "COM201 | Introduction to Human Communication",
+    "track": "other-courses",
+    "course": "com201",
+    "section": "extra-resources",
+    "courseUrl": "/academics/other-courses/com201/",
+    "courseTitle": "COM201 // Introduction to Communication Skills"
+  },
+  {
+    "url": "/academics/other-courses/com201/extra-resources/mindmaps/02-perception-self-and-communication/",
+    "title": "COM201 | Perception, Self, and Communication",
+    "track": "other-courses",
+    "course": "com201",
+    "section": "extra-resources",
+    "courseUrl": "/academics/other-courses/com201/",
+    "courseTitle": "COM201 // Introduction to Communication Skills"
+  },
+  {
+    "url": "/academics/other-courses/com201/extra-resources/mindmaps/03-language-and-meaning/",
+    "title": "COM201 | Language and Meaning",
+    "track": "other-courses",
+    "course": "com201",
+    "section": "extra-resources",
+    "courseUrl": "/academics/other-courses/com201/",
+    "courseTitle": "COM201 // Introduction to Communication Skills"
+  },
+  {
+    "url": "/academics/other-courses/com201/extra-resources/mindmaps/04-nonverbal-communication/",
+    "title": "COM201 | Nonverbal Communication",
+    "track": "other-courses",
+    "course": "com201",
+    "section": "extra-resources",
+    "courseUrl": "/academics/other-courses/com201/",
+    "courseTitle": "COM201 // Introduction to Communication Skills"
+  },
+  {
+    "url": "/academics/other-courses/com201/extra-resources/mindmaps/05-listening-and-critical-thinking/",
+    "title": "COM201 | Listening and Critical Thinking",
+    "track": "other-courses",
+    "course": "com201",
+    "section": "extra-resources",
+    "courseUrl": "/academics/other-courses/com201/",
+    "courseTitle": "COM201 // Introduction to Communication Skills"
+  },
+  {
+    "url": "/academics/other-courses/com201/extra-resources/mindmaps/06-interpersonal-communication/",
+    "title": "COM201 | Interpersonal Communication",
+    "track": "other-courses",
+    "course": "com201",
+    "section": "extra-resources",
+    "courseUrl": "/academics/other-courses/com201/",
+    "courseTitle": "COM201 // Introduction to Communication Skills"
+  },
+  {
+    "url": "/academics/other-courses/com201/extra-resources/mindmaps/07-inclusive-communication/",
+    "title": "COM201 | Inclusive Communication",
+    "track": "other-courses",
+    "course": "com201",
+    "section": "extra-resources",
+    "courseUrl": "/academics/other-courses/com201/",
+    "courseTitle": "COM201 // Introduction to Communication Skills"
+  },
+  {
+    "url": "/academics/other-courses/com201/extra-resources/mindmaps/08-small-group-communication/",
+    "title": "COM201 | Small-Group Communication",
+    "track": "other-courses",
+    "course": "com201",
+    "section": "extra-resources",
+    "courseUrl": "/academics/other-courses/com201/",
+    "courseTitle": "COM201 // Introduction to Communication Skills"
+  },
+  {
     "url": "/academics/other-courses/com201/extra-resources/worksheets/04-2-sc-chapter-2-perception-self-and-communication/",
     "title": "COM201 | Chapter 2 Study Guide — Perception, Self & Communication",
     "track": "other-courses",
@@ -2536,6 +3769,78 @@ var COURSE_PAGES = [
     "track": "other-courses",
     "course": "com201",
     "section": "extra-resources",
+    "courseUrl": "/academics/other-courses/com201/",
+    "courseTitle": "COM201 // Introduction to Communication Skills"
+  },
+  {
+    "url": "/academics/other-courses/com201/slide-breakdowns/01-introduction-to-human-communication/",
+    "title": "COM201 | Breakdown: Introduction to Human Communication",
+    "track": "other-courses",
+    "course": "com201",
+    "section": "slide-breakdowns",
+    "courseUrl": "/academics/other-courses/com201/",
+    "courseTitle": "COM201 // Introduction to Communication Skills"
+  },
+  {
+    "url": "/academics/other-courses/com201/slide-breakdowns/02-perception-self-and-communication/",
+    "title": "COM201 | Breakdown: Perception, Self, and Communication",
+    "track": "other-courses",
+    "course": "com201",
+    "section": "slide-breakdowns",
+    "courseUrl": "/academics/other-courses/com201/",
+    "courseTitle": "COM201 // Introduction to Communication Skills"
+  },
+  {
+    "url": "/academics/other-courses/com201/slide-breakdowns/03-language-and-meaning/",
+    "title": "COM201 | Breakdown: Language and Meaning",
+    "track": "other-courses",
+    "course": "com201",
+    "section": "slide-breakdowns",
+    "courseUrl": "/academics/other-courses/com201/",
+    "courseTitle": "COM201 // Introduction to Communication Skills"
+  },
+  {
+    "url": "/academics/other-courses/com201/slide-breakdowns/04-nonverbal-communication/",
+    "title": "COM201 | Breakdown: Nonverbal Communication",
+    "track": "other-courses",
+    "course": "com201",
+    "section": "slide-breakdowns",
+    "courseUrl": "/academics/other-courses/com201/",
+    "courseTitle": "COM201 // Introduction to Communication Skills"
+  },
+  {
+    "url": "/academics/other-courses/com201/slide-breakdowns/05-listening-and-critical-thinking/",
+    "title": "COM201 | Breakdown: Listening and Critical Thinking",
+    "track": "other-courses",
+    "course": "com201",
+    "section": "slide-breakdowns",
+    "courseUrl": "/academics/other-courses/com201/",
+    "courseTitle": "COM201 // Introduction to Communication Skills"
+  },
+  {
+    "url": "/academics/other-courses/com201/slide-breakdowns/06-interpersonal-communication/",
+    "title": "COM201 | Breakdown: Interpersonal Communication",
+    "track": "other-courses",
+    "course": "com201",
+    "section": "slide-breakdowns",
+    "courseUrl": "/academics/other-courses/com201/",
+    "courseTitle": "COM201 // Introduction to Communication Skills"
+  },
+  {
+    "url": "/academics/other-courses/com201/slide-breakdowns/07-inclusive-communication/",
+    "title": "COM201 | Breakdown: Inclusive Communication",
+    "track": "other-courses",
+    "course": "com201",
+    "section": "slide-breakdowns",
+    "courseUrl": "/academics/other-courses/com201/",
+    "courseTitle": "COM201 // Introduction to Communication Skills"
+  },
+  {
+    "url": "/academics/other-courses/com201/slide-breakdowns/08-small-group-communication/",
+    "title": "COM201 | Breakdown: Small-Group Communication",
+    "track": "other-courses",
+    "course": "com201",
+    "section": "slide-breakdowns",
     "courseUrl": "/academics/other-courses/com201/",
     "courseTitle": "COM201 // Introduction to Communication Skills"
   },
@@ -3008,6 +4313,222 @@ var COURSE_PAGES = [
     "courseTitle": "ENG103 // Research Writing Techniques"
   },
   {
+    "url": "/academics/other-courses/ethcs303/exams/01-moral-systems-ethical-concepts-and-theories-quiz/",
+    "title": "ETHCS303 | Moral Systems, Ethical Concepts, and Theories Quiz",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "exams",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
+    "url": "/academics/other-courses/ethcs303/exams/02-kantianism-quiz/",
+    "title": "ETHCS303 | Kantianism Quiz",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "exams",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
+    "url": "/academics/other-courses/ethcs303/exams/03-utilitarianism-quiz/",
+    "title": "ETHCS303 | Utilitarianism Quiz",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "exams",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
+    "url": "/academics/other-courses/ethcs303/exams/04-social-contract-theory-quiz/",
+    "title": "ETHCS303 | Social Contract Theory Quiz",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "exams",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
+    "url": "/academics/other-courses/ethcs303/exams/05-professional-ethics-quiz/",
+    "title": "ETHCS303 | Professional Ethics Quiz",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "exams",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
+    "url": "/academics/other-courses/ethcs303/exams/06-quiz-1-question-bank/",
+    "title": "ETHCS303 | Quiz 1 Question Bank",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "exams",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
+    "url": "/academics/other-courses/ethcs303/exams/07-quiz-1-practice/",
+    "title": "ETHCS303 | Quiz 1 Practice",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "exams",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
+    "url": "/academics/other-courses/ethcs303/exams/08-ethical-issues-in-systems-analysis-and-software-engineering-quiz/",
+    "title": "ETHCS303 | Ethical Issues in Systems Analysis and Software Engineering Quiz",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "exams",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
+    "url": "/academics/other-courses/ethcs303/exams/09-network-security-and-privacy-quiz/",
+    "title": "ETHCS303 | Network Security and Privacy Quiz",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "exams",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
+    "url": "/academics/other-courses/ethcs303/exams/10-major-1-question-bank/",
+    "title": "ETHCS303 | Major 1 Question Bank",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "exams",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
+    "url": "/academics/other-courses/ethcs303/exams/11-cloud-computing-and-privacy-issues-quiz/",
+    "title": "ETHCS303 | Cloud Computing and Privacy Issues Quiz",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "exams",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
+    "url": "/academics/other-courses/ethcs303/exams/12-privacy-issues-in-cyberspace-quiz/",
+    "title": "ETHCS303 | Privacy Issues in Cyberspace Quiz",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "exams",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
+    "url": "/academics/other-courses/ethcs303/exams/13-social-media-ethical-legal-and-security-issues-quiz/",
+    "title": "ETHCS303 | Social Media Ethical, Legal, and Security Issues Quiz",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "exams",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
+    "url": "/academics/other-courses/ethcs303/exams/14-social-engineering-quiz/",
+    "title": "ETHCS303 | Social Engineering Quiz",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "exams",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
+    "url": "/academics/other-courses/ethcs303/exams/15-introduction-to-ethical-hacking-quiz/",
+    "title": "ETHCS303 | Introduction to Ethical Hacking Quiz",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "exams",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
+    "url": "/academics/other-courses/ethcs303/exams/16-business-ethics-quiz/",
+    "title": "ETHCS303 | Business Ethics Quiz",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "exams",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
+    "url": "/academics/other-courses/ethcs303/exams/17-cyber-laws-in-saudi-arabia-quiz/",
+    "title": "ETHCS303 | Cyber Laws in Saudi Arabia Quiz",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "exams",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
+    "url": "/academics/other-courses/ethcs303/exams/17-intellectual-property-laws-quiz/",
+    "title": "ETHCS303 | Intellectual Property Laws Quiz",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "exams",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
+    "url": "/academics/other-courses/ethcs303/exams/18-quiz-1-section-81/",
+    "title": "ETHCS303 | Quiz 1 (Section 81) — Answer Key",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "exams",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
+    "url": "/academics/other-courses/ethcs303/exams/final-exam-mcq-bank/",
+    "title": "ETHCS303 | Final Exam — MCQ Question Bank",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "exams",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
+    "url": "/academics/other-courses/ethcs303/exams/final-exam-practice/",
+    "title": "ETHCS303 | Final Exam Practice",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "exams",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
+    "url": "/academics/other-courses/ethcs303/exams/major-1-exam-practice/",
+    "title": "ETHCS303 | Major 1 — Exam Practice",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "exams",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
+    "url": "/academics/other-courses/ethcs303/exams/major-2-exam-practice/",
+    "title": "ETHCS303 | Major 2 — Exam Practice",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "exams",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
+    "url": "/academics/other-courses/ethcs303/exams/scenario-question-bank/",
+    "title": "ETHCS303 | Scenario Question Bank",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "exams",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
     "url": "/academics/other-courses/ethcs303/extra-resources/01-ethcs-303-summary/",
     "title": "ETHCS303 | Summary",
     "track": "other-courses",
@@ -3337,195 +4858,6 @@ var COURSE_PAGES = [
     "track": "other-courses",
     "course": "ethcs303",
     "section": "extra-resources",
-    "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
-  },
-  {
-    "url": "/academics/other-courses/ethcs303/quizzes/01-moral-systems-ethical-concepts-and-theories-quiz/",
-    "title": "ETHCS303 | Moral Systems, Ethical Concepts, and Theories Quiz",
-    "track": "other-courses",
-    "course": "ethcs303",
-    "section": "quizzes",
-    "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
-  },
-  {
-    "url": "/academics/other-courses/ethcs303/quizzes/02-kantianism-quiz/",
-    "title": "ETHCS303 | Kantianism Quiz",
-    "track": "other-courses",
-    "course": "ethcs303",
-    "section": "quizzes",
-    "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
-  },
-  {
-    "url": "/academics/other-courses/ethcs303/quizzes/03-utilitarianism-quiz/",
-    "title": "ETHCS303 | Utilitarianism Quiz",
-    "track": "other-courses",
-    "course": "ethcs303",
-    "section": "quizzes",
-    "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
-  },
-  {
-    "url": "/academics/other-courses/ethcs303/quizzes/04-social-contract-theory-quiz/",
-    "title": "ETHCS303 | Social Contract Theory Quiz",
-    "track": "other-courses",
-    "course": "ethcs303",
-    "section": "quizzes",
-    "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
-  },
-  {
-    "url": "/academics/other-courses/ethcs303/quizzes/05-professional-ethics-quiz/",
-    "title": "ETHCS303 | Professional Ethics Quiz",
-    "track": "other-courses",
-    "course": "ethcs303",
-    "section": "quizzes",
-    "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
-  },
-  {
-    "url": "/academics/other-courses/ethcs303/quizzes/06-quiz-1-question-bank/",
-    "title": "ETHCS303 | Quiz 1 Question Bank",
-    "track": "other-courses",
-    "course": "ethcs303",
-    "section": "quizzes",
-    "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
-  },
-  {
-    "url": "/academics/other-courses/ethcs303/quizzes/07-quiz-1-practice/",
-    "title": "ETHCS303 | Quiz 1 Practice",
-    "track": "other-courses",
-    "course": "ethcs303",
-    "section": "quizzes",
-    "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
-  },
-  {
-    "url": "/academics/other-courses/ethcs303/quizzes/08-ethical-issues-in-systems-analysis-and-software-engineering-quiz/",
-    "title": "ETHCS303 | Ethical Issues in Systems Analysis and Software Engineering Quiz",
-    "track": "other-courses",
-    "course": "ethcs303",
-    "section": "quizzes",
-    "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
-  },
-  {
-    "url": "/academics/other-courses/ethcs303/quizzes/09-network-security-and-privacy-quiz/",
-    "title": "ETHCS303 | Network Security and Privacy Quiz",
-    "track": "other-courses",
-    "course": "ethcs303",
-    "section": "quizzes",
-    "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
-  },
-  {
-    "url": "/academics/other-courses/ethcs303/quizzes/10-major-1-question-bank/",
-    "title": "ETHCS303 | Major 1 Question Bank",
-    "track": "other-courses",
-    "course": "ethcs303",
-    "section": "quizzes",
-    "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
-  },
-  {
-    "url": "/academics/other-courses/ethcs303/quizzes/11-cloud-computing-and-privacy-issues-quiz/",
-    "title": "ETHCS303 | Cloud Computing and Privacy Issues Quiz",
-    "track": "other-courses",
-    "course": "ethcs303",
-    "section": "quizzes",
-    "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
-  },
-  {
-    "url": "/academics/other-courses/ethcs303/quizzes/12-privacy-issues-in-cyberspace-quiz/",
-    "title": "ETHCS303 | Privacy Issues in Cyberspace Quiz",
-    "track": "other-courses",
-    "course": "ethcs303",
-    "section": "quizzes",
-    "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
-  },
-  {
-    "url": "/academics/other-courses/ethcs303/quizzes/13-social-media-ethical-legal-and-security-issues-quiz/",
-    "title": "ETHCS303 | Social Media Ethical, Legal, and Security Issues Quiz",
-    "track": "other-courses",
-    "course": "ethcs303",
-    "section": "quizzes",
-    "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
-  },
-  {
-    "url": "/academics/other-courses/ethcs303/quizzes/14-social-engineering-quiz/",
-    "title": "ETHCS303 | Social Engineering Quiz",
-    "track": "other-courses",
-    "course": "ethcs303",
-    "section": "quizzes",
-    "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
-  },
-  {
-    "url": "/academics/other-courses/ethcs303/quizzes/15-introduction-to-ethical-hacking-quiz/",
-    "title": "ETHCS303 | Introduction to Ethical Hacking Quiz",
-    "track": "other-courses",
-    "course": "ethcs303",
-    "section": "quizzes",
-    "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
-  },
-  {
-    "url": "/academics/other-courses/ethcs303/quizzes/16-business-ethics-quiz/",
-    "title": "ETHCS303 | Business Ethics Quiz",
-    "track": "other-courses",
-    "course": "ethcs303",
-    "section": "quizzes",
-    "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
-  },
-  {
-    "url": "/academics/other-courses/ethcs303/quizzes/17-cyber-laws-in-saudi-arabia-quiz/",
-    "title": "ETHCS303 | Cyber Laws in Saudi Arabia Quiz",
-    "track": "other-courses",
-    "course": "ethcs303",
-    "section": "quizzes",
-    "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
-  },
-  {
-    "url": "/academics/other-courses/ethcs303/quizzes/17-intellectual-property-laws-quiz/",
-    "title": "ETHCS303 | Intellectual Property Laws Quiz",
-    "track": "other-courses",
-    "course": "ethcs303",
-    "section": "quizzes",
-    "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
-  },
-  {
-    "url": "/academics/other-courses/ethcs303/quizzes/18-quiz-1-section-81/",
-    "title": "ETHCS303 | Quiz 1 (Section 81) — Answer Key",
-    "track": "other-courses",
-    "course": "ethcs303",
-    "section": "quizzes",
-    "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
-  },
-  {
-    "url": "/academics/other-courses/ethcs303/quizzes/major-1-exam-practice/",
-    "title": "ETHCS303 | Major 1 — Exam Practice",
-    "track": "other-courses",
-    "course": "ethcs303",
-    "section": "quizzes",
-    "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
-  },
-  {
-    "url": "/academics/other-courses/ethcs303/quizzes/major-2-exam-practice/",
-    "title": "ETHCS303 | Major 2 — Exam Practice",
-    "track": "other-courses",
-    "course": "ethcs303",
-    "section": "quizzes",
     "courseUrl": "/academics/other-courses/ethcs303/",
     "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
   },
@@ -4007,859 +5339,94 @@ var COURSE_PAGES = [
     "courseTitle": "ISC113 // Islamic Economy"
   },
   {
-    "url": "/academics/other-courses/math221/extra-resources/rules/",
-    "title": "MATH221 | Rules",
-    "track": "other-courses",
-    "course": "math221",
-    "section": "extra-resources",
-    "courseUrl": "/academics/other-courses/math221/",
-    "courseTitle": "MATH221 // Linear Algebra"
-  },
-  {
-    "url": "/academics/other-courses/math221/extra-resources/worksheets/1-3/",
-    "title": "MATH221 | 1.3",
-    "track": "other-courses",
-    "course": "math221",
-    "section": "extra-resources",
-    "courseUrl": "/academics/other-courses/math221/",
-    "courseTitle": "MATH221 // Linear Algebra"
-  },
-  {
-    "url": "/academics/other-courses/math221/extra-resources/worksheets/2-1/",
-    "title": "MATH221 | 2.1",
-    "track": "other-courses",
-    "course": "math221",
-    "section": "extra-resources",
-    "courseUrl": "/academics/other-courses/math221/",
-    "courseTitle": "MATH221 // Linear Algebra"
-  },
-  {
-    "url": "/academics/other-courses/math221/extra-resources/worksheets/2-2/",
-    "title": "MATH221 | 2.2",
-    "track": "other-courses",
-    "course": "math221",
-    "section": "extra-resources",
-    "courseUrl": "/academics/other-courses/math221/",
-    "courseTitle": "MATH221 // Linear Algebra"
-  },
-  {
-    "url": "/academics/other-courses/math221/extra-resources/worksheets/2-3/",
-    "title": "MATH221 | 2.3",
-    "track": "other-courses",
-    "course": "math221",
-    "section": "extra-resources",
-    "courseUrl": "/academics/other-courses/math221/",
-    "courseTitle": "MATH221 // Linear Algebra"
-  },
-  {
-    "url": "/academics/other-courses/math221/extra-resources/worksheets/2-4/",
-    "title": "MATH221 | 2.4",
-    "track": "other-courses",
-    "course": "math221",
-    "section": "extra-resources",
-    "courseUrl": "/academics/other-courses/math221/",
-    "courseTitle": "MATH221 // Linear Algebra"
-  },
-  {
-    "url": "/academics/other-courses/math221/extra-resources/worksheets/2-5/",
-    "title": "MATH221 | 2.5",
-    "track": "other-courses",
-    "course": "math221",
-    "section": "extra-resources",
-    "courseUrl": "/academics/other-courses/math221/",
-    "courseTitle": "MATH221 // Linear Algebra"
-  },
-  {
-    "url": "/academics/other-courses/math221/extra-resources/worksheets/2-6/",
-    "title": "MATH221 | 2.6",
-    "track": "other-courses",
-    "course": "math221",
-    "section": "extra-resources",
-    "courseUrl": "/academics/other-courses/math221/",
-    "courseTitle": "MATH221 // Linear Algebra"
-  },
-  {
-    "url": "/academics/other-courses/math221/extra-resources/worksheets/3-1/",
-    "title": "MATH221 | 3.1",
-    "track": "other-courses",
-    "course": "math221",
-    "section": "extra-resources",
-    "courseUrl": "/academics/other-courses/math221/",
-    "courseTitle": "MATH221 // Linear Algebra"
-  },
-  {
-    "url": "/academics/other-courses/math221/extra-resources/worksheets/3-2/",
-    "title": "MATH221 | 3.2",
-    "track": "other-courses",
-    "course": "math221",
-    "section": "extra-resources",
-    "courseUrl": "/academics/other-courses/math221/",
-    "courseTitle": "MATH221 // Linear Algebra"
-  },
-  {
-    "url": "/academics/other-courses/math221/extra-resources/worksheets/3-3/",
-    "title": "MATH221 | 3.3",
-    "track": "other-courses",
-    "course": "math221",
-    "section": "extra-resources",
-    "courseUrl": "/academics/other-courses/math221/",
-    "courseTitle": "MATH221 // Linear Algebra"
-  },
-  {
-    "url": "/academics/other-courses/math221/extra-resources/worksheets/3-4/",
-    "title": "MATH221 | 3.4",
-    "track": "other-courses",
-    "course": "math221",
-    "section": "extra-resources",
-    "courseUrl": "/academics/other-courses/math221/",
-    "courseTitle": "MATH221 // Linear Algebra"
-  },
-  {
-    "url": "/academics/other-courses/math221/extra-resources/worksheets/3-5/",
-    "title": "MATH221 | 3.5",
-    "track": "other-courses",
-    "course": "math221",
-    "section": "extra-resources",
-    "courseUrl": "/academics/other-courses/math221/",
-    "courseTitle": "MATH221 // Linear Algebra"
-  },
-  {
-    "url": "/academics/other-courses/math221/extra-resources/worksheets/4-1/",
-    "title": "MATH221 | 4.1",
-    "track": "other-courses",
-    "course": "math221",
-    "section": "extra-resources",
-    "courseUrl": "/academics/other-courses/math221/",
-    "courseTitle": "MATH221 // Linear Algebra"
-  },
-  {
-    "url": "/academics/other-courses/math221/extra-resources/worksheets/4-3/",
-    "title": "MATH221 | 4.3",
-    "track": "other-courses",
-    "course": "math221",
-    "section": "extra-resources",
-    "courseUrl": "/academics/other-courses/math221/",
-    "courseTitle": "MATH221 // Linear Algebra"
-  },
-  {
-    "url": "/academics/other-courses/math221/extra-resources/worksheets/4-4/",
-    "title": "MATH221 | 4.4",
-    "track": "other-courses",
-    "course": "math221",
-    "section": "extra-resources",
-    "courseUrl": "/academics/other-courses/math221/",
-    "courseTitle": "MATH221 // Linear Algebra"
-  },
-  {
-    "url": "/academics/other-courses/math221/slides/1-1/",
-    "title": "MATH221 | 1.1",
-    "track": "other-courses",
-    "course": "math221",
-    "section": "slides",
-    "courseUrl": "/academics/other-courses/math221/",
-    "courseTitle": "MATH221 // Linear Algebra"
-  },
-  {
-    "url": "/academics/other-courses/math221/slides/1-2-1-3/",
-    "title": "MATH221 | 1.2, 1.3",
-    "track": "other-courses",
-    "course": "math221",
-    "section": "slides",
-    "courseUrl": "/academics/other-courses/math221/",
-    "courseTitle": "MATH221 // Linear Algebra"
-  },
-  {
-    "url": "/academics/other-courses/math221/slides/2-1/",
-    "title": "MATH221 | 2.1",
-    "track": "other-courses",
-    "course": "math221",
-    "section": "slides",
-    "courseUrl": "/academics/other-courses/math221/",
-    "courseTitle": "MATH221 // Linear Algebra"
-  },
-  {
-    "url": "/academics/other-courses/math221/slides/2-3/",
-    "title": "MATH221 | 2.3",
-    "track": "other-courses",
-    "course": "math221",
-    "section": "slides",
-    "courseUrl": "/academics/other-courses/math221/",
-    "courseTitle": "MATH221 // Linear Algebra"
-  },
-  {
-    "url": "/academics/other-courses/math221/slides/2-4/",
-    "title": "MATH221 | 2.4",
-    "track": "other-courses",
-    "course": "math221",
-    "section": "slides",
-    "courseUrl": "/academics/other-courses/math221/",
-    "courseTitle": "MATH221 // Linear Algebra"
-  },
-  {
-    "url": "/academics/other-courses/math221/slides/2-5/",
-    "title": "MATH221 | 2.5",
-    "track": "other-courses",
-    "course": "math221",
-    "section": "slides",
-    "courseUrl": "/academics/other-courses/math221/",
-    "courseTitle": "MATH221 // Linear Algebra"
-  },
-  {
-    "url": "/academics/other-courses/math221/slides/3-1/",
-    "title": "MATH221 | 3.1",
-    "track": "other-courses",
-    "course": "math221",
-    "section": "slides",
-    "courseUrl": "/academics/other-courses/math221/",
-    "courseTitle": "MATH221 // Linear Algebra"
-  },
-  {
-    "url": "/academics/other-courses/math221/slides/3-2/",
-    "title": "MATH221 | 3.2",
-    "track": "other-courses",
-    "course": "math221",
-    "section": "slides",
-    "courseUrl": "/academics/other-courses/math221/",
-    "courseTitle": "MATH221 // Linear Algebra"
-  },
-  {
-    "url": "/academics/other-courses/math221/slides/3-3/",
-    "title": "MATH221 | 3.3",
-    "track": "other-courses",
-    "course": "math221",
-    "section": "slides",
-    "courseUrl": "/academics/other-courses/math221/",
-    "courseTitle": "MATH221 // Linear Algebra"
-  },
-  {
-    "url": "/academics/other-courses/math221/slides/3-4/",
-    "title": "MATH221 | 3.4",
-    "track": "other-courses",
-    "course": "math221",
-    "section": "slides",
-    "courseUrl": "/academics/other-courses/math221/",
-    "courseTitle": "MATH221 // Linear Algebra"
-  },
-  {
-    "url": "/academics/other-courses/math221/slides/3-5/",
-    "title": "MATH221 | 3.5",
-    "track": "other-courses",
-    "course": "math221",
-    "section": "slides",
-    "courseUrl": "/academics/other-courses/math221/",
-    "courseTitle": "MATH221 // Linear Algebra"
-  },
-  {
-    "url": "/academics/other-courses/math221/slides/4-1/",
-    "title": "MATH221 | 4.1",
-    "track": "other-courses",
-    "course": "math221",
-    "section": "slides",
-    "courseUrl": "/academics/other-courses/math221/",
-    "courseTitle": "MATH221 // Linear Algebra"
-  },
-  {
-    "url": "/academics/other-courses/math221/slides/4-3/",
-    "title": "MATH221 | 4.3",
-    "track": "other-courses",
-    "course": "math221",
-    "section": "slides",
-    "courseUrl": "/academics/other-courses/math221/",
-    "courseTitle": "MATH221 // Linear Algebra"
-  },
-  {
-    "url": "/academics/other-courses/math221/slides/4-4/",
-    "title": "MATH221 | 4.4",
-    "track": "other-courses",
-    "course": "math221",
-    "section": "slides",
-    "courseUrl": "/academics/other-courses/math221/",
-    "courseTitle": "MATH221 // Linear Algebra"
-  },
-  {
-    "url": "/academics/other-courses/math221/slides/5-1/",
-    "title": "MATH221 | 5.1",
-    "track": "other-courses",
-    "course": "math221",
-    "section": "slides",
-    "courseUrl": "/academics/other-courses/math221/",
-    "courseTitle": "MATH221 // Linear Algebra"
-  },
-  {
-    "url": "/academics/other-courses/math221/slides/5-2/",
-    "title": "MATH221 | 5.2",
-    "track": "other-courses",
-    "course": "math221",
-    "section": "slides",
-    "courseUrl": "/academics/other-courses/math221/",
-    "courseTitle": "MATH221 // Linear Algebra"
-  },
-  {
-    "url": "/academics/other-courses/math221/slides/5-3/",
-    "title": "MATH221 | 5.3",
-    "track": "other-courses",
-    "course": "math221",
-    "section": "slides",
-    "courseUrl": "/academics/other-courses/math221/",
-    "courseTitle": "MATH221 // Linear Algebra"
-  },
-  {
-    "url": "/academics/other-courses/math221/slides/6-1/",
-    "title": "MATH221 | 6.1",
-    "track": "other-courses",
-    "course": "math221",
-    "section": "slides",
-    "courseUrl": "/academics/other-courses/math221/",
-    "courseTitle": "MATH221 // Linear Algebra"
-  },
-  {
-    "url": "/academics/other-courses/math221/slides/6-2/",
-    "title": "MATH221 | 6.2",
-    "track": "other-courses",
-    "course": "math221",
-    "section": "slides",
-    "courseUrl": "/academics/other-courses/math221/",
-    "courseTitle": "MATH221 // Linear Algebra"
-  },
-  {
-    "url": "/academics/other-courses/math221/slides/6-3/",
-    "title": "MATH221 | 6.3",
-    "track": "other-courses",
-    "course": "math221",
-    "section": "slides",
-    "courseUrl": "/academics/other-courses/math221/",
-    "courseTitle": "MATH221 // Linear Algebra"
-  },
-  {
-    "url": "/academics/other-courses/math221/slides/7-1/",
-    "title": "MATH221 | 7.1",
-    "track": "other-courses",
-    "course": "math221",
-    "section": "slides",
-    "courseUrl": "/academics/other-courses/math221/",
-    "courseTitle": "MATH221 // Linear Algebra"
-  },
-  {
-    "url": "/academics/other-courses/math221/slides/7-2/",
-    "title": "MATH221 | 7.2",
-    "track": "other-courses",
-    "course": "math221",
-    "section": "slides",
-    "courseUrl": "/academics/other-courses/math221/",
-    "courseTitle": "MATH221 // Linear Algebra"
-  },
-  {
-    "url": "/academics/other-courses/math221/slides/7-3/",
-    "title": "MATH221 | 7.3",
-    "track": "other-courses",
-    "course": "math221",
-    "section": "slides",
-    "courseUrl": "/academics/other-courses/math221/",
-    "courseTitle": "MATH221 // Linear Algebra"
-  },
-  {
-    "url": "/academics/other-courses/phy105/extra-resources/final-experiments-summary/",
-    "title": "PHY105 Final Experiments Summary",
-    "track": "other-courses",
-    "course": "phy105",
-    "section": "extra-resources",
-    "courseUrl": "/academics/other-courses/phy105/",
-    "courseTitle": "PHY105 // Physics I"
-  },
-  {
-    "url": "/academics/other-courses/phy105/extra-resources/formula-sheet/",
-    "title": "PHY105 Formula Sheet",
-    "track": "other-courses",
-    "course": "phy105",
-    "section": "extra-resources",
-    "courseUrl": "/academics/other-courses/phy105/",
-    "courseTitle": "PHY105 // Physics I"
-  },
-  {
-    "url": "/academics/other-courses/phy105/extra-resources/formulas/",
-    "title": "PHY105 Formulas",
-    "track": "other-courses",
-    "course": "phy105",
-    "section": "extra-resources",
-    "courseUrl": "/academics/other-courses/phy105/",
-    "courseTitle": "PHY105 // Physics I"
-  },
-  {
-    "url": "/academics/other-courses/phy105/extra-resources/pasco-setting/",
-    "title": "PHY105 Pasco Setting",
-    "track": "other-courses",
-    "course": "phy105",
-    "section": "extra-resources",
-    "courseUrl": "/academics/other-courses/phy105/",
-    "courseTitle": "PHY105 // Physics I"
-  },
-  {
-    "url": "/academics/other-courses/phy105/extra-resources/phy105-all-experiments/",
-    "title": "PHY105 PHY105 All Experiments",
-    "track": "other-courses",
-    "course": "phy105",
-    "section": "extra-resources",
-    "courseUrl": "/academics/other-courses/phy105/",
-    "courseTitle": "PHY105 // Physics I"
-  },
-  {
-    "url": "/academics/other-courses/phy105/slides/chapter-1-introduction/",
-    "title": "PHY105 Chapter 1 Introduction",
-    "track": "other-courses",
-    "course": "phy105",
-    "section": "slides",
-    "courseUrl": "/academics/other-courses/phy105/",
-    "courseTitle": "PHY105 // Physics I"
-  },
-  {
-    "url": "/academics/other-courses/phy105/slides/chapter-16-temperature/",
-    "title": "PHY105 Chapter 16 Temperature",
-    "track": "other-courses",
-    "course": "phy105",
-    "section": "slides",
-    "courseUrl": "/academics/other-courses/phy105/",
-    "courseTitle": "PHY105 // Physics I"
-  },
-  {
-    "url": "/academics/other-courses/phy105/slides/chapter-2-vectors/",
-    "title": "PHY105 Chapter 2 Vectors",
-    "track": "other-courses",
-    "course": "phy105",
-    "section": "slides",
-    "courseUrl": "/academics/other-courses/phy105/",
-    "courseTitle": "PHY105 // Physics I"
-  },
-  {
-    "url": "/academics/other-courses/phy105/slides/chapter-3-motion-in-two-and-three-dimensions/",
-    "title": "PHY105 Chapter 3 Motion in Two and Three Dimensions",
-    "track": "other-courses",
-    "course": "phy105",
-    "section": "slides",
-    "courseUrl": "/academics/other-courses/phy105/",
-    "courseTitle": "PHY105 // Physics I"
-  },
-  {
-    "url": "/academics/other-courses/phy105/slides/chapter-4-projectile-motion/",
-    "title": "PHY105 Chapter 4 Projectile Motion",
-    "track": "other-courses",
-    "course": "phy105",
-    "section": "slides",
-    "courseUrl": "/academics/other-courses/phy105/",
-    "courseTitle": "PHY105 // Physics I"
-  },
-  {
-    "url": "/academics/other-courses/phy105/slides/chapter-5-forces-and-motion/",
-    "title": "PHY105 Chapter 5 Forces and Motion",
-    "track": "other-courses",
-    "course": "phy105",
-    "section": "slides",
-    "courseUrl": "/academics/other-courses/phy105/",
-    "courseTitle": "PHY105 // Physics I"
-  },
-  {
-    "url": "/academics/other-courses/phy105/slides/chapter-6-force-and-motion-ii/",
-    "title": "PHY105 Chapter 6 Force and Motion II",
-    "track": "other-courses",
-    "course": "phy105",
-    "section": "slides",
-    "courseUrl": "/academics/other-courses/phy105/",
-    "courseTitle": "PHY105 // Physics I"
-  },
-  {
-    "url": "/academics/other-courses/phy105/slides/chapter-7-work-and-kinetic-energy/",
-    "title": "PHY105 Chapter 7 Work and Kinetic Energy",
-    "track": "other-courses",
-    "course": "phy105",
-    "section": "slides",
-    "courseUrl": "/academics/other-courses/phy105/",
-    "courseTitle": "PHY105 // Physics I"
-  },
-  {
-    "url": "/academics/other-courses/phy105/slides/chapter-8-potential-energy/",
-    "title": "PHY105 Chapter 8 Potential Energy",
-    "track": "other-courses",
-    "course": "phy105",
-    "section": "slides",
-    "courseUrl": "/academics/other-courses/phy105/",
-    "courseTitle": "PHY105 // Physics I"
-  },
-  {
-    "url": "/academics/other-courses/phy105/slides/chapter-9-momentum/",
-    "title": "PHY105 Chapter 9 Momentum",
-    "track": "other-courses",
-    "course": "phy105",
-    "section": "slides",
-    "courseUrl": "/academics/other-courses/phy105/",
-    "courseTitle": "PHY105 // Physics I"
-  },
-  {
-    "url": "/academics/other-courses/phy105/syllabus/lab-syllabus/",
-    "title": "PHY105 Lab Syllabus",
-    "track": "other-courses",
-    "course": "phy105",
-    "section": "syllabus",
-    "courseUrl": "/academics/other-courses/phy105/",
-    "courseTitle": "PHY105 // Physics I"
-  },
-  {
-    "url": "/academics/other-courses/phy105/syllabus/lecture-syllabus/",
-    "title": "PHY105 Lecture Syllabus",
-    "track": "other-courses",
-    "course": "phy105",
-    "section": "syllabus",
-    "courseUrl": "/academics/other-courses/phy105/",
-    "courseTitle": "PHY105 // Physics I"
-  },
-  {
-    "url": "/academics/other-courses/phy205/slides/phy205-chapter-21-electric-charge-halliday/",
-    "title": "PHY205 | Chapter 21 Electric Charge Halliday",
-    "track": "other-courses",
-    "course": "phy205",
-    "section": "slides",
-    "courseUrl": "/academics/other-courses/phy205/",
-    "courseTitle": "PHY205 // Physics II"
-  },
-  {
-    "url": "/academics/other-courses/phy205/slides/phy205-chapter-22-electric-fields-halliday/",
-    "title": "PHY205 | Chapter 22 Electric Fields Halliday",
-    "track": "other-courses",
-    "course": "phy205",
-    "section": "slides",
-    "courseUrl": "/academics/other-courses/phy205/",
-    "courseTitle": "PHY205 // Physics II"
-  },
-  {
-    "url": "/academics/other-courses/phy205/slides/phy205-chapter-23-gauss-law-halliday/",
-    "title": "PHY205 | Chapter 23 Gauss Law Halliday",
-    "track": "other-courses",
-    "course": "phy205",
-    "section": "slides",
-    "courseUrl": "/academics/other-courses/phy205/",
-    "courseTitle": "PHY205 // Physics II"
-  },
-  {
-    "url": "/academics/other-courses/phy205/slides/phy205-chapter-24-electric-potential-halliday/",
-    "title": "PHY205 | Chapter 24 Electric Potential Halliday",
-    "track": "other-courses",
-    "course": "phy205",
-    "section": "slides",
-    "courseUrl": "/academics/other-courses/phy205/",
-    "courseTitle": "PHY205 // Physics II"
-  },
-  {
-    "url": "/academics/other-courses/phy205/slides/phy205-chapter-25-capacitance-halliday/",
-    "title": "PHY205 | Chapter 25 Capacitance Halliday",
-    "track": "other-courses",
-    "course": "phy205",
-    "section": "slides",
-    "courseUrl": "/academics/other-courses/phy205/",
-    "courseTitle": "PHY205 // Physics II"
-  },
-  {
-    "url": "/academics/other-courses/phy205/slides/phy205-chapter-26-current-and-resistance-halliday/",
-    "title": "PHY205 | Chapter 26 Current And Resistance Halliday",
-    "track": "other-courses",
-    "course": "phy205",
-    "section": "slides",
-    "courseUrl": "/academics/other-courses/phy205/",
-    "courseTitle": "PHY205 // Physics II"
-  },
-  {
-    "url": "/academics/other-courses/phy205/slides/phy205-chapter-27-circuits-halliday/",
-    "title": "PHY205 | Chapter 27 Circuits Halliday",
-    "track": "other-courses",
-    "course": "phy205",
-    "section": "slides",
-    "courseUrl": "/academics/other-courses/phy205/",
-    "courseTitle": "PHY205 // Physics II"
-  },
-  {
-    "url": "/academics/other-courses/phy205/slides/phy205-chapters-28-29-30-magnetic-fields-and-induction-halliday/",
-    "title": "PHY205 | Chapters 28, 29, 30, Magnetic Fields And Induction Halliday",
-    "track": "other-courses",
-    "course": "phy205",
-    "section": "slides",
-    "courseUrl": "/academics/other-courses/phy205/",
-    "courseTitle": "PHY205 // Physics II"
-  },
-  {
-    "url": "/academics/other-courses/sci101/slides/sci101-chapter-1-patterns-of-motion-and-equilibrium/",
-    "title": "SCI101 | Chapter 1 Patterns of Motion and Equilibrium",
-    "track": "other-courses",
-    "course": "sci101",
-    "section": "slides",
-    "courseUrl": "/academics/other-courses/sci101/",
-    "courseTitle": "SCI101 // Introduction to Physical Science"
-  },
-  {
-    "url": "/academics/other-courses/sci101/slides/sci101-chapter-10/",
-    "title": "SCI101 | Chapter 10",
-    "track": "other-courses",
-    "course": "sci101",
-    "section": "slides",
-    "courseUrl": "/academics/other-courses/sci101/",
-    "courseTitle": "SCI101 // Introduction to Physical Science"
-  },
-  {
-    "url": "/academics/other-courses/sci101/slides/sci101-chapter-2-newtons-laws-of-motion/",
-    "title": "SCI101 | Chapter 2 Newton's Laws of Motion",
-    "track": "other-courses",
-    "course": "sci101",
-    "section": "slides",
-    "courseUrl": "/academics/other-courses/sci101/",
-    "courseTitle": "SCI101 // Introduction to Physical Science"
-  },
-  {
-    "url": "/academics/other-courses/sci101/slides/sci101-chapter-3-momentum-and-energy/",
-    "title": "SCI101 | Chapter 3 Momentum and Energy",
-    "track": "other-courses",
-    "course": "sci101",
-    "section": "slides",
-    "courseUrl": "/academics/other-courses/sci101/",
-    "courseTitle": "SCI101 // Introduction to Physical Science"
-  },
-  {
-    "url": "/academics/other-courses/sci101/slides/sci101-chapter-4-gravity/",
-    "title": "SCI101 | Chapter 4 Gravity",
-    "track": "other-courses",
-    "course": "sci101",
-    "section": "slides",
-    "courseUrl": "/academics/other-courses/sci101/",
-    "courseTitle": "SCI101 // Introduction to Physical Science"
-  },
-  {
-    "url": "/academics/other-courses/sci101/slides/sci101-chapter-5-fluid-mechanics/",
-    "title": "SCI101 | Chapter 5 Fluid Mechanics",
-    "track": "other-courses",
-    "course": "sci101",
-    "section": "slides",
-    "courseUrl": "/academics/other-courses/sci101/",
-    "courseTitle": "SCI101 // Introduction to Physical Science"
-  },
-  {
-    "url": "/academics/other-courses/sci101/slides/sci101-chapter-6-thermal-energy-and-thermodynamics/",
-    "title": "SCI101 | Chapter 6 Thermal Energy and Thermodynamics",
-    "track": "other-courses",
-    "course": "sci101",
-    "section": "slides",
-    "courseUrl": "/academics/other-courses/sci101/",
-    "courseTitle": "SCI101 // Introduction to Physical Science"
-  },
-  {
-    "url": "/academics/other-courses/sci101/slides/sci101-chapter-7/",
-    "title": "SCI101 | Chapter 7",
-    "track": "other-courses",
-    "course": "sci101",
-    "section": "slides",
-    "courseUrl": "/academics/other-courses/sci101/",
-    "courseTitle": "SCI101 // Introduction to Physical Science"
-  },
-  {
-    "url": "/academics/other-courses/sci101/slides/sci101-chapters-12-and-15/",
-    "title": "SCI101 | Chapters 12 and 15",
-    "track": "other-courses",
-    "course": "sci101",
-    "section": "slides",
-    "courseUrl": "/academics/other-courses/sci101/",
-    "courseTitle": "SCI101 // Introduction to Physical Science"
-  },
-  {
-    "url": "/academics/other-courses/stat101/viewer/?src=%2Facademics%2Fother-courses%2Fstat101%2Fextra-resources%2Fglossary-all-chapters.pdf&title=STAT101+Glossary&section=STUDY+MATERIAL&back=%2Facademics%2Fother-courses%2Fstat101%2Fextra-resources%2F",
-    "title": "STAT101 Glossary",
-    "track": "other-courses",
-    "course": "stat101",
-    "section": "study-material",
-    "courseUrl": "/academics/other-courses/stat101/",
-    "courseTitle": "STAT101 // Introduction to Probability Theory and Statistics"
-  },
-  {
-    "url": "/academics/other-courses/stat101/viewer/?src=%2Facademics%2Fother-courses%2Fstat101%2Fextra-resources%2Fnotebooklm-chapters-1-3.pdf&title=NotebookLM+Study+Guide&section=STUDY+MATERIAL&back=%2Facademics%2Fother-courses%2Fstat101%2Fextra-resources%2F",
-    "title": "NotebookLM Study Guide",
-    "track": "other-courses",
-    "course": "stat101",
-    "section": "study-material",
-    "courseUrl": "/academics/other-courses/stat101/",
-    "courseTitle": "STAT101 // Introduction to Probability Theory and Statistics"
-  },
-  {
-    "url": "/academics/other-courses/stat101/viewer/?src=%2Facademics%2Fother-courses%2Fstat101%2Fextra-resources%2Fstat-101-formula-sheet.pdf&title=STAT101+Formula+Sheet&section=STUDY+MATERIAL&back=%2Facademics%2Fother-courses%2Fstat101%2Fextra-resources%2F",
-    "title": "STAT101 Formula Sheet",
-    "track": "other-courses",
-    "course": "stat101",
-    "section": "study-material",
-    "courseUrl": "/academics/other-courses/stat101/",
-    "courseTitle": "STAT101 // Introduction to Probability Theory and Statistics"
-  },
-  {
-    "url": "/academics/other-courses/stat101/viewer/?src=%2Facademics%2Fother-courses%2Fstat101%2Fextra-resources%2Fstatistical-tables.pdf&title=Statistical+Tables&section=STUDY+MATERIAL&back=%2Facademics%2Fother-courses%2Fstat101%2Fextra-resources%2F",
-    "title": "Statistical Tables",
-    "track": "other-courses",
-    "course": "stat101",
-    "section": "study-material",
-    "courseUrl": "/academics/other-courses/stat101/",
-    "courseTitle": "STAT101 // Introduction to Probability Theory and Statistics"
-  },
-  {
-    "url": "/academics/other-courses/stat101/viewer/?src=%2Facademics%2Fother-courses%2Fstat101%2Fextra-resources%2Fworksheets%2Fchapter-1-sections-1-3-and-1-4-solutions.pdf&title=STAT101+Worksheet&section=WORKSHEETS&back=%2Facademics%2Fother-courses%2Fstat101%2Fextra-resources%2F",
-    "title": "Chapter 1 Sections 1 3 And 1 4 Solutions",
-    "track": "other-courses",
-    "course": "stat101",
-    "section": "worksheets",
-    "courseUrl": "/academics/other-courses/stat101/",
-    "courseTitle": "STAT101 // Introduction to Probability Theory and Statistics"
-  },
-  {
-    "url": "/academics/other-courses/stat101/viewer/?src=%2Facademics%2Fother-courses%2Fstat101%2Fextra-resources%2Fworksheets%2Fchapter-1-sections-1-3-and-1-4.pdf&title=STAT101+Worksheet&section=WORKSHEETS&back=%2Facademics%2Fother-courses%2Fstat101%2Fextra-resources%2F",
-    "title": "Chapter 1 Sections 1 3 And 1 4",
-    "track": "other-courses",
-    "course": "stat101",
-    "section": "worksheets",
-    "courseUrl": "/academics/other-courses/stat101/",
-    "courseTitle": "STAT101 // Introduction to Probability Theory and Statistics"
-  },
-  {
-    "url": "/academics/other-courses/stat101/viewer/?src=%2Facademics%2Fother-courses%2Fstat101%2Fextra-resources%2Fworksheets%2Fchapter-2-sections-2-1-to-2-3.pdf&title=STAT101+Worksheet&section=WORKSHEETS&back=%2Facademics%2Fother-courses%2Fstat101%2Fextra-resources%2F",
-    "title": "Chapter 2 Sections 2 1 To 2 3",
-    "track": "other-courses",
-    "course": "stat101",
-    "section": "worksheets",
-    "courseUrl": "/academics/other-courses/stat101/",
-    "courseTitle": "STAT101 // Introduction to Probability Theory and Statistics"
-  },
-  {
-    "url": "/academics/other-courses/stat101/viewer/?src=%2Facademics%2Fother-courses%2Fstat101%2Fextra-resources%2Fworksheets%2Fchapter-3-sections-3-1-to-3-3.pdf&title=STAT101+Worksheet&section=WORKSHEETS&back=%2Facademics%2Fother-courses%2Fstat101%2Fextra-resources%2F",
-    "title": "Chapter 3 Sections 3 1 To 3 3",
-    "track": "other-courses",
-    "course": "stat101",
-    "section": "worksheets",
-    "courseUrl": "/academics/other-courses/stat101/",
-    "courseTitle": "STAT101 // Introduction to Probability Theory and Statistics"
-  },
-  {
-    "url": "/academics/other-courses/stat101/viewer/?src=%2Facademics%2Fother-courses%2Fstat101%2Fextra-resources%2Fworksheets%2Fchapter-4-sections-4-1-and-4-2.pdf&title=STAT101+Worksheet&section=WORKSHEETS&back=%2Facademics%2Fother-courses%2Fstat101%2Fextra-resources%2F",
-    "title": "Chapter 4 Sections 4 1 And 4 2",
-    "track": "other-courses",
-    "course": "stat101",
-    "section": "worksheets",
-    "courseUrl": "/academics/other-courses/stat101/",
-    "courseTitle": "STAT101 // Introduction to Probability Theory and Statistics"
-  },
-  {
-    "url": "/academics/other-courses/stat101/viewer/?src=%2Facademics%2Fother-courses%2Fstat101%2Fextra-resources%2Fworksheets%2Fchapter-5-sections-5-1-to-5-3.pdf&title=STAT101+Worksheet&section=WORKSHEETS&back=%2Facademics%2Fother-courses%2Fstat101%2Fextra-resources%2F",
-    "title": "Chapter 5 Sections 5 1 To 5 3",
-    "track": "other-courses",
-    "course": "stat101",
-    "section": "worksheets",
-    "courseUrl": "/academics/other-courses/stat101/",
-    "courseTitle": "STAT101 // Introduction to Probability Theory and Statistics"
-  },
-  {
-    "url": "/academics/other-courses/stat101/viewer/?src=%2Facademics%2Fother-courses%2Fstat101%2Fextra-resources%2Fworksheets%2Fchapter-6-section-6-1.pdf&title=STAT101+Worksheet&section=WORKSHEETS&back=%2Facademics%2Fother-courses%2Fstat101%2Fextra-resources%2F",
-    "title": "Chapter 6 Section 6 1",
-    "track": "other-courses",
-    "course": "stat101",
-    "section": "worksheets",
-    "courseUrl": "/academics/other-courses/stat101/",
-    "courseTitle": "STAT101 // Introduction to Probability Theory and Statistics"
-  },
-  {
-    "url": "/academics/other-courses/stat101/viewer/?src=%2Facademics%2Fother-courses%2Fstat101%2Fextra-resources%2Fworksheets%2Fchapter-7-sections-7-1-to-7-3.pdf&title=STAT101+Worksheet&section=WORKSHEETS&back=%2Facademics%2Fother-courses%2Fstat101%2Fextra-resources%2F",
-    "title": "Chapter 7 Sections 7 1 To 7 3",
-    "track": "other-courses",
-    "course": "stat101",
-    "section": "worksheets",
-    "courseUrl": "/academics/other-courses/stat101/",
-    "courseTitle": "STAT101 // Introduction to Probability Theory and Statistics"
-  },
-  {
-    "url": "/academics/other-courses/stat101/viewer/?src=%2Facademics%2Fother-courses%2Fstat101%2Fextra-resources%2Fworksheets%2Fchapter-8-sections-8-1-to-8-3.pdf&title=STAT101+Worksheet&section=WORKSHEETS&back=%2Facademics%2Fother-courses%2Fstat101%2Fextra-resources%2F",
-    "title": "Chapter 8 Sections 8 1 To 8 3",
-    "track": "other-courses",
-    "course": "stat101",
-    "section": "worksheets",
-    "courseUrl": "/academics/other-courses/stat101/",
-    "courseTitle": "STAT101 // Introduction to Probability Theory and Statistics"
-  },
-  {
-    "url": "/academics/other-courses/stat101/viewer/?src=%2Facademics%2Fother-courses%2Fstat101%2Fslides%2Fchapter-1.pdf&title=Chapter+1&section=SLIDES&back=%2Facademics%2Fother-courses%2Fstat101%2Fslides%2F",
-    "title": "Chapter 1",
-    "track": "other-courses",
-    "course": "stat101",
-    "section": "slides",
-    "courseUrl": "/academics/other-courses/stat101/",
-    "courseTitle": "STAT101 // Introduction to Probability Theory and Statistics"
-  },
-  {
-    "url": "/academics/other-courses/stat101/viewer/?src=%2Facademics%2Fother-courses%2Fstat101%2Fslides%2Fchapter-14.pdf&title=Chapter+14&section=SLIDES&back=%2Facademics%2Fother-courses%2Fstat101%2Fslides%2F",
-    "title": "Chapter 14",
-    "track": "other-courses",
-    "course": "stat101",
-    "section": "slides",
-    "courseUrl": "/academics/other-courses/stat101/",
-    "courseTitle": "STAT101 // Introduction to Probability Theory and Statistics"
-  },
-  {
-    "url": "/academics/other-courses/stat101/viewer/?src=%2Facademics%2Fother-courses%2Fstat101%2Fslides%2Fchapter-2.pdf&title=Chapter+2&section=SLIDES&back=%2Facademics%2Fother-courses%2Fstat101%2Fslides%2F",
-    "title": "Chapter 2",
-    "track": "other-courses",
-    "course": "stat101",
-    "section": "slides",
-    "courseUrl": "/academics/other-courses/stat101/",
-    "courseTitle": "STAT101 // Introduction to Probability Theory and Statistics"
-  },
-  {
-    "url": "/academics/other-courses/stat101/viewer/?src=%2Facademics%2Fother-courses%2Fstat101%2Fslides%2Fchapter-3.pdf&title=Chapter+3&section=SLIDES&back=%2Facademics%2Fother-courses%2Fstat101%2Fslides%2F",
-    "title": "Chapter 3",
-    "track": "other-courses",
-    "course": "stat101",
-    "section": "slides",
-    "courseUrl": "/academics/other-courses/stat101/",
-    "courseTitle": "STAT101 // Introduction to Probability Theory and Statistics"
-  },
-  {
-    "url": "/academics/other-courses/stat101/viewer/?src=%2Facademics%2Fother-courses%2Fstat101%2Fslides%2Fchapter-4.pdf&title=Chapter+4&section=SLIDES&back=%2Facademics%2Fother-courses%2Fstat101%2Fslides%2F",
-    "title": "Chapter 4",
-    "track": "other-courses",
-    "course": "stat101",
-    "section": "slides",
-    "courseUrl": "/academics/other-courses/stat101/",
-    "courseTitle": "STAT101 // Introduction to Probability Theory and Statistics"
-  },
-  {
-    "url": "/academics/other-courses/stat101/viewer/?src=%2Facademics%2Fother-courses%2Fstat101%2Fslides%2Fchapter-5.pdf&title=Chapter+5&section=SLIDES&back=%2Facademics%2Fother-courses%2Fstat101%2Fslides%2F",
-    "title": "Chapter 5",
-    "track": "other-courses",
-    "course": "stat101",
-    "section": "slides",
-    "courseUrl": "/academics/other-courses/stat101/",
-    "courseTitle": "STAT101 // Introduction to Probability Theory and Statistics"
-  },
-  {
-    "url": "/academics/other-courses/stat101/viewer/?src=%2Facademics%2Fother-courses%2Fstat101%2Fslides%2Fchapter-6.pdf&title=Chapter+6&section=SLIDES&back=%2Facademics%2Fother-courses%2Fstat101%2Fslides%2F",
-    "title": "Chapter 6",
-    "track": "other-courses",
-    "course": "stat101",
-    "section": "slides",
-    "courseUrl": "/academics/other-courses/stat101/",
-    "courseTitle": "STAT101 // Introduction to Probability Theory and Statistics"
-  },
-  {
-    "url": "/academics/other-courses/stat101/viewer/?src=%2Facademics%2Fother-courses%2Fstat101%2Fslides%2Fchapter-7.pdf&title=Chapter+7&section=SLIDES&back=%2Facademics%2Fother-courses%2Fstat101%2Fslides%2F",
-    "title": "Chapter 7",
-    "track": "other-courses",
-    "course": "stat101",
-    "section": "slides",
-    "courseUrl": "/academics/other-courses/stat101/",
-    "courseTitle": "STAT101 // Introduction to Probability Theory and Statistics"
-  },
-  {
-    "url": "/academics/other-courses/stat101/viewer/?src=%2Facademics%2Fother-courses%2Fstat101%2Fslides%2Fchapter-8.pdf&title=Chapter+8&section=SLIDES&back=%2Facademics%2Fother-courses%2Fstat101%2Fslides%2F",
-    "title": "Chapter 8",
-    "track": "other-courses",
-    "course": "stat101",
-    "section": "slides",
-    "courseUrl": "/academics/other-courses/stat101/",
-    "courseTitle": "STAT101 // Introduction to Probability Theory and Statistics"
+    "url": "/academics/software-engineering/se201/exams/01-chapter-1-quiz/",
+    "title": "SE201 | Chapter 1 Quiz",
+    "track": "software-engineering",
+    "course": "se201",
+    "section": "exams",
+    "courseUrl": "/academics/software-engineering/se201/",
+    "courseTitle": "SE201 // Introduction to Software Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se201/exams/02-chapter-2-quiz/",
+    "title": "SE201 | Chapter 2 Quiz",
+    "track": "software-engineering",
+    "course": "se201",
+    "section": "exams",
+    "courseUrl": "/academics/software-engineering/se201/",
+    "courseTitle": "SE201 // Introduction to Software Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se201/exams/03-chapter-3-quiz/",
+    "title": "SE201 | Chapter 3 Quiz",
+    "track": "software-engineering",
+    "course": "se201",
+    "section": "exams",
+    "courseUrl": "/academics/software-engineering/se201/",
+    "courseTitle": "SE201 // Introduction to Software Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se201/exams/04-chapter-4-quiz/",
+    "title": "SE201 | Chapter 4 Quiz",
+    "track": "software-engineering",
+    "course": "se201",
+    "section": "exams",
+    "courseUrl": "/academics/software-engineering/se201/",
+    "courseTitle": "SE201 // Introduction to Software Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se201/exams/05-chapter-5-quiz/",
+    "title": "SE201 | Chapter 5 Quiz",
+    "track": "software-engineering",
+    "course": "se201",
+    "section": "exams",
+    "courseUrl": "/academics/software-engineering/se201/",
+    "courseTitle": "SE201 // Introduction to Software Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se201/exams/06-chapter-6-quiz/",
+    "title": "SE201 | Chapter 6 Quiz",
+    "track": "software-engineering",
+    "course": "se201",
+    "section": "exams",
+    "courseUrl": "/academics/software-engineering/se201/",
+    "courseTitle": "SE201 // Introduction to Software Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se201/exams/07-chapter-7-quiz/",
+    "title": "SE201 | Chapter 7 Quiz",
+    "track": "software-engineering",
+    "course": "se201",
+    "section": "exams",
+    "courseUrl": "/academics/software-engineering/se201/",
+    "courseTitle": "SE201 // Introduction to Software Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se201/exams/08-chapter-8-quiz/",
+    "title": "SE201 | Chapter 8 Quiz",
+    "track": "software-engineering",
+    "course": "se201",
+    "section": "exams",
+    "courseUrl": "/academics/software-engineering/se201/",
+    "courseTitle": "SE201 // Introduction to Software Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se201/exams/09-quiz-1-ch-1-and-2/",
+    "title": "SE201 | Quiz 1 (Ch. 1 & 2)",
+    "track": "software-engineering",
+    "course": "se201",
+    "section": "exams",
+    "courseUrl": "/academics/software-engineering/se201/",
+    "courseTitle": "SE201 // Introduction to Software Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se201/exams/10-compiled-mcqs/",
+    "title": "SE201 | Compiled MCQs",
+    "track": "software-engineering",
+    "course": "se201",
+    "section": "exams",
+    "courseUrl": "/academics/software-engineering/se201/",
+    "courseTitle": "SE201 // Introduction to Software Engineering"
   },
   {
     "url": "/academics/software-engineering/se201/extra-resources/01-uml-and-diagrams-guide/",
@@ -4894,96 +5461,6 @@ var COURSE_PAGES = [
     "track": "software-engineering",
     "course": "se201",
     "section": "extra-resources",
-    "courseUrl": "/academics/software-engineering/se201/",
-    "courseTitle": "SE201 // Introduction to Software Engineering"
-  },
-  {
-    "url": "/academics/software-engineering/se201/quizzes/01-chapter-1-quiz/",
-    "title": "SE201 | Chapter 1 Quiz",
-    "track": "software-engineering",
-    "course": "se201",
-    "section": "quizzes",
-    "courseUrl": "/academics/software-engineering/se201/",
-    "courseTitle": "SE201 // Introduction to Software Engineering"
-  },
-  {
-    "url": "/academics/software-engineering/se201/quizzes/02-chapter-2-quiz/",
-    "title": "SE201 | Chapter 2 Quiz",
-    "track": "software-engineering",
-    "course": "se201",
-    "section": "quizzes",
-    "courseUrl": "/academics/software-engineering/se201/",
-    "courseTitle": "SE201 // Introduction to Software Engineering"
-  },
-  {
-    "url": "/academics/software-engineering/se201/quizzes/03-chapter-3-quiz/",
-    "title": "SE201 | Chapter 3 Quiz",
-    "track": "software-engineering",
-    "course": "se201",
-    "section": "quizzes",
-    "courseUrl": "/academics/software-engineering/se201/",
-    "courseTitle": "SE201 // Introduction to Software Engineering"
-  },
-  {
-    "url": "/academics/software-engineering/se201/quizzes/04-chapter-4-quiz/",
-    "title": "SE201 | Chapter 4 Quiz",
-    "track": "software-engineering",
-    "course": "se201",
-    "section": "quizzes",
-    "courseUrl": "/academics/software-engineering/se201/",
-    "courseTitle": "SE201 // Introduction to Software Engineering"
-  },
-  {
-    "url": "/academics/software-engineering/se201/quizzes/05-chapter-5-quiz/",
-    "title": "SE201 | Chapter 5 Quiz",
-    "track": "software-engineering",
-    "course": "se201",
-    "section": "quizzes",
-    "courseUrl": "/academics/software-engineering/se201/",
-    "courseTitle": "SE201 // Introduction to Software Engineering"
-  },
-  {
-    "url": "/academics/software-engineering/se201/quizzes/06-chapter-6-quiz/",
-    "title": "SE201 | Chapter 6 Quiz",
-    "track": "software-engineering",
-    "course": "se201",
-    "section": "quizzes",
-    "courseUrl": "/academics/software-engineering/se201/",
-    "courseTitle": "SE201 // Introduction to Software Engineering"
-  },
-  {
-    "url": "/academics/software-engineering/se201/quizzes/07-chapter-7-quiz/",
-    "title": "SE201 | Chapter 7 Quiz",
-    "track": "software-engineering",
-    "course": "se201",
-    "section": "quizzes",
-    "courseUrl": "/academics/software-engineering/se201/",
-    "courseTitle": "SE201 // Introduction to Software Engineering"
-  },
-  {
-    "url": "/academics/software-engineering/se201/quizzes/08-chapter-8-quiz/",
-    "title": "SE201 | Chapter 8 Quiz",
-    "track": "software-engineering",
-    "course": "se201",
-    "section": "quizzes",
-    "courseUrl": "/academics/software-engineering/se201/",
-    "courseTitle": "SE201 // Introduction to Software Engineering"
-  },
-  {
-    "url": "/academics/software-engineering/se201/quizzes/09-quiz-1-ch-1-and-2/",
-    "title": "SE201 | Quiz 1 (Ch. 1 & 2)",
-    "track": "software-engineering",
-    "course": "se201",
-    "section": "quizzes",
-    "courseUrl": "/academics/software-engineering/se201/",
-    "courseTitle": "SE201 // Introduction to Software Engineering"
-  },
-  {
-    "url": "/academics/software-engineering/se201/quizzes/10-compiled-mcqs/",
-    "title": "SE201 | Compiled MCQs",
-    "track": "software-engineering",
-    "course": "se201",
-    "section": "quizzes",
     "courseUrl": "/academics/software-engineering/se201/",
     "courseTitle": "SE201 // Introduction to Software Engineering"
   },
@@ -5150,6 +5627,78 @@ var COURSE_PAGES = [
     "courseTitle": "SE201 // Introduction to Software Engineering"
   },
   {
+    "url": "/academics/software-engineering/se311/exams/01-chapter-1-quiz/",
+    "title": "SE311 | Chapter 1 Quiz",
+    "track": "software-engineering",
+    "course": "se311",
+    "section": "exams",
+    "courseUrl": "/academics/software-engineering/se311/",
+    "courseTitle": "SE311 // Software Requirements Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se311/exams/02-chapter-2-quiz/",
+    "title": "SE311 | Chapter 2 Quiz",
+    "track": "software-engineering",
+    "course": "se311",
+    "section": "exams",
+    "courseUrl": "/academics/software-engineering/se311/",
+    "courseTitle": "SE311 // Software Requirements Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se311/exams/03-chapter-4-quiz/",
+    "title": "SE311 | Chapter 4 Quiz",
+    "track": "software-engineering",
+    "course": "se311",
+    "section": "exams",
+    "courseUrl": "/academics/software-engineering/se311/",
+    "courseTitle": "SE311 // Software Requirements Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se311/exams/04-chapter-5-quiz/",
+    "title": "SE311 | Chapter 5 Quiz",
+    "track": "software-engineering",
+    "course": "se311",
+    "section": "exams",
+    "courseUrl": "/academics/software-engineering/se311/",
+    "courseTitle": "SE311 // Software Requirements Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se311/exams/05-chapter-6-quiz/",
+    "title": "SE311 | Chapter 6 Quiz",
+    "track": "software-engineering",
+    "course": "se311",
+    "section": "exams",
+    "courseUrl": "/academics/software-engineering/se311/",
+    "courseTitle": "SE311 // Software Requirements Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se311/exams/06-chapter-8-quiz/",
+    "title": "SE311 | Chapter 8 Quiz",
+    "track": "software-engineering",
+    "course": "se311",
+    "section": "exams",
+    "courseUrl": "/academics/software-engineering/se311/",
+    "courseTitle": "SE311 // Software Requirements Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se311/exams/07-chapter-9-quiz/",
+    "title": "SE311 | Chapter 9 Quiz",
+    "track": "software-engineering",
+    "course": "se311",
+    "section": "exams",
+    "courseUrl": "/academics/software-engineering/se311/",
+    "courseTitle": "SE311 // Software Requirements Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se311/exams/08-quiz-1/",
+    "title": "SE311 | Quiz 1",
+    "track": "software-engineering",
+    "course": "se311",
+    "section": "exams",
+    "courseUrl": "/academics/software-engineering/se311/",
+    "courseTitle": "SE311 // Software Requirements Engineering"
+  },
+  {
     "url": "/academics/software-engineering/se311/extra-resources/01-midterm-cheat-sheet/",
     "title": "SE311 | Midterm Cheat Sheet",
     "track": "software-engineering",
@@ -5191,78 +5740,6 @@ var COURSE_PAGES = [
     "track": "software-engineering",
     "course": "se311",
     "section": "extra-resources",
-    "courseUrl": "/academics/software-engineering/se311/",
-    "courseTitle": "SE311 // Software Requirements Engineering"
-  },
-  {
-    "url": "/academics/software-engineering/se311/quizzes/01-chapter-1-quiz/",
-    "title": "SE311 | Chapter 1 Quiz",
-    "track": "software-engineering",
-    "course": "se311",
-    "section": "quizzes",
-    "courseUrl": "/academics/software-engineering/se311/",
-    "courseTitle": "SE311 // Software Requirements Engineering"
-  },
-  {
-    "url": "/academics/software-engineering/se311/quizzes/02-chapter-2-quiz/",
-    "title": "SE311 | Chapter 2 Quiz",
-    "track": "software-engineering",
-    "course": "se311",
-    "section": "quizzes",
-    "courseUrl": "/academics/software-engineering/se311/",
-    "courseTitle": "SE311 // Software Requirements Engineering"
-  },
-  {
-    "url": "/academics/software-engineering/se311/quizzes/03-chapter-4-quiz/",
-    "title": "SE311 | Chapter 4 Quiz",
-    "track": "software-engineering",
-    "course": "se311",
-    "section": "quizzes",
-    "courseUrl": "/academics/software-engineering/se311/",
-    "courseTitle": "SE311 // Software Requirements Engineering"
-  },
-  {
-    "url": "/academics/software-engineering/se311/quizzes/04-chapter-5-quiz/",
-    "title": "SE311 | Chapter 5 Quiz",
-    "track": "software-engineering",
-    "course": "se311",
-    "section": "quizzes",
-    "courseUrl": "/academics/software-engineering/se311/",
-    "courseTitle": "SE311 // Software Requirements Engineering"
-  },
-  {
-    "url": "/academics/software-engineering/se311/quizzes/05-chapter-6-quiz/",
-    "title": "SE311 | Chapter 6 Quiz",
-    "track": "software-engineering",
-    "course": "se311",
-    "section": "quizzes",
-    "courseUrl": "/academics/software-engineering/se311/",
-    "courseTitle": "SE311 // Software Requirements Engineering"
-  },
-  {
-    "url": "/academics/software-engineering/se311/quizzes/06-chapter-8-quiz/",
-    "title": "SE311 | Chapter 8 Quiz",
-    "track": "software-engineering",
-    "course": "se311",
-    "section": "quizzes",
-    "courseUrl": "/academics/software-engineering/se311/",
-    "courseTitle": "SE311 // Software Requirements Engineering"
-  },
-  {
-    "url": "/academics/software-engineering/se311/quizzes/07-chapter-9-quiz/",
-    "title": "SE311 | Chapter 9 Quiz",
-    "track": "software-engineering",
-    "course": "se311",
-    "section": "quizzes",
-    "courseUrl": "/academics/software-engineering/se311/",
-    "courseTitle": "SE311 // Software Requirements Engineering"
-  },
-  {
-    "url": "/academics/software-engineering/se311/quizzes/08-quiz-1/",
-    "title": "SE311 | Quiz 1",
-    "track": "software-engineering",
-    "course": "se311",
-    "section": "quizzes",
     "courseUrl": "/academics/software-engineering/se311/",
     "courseTitle": "SE311 // Software Requirements Engineering"
   },
@@ -5445,6 +5922,168 @@ var COURSE_PAGES = [
     "section": "slides",
     "courseUrl": "/academics/software-engineering/se311/",
     "courseTitle": "SE311 // Software Requirements Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se322/exams/01-introduction-to-software-design-and-architecture-quiz/",
+    "title": "SE322 · Chapter 1 Quiz — Introduction to Software Design and Architecture",
+    "track": "software-engineering",
+    "course": "se322",
+    "section": "exams",
+    "courseUrl": "/academics/software-engineering/se322/",
+    "courseTitle": "SE322 // Software Design and Architecture"
+  },
+  {
+    "url": "/academics/software-engineering/se322/exams/02-software-architecture-quiz/",
+    "title": "SE322 · Chapter 2 Quiz — Software Architecture",
+    "track": "software-engineering",
+    "course": "se322",
+    "section": "exams",
+    "courseUrl": "/academics/software-engineering/se322/",
+    "courseTitle": "SE322 // Software Design and Architecture"
+  },
+  {
+    "url": "/academics/software-engineering/se322/exams/03-quality-attributes-quiz/",
+    "title": "SE322 · Chapter 3 Quiz — Quality Attributes",
+    "track": "software-engineering",
+    "course": "se322",
+    "section": "exams",
+    "courseUrl": "/academics/software-engineering/se322/",
+    "courseTitle": "SE322 // Software Design and Architecture"
+  },
+  {
+    "url": "/academics/software-engineering/se322/exams/04-architecture-patterns-quiz/",
+    "title": "SE322 · Chapter 4 Quiz — Architecture Patterns",
+    "track": "software-engineering",
+    "course": "se322",
+    "section": "exams",
+    "courseUrl": "/academics/software-engineering/se322/",
+    "courseTitle": "SE322 // Software Design and Architecture"
+  },
+  {
+    "url": "/academics/software-engineering/se322/exams/05-principles-of-detailed-design-quiz/",
+    "title": "SE322 · Chapter 5 Quiz — Principles of Detailed Design",
+    "track": "software-engineering",
+    "course": "se322",
+    "section": "exams",
+    "courseUrl": "/academics/software-engineering/se322/",
+    "courseTitle": "SE322 // Software Design and Architecture"
+  },
+  {
+    "url": "/academics/software-engineering/se322/exams/06-creational-design-patterns-quiz/",
+    "title": "SE322 · Chapter 6 Quiz — Creational Design Patterns",
+    "track": "software-engineering",
+    "course": "se322",
+    "section": "exams",
+    "courseUrl": "/academics/software-engineering/se322/",
+    "courseTitle": "SE322 // Software Design and Architecture"
+  },
+  {
+    "url": "/academics/software-engineering/se322/exams/07-structural-design-patterns-quiz/",
+    "title": "SE322 · Chapter 7 Quiz — Structural Design Patterns",
+    "track": "software-engineering",
+    "course": "se322",
+    "section": "exams",
+    "courseUrl": "/academics/software-engineering/se322/",
+    "courseTitle": "SE322 // Software Design and Architecture"
+  },
+  {
+    "url": "/academics/software-engineering/se322/exams/08-architecture-evaluation-quiz/",
+    "title": "SE322 · Chapter 8 Quiz — Architecture Evaluation",
+    "track": "software-engineering",
+    "course": "se322",
+    "section": "exams",
+    "courseUrl": "/academics/software-engineering/se322/",
+    "courseTitle": "SE322 // Software Design and Architecture"
+  },
+  {
+    "url": "/academics/software-engineering/se322/exams/09-architecture-documentation-quiz/",
+    "title": "SE322 · Chapter 9 Quiz — Architecture Documentation",
+    "track": "software-engineering",
+    "course": "se322",
+    "section": "exams",
+    "courseUrl": "/academics/software-engineering/se322/",
+    "courseTitle": "SE322 // Software Design and Architecture"
+  },
+  {
+    "url": "/academics/software-engineering/se322/extra-resources/mindmaps/01-introduction-to-software-design-and-architecture/",
+    "title": "SE322 · Chapter 1 Mindmap — Introduction to Software Design and Architecture",
+    "track": "software-engineering",
+    "course": "se322",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se322/",
+    "courseTitle": "SE322 // Software Design and Architecture"
+  },
+  {
+    "url": "/academics/software-engineering/se322/extra-resources/mindmaps/02-software-architecture/",
+    "title": "SE322 · Chapter 2 Mindmap — Software Architecture",
+    "track": "software-engineering",
+    "course": "se322",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se322/",
+    "courseTitle": "SE322 // Software Design and Architecture"
+  },
+  {
+    "url": "/academics/software-engineering/se322/extra-resources/mindmaps/03-quality-attributes/",
+    "title": "SE322 · Chapter 3 Mindmap — Quality Attributes",
+    "track": "software-engineering",
+    "course": "se322",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se322/",
+    "courseTitle": "SE322 // Software Design and Architecture"
+  },
+  {
+    "url": "/academics/software-engineering/se322/extra-resources/mindmaps/04-architecture-patterns/",
+    "title": "SE322 · Chapter 4 Mindmap — Architecture Patterns",
+    "track": "software-engineering",
+    "course": "se322",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se322/",
+    "courseTitle": "SE322 // Software Design and Architecture"
+  },
+  {
+    "url": "/academics/software-engineering/se322/extra-resources/mindmaps/05-principles-of-detailed-design/",
+    "title": "SE322 · Chapter 5 Mindmap — Principles of Detailed Design",
+    "track": "software-engineering",
+    "course": "se322",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se322/",
+    "courseTitle": "SE322 // Software Design and Architecture"
+  },
+  {
+    "url": "/academics/software-engineering/se322/extra-resources/mindmaps/06-creational-design-patterns/",
+    "title": "SE322 · Chapter 6 Mindmap — Creational Design Patterns",
+    "track": "software-engineering",
+    "course": "se322",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se322/",
+    "courseTitle": "SE322 // Software Design and Architecture"
+  },
+  {
+    "url": "/academics/software-engineering/se322/extra-resources/mindmaps/07-structural-design-patterns/",
+    "title": "SE322 · Chapter 7 Mindmap — Structural Design Patterns",
+    "track": "software-engineering",
+    "course": "se322",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se322/",
+    "courseTitle": "SE322 // Software Design and Architecture"
+  },
+  {
+    "url": "/academics/software-engineering/se322/extra-resources/mindmaps/08-architecture-evaluation/",
+    "title": "SE322 · Chapter 8 Mindmap — Architecture Evaluation",
+    "track": "software-engineering",
+    "course": "se322",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se322/",
+    "courseTitle": "SE322 // Software Design and Architecture"
+  },
+  {
+    "url": "/academics/software-engineering/se322/extra-resources/mindmaps/09-architecture-documentation/",
+    "title": "SE322 · Chapter 9 Mindmap — Architecture Documentation",
+    "track": "software-engineering",
+    "course": "se322",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se322/",
+    "courseTitle": "SE322 // Software Design and Architecture"
   },
   {
     "url": "/academics/software-engineering/se322/slide-breakdowns/01-chapter-1-introduction-to-software-design-and-architecture-extra/",
@@ -5771,11 +6410,362 @@ var COURSE_PAGES = [
     "courseTitle": "SE322 // Software Design and Architecture"
   },
   {
+    "url": "/academics/software-engineering/se401/exams/01-advanced-topics-quiz/",
+    "title": "SE401 · Chapter 1 Quiz — Advanced Topics",
+    "track": "software-engineering",
+    "course": "se401",
+    "section": "exams",
+    "courseUrl": "/academics/software-engineering/se401/",
+    "courseTitle": "SE401 // Software Testing and Quality"
+  },
+  {
+    "url": "/academics/software-engineering/se401/exams/02-black-box-testing-techniques-quiz/",
+    "title": "SE401 · Chapter 2 Quiz — Black Box Testing Techniques",
+    "track": "software-engineering",
+    "course": "se401",
+    "section": "exams",
+    "courseUrl": "/academics/software-engineering/se401/",
+    "courseTitle": "SE401 // Software Testing and Quality"
+  },
+  {
+    "url": "/academics/software-engineering/se401/exams/03-code-coverage-quiz/",
+    "title": "SE401 · Chapter 3 Quiz — Code Coverage",
+    "track": "software-engineering",
+    "course": "se401",
+    "section": "exams",
+    "courseUrl": "/academics/software-engineering/se401/",
+    "courseTitle": "SE401 // Software Testing and Quality"
+  },
+  {
+    "url": "/academics/software-engineering/se401/exams/04-introduction-quiz/",
+    "title": "SE401 · Chapter 4 Quiz — Introduction",
+    "track": "software-engineering",
+    "course": "se401",
+    "section": "exams",
+    "courseUrl": "/academics/software-engineering/se401/",
+    "courseTitle": "SE401 // Software Testing and Quality"
+  },
+  {
+    "url": "/academics/software-engineering/se401/exams/05-quality-quiz/",
+    "title": "SE401 · Chapter 5 Quiz — Quality",
+    "track": "software-engineering",
+    "course": "se401",
+    "section": "exams",
+    "courseUrl": "/academics/software-engineering/se401/",
+    "courseTitle": "SE401 // Software Testing and Quality"
+  },
+  {
+    "url": "/academics/software-engineering/se401/exams/06-regression-testing-quiz/",
+    "title": "SE401 · Chapter 6 Quiz — Regression Testing",
+    "track": "software-engineering",
+    "course": "se401",
+    "section": "exams",
+    "courseUrl": "/academics/software-engineering/se401/",
+    "courseTitle": "SE401 // Software Testing and Quality"
+  },
+  {
+    "url": "/academics/software-engineering/se401/exams/07-software-quality-quiz/",
+    "title": "SE401 · Chapter 7 Quiz — Software Quality",
+    "track": "software-engineering",
+    "course": "se401",
+    "section": "exams",
+    "courseUrl": "/academics/software-engineering/se401/",
+    "courseTitle": "SE401 // Software Testing and Quality"
+  },
+  {
+    "url": "/academics/software-engineering/se401/exams/08-test-cases-quiz/",
+    "title": "SE401 · Chapter 8 Quiz — Test Cases",
+    "track": "software-engineering",
+    "course": "se401",
+    "section": "exams",
+    "courseUrl": "/academics/software-engineering/se401/",
+    "courseTitle": "SE401 // Software Testing and Quality"
+  },
+  {
+    "url": "/academics/software-engineering/se401/exams/09-test-design-techniques-quiz/",
+    "title": "SE401 · Chapter 9 Quiz — Test Design Techniques",
+    "track": "software-engineering",
+    "course": "se401",
+    "section": "exams",
+    "courseUrl": "/academics/software-engineering/se401/",
+    "courseTitle": "SE401 // Software Testing and Quality"
+  },
+  {
+    "url": "/academics/software-engineering/se401/exams/10-testing-metrics-and-tools-quiz/",
+    "title": "SE401 · Chapter 10 Quiz — Testing Metrics and Tools",
+    "track": "software-engineering",
+    "course": "se401",
+    "section": "exams",
+    "courseUrl": "/academics/software-engineering/se401/",
+    "courseTitle": "SE401 // Software Testing and Quality"
+  },
+  {
+    "url": "/academics/software-engineering/se401/exams/11-testing-throughout-the-sdlc-quiz/",
+    "title": "SE401 · Chapter 11 Quiz — Testing Throughout the SDLC",
+    "track": "software-engineering",
+    "course": "se401",
+    "section": "exams",
+    "courseUrl": "/academics/software-engineering/se401/",
+    "courseTitle": "SE401 // Software Testing and Quality"
+  },
+  {
+    "url": "/academics/software-engineering/se401/exams/12-unit-testing-and-junit-quiz/",
+    "title": "SE401 · Chapter 12 Quiz — Unit Testing and JUnit",
+    "track": "software-engineering",
+    "course": "se401",
+    "section": "exams",
+    "courseUrl": "/academics/software-engineering/se401/",
+    "courseTitle": "SE401 // Software Testing and Quality"
+  },
+  {
+    "url": "/academics/software-engineering/se401/exams/13-white-box-testing-quiz/",
+    "title": "SE401 · Chapter 12 Quiz — White Box Testing",
+    "track": "software-engineering",
+    "course": "se401",
+    "section": "exams",
+    "courseUrl": "/academics/software-engineering/se401/",
+    "courseTitle": "SE401 // Software Testing and Quality"
+  },
+  {
+    "url": "/academics/software-engineering/se401/extra-resources/mindmaps/01-advanced-topics/",
+    "title": "SE401 · Chapter 1 Mindmap — Advanced Topics",
+    "track": "software-engineering",
+    "course": "se401",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se401/",
+    "courseTitle": "SE401 // Software Testing and Quality"
+  },
+  {
+    "url": "/academics/software-engineering/se401/extra-resources/mindmaps/02-black-box-testing-techniques/",
+    "title": "SE401 · Chapter 2 Mindmap — Black Box Testing Techniques",
+    "track": "software-engineering",
+    "course": "se401",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se401/",
+    "courseTitle": "SE401 // Software Testing and Quality"
+  },
+  {
+    "url": "/academics/software-engineering/se401/extra-resources/mindmaps/03-code-coverage/",
+    "title": "SE401 · Chapter 3 Mindmap — Code Coverage",
+    "track": "software-engineering",
+    "course": "se401",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se401/",
+    "courseTitle": "SE401 // Software Testing and Quality"
+  },
+  {
+    "url": "/academics/software-engineering/se401/extra-resources/mindmaps/04-introduction/",
+    "title": "SE401 · Chapter 4 Mindmap — Introduction",
+    "track": "software-engineering",
+    "course": "se401",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se401/",
+    "courseTitle": "SE401 // Software Testing and Quality"
+  },
+  {
+    "url": "/academics/software-engineering/se401/extra-resources/mindmaps/05-quality/",
+    "title": "SE401 · Chapter 5 Mindmap — Quality",
+    "track": "software-engineering",
+    "course": "se401",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se401/",
+    "courseTitle": "SE401 // Software Testing and Quality"
+  },
+  {
+    "url": "/academics/software-engineering/se401/extra-resources/mindmaps/06-regression-testing/",
+    "title": "SE401 · Chapter 6 Mindmap — Regression Testing",
+    "track": "software-engineering",
+    "course": "se401",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se401/",
+    "courseTitle": "SE401 // Software Testing and Quality"
+  },
+  {
+    "url": "/academics/software-engineering/se401/extra-resources/mindmaps/07-software-quality/",
+    "title": "SE401 · Chapter 7 Mindmap — Software Quality",
+    "track": "software-engineering",
+    "course": "se401",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se401/",
+    "courseTitle": "SE401 // Software Testing and Quality"
+  },
+  {
+    "url": "/academics/software-engineering/se401/extra-resources/mindmaps/08-test-cases/",
+    "title": "SE401 · Chapter 8 Mindmap — Test Cases",
+    "track": "software-engineering",
+    "course": "se401",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se401/",
+    "courseTitle": "SE401 // Software Testing and Quality"
+  },
+  {
+    "url": "/academics/software-engineering/se401/extra-resources/mindmaps/09-test-design-techniques/",
+    "title": "SE401 · Chapter 9 Mindmap — Test Design Techniques",
+    "track": "software-engineering",
+    "course": "se401",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se401/",
+    "courseTitle": "SE401 // Software Testing and Quality"
+  },
+  {
+    "url": "/academics/software-engineering/se401/extra-resources/mindmaps/10-testing-metrics-and-tools/",
+    "title": "SE401 · Chapter 10 Mindmap — Testing Metrics and Tools",
+    "track": "software-engineering",
+    "course": "se401",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se401/",
+    "courseTitle": "SE401 // Software Testing and Quality"
+  },
+  {
+    "url": "/academics/software-engineering/se401/extra-resources/mindmaps/11-testing-throughout-the-sdlc/",
+    "title": "SE401 · Chapter 11 Mindmap — Testing Throughout the SDLC",
+    "track": "software-engineering",
+    "course": "se401",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se401/",
+    "courseTitle": "SE401 // Software Testing and Quality"
+  },
+  {
+    "url": "/academics/software-engineering/se401/extra-resources/mindmaps/12-unit-testing-and-junit/",
+    "title": "SE401 · Chapter 12 Mindmap — Unit Testing and JUnit",
+    "track": "software-engineering",
+    "course": "se401",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se401/",
+    "courseTitle": "SE401 // Software Testing and Quality"
+  },
+  {
+    "url": "/academics/software-engineering/se401/extra-resources/mindmaps/13-white-box-testing/",
+    "title": "SE401 · Chapter 12 Mindmap — White Box Testing",
+    "track": "software-engineering",
+    "course": "se401",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se401/",
+    "courseTitle": "SE401 // Software Testing and Quality"
+  },
+  {
     "url": "/academics/software-engineering/se401/extra-resources/summary/",
     "title": "SE401 | Summary",
     "track": "software-engineering",
     "course": "se401",
     "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se401/",
+    "courseTitle": "SE401 // Software Testing and Quality"
+  },
+  {
+    "url": "/academics/software-engineering/se401/slide-breakdowns/01-advanced-topics/",
+    "title": "SE401 | Advanced Topics",
+    "track": "software-engineering",
+    "course": "se401",
+    "section": "slide-breakdowns",
+    "courseUrl": "/academics/software-engineering/se401/",
+    "courseTitle": "SE401 // Software Testing and Quality"
+  },
+  {
+    "url": "/academics/software-engineering/se401/slide-breakdowns/02-black-box-testing-techniques/",
+    "title": "SE401 | Black Box Testing Techniques",
+    "track": "software-engineering",
+    "course": "se401",
+    "section": "slide-breakdowns",
+    "courseUrl": "/academics/software-engineering/se401/",
+    "courseTitle": "SE401 // Software Testing and Quality"
+  },
+  {
+    "url": "/academics/software-engineering/se401/slide-breakdowns/03-code-coverage/",
+    "title": "SE401 | Code Coverage",
+    "track": "software-engineering",
+    "course": "se401",
+    "section": "slide-breakdowns",
+    "courseUrl": "/academics/software-engineering/se401/",
+    "courseTitle": "SE401 // Software Testing and Quality"
+  },
+  {
+    "url": "/academics/software-engineering/se401/slide-breakdowns/04-introduction/",
+    "title": "SE401 | Introduction",
+    "track": "software-engineering",
+    "course": "se401",
+    "section": "slide-breakdowns",
+    "courseUrl": "/academics/software-engineering/se401/",
+    "courseTitle": "SE401 // Software Testing and Quality"
+  },
+  {
+    "url": "/academics/software-engineering/se401/slide-breakdowns/05-quality/",
+    "title": "SE401 | Quality",
+    "track": "software-engineering",
+    "course": "se401",
+    "section": "slide-breakdowns",
+    "courseUrl": "/academics/software-engineering/se401/",
+    "courseTitle": "SE401 // Software Testing and Quality"
+  },
+  {
+    "url": "/academics/software-engineering/se401/slide-breakdowns/06-regression-testing/",
+    "title": "SE401 | Regression Testing",
+    "track": "software-engineering",
+    "course": "se401",
+    "section": "slide-breakdowns",
+    "courseUrl": "/academics/software-engineering/se401/",
+    "courseTitle": "SE401 // Software Testing and Quality"
+  },
+  {
+    "url": "/academics/software-engineering/se401/slide-breakdowns/07-software-quality/",
+    "title": "SE401 | Software Quality",
+    "track": "software-engineering",
+    "course": "se401",
+    "section": "slide-breakdowns",
+    "courseUrl": "/academics/software-engineering/se401/",
+    "courseTitle": "SE401 // Software Testing and Quality"
+  },
+  {
+    "url": "/academics/software-engineering/se401/slide-breakdowns/08-test-cases/",
+    "title": "SE401 | Test Cases",
+    "track": "software-engineering",
+    "course": "se401",
+    "section": "slide-breakdowns",
+    "courseUrl": "/academics/software-engineering/se401/",
+    "courseTitle": "SE401 // Software Testing and Quality"
+  },
+  {
+    "url": "/academics/software-engineering/se401/slide-breakdowns/09-test-design-techniques/",
+    "title": "SE401 | Test Design Techniques",
+    "track": "software-engineering",
+    "course": "se401",
+    "section": "slide-breakdowns",
+    "courseUrl": "/academics/software-engineering/se401/",
+    "courseTitle": "SE401 // Software Testing and Quality"
+  },
+  {
+    "url": "/academics/software-engineering/se401/slide-breakdowns/10-testing-metrics-and-tools/",
+    "title": "SE401 | Testing Metrics And Tools",
+    "track": "software-engineering",
+    "course": "se401",
+    "section": "slide-breakdowns",
+    "courseUrl": "/academics/software-engineering/se401/",
+    "courseTitle": "SE401 // Software Testing and Quality"
+  },
+  {
+    "url": "/academics/software-engineering/se401/slide-breakdowns/11-testing-throughout-the-sdlc/",
+    "title": "SE401 | Testing Throughout The SDLC",
+    "track": "software-engineering",
+    "course": "se401",
+    "section": "slide-breakdowns",
+    "courseUrl": "/academics/software-engineering/se401/",
+    "courseTitle": "SE401 // Software Testing and Quality"
+  },
+  {
+    "url": "/academics/software-engineering/se401/slide-breakdowns/12-unit-testing-and-junit/",
+    "title": "SE401 | Unit Testing And JUnit",
+    "track": "software-engineering",
+    "course": "se401",
+    "section": "slide-breakdowns",
+    "courseUrl": "/academics/software-engineering/se401/",
+    "courseTitle": "SE401 // Software Testing and Quality"
+  },
+  {
+    "url": "/academics/software-engineering/se401/slide-breakdowns/13-white-box-testing/",
+    "title": "SE401 | White Box Testing",
+    "track": "software-engineering",
+    "course": "se401",
+    "section": "slide-breakdowns",
     "courseUrl": "/academics/software-engineering/se401/",
     "courseTitle": "SE401 // Software Testing and Quality"
   },
@@ -5897,11 +6887,335 @@ var COURSE_PAGES = [
     "courseTitle": "SE401 // Software Testing and Quality"
   },
   {
+    "url": "/academics/software-engineering/se423/exams/01-change-management-quiz/",
+    "title": "SE423 | Chapter 1: Change Management Quiz",
+    "track": "software-engineering",
+    "course": "se423",
+    "section": "exams",
+    "courseUrl": "/academics/software-engineering/se423/",
+    "courseTitle": "SE423 // Software Project Management"
+  },
+  {
+    "url": "/academics/software-engineering/se423/exams/02-development-approach-quiz/",
+    "title": "SE423 | Chapter 2: Development Approach Quiz",
+    "track": "software-engineering",
+    "course": "se423",
+    "section": "exams",
+    "courseUrl": "/academics/software-engineering/se423/",
+    "courseTitle": "SE423 // Software Project Management"
+  },
+  {
+    "url": "/academics/software-engineering/se423/exams/03-estimation-quiz/",
+    "title": "SE423 | Chapter 3: Estimation Quiz",
+    "track": "software-engineering",
+    "course": "se423",
+    "section": "exams",
+    "courseUrl": "/academics/software-engineering/se423/",
+    "courseTitle": "SE423 // Software Project Management"
+  },
+  {
+    "url": "/academics/software-engineering/se423/exams/04-introduction-quiz/",
+    "title": "SE423 | Chapter 4: Introduction Quiz",
+    "track": "software-engineering",
+    "course": "se423",
+    "section": "exams",
+    "courseUrl": "/academics/software-engineering/se423/",
+    "courseTitle": "SE423 // Software Project Management"
+  },
+  {
+    "url": "/academics/software-engineering/se423/exams/05-project-performance-domains-quiz/",
+    "title": "SE423 | Chapter 5: Project Performance Domains Quiz",
+    "track": "software-engineering",
+    "course": "se423",
+    "section": "exams",
+    "courseUrl": "/academics/software-engineering/se423/",
+    "courseTitle": "SE423 // Software Project Management"
+  },
+  {
+    "url": "/academics/software-engineering/se423/exams/06-quality-quiz/",
+    "title": "SE423 | Chapter 6: Quality Quiz",
+    "track": "software-engineering",
+    "course": "se423",
+    "section": "exams",
+    "courseUrl": "/academics/software-engineering/se423/",
+    "courseTitle": "SE423 // Software Project Management"
+  },
+  {
+    "url": "/academics/software-engineering/se423/exams/07-risk-management-quiz/",
+    "title": "SE423 | Chapter 7: Risk Management Quiz",
+    "track": "software-engineering",
+    "course": "se423",
+    "section": "exams",
+    "courseUrl": "/academics/software-engineering/se423/",
+    "courseTitle": "SE423 // Software Project Management"
+  },
+  {
+    "url": "/academics/software-engineering/se423/exams/08-scheduling-and-tracking-quiz/",
+    "title": "SE423 | Chapter 8: Scheduling and Tracking Quiz",
+    "track": "software-engineering",
+    "course": "se423",
+    "section": "exams",
+    "courseUrl": "/academics/software-engineering/se423/",
+    "courseTitle": "SE423 // Software Project Management"
+  },
+  {
+    "url": "/academics/software-engineering/se423/exams/09-software-engineering-quiz/",
+    "title": "SE423 | Chapter 9: Software Engineering Quiz",
+    "track": "software-engineering",
+    "course": "se423",
+    "section": "exams",
+    "courseUrl": "/academics/software-engineering/se423/",
+    "courseTitle": "SE423 // Software Project Management"
+  },
+  {
+    "url": "/academics/software-engineering/se423/exams/10-stakeholders-quiz/",
+    "title": "SE423 | Chapter 10: Stakeholders Quiz",
+    "track": "software-engineering",
+    "course": "se423",
+    "section": "exams",
+    "courseUrl": "/academics/software-engineering/se423/",
+    "courseTitle": "SE423 // Software Project Management"
+  },
+  {
+    "url": "/academics/software-engineering/se423/exams/11-tailoring-models-methods-and-artifacts-quiz/",
+    "title": "SE423 | Chapter 11: Tailoring Models, Methods & Artifacts Quiz",
+    "track": "software-engineering",
+    "course": "se423",
+    "section": "exams",
+    "courseUrl": "/academics/software-engineering/se423/",
+    "courseTitle": "SE423 // Software Project Management"
+  },
+  {
+    "url": "/academics/software-engineering/se423/exams/12-team-quiz/",
+    "title": "SE423 | Chapter 12: Team Quiz",
+    "track": "software-engineering",
+    "course": "se423",
+    "section": "exams",
+    "courseUrl": "/academics/software-engineering/se423/",
+    "courseTitle": "SE423 // Software Project Management"
+  },
+  {
+    "url": "/academics/software-engineering/se423/extra-resources/mindmaps/01-change-management/",
+    "title": "SE423 | Change Management",
+    "track": "software-engineering",
+    "course": "se423",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se423/",
+    "courseTitle": "SE423 // Software Project Management"
+  },
+  {
+    "url": "/academics/software-engineering/se423/extra-resources/mindmaps/02-development-approach/",
+    "title": "SE423 | Development Approach",
+    "track": "software-engineering",
+    "course": "se423",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se423/",
+    "courseTitle": "SE423 // Software Project Management"
+  },
+  {
+    "url": "/academics/software-engineering/se423/extra-resources/mindmaps/03-estimation/",
+    "title": "SE423 | Estimation",
+    "track": "software-engineering",
+    "course": "se423",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se423/",
+    "courseTitle": "SE423 // Software Project Management"
+  },
+  {
+    "url": "/academics/software-engineering/se423/extra-resources/mindmaps/04-introduction/",
+    "title": "SE423 | Introduction",
+    "track": "software-engineering",
+    "course": "se423",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se423/",
+    "courseTitle": "SE423 // Software Project Management"
+  },
+  {
+    "url": "/academics/software-engineering/se423/extra-resources/mindmaps/05-project-performance-domains/",
+    "title": "SE423 | Project Performance Domains",
+    "track": "software-engineering",
+    "course": "se423",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se423/",
+    "courseTitle": "SE423 // Software Project Management"
+  },
+  {
+    "url": "/academics/software-engineering/se423/extra-resources/mindmaps/06-quality/",
+    "title": "SE423 | Quality",
+    "track": "software-engineering",
+    "course": "se423",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se423/",
+    "courseTitle": "SE423 // Software Project Management"
+  },
+  {
+    "url": "/academics/software-engineering/se423/extra-resources/mindmaps/07-risk-management/",
+    "title": "SE423 | Risk Management",
+    "track": "software-engineering",
+    "course": "se423",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se423/",
+    "courseTitle": "SE423 // Software Project Management"
+  },
+  {
+    "url": "/academics/software-engineering/se423/extra-resources/mindmaps/08-scheduling-and-tracking/",
+    "title": "SE423 | Scheduling and Tracking",
+    "track": "software-engineering",
+    "course": "se423",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se423/",
+    "courseTitle": "SE423 // Software Project Management"
+  },
+  {
+    "url": "/academics/software-engineering/se423/extra-resources/mindmaps/09-software-engineering/",
+    "title": "SE423 | Software Engineering",
+    "track": "software-engineering",
+    "course": "se423",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se423/",
+    "courseTitle": "SE423 // Software Project Management"
+  },
+  {
+    "url": "/academics/software-engineering/se423/extra-resources/mindmaps/10-stakeholders/",
+    "title": "SE423 | Stakeholders",
+    "track": "software-engineering",
+    "course": "se423",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se423/",
+    "courseTitle": "SE423 // Software Project Management"
+  },
+  {
+    "url": "/academics/software-engineering/se423/extra-resources/mindmaps/11-tailoring-models-methods-and-artifacts/",
+    "title": "SE423 | Tailoring Models, Methods, and Artifacts",
+    "track": "software-engineering",
+    "course": "se423",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se423/",
+    "courseTitle": "SE423 // Software Project Management"
+  },
+  {
+    "url": "/academics/software-engineering/se423/extra-resources/mindmaps/12-team/",
+    "title": "SE423 | Team",
+    "track": "software-engineering",
+    "course": "se423",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se423/",
+    "courseTitle": "SE423 // Software Project Management"
+  },
+  {
     "url": "/academics/software-engineering/se423/extra-resources/study-guide/",
     "title": "SE423 | Study Guide",
     "track": "software-engineering",
     "course": "se423",
     "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se423/",
+    "courseTitle": "SE423 // Software Project Management"
+  },
+  {
+    "url": "/academics/software-engineering/se423/slide-breakdowns/01-change-management/",
+    "title": "SE423 | Change Management",
+    "track": "software-engineering",
+    "course": "se423",
+    "section": "slide-breakdowns",
+    "courseUrl": "/academics/software-engineering/se423/",
+    "courseTitle": "SE423 // Software Project Management"
+  },
+  {
+    "url": "/academics/software-engineering/se423/slide-breakdowns/02-development-approach/",
+    "title": "SE423 | Development Approach",
+    "track": "software-engineering",
+    "course": "se423",
+    "section": "slide-breakdowns",
+    "courseUrl": "/academics/software-engineering/se423/",
+    "courseTitle": "SE423 // Software Project Management"
+  },
+  {
+    "url": "/academics/software-engineering/se423/slide-breakdowns/03-estimation/",
+    "title": "SE423 | Estimation",
+    "track": "software-engineering",
+    "course": "se423",
+    "section": "slide-breakdowns",
+    "courseUrl": "/academics/software-engineering/se423/",
+    "courseTitle": "SE423 // Software Project Management"
+  },
+  {
+    "url": "/academics/software-engineering/se423/slide-breakdowns/04-introduction/",
+    "title": "SE423 | Introduction",
+    "track": "software-engineering",
+    "course": "se423",
+    "section": "slide-breakdowns",
+    "courseUrl": "/academics/software-engineering/se423/",
+    "courseTitle": "SE423 // Software Project Management"
+  },
+  {
+    "url": "/academics/software-engineering/se423/slide-breakdowns/05-project-performance-domains/",
+    "title": "SE423 | Project Performance Domains",
+    "track": "software-engineering",
+    "course": "se423",
+    "section": "slide-breakdowns",
+    "courseUrl": "/academics/software-engineering/se423/",
+    "courseTitle": "SE423 // Software Project Management"
+  },
+  {
+    "url": "/academics/software-engineering/se423/slide-breakdowns/06-quality/",
+    "title": "SE423 | Quality",
+    "track": "software-engineering",
+    "course": "se423",
+    "section": "slide-breakdowns",
+    "courseUrl": "/academics/software-engineering/se423/",
+    "courseTitle": "SE423 // Software Project Management"
+  },
+  {
+    "url": "/academics/software-engineering/se423/slide-breakdowns/07-risk-management/",
+    "title": "SE423 | Risk Management",
+    "track": "software-engineering",
+    "course": "se423",
+    "section": "slide-breakdowns",
+    "courseUrl": "/academics/software-engineering/se423/",
+    "courseTitle": "SE423 // Software Project Management"
+  },
+  {
+    "url": "/academics/software-engineering/se423/slide-breakdowns/08-scheduling-and-tracking/",
+    "title": "SE423 | Scheduling And Tracking",
+    "track": "software-engineering",
+    "course": "se423",
+    "section": "slide-breakdowns",
+    "courseUrl": "/academics/software-engineering/se423/",
+    "courseTitle": "SE423 // Software Project Management"
+  },
+  {
+    "url": "/academics/software-engineering/se423/slide-breakdowns/09-software-engineering/",
+    "title": "SE423 | Software Engineering",
+    "track": "software-engineering",
+    "course": "se423",
+    "section": "slide-breakdowns",
+    "courseUrl": "/academics/software-engineering/se423/",
+    "courseTitle": "SE423 // Software Project Management"
+  },
+  {
+    "url": "/academics/software-engineering/se423/slide-breakdowns/10-stakeholders/",
+    "title": "SE423 | Stakeholders",
+    "track": "software-engineering",
+    "course": "se423",
+    "section": "slide-breakdowns",
+    "courseUrl": "/academics/software-engineering/se423/",
+    "courseTitle": "SE423 // Software Project Management"
+  },
+  {
+    "url": "/academics/software-engineering/se423/slide-breakdowns/11-tailoring-models-methods-and-artifacts/",
+    "title": "SE423 | Tailoring Models Methods And Artifacts",
+    "track": "software-engineering",
+    "course": "se423",
+    "section": "slide-breakdowns",
+    "courseUrl": "/academics/software-engineering/se423/",
+    "courseTitle": "SE423 // Software Project Management"
+  },
+  {
+    "url": "/academics/software-engineering/se423/slide-breakdowns/12-team/",
+    "title": "SE423 | Team",
+    "track": "software-engineering",
+    "course": "se423",
+    "section": "slide-breakdowns",
     "courseUrl": "/academics/software-engineering/se423/",
     "courseTitle": "SE423 // Software Project Management"
   },
@@ -6023,23 +7337,23 @@ var COURSE_MANIFEST = {
   "cs331": 46,
   "cs340": 36,
   "cys401": 29,
-  "cys405": 22,
-  "cys406": 32,
-  "com201": 24,
-  "eng101": 37,
-  "eng103": 7,
-  "ethcs303": 88,
-  "isc113": 23,
+  "cys405": 44,
+  "cys406": 64,
   "math221": 39,
   "phy105": 17,
   "phy205": 8,
   "sci101": 9,
-  "stat101": 22,
+  "stat101": 2,
+  "com201": 40,
+  "eng101": 37,
+  "eng103": 7,
+  "ethcs303": 91,
+  "isc113": 23,
   "se201": 32,
   "se311": 33,
-  "se322": 36,
-  "se401": 14,
-  "se423": 13
+  "se322": 54,
+  "se401": 53,
+  "se423": 49
 };
 var COURSE_MANIFEST_BY_TRACK = {
   "computer-science/cs101": 8,
@@ -6050,21 +7364,21 @@ var COURSE_MANIFEST_BY_TRACK = {
   "computer-science/cs331": 46,
   "computer-science/cs340": 36,
   "cybersecurity/cys401": 29,
-  "cybersecurity/cys405": 22,
-  "cybersecurity/cys406": 32,
-  "other-courses/com201": 24,
+  "cybersecurity/cys405": 44,
+  "cybersecurity/cys406": 64,
+  "math/math221": 39,
+  "math/phy105": 17,
+  "math/phy205": 8,
+  "math/sci101": 9,
+  "math/stat101": 2,
+  "other-courses/com201": 40,
   "other-courses/eng101": 37,
   "other-courses/eng103": 7,
-  "other-courses/ethcs303": 88,
+  "other-courses/ethcs303": 91,
   "other-courses/isc113": 23,
-  "other-courses/math221": 39,
-  "other-courses/phy105": 17,
-  "other-courses/phy205": 8,
-  "other-courses/sci101": 9,
-  "other-courses/stat101": 22,
   "software-engineering/se201": 32,
   "software-engineering/se311": 33,
-  "software-engineering/se322": 36,
-  "software-engineering/se401": 14,
-  "software-engineering/se423": 13
+  "software-engineering/se322": 54,
+  "software-engineering/se401": 53,
+  "software-engineering/se423": 49
 };

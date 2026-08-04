@@ -137,12 +137,97 @@ COURSES: dict[str, dict[str, Any]] = {
             "Slide Breakdowns": "/academics/software-engineering/se322/slide-breakdowns/",
             "Slides": "/academics/software-engineering/se322/slides/",
             "Study Material": "/academics/software-engineering/se322/extra-resources/",
-            "Quizzes": "/academics/software-engineering/se322/quizzes/",
+            "Quizzes": "/academics/software-engineering/se322/exams/",
         },
         "title_override": "Software Design and Architecture",
         "description": "Software architecture, design principles, architectural patterns, design patterns, evaluation, and documentation.",
         "credits": "3",
         "prereq": "TBD",
+        "status": "complete",
+    },
+    "SE365": {
+        "track": "Software Engineering",
+        "path": "docs/academics/software-engineering/se365/",
+        "url": "/academics/software-engineering/se365/",
+        "sections": {
+            "Overview": "/academics/software-engineering/se365/",
+            "Slide Breakdowns": "/academics/software-engineering/se365/slide-breakdowns/",
+            "Slides": "/academics/software-engineering/se365/slides/",
+            "Study Material": "/academics/software-engineering/se365/extra-resources/",
+            "Exams": "/academics/software-engineering/se365/exams/",
+        },
+        "title_override": "Human-Computer Interaction",
+        "status": "available",
+    },
+    "SE371": {
+        "track": "Software Engineering",
+        "path": "docs/academics/software-engineering/se371/",
+        "url": "/academics/software-engineering/se371/",
+        "sections": {
+            "Overview": "/academics/software-engineering/se371/",
+            "Slide Breakdowns": "/academics/software-engineering/se371/slide-breakdowns/",
+            "Slides": "/academics/software-engineering/se371/slides/",
+            "Study Material": "/academics/software-engineering/se371/extra-resources/",
+            "Exams": "/academics/software-engineering/se371/exams/",
+        },
+        "title_override": "Web Engineering",
+        "status": "available",
+    },
+    "SE401": {
+        "track": "Software Engineering",
+        "path": "docs/academics/software-engineering/se401/",
+        "url": "/academics/software-engineering/se401/",
+        "sections": {
+            "Overview": "/academics/software-engineering/se401/",
+            "Slide Breakdowns": "/academics/software-engineering/se401/slide-breakdowns/",
+            "Slides": "/academics/software-engineering/se401/slides/",
+            "Study Material": "/academics/software-engineering/se401/extra-resources/",
+            "Quizzes": "/academics/software-engineering/se401/exams/",
+            "Exams": "/academics/software-engineering/se401/exams/",
+        },
+        "title_override": "Software Testing and Quality",
+        "status": "complete",
+    },
+    "SE411": {
+        "track": "Software Engineering",
+        "path": "docs/academics/software-engineering/se411/",
+        "url": "/academics/software-engineering/se411/",
+        "sections": {
+            "Overview": "/academics/software-engineering/se411/",
+            "Slide Breakdowns": "/academics/software-engineering/se411/slide-breakdowns/",
+            "Slides": "/academics/software-engineering/se411/slides/",
+            "Study Material": "/academics/software-engineering/se411/extra-resources/",
+            "Exams": "/academics/software-engineering/se411/exams/",
+        },
+        "title_override": "Software Construction",
+        "status": "available",
+    },
+    "SE423": {
+        "track": "Software Engineering",
+        "path": "docs/academics/software-engineering/se423/",
+        "url": "/academics/software-engineering/se423/",
+        "sections": {
+            "Overview": "/academics/software-engineering/se423/",
+            "Slide Breakdowns": "/academics/software-engineering/se423/slide-breakdowns/",
+            "Slides": "/academics/software-engineering/se423/slides/",
+            "Study Material": "/academics/software-engineering/se423/extra-resources/",
+            "Quizzes": "/academics/software-engineering/se423/exams/",
+        },
+        "title_override": "Software Project Management",
+        "status": "complete",
+    },
+    "SE499": {
+        "track": "Software Engineering",
+        "path": "docs/academics/software-engineering/se499/",
+        "url": "/academics/software-engineering/se499/",
+        "sections": {
+            "Overview": "/academics/software-engineering/se499/",
+            "Slide Breakdowns": "/academics/software-engineering/se499/slide-breakdowns/",
+            "Slides": "/academics/software-engineering/se499/slides/",
+            "Study Material": "/academics/software-engineering/se499/extra-resources/",
+            "Exams": "/academics/software-engineering/se499/exams/",
+        },
+        "title_override": "Senior Project",
         "status": "available",
     },
     "CYS401": {
@@ -161,7 +246,7 @@ COURSES: dict[str, dict[str, Any]] = {
             "Slide Breakdowns": "/Academics/cybersecurity/cys402/slide-breakdowns/",
             "Slides": "/Academics/cybersecurity/cys402/slides/",
             "Study Material": "/Academics/cybersecurity/cys402/extra-resources/",
-            "Quizzes": "/Academics/cybersecurity/cys402/quizzes/",
+            "Quizzes": "/Academics/cybersecurity/cys402/exams/",
         },
         "title_override": "Cybersecurity",
         "credits": "TBD",
@@ -175,9 +260,24 @@ COURSES: dict[str, dict[str, Any]] = {
             "Slide Breakdowns": "/Academics/cybersecurity/cys403/slide-breakdowns/",
             "Slides": "/Academics/cybersecurity/cys403/slides/",
             "Study Material": "/Academics/cybersecurity/cys403/extra-resources/",
-            "Quizzes": "/Academics/cybersecurity/cys403/quizzes/",
+            "Quizzes": "/Academics/cybersecurity/cys403/exams/",
         },
         "title_override": "Cybersecurity",
+        "credits": "TBD",
+        "prereq": "TBD",
+    },
+    "CYS405": {
+        "track": "Cybersecurity",
+        "path": "docs/academics/cybersecurity/cys405/",
+        "url": "/academics/cybersecurity/cys405/",
+        "sections": {
+            "Overview": "/academics/cybersecurity/cys405/",
+            "Slide Breakdowns": "/academics/cybersecurity/cys405/slide-breakdowns/",
+            "Slides": "/academics/cybersecurity/cys405/slides/",
+            "Study Material": "/academics/cybersecurity/cys405/extra-resources/",
+            "Exams": "/academics/cybersecurity/cys405/exams/",
+        },
+        "title_override": "Ethical Hacking and Penetration Testing",
         "credits": "TBD",
         "prereq": "TBD",
     },
@@ -189,7 +289,7 @@ COURSES: dict[str, dict[str, Any]] = {
             "Slide Breakdowns": "/Academics/cybersecurity/cys406/slide-breakdowns/",
             "Slides": "/Academics/cybersecurity/cys406/slides/",
             "Study Material": "/Academics/cybersecurity/cys406/extra-resources/",
-            "Quizzes": "/Academics/cybersecurity/cys406/quizzes/",
+            "Quizzes": "/Academics/cybersecurity/cys406/exams/",
         },
         "title_override": "Cybersecurity",
         "credits": "TBD",
@@ -227,7 +327,7 @@ COURSES: dict[str, dict[str, Any]] = {
             "Syllabus": "/academics/other-courses/phy105/syllabus/",
             "Slides": "/academics/other-courses/phy105/slides/",
             "Study Material": "/academics/other-courses/phy105/extra-resources/",
-            "Quizzes": "/academics/other-courses/phy105/quizzes/",
+            "Quizzes": "/academics/other-courses/phy105/exams/",
         },
         "title_override": "Physics I",
         "credits": "4",
@@ -243,7 +343,7 @@ COURSES: dict[str, dict[str, Any]] = {
             "Syllabus": "/academics/other-courses/sci101/syllabus/",
             "Slides": "/academics/other-courses/sci101/slides/",
             "Study Material": "/academics/other-courses/sci101/extra-resources/",
-            "Quizzes": "/academics/other-courses/sci101/quizzes/",
+            "Quizzes": "/academics/other-courses/sci101/exams/",
         },
         "title_override": "Introduction to Physical Science",
         "credits": "3",
@@ -259,7 +359,7 @@ COURSES: dict[str, dict[str, Any]] = {
             "Slide Breakdowns": "/academics/other-courses/stat101/slide-breakdowns/",
             "Slides": "/academics/other-courses/stat101/slides/",
             "Study Material": "/academics/other-courses/stat101/extra-resources/",
-            "Quizzes": "/academics/other-courses/stat101/quizzes/",
+            "Quizzes": "/academics/other-courses/stat101/exams/",
         },
         "title_override": "Introduction to Probability Theory and Statistics",
         "description": "An introductory course in descriptive statistics, probability, probability distributions, sampling, and estimation, with spreadsheet-based analysis of real-world data.",
@@ -276,7 +376,7 @@ COURSES: dict[str, dict[str, Any]] = {
             "Slide Breakdowns": "/academics/other-courses/math221/slide-breakdowns/",
             "Slides": "/academics/other-courses/math221/slides/",
             "Study Material": "/academics/other-courses/math221/extra-resources/",
-            "Quizzes": "/academics/other-courses/math221/quizzes/",
+            "Quizzes": "/academics/other-courses/math221/exams/",
         },
         "title_override": "Linear Algebra",
         "description": "A linear algebra course supported by chapter summaries, worked material, matrix methods, pivoting strategies, and matrix inversion resources.",
@@ -310,7 +410,7 @@ COURSES: dict[str, dict[str, Any]] = {
             "Slide Breakdowns": "/Academics/other-courses/eng101/slide-breakdowns/",
             "Slides": "/Academics/other-courses/eng101/slides/",
             "Study Material": "/Academics/other-courses/eng101/extra-resources/",
-            "Quizzes": "/Academics/other-courses/eng101/quizzes/",
+            "Quizzes": "/Academics/other-courses/eng101/exams/",
         },
         "title_override": "Intensive Writing",
         "code_override": "ENG101",
@@ -323,7 +423,7 @@ COURSES: dict[str, dict[str, Any]] = {
         "sections": {
             "Overview": "/Academics/other-courses/eng103/",
             "Study Material": "/Academics/other-courses/eng103/extra-resources/",
-            "Quizzes": "/Academics/other-courses/eng103/quizzes/",
+            "Quizzes": "/Academics/other-courses/eng103/exams/",
         },
         "title_override": "Research Writing Techniques",
         "credits": "3",
@@ -337,7 +437,7 @@ COURSES: dict[str, dict[str, Any]] = {
             "Overview": "/Academics/other-courses/isc113/",
             "Slide Breakdowns": "/Academics/other-courses/isc113/slide-breakdowns/",
             "Study Material": "/Academics/other-courses/isc113/extra-resources/",
-            "Quizzes": "/Academics/other-courses/isc113/quizzes/",
+            "Quizzes": "/Academics/other-courses/isc113/exams/",
         },
         "credits": "2",
         "prereq": "None",
@@ -355,16 +455,16 @@ TRACKS: dict[str, dict[str, Any]] = {
     },
     "software-engineering": {
         "label": "SOFTWARE ENGINEERING",
-        "title": "2 courses.<br>Requirements, design,<br>and engineering practice.",
-        "meta": ["SE Track", "2 Courses", "Process", "Requirements", "Design"],
-        "courses": ["SE201", "SE311", "SE322"],
+        "title": "9 courses.<br>Requirements, design,<br>and engineering practice.",
+        "meta": ["SE Track", "9 Courses", "Process", "Requirements", "Design"],
+        "courses": ["SE201", "SE311", "SE322", "SE365", "SE371", "SE401", "SE411", "SE423", "SE499"],
         "url": "/track-software-engineering.html",
     },
     "cybersecurity": {
         "label": "CYBERSECURITY",
         "title": "4 courses.<br>Security foundations,<br>threats, and defense.",
         "meta": ["Cyber Track", "4 Courses", "Security", "Risk", "Defense"],
-        "courses": ["CYS401", "CYS402", "CYS403", "CYS406"],
+        "courses": ["CYS401", "CYS402", "CYS403", "CYS405", "CYS406"],
         "url": "/track-cybersecurity.html",
     },
     "other-courses": {
@@ -2158,7 +2258,7 @@ def fix_visible_links(text: str) -> str:
         "Slide Breakdowns": "/Academics/courses/se311/slide-breakdowns/",
         "Study Material": "/Academics/courses/se311/study-material/",
         "Slides": "/Academics/courses/se311/slides/",
-        "Quizzes": "/Academics/courses/se311/quizzes/",
+        "Quizzes": "/Academics/courses/se311/exams/",
     }
     for title, url in tab_urls.items():
         text = re.sub(rf'href="#"([^>]*class="tab[^"]*"[^>]*>{re.escape(title)}</a>)', f'href="{url}"\\1', text, count=1)
@@ -2306,13 +2406,36 @@ def slugify(value: str) -> str:
 
 
 def section_url(code: str, label: str) -> str:
+    base = canonical_course_url(code)
     if label == "Overview":
-        return str(COURSES[code]["url"])
-    return f"/Academics/courses/{code.lower()}/{slugify(label)}/"
+        return base
+    section_slug = {
+        "Study Material": "extra-resources",
+        "Extra Resources": "extra-resources",
+        "Quizzes": "exams",
+        "Exams": "exams",
+        "Slides With Notes": "slides-with-notes",
+    }.get(label, slugify(label))
+    return f"{base}{section_slug}/"
 
 
 def viewer_url(code: str, section_label: str, item_label: str, index: int) -> str:
-    return f"/Academics/courses/{code.lower()}/{slugify(section_label)}/{index:02d}-{slugify(item_label)}/"
+    return f"{section_url(code, section_label)}{index:02d}-{slugify(item_label)}/"
+
+
+def canonical_course_url(code: str) -> str:
+    lower = code.lower()
+    if code.startswith("CS"):
+        track = "computer-science"
+    elif code.startswith("SE"):
+        track = "software-engineering"
+    elif code.startswith("CYS"):
+        track = "cybersecurity"
+    elif code.startswith(("PHY", "SCI", "STAT", "MATH")):
+        track = "math"
+    else:
+        track = "other-courses"
+    return f"/academics/{track}/{lower}/"
 
 
 def generated_sections(code: str) -> dict[str, str]:
@@ -2404,13 +2527,13 @@ def academic_sidebar(active_code: str | None = None, active_section: str | None 
                         f'{"<span class=\"status-dot\"></span>" if section_active and not active_item else ""}{html.escape(section_label.upper())}</a></li>{item_children}'
                     )
                 children.append(
-                    f'<li class="tree-item file-active"><a class="tree-file" href="{html.escape(str(config["url"]))}">'
+                    f'<li class="tree-item file-active"><a class="tree-file" href="{html.escape(canonical_course_url(code))}">'
                     f'{"<span class=\"status-dot\"></span>" if active_section == "Overview" else ""}{display}</a></li>'
                     f'<ul class="tree-children section-children">{"".join(section_children)}</ul>'
                 )
             else:
                 children.append(
-                    f'<li class="tree-item"><a class="tree-file" href="{html.escape(str(config["url"]))}">{display}</a></li>'
+                    f'<li class="tree-item"><a class="tree-file" href="{html.escape(canonical_course_url(code))}">{display}</a></li>'
                 )
         track_rows.append(
             f'<li class="tree-item{track_modifier}"><button class="tree-course-link tree-toggle-button" type="button" data-tree-toggle="{child_id}" aria-expanded="{str(is_track_active).lower()}">'
@@ -2422,7 +2545,7 @@ def academic_sidebar(active_code: str | None = None, active_section: str | None 
                     <div class="sidebar-header"><span class="sidebar-title">SYSTEM_DIRECTORY</span><button class="sidebar-collapse-button" type="button" data-sidebar-collapse aria-expanded="true"><span class="collapse-icon">&lt;</span></button></div>
                     <div class="file-tree">
                         <ul class="tree-node">
-                            <li class="tree-item root-dir"><a class="tree-course-link" href="/Academics/">ACADEMICS/</a></li>
+                            <li class="tree-item root-dir"><a class="tree-course-link" href="/academics/">ACADEMICS/</a></li>
                             {"".join(track_rows)}
                         </ul>
                     </div>
@@ -3113,6 +3236,27 @@ def enhance_projects_page(text: str) -> str:
 
 def enhance_work_page(text: str) -> str:
     text = text.replace("6+ Projects", "8 Projects").replace("8+ Projects", "8 Projects")
+    if "@keyframes metric-drift" not in text:
+        text = text.replace(
+            "</style>",
+            r"""
+        /* Larger, animated metrics telemetry strip. */
+        .system-divider { margin-top: 1rem; opacity: 0.72; }
+        .system-divider .hatch-lines { display: inline-block; animation: metrics-scan 4.5s linear infinite; }
+        .proof-strip { min-height: 82px; gap: clamp(1.5rem, 3.5vw, 3.75rem); padding: 1.35rem clamp(1rem, 3vw, 2.5rem); overflow: hidden; box-shadow: inset 0 0 34px rgba(184,41,234,.045); }
+        .proof-item { position: relative; font-size: clamp(.86rem,1vw,1rem); font-weight: 650; letter-spacing: .14em; white-space: nowrap; animation: metric-drift 5s ease-in-out infinite; }
+        .proof-item::before { font-size: .78rem; filter: drop-shadow(0 0 6px var(--brand-purple)); animation: metric-pulse 1.8s ease-in-out infinite; }
+        .proof-item:nth-of-type(2) { animation-delay: -1.25s; }
+        .proof-item:nth-of-type(3) { animation-delay: -2.5s; }
+        .proof-item:nth-of-type(4) { animation-delay: -3.75s; }
+        @keyframes metric-drift { 0%,100% { transform:translate3d(-5px,0,0);color:var(--text-dim) } 50% { transform:translate3d(5px,-3px,0);color:var(--text-main) } }
+        @keyframes metric-pulse { 0%,100% { opacity:.55;transform:scale(.88) } 50% { opacity:1;transform:scale(1.2) } }
+        @keyframes metrics-scan { 0% { transform:translateX(-6px);opacity:.45 } 50% { opacity:1 } 100% { transform:translateX(6px);opacity:.45 } }
+        @media (prefers-reduced-motion: reduce) { .proof-item,.proof-item::before,.system-divider .hatch-lines { animation:none!important } }
+        @media (max-width: 768px) { .proof-item { font-size:.86rem } }
+    </style>""",
+            1,
+        )
     links = {
         "SE311 Requirements Analysis": "/work/projects/#project-se311",
         "Sillah Health System": "/work/projects/#project-se201",

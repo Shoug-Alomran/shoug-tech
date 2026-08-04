@@ -106,7 +106,7 @@ for fn in ["Cheat-Sheet.html", "Cheat-Sheet.ar.html"]:
 print("\n-- cs330 internal renames --")
 cs330 = os.path.join(cs, "cs330")
 q_old = os.path.join(cs330, "Quizez")
-q_new = os.path.join(cs330, "quizzes")
+q_new = os.path.join(cs330, "exams")
 if os.path.exists(q_old):
     rename_case(q_old, "quizzes_tmp")
     os.rename(os.path.join(cs330, "quizzes_tmp"), q_new)
@@ -154,7 +154,7 @@ if os.path.exists(er_mis):
     shutil.rmtree(er_mis)
 
 qz_old = os.path.join(cs340, "quizez")
-qz_new = os.path.join(cs340, "quizzes")
+qz_new = os.path.join(cs340, "exams")
 if os.path.exists(qz_old):
     os.rename(qz_old, os.path.join(cs340, "__qztmp__"))
     os.rename(os.path.join(cs340, "__qztmp__"), qz_new)
@@ -187,7 +187,7 @@ copy_contents(f"{courses}/cs285/study-material", f"{cs}/cs285/extra-resources")
 copy_file(f"{courses}/cs330/index.html", f"{cs}/cs330/index.html")
 copy_contents(f"{courses}/cs330/slide-breakdowns", f"{cs}/cs330/slide-breakdowns")
 copy_contents(f"{courses}/cs330/study-material", f"{cs}/cs330/extra-resources")
-copy_contents(f"{courses}/cs330/quizzes", f"{cs}/cs330/quizzes")
+copy_contents(f"{courses}/cs330/exams", f"{cs}/cs330/exams")
 
 # cs331
 copy_file(f"{courses}/cs331/index.html", f"{cs}/cs331/index.html")
@@ -200,7 +200,7 @@ copy_file(f"{courses}/cs340/index.html", f"{cs}/cs340/index.html")
 copy_contents(f"{courses}/cs340/slide-breakdowns", f"{cs}/cs340/slide-breakdowns")
 copy_contents(f"{courses}/cs340/study-material", f"{cs}/cs340/extra-resources")
 copy_contents(f"{courses}/cs340/mindmap", f"{cs}/cs340/extra-resources/mindmap")
-copy_contents(f"{courses}/cs340/quizzes", f"{cs}/cs340/quizzes")
+copy_contents(f"{courses}/cs340/exams", f"{cs}/cs340/exams")
 
 # ============================================================
 # STEP 3: SOFTWARE ENGINEERING - rename uppercase to lowercase
@@ -228,7 +228,7 @@ if os.path.exists(img_p):
 
 qz_p = os.path.join(se201, "Quizez")
 if os.path.exists(qz_p):
-    dst = os.path.join(se201, "quizzes")
+    dst = os.path.join(se201, "exams")
     ensure_dir(dst)
     copy_contents(qz_p, dst)
     shutil.rmtree(qz_p)
@@ -238,7 +238,7 @@ print("\n-- se311 internal renames --")
 se311 = os.path.join(se, "se311")
 qz_p = os.path.join(se311, "quizez")
 if os.path.exists(qz_p):
-    dst = os.path.join(se311, "quizzes")
+    dst = os.path.join(se311, "exams")
     os.rename(qz_p, os.path.join(se311, "__qztmp__"))
     os.rename(os.path.join(se311, "__qztmp__"), dst)
     print("  [RENAMED] quizez -> quizzes")
@@ -260,13 +260,13 @@ print("\n=== Merging courses/ into SE ===")
 copy_file(f"{courses}/se201/index.html", f"{se}/se201/index.html")
 copy_contents(f"{courses}/se201/slide-breakdowns", f"{se}/se201/slide-breakdowns")
 copy_contents(f"{courses}/se201/study-material", f"{se}/se201/extra-resources")
-copy_contents(f"{courses}/se201/quizzes", f"{se}/se201/quizzes")
+copy_contents(f"{courses}/se201/exams", f"{se}/se201/exams")
 
 # se311
 copy_file(f"{courses}/se311/index.html", f"{se}/se311/index.html")
 copy_contents(f"{courses}/se311/slide-breakdowns", f"{se}/se311/slide-breakdowns")
 copy_contents(f"{courses}/se311/study-material", f"{se}/se311/extra-resources")
-copy_contents(f"{courses}/se311/quizzes", f"{se}/se311/quizzes")
+copy_contents(f"{courses}/se311/exams", f"{se}/se311/exams")
 
 # se322 (no course page likely)
 copy_file(f"{courses}/se322/index.html", f"{se}/se322/index.html")
@@ -302,7 +302,7 @@ for upper, lower in [("CYS401", "cys401"), ("CYS402", "cys402")]:
 cys401 = os.path.join(cyber_new, "cys401")
 qz_p = os.path.join(cys401, "Quizez")
 if os.path.exists(qz_p):
-    dst = os.path.join(cys401, "quizzes")
+    dst = os.path.join(cys401, "exams")
     ensure_dir(dst)
     copy_contents(qz_p, dst)
     shutil.rmtree(qz_p)
@@ -311,7 +311,7 @@ if os.path.exists(qz_p):
 # Merge courses/cys401
 copy_file(f"{courses}/cys401/index.html", f"{cyber_new}/cys401/index.html")
 copy_contents(f"{courses}/cys401/slide-breakdowns", f"{cyber_new}/cys401/slide-breakdowns")
-copy_contents(f"{courses}/cys401/quizzes", f"{cyber_new}/cys401/quizzes")
+copy_contents(f"{courses}/cys401/exams", f"{cyber_new}/cys401/exams")
 
 # ============================================================
 # STEP 6: OTHER COURSES
@@ -329,12 +329,12 @@ copy_contents(f"{src_base}/slides", f"{dst_base}/slides")
 copy_contents(f"{src_base}/slide-breakdowns", f"{dst_base}/slide-breakdowns")
 copy_contents(f"{src_base}/extra-resources", f"{dst_base}/extra-resources")
 copy_contents(f"{src_base}/mindmap", f"{dst_base}/extra-resources/mindmap")
-copy_contents(f"{src_base}/quizez", f"{dst_base}/quizzes")
+copy_contents(f"{src_base}/quizez", f"{dst_base}/exams")
 copy_file(f"{courses}/ethcs303/index.html", f"{dst_base}/index.html")
 copy_contents(f"{courses}/ethcs303/slide-breakdowns", f"{dst_base}/slide-breakdowns")
 copy_contents(f"{courses}/ethcs303/extra-resources", f"{dst_base}/extra-resources")
 copy_contents(f"{courses}/ethcs303/mindmaps", f"{dst_base}/extra-resources/mindmap")
-copy_contents(f"{courses}/ethcs303/quizzes", f"{dst_base}/quizzes")
+copy_contents(f"{courses}/ethcs303/exams", f"{dst_base}/exams")
 
 # phy205
 print("\n-- phy205 --")
@@ -466,8 +466,8 @@ all_replacements = [
     # E. study-material -> extra-resources
     ("/study-material/", "/extra-resources/"),
     # F. quizez -> quizzes
-    ("/quizez/",  "/quizzes/"),
-    ("/Quizez/",  "/quizzes/"),
+    ("/quizez/",  "/exams/"),
+    ("/Quizez/",  "/exams/"),
     # Also fix extra-resorces typo in links
     ("/extra-resorces/", "/extra-resources/"),
 ]

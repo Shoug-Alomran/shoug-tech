@@ -14,7 +14,7 @@
       base + 'slide-breakdowns/',
       base + 'slides/',
       base + 'extra-resources/',
-      base + 'quizzes/',
+      base + 'exams/',
       base + 'exams/'
     ];
 

@@ -1,0 +1,1435 @@
+<!DOCTYPE html>
+<html lang="en">
+<script>!function(){var t=localStorage.getItem("shoug-theme");if(t)document.documentElement.setAttribute("data-theme",t);}();</script>
+
+<head>
+    <link rel="icon" type="image/png" href="/assets/shoug-favicon-v3.png">
+    <link rel="shortcut icon" href="/assets/shoug-favicon-v3.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/shoug-apple-touch-icon-v3.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elliptic Curves — Big Security, Tiny Keys — CYS406 Mindmap</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0d1117;
+            --surface: #161b22;
+            --surface2: #1f2937;
+            --border: #30363d;
+            --text: #e6edf3;
+            --text-muted: #8b949e;
+            --accent: #58a6ff;
+            --accent2: #3fb950;
+            --accent3: #d2a8ff;
+            --accent4: #ffa657;
+            --accent5: #ff7b72;
+            --accent6: #79c0ff;
+            --node-root: #1a2744;
+            --node-root-border: #58a6ff;
+            --node-l1: #1a2a1e;
+            --node-l1-border: #3fb950;
+            --node-l2: #2a1f3d;
+            --node-l2-border: #d2a8ff;
+            --node-l3: #2a1f18;
+            --node-l3-border: #ffa657;
+            --node-selected: #0d2442;
+            --node-selected-border: #58a6ff;
+            --shadow: rgba(0, 0, 0, 0.5);
+            --connector: #30363d;
+            --panel-bg: #161b22;
+            --panel-border: #30363d;
+            --toolbar-bg: rgba(13, 17, 23, 0.92);
+            --search-bg: #21262d;
+            --search-border: #30363d;
+            --transition: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        [data-theme="light"] {
+            --bg: #f6f8fa;
+            --surface: #ffffff;
+            --surface2: #f0f2f5;
+            --border: #d0d7de;
+            --text: #1f2328;
+            --text-muted: #656d76;
+            --accent: #0969da;
+            --accent2: #1a7f37;
+            --accent3: #8250df;
+            --accent4: #bc4c00;
+            --accent5: #cf222e;
+            --accent6: #0550ae;
+            --node-root: #dbeafe;
+            --node-root-border: #0969da;
+            --node-l1: #dcfce7;
+            --node-l1-border: #1a7f37;
+            --node-l2: #ede9fe;
+            --node-l2-border: #8250df;
+            --node-l3: #fff7ed;
+            --node-l3-border: #bc4c00;
+            --node-selected: #bfdbfe;
+            --node-selected-border: #0969da;
+            --shadow: rgba(0, 0, 0, 0.12);
+            --connector: #c8d1da;
+            --panel-bg: #ffffff;
+            --panel-border: #d0d7de;
+            --toolbar-bg: rgba(246, 248, 250, 0.92);
+            --search-bg: #f6f8fa;
+            --search-border: #d0d7de;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            height: 100vh;
+            overflow: hidden;
+            transition: background var(--transition), color var(--transition);
+            user-select: none;
+        }
+
+        /* TOOLBAR */
+        #toolbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            background: var(--toolbar-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            height: 56px;
+            transition: background var(--transition), border-color var(--transition);
+        }
+
+        .toolbar-brand {
+            font-family: 'DM Serif Display', serif;
+            font-size: 16px;
+            color: var(--text);
+            white-space: nowrap;
+            margin-right: 8px;
+            letter-spacing: -0.3px;
+        }
+
+        .toolbar-brand span {
+            color: var(--accent);
+        }
+
+        .toolbar-sep {
+            width: 1px;
+            height: 24px;
+            background: var(--border);
+            margin: 0 4px;
+        }
+
+        #search-wrap {
+            position: relative;
+            flex: 1;
+            max-width: 280px;
+        }
+
+        #search-wrap svg {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        #search {
+            width: 100%;
+            background: var(--search-bg);
+            border: 1px solid var(--search-border);
+            border-radius: 8px;
+            padding: 6px 12px 6px 34px;
+            color: var(--text);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 13px;
+            outline: none;
+            transition: border-color 0.2s, background var(--transition);
+        }
+
+        #search:focus {
+            border-color: var(--accent);
+        }
+
+        #search::placeholder {
+            color: var(--text-muted);
+        }
+
+        .tb-btn {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 6px 11px;
+            color: var(--text);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s, border-color 0.2s, transform 0.1s;
+            white-space: nowrap;
+        }
+
+        .tb-btn:hover {
+            background: var(--border);
+            transform: translateY(-1px);
+        }
+
+        .tb-btn:active {
+            transform: translateY(0);
+        }
+
+        .tb-btn svg {
+            flex-shrink: 0;
+        }
+
+        #theme-toggle {
+            font-size: 16px;
+            padding: 6px 10px;
+        }
+
+        #search-results {
+            position: absolute;
+            top: calc(100% + 6px);
+            left: 0;
+            right: 0;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            box-shadow: 0 8px 32px var(--shadow);
+            z-index: 200;
+            max-height: 260px;
+            overflow-y: auto;
+            display: none;
+        }
+
+        .sr-item {
+            padding: 9px 14px;
+            font-size: 13px;
+            cursor: pointer;
+            border-bottom: 1px solid var(--border);
+            transition: background 0.15s;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .sr-item:last-child {
+            border-bottom: none;
+        }
+
+        .sr-item:hover {
+            background: var(--surface2);
+        }
+
+        .sr-item .sr-path {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .sr-item mark {
+            background: transparent;
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        /* CANVAS */
+        #canvas-wrap {
+            position: fixed;
+            top: 56px;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            overflow: hidden;
+            cursor: grab;
+        }
+
+        #canvas-wrap.grabbing {
+            cursor: grabbing;
+        }
+
+        #canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4000px;
+            height: 4000px;
+            transform-origin: 0 0;
+        }
+
+        #svg-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        /* NODES */
+        .node {
+            position: absolute;
+            border-radius: 14px;
+            border: 2px solid;
+            cursor: pointer;
+            transition:
+                box-shadow 0.25s,
+                transform 0.25s,
+                background 0.25s,
+                border-color 0.25s,
+                opacity 0.25s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            max-width: 220px;
+            min-width: 120px;
+        }
+
+        .node:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 8px 24px var(--shadow);
+            z-index: 10;
+        }
+
+        .node.root {
+            background: var(--node-root);
+            border-color: var(--node-root-border);
+            font-family: 'DM Serif Display', serif;
+            font-size: 15px;
+            min-width: 160px;
+            max-width: 240px;
+            box-shadow: 0 0 0 4px rgba(88, 166, 255, 0.15), 0 4px 20px var(--shadow);
+        }
+
+        .node.level-1 {
+            background: var(--node-l1);
+            border-color: var(--node-l1-border);
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .node.level-2 {
+            background: var(--node-l2);
+            border-color: var(--node-l2-border);
+            font-size: 12.5px;
+        }
+
+        .node.level-3 {
+            background: var(--node-l3);
+            border-color: var(--node-l3-border);
+            font-size: 12px;
+        }
+
+        .node.selected {
+            background: var(--node-selected) !important;
+            border-color: var(--node-selected-border) !important;
+            box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.3), 0 6px 24px var(--shadow) !important;
+            z-index: 20;
+        }
+
+        .node.highlighted {
+            box-shadow: 0 0 0 3px var(--accent4), 0 4px 16px var(--shadow) !important;
+        }
+
+        .node-text {
+            flex: 1;
+            line-height: 1.35;
+            word-break: break-word;
+        }
+
+        .chevron {
+            flex-shrink: 0;
+            width: 16px;
+            height: 16px;
+            opacity: 0.6;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s;
+        }
+
+        .node.expanded .chevron {
+            transform: rotate(90deg);
+            opacity: 1;
+        }
+
+        .leaf-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--text-muted);
+            flex-shrink: 0;
+            transition: background 0.2s;
+        }
+
+        .node.selected .leaf-dot,
+        .node:hover .leaf-dot {
+            background: var(--accent);
+        }
+
+        /* CONNECTOR LINES */
+        .connector {
+            fill: none;
+            stroke: var(--connector);
+            stroke-width: 1.5;
+            transition: stroke var(--transition);
+        }
+
+        /* PANEL */
+        #panel {
+            position: fixed;
+            top: 56px;
+            right: -440px;
+            width: 420px;
+            bottom: 0;
+            background: var(--panel-bg);
+            border-left: 1px solid var(--panel-border);
+            z-index: 90;
+            display: flex;
+            flex-direction: column;
+            transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1), background var(--transition), border-color var(--transition);
+            box-shadow: -8px 0 40px var(--shadow);
+        }
+
+        #panel.open {
+            right: 0;
+        }
+
+        #panel-header {
+            padding: 20px 20px 16px;
+            border-bottom: 1px solid var(--panel-border);
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        #panel-title {
+            font-family: 'DM Serif Display', serif;
+            font-size: 20px;
+            line-height: 1.3;
+            flex: 1;
+            color: var(--text);
+        }
+
+        #panel-close {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 6px;
+            transition: color 0.2s, background 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        #panel-close:hover {
+            color: var(--text);
+            background: var(--surface2);
+        }
+
+        #panel-body {
+            padding: 20px;
+            overflow-y: auto;
+            flex: 1;
+            line-height: 1.75;
+            font-size: 14px;
+            color: var(--text);
+        }
+
+        #panel-body p {
+            margin-bottom: 14px;
+        }
+
+        #panel-body strong {
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        #panel-body em {
+            color: var(--accent3);
+            font-style: italic;
+        }
+
+        .panel-tag {
+            display: inline-block;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 3px 10px;
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--text-muted);
+            margin-bottom: 14px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        /* ZOOM BADGE */
+        #zoom-badge {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 5px 14px;
+            font-size: 12px;
+            color: var(--text-muted);
+            z-index: 50;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        /* FOOTER */
+        #footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--toolbar-bg);
+            backdrop-filter: blur(12px);
+            border-top: 1px solid var(--border);
+            z-index: 100;
+            font-size: 12px;
+            color: var(--text-muted);
+            gap: 6px;
+            transition: background var(--transition), border-color var(--transition);
+        }
+
+        #footer span {
+            font-weight: 600;
+            color: var(--text);
+            font-family: 'DM Serif Display', serif;
+            letter-spacing: 0.2px;
+        }
+
+        /* SCROLLBAR */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 3px;
+        }
+
+        /* NODE ANIMATION */
+        @keyframes nodeIn {
+            from {
+                opacity: 0;
+                transform: translateX(-12px) scale(0.95);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0) scale(1);
+            }
+        }
+
+        .node {
+            animation: nodeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) both;
+        }
+    </style>
+
+    <meta name="description" content="Interactive CYS406 Chapter 5 Elliptic Curves — Big Security, Tiny Keys mindmap with expandable concepts, search, zoom, pan, details, and PNG export.">
+    <link rel="canonical" href="https://shoug-tech.com/Academics/other-courses/ethcs303/extra-resources/mindmap/01-moral-systems-ethical-concepts-and-theories/moral-systems-ethical-concepts-and-theories.html">
+    <meta property="og:title" content="Elliptic Curves — Big Security, Tiny Keys — CYS406 Mindmap">
+    <meta property="og:description" content="Interactive CYS406 Chapter 5 Elliptic Curves — Big Security, Tiny Keys mindmap with expandable concepts, search, zoom, pan, details, and PNG export.">
+    <meta property="og:url" content="https://shoug-tech.com/Academics/other-courses/ethcs303/extra-resources/mindmap/01-moral-systems-ethical-concepts-and-theories/moral-systems-ethical-concepts-and-theories.html">
+    <meta property="og:type" content="article">
+    <meta property="og:image" content="https://shoug-tech.com/assets/og-banner.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Elliptic Curves — Big Security, Tiny Keys — CYS406 Mindmap">
+    <meta name="twitter:description" content="Interactive CYS406 Chapter 5 Elliptic Curves — Big Security, Tiny Keys mindmap with expandable concepts, search, zoom, pan, details, and PNG export.">
+    <meta name="twitter:image" content="https://shoug-tech.com/assets/og-banner.png">
+    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebPage", "url": "https://shoug-tech.com/academics/cybersecurity/cys406/extra-resources/mindmaps/05-elliptic-curves-big-security-tiny-keys/elliptic-curves-big-security-tiny-keys.html", "name": "Elliptic Curves \u2014 Big Security, Tiny Keys \u2014 CYS406 Mindmap", "description": "Interactive CYS406 Chapter 5 Elliptic Curves \u2014 Big Security, Tiny Keys mindmap with expandable concepts, search, zoom, pan, details, and PNG export.", "isPartOf": {"@type": "WebSite", "name": "Shoug's Digital Garden", "url": "https://shoug-tech.com/"}}</script>
+
+      <link rel="alternate" hreflang="en" href="https://shoug-tech.com/Academics/other-courses/ethcs303/extra-resources/mindmap/01-moral-systems-ethical-concepts-and-theories/moral-systems-ethical-concepts-and-theories.html">
+      <link rel="alternate" hreflang="ar" href="https://shoug-tech.com/ar/Academics/other-courses/ethcs303/extra-resources/mindmap/01-moral-systems-ethical-concepts-and-theories/moral-systems-ethical-concepts-and-theories.html">
+      <link rel="alternate" hreflang="x-default" href="https://shoug-tech.com/Academics/other-courses/ethcs303/extra-resources/mindmap/01-moral-systems-ethical-concepts-and-theories/moral-systems-ethical-concepts-and-theories.html">
+
+    <!-- Microsoft Clarity tracking code for https://shoug-tech.com/ -->
+    <script type="text/javascript">
+        (function(c,l,a,r,i,t,y){
+            c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+            t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+            y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+        })(window, document, "clarity", "script", "xub0eqmvs9");
+    </script>
+</head>
+
+<body data-theme="dark">
+
+    <!-- TOOLBAR -->
+    <div id="toolbar">
+        <div class="toolbar-brand">Mind<span>Map</span></div>
+        <div class="toolbar-sep"></div>
+
+        <div id="search-wrap">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+            <input id="search" type="text" placeholder="Search topics…" autocomplete="off">
+            <div id="search-results"></div>
+        </div>
+
+        <div class="toolbar-sep"></div>
+
+        <button class="tb-btn" id="theme-toggle" title="Toggle theme">🌙</button>
+        <button class="tb-btn" onclick="zoom(0.15)" title="Zoom in">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                <line x1="11" y1="8" x2="11" y2="14" />
+                <line x1="8" y1="11" x2="14" y2="11" />
+            </svg>
+            Zoom In
+        </button>
+        <button class="tb-btn" onclick="zoom(-0.15)" title="Zoom out">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                <line x1="8" y1="11" x2="14" y2="11" />
+            </svg>
+            Zoom Out
+        </button>
+        <button class="tb-btn" onclick="resetView()" title="Reset view">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polyline points="1 4 1 10 7 10" />
+                <path d="M3.51 15a9 9 0 1 0 .49-4.87" />
+            </svg>
+            Reset
+        </button>
+        <button class="tb-btn" onclick="expandAll()" title="Expand all">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polyline points="7 13 12 18 17 13" />
+                <polyline points="7 6 12 11 17 6" />
+            </svg>
+            Expand All
+        </button>
+        <button class="tb-btn" onclick="collapseAll()" title="Collapse all">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polyline points="7 11 12 6 17 11" />
+                <polyline points="7 18 12 13 17 18" />
+            </svg>
+            Collapse All
+        </button>
+        <button class="tb-btn" onclick="exportPNG()" title="Export PNG">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="7 10 12 15 17 10" />
+                <line x1="12" y1="15" x2="12" y2="3" />
+            </svg>
+            Export
+        </button>
+    </div>
+
+    <!-- CANVAS -->
+    <div id="canvas-wrap">
+        <div id="canvas">
+            <svg id="svg-layer"></svg>
+        </div>
+    </div>
+
+    <!-- PANEL -->
+    <div id="panel">
+        <div id="panel-header">
+            <div id="panel-title">Node Title</div>
+            <button id="panel-close" onclick="closePanel()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <line x1="18" y1="6" x2="6" y2="18" />
+                    <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+            </button>
+        </div>
+        <div id="panel-body"></div>
+    </div>
+
+    <!-- ZOOM BADGE -->
+    <div id="zoom-badge">100%</div>
+
+    <!-- FOOTER -->
+    <div id="footer">
+        Made by <span>Shoug Alomran</span> &nbsp;·&nbsp; Elliptic Curves — Big Security, Tiny Keys Mindmap
+    </div>
+
+    <script>
+        // ─────────────────────────────────────────────
+        // DATA
+        // ─────────────────────────────────────────────
+        const DATA = {
+    "id": "root",
+    "label": "Elliptic Curves — Big Security, Tiny Keys",
+    "desc": "<span class=\"panel-tag\">CYS406 · Chapter 5</span><p>A comprehensive concept map for <strong>Elliptic Curves — Big Security, Tiny Keys</strong>. Expand branches, select a node for detail, search topics, zoom, pan, or export the full map.</p>",
+    "children": [
+        {
+            "id": "branch-1",
+            "label": "What Is an Elliptic Curve?",
+            "desc": "<span class=\"panel-tag\">Core Concept</span><p>Forget &quot;ellipse&quot; — an elliptic curve has nothing to do with ellipses. It&#x27;s simply the set of points (x, y) that satisfy a specific cubic equation:</p>",
+            "children": [
+                {
+                    "id": "branch-1-detail-1",
+                    "label": "Why cryptographers like this shape: Elliptic curves…",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Why cryptographers like this shape: Elliptic curves used in crypto are actually computed over a finite field (integers mod a prime p), not over real numbers — so the &quot;smooth curve&quot; picture is really just a scatter of discrete points. The geometric picture (lines, tangents) is only a visual aid for understanding the algebraic rule.</p>"
+                },
+                {
+                    "id": "branch-1-detail-2",
+                    "label": "a, b: The two constants that shape…",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>a, b: The two constants that shape the curve. Different (a, b) pairs give visibly different curve shapes.</p>"
+                },
+                {
+                    "id": "branch-1-detail-3",
+                    "label": "Nonsingular: 4a³ + 27b² ≠ 0. Guarantees…",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Nonsingular: 4a³ + 27b² ≠ 0. Guarantees a smooth curve with a well-defined tangent everywhere.</p>"
+                },
+                {
+                    "id": "branch-1-detail-4",
+                    "label": "Point at Infinity (O): An imaginary \"extra\"…",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Point at Infinity (O): An imaginary &quot;extra&quot; point added to the curve that acts as the identity element of the group.</p>"
+                }
+            ]
+        },
+        {
+            "id": "branch-2",
+            "label": "Properties of Elliptic Curves",
+            "desc": "<span class=\"panel-tag\">Core Concept</span><p>Two structural facts about the curve make the whole cryptosystem work:</p>",
+            "children": [
+                {
+                    "id": "branch-2-detail-1",
+                    "label": "Symmetric about the x-axis: For every point…",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Symmetric about the x-axis: For every point (x, y) on the curve, the point (x, −y) is also on the curve. This symmetry is exactly what defines the &quot;inverse&quot; of a point in the group (see Section 04).</p>"
+                },
+                {
+                    "id": "branch-2-detail-2",
+                    "label": "A line meets the curve at exactly…",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>A line meets the curve at exactly 3 points: Any non-vertical straight line drawn through the curve intersects it at exactly three points (counting the point at infinity and tangency/multiplicity). This is the geometric engine behind point addition.</p>"
+                },
+                {
+                    "id": "branch-2-detail-3",
+                    "label": "Trapdoor function: Given a secret \"trapdoor\" value…",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Trapdoor function: Given a secret &quot;trapdoor&quot; value t , certain operations become easy to compute forward but practically impossible to reverse without knowing t. ECC&#x27;s trapdoor is point multiplication : computing kP (k copies of P added together) is fast, but recovering k from kP and P is (believed to be) extremely hard. This asymmetry — easy forward, hard backward — is the entire basis of public-key cryptography.</p>"
+                }
+            ]
+        },
+        {
+            "id": "branch-3",
+            "label": "Groups & Group Properties",
+            "desc": "<span class=\"panel-tag\">Core Concept</span><p>A group is a set G with a binary operation (&quot;+&quot;) that satisfies four rules. Add a fifth rule and it becomes an abelian group (commutative group).</p>",
+            "children": [
+                {
+                    "id": "branch-3-detail-1",
+                    "label": "A group is a set G with…",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>A group is a set G with a binary operation (&quot;+&quot;) that satisfies four rules. Add a fifth rule and it becomes an abelian group (commutative group).</p>"
+                }
+            ]
+        },
+        {
+            "id": "branch-4",
+            "label": "Groups Over Elliptic Curves — Point Addition",
+            "desc": "<span class=\"panel-tag\">Core Concept</span><p>We can define an abelian group directly on the points of an elliptic curve:</p>",
+            "children": [
+                {
+                    "id": "branch-4-detail-1",
+                    "label": "Elements: Every point on the curve, plus…",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Elements: Every point on the curve, plus the point at infinity O.</p>"
+                },
+                {
+                    "id": "branch-4-detail-2",
+                    "label": "Identity: The point at infinity, O. P…",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Identity: The point at infinity, O. P + O = P for any point P.</p>"
+                },
+                {
+                    "id": "branch-4-detail-3",
+                    "label": "Inverse of P: The point symmetric about…",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Inverse of P: The point symmetric about the x-axis — if P=(x,y) then −P=(x,−y).</p>"
+                },
+                {
+                    "id": "branch-4-detail-4",
+                    "label": "Addition rule: Given three aligned, non-zero points…",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Addition rule: Given three aligned, non-zero points P, Q, R on a straight line, their sum P+Q+R = O.</p>"
+                }
+            ]
+        },
+        {
+            "id": "branch-5",
+            "label": "Finite Fields (Fp)",
+            "desc": "<span class=\"panel-tag\">Core Concept</span><p>Real ECC doesn&#x27;t run on the real-number plane — it runs on a finite field : a set with a finite number of elements. The simplest example is the integers modulo a prime p, written Z/p , GF(p) , or F p .</p>",
+            "children": [
+                {
+                    "id": "branch-5-detail-1",
+                    "label": "Two operations: Fields define addition (+) and…",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Two operations: Fields define addition (+) and multiplication (·). Both are closed, associative, and commutative. Each has a unique identity element (0 for +, 1 for ·) and every element has a unique inverse.</p>"
+                },
+                {
+                    "id": "branch-5-detail-2",
+                    "label": "Distributive law: Multiplication distributes over addition: x·(y+z)…",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Distributive law: Multiplication distributes over addition: x·(y+z) = x·y + x·z — exactly like ordinary arithmetic, just &quot;wrapped around&quot; modulo p.</p>"
+                }
+            ]
+        },
+        {
+            "id": "branch-6",
+            "label": "Point Multiplication, Order & Base Points",
+            "desc": "<span class=\"panel-tag\">Core Concept</span><p>Core concepts, distinctions, and defensive implications of Point Multiplication, Order &amp; Base Points.</p>",
+            "children": [
+                {
+                    "id": "branch-6-detail-1",
+                    "label": "Lagrange-style rule: The order of any subgroup…",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Lagrange-style rule: The order of any subgroup always divides the order of the parent group. If the whole elliptic curve has N points and a subgroup has n points, then n | N (n is a divisor of N).</p>"
+                },
+                {
+                    "id": "branch-6-detail-2",
+                    "label": "Algorithm — Finding a Base Point",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Algorithm — Finding a Base Point</p>"
+                },
+                {
+                    "id": "branch-6-detail-3",
+                    "label": "Calculate N: Find the order N of…",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Calculate N: Find the order N of the whole elliptic curve (total number of points on it, including O).</p>"
+                },
+                {
+                    "id": "branch-6-detail-4",
+                    "label": "Choose subgroup order n: Pick n such…",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Choose subgroup order n: Pick n such that it is prime and divides N. (The algorithm only works correctly if n is prime.)</p>"
+                },
+                {
+                    "id": "branch-6-detail-5",
+                    "label": "Compute the cofactor: h = N /…",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Compute the cofactor: h = N / n.</p>"
+                },
+                {
+                    "id": "branch-6-detail-6",
+                    "label": "Pick a random point P: Any point…",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Pick a random point P: Any point on the curve.</p>"
+                },
+                {
+                    "id": "branch-6-detail-7",
+                    "label": "Compute G = hP: If G =…",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Compute G = hP: If G = O, go back to step 4 and try a different P.</p>"
+                },
+                {
+                    "id": "branch-6-detail-8",
+                    "label": "Done: Otherwise G is a generator of…",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Done: Otherwise G is a generator of a subgroup of order n with cofactor h. G is your base point.</p>"
+                }
+            ]
+        },
+        {
+            "id": "branch-7",
+            "label": "ECC as a Cryptosystem — The Discrete Log Problem",
+            "desc": "<span class=\"panel-tag\">Core Concept</span><p>ECC systems were first proposed independently in 1985 by Neal Koblitz and Victor Miller . Both built on the same intuition as classic Diffie-Hellman, but swapped &quot;exponentiation mod p&quot; for &quot;point multiplication on a curve.&quot;</p>",
+            "children": [
+                {
+                    "id": "branch-7-detail-1",
+                    "label": "Elliptic Curve over K: A nonsingular cubic…",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Elliptic Curve over K: A nonsingular cubic curve f(x,y)=0 with a rational point (possibly the point at infinity). K is usually reals, rationals, or a finite field.</p>"
+                },
+                {
+                    "id": "branch-7-detail-2",
+                    "label": "ECC: A public-key cryptosystem — just like…",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>ECC: A public-key cryptosystem — just like RSA, Rabin, or ElGamal — where every user has a public key (encryption/verify) and a private key (decrypt/sign), but built on elliptic curve math.</p>"
+                }
+            ]
+        },
+        {
+            "id": "branch-8",
+            "label": "The Generic ECC Procedure",
+            "desc": "<span class=\"panel-tag\">Core Concept</span><p>Every public-key cryptosystem has one underlying &quot;hard to reverse&quot; math operation: RSA uses exponentiation ; ECC uses point multiplication (repeated point addition).</p>",
+            "children": [
+                {
+                    "id": "branch-8-detail-1",
+                    "label": "Step 1 — Public parameters (agreed by…",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Step 1 — Public parameters (agreed by everyone)</p>"
+                },
+                {
+                    "id": "branch-8-detail-2",
+                    "label": "Step 2 — Each user's key pair:…",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Step 2 — Each user&#x27;s key pair: Notice the shape: private key is a plain number, public key is that number multiplied into the base point. Recovering x from Q and B means solving the ECDLP.</p>"
+                },
+                {
+                    "id": "branch-8-detail-3",
+                    "label": "The elliptic curve equation (values of a…",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>The elliptic curve equation (values of a and b)</p>"
+                },
+                {
+                    "id": "branch-8-detail-4",
+                    "label": "A prime, p, defining the field F…",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>A prime, p, defining the field F p</p>"
+                },
+                {
+                    "id": "branch-8-detail-5",
+                    "label": "The elliptic group computed from the curve…",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>The elliptic group computed from the curve equation</p>"
+                },
+                {
+                    "id": "branch-8-detail-6",
+                    "label": "A base point B, taken from the…",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>A base point B, taken from the elliptic group (analogous to the generator g in classic Diffie-Hellman)</p>"
+                }
+            ]
+        },
+        {
+            "id": "branch-9",
+            "label": "ECC Encryption — the ElGamal Analog",
+            "desc": "<span class=\"panel-tag\">Core Concept</span><p>Suppose Alice wants to send Bob an encrypted message M.</p>",
+            "children": [
+                {
+                    "id": "branch-9-detail-1",
+                    "label": "Agree on base point B: Both Alice…",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Agree on base point B: Both Alice and Bob already know the shared curve, field, and base point B.</p>"
+                },
+                {
+                    "id": "branch-9-detail-2",
+                    "label": "Generate key pairs: Alice: private a, public…",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Generate key pairs: Alice: private a, public P A = a·B. Bob: private b, public P B = b·B.</p>"
+                },
+                {
+                    "id": "branch-9-detail-3",
+                    "label": "Encode the message: Alice encodes plaintext M…",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Encode the message: Alice encodes plaintext M onto a point P M in the elliptic group.</p>"
+                },
+                {
+                    "id": "branch-9-detail-4",
+                    "label": "Pick random k: Alice chooses a random…",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Pick random k: Alice chooses a random integer k from [1, p−1] — a fresh &quot;session&quot; value, used once.</p>"
+                },
+                {
+                    "id": "branch-9-detail-5",
+                    "label": "Build the ciphertext pair: P C =…",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Build the ciphertext pair: P C = [ (kB), (P M + kP B ) ] — two points sent to Bob.</p>"
+                },
+                {
+                    "id": "branch-9-detail-6",
+                    "label": "Bob decrypts: Bob computes b·(kB), then subtracts…",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Bob decrypts: Bob computes b·(kB), then subtracts it from the second point: (P M + kP B ) − b(kB) = P M + k(bB) − b(kB) = P M .</p>"
+                },
+                {
+                    "id": "branch-9-detail-7",
+                    "label": "Decode: Bob decodes P M back into…",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Decode: Bob decodes P M back into the original message M.</p>"
+                },
+                {
+                    "id": "branch-9-detail-8",
+                    "label": "Comparison to classic ElGamal: Ciphertext = […",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Comparison to classic ElGamal: Ciphertext = [ (kB), (P M + kP B ) ] — a pair of curve points.</p>"
+                }
+            ]
+        },
+        {
+            "id": "branch-10",
+            "label": "ECC Diffie-Hellman Key Exchange",
+            "desc": "<span class=\"panel-tag\">Core Concept</span><p>Public: the elliptic curve and a point B=(x,y) on it. Secret: Alice&#x27;s number a and Bob&#x27;s number b.</p>",
+            "children": [
+                {
+                    "id": "branch-10-detail-1",
+                    "label": "Both generate key pairs: Alice: private a,…",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Both generate key pairs: Alice: private a, public P A = a·B. Bob: private b, public P B = b·B.</p>"
+                },
+                {
+                    "id": "branch-10-detail-2",
+                    "label": "Exchange public keys: Alice and Bob send…",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Exchange public keys: Alice and Bob send each other P A and P B over the open channel.</p>"
+                },
+                {
+                    "id": "branch-10-detail-3",
+                    "label": "Combine with own private key: Alice computes…",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Combine with own private key: Alice computes K AB = a(bB) = a·P B . Bob computes K AB = b(aB) = b·P A .</p>"
+                },
+                {
+                    "id": "branch-10-detail-4",
+                    "label": "Same shared secret: Both land on K…",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Same shared secret: Both land on K AB = abB, since scalar multiplication is commutative (ab = ba).</p>"
+                }
+            ]
+        },
+        {
+            "id": "branch-11",
+            "label": "Why Use ECC? Security & Key Size",
+            "desc": "<span class=\"panel-tag\">Core Concept</span><p>To analyze any cryptosystem, ask: how hard is the underlying math problem?</p>",
+            "children": [
+                {
+                    "id": "branch-11-detail-1",
+                    "label": "Key size to protect a 128-bit AES…",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Key size to protect a 128-bit AES key</p>"
+                },
+                {
+                    "id": "branch-11-detail-2",
+                    "label": "\"Just increase RSA's key length\" — impractical:…",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>&quot;Just increase RSA&#x27;s key length&quot; — impractical: Because factoring difficulty grows sub-exponentially with key size, RSA needs huge keys to keep up. ECC&#x27;s harder underlying problem means small keys already give strong security — a real advantage on constrained hardware.</p>"
+                }
+            ]
+        },
+        {
+            "id": "branch-12",
+            "label": "Applications & Benefits of ECC",
+            "desc": "<span class=\"panel-tag\">Core Concept</span><p>Core concepts, distinctions, and defensive implications of Applications &amp; Benefits of ECC.</p>",
+            "children": [
+                {
+                    "id": "branch-12-detail-1",
+                    "label": "Where ECC shines",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Where ECC shines</p>"
+                },
+                {
+                    "id": "branch-12-detail-2",
+                    "label": "Benefits over classic cryptosystems: Q = kP,…",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Benefits over classic cryptosystems: Q = kP, where Q and P belong to a prime curve. Given k and P, computing Q is easy (just repeated point addition). Given Q and P, finding k is hard — the elliptic curve logarithm problem — provided k is large enough. ECC&#x27;s security rests entirely on this asymmetry, and because it needs much smaller keys than factoring-based systems for the same security level, it offers a real computational edge.</p>"
+                },
+                {
+                    "id": "branch-12-detail-3",
+                    "label": "Wireless communication devices",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Wireless communication devices</p>"
+                },
+                {
+                    "id": "branch-12-detail-4",
+                    "label": "Web servers handling many concurrent encryption sessions",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Web servers handling many concurrent encryption sessions</p>"
+                },
+                {
+                    "id": "branch-12-detail-5",
+                    "label": "Any application needing strong security without the…",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Any application needing strong security without the power/storage/compute budget for RSA-sized keys</p>"
+                },
+                {
+                    "id": "branch-12-detail-6",
+                    "label": "Same guarantees: confidentiality, integrity, authentication, non-repudiation",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Same guarantees: confidentiality, integrity, authentication, non-repudiation</p>"
+                },
+                {
+                    "id": "branch-12-detail-7",
+                    "label": "Much shorter key lengths for equivalent security",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Much shorter key lengths for equivalent security</p>"
+                },
+                {
+                    "id": "branch-12-detail-8",
+                    "label": "Faster encryption, decryption, and signature verification",
+                    "desc": "<span class=\"panel-tag\">Key Detail</span><p>Faster encryption, decryption, and signature verification</p>"
+                }
+            ]
+        }
+    ]
+};
+
+        // ─────────────────────────────────────────────
+        // STATE
+        // ─────────────────────────────────────────────
+        const state = {
+            expanded: new Set(['root']),
+            selected: null,
+            panX: 0,
+            panY: 0,
+            scale: 1,
+            dragging: false,
+            dragStartX: 0,
+            dragStartY: 0,
+            dragStartPanX: 0,
+            dragStartPanY: 0
+        };
+
+        const NODE_W = 200;
+        const NODE_H = 44;
+        const H_GAP = 80;
+        const V_GAP = 28;
+
+        function estimateNodeHeight(node) {
+            const text = String(node.label || "");
+            const charsPerLine = node._level === 0 ? 22 : 18;
+            const lines = Math.max(1, Math.ceil(text.length / charsPerLine));
+            return Math.max(NODE_H, 24 + lines * 22);
+        }
+
+        // ─────────────────────────────────────────────
+        // LAYOUT ENGINE
+        // ─────────────────────────────────────────────
+        function shiftSubtree(node, deltaY) {
+            node._y += deltaY;
+            if (node.children && state.expanded.has(node.id)) {
+                node.children.forEach(child => shiftSubtree(child, deltaY));
+            }
+        }
+
+        function computeLayout(node, level = 0, x = 100, y = 0) {
+            node._level = level;
+            node._x = x;
+            node._y = y;
+            node._w = NODE_W;
+            node._h = estimateNodeHeight(node);
+
+            if (!node.children || !state.expanded.has(node.id)) {
+                node._subtreeH = node._h;
+                return node._subtreeH;
+            }
+
+            const childX = x + NODE_W + H_GAP;
+            let totalH = 0;
+            node.children.forEach(child => {
+                totalH += computeLayout(child, level + 1, childX, 0);
+                totalH += V_GAP;
+            });
+            totalH -= V_GAP;
+
+            let cy = y + (node._h / 2) - (totalH / 2);
+            node.children.forEach(child => {
+                const nextY = cy + (child._subtreeH / 2) - (child._h / 2);
+                shiftSubtree(child, nextY - child._y);
+                cy += child._subtreeH + V_GAP;
+            });
+
+            node._subtreeH = Math.max(node._h, totalH);
+            return node._subtreeH;
+        }
+
+        // ─────────────────────────────────────────────
+        // RENDER
+        // ─────────────────────────────────────────────
+        const canvas = document.getElementById('canvas');
+        const svgLayer = document.getElementById('svg-layer');
+        let nodeEls = {};
+
+        function render() {
+            computeLayout(DATA, 0, 100, 2000);
+            renderNodes(DATA);
+            renderConnectors(DATA);
+        }
+
+        function renderNodes(node) {
+            let el = nodeEls[node.id];
+            if (!el) {
+                el = document.createElement('div');
+                el.className = 'node';
+                el.dataset.id = node.id;
+                el.innerHTML = buildNodeHTML(node);
+                el.addEventListener('click', () => onNodeClick(node));
+                canvas.appendChild(el);
+                nodeEls[node.id] = el;
+            }
+
+            const levelClass = node._level === 0 ? 'root' : `level-${Math.min(node._level, 3)}`;
+            el.className = `node ${levelClass}${state.selected === node.id ? ' selected' : ''}${state.expanded.has(node.id) ? ' expanded' : ''}`;
+            el.style.left = node._x + 'px';
+            el.style.top = node._y + 'px';
+            el.style.width = node._w + 'px';
+            el.style.minHeight = node._h + 'px';
+            el.style.display = 'flex';
+
+            if (node.children && state.expanded.has(node.id)) {
+                node.children.forEach(renderNodes);
+            }
+
+            // Remove orphaned children
+            if (!node.children || !state.expanded.has(node.id)) {
+                collapseChildren(node);
+            }
+        }
+
+        function buildNodeHTML(node) {
+            const isParent = node.children && node.children.length > 0;
+            const icon = isParent
+                ? `<svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>`
+                : `<div class="leaf-dot"></div>`;
+            return `<div class="node-text">${node.label}</div>${icon}`;
+        }
+
+        function collapseChildren(node) {
+            if (!node.children) return;
+            node.children.forEach(child => {
+                if (nodeEls[child.id]) {
+                    nodeEls[child.id].style.display = 'none';
+                }
+                collapseChildren(child);
+            });
+        }
+
+        function renderConnectors(node) {
+            svgLayer.innerHTML = '';
+            drawConnectors(node);
+        }
+
+        function drawConnectors(node) {
+            if (!node.children || !state.expanded.has(node.id)) return;
+            node.children.forEach(child => {
+                const x1 = node._x + node._w;
+                const y1 = node._y + node._h / 2;
+                const x2 = child._x;
+                const y2 = child._y + child._h / 2;
+                const cx1 = x1 + (x2 - x1) * 0.55;
+                const cx2 = x2 - (x2 - x1) * 0.55;
+                const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                path.setAttribute('class', 'connector');
+                path.setAttribute('d', `M${x1},${y1} C${cx1},${y1} ${cx2},${y2} ${x2},${y2}`);
+                svgLayer.appendChild(path);
+                drawConnectors(child);
+            });
+        }
+
+        // ─────────────────────────────────────────────
+        // INTERACTION
+        // ─────────────────────────────────────────────
+        function onNodeClick(node) {
+            if (node.children && node.children.length > 0) {
+                if (state.expanded.has(node.id)) {
+                    state.expanded.delete(node.id);
+                } else {
+                    state.expanded.add(node.id);
+                }
+                state.selected = node.id;
+                render();
+            } else {
+                state.selected = node.id;
+                render();
+                openPanel(node);
+            }
+        }
+
+        function openPanel(node) {
+            document.getElementById('panel-title').textContent = node.label;
+            document.getElementById('panel-body').innerHTML = node.desc || `<p>No description available.</p>`;
+            document.getElementById('panel').classList.add('open');
+        }
+
+        function closePanel() {
+            document.getElementById('panel').classList.remove('open');
+            state.selected = null;
+            render();
+        }
+
+        // ─────────────────────────────────────────────
+        // PAN & ZOOM
+        // ─────────────────────────────────────────────
+        const wrap = document.getElementById('canvas-wrap');
+
+        function applyTransform() {
+            canvas.style.transform = `translate(${state.panX}px, ${state.panY}px) scale(${state.scale})`;
+            document.getElementById('zoom-badge').textContent = Math.round(state.scale * 100) + '%';
+        }
+
+        wrap.addEventListener('mousedown', e => {
+            if (e.target.closest('.node')) return;
+            state.dragging = true;
+            state.dragStartX = e.clientX;
+            state.dragStartY = e.clientY;
+            state.dragStartPanX = state.panX;
+            state.dragStartPanY = state.panY;
+            wrap.classList.add('grabbing');
+        });
+
+        window.addEventListener('mousemove', e => {
+            if (!state.dragging) return;
+            state.panX = state.dragStartPanX + (e.clientX - state.dragStartX);
+            state.panY = state.dragStartPanY + (e.clientY - state.dragStartY);
+            applyTransform();
+        });
+
+        window.addEventListener('mouseup', () => {
+            state.dragging = false;
+            wrap.classList.remove('grabbing');
+        });
+
+        wrap.addEventListener('wheel', e => {
+            e.preventDefault();
+            const delta = e.deltaY < 0 ? 0.1 : -0.1;
+            state.scale = Math.max(0.2, Math.min(2.5, state.scale + delta));
+            applyTransform();
+        }, { passive: false });
+
+        function zoom(delta) {
+            state.scale = Math.max(0.2, Math.min(2.5, state.scale + delta));
+            applyTransform();
+        }
+
+        function resetView() {
+            state.panX = 0;
+            state.panY = 0;
+            state.scale = 1;
+            applyTransform();
+        }
+
+        // ─────────────────────────────────────────────
+        // EXPAND / COLLAPSE ALL
+        // ─────────────────────────────────────────────
+        function collectIds(node, ids = []) {
+            ids.push(node.id);
+            if (node.children) node.children.forEach(c => collectIds(c, ids));
+            return ids;
+        }
+
+        function expandAll() {
+            collectIds(DATA).forEach(id => state.expanded.add(id));
+            render();
+        }
+
+        function collapseAll() {
+            state.expanded.clear();
+            state.expanded.add('root');
+            render();
+        }
+
+        // ─────────────────────────────────────────────
+        // SEARCH
+        // ─────────────────────────────────────────────
+        const searchInput = document.getElementById('search');
+        const searchResults = document.getElementById('search-results');
+
+        function flatNodes(node, path = [], results = []) {
+            results.push({ node, path: [...path, node.label] });
+            if (node.children) node.children.forEach(c => flatNodes(c, [...path, node.label], results));
+            return results;
+        }
+
+        const allNodes = flatNodes(DATA);
+
+        searchInput.addEventListener('input', () => {
+            const q = searchInput.value.trim().toLowerCase();
+            // Clear highlights
+            Object.values(nodeEls).forEach(el => el.classList.remove('highlighted'));
+
+            if (!q) {
+                searchResults.style.display = 'none';
+                return;
+            }
+
+            const matches = allNodes.filter(({ node }) => node.label.toLowerCase().includes(q));
+            if (matches.length === 0) {
+                searchResults.innerHTML = '<div class="sr-item" style="cursor:default;color:var(--text-muted)">No results found</div>';
+                searchResults.style.display = 'block';
+                return;
+            }
+
+            searchResults.innerHTML = matches.slice(0, 10).map(({ node, path }) => {
+                const hl = node.label.replace(new RegExp(`(${q})`, 'gi'), '<mark>$1</mark>');
+                const trail = path.slice(0, -1).join(' › ');
+                return `<div class="sr-item" data-id="${node.id}"><div>${hl}</div>${trail ? `<div class="sr-path">${trail}</div>` : ''}</div>`;
+            }).join('');
+
+            searchResults.querySelectorAll('.sr-item[data-id]').forEach(el => {
+                el.addEventListener('click', () => {
+                    const id = el.dataset.id;
+                    navigateTo(id);
+                    searchResults.style.display = 'none';
+                    searchInput.value = '';
+                });
+            });
+
+            matches.forEach(({ node }) => {
+                if (nodeEls[node.id]) nodeEls[node.id].classList.add('highlighted');
+            });
+
+            searchResults.style.display = 'block';
+        });
+
+        document.addEventListener('click', e => {
+            if (!e.target.closest('#search-wrap')) searchResults.style.display = 'none';
+        });
+
+        function navigateTo(id) {
+            // Expand path to node
+            function findPath(node, targetId, path = []) {
+                if (node.id === targetId) return [...path, node.id];
+                if (node.children) {
+                    for (const c of node.children) {
+                        const r = findPath(c, targetId, [...path, node.id]);
+                        if (r) return r;
+                    }
+                }
+                return null;
+            }
+            const path = findPath(DATA, id);
+            if (path) path.forEach(pid => state.expanded.add(pid));
+            state.selected = id;
+            render();
+            // Center on node
+            setTimeout(() => {
+                function findNode(node, id) {
+                    if (node.id === id) return node;
+                    if (node.children) for (const c of node.children) { const r = findNode(c, id); if (r) return r; }
+                    return null;
+                }
+                const n = findNode(DATA, id);
+                if (n) {
+                    const vpW = wrap.clientWidth;
+                    const vpH = wrap.clientHeight;
+                    state.panX = vpW / 2 - (n._x + n._w / 2) * state.scale;
+                    state.panY = vpH / 2 - (n._y + n._h / 2) * state.scale;
+                    applyTransform();
+                }
+            }, 100);
+        }
+
+        // ─────────────────────────────────────────────
+        // THEME
+        // ─────────────────────────────────────────────
+        const themeBtn = document.getElementById('theme-toggle');
+        let isDark = true;
+
+        function applyTheme(dark) {
+            document.body.dataset.theme = dark ? 'dark' : 'light';
+            themeBtn.textContent = dark ? '🌙' : '☀️';
+            localStorage.setItem('mm-theme', dark ? 'dark' : 'light');
+            try { localStorage.setItem('shoug-theme', dark ? 'dark' : 'light'); } catch(_e) {}
+        }
+
+        themeBtn.addEventListener('click', () => {
+            isDark = !isDark;
+            applyTheme(isDark);
+        });
+
+        // Restore
+        const saved = localStorage.getItem('shoug-theme') || localStorage.getItem('mm-theme');
+        if (saved === 'light') { isDark = false; applyTheme(false); }
+
+        // ─────────────────────────────────────────────
+        // EXPORT PNG
+        // ─────────────────────────────────────────────
+        async function exportPNG() {
+            const msg = document.createElement('div');
+            msg.style.cssText = 'position:fixed;top:70px;left:50%;transform:translateX(-50%);background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 20px;font-size:13px;z-index:999;';
+            msg.textContent = 'Preparing export… (open browser print for full export)';
+            document.body.appendChild(msg);
+            setTimeout(() => msg.remove(), 3000);
+            window.print();
+        }
+
+        // ─────────────────────────────────────────────
+        // INIT
+        // ─────────────────────────────────────────────
+        function init() {
+            state.panX = 40;
+            state.panY = -1820;
+            applyTransform();
+            render();
+        }
+
+        init();
+    </script>
+
+
+    <script src="/javascripts/mindmap-controls.js"></script>
+</body>
+
+</html>

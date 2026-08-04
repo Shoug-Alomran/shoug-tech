@@ -239,7 +239,7 @@ def candidate_slide_breakdown_url(url: str) -> str | None:
         return None
 
     suffix = "/".join(parts[2:])
-    if suffix.startswith(("slides/", "study-material/", "study_material/", "quizzes/", "quizez/", "overview/")):
+    if suffix.startswith(("slides/", "study-material/", "study_material/", "exams/", "quizez/", "overview/")):
         return None
 
     inserted = f"{prefix}{parts[0]}/{parts[1]}/slide-breakdowns/{suffix}"
