@@ -47,6 +47,8 @@
       --locked-bg: #4a4a52;
       --locked-text: #fff;
       --locked-border: #2e2e33;
+
+      --critical-accent: #d9a441;
     }
 
     :root[data-theme="dark"] {
@@ -328,6 +330,7 @@
       color: var(--locked-text);
       border-inline-start-color: var(--locked-border);
       cursor: grab;
+      box-shadow: inset 0 0 0 2px var(--critical-accent);
     }
 
     .course.locked.state-completed {
@@ -833,6 +836,7 @@
 
     .swatch.locked {
       background: var(--locked-bg);
+      box-shadow: inset 0 0 0 2px var(--critical-accent);
     }
 
     footer.hint {
@@ -1057,6 +1061,7 @@
         <button class="lang-toggle" id="viewModeBtn" type="button">✏️</button>
         <button class="lang-toggle" id="eyeBtn" type="button">👁</button>
         <button class="lang-toggle" id="gradBtn" type="button">🎓</button>
+        <button class="lang-toggle" id="pypBtn" type="button">🎒</button>
         <button class="lang-toggle" id="langBtn" type="button">EN</button>
         <button class="add-summer" id="addSummerBtn"></button>
         <button class="add-gap" id="addGapBtn"></button>
@@ -1202,7 +1207,7 @@
         legendLocked: 'لا يؤخر',
         footer: 'يتم الحفظ تلقائياً في هذا المتصفح.',
         elective: 'اختياري',
-        progress: (done, total, pct) => `${done} / ${total} مقرر مكتمل (${pct}%)`,
+        progress: (done, total, pct, doneHours, totalHours) => `${done} / ${total} مقرر مكتمل (${pct}%) · ${doneHours} / ${totalHours} ساعة`,
         addCoursePromptCode: 'رمز المقرر (مثال: CYS410):',
         addCoursePromptName: 'اسم المقرر (اختياري):',
         addCourseDup: 'هذا الرمز موجود بالفعل.',
@@ -1230,6 +1235,7 @@
         moveBlockedPrereq: (code, pre) => `${code} يحتاج ${pre} قبله.`,
         moveBlockedDependent: (code, dep) => `${dep} يحتاج ${code} قبله.`,
         moveBlockedCritical: code => `${code} يمكن تقديمه فقط، لا تأخيره.`,
+        moveBlockedMinHours: (code, needed, have) => `${code} يتطلب إتمام ${needed} ساعة معتمدة على الأقل (مستوى طالب "جونيور") — لديك ${have} ساعة مجدولة قبل هذا الفصل.`,
         moveBlockedNoPrepSummer: code => `${code} يجب أن يبقى في فصل عادي.`,
         criticalTitle: 'يمكن تقديمه فقط',
         examTickTitle: 'إعفاء باختبار',
@@ -1239,6 +1245,8 @@
         moveCourseDone: code => `تم نقل ${code}.`,
         editModeTitle: '✏️ إخفاء أدوات التعديل وعرض الخطة فقط',
         viewModeTitle: '✏️ إظهار أدوات التعديل',
+        pypDropTitle: '🎒 إسقاط السنة التحضيرية بالكامل (للمعفيين منها)',
+        pypRestoreTitle: '🎒 إظهار السنة التحضيرية',
         themeToLight: 'فاتح',
         themeToDark: 'داكن',
         eyeBtnTitle: '👁 عرض تقدمك على خطة الجامعة الأصلية',
@@ -1293,18 +1301,24 @@
           ['رتّب خطتك', 'اسحب المقررات بين الفصول إذا غيرت ترتيبك.'],
           ['أضف الصيفي', 'استخدم زر الصيفي إذا أخذت مقرر خارج الفصل العادي.'],
           ['الأزرار المهمة', '✏️ يبدّل بين التعديل والعرض. 👁 يعرض تقدمك على خطة الجامعة الأصلية.'],
+          ['المسار الحرج', 'الإطار الذهبي يعني أن مقرراً لاحقاً يحتاج إتمام هذا المقرر أولاً. يمكنك أخذه قبل موعده، لكن لا يمكن تأخيره.'],
+          ['السنة التحضيرية', 'معفي من السنة التحضيرية؟ اضغط 🎒 لإخفائها بالكامل.'],
           ['احسب التخرج', 'اضغط 🎓 واختر فصل وسنة البداية.'],
         ],
         walkProgressSteps: (done, current) => [
           ['راجع الألوان', `${done} مكتمل · ${current} حالي. تأكد أن الألوان تطابق سجلك.`],
           ['رتّب الباقي', 'اسحب المقررات القادمة حسب خطتك الحقيقية.'],
           ['قارن مع الجامعة', 'اضغط 👁 لرؤية تقدمك الحالي على ترتيب خطة الجامعة الأصلية.'],
+          ['المسار الحرج', 'الإطار الذهبي يعني أن مقرراً لاحقاً يحتاج إتمام هذا المقرر أولاً. يمكنك أخذه قبل موعده، لكن لا يمكن تأخيره.'],
+          ['السنة التحضيرية', 'معفي من السنة التحضيرية؟ اضغط 🎒 لإخفائها بالكامل.'],
           ['افتح التخرج', 'زر 🎓 يعطيك موعد التخرج وفصل التدريب وفصل استلام الشهادة.'],
         ],
         walkCustomSteps: (summers, moved) => [
           ['خطة مخصصة', `${summers} صيفي · ${moved} مقرر منقول.`],
           ['راجع المسار', 'تأكد أن المقررات المؤجلة أو المقدمة في مكانها الصحيح.'],
           ['قارن مع الأصل', '👁 يعرض نفس تقدمك لكن على ترتيب الجامعة الأصلي.'],
+          ['المسار الحرج', 'الإطار الذهبي يعني أن مقرراً لاحقاً يحتاج إتمام هذا المقرر أولاً. يمكنك أخذه قبل موعده، لكن لا يمكن تأخيره.'],
+          ['السنة التحضيرية', 'معفي من السنة التحضيرية؟ اضغط 🎒 لإخفائها بالكامل.'],
           ['احسب النتيجة', 'افتح 🎓 بعد كل تعديل كبير.'],
         ],
         toggleTo: 'EN',
@@ -1321,7 +1335,7 @@
         legendLocked: 'Do not delay',
         footer: 'Saved automatically in this browser.',
         elective: 'Elective',
-        progress: (done, total, pct) => `${done} / ${total} courses completed (${pct}%)`,
+        progress: (done, total, pct, doneHours, totalHours) => `${done} / ${total} courses completed (${pct}%) · ${doneHours} / ${totalHours} hrs`,
         addCoursePromptCode: 'Course code (e.g. CYS410):',
         addCoursePromptName: 'Course name (optional):',
         addCourseDup: 'That code already exists.',
@@ -1349,6 +1363,7 @@
         moveBlockedPrereq: (code, pre) => `${code} needs ${pre} first.`,
         moveBlockedDependent: (code, dep) => `${dep} needs ${code} first.`,
         moveBlockedCritical: code => `${code} can move earlier, not later.`,
+        moveBlockedMinHours: (code, needed, have) => `${code} requires at least ${needed} completed credit hours (junior standing) — you have ${have} hours scheduled before this term.`,
         moveBlockedNoPrepSummer: code => `${code} must stay in a regular term.`,
         criticalTitle: 'Can move earlier only',
         examTickTitle: 'Waived by exam',
@@ -1358,6 +1373,8 @@
         moveCourseDone: code => `${code} moved.`,
         editModeTitle: '✏️ Hide editing tools and view the plan',
         viewModeTitle: '✏️ Show editing tools',
+        pypDropTitle: '🎒 Drop the prep year entirely (if exempted)',
+        pypRestoreTitle: '🎒 Show the prep year',
         themeToLight: 'Light mode',
         themeToDark: 'Dark mode',
         eyeBtnTitle: '👁 View your progress on the university original plan',
@@ -1412,18 +1429,24 @@
           ['Arrange your plan', 'Drag courses between terms if your order is different.'],
           ['Add summers', 'Use the summer button for courses taken outside regular terms.'],
           ['Use the toolbar', '✏️ switches edit/view mode. 👁 shows your current progress on the university original plan.'],
+          ['Critical path', 'A gold ring means a later course needs this one done first. You can take it earlier than shown, just not later.'],
+          ['Prep year', 'Exempt from the prep year? Tap 🎒 to hide it completely.'],
           ['Check graduation', 'Open 🎓 and choose your start term and year.'],
         ],
         walkProgressSteps: (done, current) => [
           ['Check colors', `${done} done · ${current} current. Make sure this matches your record.`],
           ['Plan what is left', 'Drag upcoming courses into the terms you expect.'],
           ['Compare with PSU', 'Click 👁 to see your current progress in the university original order.'],
+          ['Critical path', 'A gold ring means a later course needs this one done first. You can take it earlier than shown, just not later.'],
+          ['Prep year', 'Exempt from the prep year? Tap 🎒 to hide it completely.'],
           ['Open graduation', 'The 🎓 panel shows graduation, co-op term, and degree term.'],
         ],
         walkCustomSteps: (summers, moved) => [
           ['Custom plan', `${summers} summer · ${moved} moved.`],
           ['Review sequence', 'Make sure delayed or early courses are in the right places.'],
           ['Compare with original', '👁 keeps your progress colors, but shows them on the university original plan.'],
+          ['Critical path', 'A gold ring means a later course needs this one done first. You can take it earlier than shown, just not later.'],
+          ['Prep year', 'Exempt from the prep year? Tap 🎒 to hide it completely.'],
           ['Recalculate', 'Open 🎓 after any big plan change.'],
         ],
         toggleTo: 'AR',
@@ -1799,7 +1822,8 @@
         code: 'CYS401',
         name: 'أساسيات الأمن السيبراني',
         nameEn: 'Fundamentals of Cybersecurity',
-        prereqs: [],
+        prereqs: ['ETHC303'],
+        minHours: 70,
         hours: 3,
         term: 't5'
       },
@@ -1876,7 +1900,7 @@
         nameEn: 'Ethical & Social Aspects of Computing',
         prereqs: [],
         hours: 3,
-        term: 't6'
+        term: 't4'
       },
       {
         code: 'SE499',
@@ -2764,6 +2788,21 @@
           return { ok: false, reason: t().moveBlockedPrereq(code, preCode) };
         }
       }
+
+      // Standing gate (e.g. junior standing before CYS401): sum the credit hours of every course
+      // scheduled strictly before this term and require it to clear the course's minHours threshold.
+      if (course.minHours) {
+        const priorHours = Object.values(map).reduce((sum, c) => {
+          const loc = assignments[c.code];
+          if (!loc || loc === 'pool' || isGroupId(loc)) return sum;
+          const locTerm = terms.find(term => term.id === loc);
+          return (locTerm && locTerm.order < targetOrder) ? sum + (c.hours || 0) : sum;
+        }, 0);
+        if (priorHours < course.minHours) {
+          return { ok: false, reason: t().moveBlockedMinHours(code, course.minHours, priorHours) };
+        }
+      }
+
       for (const dep of dependentsOf(code, map)) {
         const depLoc = assignments[dep.code];
         if (!depLoc || depLoc === 'pool' || isGroupId(depLoc)) continue;
@@ -3083,6 +3122,9 @@
       document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
       document.getElementById('pageTitle').textContent = s.pageTitle;
       document.getElementById('pageSub').textContent = viewMode ? s.pageSubView : s.pageSub;
+      const pypBtn = document.getElementById('pypBtn');
+      pypBtn.title = gradState.dropPYP ? s.pypRestoreTitle : s.pypDropTitle;
+      pypBtn.classList.toggle('active', !!gradState.dropPYP);
       document.getElementById('addSummerBtn').textContent = s.addSummer;
       document.getElementById('addGapBtn').textContent = s.addGap;
       document.getElementById('resetBtn').textContent = s.reset;
@@ -3136,7 +3178,7 @@
 
       // Students can only ever ENTER the program at Prep 1st (full prep), Prep 2nd (placed out of Prep 1st),
       // or 1st (fully exempted from prep) — never partway into the regular 1st-8th sequence.
-      const VALID_START_TERMS = ['prep1', 'prep2', 't1'];
+      const VALID_START_TERMS = gradState.dropPYP ? ['t1'] : ['prep1', 'prep2', 't1'];
       const termSelect = document.getElementById('gradStartTerm');
       const prevValue = termSelect.value;
       termSelect.innerHTML = '';
@@ -3249,8 +3291,10 @@
       const plan = document.getElementById('plan');
       planPrep.innerHTML = '';
       plan.innerHTML = '';
+      planPrep.style.display = gradState.dropPYP ? 'none' : '';
 
       allTerms().forEach(term => {
+        if (gradState.dropPYP && term.isPrep) return;
         const row = buildTermRow(term, map, gateways);
         (term.isPrep ? planPrep : plan).appendChild(row);
       });
@@ -3320,12 +3364,15 @@
     // plus one slot per elective group that actually carries required hours (satisfied once any course in
     // that group is completed/waived) — matching the same total used by the "Remaining to graduate" card.
     function updateProgress(map) {
-      const startTermId = (gradState && gradState.startTerm) || 'prep1';
+      const startTermId = gradState.dropPYP ? 't1' : ((gradState && gradState.startTerm) || 'prep1');
       const totals = totalPlanRequirements(startTermId);
-      let done = 0;
+      let done = 0, doneHours = 0;
       Object.values(map).forEach(c => {
         if (!c.term || !termMeetsStartScope(c, startTermId)) return;
-        if (statusMap[c.code] === 'completed' || (c.examEligible && examMap[c.code])) done++;
+        if (statusMap[c.code] === 'completed' || (c.examEligible && examMap[c.code])) {
+          done++;
+          doneHours += c.hours || 0;
+        }
       });
       ELECTIVE_GROUPS.forEach(g => {
         if (g.required <= 0) return;
@@ -3333,9 +3380,10 @@
           .filter(c => c.group === g.id && isCourseDone(c))
           .reduce((sum, c) => sum + (c.hours || 0), 0);
         if (completedHours >= g.required) done++;
+        doneHours += Math.min(completedHours, g.required);
       });
       const pct = totals.courses ? Math.round((done / totals.courses) * 100) : 0;
-      document.getElementById('progressText').textContent = t().progress(done, totals.courses, pct);
+      document.getElementById('progressText').textContent = t().progress(done, totals.courses, pct, doneHours, totals.hours);
       document.getElementById('progressFill').style.width = pct + '%';
     }
 
@@ -3360,8 +3408,10 @@
       comparePrep.innerHTML = '';
       compareMain.innerHTML = '';
       compareElectives.innerHTML = '';
+      comparePrep.style.display = gradState.dropPYP ? 'none' : '';
 
       BASE_TERMS.slice().sort((a, b) => a.order - b.order).forEach(term => {
+        if (gradState.dropPYP && term.isPrep) return;
         const row = document.createElement('div');
         row.className = 'term-row';
         const label = document.createElement('div');
@@ -3824,6 +3874,19 @@
     document.getElementById('compareCloseBtn').addEventListener('click', () => toggleCompare(false));
     document.getElementById('compareOverlay').addEventListener('click', () => toggleCompare(false));
     document.getElementById('gradBtn').addEventListener('click', () => toggleGrad());
+    document.getElementById('pypBtn').addEventListener('click', () => {
+      gradState.dropPYP = !gradState.dropPYP;
+      if (gradState.dropPYP) {
+        gradState.pypPrevStartTerm = gradState.startTerm;
+        gradState.startTerm = 't1';
+      } else if (gradState.pypPrevStartTerm) {
+        gradState.startTerm = gradState.pypPrevStartTerm;
+        delete gradState.pypPrevStartTerm;
+      }
+      saveState();
+      renderStaticText();
+      render();
+    });
     document.getElementById('gradCloseBtn').addEventListener('click', () => toggleGrad(false));
     document.getElementById('gradOverlay').addEventListener('click', () => toggleGrad(false));
     document.getElementById('gradCalcBtn').addEventListener('click', calculateGraduation);
