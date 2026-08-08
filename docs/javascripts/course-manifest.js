@@ -6086,6 +6086,15 @@ var COURSE_PAGES = [
     "courseTitle": "SE322 // Software Design and Architecture"
   },
   {
+    "url": "/academics/software-engineering/se322/extra-resources/summary/",
+    "title": "SE322 | Summary",
+    "track": "software-engineering",
+    "course": "se322",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se322/",
+    "courseTitle": "SE322 // Software Design and Architecture"
+  },
+  {
     "url": "/academics/software-engineering/se322/slide-breakdowns/01-chapter-1-introduction-to-software-design-and-architecture-extra/",
     "title": "SE322 | Chapter 1 Introduction To Software Design And Architecture Extra",
     "track": "software-engineering",
@@ -6408,6 +6417,1743 @@ var COURSE_PAGES = [
     "section": "slides",
     "courseUrl": "/academics/software-engineering/se322/",
     "courseTitle": "SE322 // Software Design and Architecture"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/chapter-2/example-code-a/",
+    "title": "Example Code A | SE371 Web Engineering",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/chapter-2/example-code-b/",
+    "title": "Example Code B | SE371 Web Engineering",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/chapter-3/example-codes-css/00-inline-external-embed/",
+    "title": "00 Inline External Embed | SE371 Web Engineering",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/chapter-3/example-codes-css/01-selectors/",
+    "title": "01 Selectors | SE371 Web Engineering",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/chapter-3/example-codes-css/02-selector/",
+    "title": "02 Selector | SE371 Web Engineering",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/chapter-3/example-codes-css/03-nested-selector/",
+    "title": "03 Nested Selector | SE371 Web Engineering Resource",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/chapter-3/example-codes-css/04-box-sizing/",
+    "title": "04 Box Sizing | SE371 Web Engineering",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/chapter-3/example-codes-css/05-a-vertical-align/",
+    "title": "05 A Vertical Align | SE371 Web Engineering",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/chapter-3/example-codes-css/05-import-font/",
+    "title": "05 Import Font | SE371 Web Engineering Resource",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/chapter-3/example-codes-css/07-style-forms/",
+    "title": "07 Style Forms | SE371 Web Engineering Resource",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/chapter-3/example-codes-css/08-flex-layout/flex-3/",
+    "title": "Flex 3 | SE371 Web Engineering",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/chapter-3/example-codes-css/09-grid-layout/grid-example/",
+    "title": "Grid Example | SE371 Web Engineering",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/chapter-3/example-codes-css/6-style-tables/",
+    "title": "6 Style Tables | SE371 Web Engineering Resource",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/chapter-3/example-codes-css/inherit-example/",
+    "title": "Inherit Example | SE371 Web Engineering",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/chapter-4/javascript-codes/ex-01-js-placement/myscripts/",
+    "title": "Myscripts | SE371 Web Engineering",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/chapter-4/javascript-codes/ex-02-innerhtml/",
+    "title": "Ex 02 Innerhtml | SE371 Web Engineering Resource",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/chapter-4/javascript-codes/ex-02-var/",
+    "title": "Ex 02 Var | SE371 Web Engineering Resource",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/chapter-4/javascript-codes/ex-03-a-loop/",
+    "title": "Ex 03 A Loop | SE371 Web Engineering",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/chapter-4/javascript-codes/ex-03-b-array/",
+    "title": "Ex 03 B Array | SE371 Web Engineering",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/chapter-4/javascript-codes/ex-05-try-catch/",
+    "title": "Ex 05 Try Catch | SE371 Web Engineering Resource",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/chapter-4/javascript-codes/ex-06-obj02-01-creation/",
+    "title": "Ex 06 Obj02 01 Creation | SE371 Web Engineering",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/chapter-4/javascript-codes/ex-07-json04/",
+    "title": "Ex 07 Json04 | SE371 Web Engineering Resource",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/chapter-4/javascript-codes/ex-08-function/",
+    "title": "Ex 08 Function | SE371 Web Engineering",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/chapter-4/javascript-codes/ex-09-function/",
+    "title": "Ex 09 Function | SE371 Web Engineering",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/chapter-4/javascript-codes/ex-10-callback-fun/",
+    "title": "Ex 10 Callback Fun | SE371 Web Engineering",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/chapter-4/javascript-codes/ex-11-constructur-06/",
+    "title": "Ex 11 Constructur 06 | SE371 Web Engineering",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/chapter-4/javascript-codes/ex-12-arrayfun-08/",
+    "title": "Ex 12 Arrayfun 08 | SE371 Web Engineering",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/chapter-5/js-front-end-all-examples/01-sweetalert/",
+    "title": "01 Sweetalert | SE371 Web Engineering Resource",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/chapter-5/js-front-end-all-examples/02-dom/",
+    "title": "02 DOM | SE371 Web Engineering",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/chapter-5/js-front-end-all-examples/02b-dom/",
+    "title": "02B DOM | SE371 Web Engineering Resource",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/chapter-5/js-front-end-all-examples/03-ex-inner-html/",
+    "title": "03 Ex Inner HTML | SE371 Web Engineering Resource",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/chapter-5/js-front-end-all-examples/05-dataset/",
+    "title": "05 Dataset | SE371 Web Engineering Resource",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/chapter-5/js-front-end-all-examples/06-eventwindows/",
+    "title": "06 Eventwindows | SE371 Web Engineering Resource",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/chapter-5/js-front-end-all-examples/07-event-handler/",
+    "title": "07 Event Handler | SE371 Web Engineering Resource",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/chapter-5/js-front-end-all-examples/08-eventprop/",
+    "title": "08 Eventprop | SE371 Web Engineering",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/chapter-5/js-front-end-all-examples/08b-event-delegation/",
+    "title": "08B Event Delegation | SE371 Web Engineering Resource",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/chapter-5/js-front-end-all-examples/09-mouse-events/",
+    "title": "09 Mouse Events | SE371 Web Engineering",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/chapter-5/js-front-end-all-examples/09-tiles-game/css/",
+    "title": "CSS | SE371 Web Engineering",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/chapter-5/js-front-end-all-examples/10-form-events/",
+    "title": "10 Form Events | SE371 Web Engineering",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/chapter-5/js-front-end-all-examples/10b-form-submit-event/css/",
+    "title": "CSS | SE371 Web Engineering",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/chapter-5/js-front-end-all-examples/11-multiselect-validation/",
+    "title": "11 Multiselect Validation | SE371 Web Engineering Resource",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/cheat-sheet-for-html/",
+    "title": "Cheat Sheet For HTML | SE371 Web Engineering",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/labs/solutions/lab-02-solution/part-a/images/",
+    "title": "Images | SE371 Web Engineering",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/labs/solutions/lab-02-solution/part-b/",
+    "title": "Part B | SE371 Web Engineering Resource",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/labs/solutions/lab-03-solution/lab-03a-css-solution/solution/css/",
+    "title": "CSS | SE371 Web Engineering",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/labs/solutions/lab-03-solution/lab-03a-css-solution/solution/images/",
+    "title": "Images | SE371 Web Engineering",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/labs/solutions/lab-03-solution/lab-03b-css-solution/solution-lab03b/css/",
+    "title": "CSS | SE371 Web Engineering",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/labs/solutions/lab-03-solution/lab-03b-css-solution/solution-lab03b/images/",
+    "title": "Images | SE371 Web Engineering",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/labs/solutions/lab-06a-solution/",
+    "title": "Lab 06A Solution | SE371 Web Engineering Resource",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/labs/solutions/lab-6b-solution/",
+    "title": "Lab 6B Solution | SE371 Web Engineering Resource",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/01-creation-e9333e42/",
+    "title": "01 Creation | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/01-index-4e759639/",
+    "title": "01 Index | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/02-index-e7813d14/",
+    "title": "02 Index | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/022-table-7bbf8bcc/",
+    "title": "022 Table | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/03-index-dbeb9734/",
+    "title": "03 Index | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/03-object-destructuring-75f32c73/",
+    "title": "03 Object Destructuring | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/04-box-sizing-7dea49bb/",
+    "title": "04 Box Sizing | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/04-pic-trulli-570661dc/",
+    "title": "04 Pic Trulli | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/04b-button-7b639bc4/",
+    "title": "04B Button | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/05-div-hr-example-22f59a69/",
+    "title": "05 Div Hr Example | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/06-hyperlink-d7300218/",
+    "title": "06 Hyperlink | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/07-inline-da63a4ea/",
+    "title": "07 Inline | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/08-html5elemnts-691fadaf/",
+    "title": "08 Html5Elemnts | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/1-b44e0fff/",
+    "title": "1 | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/1-css-tutorial-for-styling-tables-d0f480aa/",
+    "title": "1 CSS Tutorial For Styling Tables | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/1-getmethod-8c61dffd/",
+    "title": "1 Getmethod | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/1-javascript-tutorial-1-6754580d/",
+    "title": "1 Javascript Tutorial 1 | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/2-css-flex-and-grid-tutorial-4dae9447/",
+    "title": "2 CSS Flex And Grid Tutorial | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/2-example-form-input-control-ffcd1087/",
+    "title": "2 Example Form Input Control | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/2-javascript-tutorial-functions-and-json-objects-8fc2f70e/",
+    "title": "2 Javascript Tutorial Functions And JSON Objects | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/3-javascript-exercises-set-1-questions-88131c0e/",
+    "title": "3 Javascript Exercises Set 1 Questions | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/3-responsive-tables-using-css-grid-and-media-939b06aa/",
+    "title": "3 Responsive Tables Using CSS Grid And Media | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/3-select-fad7b8d3/",
+    "title": "3 Select | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/3-variables-if-loops-with-examples-v1-da2ad2a5/",
+    "title": "3 Variables If Loops With Examples V1 | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/4-1-javascript-tutorial-on-functions-arrow-functions-array-methods-58ec3a1a/",
+    "title": "4 1 Javascript Tutorial On Functions Arrow Functions Array Methods | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/4-2-javascript-tutorial-more-on-array-methods-49eb0bc1/",
+    "title": "4 2 Javascript Tutorial More On Array Methods | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/4-3-exercise-car-search-application-db7b32ee/",
+    "title": "4 3 Exercise Car Search Application | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/4-4-displaying-data-in-an-html-table-using-javascript-e6cf978b/",
+    "title": "4 4 Displaying Data In An HTML Table Using Javascript | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/4-radio-button-6f09bd46/",
+    "title": "4 Radio Button | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/5-num-range-color-28e1eeea/",
+    "title": "5 Num Range Color | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/6-date-7877ac85/",
+    "title": "6 Date | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/action-page-1a3daa73/",
+    "title": "Action Page | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/banner-3f3f2c25/",
+    "title": "Banner | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/banner-d7810432/",
+    "title": "Banner | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/class-and-id-style-7197e8c4/",
+    "title": "Class And Id Style | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/constructor-61d6ade6/",
+    "title": "Constructor | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/css-layout-tutorial-handout-with-starter-and-exercises-507e502d/",
+    "title": "CSS Layout Tutorial Handout With Starter And Exercises | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/css-reset-0f228b39/",
+    "title": "CSS Reset | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/css-reset-14eb9cf0/",
+    "title": "CSS Reset | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/css-reset-21804088/",
+    "title": "CSS Reset | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/css-reset-395ef814/",
+    "title": "CSS Reset | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/css-reset-750c01c3/",
+    "title": "CSS Reset | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/css-reset-9a1b4c6f/",
+    "title": "CSS Reset | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/css-reset-ce8ac39b/",
+    "title": "CSS Reset | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/css-reset-e86cb54a/",
+    "title": "CSS Reset | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/event-propagation-0aa36bf7/",
+    "title": "Event Propagation | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/external-a51b6b8b/",
+    "title": "External | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/external-cc5d9aba/",
+    "title": "External | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/flex-basis-40129d97/",
+    "title": "Flex Basis | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/flex-intro-1-0a157f1e/",
+    "title": "Flex Intro 1 | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/flex-intro-1dbbddb9/",
+    "title": "Flex Intro | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/funcscript-59d02b06/",
+    "title": "Funcscript | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/global-95bd7f63/",
+    "title": "Global | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/grid-justify-cdbaf760/",
+    "title": "Grid Justify | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/hoisted-be401812/",
+    "title": "Hoisted | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/home-014d2312/",
+    "title": "Home | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/home-1e1aa162/",
+    "title": "Home | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/homepage-406cbe62/",
+    "title": "Homepage | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/homepage-40c21c49/",
+    "title": "Homepage | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/homepage-56c59859/",
+    "title": "Homepage | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/homepage-b9889d58/",
+    "title": "Homepage | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/html-cheat-sheet-2-q1-bfbd321f/",
+    "title": "HTML Cheat Sheet 2 Q1 | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/html-cheat-sheet-q1-1f7fac94/",
+    "title": "HTML Cheat Sheet Q1 | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/i-collection-vs-node-list-165b7600/",
+    "title": "I Collection Vs Node List | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/ii-classlist-27f5e3be/",
+    "title": "Ii Classlist | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/iii-classlist-add-01767a0c/",
+    "title": "Iii Classlist Add | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/index-b0f56432/",
+    "title": "Index | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/index-blur-f4cf3ff1/",
+    "title": "Index Blur | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/index-change-a735e1fb/",
+    "title": "Index Change | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/index-focus-55c2ee6f/",
+    "title": "Index Focus | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/index-mousedown-up-8189a1d1/",
+    "title": "Index Mousedown Up | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/index-reset-6fe17611/",
+    "title": "Index Reset | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/index-select-70e99c3a/",
+    "title": "Index Select | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/inhertiexample-2ce8822d/",
+    "title": "Inhertiexample | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/inline-external-embed-829ff562/",
+    "title": "Inline External Embed | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/iv-index-d768e469/",
+    "title": "Iv Index | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/javascript-048aed08/",
+    "title": "Javascript | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/javascript-c105c625/",
+    "title": "Javascript | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/js-logo-f520fe95/",
+    "title": "JS Logo | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/js-placement-96ca889f/",
+    "title": "JS Placement | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/key-event-0e280756/",
+    "title": "Key Event | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/lab-01-solution-149763a7/",
+    "title": "Lab 01 Solution | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/lab-01a-b65fd47c/",
+    "title": "Lab 01A | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/lab-01a-solution-07869208/",
+    "title": "Lab 01A Solution | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/lab-01b-3648a812/",
+    "title": "Lab 01B | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/lab-01b-solution-92777d7a/",
+    "title": "Lab 01B Solution | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/lab-02-3b7011f3/",
+    "title": "Lab 02 | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/lab-02-solution-80268569/",
+    "title": "Lab 02 Solution | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/lab-03a-css-d140cca7/",
+    "title": "Lab 03A CSS | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/lab-03a-css-solution-229ee1e9/",
+    "title": "Lab 03A CSS Solution | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/lab-03b-css-4bc066e1/",
+    "title": "Lab 03B CSS | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/lab-03b-css-solution-4c1deaa6/",
+    "title": "Lab 03B CSS Solution | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/lab-04-flex-grid-dc6c8188/",
+    "title": "Lab 04 Flex Grid | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/lab-04-flex-grid-solution-f98c98be/",
+    "title": "Lab 04 Flex Grid Solution | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/lab-05a-javascript-intro-new-4b106450/",
+    "title": "Lab 05A Javascript Intro New | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/lab-05a-solution-21111972/",
+    "title": "Lab 05A Solution | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/lab-05b-array-functions-a3f98873/",
+    "title": "Lab 05B Array Functions | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/lab-05b-solution-d679a72f/",
+    "title": "Lab 05B Solution | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/lab-07-solution-53f9e331/",
+    "title": "Lab 07 Solution | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/lab-08-solution-5a3bdaf0/",
+    "title": "Lab 08 Solution | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/lab-09-express-ejs-solution-b6cf6ffc/",
+    "title": "Lab 09 Express EJS Solution | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/lab-11-solution-405367e1/",
+    "title": "Lab 11 Solution | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/lab-3b-solution-steps-79ff24f4/",
+    "title": "Lab 3B Solution Steps | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/lab-4-solution-steps-3729613e/",
+    "title": "Lab 4 Solution Steps | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/lab-5a-javascript-intro-solution-steps-634c04f0/",
+    "title": "Lab 5A Javascript Intro Solution Steps | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/main-styles-1c1bfc89/",
+    "title": "Main Styles | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/main-styles-da68e36a/",
+    "title": "Main Styles | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/map-reduce-10031ff7/",
+    "title": "Map Reduce | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/nested-grid-example-79bf386e/",
+    "title": "Nested Grid Example | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/pdf-1e26bfaf/",
+    "title": "PDF | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/pdf-dddb5f05/",
+    "title": "PDF | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/pg2-b6f5d109/",
+    "title": "Pg2 | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/plane-a5d78cbe/",
+    "title": "Plane | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/practice-exercise-b1a70a7c/",
+    "title": "Practice Exercise | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/pseudocode-ab37dddc/",
+    "title": "Pseudocode | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/register-c0cc7e4a/",
+    "title": "Register | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/register-c31358d4/",
+    "title": "Register | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/restfunc-a613209f/",
+    "title": "Restfunc | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/solution-lab-10-c78cded5/",
+    "title": "Solution Lab 10 | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/styles-10298c16/",
+    "title": "Styles | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/styles-47a931ee/",
+    "title": "Styles | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/styles-51346bb5/",
+    "title": "Styles | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/styles-60093006/",
+    "title": "Styles | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/styles-65520016/",
+    "title": "Styles | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/styles-a98f068c/",
+    "title": "Styles | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/styles-newcss-9dd5d704/",
+    "title": "Styles Newcss | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/styling-tables-using-default-class-and-id-specific-styles-2269186f/",
+    "title": "Styling Tables Using Default Class And Id Specific Styles | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/tables-6e95cab6/",
+    "title": "Tables | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/tablescss-step1-eee475ea/",
+    "title": "Tablescss Step1 | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/tablescss-step2-dee52458/",
+    "title": "Tablescss Step2 | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/tablescss-step3-6f72b48f/",
+    "title": "Tablescss Step3 | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/text-vertical-align-e3592a8b/",
+    "title": "Text Vertical Align | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/this-681d0d84/",
+    "title": "This | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/v-inhtml-text-cont-346ace3c/",
+    "title": "V Inhtml Text Cont | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/whatever-5922b892/",
+    "title": "Whatever | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/extra-resources/tutorials/css/styling-tables-using-default-class-and-id-specific-styles/",
+    "title": "Styling Tables Using Default Class And Id Specific Styles | SE371 Web Engineering",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/slides/chapter-01-introduction-to-the-web/",
+    "title": "Chapter 01: Introduction to the Web | SE371 Slides",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "slides",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/slides/chapter-02-html-2/",
+    "title": "Chapter 02: HTML Fundamentals | SE371 Slides",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "slides",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/slides/chapter-03-css/",
+    "title": "Chapter 03: CSS | SE371 Slides",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "slides",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/slides/chapter-04-javascript/",
+    "title": "Chapter 04: JavaScript | SE371 Slides",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "slides",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/slides/chapter-05-javascript-in-the-front-end/",
+    "title": "Chapter 05: Front-End JavaScript | SE371 Slides",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "slides",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/slides/chapter-06-server-side-node/",
+    "title": "Chapter 06: Server-Side Node.js | SE371 Slides",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "slides",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/slides/chapter-07-working-with-databases/",
+    "title": "Chapter 07: Working with Databases | SE371 Slides",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "slides",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
   },
   {
     "url": "/academics/software-engineering/se401/exams/01-advanced-topics-quiz/",
@@ -7351,7 +9097,8 @@ var COURSE_MANIFEST = {
   "isc113": 23,
   "se201": 32,
   "se311": 33,
-  "se322": 54,
+  "se322": 55,
+  "se371": 193,
   "se401": 53,
   "se423": 49
 };
@@ -7378,7 +9125,8 @@ var COURSE_MANIFEST_BY_TRACK = {
   "other-courses/isc113": 23,
   "software-engineering/se201": 32,
   "software-engineering/se311": 33,
-  "software-engineering/se322": 54,
+  "software-engineering/se322": 55,
+  "software-engineering/se371": 193,
   "software-engineering/se401": 53,
   "software-engineering/se423": 49
 };
