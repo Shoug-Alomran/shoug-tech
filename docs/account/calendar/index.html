@@ -1219,7 +1219,8 @@
 
     .day-list {
       overflow: auto;
-      padding: 0
+      padding: 0;
+      min-height: 0
     }
 
     .all-day-list {
@@ -1347,7 +1348,7 @@
       right: 8px;
       border-radius: 11px;
       padding: 8px 10px;
-      overflow: hidden;
+      overflow: visible;
       border-left: 5px solid currentColor;
       background: rgba(96, 165, 250, .14);
       color: var(--blue);
@@ -1377,7 +1378,38 @@
 
     .timeline-event.class {
       background: rgba(96, 165, 250, .14);
-      color: var(--blue)
+      color: var(--blue);
+      padding-right: 390px
+    }
+
+    .timeline-event.class .day-card-actions {
+      position: absolute;
+      top: 50%;
+      right: 10px;
+      transform: translateY(-50%);
+      margin: 0;
+      max-width: 370px;
+      justify-content: flex-end
+    }
+
+    .timeline-event.class .mini-btn {
+      height: 26px;
+      padding: 0 10px;
+      background: color-mix(in srgb, var(--surface) 82%, currentColor 18%)
+    }
+
+    @media(max-width:900px) {
+      .timeline-event.class {
+        padding-right: 10px
+      }
+
+      .timeline-event.class .day-card-actions {
+        position: static;
+        transform: none;
+        margin-top: 8px;
+        max-width: none;
+        justify-content: flex-start
+      }
     }
 
     .timeline-event.class.online {
@@ -1413,6 +1445,17 @@
       text-overflow: ellipsis
     }
 
+    .timeline-event-title a,
+    .day-card-title a {
+      color: inherit;
+      text-decoration: none
+    }
+
+    .timeline-event-title a:hover,
+    .day-card-title a:hover {
+      text-decoration: underline
+    }
+
     .timeline-event-meta {
       font-size: .76rem;
       margin-top: 3px;
@@ -1422,15 +1465,17 @@
 
     .timeline-event.compact {
       padding: 7px 12px;
-      overflow: hidden
+      overflow: visible
     }
 
     .timeline-event.compact .day-card-actions {
-      display: none
+      display: flex
     }
 
     .exam-form-body {
-      padding: 18px 22px
+      padding: 18px 22px;
+      overflow: auto;
+      min-height: 0
     }
 
     .exam-conflict {
@@ -2706,7 +2751,7 @@
       }
       function timelineEventHtml(e, startHour, pxPerHour) {
         var start = minutes(e.start), end = minutes(e.end), duration = (end && end > start ? end : start + 60) - start, top = Math.max(0, (start - startHour * 60) / 60 * pxPerHour), compact = duration <= 35, height = Math.max(compact ? 52 : 56, duration / 60 * pxPerHour - 4);
-        return '<div class="timeline-event ' + eventClasses(e) + (compact ? ' compact' : '') + '" style="top:' + top + 'px;height:' + height + 'px"><div class="timeline-event-title">' + esc(e.title) + (e.online ? ' <span class="online-badge">Online</span>' : '') + '</div><div class="timeline-event-meta">' + esc(e.meta) + '</div>' + eventActionsHtml(e) + '</div>';
+        return '<div class="timeline-event ' + eventClasses(e) + (compact ? ' compact' : '') + '" style="top:' + top + 'px;height:' + height + 'px"><div class="timeline-event-title">' + eventTitleHtml(e) + (e.online ? ' <span class="online-badge">Online</span>' : '') + '</div><div class="timeline-event-meta">' + esc(e.meta) + '</div>' + eventActionsHtml(e) + '</div>';
       }
       function isRangeEvent(e) { return !e.start && e.endDate && e.endDate !== e.date; }
       function eventIdentity(e) { return e.examId || e.classId || e.itemId || e.sourceId || [e.kind, e.title, e.date, e.endDate].join("|"); }
@@ -2766,8 +2811,9 @@
         $("saved-list").querySelectorAll("[data-class-edit-schedule]").forEach(function (b) { b.addEventListener("click", function () { openClassEdit(b.dataset.classEditSchedule, firstEditableClassDate(classes.find(function (c) { return c.id === b.dataset.classEditSchedule; }) || {}), "schedule"); }); });
         $("saved-list").querySelectorAll("[data-class]").forEach(function (b) { b.addEventListener("click", function () { var removed = classes.splice(Number(b.dataset.class), 1)[0]; if (removed) { classAttendance = classAttendance.filter(function (r) { return r.classId !== removed.id; }); classOverrides = classOverrides.filter(function (o) { return o.classId !== removed.id; }); } persist().then(function () { renderAll(); toast("Class schedule deleted"); }); }); });
         $("saved-list").querySelectorAll("[data-event]").forEach(function (b) { b.addEventListener("click", function () { items.splice(Number(b.dataset.event), 1); persist().then(renderAll); }); });
-        $("exam-list").innerHTML = futureExams().length ? futureExams().slice(0, 8).map(function (e) { return '<div class="item"><div><div class="item-title">' + esc(e.course) + '</div><div class="item-meta">' + esc(examTypeLabel(e.type)) + ' · ' + esc(e.date) + (e.start ? ' · ' + esc(timeRange(e.start, e.end)) : '') + (e.location ? ' · ' + esc(e.location) : '') + '</div></div><button class="remove-btn" data-exam-edit="' + esc(e.id) + '">Edit</button></div>'; }).join("") : '<div class="empty">No upcoming exams yet. Add one here or from your profile.</div>';
+        $("exam-list").innerHTML = futureExams().length ? futureExams().slice(0, 8).map(function (e) { return '<div class="item"><div><div class="item-title">' + esc(e.course) + '</div><div class="item-meta">' + esc(examTypeLabel(e.type)) + ' · ' + esc(e.date) + (e.start ? ' · ' + esc(timeRange(e.start, e.end)) : '') + (e.location ? ' · ' + esc(e.location) : '') + '</div></div><div class="item-actions"><button class="remove-btn edit" data-exam-edit="' + esc(e.id) + '">Edit</button><button class="remove-btn" data-exam-delete="' + esc(e.id) + '">Delete</button></div></div>'; }).join("") : '<div class="empty">No upcoming exams yet. Add one here or from your profile.</div>';
         $("exam-list").querySelectorAll("[data-exam-edit]").forEach(function (b) { b.addEventListener("click", function () { openExamEditor(b.dataset.examEdit); }); });
+        $("exam-list").querySelectorAll("[data-exam-delete]").forEach(function (b) { b.addEventListener("click", function () { deleteExamById(b.dataset.examDelete); }); });
         var stats = attendanceStats();
         $("attendance-list").innerHTML = stats.length ? stats.map(function (s) { return '<div class="item"><div><div class="item-title">' + esc(s.title) + '</div><div class="item-meta">' + s.skipped + ' skipped · ' + s.cancelled + ' cancelled · ' + s.exam + ' exam conflicts · ' + s.partial + ' excused</div></div></div>'; }).join("") : '<div class="empty">No class removals recorded yet.</div>';
         renderStudyOptions();
@@ -2863,7 +2909,8 @@
         if (e.itemId) return '<div class="day-card-actions"><button class="mini-btn danger" data-item-delete="' + esc(e.itemId) + '" type="button">Delete Event</button></div>';
         return "";
       }
-      function dayCardHtml(e) { return '<div class="day-card ' + eventClasses(e) + '"><div class="day-card-title">' + esc(e.title) + (e.online ? ' <span class="online-badge">Online</span>' : '') + '</div><div class="day-card-meta">' + esc(e.meta) + '</div>' + eventActionsHtml(e) + '</div>'; }
+      function eventTitleHtml(e) { return e.onlineLink ? '<a href="' + esc(e.onlineLink) + '" target="_blank" rel="noopener noreferrer">' + esc(e.title) + '</a>' : esc(e.title); }
+      function dayCardHtml(e) { return '<div class="day-card ' + eventClasses(e) + '"><div class="day-card-title">' + eventTitleHtml(e) + (e.online ? ' <span class="online-badge">Online</span>' : '') + '</div><div class="day-card-meta">' + esc(e.meta) + '</div>' + eventActionsHtml(e) + '</div>'; }
       function closeDay() { $("day-detail").classList.remove("open"); $("day-detail").setAttribute("aria-hidden", "true"); if (!$("event-editor").classList.contains("open")) document.body.style.overflow = ""; activeDayKey = ""; }
       function sameExamFields(a, b) {
         return String(a.course || "").trim().toUpperCase() === String(b.course || "").trim().toUpperCase()
@@ -2975,15 +3022,16 @@
         nextExams[examId] = current;
         profileRef.set({ exams: nextExams, updatedAt: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true }).then(function () { closeExamEditor(); toast(conflicts.length ? "Exam saved with conflict warning" : (wasEditing ? "Exam updated" : "Exam added")); });
       }
-      function deleteExam() {
-        if (!profileRef || !editingExamId) { toast("Open an exam first"); return; }
+      function deleteExamById(id) {
+        if (!profileRef || !id) { toast("Choose an exam first"); return; }
         var nextExams = Object.assign({}, examMap);
-        delete nextExams[editingExamId];
+        delete nextExams[id];
         profileRef.set({ exams: nextExams, updatedAt: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true }).then(function () {
-          closeExamEditor();
+          if (editingExamId === id) closeExamEditor();
           toast("Exam deleted");
         });
       }
+      function deleteExam() { deleteExamById(editingExamId); }
       function addClass() {
         var days = [].slice.call($("class-days").querySelectorAll("input:checked")).map(function (i) { return i.value; });
         var title = $("class-title").value.trim();
