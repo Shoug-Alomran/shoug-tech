@@ -31,6 +31,7 @@
       --term-badge-text: #fff;
       --summer-badge: #c07a1f;
       --gap-badge: #5b6472;
+      --extra-badge: #5a4fcf;
       --elective-badge: #3a3f4a;
 
       --not-taken-bg: #8a2b2b;
@@ -60,6 +61,7 @@
       --muted: #9a9ca3;
       --term-badge: #3f6fc0;
       --gap-badge: #7a828f;
+      --extra-badge: #766cf0;
       --not-taken-bg: #5c2323;
       --not-taken-border: #3f1717;
       --current-bg: #1f2126;
@@ -77,6 +79,7 @@
         --muted: #9a9ca3;
         --term-badge: #3f6fc0;
         --gap-badge: #7a828f;
+        --extra-badge: #766cf0;
         --not-taken-bg: #5c2323;
         --not-taken-border: #3f1717;
         --current-bg: #1f2126;
@@ -163,6 +166,11 @@
       color: var(--gap-badge);
     }
 
+    .actions button.add-extra:hover {
+      border-color: var(--extra-badge);
+      color: var(--extra-badge);
+    }
+
     .progress-bar {
       height: 8px;
       border-radius: 5px;
@@ -209,6 +217,10 @@
 
     .term-row.gap .term-label {
       background: var(--gap-badge);
+    }
+
+    .term-row.extra .term-label {
+      background: var(--extra-badge);
     }
 
     .gap-note {
@@ -493,6 +505,18 @@
 
     .course.view-only {
       cursor: default;
+    }
+
+
+    .course.elective-slot {
+      background: var(--empty-slot-bg);
+      color: var(--empty-slot-text);
+      border-inline-start-color: var(--term-badge);
+      cursor: default;
+    }
+
+    .course.elective-slot:hover {
+      filter: none;
     }
 
     .compare-overlay {
@@ -902,9 +926,13 @@
       }
 
       .actions .add-summer,
-      .actions .add-gap,
-      .actions #resetBtn {
+      .actions .add-extra,
+      .actions .add-gap {
         grid-column: span 2;
+      }
+
+      .actions #resetBtn {
+        grid-column: span 6;
       }
 
       .course {
@@ -993,6 +1021,7 @@
       }
 
       .actions .add-summer,
+      .actions .add-extra,
       .actions .add-gap,
       .actions #resetBtn {
         grid-column: span 3;
@@ -1065,6 +1094,7 @@
         <button class="lang-toggle" id="pypBtn" type="button">🎒</button>
         <button class="lang-toggle" id="langBtn" type="button">EN</button>
         <button class="add-summer" id="addSummerBtn"></button>
+        <button class="add-extra" id="addExtraBtn"></button>
         <button class="add-gap" id="addGapBtn"></button>
         <button id="resetBtn"></button>
       </div>
@@ -1121,6 +1151,19 @@
     <div class="summer-options" id="summerOptions"></div>
     <div class="summer-actions">
       <button id="summerCancelBtn" type="button"></button>
+    </div>
+  </div>
+
+  <div class="compare-overlay" id="extraOverlay"></div>
+  <div class="walk-panel summer-panel extra-panel" id="extraPanel">
+    <div class="compare-header">
+      <h2 id="extraTitle"></h2>
+      <button class="compare-close" id="extraCloseBtn" type="button">×</button>
+    </div>
+    <div class="sub" id="extraSub"></div>
+    <div class="summer-options" id="extraOptions"></div>
+    <div class="summer-actions">
+      <button id="extraCancelBtn" type="button"></button>
     </div>
   </div>
 
@@ -1222,6 +1265,14 @@
         addSummerCancel: 'إلغاء',
         addSummerAdded: label => `تمت إضافة ${label}.`,
         summerLabel: n => `صيفي ${n}`,
+        addExtra: '+ إضافة فصل إضافي',
+        addExtraTitle: 'إضافة فصل إضافي',
+        addExtraSub: 'اختر الفصل الذي يأتي الفصل الإضافي بعده. يمكن نقل المقررات إليه مثل أي فصل عادي.',
+        addExtraAfter: term => `بعد ${term}`,
+        addExtraMeta: term => `سيظهر فصل إضافي بعد ${term}.`,
+        addExtraCancel: 'إلغاء',
+        addExtraAdded: label => `تمت إضافة ${label}.`,
+        extraLabel: n => `فصل إضافي ${n}`,
         addGap: '+ إضافة فصل فراغ',
         addGapTitle: 'إضافة فصل فراغ',
         addGapSub: 'اختر الفصل الذي يأتي فصل الفراغ بعده. مخصص لمن أخذ سنة أو فصل فراغ.',
@@ -1232,7 +1283,7 @@
         gapLabel: n => `فصل فراغ ${n}`,
         gapNote: 'فصل فراغ — بدون مقررات.',
         gapNoCourses: 'فصل الفراغ لا يستقبل مقررات؛ إنه يمثل فترة توقف.',
-        resetConfirm: 'تصفير الخطة؟ سيُحذف التقدم والفصول الصيفية وفصول الفراغ والمقررات المضافة.',
+        resetConfirm: 'تصفير الخطة؟ سيُحذف التقدم والفصول الصيفية والإضافية وفصول الفراغ والمقررات المضافة.',
         moveBlockedPrereq: (code, pre) => `${code} يحتاج ${pre} قبله.`,
         moveBlockedDependent: (code, dep) => `${dep} يحتاج ${code} قبله.`,
         moveBlockedCritical: code => `${code} يمكن تقديمه فقط، لا تأخيره.`,
@@ -1314,8 +1365,8 @@
           ['السنة التحضيرية', 'معفي من السنة التحضيرية؟ اضغط 🎒 لإخفائها بالكامل.'],
           ['افتح التخرج', 'زر 🎓 يعطيك موعد التخرج وفصل التدريب وفصل استلام الشهادة.'],
         ],
-        walkCustomSteps: (summers, moved) => [
-          ['خطة مخصصة', `${summers} صيفي · ${moved} مقرر منقول.`],
+        walkCustomSteps: (summers, extras, gaps, moved) => [
+          ['خطة مخصصة', `${summers} صيفي · ${extras} إضافي · ${gaps} فراغ · ${moved} مقرر منقول.`],
           ['راجع المسار', 'تأكد أن المقررات المؤجلة أو المقدمة في مكانها الصحيح.'],
           ['قارن مع الأصل', '👁 يعرض نفس تقدمك لكن على ترتيب الجامعة الأصلي.'],
           ['المسار الحرج', 'الإطار الذهبي يعني أن مقرراً لاحقاً يحتاج إتمام هذا المقرر أولاً. يمكنك أخذه قبل موعده، لكن لا يمكن تأخيره.'],
@@ -1350,6 +1401,14 @@
         addSummerCancel: 'Cancel',
         addSummerAdded: label => `${label} added.`,
         summerLabel: n => `Summer ${n}`,
+        addExtra: '+ Add Extra Semester',
+        addExtraTitle: 'Add Extra Semester',
+        addExtraSub: 'Choose where the extra semester should go. You can move courses into it like a normal term.',
+        addExtraAfter: term => `After ${term}`,
+        addExtraMeta: term => `The extra semester will appear after ${term}.`,
+        addExtraCancel: 'Cancel',
+        addExtraAdded: label => `${label} added.`,
+        extraLabel: n => `Extra Semester ${n}`,
         addGap: '+ Add Gap Semester',
         addGapTitle: 'Add Gap Semester',
         addGapSub: 'Choose where the gap semester should go. For a gap year or gap semester with no courses.',
@@ -1360,7 +1419,7 @@
         gapLabel: n => `Gap Semester ${n}`,
         gapNote: 'Gap semester — no courses.',
         gapNoCourses: 'A gap semester can\'t hold courses; it represents time off.',
-        resetConfirm: "Reset the plan? This clears progress, summers, gap semesters, and added courses.",
+        resetConfirm: "Reset the plan? This clears progress, summers, extra semesters, gap semesters, and added courses.",
         moveBlockedPrereq: (code, pre) => `${code} needs ${pre} first.`,
         moveBlockedDependent: (code, dep) => `${dep} needs ${code} first.`,
         moveBlockedCritical: code => `${code} can move earlier, not later.`,
@@ -1442,8 +1501,8 @@
           ['Prep year', 'Exempt from the prep year? Tap 🎒 to hide it completely.'],
           ['Open graduation', 'The 🎓 panel shows graduation, co-op term, and degree term.'],
         ],
-        walkCustomSteps: (summers, moved) => [
-          ['Custom plan', `${summers} summer · ${moved} moved.`],
+        walkCustomSteps: (summers, extras, gaps, moved) => [
+          ['Custom plan', `${summers} summer · ${extras} extra · ${gaps} gap · ${moved} moved.`],
           ['Review sequence', 'Make sure delayed or early courses are in the right places.'],
           ['Compare with original', '👁 keeps your progress colors, but shows them on the university original plan.'],
           ['Critical path', 'A gold ring means a later course needs this one done first. You can take it earlier than shown, just not later.'],
@@ -2548,12 +2607,30 @@
       }
     ];
 
+    const ELECTIVE_SLOTS = [
+      {
+        group: 'grp-a',
+        term: 't1',
+        count: 2
+      },
+      {
+        group: 'grp-b',
+        term: 't7',
+        count: 2
+      },
+      {
+        group: 'grp-c',
+        term: 't7',
+        count: 1
+      }
+    ];
+
     /* ---------- State ---------- */
     const STORAGE_KEY = 'shoug_academic_plan_grid_is_ai_v1';
     const STATES = ['not-taken', 'current', 'completed'];
     let statusMap = {};      // code -> status
     let assignments = {};    // code -> location id (a term id or an elective group id)
-    let extraTerms = [];     // user-added summer terms {id,labelAr,labelEn,order,isSummer}
+    let extraTerms = [];     // user-added terms {id,labelAr,labelEn,order,isSummer,isExtra,isGap}
     let customCourses = [];  // user-added courses (same shape as COURSES entries)
     let examMap = {};        // code -> true if waived via a promotion/placement test (examEligible courses only)
     let selectedMoveCode = null; // tap-to-move support for touch devices
@@ -2951,6 +3028,59 @@
       render();
     }
 
+    function addExtraTerm() {
+      toggleExtraPicker(true);
+    }
+
+    function toggleExtraPicker(force) {
+      const overlay = document.getElementById('extraOverlay');
+      const panel = document.getElementById('extraPanel');
+      const shouldOpen = typeof force === 'boolean' ? force : !panel.classList.contains('open');
+      overlay.classList.toggle('open', shouldOpen);
+      panel.classList.toggle('open', shouldOpen);
+      if (shouldOpen) renderExtraOptions();
+    }
+
+    function renderExtraOptions() {
+      const s = t();
+      const options = document.getElementById('extraOptions');
+      const baseSorted = BASE_TERMS.slice().sort((a, b) => a.order - b.order);
+      options.innerHTML = '';
+      baseSorted.forEach(term => {
+        const label = termLabel(term);
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'summer-option';
+        const title = document.createElement('span');
+        title.className = 'summer-option-title';
+        title.textContent = s.addExtraAfter(label);
+        const meta = document.createElement('span');
+        meta.className = 'summer-option-meta';
+        meta.textContent = s.addExtraMeta(label);
+        btn.append(title, meta);
+        btn.addEventListener('click', () => confirmAddExtraTerm(term));
+        options.appendChild(btn);
+      });
+    }
+
+    function confirmAddExtraTerm(afterTerm) {
+      const countSoFar = extraTerms.filter(term => term.isExtra).length + 1;
+      const id = 'extra-' + Date.now();
+      const labelAr = 'فصل إضافي ' + countSoFar;
+      const labelEn = 'Extra Semester ' + countSoFar;
+      extraTerms.push({
+        id,
+        labelAr,
+        labelEn,
+        order: afterTerm.order + 0.5,
+        isExtra: true,
+      });
+      toggleExtraPicker(false);
+      saveState();
+      render();
+      toast(t().addExtraAdded(lang === 'ar' ? labelAr : labelEn));
+    }
+
     function addGapTerm() {
       toggleGapPicker(true);
     }
@@ -3015,17 +3145,23 @@
       pypBtn.title = gradState.dropPYP ? s.pypRestoreTitle : s.pypDropTitle;
       pypBtn.classList.toggle('active', !!gradState.dropPYP);
       document.getElementById('addSummerBtn').textContent = s.addSummer;
+      document.getElementById('addExtraBtn').textContent = s.addExtra;
       document.getElementById('addGapBtn').textContent = s.addGap;
       document.getElementById('resetBtn').textContent = s.reset;
       document.getElementById('summerTitle').textContent = s.addSummerTitle;
       document.getElementById('summerSub').textContent = s.addSummerSub;
       document.getElementById('summerCancelBtn').textContent = s.addSummerCancel;
+      document.getElementById('extraTitle').textContent = s.addExtraTitle;
+      document.getElementById('extraSub').textContent = s.addExtraSub;
+      document.getElementById('extraCancelBtn').textContent = s.addExtraCancel;
       document.getElementById('gapTitle').textContent = s.addGapTitle;
       document.getElementById('gapSub').textContent = s.addGapSub;
       document.getElementById('gapCancelBtn').textContent = s.addGapCancel;
       if (document.getElementById('summerPanel').classList.contains('open')) renderSummerOptions();
+      if (document.getElementById('extraPanel').classList.contains('open')) renderExtraOptions();
       if (document.getElementById('gapPanel').classList.contains('open')) renderGapOptions();
       document.getElementById('addSummerBtn').style.display = viewMode ? 'none' : '';
+      document.getElementById('addExtraBtn').style.display = viewMode ? 'none' : '';
       document.getElementById('addGapBtn').style.display = viewMode ? 'none' : '';
       document.getElementById('resetBtn').style.display = viewMode ? 'none' : '';
       document.getElementById('legendRed').textContent = s.legendRed;
@@ -3086,11 +3222,12 @@
       const doneCount = courses.filter(c => isCourseDone(c)).length;
       const currentCount = courses.filter(c => statusMap[c.code] === 'current' && !isCourseDone(c)).length;
       const summerCount = extraTerms.filter(term => term.isSummer).length;
+      const extraCount = extraTerms.filter(term => term.isExtra).length;
       const gapCount = extraTerms.filter(term => term.isGap).length;
       const movedCount = courses.filter(c => assignments[c.code] && assignments[c.code] !== defaultLocation(c)).length;
-      const hasCustomLayout = summerCount > 0 || gapCount > 0 || movedCount > 0 || customCourses.length > 0;
+      const hasCustomLayout = summerCount > 0 || extraCount > 0 || gapCount > 0 || movedCount > 0 || customCourses.length > 0;
       return hasCustomLayout
-        ? s.walkCustomSteps(summerCount, movedCount)
+        ? s.walkCustomSteps(summerCount, extraCount, gapCount, movedCount)
         : (doneCount > 0 || currentCount > 0 ? s.walkProgressSteps(doneCount, currentCount) : s.walkBlankSteps);
     }
 
@@ -3107,7 +3244,7 @@
 
     function buildTermRow(term, map, gateways) {
       const row = document.createElement('div');
-      row.className = 'term-row' + (term.isSummer ? ' summer' : '') + (term.isGap ? ' gap' : '');
+      row.className = 'term-row' + (term.isSummer ? ' summer' : '') + (term.isExtra ? ' extra' : '') + (term.isGap ? ' gap' : '');
 
       const label = document.createElement('div');
       label.className = 'term-label';
@@ -3120,7 +3257,7 @@
           moveSelectedCourse(term.id);
         });
       }
-      if ((term.isSummer || term.isGap) && !viewMode) {
+      if ((term.isSummer || term.isExtra || term.isGap) && !viewMode) {
         const rm = document.createElement('button');
         rm.className = 'term-remove';
         rm.textContent = '×';
@@ -3290,6 +3427,17 @@
 
     // Renders the plan exactly as the official COURSES data lists it (term/group), ignoring drag moves,
     // added summer terms, and custom courses — so it reflects only what the university originally planned.
+
+    function staticElectiveSlotEl(slot, slotIndex, slotCount) {
+      const group = ELECTIVE_GROUPS.find(g => g.id === slot.group);
+      const div = document.createElement('div');
+      div.className = 'course elective-slot';
+      const label = group && group.label ? group.label : t().elective;
+      const suffix = slotCount > 1 ? ' ' + (slotIndex + 1) + '/' + slotCount : '';
+      div.innerHTML = '<div class="code-row"><span class="code">' + t().elective + '</span></div><span class="name">' + label + suffix + '</span>';
+      return div;
+    }
+
     function renderCompare() {
       const comparePrep = document.getElementById('compare-prep');
       const compareMain = document.getElementById('compare-main');
@@ -3311,6 +3459,11 @@
         const courses = document.createElement('div');
         courses.className = 'term-courses';
         COURSES.filter(c => c.term === term.id).forEach(c => courses.appendChild(staticCourseEl(c)));
+        ELECTIVE_SLOTS.filter(slot => slot.term === term.id).forEach(slot => {
+          for (let slotIndex = 0; slotIndex < slot.count; slotIndex++) {
+            courses.appendChild(staticElectiveSlotEl(slot, slotIndex, slot.count));
+          }
+        });
         row.appendChild(courses);
 
         (term.isPrep ? comparePrep : compareMain).appendChild(row);
@@ -3595,7 +3748,7 @@
         .filter(term => term.order > currentPositionOrder)
         .filter(term => Object.values(map).some(c => assignments[c.code] === term.id && !isCourseDone(c)));
       const coopRemaining = remainingTermsList.some(term => term.id === 't8') ? 1 : 0;
-      const regularRemaining = remainingTermsList.filter(term => !term.isSummer && term.id !== 't8').length;
+      const regularRemaining = remainingTermsList.filter(term => !term.isSummer && !term.isGap && term.id !== 't8').length;
       const summerCount = remainingTermsList.filter(term => term.isSummer).length;
       const totalsForPace = totalPlanRequirements(termId);
 
@@ -3730,10 +3883,14 @@
       }
     });
     document.getElementById('addSummerBtn').addEventListener('click', addSummerTerm);
+    document.getElementById('addExtraBtn').addEventListener('click', addExtraTerm);
     document.getElementById('summerCloseBtn').addEventListener('click', () => toggleSummerPicker(false));
     document.getElementById('summerCancelBtn').addEventListener('click', () => toggleSummerPicker(false));
     document.getElementById('summerOverlay').addEventListener('click', () => toggleSummerPicker(false));
     document.getElementById('addGapBtn').addEventListener('click', addGapTerm);
+    document.getElementById('extraCloseBtn').addEventListener('click', () => toggleExtraPicker(false));
+    document.getElementById('extraCancelBtn').addEventListener('click', () => toggleExtraPicker(false));
+    document.getElementById('extraOverlay').addEventListener('click', () => toggleExtraPicker(false));
     document.getElementById('gapCloseBtn').addEventListener('click', () => toggleGapPicker(false));
     document.getElementById('gapCancelBtn').addEventListener('click', () => toggleGapPicker(false));
     document.getElementById('gapOverlay').addEventListener('click', () => toggleGapPicker(false));
