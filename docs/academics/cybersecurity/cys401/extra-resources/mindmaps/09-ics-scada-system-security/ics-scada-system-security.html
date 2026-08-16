@@ -1,0 +1,1511 @@
+<!DOCTYPE html>
+<html lang="en">
+<script>!function(){var t=localStorage.getItem("shoug-theme");if(t)document.documentElement.setAttribute("data-theme",t);}();</script>
+
+<head>
+    <link rel="icon" type="image/png" href="/assets/shoug-favicon-v3.png">
+    <link rel="shortcut icon" href="/assets/shoug-favicon-v3.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/shoug-apple-touch-icon-v3.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ICS / SCADA System Security — CYS401 Mindmap</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0d1117;
+            --surface: #161b22;
+            --surface2: #1f2937;
+            --border: #30363d;
+            --text: #e6edf3;
+            --text-muted: #8b949e;
+            --accent: #58a6ff;
+            --accent2: #3fb950;
+            --accent3: #d2a8ff;
+            --accent4: #ffa657;
+            --accent5: #ff7b72;
+            --accent6: #79c0ff;
+            --node-root: #1a2744;
+            --node-root-border: #58a6ff;
+            --node-l1: #1a2a1e;
+            --node-l1-border: #3fb950;
+            --node-l2: #2a1f3d;
+            --node-l2-border: #d2a8ff;
+            --node-l3: #2a1f18;
+            --node-l3-border: #ffa657;
+            --node-selected: #0d2442;
+            --node-selected-border: #58a6ff;
+            --shadow: rgba(0, 0, 0, 0.5);
+            --connector: #30363d;
+            --panel-bg: #161b22;
+            --panel-border: #30363d;
+            --toolbar-bg: rgba(13, 17, 23, 0.92);
+            --search-bg: #21262d;
+            --search-border: #30363d;
+            --transition: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        [data-theme="light"] {
+            --bg: #f6f8fa;
+            --surface: #ffffff;
+            --surface2: #f0f2f5;
+            --border: #d0d7de;
+            --text: #1f2328;
+            --text-muted: #656d76;
+            --accent: #0969da;
+            --accent2: #1a7f37;
+            --accent3: #8250df;
+            --accent4: #bc4c00;
+            --accent5: #cf222e;
+            --accent6: #0550ae;
+            --node-root: #dbeafe;
+            --node-root-border: #0969da;
+            --node-l1: #dcfce7;
+            --node-l1-border: #1a7f37;
+            --node-l2: #ede9fe;
+            --node-l2-border: #8250df;
+            --node-l3: #fff7ed;
+            --node-l3-border: #bc4c00;
+            --node-selected: #bfdbfe;
+            --node-selected-border: #0969da;
+            --shadow: rgba(0, 0, 0, 0.12);
+            --connector: #c8d1da;
+            --panel-bg: #ffffff;
+            --panel-border: #d0d7de;
+            --toolbar-bg: rgba(246, 248, 250, 0.92);
+            --search-bg: #f6f8fa;
+            --search-border: #d0d7de;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            height: 100vh;
+            overflow: hidden;
+            transition: background var(--transition), color var(--transition);
+            user-select: none;
+        }
+
+        /* TOOLBAR */
+        #toolbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            background: var(--toolbar-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            height: 56px;
+            transition: background var(--transition), border-color var(--transition);
+        }
+
+        .toolbar-brand {
+            font-family: 'DM Serif Display', serif;
+            font-size: 16px;
+            color: var(--text);
+            white-space: nowrap;
+            margin-right: 8px;
+            letter-spacing: -0.3px;
+        }
+
+        .toolbar-brand span {
+            color: var(--accent);
+        }
+
+        .toolbar-sep {
+            width: 1px;
+            height: 24px;
+            background: var(--border);
+            margin: 0 4px;
+        }
+
+        #search-wrap {
+            position: relative;
+            flex: 1;
+            max-width: 280px;
+        }
+
+        #search-wrap svg {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        #search {
+            width: 100%;
+            background: var(--search-bg);
+            border: 1px solid var(--search-border);
+            border-radius: 8px;
+            padding: 6px 12px 6px 34px;
+            color: var(--text);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 13px;
+            outline: none;
+            transition: border-color 0.2s, background var(--transition);
+        }
+
+        #search:focus {
+            border-color: var(--accent);
+        }
+
+        #search::placeholder {
+            color: var(--text-muted);
+        }
+
+        .tb-btn {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 6px 11px;
+            color: var(--text);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s, border-color 0.2s, transform 0.1s;
+            white-space: nowrap;
+        }
+
+        .tb-btn:hover {
+            background: var(--border);
+            transform: translateY(-1px);
+        }
+
+        .tb-btn:active {
+            transform: translateY(0);
+        }
+
+        .tb-btn svg {
+            flex-shrink: 0;
+        }
+
+        #theme-toggle {
+            font-size: 16px;
+            padding: 6px 10px;
+        }
+
+        #search-results {
+            position: absolute;
+            top: calc(100% + 6px);
+            left: 0;
+            right: 0;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            box-shadow: 0 8px 32px var(--shadow);
+            z-index: 200;
+            max-height: 260px;
+            overflow-y: auto;
+            display: none;
+        }
+
+        .sr-item {
+            padding: 9px 14px;
+            font-size: 13px;
+            cursor: pointer;
+            border-bottom: 1px solid var(--border);
+            transition: background 0.15s;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .sr-item:last-child {
+            border-bottom: none;
+        }
+
+        .sr-item:hover {
+            background: var(--surface2);
+        }
+
+        .sr-item .sr-path {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .sr-item mark {
+            background: transparent;
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        /* CANVAS */
+        #canvas-wrap {
+            position: fixed;
+            top: 56px;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            overflow: hidden;
+            cursor: grab;
+        }
+
+        #canvas-wrap.grabbing {
+            cursor: grabbing;
+        }
+
+        #canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4000px;
+            height: 4000px;
+            transform-origin: 0 0;
+        }
+
+        #svg-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        /* NODES */
+        .node {
+            position: absolute;
+            border-radius: 14px;
+            border: 2px solid;
+            cursor: pointer;
+            transition:
+                box-shadow 0.25s,
+                transform 0.25s,
+                background 0.25s,
+                border-color 0.25s,
+                opacity 0.25s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            max-width: 220px;
+            min-width: 120px;
+        }
+
+        .node:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 8px 24px var(--shadow);
+            z-index: 10;
+        }
+
+        .node.root {
+            background: var(--node-root);
+            border-color: var(--node-root-border);
+            font-family: 'DM Serif Display', serif;
+            font-size: 15px;
+            min-width: 160px;
+            max-width: 240px;
+            box-shadow: 0 0 0 4px rgba(88, 166, 255, 0.15), 0 4px 20px var(--shadow);
+        }
+
+        .node.level-1 {
+            background: var(--node-l1);
+            border-color: var(--node-l1-border);
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .node.level-2 {
+            background: var(--node-l2);
+            border-color: var(--node-l2-border);
+            font-size: 12.5px;
+        }
+
+        .node.level-3 {
+            background: var(--node-l3);
+            border-color: var(--node-l3-border);
+            font-size: 12px;
+        }
+
+        .node.selected {
+            background: var(--node-selected) !important;
+            border-color: var(--node-selected-border) !important;
+            box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.3), 0 6px 24px var(--shadow) !important;
+            z-index: 20;
+        }
+
+        .node.highlighted {
+            box-shadow: 0 0 0 3px var(--accent4), 0 4px 16px var(--shadow) !important;
+        }
+
+        .node-text {
+            flex: 1;
+            line-height: 1.35;
+            word-break: break-word;
+        }
+
+        .chevron {
+            flex-shrink: 0;
+            width: 16px;
+            height: 16px;
+            opacity: 0.6;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s;
+        }
+
+        .node.expanded .chevron {
+            transform: rotate(90deg);
+            opacity: 1;
+        }
+
+        .leaf-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--text-muted);
+            flex-shrink: 0;
+            transition: background 0.2s;
+        }
+
+        .node.selected .leaf-dot,
+        .node:hover .leaf-dot {
+            background: var(--accent);
+        }
+
+        /* CONNECTOR LINES */
+        .connector {
+            fill: none;
+            stroke: var(--connector);
+            stroke-width: 1.5;
+            transition: stroke var(--transition);
+        }
+
+        /* PANEL */
+        #panel {
+            position: fixed;
+            top: 56px;
+            right: -440px;
+            width: 420px;
+            bottom: 0;
+            background: var(--panel-bg);
+            border-left: 1px solid var(--panel-border);
+            z-index: 90;
+            display: flex;
+            flex-direction: column;
+            transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1), background var(--transition), border-color var(--transition);
+            box-shadow: -8px 0 40px var(--shadow);
+        }
+
+        #panel.open {
+            right: 0;
+        }
+
+        #panel-header {
+            padding: 20px 20px 16px;
+            border-bottom: 1px solid var(--panel-border);
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        #panel-title {
+            font-family: 'DM Serif Display', serif;
+            font-size: 20px;
+            line-height: 1.3;
+            flex: 1;
+            color: var(--text);
+        }
+
+        #panel-close {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 6px;
+            transition: color 0.2s, background 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        #panel-close:hover {
+            color: var(--text);
+            background: var(--surface2);
+        }
+
+        #panel-body {
+            padding: 20px;
+            overflow-y: auto;
+            flex: 1;
+            line-height: 1.75;
+            font-size: 14px;
+            color: var(--text);
+        }
+
+        #panel-body p {
+            margin-bottom: 14px;
+        }
+
+        #panel-body strong {
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        #panel-body em {
+            color: var(--accent3);
+            font-style: italic;
+        }
+
+        .panel-tag {
+            display: inline-block;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 3px 10px;
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--text-muted);
+            margin-bottom: 14px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        /* ZOOM BADGE */
+        #zoom-badge {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 5px 14px;
+            font-size: 12px;
+            color: var(--text-muted);
+            z-index: 50;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        /* FOOTER */
+        #footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--toolbar-bg);
+            backdrop-filter: blur(12px);
+            border-top: 1px solid var(--border);
+            z-index: 100;
+            font-size: 12px;
+            color: var(--text-muted);
+            gap: 6px;
+            transition: background var(--transition), border-color var(--transition);
+        }
+
+        #footer span {
+            font-weight: 600;
+            color: var(--text);
+            font-family: 'DM Serif Display', serif;
+            letter-spacing: 0.2px;
+        }
+
+        /* SCROLLBAR */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 3px;
+        }
+
+        /* NODE ANIMATION */
+        @keyframes nodeIn {
+            from {
+                opacity: 0;
+                transform: translateX(-12px) scale(0.95);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0) scale(1);
+            }
+        }
+
+        .node {
+            animation: nodeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) both;
+        }
+    </style>
+
+    <meta name="description" content="Interactive CYS401 Chapter 9 ICS / SCADA System Security mindmap with expandable concepts, worked examples, search, zoom, pan, and PNG export.">
+    <link rel="canonical" href="https://shoug-tech.com/Academics/cybersecurity/cys401/extra-resources/mindmaps/09-ics-scada-system-security/ics-scada-system-security.html">
+    <meta property="og:title" content="ICS / SCADA System Security — CYS401 Mindmap">
+    <meta property="og:description" content="Interactive CYS401 Chapter 9 ICS / SCADA System Security mindmap with expandable concepts, worked examples, search, zoom, pan, and PNG export.">
+    <meta property="og:url" content="https://shoug-tech.com/Academics/cybersecurity/cys401/extra-resources/mindmaps/09-ics-scada-system-security/ics-scada-system-security.html">
+    <meta property="og:type" content="article">
+    <meta property="og:image" content="https://shoug-tech.com/assets/og-banner.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="ICS / SCADA System Security — CYS401 Mindmap">
+    <meta name="twitter:description" content="Interactive CYS401 Chapter 9 ICS / SCADA System Security mindmap with expandable concepts, worked examples, search, zoom, pan, and PNG export.">
+    <meta name="twitter:image" content="https://shoug-tech.com/assets/og-banner.png">
+    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebPage", "url": "https://shoug-tech.com/Academics/cybersecurity/cys401/extra-resources/mindmaps/09-ics-scada-system-security/ics-scada-system-security.html", "name": "ICS / SCADA System Security \u2014 CYS401 Mindmap", "description": "Interactive CYS401 Chapter 9 ICS / SCADA System Security mindmap with expandable concepts, worked examples, search, zoom, pan, and PNG export.", "isPartOf": {"@type": "WebSite", "name": "Shoug's Digital Garden", "url": "https://shoug-tech.com/"}}</script>
+
+      <link rel="alternate" hreflang="en" href="https://shoug-tech.com/Academics/cybersecurity/cys401/extra-resources/mindmaps/09-ics-scada-system-security/ics-scada-system-security.html">
+      <link rel="alternate" hreflang="ar" href="https://shoug-tech.com/ar/Academics/cybersecurity/cys401/extra-resources/mindmaps/09-ics-scada-system-security/ics-scada-system-security.html">
+      <link rel="alternate" hreflang="x-default" href="https://shoug-tech.com/Academics/cybersecurity/cys401/extra-resources/mindmaps/09-ics-scada-system-security/ics-scada-system-security.html">
+
+    <!-- Microsoft Clarity tracking code for https://shoug-tech.com/ -->
+    <script type="text/javascript">
+        (function(c,l,a,r,i,t,y){
+            c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+            t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+            y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+        })(window, document, "clarity", "script", "xub0eqmvs9");
+    </script>
+</head>
+
+<body data-theme="dark">
+
+    <!-- TOOLBAR -->
+    <div id="toolbar">
+        <div class="toolbar-brand">Mind<span>Map</span></div>
+        <div class="toolbar-sep"></div>
+
+        <div id="search-wrap">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+            <input id="search" type="text" placeholder="Search topics…" autocomplete="off">
+            <div id="search-results"></div>
+        </div>
+
+        <div class="toolbar-sep"></div>
+
+        <button class="tb-btn" id="theme-toggle" title="Toggle theme">🌙</button>
+        <button class="tb-btn" onclick="zoom(0.15)" title="Zoom in">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                <line x1="11" y1="8" x2="11" y2="14" />
+                <line x1="8" y1="11" x2="14" y2="11" />
+            </svg>
+            Zoom In
+        </button>
+        <button class="tb-btn" onclick="zoom(-0.15)" title="Zoom out">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                <line x1="8" y1="11" x2="14" y2="11" />
+            </svg>
+            Zoom Out
+        </button>
+        <button class="tb-btn" onclick="resetView()" title="Reset view">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polyline points="1 4 1 10 7 10" />
+                <path d="M3.51 15a9 9 0 1 0 .49-4.87" />
+            </svg>
+            Reset
+        </button>
+        <button class="tb-btn" onclick="expandAll()" title="Expand all">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polyline points="7 13 12 18 17 13" />
+                <polyline points="7 6 12 11 17 6" />
+            </svg>
+            Expand All
+        </button>
+        <button class="tb-btn" onclick="collapseAll()" title="Collapse all">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polyline points="7 11 12 6 17 11" />
+                <polyline points="7 18 12 13 17 18" />
+            </svg>
+            Collapse All
+        </button>
+        <button class="tb-btn" onclick="exportPNG()" title="Export PNG">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="7 10 12 15 17 10" />
+                <line x1="12" y1="15" x2="12" y2="3" />
+            </svg>
+            Export
+        </button>
+    </div>
+
+    <!-- CANVAS -->
+    <div id="canvas-wrap">
+        <div id="canvas">
+            <svg id="svg-layer"></svg>
+        </div>
+    </div>
+
+    <!-- PANEL -->
+    <div id="panel">
+        <div id="panel-header">
+            <div id="panel-title">Node Title</div>
+            <button id="panel-close" onclick="closePanel()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <line x1="18" y1="6" x2="6" y2="18" />
+                    <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+            </button>
+        </div>
+        <div id="panel-body"></div>
+    </div>
+
+    <!-- ZOOM BADGE -->
+    <div id="zoom-badge">100%</div>
+
+    <!-- FOOTER -->
+    <div id="footer">
+        Made by <span>Shoug Alomran</span> &nbsp;·&nbsp; ICS / SCADA System Security Mindmap
+    </div>
+
+    <script>
+        // ─────────────────────────────────────────────
+        // DATA
+        // ─────────────────────────────────────────────
+        const DATA = {
+    "id": "root",
+    "label": "ICS / SCADA System Security",
+    "desc": "<span class=\"panel-tag\">CYS401 · Chapter 9</span><p>A comprehensive concept map for <strong>ICS / SCADA System Security</strong>.</p><p>Expand a branch to see its concepts, then select any node for the full explanation and a worked example. You can search topics, zoom, pan, and export the map.</p>",
+    "children": [
+        {
+            "id": "branch-1",
+            "label": "What ICS/SCADA Is",
+            "desc": "<span class=\"panel-tag\">Core Concept</span><p>Cyber-physical systems that watch and control physical machinery, where a cyber attack becomes a physical hazard.</p>",
+            "children": [
+                {
+                    "id": "branch-1-detail-1",
+                    "label": "SCADA",
+                    "desc": "<span class=\"panel-tag\">Definition</span><p>SCADA stands for <strong>Supervisory Control And Data Acquisition</strong> — the 'brain' that watches and controls physical machines from a central place.</p><p><strong>In everyday terms:</strong> The control room in a power station with wall-sized screens showing every substation is SCADA in its most recognisable form.</p>"
+                },
+                {
+                    "id": "branch-1-detail-2",
+                    "label": "Cyber-Physical Systems",
+                    "desc": "<span class=\"panel-tag\">Definition</span><p>CPS is a fusion of ICT — software and networks — with the physical world, connected through <strong>sensors</strong> for input and <strong>actuators</strong> for output.</p><p><strong>In everyday terms:</strong> A modern car is a cyber-physical system: software reads wheel-speed sensors and physically applies the brakes during ABS, faster than a human could.</p>"
+                },
+                {
+                    "id": "branch-1-detail-3",
+                    "label": "ICS",
+                    "desc": "<span class=\"panel-tag\">Definition</span><p>Industrial Control Systems is the umbrella term for control systems used in critical infrastructure. SCADA and DCS (Distributed Control Systems) are both types of ICS.</p>"
+                },
+                {
+                    "id": "branch-1-detail-4",
+                    "label": "Why It Matters",
+                    "desc": "<span class=\"panel-tag\">Stakes</span><p>ICS controls power grids, water treatment, and oil and gas, so a cyber attack becomes a <strong>physical hazard</strong>. It can affect national safety and the economy, and human lives are at stake.</p><p><strong>In everyday terms:</strong> An IT breach leaks data. An OT breach can contaminate a water supply or shut off power to a hospital — which is why this chapter's priorities differ from every other chapter.</p>"
+                },
+                {
+                    "id": "branch-1-detail-5",
+                    "label": "Applications",
+                    "desc": "<span class=\"panel-tag\">Reference</span><p>Real-world applications are the smart grid, water treatment, oil and gas, transportation, telecom, manufacturing, and medical/OT systems.</p><p><strong>In everyday terms:</strong> Every one of these touches daily life directly — the electricity in your home and the water from your tap are both running on systems in this list.</p>"
+                }
+            ]
+        },
+        {
+            "id": "branch-2",
+            "label": "ICS/SCADA Architecture",
+            "desc": "<span class=\"panel-tag\">Core Concept</span><p>Four hardware components form a data pipeline from the physical world to the control centre.</p>",
+            "children": [
+                {
+                    "id": "branch-2-detail-1",
+                    "label": "Field Instruments",
+                    "desc": "<span class=\"panel-tag\">Component 1</span><p>Field instruments are the sensors, actuators, valves, and pumps that touch the physical process directly. They are the point where software meets the physical world.</p>"
+                },
+                {
+                    "id": "branch-2-detail-2",
+                    "label": "PLCs and RTUs",
+                    "desc": "<span class=\"panel-tag\">Component 2</span><p>PLCs and RTUs process and control local devices, sitting between the field instruments and the wider network.</p><p><strong>In everyday terms:</strong> They are the layer that keeps the plant running even when the link to the control centre drops, because the local logic does not need permission to act.</p>"
+                },
+                {
+                    "id": "branch-2-detail-3",
+                    "label": "Communications",
+                    "desc": "<span class=\"panel-tag\">Component 3</span><p>The communications layer covers wired, wireless, satellite, and fibre links carrying data between the field and the control centre. Its geographic spread is what makes it hard to secure.</p>"
+                },
+                {
+                    "id": "branch-2-detail-4",
+                    "label": "SCADA Control Centre",
+                    "desc": "<span class=\"panel-tag\">Component 4</span><p>The control centre holds the MTU, HMI, OPC server, and database — where operators actually see and command the system.</p><p><strong>In everyday terms:</strong> It is the room with the wall of screens — the only place in the architecture where a human actually sees the whole process at once.</p>"
+                },
+                {
+                    "id": "branch-2-detail-5",
+                    "label": "Sensors vs Actuators",
+                    "desc": "<span class=\"panel-tag\">Detail</span><p><strong>Sensors are INPUT</strong>: they measure temperature, pressure, flow, and voltage. <strong>Actuators are OUTPUT</strong>: they take mechanical or electronic action. Both are critical analog devices for PLCs and RTUs.</p><p><strong>In everyday terms:</strong> A thermostat has both: the thermometer is the sensor, the relay that switches the heater on is the actuator.</p>"
+                },
+                {
+                    "id": "branch-2-detail-6",
+                    "label": "PLC vs RTU",
+                    "desc": "<span class=\"panel-tag\">Detail</span><p>A <strong>PLC</strong> is a rugged industrial computer that runs predefined logic and controls outputs directly. An <strong>RTU</strong> is a telemetry device that collects data from sensors and sends it to the MTU. In sophisticated systems, PLCs can act as RTUs.</p><p><strong>In everyday terms:</strong> The PLC decides and acts locally; the RTU mainly reports upward. That distinction is what the exam tests.</p>"
+                },
+                {
+                    "id": "branch-2-detail-7",
+                    "label": "MTU — The Heart",
+                    "desc": "<span class=\"panel-tag\">Detail</span><p>The Master Terminal Unit is the <strong>heart</strong> of SCADA. It initiates all communication, collects and stores data in the database, and provides the HMI interface to operators.</p><p><strong>In everyday terms:</strong> If a question asks what MTU stands for, the answer is Master Terminal Unit, and 'the heart of SCADA' is the phrase to remember it by.</p>"
+                },
+                {
+                    "id": "branch-2-detail-8",
+                    "label": "OPC Server",
+                    "desc": "<span class=\"panel-tag\">Detail</span><p>OPC — OLE for Process Control — is a software interface letting Windows communicate with industrial hardware. It acts as a translator between the IT and OT worlds.</p><p><strong>In everyday terms:</strong> It is the adapter that lets an ordinary Windows application read from a controller designed decades before that application existed.</p>"
+                },
+                {
+                    "id": "branch-2-detail-9",
+                    "label": "Purdue Model",
+                    "desc": "<span class=\"panel-tag\">Architecture</span><p>The Purdue Enterprise Reference Architecture has six levels: <strong>0</strong> Physical Process (pipes, machines, turbines), <strong>1</strong> Sensors and Actuators, <strong>2</strong> PLCs and RTUs for local control logic, <strong>3</strong> SCADA and HMI for supervisory control and data historians, <strong>4</strong> Enterprise IT Systems such as ERP and corporate networks, and <strong>5</strong> Cloud and External Networks.</p><p><strong>In everyday terms:</strong> Know the levels bottom to top: Physical → Sensors → Control → SCADA → Enterprise → Cloud. Attacks travel downward from level 5, and defence is about stopping that descent.</p>"
+                }
+            ]
+        },
+        {
+            "id": "branch-3",
+            "label": "IT vs OT Environments",
+            "desc": "<span class=\"panel-tag\">Core Concept</span><p>The priorities of operational technology are the reverse of standard IT, and this is the chapter's central exam concept.</p>",
+            "children": [
+                {
+                    "id": "branch-3-detail-1",
+                    "label": "Focus",
+                    "desc": "<span class=\"panel-tag\">Comparison</span><p>IT focuses on <strong>data processing</strong>. OT focuses on <strong>physical processes</strong>.</p>"
+                },
+                {
+                    "id": "branch-3-detail-2",
+                    "label": "Top Priority",
+                    "desc": "<span class=\"panel-tag\">Comparison</span><p>IT's top priority is <strong>Confidentiality</strong>. OT's top priority is <strong>Availability and Safety</strong>. This inversion drives every other difference in the table.</p>"
+                },
+                {
+                    "id": "branch-3-detail-3",
+                    "label": "Downtime Tolerance",
+                    "desc": "<span class=\"panel-tag\">Comparison</span><p>In IT, downtime is somewhat acceptable — a maintenance window is normal. In OT, downtime must be minimal and preferably zero.</p><p><strong>In everyday terms:</strong> A company email server can be offline at 2am on Sunday. A water treatment plant cannot.</p>"
+                },
+                {
+                    "id": "branch-3-detail-4",
+                    "label": "Updates and Patches",
+                    "desc": "<span class=\"panel-tag\">Comparison</span><p>IT patches frequently and automatically. OT updates slowly, carefully, and rarely, because a failed patch has physical consequences and the maintenance window may come once a year.</p><p><strong>In everyday terms:</strong> Your laptop reboots for updates whenever it likes. A turbine controller cannot be rebooted because a patch is available.</p>"
+                },
+                {
+                    "id": "branch-3-detail-5",
+                    "label": "System Lifecycle",
+                    "desc": "<span class=\"panel-tag\">Comparison</span><p>IT systems live 3–5 years. OT systems live <strong>15–30+ years</strong>, which is why equipment designed before modern security exists is still in production today.</p><p><strong>In everyday terms:</strong> A controller installed in 2005 is middle-aged by OT standards and prehistoric by IT standards — and it is still running.</p>"
+                },
+                {
+                    "id": "branch-3-detail-6",
+                    "label": "Failure Impact",
+                    "desc": "<span class=\"panel-tag\">Comparison</span><p>IT failure means data loss and financial cost. OT failure means <strong>physical harm and potentially deaths</strong>.</p><p><strong>In everyday terms:</strong> This single row explains the whole chapter: when failure can kill someone, availability outranks confidentiality.</p>"
+                }
+            ]
+        },
+        {
+            "id": "branch-4",
+            "label": "SCADA Protocols",
+            "desc": "<span class=\"panel-tag\">Core Concept</span><p>Industrial protocols rather than standard TCP/IP, with wildly varying security levels.</p>",
+            "children": [
+                {
+                    "id": "branch-4-detail-1",
+                    "label": "Modbus",
+                    "desc": "<span class=\"panel-tag\">Protocol</span><p>Modbus runs on <strong>port 502</strong> and has <strong>LOW</strong> security — no encryption and no authentication. It was designed in 1979 with zero security in mind and is still widely deployed.</p><p><strong>In everyday terms:</strong> An attacker who reaches a Modbus device has direct control with no authentication barrier at all. If a question asks which SCADA protocol has the lowest security, the answer is Modbus.</p>"
+                },
+                {
+                    "id": "branch-4-detail-2",
+                    "label": "DNP3",
+                    "desc": "<span class=\"panel-tag\">Protocol</span><p>DNP3 runs on <strong>port 20000</strong> with <strong>MEDIUM</strong> security and supports a Secure Authentication feature. DNP on port 19999 is the earlier version.</p>"
+                },
+                {
+                    "id": "branch-4-detail-3",
+                    "label": "OPC UA",
+                    "desc": "<span class=\"panel-tag\">Protocol</span><p>OPC UA uses various ports and has <strong>HIGH</strong> security — encrypted and authenticated. It is the modern standard for new deployments.</p>"
+                },
+                {
+                    "id": "branch-4-detail-4",
+                    "label": "IEC 61850",
+                    "desc": "<span class=\"panel-tag\">Protocol</span><p>IEC 61850 uses various ports and has <strong>HIGH</strong> security. It is used specifically in smart grids.</p>"
+                },
+                {
+                    "id": "branch-4-detail-5",
+                    "label": "EtherNet/IP & PROFINET",
+                    "desc": "<span class=\"panel-tag\">Protocol</span><p>EtherNet/IP runs on <strong>port 2222</strong> with MEDIUM security and is an industrial Ethernet protocol. PROFINET runs on <strong>ports 34962–34964</strong> with MEDIUM security and is used in factory automation.</p>"
+                }
+            ]
+        },
+        {
+            "id": "branch-5",
+            "label": "Vulnerabilities & Threats",
+            "desc": "<span class=\"panel-tag\">Core Concept</span><p>Five root causes of ICS weakness, and two categories of threat.</p>",
+            "children": [
+                {
+                    "id": "branch-5-detail-1",
+                    "label": "Scanning Absent",
+                    "desc": "<span class=\"panel-tag\">Root Cause</span><p>There is no real-time network monitoring, so abnormal activity simply is not observed as it happens.</p><p><strong>In everyday terms:</strong> An intruder can move through the network for months, because nothing is watching for the traffic that would give them away.</p>"
+                },
+                {
+                    "id": "branch-5-detail-2",
+                    "label": "No Patch Speed",
+                    "desc": "<span class=\"panel-tag\">Root Cause</span><p>Updates and patching are slow or non-existent, so known vulnerabilities stay exploitable for years.</p><p><strong>In everyday terms:</strong> A flaw published in 2019 can still be exploitable in 2026, because the maintenance window to fix it has never been affordable.</p>"
+                },
+                {
+                    "id": "branch-5-detail-3",
+                    "label": "Weak Authentication",
+                    "desc": "<span class=\"panel-tag\">Root Cause</span><p>Authentication practices are poor or absent, so reaching a device is often the same as controlling it.</p><p><strong>In everyday terms:</strong> On many industrial protocols there is no login at all — if you can send the packet, you can issue the command.</p>"
+                },
+                {
+                    "id": "branch-5-detail-4",
+                    "label": "Device Ignorance",
+                    "desc": "<span class=\"panel-tag\">Root Cause</span><p>Device capabilities are unknown to the operators, so nobody knows what a given controller can actually be made to do.</p><p><strong>In everyday terms:</strong> Teams frequently discover a device has a web interface, or a wireless radio, years after installing it.</p>"
+                },
+                {
+                    "id": "branch-5-detail-5",
+                    "label": "No Traffic Visibility",
+                    "desc": "<span class=\"panel-tag\">Root Cause</span><p>Abnormal activity cannot be seen because there is no baseline of what normal traffic looks like.</p><p><strong>In everyday terms:</strong> Without knowing what a normal day looks like, an operator cannot tell an attack from a busy afternoon.</p>"
+                },
+                {
+                    "id": "branch-5-detail-6",
+                    "label": "Unintentional Threats",
+                    "desc": "<span class=\"panel-tag\">Threat Category</span><p>Unintentional threats originate <strong>inside the premises</strong> with no malicious intent. They are the <strong>human factor</strong> of negligence, carelessness, and lack of training among employees and contractors, <strong>machine failure</strong> from device weakness and equipment crashes, and <strong>natural disasters</strong> such as floods, earthquakes, avalanches, and tsunamis.</p><p><strong>In everyday terms:</strong> A contractor plugging a laptop into the wrong network segment to save time has caused a serious incident without any hostile intent.</p>"
+                },
+                {
+                    "id": "branch-5-detail-7",
+                    "label": "Purposeful Threats",
+                    "desc": "<span class=\"panel-tag\">Threat Category</span><p>Purposeful threats are intentional attacks with specific objectives: disgruntled or annoyed employees, industrial espionage, sabotage operations, remote cyber hackers, viruses and worms, physical theft, and electronic terrorism.</p><p><strong>In everyday terms:</strong> The list runs from a frustrated employee to organised terrorism, and the defences differ enormously depending on which end you are facing.</p>"
+                },
+                {
+                    "id": "branch-5-detail-8",
+                    "label": "Attack Complexity",
+                    "desc": "<span class=\"panel-tag\">Analysis</span><p>Attack complexity is determined by three factors: how vital the attack purpose is, what impact level must be achieved, and how well the ICS/SCADA system is secured.</p><p><strong>In everyday terms:</strong> The same three factors explain why a national grid attracts patient, well-funded attackers while a small factory usually does not.</p>"
+                },
+                {
+                    "id": "branch-5-detail-9",
+                    "label": "Known Attacks",
+                    "desc": "<span class=\"panel-tag\">Reference</span><p>The known attacks on ICS/SCADA are eavesdropping, denial of service, wireless jamming, man-in-the-middle, and replay attacks.</p><p><strong>In everyday terms:</strong> Replay attacks are especially effective here: recording a legitimate 'open valve' command and sending it again later needs no cryptography to be broken.</p>"
+                }
+            ]
+        },
+        {
+            "id": "branch-6",
+            "label": "Security Challenges",
+            "desc": "<span class=\"panel-tag\">Core Concept</span><p>Structural problems that make ICS/SCADA genuinely hard to secure.</p>",
+            "children": [
+                {
+                    "id": "branch-6-detail-1",
+                    "label": "Legacy Architecture",
+                    "desc": "<span class=\"panel-tag\">Challenge</span><p>These are old system designs where security was never considered, and messages are still transmitted in <strong>cleartext</strong> with no encryption.</p><p><strong>In everyday terms:</strong> The systems were designed on the assumption that being physically isolated was the security. That assumption stopped being true and the designs did not change.</p>"
+                },
+                {
+                    "id": "branch-6-detail-2",
+                    "label": "Patching Problem",
+                    "desc": "<span class=\"panel-tag\">Challenge</span><p>There is no regular patching scheme, some firmware is <strong>never</strong> updated, and downtime for maintenance is difficult to schedule.</p><p><strong>In everyday terms:</strong> Taking a production line offline to patch a controller may cost more per hour than the entire security budget for the year.</p>"
+                },
+                {
+                    "id": "branch-6-detail-3",
+                    "label": "Geographic Scatter",
+                    "desc": "<span class=\"panel-tag\">Challenge</span><p>Components such as sensors, RTUs, and PLCs are geographically spread out, making them very hard to physically secure.</p><p><strong>In everyday terms:</strong> A pipeline monitoring station in the desert has no guard, no camera, and a lock that any determined person can defeat.</p>"
+                },
+                {
+                    "id": "branch-6-detail-4",
+                    "label": "IT/OT Gap",
+                    "desc": "<span class=\"panel-tag\">Challenge</span><p>The two halves are managed by different departments with no coordination, producing security gaps. The OT department manages the PLCs and the IT department manages the networks, and nobody owns the overlap.</p><p><strong>In everyday terms:</strong> The gap is organisational rather than technical, which is why buying a product does not close it.</p>"
+                },
+                {
+                    "id": "branch-6-detail-5",
+                    "label": "Cannot Pen-Test Live",
+                    "desc": "<span class=\"panel-tag\">Challenge</span><p>Penetration tests cannot be run on production SCADA systems, because the risk of disrupting real operations is too high.</p><p><strong>In everyday terms:</strong> A scan that would merely slow a web server can crash a controller — so the standard tool for finding vulnerabilities is off the table.</p>"
+                },
+                {
+                    "id": "branch-6-detail-6",
+                    "label": "Other Challenges",
+                    "desc": "<span class=\"panel-tag\">Challenge</span><p>The remaining challenges are unsupported operating systems and applications, shared accounts with no individual authentication, OT networks exposed to the public, limited remediation time, and vulnerability tracking problems.</p><p><strong>In everyday terms:</strong> Shared accounts are the quiet killer on this list: when everyone logs in as 'operator', the audit log can never answer who did what.</p>"
+                }
+            ]
+        },
+        {
+            "id": "branch-7",
+            "label": "Security Objectives",
+            "desc": "<span class=\"panel-tag\">Core Concept</span><p>In ICS/SCADA the CIA priority order is reversed — the chapter's most examined idea.</p>",
+            "children": [
+                {
+                    "id": "branch-7-detail-1",
+                    "label": "AIC, Not CIA",
+                    "desc": "<span class=\"panel-tag\">Critical Concept</span><p>In ICS/SCADA the priority order is <strong>Availability → Integrity → Confidentiality</strong> (AIC instead of CIA). This is the key difference from traditional IT security.</p><p><strong>In everyday terms:</strong> If a question asks which CIA property has the highest priority in ICS/SCADA, the answer is Availability.</p>"
+                },
+                {
+                    "id": "branch-7-detail-2",
+                    "label": "Availability First",
+                    "desc": "<span class=\"panel-tag\">Priority 1</span><p>Systems must run 24/7, because even brief downtime in critical infrastructure is dangerous rather than merely inconvenient.</p><p><strong>In everyday terms:</strong> A power grid control system going down for ten minutes is not a service interruption, it is a public safety event.</p>"
+                },
+                {
+                    "id": "branch-7-detail-3",
+                    "label": "Integrity Second",
+                    "desc": "<span class=\"panel-tag\">Priority 2</span><p>Operators must be able to <strong>trust sensor readings</strong> in order to make correct decisions. False readings are more dangerous than missing ones, because operators act on them confidently.</p><p><strong>In everyday terms:</strong> A pressure gauge reporting 'normal' while the real pressure climbs is worse than a gauge that visibly fails, because a failed gauge gets investigated.</p>"
+                },
+                {
+                    "id": "branch-7-detail-4",
+                    "label": "Confidentiality Third",
+                    "desc": "<span class=\"panel-tag\">Priority 3</span><p>Sensor state data is time-specific and discarded after use, which makes it less critical to keep secret than in a typical IT system.</p><p><strong>In everyday terms:</strong> Knowing a valve's position ten minutes ago is of very limited use to an attacker, whereas being able to change it is everything.</p>"
+                },
+                {
+                    "id": "branch-7-detail-5",
+                    "label": "Redundancy",
+                    "desc": "<span class=\"panel-tag\">Objective</span><p>Critical devices — historian servers, switches, modems, and field instruments — need redundant backups so the system survives individual failures.</p><p><strong>In everyday terms:</strong> It is the same reasoning as a hospital's backup generator — the point is not preventing the power cut, it is surviving one.</p>"
+                },
+                {
+                    "id": "branch-7-detail-6",
+                    "label": "Systematic Degradation",
+                    "desc": "<span class=\"panel-tag\">Objective</span><p>The system should degrade gracefully: <strong>Normal</strong> (full automation) → <strong>Emergency</strong> (partial automation) → <strong>Full Manual</strong> (no automation), rather than failing all at once.</p><p><strong>In everyday terms:</strong> Aircraft are designed the same way: as systems fail, control degrades step by step to something a human can still fly.</p>"
+                },
+                {
+                    "id": "branch-7-detail-7",
+                    "label": "Early Detection",
+                    "desc": "<span class=\"panel-tag\">Objective</span><p>Detect failures early — exhausted memory, bandwidth, or processor usage — before they become attacks or outages.</p><p><strong>In everyday terms:</strong> A disk filling up or memory slowly leaking is boring to watch and far cheaper to fix than the outage it becomes at 3am.</p>"
+                }
+            ]
+        },
+        {
+            "id": "branch-8",
+            "label": "Requirements & Countermeasures",
+            "desc": "<span class=\"panel-tag\">Core Concept</span><p>Controls for field instruments, servers, the physical perimeter, and the network.</p>",
+            "children": [
+                {
+                    "id": "branch-8-detail-1",
+                    "label": "Field Instruments",
+                    "desc": "<span class=\"panel-tag\">Countermeasure</span><p>Field instruments need security across the whole lifecycle from procurement through installation, monitoring, and maintenance, and must meet authentication, authorization, and CIA requirements. Physical controls are secure fences, gates, and locks, plus CCTV and motion detectors at remote stations.</p>"
+                },
+                {
+                    "id": "branch-8-detail-2",
+                    "label": "Server Security",
+                    "desc": "<span class=\"panel-tag\">Countermeasure</span><p>Server controls are strong multifactor authentication, application whitelisting, physical and logical access controls, load balancing and failover, and configuration and patch management.</p><p><strong>In everyday terms:</strong> Application whitelisting suits OT unusually well: these machines run a small, fixed set of programs, so denying everything else breaks nothing.</p>"
+                },
+                {
+                    "id": "branch-8-detail-3",
+                    "label": "Physical Perimeter",
+                    "desc": "<span class=\"panel-tag\">Countermeasure</span><p>Perimeter controls track the location and movement of personnel, integrate video surveillance with SCADA alarms, maintain real-time alarm capability, and use a <strong>mantrap</strong> — a single-person access control enclosure.</p><p><strong>In everyday terms:</strong> A mantrap is the two-door airlock where the second door will not open until the first has closed, which defeats tailgating physically rather than by policy.</p>"
+                },
+                {
+                    "id": "branch-8-detail-4",
+                    "label": "Network Security",
+                    "desc": "<span class=\"panel-tag\">Countermeasure</span><p>Network controls avoid legacy dial-up and leased-line modems, use NSM, NDR, and SIEM tools, encrypt communications, and segment the network.</p><p><strong>In everyday terms:</strong> Segmentation matters most here: it is what stops a compromised office PC from reaching a turbine controller.</p>"
+                },
+                {
+                    "id": "branch-8-detail-5",
+                    "label": "NSM",
+                    "desc": "<span class=\"panel-tag\">Monitoring Tool</span><p>Network Security Monitoring gathers, analyses, and warns about intrusions.</p><p><strong>In everyday terms:</strong> It is the security camera of the network — always recording, and useful mainly because someone reviews what it captured.</p>"
+                },
+                {
+                    "id": "branch-8-detail-6",
+                    "label": "NDR",
+                    "desc": "<span class=\"panel-tag\">Monitoring Tool</span><p>Network Detection and Response is <strong>passive and behaviour-based</strong>, with no impact on operations. That passivity is exactly why it suits OT, where active scanning is forbidden.</p><p><strong>In everyday terms:</strong> It is the compromise for an environment that cannot be pen-tested: watch everything, touch nothing.</p>"
+                },
+                {
+                    "id": "branch-8-detail-7",
+                    "label": "SIEM",
+                    "desc": "<span class=\"panel-tag\">Monitoring Tool</span><p>SIEM provides real-time analysis, data aggregation, dashboards, and forensics, pulling events from many sources into one view.</p><p><strong>In everyday terms:</strong> It is what turns thousands of separate log lines from dozens of systems into one screen an analyst can actually act on.</p>"
+                },
+                {
+                    "id": "branch-8-detail-8",
+                    "label": "ISO 27001 Policies",
+                    "desc": "<span class=\"panel-tag\">Governance</span><p>The recommended policies are clear desk and screen, access control, data classification, mobile computing, password, penetration testing, backup and recovery, physical security, system monitoring, third-party access, virus/malware, and disposal.</p><p><strong>In everyday terms:</strong> The clear desk policy sits alongside penetration testing in the same list, which is a good reminder that governance covers paper on a desk as much as packets on a wire.</p>"
+                }
+            ]
+        },
+        {
+            "id": "branch-9",
+            "label": "Governance & Planning",
+            "desc": "<span class=\"panel-tag\">Core Concept</span><p>Closing the ownership gap between IT and OT, and the seven-phase planning model.</p>",
+            "children": [
+                {
+                    "id": "branch-9-detail-1",
+                    "label": "The Governance Gap",
+                    "desc": "<span class=\"panel-tag\">Problem</span><p>OT devices are managed by the engineering or automation department while IT components are managed by the IT department. Without coordination this creates security gaps, and nobody clearly owns the ICS/SCADA overlap zone.</p><p><strong>In everyday terms:</strong> Both teams assume the other is covering the boundary, and the boundary is exactly where attackers cross.</p>"
+                },
+                {
+                    "id": "branch-9-detail-2",
+                    "label": "Key Standards",
+                    "desc": "<span class=\"panel-tag\">Reference</span><p>The named standards are <strong>NIST SP 800-82</strong> (Guide to ICS Security), <strong>NISTIR 7628</strong> (Smart Grid Cyber Security), <strong>NERC CIP 002-009</strong> (Critical Infrastructure Protection), the <strong>DHS Catalog</strong> (Control Systems Security), and <strong>ISO 27001</strong> (Information Security Management).</p><p><strong>In everyday terms:</strong> NIST SP 800-82 is the one to remember by name — it is the dedicated ICS security guide rather than a general IT standard.</p>"
+                },
+                {
+                    "id": "branch-9-detail-3",
+                    "label": "Governance Benefits",
+                    "desc": "<span class=\"panel-tag\">Value</span><p>Good governance delivers clear roles and responsibilities for OT and IT, a better view of ICS/SCADA threats, improved stakeholder communication, resource optimization, and a consistent security strategy.</p><p><strong>In everyday terms:</strong> Most of these benefits are organisational rather than technical, which fits the problem: the gap being closed is between two departments.</p>"
+                },
+                {
+                    "id": "branch-9-detail-4",
+                    "label": "Phase 1: Assess",
+                    "desc": "<span class=\"panel-tag\">Planning Model</span><p>Assess the existing systems, establishing what is actually deployed before deciding what to change.</p><p><strong>In everyday terms:</strong> Almost every assessment turns up equipment nobody remembered installing, still connected and still unpatched.</p>"
+                },
+                {
+                    "id": "branch-9-detail-5",
+                    "label": "Phase 2: Document",
+                    "desc": "<span class=\"panel-tag\">Planning Model</span><p>Document the policies and procedures, so decisions exist somewhere other than in individual memories.</p><p><strong>In everyday terms:</strong> If the only person who knows how the system is configured leaves, undocumented knowledge leaves with them.</p>"
+                },
+                {
+                    "id": "branch-9-detail-6",
+                    "label": "Phase 3: Train",
+                    "desc": "<span class=\"panel-tag\">Planning Model</span><p>Train the employees and contractors, since the human factor is the leading unintentional threat in this environment.</p><p><strong>In everyday terms:</strong> Training is placed third, before any technical control, because negligence and lack of training cause more ICS incidents than attackers do.</p>"
+                },
+                {
+                    "id": "branch-9-detail-7",
+                    "label": "Phase 4: Segment",
+                    "desc": "<span class=\"panel-tag\">Planning Model</span><p>Segment the ICS/SCADA network and its security, so a compromise in one zone cannot reach the whole plant.</p><p><strong>In everyday terms:</strong> It is the fire-door principle: the point is not preventing the fire, it is stopping it spreading through the whole building.</p>"
+                },
+                {
+                    "id": "branch-9-detail-8",
+                    "label": "Phase 5: Control",
+                    "desc": "<span class=\"panel-tag\">Planning Model</span><p>Control access to the ICS/SCADA system, defining who may reach which components and from where.</p><p><strong>In everyday terms:</strong> This is where 'anyone on the plant network can reach anything' finally becomes 'these people, from these places, can reach these devices'.</p>"
+                },
+                {
+                    "id": "branch-9-detail-9",
+                    "label": "Phase 6: Harden",
+                    "desc": "<span class=\"panel-tag\">Planning Model</span><p>Harden the components of the ICS/SCADA system, removing unnecessary services and changing defaults.</p><p><strong>In everyday terms:</strong> A controller shipped with a web interface, a default password, and three unused protocols enabled is doing five jobs when it only needs one.</p>"
+                },
+                {
+                    "id": "branch-9-detail-10",
+                    "label": "Phase 7: Monitor",
+                    "desc": "<span class=\"panel-tag\">Planning Model</span><p>Monitor and maintain the security of the ICS/SCADA system, which is continuous rather than a project with an end date.</p><p><strong>In everyday terms:</strong> There are <strong>seven</strong> phases: Assess → Document → Train → Segment → Control → Harden → Monitor. The count itself is an exam question.</p>"
+                }
+            ]
+        },
+        {
+            "id": "branch-10",
+            "label": "AI-Enabled SCADA",
+            "desc": "<span class=\"panel-tag\">Core Concept</span><p>Modern SCADA integrates AI and machine learning to shift from reactive to predictive operations.</p>",
+            "children": [
+                {
+                    "id": "branch-10-detail-1",
+                    "label": "Monitoring",
+                    "desc": "<span class=\"panel-tag\">Traditional vs AI</span><p>Traditional SCADA monitoring is <strong>reactive</strong> — it reports what has happened. AI-integrated monitoring is <strong>predictive and proactive</strong>, flagging what is about to happen.</p>"
+                },
+                {
+                    "id": "branch-10-detail-2",
+                    "label": "Maintenance",
+                    "desc": "<span class=\"panel-tag\">Traditional vs AI</span><p>Traditional maintenance is scheduled or manual. AI enables <strong>predictive maintenance</strong>, servicing equipment based on its actual condition rather than the calendar.</p><p><strong>In everyday terms:</strong> Replacing a bearing because vibration data says it is degrading, rather than because six months have passed — cheaper and it prevents the failure.</p>"
+                },
+                {
+                    "id": "branch-10-detail-3",
+                    "label": "Decision-Making",
+                    "desc": "<span class=\"panel-tag\">Traditional vs AI</span><p>Traditional decision-making is human-driven. AI-integrated systems are AI-assisted or automated, which speeds response and introduces a new class of risk if the AI is manipulated.</p>"
+                },
+                {
+                    "id": "branch-10-detail-4",
+                    "label": "Anomaly Detection",
+                    "desc": "<span class=\"panel-tag\">Traditional vs AI</span><p>Traditional anomaly detection is rule-based using signatures. AI-integrated detection is machine-learning-based, so it can flag behaviour nobody wrote a rule for.</p><p><strong>In everyday terms:</strong> Signature-based detection can only catch attacks someone has already seen and described; behaviour-based detection can catch the first victim's attack.</p>"
+                },
+                {
+                    "id": "branch-10-detail-5",
+                    "label": "Data & Security",
+                    "desc": "<span class=\"panel-tag\">Traditional vs AI</span><p>Traditional data analysis produces historical reports, while AI produces real-time intelligent insights. Traditional security uses signature-based detection, while AI uses AI-driven threat detection.</p>"
+                }
+            ]
+        }
+    ]
+};
+
+        // ─────────────────────────────────────────────
+        // STATE
+        // ─────────────────────────────────────────────
+        const state = {
+            expanded: new Set(['root']),
+            selected: null,
+            panX: 0,
+            panY: 0,
+            scale: 1,
+            dragging: false,
+            dragStartX: 0,
+            dragStartY: 0,
+            dragStartPanX: 0,
+            dragStartPanY: 0
+        };
+
+        const NODE_W = 200;
+        const NODE_H = 44;
+        const H_GAP = 80;
+        const V_GAP = 28;
+
+        function estimateNodeHeight(node) {
+            const text = String(node.label || "");
+            const charsPerLine = node._level === 0 ? 22 : 18;
+            const lines = Math.max(1, Math.ceil(text.length / charsPerLine));
+            return Math.max(NODE_H, 24 + lines * 22);
+        }
+
+        // ─────────────────────────────────────────────
+        // LAYOUT ENGINE
+        // ─────────────────────────────────────────────
+        function shiftSubtree(node, deltaY) {
+            node._y += deltaY;
+            if (node.children && state.expanded.has(node.id)) {
+                node.children.forEach(child => shiftSubtree(child, deltaY));
+            }
+        }
+
+        function computeLayout(node, level = 0, x = 100, y = 0) {
+            node._level = level;
+            node._x = x;
+            node._y = y;
+            node._w = NODE_W;
+            node._h = estimateNodeHeight(node);
+
+            if (!node.children || !state.expanded.has(node.id)) {
+                node._subtreeH = node._h;
+                return node._subtreeH;
+            }
+
+            const childX = x + NODE_W + H_GAP;
+            let totalH = 0;
+            node.children.forEach(child => {
+                totalH += computeLayout(child, level + 1, childX, 0);
+                totalH += V_GAP;
+            });
+            totalH -= V_GAP;
+
+            let cy = y + (node._h / 2) - (totalH / 2);
+            node.children.forEach(child => {
+                const nextY = cy + (child._subtreeH / 2) - (child._h / 2);
+                shiftSubtree(child, nextY - child._y);
+                cy += child._subtreeH + V_GAP;
+            });
+
+            node._subtreeH = Math.max(node._h, totalH);
+            return node._subtreeH;
+        }
+
+        // ─────────────────────────────────────────────
+        // RENDER
+        // ─────────────────────────────────────────────
+        const canvas = document.getElementById('canvas');
+        const svgLayer = document.getElementById('svg-layer');
+        let nodeEls = {};
+
+        function render() {
+            computeLayout(DATA, 0, 100, 2000);
+            renderNodes(DATA);
+            renderConnectors(DATA);
+        }
+
+        function renderNodes(node) {
+            let el = nodeEls[node.id];
+            if (!el) {
+                el = document.createElement('div');
+                el.className = 'node';
+                el.dataset.id = node.id;
+                el.innerHTML = buildNodeHTML(node);
+                el.addEventListener('click', () => onNodeClick(node));
+                canvas.appendChild(el);
+                nodeEls[node.id] = el;
+            }
+
+            const levelClass = node._level === 0 ? 'root' : `level-${Math.min(node._level, 3)}`;
+            el.className = `node ${levelClass}${state.selected === node.id ? ' selected' : ''}${state.expanded.has(node.id) ? ' expanded' : ''}`;
+            el.style.left = node._x + 'px';
+            el.style.top = node._y + 'px';
+            el.style.width = node._w + 'px';
+            el.style.minHeight = node._h + 'px';
+            el.style.display = 'flex';
+
+            if (node.children && state.expanded.has(node.id)) {
+                node.children.forEach(renderNodes);
+            }
+
+            // Remove orphaned children
+            if (!node.children || !state.expanded.has(node.id)) {
+                collapseChildren(node);
+            }
+        }
+
+        function buildNodeHTML(node) {
+            const isParent = node.children && node.children.length > 0;
+            const icon = isParent
+                ? `<svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>`
+                : `<div class="leaf-dot"></div>`;
+            return `<div class="node-text">${node.label}</div>${icon}`;
+        }
+
+        function collapseChildren(node) {
+            if (!node.children) return;
+            node.children.forEach(child => {
+                if (nodeEls[child.id]) {
+                    nodeEls[child.id].style.display = 'none';
+                }
+                collapseChildren(child);
+            });
+        }
+
+        function renderConnectors(node) {
+            svgLayer.innerHTML = '';
+            drawConnectors(node);
+        }
+
+        function drawConnectors(node) {
+            if (!node.children || !state.expanded.has(node.id)) return;
+            node.children.forEach(child => {
+                const x1 = node._x + node._w;
+                const y1 = node._y + node._h / 2;
+                const x2 = child._x;
+                const y2 = child._y + child._h / 2;
+                const cx1 = x1 + (x2 - x1) * 0.55;
+                const cx2 = x2 - (x2 - x1) * 0.55;
+                const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                path.setAttribute('class', 'connector');
+                path.setAttribute('d', `M${x1},${y1} C${cx1},${y1} ${cx2},${y2} ${x2},${y2}`);
+                svgLayer.appendChild(path);
+                drawConnectors(child);
+            });
+        }
+
+        // ─────────────────────────────────────────────
+        // INTERACTION
+        // ─────────────────────────────────────────────
+        function onNodeClick(node) {
+            if (node.children && node.children.length > 0) {
+                if (state.expanded.has(node.id)) {
+                    state.expanded.delete(node.id);
+                } else {
+                    state.expanded.add(node.id);
+                }
+                state.selected = node.id;
+                render();
+            } else {
+                state.selected = node.id;
+                render();
+                openPanel(node);
+            }
+        }
+
+        function openPanel(node) {
+            document.getElementById('panel-title').textContent = node.label;
+            document.getElementById('panel-body').innerHTML = node.desc || `<p>No description available.</p>`;
+            document.getElementById('panel').classList.add('open');
+        }
+
+        function closePanel() {
+            document.getElementById('panel').classList.remove('open');
+            state.selected = null;
+            render();
+        }
+
+        // ─────────────────────────────────────────────
+        // PAN & ZOOM
+        // ─────────────────────────────────────────────
+        const wrap = document.getElementById('canvas-wrap');
+
+        function applyTransform() {
+            canvas.style.transform = `translate(${state.panX}px, ${state.panY}px) scale(${state.scale})`;
+            document.getElementById('zoom-badge').textContent = Math.round(state.scale * 100) + '%';
+        }
+
+        wrap.addEventListener('mousedown', e => {
+            if (e.target.closest('.node')) return;
+            state.dragging = true;
+            state.dragStartX = e.clientX;
+            state.dragStartY = e.clientY;
+            state.dragStartPanX = state.panX;
+            state.dragStartPanY = state.panY;
+            wrap.classList.add('grabbing');
+        });
+
+        window.addEventListener('mousemove', e => {
+            if (!state.dragging) return;
+            state.panX = state.dragStartPanX + (e.clientX - state.dragStartX);
+            state.panY = state.dragStartPanY + (e.clientY - state.dragStartY);
+            applyTransform();
+        });
+
+        window.addEventListener('mouseup', () => {
+            state.dragging = false;
+            wrap.classList.remove('grabbing');
+        });
+
+        wrap.addEventListener('wheel', e => {
+            e.preventDefault();
+            const delta = e.deltaY < 0 ? 0.1 : -0.1;
+            state.scale = Math.max(0.2, Math.min(2.5, state.scale + delta));
+            applyTransform();
+        }, { passive: false });
+
+        function zoom(delta) {
+            state.scale = Math.max(0.2, Math.min(2.5, state.scale + delta));
+            applyTransform();
+        }
+
+        function resetView() {
+            state.panX = 0;
+            state.panY = 0;
+            state.scale = 1;
+            applyTransform();
+        }
+
+        // ─────────────────────────────────────────────
+        // EXPAND / COLLAPSE ALL
+        // ─────────────────────────────────────────────
+        function collectIds(node, ids = []) {
+            ids.push(node.id);
+            if (node.children) node.children.forEach(c => collectIds(c, ids));
+            return ids;
+        }
+
+        function expandAll() {
+            collectIds(DATA).forEach(id => state.expanded.add(id));
+            render();
+        }
+
+        function collapseAll() {
+            state.expanded.clear();
+            state.expanded.add('root');
+            render();
+        }
+
+        // ─────────────────────────────────────────────
+        // SEARCH
+        // ─────────────────────────────────────────────
+        const searchInput = document.getElementById('search');
+        const searchResults = document.getElementById('search-results');
+
+        function flatNodes(node, path = [], results = []) {
+            results.push({ node, path: [...path, node.label] });
+            if (node.children) node.children.forEach(c => flatNodes(c, [...path, node.label], results));
+            return results;
+        }
+
+        const allNodes = flatNodes(DATA);
+
+        searchInput.addEventListener('input', () => {
+            const q = searchInput.value.trim().toLowerCase();
+            // Clear highlights
+            Object.values(nodeEls).forEach(el => el.classList.remove('highlighted'));
+
+            if (!q) {
+                searchResults.style.display = 'none';
+                return;
+            }
+
+            const matches = allNodes.filter(({ node }) => node.label.toLowerCase().includes(q));
+            if (matches.length === 0) {
+                searchResults.innerHTML = '<div class="sr-item" style="cursor:default;color:var(--text-muted)">No results found</div>';
+                searchResults.style.display = 'block';
+                return;
+            }
+
+            searchResults.innerHTML = matches.slice(0, 10).map(({ node, path }) => {
+                const hl = node.label.replace(new RegExp(`(${q})`, 'gi'), '<mark>$1</mark>');
+                const trail = path.slice(0, -1).join(' › ');
+                return `<div class="sr-item" data-id="${node.id}"><div>${hl}</div>${trail ? `<div class="sr-path">${trail}</div>` : ''}</div>`;
+            }).join('');
+
+            searchResults.querySelectorAll('.sr-item[data-id]').forEach(el => {
+                el.addEventListener('click', () => {
+                    const id = el.dataset.id;
+                    navigateTo(id);
+                    searchResults.style.display = 'none';
+                    searchInput.value = '';
+                });
+            });
+
+            matches.forEach(({ node }) => {
+                if (nodeEls[node.id]) nodeEls[node.id].classList.add('highlighted');
+            });
+
+            searchResults.style.display = 'block';
+        });
+
+        document.addEventListener('click', e => {
+            if (!e.target.closest('#search-wrap')) searchResults.style.display = 'none';
+        });
+
+        function navigateTo(id) {
+            // Expand path to node
+            function findPath(node, targetId, path = []) {
+                if (node.id === targetId) return [...path, node.id];
+                if (node.children) {
+                    for (const c of node.children) {
+                        const r = findPath(c, targetId, [...path, node.id]);
+                        if (r) return r;
+                    }
+                }
+                return null;
+            }
+            const path = findPath(DATA, id);
+            if (path) path.forEach(pid => state.expanded.add(pid));
+            state.selected = id;
+            render();
+            // Center on node
+            setTimeout(() => {
+                function findNode(node, id) {
+                    if (node.id === id) return node;
+                    if (node.children) for (const c of node.children) { const r = findNode(c, id); if (r) return r; }
+                    return null;
+                }
+                const n = findNode(DATA, id);
+                if (n) {
+                    const vpW = wrap.clientWidth;
+                    const vpH = wrap.clientHeight;
+                    state.panX = vpW / 2 - (n._x + n._w / 2) * state.scale;
+                    state.panY = vpH / 2 - (n._y + n._h / 2) * state.scale;
+                    applyTransform();
+                }
+            }, 100);
+        }
+
+        // ─────────────────────────────────────────────
+        // THEME
+        // ─────────────────────────────────────────────
+        const themeBtn = document.getElementById('theme-toggle');
+        let isDark = true;
+
+        function applyTheme(dark) {
+            document.body.dataset.theme = dark ? 'dark' : 'light';
+            themeBtn.textContent = dark ? '🌙' : '☀️';
+            localStorage.setItem('mm-theme', dark ? 'dark' : 'light');
+            try { localStorage.setItem('shoug-theme', dark ? 'dark' : 'light'); } catch(_e) {}
+        }
+
+        themeBtn.addEventListener('click', () => {
+            isDark = !isDark;
+            applyTheme(isDark);
+        });
+
+        // Restore
+        const saved = localStorage.getItem('shoug-theme') || localStorage.getItem('mm-theme');
+        if (saved === 'light') { isDark = false; applyTheme(false); }
+
+        // ─────────────────────────────────────────────
+        // EXPORT PNG
+        // ─────────────────────────────────────────────
+        async function exportPNG() {
+            const msg = document.createElement('div');
+            msg.style.cssText = 'position:fixed;top:70px;left:50%;transform:translateX(-50%);background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 20px;font-size:13px;z-index:999;';
+            msg.textContent = 'Preparing export… (open browser print for full export)';
+            document.body.appendChild(msg);
+            setTimeout(() => msg.remove(), 3000);
+            window.print();
+        }
+
+        // ─────────────────────────────────────────────
+        // INIT
+        // ─────────────────────────────────────────────
+        function init() {
+            state.panX = 40;
+            state.panY = -1820;
+            applyTransform();
+            render();
+        }
+
+        init();
+    </script>
+
+
+    <script src="/javascripts/mindmap-controls.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,1454 @@
+<!DOCTYPE html>
+<html lang="en">
+<script>!function(){var t=localStorage.getItem("shoug-theme");if(t)document.documentElement.setAttribute("data-theme",t);}();</script>
+
+<head>
+    <link rel="icon" type="image/png" href="/assets/shoug-favicon-v3.png">
+    <link rel="shortcut icon" href="/assets/shoug-favicon-v3.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/shoug-apple-touch-icon-v3.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authentication &amp; Access Control — CYS401 Mindmap</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0d1117;
+            --surface: #161b22;
+            --surface2: #1f2937;
+            --border: #30363d;
+            --text: #e6edf3;
+            --text-muted: #8b949e;
+            --accent: #58a6ff;
+            --accent2: #3fb950;
+            --accent3: #d2a8ff;
+            --accent4: #ffa657;
+            --accent5: #ff7b72;
+            --accent6: #79c0ff;
+            --node-root: #1a2744;
+            --node-root-border: #58a6ff;
+            --node-l1: #1a2a1e;
+            --node-l1-border: #3fb950;
+            --node-l2: #2a1f3d;
+            --node-l2-border: #d2a8ff;
+            --node-l3: #2a1f18;
+            --node-l3-border: #ffa657;
+            --node-selected: #0d2442;
+            --node-selected-border: #58a6ff;
+            --shadow: rgba(0, 0, 0, 0.5);
+            --connector: #30363d;
+            --panel-bg: #161b22;
+            --panel-border: #30363d;
+            --toolbar-bg: rgba(13, 17, 23, 0.92);
+            --search-bg: #21262d;
+            --search-border: #30363d;
+            --transition: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        [data-theme="light"] {
+            --bg: #f6f8fa;
+            --surface: #ffffff;
+            --surface2: #f0f2f5;
+            --border: #d0d7de;
+            --text: #1f2328;
+            --text-muted: #656d76;
+            --accent: #0969da;
+            --accent2: #1a7f37;
+            --accent3: #8250df;
+            --accent4: #bc4c00;
+            --accent5: #cf222e;
+            --accent6: #0550ae;
+            --node-root: #dbeafe;
+            --node-root-border: #0969da;
+            --node-l1: #dcfce7;
+            --node-l1-border: #1a7f37;
+            --node-l2: #ede9fe;
+            --node-l2-border: #8250df;
+            --node-l3: #fff7ed;
+            --node-l3-border: #bc4c00;
+            --node-selected: #bfdbfe;
+            --node-selected-border: #0969da;
+            --shadow: rgba(0, 0, 0, 0.12);
+            --connector: #c8d1da;
+            --panel-bg: #ffffff;
+            --panel-border: #d0d7de;
+            --toolbar-bg: rgba(246, 248, 250, 0.92);
+            --search-bg: #f6f8fa;
+            --search-border: #d0d7de;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            height: 100vh;
+            overflow: hidden;
+            transition: background var(--transition), color var(--transition);
+            user-select: none;
+        }
+
+        /* TOOLBAR */
+        #toolbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            background: var(--toolbar-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            height: 56px;
+            transition: background var(--transition), border-color var(--transition);
+        }
+
+        .toolbar-brand {
+            font-family: 'DM Serif Display', serif;
+            font-size: 16px;
+            color: var(--text);
+            white-space: nowrap;
+            margin-right: 8px;
+            letter-spacing: -0.3px;
+        }
+
+        .toolbar-brand span {
+            color: var(--accent);
+        }
+
+        .toolbar-sep {
+            width: 1px;
+            height: 24px;
+            background: var(--border);
+            margin: 0 4px;
+        }
+
+        #search-wrap {
+            position: relative;
+            flex: 1;
+            max-width: 280px;
+        }
+
+        #search-wrap svg {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        #search {
+            width: 100%;
+            background: var(--search-bg);
+            border: 1px solid var(--search-border);
+            border-radius: 8px;
+            padding: 6px 12px 6px 34px;
+            color: var(--text);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 13px;
+            outline: none;
+            transition: border-color 0.2s, background var(--transition);
+        }
+
+        #search:focus {
+            border-color: var(--accent);
+        }
+
+        #search::placeholder {
+            color: var(--text-muted);
+        }
+
+        .tb-btn {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 6px 11px;
+            color: var(--text);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s, border-color 0.2s, transform 0.1s;
+            white-space: nowrap;
+        }
+
+        .tb-btn:hover {
+            background: var(--border);
+            transform: translateY(-1px);
+        }
+
+        .tb-btn:active {
+            transform: translateY(0);
+        }
+
+        .tb-btn svg {
+            flex-shrink: 0;
+        }
+
+        #theme-toggle {
+            font-size: 16px;
+            padding: 6px 10px;
+        }
+
+        #search-results {
+            position: absolute;
+            top: calc(100% + 6px);
+            left: 0;
+            right: 0;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            box-shadow: 0 8px 32px var(--shadow);
+            z-index: 200;
+            max-height: 260px;
+            overflow-y: auto;
+            display: none;
+        }
+
+        .sr-item {
+            padding: 9px 14px;
+            font-size: 13px;
+            cursor: pointer;
+            border-bottom: 1px solid var(--border);
+            transition: background 0.15s;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .sr-item:last-child {
+            border-bottom: none;
+        }
+
+        .sr-item:hover {
+            background: var(--surface2);
+        }
+
+        .sr-item .sr-path {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .sr-item mark {
+            background: transparent;
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        /* CANVAS */
+        #canvas-wrap {
+            position: fixed;
+            top: 56px;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            overflow: hidden;
+            cursor: grab;
+        }
+
+        #canvas-wrap.grabbing {
+            cursor: grabbing;
+        }
+
+        #canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4000px;
+            height: 4000px;
+            transform-origin: 0 0;
+        }
+
+        #svg-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        /* NODES */
+        .node {
+            position: absolute;
+            border-radius: 14px;
+            border: 2px solid;
+            cursor: pointer;
+            transition:
+                box-shadow 0.25s,
+                transform 0.25s,
+                background 0.25s,
+                border-color 0.25s,
+                opacity 0.25s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            max-width: 220px;
+            min-width: 120px;
+        }
+
+        .node:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 8px 24px var(--shadow);
+            z-index: 10;
+        }
+
+        .node.root {
+            background: var(--node-root);
+            border-color: var(--node-root-border);
+            font-family: 'DM Serif Display', serif;
+            font-size: 15px;
+            min-width: 160px;
+            max-width: 240px;
+            box-shadow: 0 0 0 4px rgba(88, 166, 255, 0.15), 0 4px 20px var(--shadow);
+        }
+
+        .node.level-1 {
+            background: var(--node-l1);
+            border-color: var(--node-l1-border);
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .node.level-2 {
+            background: var(--node-l2);
+            border-color: var(--node-l2-border);
+            font-size: 12.5px;
+        }
+
+        .node.level-3 {
+            background: var(--node-l3);
+            border-color: var(--node-l3-border);
+            font-size: 12px;
+        }
+
+        .node.selected {
+            background: var(--node-selected) !important;
+            border-color: var(--node-selected-border) !important;
+            box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.3), 0 6px 24px var(--shadow) !important;
+            z-index: 20;
+        }
+
+        .node.highlighted {
+            box-shadow: 0 0 0 3px var(--accent4), 0 4px 16px var(--shadow) !important;
+        }
+
+        .node-text {
+            flex: 1;
+            line-height: 1.35;
+            word-break: break-word;
+        }
+
+        .chevron {
+            flex-shrink: 0;
+            width: 16px;
+            height: 16px;
+            opacity: 0.6;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s;
+        }
+
+        .node.expanded .chevron {
+            transform: rotate(90deg);
+            opacity: 1;
+        }
+
+        .leaf-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--text-muted);
+            flex-shrink: 0;
+            transition: background 0.2s;
+        }
+
+        .node.selected .leaf-dot,
+        .node:hover .leaf-dot {
+            background: var(--accent);
+        }
+
+        /* CONNECTOR LINES */
+        .connector {
+            fill: none;
+            stroke: var(--connector);
+            stroke-width: 1.5;
+            transition: stroke var(--transition);
+        }
+
+        /* PANEL */
+        #panel {
+            position: fixed;
+            top: 56px;
+            right: -440px;
+            width: 420px;
+            bottom: 0;
+            background: var(--panel-bg);
+            border-left: 1px solid var(--panel-border);
+            z-index: 90;
+            display: flex;
+            flex-direction: column;
+            transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1), background var(--transition), border-color var(--transition);
+            box-shadow: -8px 0 40px var(--shadow);
+        }
+
+        #panel.open {
+            right: 0;
+        }
+
+        #panel-header {
+            padding: 20px 20px 16px;
+            border-bottom: 1px solid var(--panel-border);
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        #panel-title {
+            font-family: 'DM Serif Display', serif;
+            font-size: 20px;
+            line-height: 1.3;
+            flex: 1;
+            color: var(--text);
+        }
+
+        #panel-close {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 6px;
+            transition: color 0.2s, background 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        #panel-close:hover {
+            color: var(--text);
+            background: var(--surface2);
+        }
+
+        #panel-body {
+            padding: 20px;
+            overflow-y: auto;
+            flex: 1;
+            line-height: 1.75;
+            font-size: 14px;
+            color: var(--text);
+        }
+
+        #panel-body p {
+            margin-bottom: 14px;
+        }
+
+        #panel-body strong {
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        #panel-body em {
+            color: var(--accent3);
+            font-style: italic;
+        }
+
+        .panel-tag {
+            display: inline-block;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 3px 10px;
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--text-muted);
+            margin-bottom: 14px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        /* ZOOM BADGE */
+        #zoom-badge {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 5px 14px;
+            font-size: 12px;
+            color: var(--text-muted);
+            z-index: 50;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        /* FOOTER */
+        #footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--toolbar-bg);
+            backdrop-filter: blur(12px);
+            border-top: 1px solid var(--border);
+            z-index: 100;
+            font-size: 12px;
+            color: var(--text-muted);
+            gap: 6px;
+            transition: background var(--transition), border-color var(--transition);
+        }
+
+        #footer span {
+            font-weight: 600;
+            color: var(--text);
+            font-family: 'DM Serif Display', serif;
+            letter-spacing: 0.2px;
+        }
+
+        /* SCROLLBAR */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 3px;
+        }
+
+        /* NODE ANIMATION */
+        @keyframes nodeIn {
+            from {
+                opacity: 0;
+                transform: translateX(-12px) scale(0.95);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0) scale(1);
+            }
+        }
+
+        .node {
+            animation: nodeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) both;
+        }
+    </style>
+
+    <meta name="description" content="Interactive CYS401 Chapter 10 Authentication &amp; Access Control mindmap with expandable concepts, worked examples, search, zoom, pan, and PNG export.">
+    <link rel="canonical" href="https://shoug-tech.com/Academics/cybersecurity/cys401/extra-resources/mindmaps/10-authentication-and-access-control/authentication-and-access-control.html">
+    <meta property="og:title" content="Authentication &amp; Access Control — CYS401 Mindmap">
+    <meta property="og:description" content="Interactive CYS401 Chapter 10 Authentication &amp; Access Control mindmap with expandable concepts, worked examples, search, zoom, pan, and PNG export.">
+    <meta property="og:url" content="https://shoug-tech.com/Academics/cybersecurity/cys401/extra-resources/mindmaps/10-authentication-and-access-control/authentication-and-access-control.html">
+    <meta property="og:type" content="article">
+    <meta property="og:image" content="https://shoug-tech.com/assets/og-banner.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Authentication &amp; Access Control — CYS401 Mindmap">
+    <meta name="twitter:description" content="Interactive CYS401 Chapter 10 Authentication &amp; Access Control mindmap with expandable concepts, worked examples, search, zoom, pan, and PNG export.">
+    <meta name="twitter:image" content="https://shoug-tech.com/assets/og-banner.png">
+    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebPage", "url": "https://shoug-tech.com/Academics/cybersecurity/cys401/extra-resources/mindmaps/10-authentication-and-access-control/authentication-and-access-control.html", "name": "Authentication & Access Control \u2014 CYS401 Mindmap", "description": "Interactive CYS401 Chapter 10 Authentication & Access Control mindmap with expandable concepts, worked examples, search, zoom, pan, and PNG export.", "isPartOf": {"@type": "WebSite", "name": "Shoug's Digital Garden", "url": "https://shoug-tech.com/"}}</script>
+
+      <link rel="alternate" hreflang="en" href="https://shoug-tech.com/Academics/cybersecurity/cys401/extra-resources/mindmaps/10-authentication-and-access-control/authentication-and-access-control.html">
+      <link rel="alternate" hreflang="ar" href="https://shoug-tech.com/ar/Academics/cybersecurity/cys401/extra-resources/mindmaps/10-authentication-and-access-control/authentication-and-access-control.html">
+      <link rel="alternate" hreflang="x-default" href="https://shoug-tech.com/Academics/cybersecurity/cys401/extra-resources/mindmaps/10-authentication-and-access-control/authentication-and-access-control.html">
+
+    <!-- Microsoft Clarity tracking code for https://shoug-tech.com/ -->
+    <script type="text/javascript">
+        (function(c,l,a,r,i,t,y){
+            c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+            t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+            y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+        })(window, document, "clarity", "script", "xub0eqmvs9");
+    </script>
+</head>
+
+<body data-theme="dark">
+
+    <!-- TOOLBAR -->
+    <div id="toolbar">
+        <div class="toolbar-brand">Mind<span>Map</span></div>
+        <div class="toolbar-sep"></div>
+
+        <div id="search-wrap">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+            <input id="search" type="text" placeholder="Search topics…" autocomplete="off">
+            <div id="search-results"></div>
+        </div>
+
+        <div class="toolbar-sep"></div>
+
+        <button class="tb-btn" id="theme-toggle" title="Toggle theme">🌙</button>
+        <button class="tb-btn" onclick="zoom(0.15)" title="Zoom in">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                <line x1="11" y1="8" x2="11" y2="14" />
+                <line x1="8" y1="11" x2="14" y2="11" />
+            </svg>
+            Zoom In
+        </button>
+        <button class="tb-btn" onclick="zoom(-0.15)" title="Zoom out">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                <line x1="8" y1="11" x2="14" y2="11" />
+            </svg>
+            Zoom Out
+        </button>
+        <button class="tb-btn" onclick="resetView()" title="Reset view">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polyline points="1 4 1 10 7 10" />
+                <path d="M3.51 15a9 9 0 1 0 .49-4.87" />
+            </svg>
+            Reset
+        </button>
+        <button class="tb-btn" onclick="expandAll()" title="Expand all">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polyline points="7 13 12 18 17 13" />
+                <polyline points="7 6 12 11 17 6" />
+            </svg>
+            Expand All
+        </button>
+        <button class="tb-btn" onclick="collapseAll()" title="Collapse all">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polyline points="7 11 12 6 17 11" />
+                <polyline points="7 18 12 13 17 18" />
+            </svg>
+            Collapse All
+        </button>
+        <button class="tb-btn" onclick="exportPNG()" title="Export PNG">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="7 10 12 15 17 10" />
+                <line x1="12" y1="15" x2="12" y2="3" />
+            </svg>
+            Export
+        </button>
+    </div>
+
+    <!-- CANVAS -->
+    <div id="canvas-wrap">
+        <div id="canvas">
+            <svg id="svg-layer"></svg>
+        </div>
+    </div>
+
+    <!-- PANEL -->
+    <div id="panel">
+        <div id="panel-header">
+            <div id="panel-title">Node Title</div>
+            <button id="panel-close" onclick="closePanel()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <line x1="18" y1="6" x2="6" y2="18" />
+                    <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+            </button>
+        </div>
+        <div id="panel-body"></div>
+    </div>
+
+    <!-- ZOOM BADGE -->
+    <div id="zoom-badge">100%</div>
+
+    <!-- FOOTER -->
+    <div id="footer">
+        Made by <span>Shoug Alomran</span> &nbsp;·&nbsp; Authentication &amp; Access Control Mindmap
+    </div>
+
+    <script>
+        // ─────────────────────────────────────────────
+        // DATA
+        // ─────────────────────────────────────────────
+        const DATA = {
+    "id": "root",
+    "label": "Authentication & Access Control",
+    "desc": "<span class=\"panel-tag\">CYS401 · Chapter 10</span><p>A comprehensive concept map for <strong>Authentication &amp; Access Control</strong>.</p><p>Expand a branch to see its concepts, then select any node for the full explanation and a worked example. You can search topics, zoom, pan, and export the map.</p>",
+    "children": [
+        {
+            "id": "branch-1",
+            "label": "Access Control Foundations",
+            "desc": "<span class=\"panel-tag\">Core Concept</span><p>Access control manages the flow of information between subjects and objects in order to enforce CIA.</p>",
+            "children": [
+                {
+                    "id": "branch-1-detail-1",
+                    "label": "What Access Control Is",
+                    "desc": "<span class=\"panel-tag\">Definition</span><p>Access control is a security technique that regulates who or what can view or use resources. It specifies what users can do, which resources they can access, and what operations they can perform.</p>"
+                },
+                {
+                    "id": "branch-1-detail-2",
+                    "label": "Subjects and Objects",
+                    "desc": "<span class=\"panel-tag\">Definition</span><p><strong>Subjects</strong> are active entities that request access. <strong>Objects</strong> are passive entities that contain information. The goal of controlling the flow between them is to enforce Confidentiality, Integrity, and Availability.</p><p><strong>In everyday terms:</strong> A person opening a file is the subject; the file is the object. The same file becomes a subject if it is a program that starts requesting things itself.</p>"
+                },
+                {
+                    "id": "branch-1-detail-3",
+                    "label": "The Three Functions",
+                    "desc": "<span class=\"panel-tag\">Sequence</span><p>The three distinct and sequential functions are <strong>Identification</strong> (who are you claiming to be?), <strong>Authentication</strong> (prove it), and <strong>Authorization</strong> (what are you allowed to do?). The order never changes.</p><p><strong>In everyday terms:</strong> Mnemonic: 'I Am Authorized'. 'I am Alice' (claim) → 'here's my proof' (verify) → 'here's what Alice can do' (permit).</p>"
+                },
+                {
+                    "id": "branch-1-detail-4",
+                    "label": "Identification",
+                    "desc": "<span class=\"panel-tag\">Function 1</span><p>Identification establishes the identity of a subject — user, program, or process — using <strong>public</strong> information such as a username. Nothing is secret at this stage.</p>"
+                },
+                {
+                    "id": "branch-1-detail-5",
+                    "label": "Good Identification",
+                    "desc": "<span class=\"panel-tag\">Requirements</span><p>Identification values must be <strong>unique</strong> so users can be held accountable, follow a <strong>standard naming</strong> scheme for consistency, and be <strong>non-descriptive</strong> so they do not reveal the user's position or role.</p><p><strong>In everyday terms:</strong> A username like 'ceo_alomran' is descriptive and therefore a bad identifier — it tells an attacker exactly which account is worth targeting.</p>"
+                }
+            ]
+        },
+        {
+            "id": "branch-2",
+            "label": "Three Authentication Factors",
+            "desc": "<span class=\"panel-tag\">Core Concept</span><p>Something you know, something you have, something you are — and what makes MFA genuine.</p>",
+            "children": [
+                {
+                    "id": "branch-2-detail-1",
+                    "label": "Factor 1: Knowledge",
+                    "desc": "<span class=\"panel-tag\">Type 1</span><p>Something you <strong>KNOW</strong>: passwords, passphrases, and PINs. It is the most common factor and the weakest, because it can be guessed, stolen, or shared.</p><p><strong>In everyday terms:</strong> A password can be given away over the phone in ten seconds, which no other factor can.</p>"
+                },
+                {
+                    "id": "branch-2-detail-2",
+                    "label": "Factor 2: Ownership",
+                    "desc": "<span class=\"panel-tag\">Type 2</span><p>Something you <strong>HAVE</strong>: tokens, smart cards, and key fobs. RSA SecurID is the classic example, generating one-time passwords.</p><p><strong>In everyday terms:</strong> Stealing this factor requires physical presence, which is why it defeats remote attackers even when they have your password.</p>"
+                },
+                {
+                    "id": "branch-2-detail-3",
+                    "label": "Factor 3: Characteristics",
+                    "desc": "<span class=\"panel-tag\">Type 3</span><p>Something you <strong>ARE</strong>: biometrics, meaning digitized physical features such as fingerprint and iris, or behaviours such as signature and keystroke dynamics.</p><p><strong>In everyday terms:</strong> You cannot forget it or lend it — and you also cannot change it after a breach, which is its unique weakness.</p>"
+                },
+                {
+                    "id": "branch-2-detail-4",
+                    "label": "Know, Own, Are",
+                    "desc": "<span class=\"panel-tag\">Memory Hook</span><p>The three factors compress to <strong>'Know. Own. Are.'</strong> — something you know, something you own, something you are.</p>"
+                },
+                {
+                    "id": "branch-2-detail-5",
+                    "label": "What Counts as MFA",
+                    "desc": "<span class=\"panel-tag\">Key Rule</span><p>Using two or more factors together gives <strong>strong authentication</strong>, but they must be <strong>DIFFERENT types</strong>. Password plus token is 1+2 and qualifies; two of the same type is <strong>NOT</strong> MFA.</p><p><strong>In everyday terms:</strong> A password plus a security question is not MFA — both are things you know, and a single successful phishing call captures both.</p>"
+                }
+            ]
+        },
+        {
+            "id": "branch-3",
+            "label": "Biometrics",
+            "desc": "<span class=\"panel-tag\">Core Concept</span><p>The most accurate and most expensive factor, judged by its error rates.</p>",
+            "children": [
+                {
+                    "id": "branch-3-detail-1",
+                    "label": "What Biometrics Is",
+                    "desc": "<span class=\"panel-tag\">Definition</span><p>Biometrics verifies identity by analysing a unique person attribute or behaviour — what a person <strong>IS</strong>. It is the most expensive and most accurate form of authentication, but has user acceptance challenges.</p><p><strong>In everyday terms:</strong> Acceptance matters more than it sounds: people object to giving fingerprints to an employer in a way they never object to a password.</p>"
+                },
+                {
+                    "id": "branch-3-detail-2",
+                    "label": "Physiological Types",
+                    "desc": "<span class=\"panel-tag\">Category</span><p>Physiological (physical) biometrics are face recognition, fingerprint, hand geometry, iris and retina scan, and DNA.</p><p><strong>In everyday terms:</strong> These measure your body rather than your behaviour, which makes them stable over time — and impossible to change if the data is ever stolen.</p>"
+                },
+                {
+                    "id": "branch-3-detail-3",
+                    "label": "Behavioural Types",
+                    "desc": "<span class=\"panel-tag\">Category</span><p>Behavioural biometrics measure actions rather than anatomy: keystroke dynamics, signature dynamics, and voice recognition.</p><p><strong>In everyday terms:</strong> Keystroke dynamics identifies you by your typing rhythm — the same password typed by someone else reads as a different person.</p>"
+                },
+                {
+                    "id": "branch-3-detail-4",
+                    "label": "Type I Error (FRR)",
+                    "desc": "<span class=\"panel-tag\">Error Rate</span><p>The <strong>False Rejection Rate</strong> is when the system rejects an <strong>AUTHORIZED</strong> user. It is annoying but not dangerous, and it means the system is set too strict.</p><p><strong>In everyday terms:</strong> Your phone refusing your own fingerprint on a cold morning — irritating, and nobody got in who should not have.</p>"
+                },
+                {
+                    "id": "branch-3-detail-5",
+                    "label": "Type II Error (FAR)",
+                    "desc": "<span class=\"panel-tag\">Error Rate</span><p>The <strong>False Acceptance Rate</strong> is when the system accepts an <strong>UNAUTHORIZED</strong> user. It is very dangerous, and it means the system is set too lax.</p><p><strong>In everyday terms:</strong> Your phone unlocking for your sibling's face is a Type II error, and it is a security breach rather than an inconvenience.</p>"
+                },
+                {
+                    "id": "branch-3-detail-6",
+                    "label": "Which Error Is Worse",
+                    "desc": "<span class=\"panel-tag\">Exam Trap</span><p><strong>Type II (False Acceptance)</strong> is always the more critical error to minimise, because accepting an impostor is a security breach while Type I merely inconveniences a legitimate user.</p><p><strong>In everyday terms:</strong> Memory trick: 'Type 1 rejects the Right one. Type 2 accepts the Wrong one.'</p>"
+                },
+                {
+                    "id": "branch-3-detail-7",
+                    "label": "Crossover Error Rate",
+                    "desc": "<span class=\"panel-tag\">Metric</span><p>The CER or ERR is the point where <strong>FRR equals FAR</strong>. A <strong>lower CER means a more accurate system</strong>, and it is the standard figure used to compare biometric systems.</p><p><strong>In everyday terms:</strong> Any system can be tuned to reject almost nobody or accept almost nobody. The CER is the single number that describes the system rather than its current setting.</p>"
+                }
+            ]
+        },
+        {
+            "id": "branch-4",
+            "label": "Passwords & OTP",
+            "desc": "<span class=\"panel-tag\">Core Concept</span><p>The most common scheme, its attack techniques, and the one-time password answer.</p>",
+            "children": [
+                {
+                    "id": "branch-4-detail-1",
+                    "label": "Password Weakness",
+                    "desc": "<span class=\"panel-tag\">Foundation</span><p>Passwords are the most common identification and authentication scheme, and are considered a <strong>weak security mechanism on their own</strong>. Strong password protections and complexity requirements are always needed.</p>"
+                },
+                {
+                    "id": "branch-4-detail-2",
+                    "label": "Electronic Monitoring",
+                    "desc": "<span class=\"panel-tag\">Attack</span><p>Sniffing network traffic to capture passwords in transit. It is a passive attack and is defeated by encryption such as TLS/HTTPS.</p><p><strong>In everyday terms:</strong> It is why logging into an HTTP site on public WiFi hands your password to anyone else on that network.</p>"
+                },
+                {
+                    "id": "branch-4-detail-3",
+                    "label": "Password File Access",
+                    "desc": "<span class=\"panel-tag\">Attack</span><p>Gaining access to the stored password file, such as /etc/shadow on Linux. It is defeated by hashing and salting, so the file yields no usable passwords.</p><p><strong>In everyday terms:</strong> Salting matters because without it, one precomputed table cracks every identical password in the file at once.</p>"
+                },
+                {
+                    "id": "branch-4-detail-4",
+                    "label": "Brute Force",
+                    "desc": "<span class=\"panel-tag\">Attack</span><p>Trying every possible combination. It takes time but <strong>guarantees</strong> success eventually, and is defeated by lockout policies and long passwords.</p><p><strong>In everyday terms:</strong> Length beats complexity here: each extra character multiplies the search space far more than swapping an 'a' for an '@'.</p>"
+                },
+                {
+                    "id": "branch-4-detail-5",
+                    "label": "Dictionary Attack",
+                    "desc": "<span class=\"panel-tag\">Attack</span><p>Using a list of common words and passwords, which is much faster than brute force because it tries only likely candidates. It is defeated by random and complex passwords.</p><p><strong>In everyday terms:</strong> Attackers start with lists of passwords leaked from previous breaches — which is exactly why reusing a password across sites is so dangerous.</p>"
+                },
+                {
+                    "id": "branch-4-detail-6",
+                    "label": "Social Engineering",
+                    "desc": "<span class=\"panel-tag\">Attack</span><p>Simply asking for the password, using deception. It remains a password attack technique in its own right, and it bypasses every technical control on the list.</p><p><strong>In everyday terms:</strong> No amount of password complexity helps if the user types it into a convincing fake login page.</p>"
+                },
+                {
+                    "id": "branch-4-detail-7",
+                    "label": "OTP Advantage",
+                    "desc": "<span class=\"panel-tag\">Defence</span><p>One-time passwords, also called dynamic passwords, are <strong>not vulnerable</strong> to electronic eavesdropping, sniffing, or password guessing, because each password is used exactly once.</p><p><strong>In everyday terms:</strong> An attacker who captures the code as you type it has captured something already worthless.</p>"
+                },
+                {
+                    "id": "branch-4-detail-8",
+                    "label": "Synchronous OTP",
+                    "desc": "<span class=\"panel-tag\">OTP Type</span><p>Time-based OTP: the token generates a code in sync with the server clock, with no challenge needed — it just has to match the current time window. Examples are Google Authenticator and RSA SecurID.</p><p><strong>In everyday terms:</strong> The six-digit code in your authenticator app that changes every thirty seconds.</p>"
+                },
+                {
+                    "id": "branch-4-detail-9",
+                    "label": "Asynchronous OTP",
+                    "desc": "<span class=\"panel-tag\">OTP Type</span><p>Challenge-based OTP: the server sends a random challenge value, the user enters it into the token, the token generates an OTP, and the user sends the OTP back to the server.</p><p><strong>In everyday terms:</strong> Some banks still issue a small calculator-style device for exactly this — you type in the number from the screen and it returns the response.</p>"
+                }
+            ]
+        },
+        {
+            "id": "branch-5",
+            "label": "Authorization",
+            "desc": "<span class=\"panel-tag\">Core Concept</span><p>Determining whether a proven identity has the right to access a requested resource.</p>",
+            "children": [
+                {
+                    "id": "branch-5-detail-1",
+                    "label": "What Authorization Is",
+                    "desc": "<span class=\"panel-tag\">Definition</span><p>Authorization determines whether a proven identity has the <strong>RIGHT</strong> to access the requested resources. It is based on level of trust plus need to know.</p>"
+                },
+                {
+                    "id": "branch-5-detail-2",
+                    "label": "Criterion: Roles",
+                    "desc": "<span class=\"panel-tag\">Access Criteria</span><p>Access is granted based on <strong>job function</strong>, such as managers versus clerks versus cashiers.</p><p><strong>In everyday terms:</strong> It is why a new cashier can start work on day one with exactly the right access: the role already exists and they are simply placed in it.</p>"
+                },
+                {
+                    "id": "branch-5-detail-3",
+                    "label": "Criterion: Groups",
+                    "desc": "<span class=\"panel-tag\">Access Criteria</span><p>Access is granted to <strong>groups</strong> of multiple users needing the same access, such as an HR group or an IT group.</p><p><strong>In everyday terms:</strong> Adding someone to the HR group grants a dozen permissions in one action, and removing them revokes all twelve just as cleanly.</p>"
+                },
+                {
+                    "id": "branch-5-detail-4",
+                    "label": "Criterion: Location",
+                    "desc": "<span class=\"panel-tag\">Access Criteria</span><p>Access is restricted by <strong>where</strong> the request comes from, local versus remote.</p><p><strong>In everyday terms:</strong> A policy of no remote administration to servers means a stolen admin password is useless from outside the building.</p>"
+                },
+                {
+                    "id": "branch-5-detail-5",
+                    "label": "Criterion: Time",
+                    "desc": "<span class=\"panel-tag\">Access Criteria</span><p>Access is restricted to certain <strong>hours</strong>, such as a database reachable only between 8am and 6pm.</p><p><strong>In everyday terms:</strong> It makes 3am activity impossible rather than merely suspicious, which is a much stronger control than alerting on it.</p>"
+                },
+                {
+                    "id": "branch-5-detail-6",
+                    "label": "Criterion: Transaction Types",
+                    "desc": "<span class=\"panel-tag\">Access Criteria</span><p>Access controls <strong>what functions</strong> can be performed on data, such as read-only during an audit period.</p><p><strong>In everyday terms:</strong> During an audit a system may be switched to read-only for everyone, so records can be examined but not altered while under review.</p>"
+                },
+                {
+                    "id": "branch-5-detail-7",
+                    "label": "Authorization Creep",
+                    "desc": "<span class=\"panel-tag\">Risk</span><p>Authorization creep is employees accumulating permissions over time as they change roles, without the old ones being removed. It is a major security risk requiring regular review and revocation.</p><p><strong>In everyday terms:</strong> Someone who has worked at a company for ten years across four departments often holds the combined access of all four — far more than anyone would ever approve at once.</p>"
+                },
+                {
+                    "id": "branch-5-detail-8",
+                    "label": "Default to Zero",
+                    "desc": "<span class=\"panel-tag\">Principle</span><p>Start with <strong>ZERO</strong> access and grant only what is needed. This is the secure baseline and the opposite of allow-by-default.</p>"
+                },
+                {
+                    "id": "branch-5-detail-9",
+                    "label": "Need to Know",
+                    "desc": "<span class=\"panel-tag\">Principle</span><p>Users get access <strong>ONLY</strong> to information they absolutely require for their job duties. Even holding a clearance is not sufficient — they must also have a need to know.</p><p><strong>In everyday terms:</strong> A Top Secret clearance does not entitle someone to every Top Secret file. Clearance is the ceiling; need to know is the actual grant.</p>"
+                },
+                {
+                    "id": "branch-5-detail-10",
+                    "label": "Access Control Lists",
+                    "desc": "<span class=\"panel-tag\">Tool</span><p>An ACL is a list of subjects — users — that are authorized to access a particular object. It is bound to the <strong>OBJECT</strong> and tells the object who may access it.</p>"
+                }
+            ]
+        },
+        {
+            "id": "branch-6",
+            "label": "Single Sign-On",
+            "desc": "<span class=\"panel-tag\">Core Concept</span><p>One login for everything, with a matching single point of compromise.</p>",
+            "children": [
+                {
+                    "id": "branch-6-detail-1",
+                    "label": "What SSO Is",
+                    "desc": "<span class=\"panel-tag\">Definition</span><p>Single Sign-On allows user credentials to be entered <strong>ONE</strong> time, granting access to <strong>ALL</strong> authorized resources across primary and secondary network domains. It is also called 'reduced sign-on' and is used in federated identity management systems.</p><p><strong>In everyday terms:</strong> Signing into one Google account and reaching Gmail, Drive, and YouTube without logging in again.</p>"
+                },
+                {
+                    "id": "branch-6-detail-2",
+                    "label": "SSO Technologies",
+                    "desc": "<span class=\"panel-tag\">Reference</span><p>The named technologies are <strong>Kerberos</strong>, <strong>SESAME</strong>, <strong>security domains</strong>, <strong>directory services</strong>, and <strong>dumb terminals</strong>.</p><p><strong>In everyday terms:</strong> Kerberos is the one worth knowing properly — it is what signs you in across a whole Windows domain after a single login.</p>"
+                },
+                {
+                    "id": "branch-6-detail-3",
+                    "label": "Pro: Efficient Logon",
+                    "desc": "<span class=\"panel-tag\">Advantage</span><p>The user logs in only once for all authorized systems, removing repeated authentication friction across the working day.</p><p><strong>In everyday terms:</strong> It is the difference between logging in once each morning and typing the same password into six systems before lunch.</p>"
+                },
+                {
+                    "id": "branch-6-detail-4",
+                    "label": "Pro: Stronger Passwords",
+                    "desc": "<span class=\"panel-tag\">Advantage</span><p>With only one password to remember, users choose harder ones. Password strength improves precisely because there is only one to manage.</p><p><strong>In everyday terms:</strong> Ten separate systems produce ten weak, related passwords. One system produces one strong one.</p>"
+                },
+                {
+                    "id": "branch-6-detail-5",
+                    "label": "Pro: Central Administration",
+                    "desc": "<span class=\"panel-tag\">Advantage</span><p>Centralized administration applies consistent policy across the organization, and disabling one account removes access everywhere at once.</p><p><strong>In everyday terms:</strong> When someone leaves, one action closes every door — instead of hoping nobody forgot a system.</p>"
+                },
+                {
+                    "id": "branch-6-detail-6",
+                    "label": "Con: Single Point of Compromise",
+                    "desc": "<span class=\"panel-tag\">Critical Risk</span><p>One stolen credential grants access to <strong>everything</strong> the user is authorized for. This is the critical exam trade-off for SSO and the direct mirror of its main benefit.</p><p><strong>In everyday terms:</strong> The same property that closes every door at once when someone leaves opens every door at once when a credential is phished — which is why SSO and MFA are almost always deployed together.</p>"
+                },
+                {
+                    "id": "branch-6-detail-7",
+                    "label": "Con: Interoperability",
+                    "desc": "<span class=\"panel-tag\">Risk</span><p>Legacy interoperability problems mean older systems may not work with SSO software, and unusual systems may not interface well, creating implementation difficulties.</p><p><strong>In everyday terms:</strong> An old system that predates SSO often has to keep its own separate login, which quietly undoes part of the benefit.</p>"
+                }
+            ]
+        },
+        {
+            "id": "branch-7",
+            "label": "Access Control Models",
+            "desc": "<span class=\"panel-tag\">Core Concept</span><p>DAC, MAC, and RBAC — the question of who decides who gets access.</p>",
+            "children": [
+                {
+                    "id": "branch-7-detail-1",
+                    "label": "DAC",
+                    "desc": "<span class=\"panel-tag\">Model</span><p>Discretionary Access Control: the <strong>OWNER</strong> of the resource decides who can access it. It is used in most OS file systems such as Windows and Linux, and is the <strong>most flexible and least secure</strong> model, best where flexibility is needed in small environments.</p><p><strong>In everyday terms:</strong> Sharing a Google Doc is DAC: you own it, you decide who gets the link, and no central authority reviews that decision.</p>"
+                },
+                {
+                    "id": "branch-7-detail-2",
+                    "label": "MAC",
+                    "desc": "<span class=\"panel-tag\">Model</span><p>Mandatory Access Control: the <strong>SYSTEM</strong> enforces access based on security labels and clearances. Users have clearances, resources have classification labels, and users <strong>cannot override</strong> the system. It is the <strong>most rigid and most secure</strong> model, used in military and government settings.</p><p><strong>In everyday terms:</strong> A Secret document cannot be emailed to an Unclassified recipient no matter how senior the sender is — the system refuses, and there is no override.</p>"
+                },
+                {
+                    "id": "branch-7-detail-3",
+                    "label": "RBAC",
+                    "desc": "<span class=\"panel-tag\">Model</span><p>Role-Based (Non-Discretionary) Access Control: centrally administered <strong>ROLES</strong> determine access rather than individual identity. It is best for organizations with <strong>high staff turnover</strong>, because changing the role changes permissions automatically.</p><p><strong>In everyday terms:</strong> A hospital grants access to the 'ward nurse' role. When a nurse transfers wards, one role change updates everything — nobody edits permissions file by file.</p>"
+                },
+                {
+                    "id": "branch-7-detail-4",
+                    "label": "Choosing Between Them",
+                    "desc": "<span class=\"panel-tag\">Exam Tip</span><p>The discriminator is <strong>who decides</strong>: the owner (DAC), the system labels (MAC), or the job role (RBAC). Mnemonic: 'Decide by Discretion, Mandatory labels, or Roles.'</p>"
+                }
+            ]
+        },
+        {
+            "id": "branch-8",
+            "label": "Access Control Techniques",
+            "desc": "<span class=\"panel-tag\">Core Concept</span><p>Rule-based control, constrained interfaces, and the access control matrix.</p>",
+            "children": [
+                {
+                    "id": "branch-8-detail-1",
+                    "label": "Rule-Based AC",
+                    "desc": "<span class=\"panel-tag\">Technique</span><p>Rule-based access control uses specific rules defining what <strong>CAN</strong> and <strong>CANNOT</strong> happen between subject and object, and is not necessarily identity-based. Its classic example is the <strong>FIREWALL</strong>, and it is traditionally used in MAC systems.</p><p><strong>In everyday terms:</strong> A firewall rule blocks traffic from a whole country without knowing or caring who any individual user is.</p>"
+                },
+                {
+                    "id": "branch-8-detail-2",
+                    "label": "Constrained Interfaces",
+                    "desc": "<span class=\"panel-tag\">Technique</span><p>Constrained user interfaces restrict access by <strong>hiding or disabling</strong> options the user is not allowed to use. The three types are menus and shells, database views, and physically constrained interfaces.</p><p><strong>In everyday terms:</strong> An ATM keypad is a physically constrained interface: there is simply no key that could request anything you are not permitted to do.</p>"
+                },
+                {
+                    "id": "branch-8-detail-3",
+                    "label": "Access Control Matrix",
+                    "desc": "<span class=\"panel-tag\">Technique</span><p>The access control matrix is a table mapping <strong>subjects × objects</strong>, showing what actions each subject may take on each object. It has two views, depending on the direction you read it.</p>"
+                },
+                {
+                    "id": "branch-8-detail-4",
+                    "label": "Capability Table",
+                    "desc": "<span class=\"panel-tag\">View</span><p>A capability table is bound to the <strong>SUBJECT</strong>. Read down a <strong>ROW</strong> to see everything this user can access — 'here are Alice's capabilities.'</p><p><strong>In everyday terms:</strong> This is the view you need when an employee leaves and you must revoke everything they could reach.</p>"
+                },
+                {
+                    "id": "branch-8-detail-5",
+                    "label": "Access Control List",
+                    "desc": "<span class=\"panel-tag\">View</span><p>An ACL is bound to the <strong>OBJECT</strong>. Read down a <strong>COLUMN</strong> to see everyone who can access this resource — 'here is who can access File1.'</p><p><strong>In everyday terms:</strong> This is the view you need when auditing a sensitive file and asking who has been able to open it.</p>"
+                },
+                {
+                    "id": "branch-8-detail-6",
+                    "label": "Centralized Administration",
+                    "desc": "<span class=\"panel-tag\">Administration</span><p>One entity oversees all corporate resource access, giving a consistent and uniform method of controlling access rights. The protocols used are RADIUS, TACACS+, and Diameter.</p>"
+                },
+                {
+                    "id": "branch-8-detail-7",
+                    "label": "Decentralized Administration",
+                    "desc": "<span class=\"panel-tag\">Administration</span><p>Control is given to people closer to the resources. It lacks proper consistency and is harder to enforce organization-wide, though the local decision-makers understand the context better.</p><p><strong>In everyday terms:</strong> Each department managing its own permissions means faster decisions and no way to answer 'who can reach customer data?' across the company.</p>"
+                }
+            ]
+        },
+        {
+            "id": "branch-9",
+            "label": "RADIUS, TACACS+ & Diameter",
+            "desc": "<span class=\"panel-tag\">Core Concept</span><p>The AAA protocols, and the differences that get examined.</p>",
+            "children": [
+                {
+                    "id": "branch-9-detail-1",
+                    "label": "RADIUS Basics",
+                    "desc": "<span class=\"panel-tag\">Protocol</span><p>Remote Authentication Dial-In User Service is an open, client/server protocol. It is used most by <strong>ISPs</strong> to authenticate customers before granting internet access, and is appropriate for simple accept/deny decisions.</p>"
+                },
+                {
+                    "id": "branch-9-detail-2",
+                    "label": "RADIUS Properties",
+                    "desc": "<span class=\"panel-tag\">Protocol</span><p>RADIUS uses <strong>UDP</strong> on ports 1812 and 1813, encrypts <strong>only the password field</strong>, and <strong>combines</strong> authentication with authorization.</p><p><strong>In everyday terms:</strong> Encrypting only the password means the username, and everything else about the session, travels in the clear.</p>"
+                },
+                {
+                    "id": "branch-9-detail-3",
+                    "label": "TACACS+ Properties",
+                    "desc": "<span class=\"panel-tag\">Protocol</span><p>Terminal Access Controller Access Control System uses <strong>TCP</strong> on port 49 and encrypts the <strong>entire packet</strong> except the TACACS header. It <strong>separates</strong> authentication, authorization, and accounting, giving true AAA.</p>"
+                },
+                {
+                    "id": "branch-9-detail-4",
+                    "label": "TACACS+ Advantage",
+                    "desc": "<span class=\"panel-tag\">Protocol</span><p>Because TACACS+ separates authentication from authorization, the two can be implemented on <strong>different security servers</strong>. Combined with full packet encryption, this makes it superior to RADIUS for enterprise security and granular control. It is used in enterprise networks and the Cisco AAA architecture.</p><p><strong>In everyday terms:</strong> It lets one system verify who you are while a completely separate system decides what you may do — useful when those decisions belong to different teams.</p>"
+                },
+                {
+                    "id": "branch-9-detail-5",
+                    "label": "Diameter",
+                    "desc": "<span class=\"panel-tag\">Protocol</span><p>Diameter is RADIUS evolved: an IETF standard (RFC 3588) using TCP/SCTP with full encryption and extensible true AAA. It was built to overcome RADIUS limitations, and applications requiring AAA can define extensions on top of the Diameter base protocol. It is used in mobile networks and modern AAA applications.</p><p><strong>In everyday terms:</strong> The name is a joke: a diameter is twice a radius.</p>"
+                },
+                {
+                    "id": "branch-9-detail-6",
+                    "label": "RADIUS vs TACACS+",
+                    "desc": "<span class=\"panel-tag\">Memory Hook</span><p>RADIUS = 'Rapid but Partial': <strong>UDP</strong>, encrypts <strong>password only</strong>, <strong>combines</strong> auth and authz. TACACS+ = 'Total Armored Control': <strong>TCP</strong>, encrypts <strong>everything</strong>, <strong>separates</strong> auth, authz, and accounting.</p>"
+                }
+            ]
+        }
+    ]
+};
+
+        // ─────────────────────────────────────────────
+        // STATE
+        // ─────────────────────────────────────────────
+        const state = {
+            expanded: new Set(['root']),
+            selected: null,
+            panX: 0,
+            panY: 0,
+            scale: 1,
+            dragging: false,
+            dragStartX: 0,
+            dragStartY: 0,
+            dragStartPanX: 0,
+            dragStartPanY: 0
+        };
+
+        const NODE_W = 200;
+        const NODE_H = 44;
+        const H_GAP = 80;
+        const V_GAP = 28;
+
+        function estimateNodeHeight(node) {
+            const text = String(node.label || "");
+            const charsPerLine = node._level === 0 ? 22 : 18;
+            const lines = Math.max(1, Math.ceil(text.length / charsPerLine));
+            return Math.max(NODE_H, 24 + lines * 22);
+        }
+
+        // ─────────────────────────────────────────────
+        // LAYOUT ENGINE
+        // ─────────────────────────────────────────────
+        function shiftSubtree(node, deltaY) {
+            node._y += deltaY;
+            if (node.children && state.expanded.has(node.id)) {
+                node.children.forEach(child => shiftSubtree(child, deltaY));
+            }
+        }
+
+        function computeLayout(node, level = 0, x = 100, y = 0) {
+            node._level = level;
+            node._x = x;
+            node._y = y;
+            node._w = NODE_W;
+            node._h = estimateNodeHeight(node);
+
+            if (!node.children || !state.expanded.has(node.id)) {
+                node._subtreeH = node._h;
+                return node._subtreeH;
+            }
+
+            const childX = x + NODE_W + H_GAP;
+            let totalH = 0;
+            node.children.forEach(child => {
+                totalH += computeLayout(child, level + 1, childX, 0);
+                totalH += V_GAP;
+            });
+            totalH -= V_GAP;
+
+            let cy = y + (node._h / 2) - (totalH / 2);
+            node.children.forEach(child => {
+                const nextY = cy + (child._subtreeH / 2) - (child._h / 2);
+                shiftSubtree(child, nextY - child._y);
+                cy += child._subtreeH + V_GAP;
+            });
+
+            node._subtreeH = Math.max(node._h, totalH);
+            return node._subtreeH;
+        }
+
+        // ─────────────────────────────────────────────
+        // RENDER
+        // ─────────────────────────────────────────────
+        const canvas = document.getElementById('canvas');
+        const svgLayer = document.getElementById('svg-layer');
+        let nodeEls = {};
+
+        function render() {
+            computeLayout(DATA, 0, 100, 2000);
+            renderNodes(DATA);
+            renderConnectors(DATA);
+        }
+
+        function renderNodes(node) {
+            let el = nodeEls[node.id];
+            if (!el) {
+                el = document.createElement('div');
+                el.className = 'node';
+                el.dataset.id = node.id;
+                el.innerHTML = buildNodeHTML(node);
+                el.addEventListener('click', () => onNodeClick(node));
+                canvas.appendChild(el);
+                nodeEls[node.id] = el;
+            }
+
+            const levelClass = node._level === 0 ? 'root' : `level-${Math.min(node._level, 3)}`;
+            el.className = `node ${levelClass}${state.selected === node.id ? ' selected' : ''}${state.expanded.has(node.id) ? ' expanded' : ''}`;
+            el.style.left = node._x + 'px';
+            el.style.top = node._y + 'px';
+            el.style.width = node._w + 'px';
+            el.style.minHeight = node._h + 'px';
+            el.style.display = 'flex';
+
+            if (node.children && state.expanded.has(node.id)) {
+                node.children.forEach(renderNodes);
+            }
+
+            // Remove orphaned children
+            if (!node.children || !state.expanded.has(node.id)) {
+                collapseChildren(node);
+            }
+        }
+
+        function buildNodeHTML(node) {
+            const isParent = node.children && node.children.length > 0;
+            const icon = isParent
+                ? `<svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>`
+                : `<div class="leaf-dot"></div>`;
+            return `<div class="node-text">${node.label}</div>${icon}`;
+        }
+
+        function collapseChildren(node) {
+            if (!node.children) return;
+            node.children.forEach(child => {
+                if (nodeEls[child.id]) {
+                    nodeEls[child.id].style.display = 'none';
+                }
+                collapseChildren(child);
+            });
+        }
+
+        function renderConnectors(node) {
+            svgLayer.innerHTML = '';
+            drawConnectors(node);
+        }
+
+        function drawConnectors(node) {
+            if (!node.children || !state.expanded.has(node.id)) return;
+            node.children.forEach(child => {
+                const x1 = node._x + node._w;
+                const y1 = node._y + node._h / 2;
+                const x2 = child._x;
+                const y2 = child._y + child._h / 2;
+                const cx1 = x1 + (x2 - x1) * 0.55;
+                const cx2 = x2 - (x2 - x1) * 0.55;
+                const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                path.setAttribute('class', 'connector');
+                path.setAttribute('d', `M${x1},${y1} C${cx1},${y1} ${cx2},${y2} ${x2},${y2}`);
+                svgLayer.appendChild(path);
+                drawConnectors(child);
+            });
+        }
+
+        // ─────────────────────────────────────────────
+        // INTERACTION
+        // ─────────────────────────────────────────────
+        function onNodeClick(node) {
+            if (node.children && node.children.length > 0) {
+                if (state.expanded.has(node.id)) {
+                    state.expanded.delete(node.id);
+                } else {
+                    state.expanded.add(node.id);
+                }
+                state.selected = node.id;
+                render();
+            } else {
+                state.selected = node.id;
+                render();
+                openPanel(node);
+            }
+        }
+
+        function openPanel(node) {
+            document.getElementById('panel-title').textContent = node.label;
+            document.getElementById('panel-body').innerHTML = node.desc || `<p>No description available.</p>`;
+            document.getElementById('panel').classList.add('open');
+        }
+
+        function closePanel() {
+            document.getElementById('panel').classList.remove('open');
+            state.selected = null;
+            render();
+        }
+
+        // ─────────────────────────────────────────────
+        // PAN & ZOOM
+        // ─────────────────────────────────────────────
+        const wrap = document.getElementById('canvas-wrap');
+
+        function applyTransform() {
+            canvas.style.transform = `translate(${state.panX}px, ${state.panY}px) scale(${state.scale})`;
+            document.getElementById('zoom-badge').textContent = Math.round(state.scale * 100) + '%';
+        }
+
+        wrap.addEventListener('mousedown', e => {
+            if (e.target.closest('.node')) return;
+            state.dragging = true;
+            state.dragStartX = e.clientX;
+            state.dragStartY = e.clientY;
+            state.dragStartPanX = state.panX;
+            state.dragStartPanY = state.panY;
+            wrap.classList.add('grabbing');
+        });
+
+        window.addEventListener('mousemove', e => {
+            if (!state.dragging) return;
+            state.panX = state.dragStartPanX + (e.clientX - state.dragStartX);
+            state.panY = state.dragStartPanY + (e.clientY - state.dragStartY);
+            applyTransform();
+        });
+
+        window.addEventListener('mouseup', () => {
+            state.dragging = false;
+            wrap.classList.remove('grabbing');
+        });
+
+        wrap.addEventListener('wheel', e => {
+            e.preventDefault();
+            const delta = e.deltaY < 0 ? 0.1 : -0.1;
+            state.scale = Math.max(0.2, Math.min(2.5, state.scale + delta));
+            applyTransform();
+        }, { passive: false });
+
+        function zoom(delta) {
+            state.scale = Math.max(0.2, Math.min(2.5, state.scale + delta));
+            applyTransform();
+        }
+
+        function resetView() {
+            state.panX = 0;
+            state.panY = 0;
+            state.scale = 1;
+            applyTransform();
+        }
+
+        // ─────────────────────────────────────────────
+        // EXPAND / COLLAPSE ALL
+        // ─────────────────────────────────────────────
+        function collectIds(node, ids = []) {
+            ids.push(node.id);
+            if (node.children) node.children.forEach(c => collectIds(c, ids));
+            return ids;
+        }
+
+        function expandAll() {
+            collectIds(DATA).forEach(id => state.expanded.add(id));
+            render();
+        }
+
+        function collapseAll() {
+            state.expanded.clear();
+            state.expanded.add('root');
+            render();
+        }
+
+        // ─────────────────────────────────────────────
+        // SEARCH
+        // ─────────────────────────────────────────────
+        const searchInput = document.getElementById('search');
+        const searchResults = document.getElementById('search-results');
+
+        function flatNodes(node, path = [], results = []) {
+            results.push({ node, path: [...path, node.label] });
+            if (node.children) node.children.forEach(c => flatNodes(c, [...path, node.label], results));
+            return results;
+        }
+
+        const allNodes = flatNodes(DATA);
+
+        searchInput.addEventListener('input', () => {
+            const q = searchInput.value.trim().toLowerCase();
+            // Clear highlights
+            Object.values(nodeEls).forEach(el => el.classList.remove('highlighted'));
+
+            if (!q) {
+                searchResults.style.display = 'none';
+                return;
+            }
+
+            const matches = allNodes.filter(({ node }) => node.label.toLowerCase().includes(q));
+            if (matches.length === 0) {
+                searchResults.innerHTML = '<div class="sr-item" style="cursor:default;color:var(--text-muted)">No results found</div>';
+                searchResults.style.display = 'block';
+                return;
+            }
+
+            searchResults.innerHTML = matches.slice(0, 10).map(({ node, path }) => {
+                const hl = node.label.replace(new RegExp(`(${q})`, 'gi'), '<mark>$1</mark>');
+                const trail = path.slice(0, -1).join(' › ');
+                return `<div class="sr-item" data-id="${node.id}"><div>${hl}</div>${trail ? `<div class="sr-path">${trail}</div>` : ''}</div>`;
+            }).join('');
+
+            searchResults.querySelectorAll('.sr-item[data-id]').forEach(el => {
+                el.addEventListener('click', () => {
+                    const id = el.dataset.id;
+                    navigateTo(id);
+                    searchResults.style.display = 'none';
+                    searchInput.value = '';
+                });
+            });
+
+            matches.forEach(({ node }) => {
+                if (nodeEls[node.id]) nodeEls[node.id].classList.add('highlighted');
+            });
+
+            searchResults.style.display = 'block';
+        });
+
+        document.addEventListener('click', e => {
+            if (!e.target.closest('#search-wrap')) searchResults.style.display = 'none';
+        });
+
+        function navigateTo(id) {
+            // Expand path to node
+            function findPath(node, targetId, path = []) {
+                if (node.id === targetId) return [...path, node.id];
+                if (node.children) {
+                    for (const c of node.children) {
+                        const r = findPath(c, targetId, [...path, node.id]);
+                        if (r) return r;
+                    }
+                }
+                return null;
+            }
+            const path = findPath(DATA, id);
+            if (path) path.forEach(pid => state.expanded.add(pid));
+            state.selected = id;
+            render();
+            // Center on node
+            setTimeout(() => {
+                function findNode(node, id) {
+                    if (node.id === id) return node;
+                    if (node.children) for (const c of node.children) { const r = findNode(c, id); if (r) return r; }
+                    return null;
+                }
+                const n = findNode(DATA, id);
+                if (n) {
+                    const vpW = wrap.clientWidth;
+                    const vpH = wrap.clientHeight;
+                    state.panX = vpW / 2 - (n._x + n._w / 2) * state.scale;
+                    state.panY = vpH / 2 - (n._y + n._h / 2) * state.scale;
+                    applyTransform();
+                }
+            }, 100);
+        }
+
+        // ─────────────────────────────────────────────
+        // THEME
+        // ─────────────────────────────────────────────
+        const themeBtn = document.getElementById('theme-toggle');
+        let isDark = true;
+
+        function applyTheme(dark) {
+            document.body.dataset.theme = dark ? 'dark' : 'light';
+            themeBtn.textContent = dark ? '🌙' : '☀️';
+            localStorage.setItem('mm-theme', dark ? 'dark' : 'light');
+            try { localStorage.setItem('shoug-theme', dark ? 'dark' : 'light'); } catch(_e) {}
+        }
+
+        themeBtn.addEventListener('click', () => {
+            isDark = !isDark;
+            applyTheme(isDark);
+        });
+
+        // Restore
+        const saved = localStorage.getItem('shoug-theme') || localStorage.getItem('mm-theme');
+        if (saved === 'light') { isDark = false; applyTheme(false); }
+
+        // ─────────────────────────────────────────────
+        // EXPORT PNG
+        // ─────────────────────────────────────────────
+        async function exportPNG() {
+            const msg = document.createElement('div');
+            msg.style.cssText = 'position:fixed;top:70px;left:50%;transform:translateX(-50%);background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 20px;font-size:13px;z-index:999;';
+            msg.textContent = 'Preparing export… (open browser print for full export)';
+            document.body.appendChild(msg);
+            setTimeout(() => msg.remove(), 3000);
+            window.print();
+        }
+
+        // ─────────────────────────────────────────────
+        // INIT
+        // ─────────────────────────────────────────────
+        function init() {
+            state.panX = 40;
+            state.panY = -1820;
+            applyTransform();
+            render();
+        }
+
+        init();
+    </script>
+
+
+    <script src="/javascripts/mindmap-controls.js"></script>
+</body>
+
+</html>

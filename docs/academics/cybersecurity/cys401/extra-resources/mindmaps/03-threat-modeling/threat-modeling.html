@@ -1,0 +1,1392 @@
+<!DOCTYPE html>
+<html lang="en">
+<script>!function(){var t=localStorage.getItem("shoug-theme");if(t)document.documentElement.setAttribute("data-theme",t);}();</script>
+
+<head>
+    <link rel="icon" type="image/png" href="/assets/shoug-favicon-v3.png">
+    <link rel="shortcut icon" href="/assets/shoug-favicon-v3.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/shoug-apple-touch-icon-v3.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Understand &amp; Apply Threat Modeling — CYS401 Mindmap</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0d1117;
+            --surface: #161b22;
+            --surface2: #1f2937;
+            --border: #30363d;
+            --text: #e6edf3;
+            --text-muted: #8b949e;
+            --accent: #58a6ff;
+            --accent2: #3fb950;
+            --accent3: #d2a8ff;
+            --accent4: #ffa657;
+            --accent5: #ff7b72;
+            --accent6: #79c0ff;
+            --node-root: #1a2744;
+            --node-root-border: #58a6ff;
+            --node-l1: #1a2a1e;
+            --node-l1-border: #3fb950;
+            --node-l2: #2a1f3d;
+            --node-l2-border: #d2a8ff;
+            --node-l3: #2a1f18;
+            --node-l3-border: #ffa657;
+            --node-selected: #0d2442;
+            --node-selected-border: #58a6ff;
+            --shadow: rgba(0, 0, 0, 0.5);
+            --connector: #30363d;
+            --panel-bg: #161b22;
+            --panel-border: #30363d;
+            --toolbar-bg: rgba(13, 17, 23, 0.92);
+            --search-bg: #21262d;
+            --search-border: #30363d;
+            --transition: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        [data-theme="light"] {
+            --bg: #f6f8fa;
+            --surface: #ffffff;
+            --surface2: #f0f2f5;
+            --border: #d0d7de;
+            --text: #1f2328;
+            --text-muted: #656d76;
+            --accent: #0969da;
+            --accent2: #1a7f37;
+            --accent3: #8250df;
+            --accent4: #bc4c00;
+            --accent5: #cf222e;
+            --accent6: #0550ae;
+            --node-root: #dbeafe;
+            --node-root-border: #0969da;
+            --node-l1: #dcfce7;
+            --node-l1-border: #1a7f37;
+            --node-l2: #ede9fe;
+            --node-l2-border: #8250df;
+            --node-l3: #fff7ed;
+            --node-l3-border: #bc4c00;
+            --node-selected: #bfdbfe;
+            --node-selected-border: #0969da;
+            --shadow: rgba(0, 0, 0, 0.12);
+            --connector: #c8d1da;
+            --panel-bg: #ffffff;
+            --panel-border: #d0d7de;
+            --toolbar-bg: rgba(246, 248, 250, 0.92);
+            --search-bg: #f6f8fa;
+            --search-border: #d0d7de;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            height: 100vh;
+            overflow: hidden;
+            transition: background var(--transition), color var(--transition);
+            user-select: none;
+        }
+
+        /* TOOLBAR */
+        #toolbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            background: var(--toolbar-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            height: 56px;
+            transition: background var(--transition), border-color var(--transition);
+        }
+
+        .toolbar-brand {
+            font-family: 'DM Serif Display', serif;
+            font-size: 16px;
+            color: var(--text);
+            white-space: nowrap;
+            margin-right: 8px;
+            letter-spacing: -0.3px;
+        }
+
+        .toolbar-brand span {
+            color: var(--accent);
+        }
+
+        .toolbar-sep {
+            width: 1px;
+            height: 24px;
+            background: var(--border);
+            margin: 0 4px;
+        }
+
+        #search-wrap {
+            position: relative;
+            flex: 1;
+            max-width: 280px;
+        }
+
+        #search-wrap svg {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        #search {
+            width: 100%;
+            background: var(--search-bg);
+            border: 1px solid var(--search-border);
+            border-radius: 8px;
+            padding: 6px 12px 6px 34px;
+            color: var(--text);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 13px;
+            outline: none;
+            transition: border-color 0.2s, background var(--transition);
+        }
+
+        #search:focus {
+            border-color: var(--accent);
+        }
+
+        #search::placeholder {
+            color: var(--text-muted);
+        }
+
+        .tb-btn {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 6px 11px;
+            color: var(--text);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s, border-color 0.2s, transform 0.1s;
+            white-space: nowrap;
+        }
+
+        .tb-btn:hover {
+            background: var(--border);
+            transform: translateY(-1px);
+        }
+
+        .tb-btn:active {
+            transform: translateY(0);
+        }
+
+        .tb-btn svg {
+            flex-shrink: 0;
+        }
+
+        #theme-toggle {
+            font-size: 16px;
+            padding: 6px 10px;
+        }
+
+        #search-results {
+            position: absolute;
+            top: calc(100% + 6px);
+            left: 0;
+            right: 0;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            box-shadow: 0 8px 32px var(--shadow);
+            z-index: 200;
+            max-height: 260px;
+            overflow-y: auto;
+            display: none;
+        }
+
+        .sr-item {
+            padding: 9px 14px;
+            font-size: 13px;
+            cursor: pointer;
+            border-bottom: 1px solid var(--border);
+            transition: background 0.15s;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .sr-item:last-child {
+            border-bottom: none;
+        }
+
+        .sr-item:hover {
+            background: var(--surface2);
+        }
+
+        .sr-item .sr-path {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .sr-item mark {
+            background: transparent;
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        /* CANVAS */
+        #canvas-wrap {
+            position: fixed;
+            top: 56px;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            overflow: hidden;
+            cursor: grab;
+        }
+
+        #canvas-wrap.grabbing {
+            cursor: grabbing;
+        }
+
+        #canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4000px;
+            height: 4000px;
+            transform-origin: 0 0;
+        }
+
+        #svg-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        /* NODES */
+        .node {
+            position: absolute;
+            border-radius: 14px;
+            border: 2px solid;
+            cursor: pointer;
+            transition:
+                box-shadow 0.25s,
+                transform 0.25s,
+                background 0.25s,
+                border-color 0.25s,
+                opacity 0.25s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            max-width: 220px;
+            min-width: 120px;
+        }
+
+        .node:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 8px 24px var(--shadow);
+            z-index: 10;
+        }
+
+        .node.root {
+            background: var(--node-root);
+            border-color: var(--node-root-border);
+            font-family: 'DM Serif Display', serif;
+            font-size: 15px;
+            min-width: 160px;
+            max-width: 240px;
+            box-shadow: 0 0 0 4px rgba(88, 166, 255, 0.15), 0 4px 20px var(--shadow);
+        }
+
+        .node.level-1 {
+            background: var(--node-l1);
+            border-color: var(--node-l1-border);
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .node.level-2 {
+            background: var(--node-l2);
+            border-color: var(--node-l2-border);
+            font-size: 12.5px;
+        }
+
+        .node.level-3 {
+            background: var(--node-l3);
+            border-color: var(--node-l3-border);
+            font-size: 12px;
+        }
+
+        .node.selected {
+            background: var(--node-selected) !important;
+            border-color: var(--node-selected-border) !important;
+            box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.3), 0 6px 24px var(--shadow) !important;
+            z-index: 20;
+        }
+
+        .node.highlighted {
+            box-shadow: 0 0 0 3px var(--accent4), 0 4px 16px var(--shadow) !important;
+        }
+
+        .node-text {
+            flex: 1;
+            line-height: 1.35;
+            word-break: break-word;
+        }
+
+        .chevron {
+            flex-shrink: 0;
+            width: 16px;
+            height: 16px;
+            opacity: 0.6;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s;
+        }
+
+        .node.expanded .chevron {
+            transform: rotate(90deg);
+            opacity: 1;
+        }
+
+        .leaf-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--text-muted);
+            flex-shrink: 0;
+            transition: background 0.2s;
+        }
+
+        .node.selected .leaf-dot,
+        .node:hover .leaf-dot {
+            background: var(--accent);
+        }
+
+        /* CONNECTOR LINES */
+        .connector {
+            fill: none;
+            stroke: var(--connector);
+            stroke-width: 1.5;
+            transition: stroke var(--transition);
+        }
+
+        /* PANEL */
+        #panel {
+            position: fixed;
+            top: 56px;
+            right: -440px;
+            width: 420px;
+            bottom: 0;
+            background: var(--panel-bg);
+            border-left: 1px solid var(--panel-border);
+            z-index: 90;
+            display: flex;
+            flex-direction: column;
+            transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1), background var(--transition), border-color var(--transition);
+            box-shadow: -8px 0 40px var(--shadow);
+        }
+
+        #panel.open {
+            right: 0;
+        }
+
+        #panel-header {
+            padding: 20px 20px 16px;
+            border-bottom: 1px solid var(--panel-border);
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        #panel-title {
+            font-family: 'DM Serif Display', serif;
+            font-size: 20px;
+            line-height: 1.3;
+            flex: 1;
+            color: var(--text);
+        }
+
+        #panel-close {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 6px;
+            transition: color 0.2s, background 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        #panel-close:hover {
+            color: var(--text);
+            background: var(--surface2);
+        }
+
+        #panel-body {
+            padding: 20px;
+            overflow-y: auto;
+            flex: 1;
+            line-height: 1.75;
+            font-size: 14px;
+            color: var(--text);
+        }
+
+        #panel-body p {
+            margin-bottom: 14px;
+        }
+
+        #panel-body strong {
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        #panel-body em {
+            color: var(--accent3);
+            font-style: italic;
+        }
+
+        .panel-tag {
+            display: inline-block;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 3px 10px;
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--text-muted);
+            margin-bottom: 14px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        /* ZOOM BADGE */
+        #zoom-badge {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 5px 14px;
+            font-size: 12px;
+            color: var(--text-muted);
+            z-index: 50;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        /* FOOTER */
+        #footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--toolbar-bg);
+            backdrop-filter: blur(12px);
+            border-top: 1px solid var(--border);
+            z-index: 100;
+            font-size: 12px;
+            color: var(--text-muted);
+            gap: 6px;
+            transition: background var(--transition), border-color var(--transition);
+        }
+
+        #footer span {
+            font-weight: 600;
+            color: var(--text);
+            font-family: 'DM Serif Display', serif;
+            letter-spacing: 0.2px;
+        }
+
+        /* SCROLLBAR */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 3px;
+        }
+
+        /* NODE ANIMATION */
+        @keyframes nodeIn {
+            from {
+                opacity: 0;
+                transform: translateX(-12px) scale(0.95);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0) scale(1);
+            }
+        }
+
+        .node {
+            animation: nodeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) both;
+        }
+    </style>
+
+    <meta name="description" content="Interactive CYS401 Chapter 3 Understand &amp; Apply Threat Modeling mindmap with expandable concepts, worked examples, search, zoom, pan, and PNG export.">
+    <link rel="canonical" href="https://shoug-tech.com/Academics/cybersecurity/cys401/extra-resources/mindmaps/03-threat-modeling/threat-modeling.html">
+    <meta property="og:title" content="Understand &amp; Apply Threat Modeling — CYS401 Mindmap">
+    <meta property="og:description" content="Interactive CYS401 Chapter 3 Understand &amp; Apply Threat Modeling mindmap with expandable concepts, worked examples, search, zoom, pan, and PNG export.">
+    <meta property="og:url" content="https://shoug-tech.com/Academics/cybersecurity/cys401/extra-resources/mindmaps/03-threat-modeling/threat-modeling.html">
+    <meta property="og:type" content="article">
+    <meta property="og:image" content="https://shoug-tech.com/assets/og-banner.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Understand &amp; Apply Threat Modeling — CYS401 Mindmap">
+    <meta name="twitter:description" content="Interactive CYS401 Chapter 3 Understand &amp; Apply Threat Modeling mindmap with expandable concepts, worked examples, search, zoom, pan, and PNG export.">
+    <meta name="twitter:image" content="https://shoug-tech.com/assets/og-banner.png">
+    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebPage", "url": "https://shoug-tech.com/Academics/cybersecurity/cys401/extra-resources/mindmaps/03-threat-modeling/threat-modeling.html", "name": "Understand & Apply Threat Modeling \u2014 CYS401 Mindmap", "description": "Interactive CYS401 Chapter 3 Understand & Apply Threat Modeling mindmap with expandable concepts, worked examples, search, zoom, pan, and PNG export.", "isPartOf": {"@type": "WebSite", "name": "Shoug's Digital Garden", "url": "https://shoug-tech.com/"}}</script>
+
+      <link rel="alternate" hreflang="en" href="https://shoug-tech.com/Academics/cybersecurity/cys401/extra-resources/mindmaps/03-threat-modeling/threat-modeling.html">
+      <link rel="alternate" hreflang="ar" href="https://shoug-tech.com/ar/Academics/cybersecurity/cys401/extra-resources/mindmaps/03-threat-modeling/threat-modeling.html">
+      <link rel="alternate" hreflang="x-default" href="https://shoug-tech.com/Academics/cybersecurity/cys401/extra-resources/mindmaps/03-threat-modeling/threat-modeling.html">
+
+    <!-- Microsoft Clarity tracking code for https://shoug-tech.com/ -->
+    <script type="text/javascript">
+        (function(c,l,a,r,i,t,y){
+            c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+            t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+            y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+        })(window, document, "clarity", "script", "xub0eqmvs9");
+    </script>
+</head>
+
+<body data-theme="dark">
+
+    <!-- TOOLBAR -->
+    <div id="toolbar">
+        <div class="toolbar-brand">Mind<span>Map</span></div>
+        <div class="toolbar-sep"></div>
+
+        <div id="search-wrap">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+            <input id="search" type="text" placeholder="Search topics…" autocomplete="off">
+            <div id="search-results"></div>
+        </div>
+
+        <div class="toolbar-sep"></div>
+
+        <button class="tb-btn" id="theme-toggle" title="Toggle theme">🌙</button>
+        <button class="tb-btn" onclick="zoom(0.15)" title="Zoom in">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                <line x1="11" y1="8" x2="11" y2="14" />
+                <line x1="8" y1="11" x2="14" y2="11" />
+            </svg>
+            Zoom In
+        </button>
+        <button class="tb-btn" onclick="zoom(-0.15)" title="Zoom out">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                <line x1="8" y1="11" x2="14" y2="11" />
+            </svg>
+            Zoom Out
+        </button>
+        <button class="tb-btn" onclick="resetView()" title="Reset view">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polyline points="1 4 1 10 7 10" />
+                <path d="M3.51 15a9 9 0 1 0 .49-4.87" />
+            </svg>
+            Reset
+        </button>
+        <button class="tb-btn" onclick="expandAll()" title="Expand all">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polyline points="7 13 12 18 17 13" />
+                <polyline points="7 6 12 11 17 6" />
+            </svg>
+            Expand All
+        </button>
+        <button class="tb-btn" onclick="collapseAll()" title="Collapse all">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polyline points="7 11 12 6 17 11" />
+                <polyline points="7 18 12 13 17 18" />
+            </svg>
+            Collapse All
+        </button>
+        <button class="tb-btn" onclick="exportPNG()" title="Export PNG">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="7 10 12 15 17 10" />
+                <line x1="12" y1="15" x2="12" y2="3" />
+            </svg>
+            Export
+        </button>
+    </div>
+
+    <!-- CANVAS -->
+    <div id="canvas-wrap">
+        <div id="canvas">
+            <svg id="svg-layer"></svg>
+        </div>
+    </div>
+
+    <!-- PANEL -->
+    <div id="panel">
+        <div id="panel-header">
+            <div id="panel-title">Node Title</div>
+            <button id="panel-close" onclick="closePanel()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <line x1="18" y1="6" x2="6" y2="18" />
+                    <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+            </button>
+        </div>
+        <div id="panel-body"></div>
+    </div>
+
+    <!-- ZOOM BADGE -->
+    <div id="zoom-badge">100%</div>
+
+    <!-- FOOTER -->
+    <div id="footer">
+        Made by <span>Shoug Alomran</span> &nbsp;·&nbsp; Understand &amp; Apply Threat Modeling Mindmap
+    </div>
+
+    <script>
+        // ─────────────────────────────────────────────
+        // DATA
+        // ─────────────────────────────────────────────
+        const DATA = {
+    "id": "root",
+    "label": "Understand & Apply Threat Modeling",
+    "desc": "<span class=\"panel-tag\">CYS401 · Chapter 3</span><p>A comprehensive concept map for <strong>Understand &amp; Apply Threat Modeling</strong>.</p><p>Expand a branch to see its concepts, then select any node for the full explanation and a worked example. You can search topics, zoom, pan, and export the map.</p>",
+    "children": [
+        {
+            "id": "branch-1",
+            "label": "What Threat Modeling Is",
+            "desc": "<span class=\"panel-tag\">Core Concept</span><p>A structured security process used to identify potential threats before they become real attacks — security planning done before something goes wrong.</p>",
+            "children": [
+                {
+                    "id": "branch-1-detail-1",
+                    "label": "Identify Threats",
+                    "desc": "<span class=\"panel-tag\">Step 1</span><p>The first step is spotting what could go wrong in a system before attackers do. It is deliberately imaginative work: you are trying to think like someone who wants your system to fail.</p><p><strong>In everyday terms:</strong> Before a shop opens, the owner walks around asking 'how would someone rob this place?' — back door, till position, camera blind spots. That walk is threat identification.</p>"
+                },
+                {
+                    "id": "branch-1-detail-2",
+                    "label": "Analyze Vulnerabilities",
+                    "desc": "<span class=\"panel-tag\">Step 2</span><p>The second step is understanding how each threat could actually exploit a weakness in the system. A threat with no matching weakness cannot hurt you, so this step filters imagination into reality.</p><p><strong>In everyday terms:</strong> 'Someone could rob us' becomes 'the back door lock is broken and the camera does not cover it' — now it is actionable.</p>"
+                },
+                {
+                    "id": "branch-1-detail-3",
+                    "label": "Determine Impact",
+                    "desc": "<span class=\"panel-tag\">Step 3</span><p>The third step evaluates which assets are most valuable and how much damage could occur. This is what lets you rank threats instead of treating them all as equally urgent.</p><p><strong>In everyday terms:</strong> Losing the till float is inconvenient; losing the customer database is a legal event. Same shop, wildly different impact.</p>"
+                },
+                {
+                    "id": "branch-1-detail-4",
+                    "label": "Define Controls",
+                    "desc": "<span class=\"panel-tag\">Step 4</span><p>The final step designs appropriate security countermeasures to reduce or eliminate the risk. Only now does it make sense to spend money, because you know what you are buying protection against.</p><p><strong>In everyday terms:</strong> Fix the lock and move the camera — cheap, targeted fixes that came from the first three steps rather than from a sales brochure.</p>"
+                }
+            ]
+        },
+        {
+            "id": "branch-2",
+            "label": "Key Terminology",
+            "desc": "<span class=\"panel-tag\">Core Concept</span><p>The building blocks of every threat modeling question — the distinctions matter far more than the definitions.</p>",
+            "children": [
+                {
+                    "id": "branch-2-detail-1",
+                    "label": "Asset",
+                    "desc": "<span class=\"panel-tag\">Terminology</span><p>An asset is any element with value to an organization — data, systems, processes, or reputation — that must be protected. Reputation counts, which is why breaches hurt even when nothing irreplaceable is lost.</p><p><strong>In everyday terms:</strong> For a restaurant the assets are the cash, the recipes, and the online rating. The rating is the one that cannot be restored from backup.</p>"
+                },
+                {
+                    "id": "branch-2-detail-2",
+                    "label": "Threat",
+                    "desc": "<span class=\"panel-tag\">Terminology</span><p>A threat is a potential event that could cause unwanted impact. The key property is that it <strong>has not happened yet</strong> — it is a possibility.</p><p><strong>In everyday terms:</strong> 'A hacker could target the student portal' is a threat. It is true right now, and nothing has occurred.</p>"
+                },
+                {
+                    "id": "branch-2-detail-3",
+                    "label": "Attack",
+                    "desc": "<span class=\"panel-tag\">Terminology</span><p>An attack is an actual event that causes unwanted impact — a threat that became real. The distinction from threat is purely about whether it has happened.</p><p><strong>In everyday terms:</strong> 'A hacker ran SQL injection against the portal last Tuesday' is an attack. Same actor, same method, different tense.</p>"
+                },
+                {
+                    "id": "branch-2-detail-4",
+                    "label": "Vulnerability",
+                    "desc": "<span class=\"panel-tag\">Terminology</span><p>A vulnerability is the absence of a safeguard, or a system weakness, that a threat could exploit to cause damage. It is a property of your system, not of the attacker.</p><p><strong>In everyday terms:</strong> The portal accepting unfiltered input is the vulnerability — it exists whether or not anyone ever tries to exploit it.</p>"
+                },
+                {
+                    "id": "branch-2-detail-5",
+                    "label": "Threat Agent",
+                    "desc": "<span class=\"panel-tag\">Terminology</span><p>A threat agent is the entity — person or process — that initiates the threat: the attacker or source of danger. It can be non-human, which is why automated scanners and malware count.</p><p><strong>In everyday terms:</strong> A bot scanning the entire internet for unpatched servers is a threat agent that has never heard of your organisation specifically.</p>"
+                },
+                {
+                    "id": "branch-2-detail-6",
+                    "label": "Exploit",
+                    "desc": "<span class=\"panel-tag\">Terminology</span><p>An exploit is what happens when a threat agent finds a vulnerability and initiates the threat — the moment the vulnerability is actually used.</p><p><strong>In everyday terms:</strong> The exploit is the specific crafted input typed into the login box, not the flaw and not the person.</p>"
+                },
+                {
+                    "id": "branch-2-detail-7",
+                    "label": "Control",
+                    "desc": "<span class=\"panel-tag\">Terminology</span><p>A control, or countermeasure, is any step or action taken to prevent a threat from exploiting a vulnerability, or to minimise the damage once an exploit occurs. Controls therefore come in preventive and limiting flavours.</p><p><strong>In everyday terms:</strong> Input validation prevents the injection; database backups limit the damage if it succeeds anyway. Both are controls, doing different jobs.</p>"
+                },
+                {
+                    "id": "branch-2-detail-8",
+                    "label": "Risk",
+                    "desc": "<span class=\"panel-tag\">Terminology</span><p>Risk is the likelihood that a threat will exploit a vulnerability, resulting in harm to an asset. The course states it as <strong>Risk = Threat + Vulnerability + Asset + Damage</strong>.</p><p><strong>In everyday terms:</strong> A flaw in a system holding no valuable data is low risk. The same flaw in the payroll system is high risk — identical vulnerability, different asset.</p>"
+                },
+                {
+                    "id": "branch-2-detail-9",
+                    "label": "Threat vs Attack",
+                    "desc": "<span class=\"panel-tag\">Exam Tip</span><p>This is the single most repeated trick in the chapter: <strong>threat = potential</strong> (has not happened), <strong>attack = actual</strong> (it happened). If the question describes something in past tense with an effect, it is an attack.</p><p><strong>In everyday terms:</strong> 'An attacker sent a flood of packets' is an attack, not a threat, because the packets were actually sent.</p>"
+                }
+            ]
+        },
+        {
+            "id": "branch-3",
+            "label": "Proactive vs Reactive",
+            "desc": "<span class=\"panel-tag\">Core Concept</span><p>Threat modeling can happen before deployment or after an incident, and one of the two is clearly preferred.</p>",
+            "children": [
+                {
+                    "id": "branch-3-detail-1",
+                    "label": "Proactive Approach",
+                    "desc": "<span class=\"panel-tag\">Preferred</span><p>Also called the <strong>defensive</strong> approach, proactive modeling is performed during system design and development, so security is built in from the start. It predicts threats and designs defenses before deployment rather than relying on patches later.</p><p><strong>In everyday terms:</strong> Designing a building with fire exits from the first blueprint, instead of discovering after opening that the only staircase is a death trap.</p>"
+                },
+                {
+                    "id": "branch-3-detail-2",
+                    "label": "Reactive Approach",
+                    "desc": "<span class=\"panel-tag\">Alternative</span><p>Also called the <strong>adversarial</strong> approach, reactive modeling is performed after deployment or after an incident, based on observed attacks or failures. It is not worthless — it responds to real evidence — but it is slower and costlier.</p><p><strong>In everyday terms:</strong> Adding a speed bump after three accidents on the same corner. The data is undeniable, and it cost three accidents to collect.</p>"
+                },
+                {
+                    "id": "branch-3-detail-3",
+                    "label": "Which Is Better",
+                    "desc": "<span class=\"panel-tag\">Exam Tip</span><p>If a question asks which approach is preferred, the answer is always <strong>proactive</strong>. It is more effective because fixing a design flaw on paper costs a fraction of fixing it in a live system.</p>"
+                }
+            ]
+        },
+        {
+            "id": "branch-4",
+            "label": "Identifying Threats",
+            "desc": "<span class=\"panel-tag\">Core Concept</span><p>Three steps for finding threats, and three focus lenses for deciding what to look at first.</p>",
+            "children": [
+                {
+                    "id": "branch-4-detail-1",
+                    "label": "Map the Technologies",
+                    "desc": "<span class=\"panel-tag\">Process</span><p>The first step is identifying all technologies involved: hardware, software, networks, data flows, and external connections. You cannot protect a component you did not know existed.</p><p><strong>In everyday terms:</strong> Most organisations discover forgotten servers during this step — a machine someone set up years ago that still holds live data and has not been patched since.</p>"
+                },
+                {
+                    "id": "branch-4-detail-2",
+                    "label": "Enumerate Attacks",
+                    "desc": "<span class=\"panel-tag\">Process</span><p>The second step considers possible attacks on each element, across all three categories: logical/technical such as SQL injection and XSS, physical such as theft and destruction, and social such as phishing and impersonation.</p><p><strong>In everyday terms:</strong> Forgetting the social category is the classic mistake — a perfectly hardened server still loses to an attacker who phones the help desk and asks for a password reset.</p>"
+                },
+                {
+                    "id": "branch-4-detail-3",
+                    "label": "Define Prevention",
+                    "desc": "<span class=\"panel-tag\">Process</span><p>The third step specifies countermeasures for each identified attack: encryption, access controls, firewalls, or training. Each attack should leave the exercise with a named owner and a named control.</p>"
+                },
+                {
+                    "id": "branch-4-detail-4",
+                    "label": "Asset-Focused",
+                    "desc": "<span class=\"panel-tag\">Lens</span><p>The asset-focused lens starts from what is valuable and uses asset valuation to prioritise protection. The guiding question is 'what is worth protecting?' — data, systems, money, reputation, intellectual property.</p><p><strong>In everyday terms:</strong> A jeweller secures the display cases far more heavily than the stockroom of empty boxes, because the lens starts from value rather than from layout.</p>"
+                },
+                {
+                    "id": "branch-4-detail-5",
+                    "label": "Attacker-Focused",
+                    "desc": "<span class=\"panel-tag\">Lens</span><p>The attacker-focused lens identifies potential attackers first and asks 'who would attack us and why?' — hackers, insiders, competitors, nation-states, or malware authors. Different attackers have wildly different budgets and patience.</p><p><strong>In everyday terms:</strong> A corner shop worries about opportunistic thieves. A defence contractor worries about a government team willing to spend two years on the problem.</p>"
+                },
+                {
+                    "id": "branch-4-detail-6",
+                    "label": "Software-Focused",
+                    "desc": "<span class=\"panel-tag\">Lens</span><p>The software-focused lens applies when you develop software yourself, identifying threats to the software itself: buffer overflows, injection attacks, insecure APIs, and authentication flaws.</p><p><strong>In everyday terms:</strong> A team building a hospital app asks 'how could someone abuse our own login form?' rather than 'who might attack the hospital?' — the lens turns inward on their own code.</p>"
+                },
+                {
+                    "id": "branch-4-detail-7",
+                    "label": "Course Case Study",
+                    "desc": "<span class=\"panel-tag\">Worked Example</span><p>The slides model a university learning platform. Student grades face a student threat actor exploiting weak authentication to change their own grade. Exam content faces a hacker using SQL injection to extract upcoming questions. Faculty logins face phishing where no MFA exists. Platform uptime faces an insider deleting files through misconfigured permissions.</p><p><strong>In everyday terms:</strong> Notice that the most likely attacker on the grades row is a student, not an external hacker — asset-focused modeling keeps producing that uncomfortable answer.</p>"
+                }
+            ]
+        },
+        {
+            "id": "branch-5",
+            "label": "STRIDE",
+            "desc": "<span class=\"panel-tag\">Core Concept</span><p>Microsoft's threat categorization scheme, which classifies each threat by the security property it violates.</p>",
+            "children": [
+                {
+                    "id": "branch-5-detail-1",
+                    "label": "Spoofing",
+                    "desc": "<span class=\"panel-tag\">S</span><p>Spoofing is gaining access through a falsified identity — pretending to be someone or something else, as in a fake login page or domain spoofing. It violates <strong>Authentication</strong>, and is mitigated with digital signatures, Active Directory, LDAP passwords, and crypto tunnels.</p><p><strong>In everyday terms:</strong> Caller ID showing your bank's real number while an attacker speaks is spoofing — the identity displayed is genuine-looking and false.</p>"
+                },
+                {
+                    "id": "branch-5-detail-2",
+                    "label": "Tampering",
+                    "desc": "<span class=\"panel-tag\">T</span><p>Tampering is unauthorized change or manipulation of data — modifying files, packets, or code in transit or at rest. It violates <strong>Integrity</strong>, and is mitigated with hashing, digital signatures, ACLs, and crypto tunnels.</p><p><strong>In everyday terms:</strong> Changing the amount on a cheque after it is signed. The signature is real; the document no longer says what was agreed.</p>"
+                },
+                {
+                    "id": "branch-5-detail-3",
+                    "label": "Repudiation",
+                    "desc": "<span class=\"panel-tag\">R</span><p>Repudiation is the ability to deny having performed an action — 'I didn't send that email', 'I didn't modify that file'. It violates <strong>Non-repudiation</strong>, and is mitigated with digital signatures, logging, audit trails, and customer history.</p><p><strong>In everyday terms:</strong> A courier delivery with no signature and no photo: the recipient can claim it never arrived, and there is no way to settle the argument.</p>"
+                },
+                {
+                    "id": "branch-5-detail-4",
+                    "label": "Information Disclosure",
+                    "desc": "<span class=\"panel-tag\">I</span><p>Information disclosure is the revelation of private, confidential, or controlled information to unauthorized entities. It violates <strong>Confidentiality</strong>, and is mitigated with encryption, ACLs, PGP, and SSL/TLS.</p><p><strong>In everyday terms:</strong> A hospital emailing test results to the wrong patient — no attacker involved, and the confidentiality damage is identical.</p>"
+                },
+                {
+                    "id": "branch-5-detail-5",
+                    "label": "Denial of Service",
+                    "desc": "<span class=\"panel-tag\">D</span><p>Denial of service prevents authorized use of a resource through connection overloading or traffic flooding. It violates <strong>Availability</strong>, and is mitigated with load balancers, added capacity, and rate limiting.</p><p><strong>In everyday terms:</strong> A hundred people calling a restaurant at once purely to occupy the line so real customers cannot book.</p>"
+                },
+                {
+                    "id": "branch-5-detail-6",
+                    "label": "Elevation of Privilege",
+                    "desc": "<span class=\"panel-tag\">E</span><p>Elevation of privilege occurs when a limited user account becomes one with greater privileges, powers, and access than intended. It violates <strong>Authorization</strong>, and is mitigated with isolation, input validation, firewalls, and sandboxing.</p><p><strong>In everyday terms:</strong> A hotel guest whose key card starts opening staff-only doors. They were let in legitimately; they now go where they should not.</p>"
+                },
+                {
+                    "id": "branch-5-detail-7",
+                    "label": "Banking Example",
+                    "desc": "<span class=\"panel-tag\">Worked Example</span><p>The slides map STRIDE onto an online banking app: logging in with stolen credentials (S), modifying a transfer amount in transit (T), denying a fraudulent transfer was made (R), account balances exposed via an unsecured API (I), flooding the login page (D), and exploiting a bug to reach the admin panel (E).</p><p><strong>In everyday terms:</strong> Notice the same six categories cover a stolen password, an edited transfer, a denied transaction, a leaky API, an overloaded page, and a privilege bug — one framework, the whole attack surface.</p>"
+                },
+                {
+                    "id": "branch-5-detail-8",
+                    "label": "Property Drill",
+                    "desc": "<span class=\"panel-tag\">Memory Hook</span><p>Each letter maps to exactly one property: Spoofing→Authentication, Tampering→Integrity, Repudiation→Non-repudiation, Information Disclosure→Confidentiality, DoS→Availability, Elevation→Authorization.</p><p><strong>In everyday terms:</strong> Repudiation is the one people forget, because non-repudiation is the only property in the list that is not part of CIA.</p>"
+                }
+            ]
+        },
+        {
+            "id": "branch-6",
+            "label": "Other Threat Models",
+            "desc": "<span class=\"panel-tag\">Core Concept</span><p>Know the name and the core focus of each alternative framework — that is what the exam tests.</p>",
+            "children": [
+                {
+                    "id": "branch-6-detail-1",
+                    "label": "PASTA",
+                    "desc": "<span class=\"panel-tag\">Framework</span><p>PASTA is the Process for Attack Simulation and Threat Analysis: a <strong>risk-centric</strong>, seven-stage framework that simulates attacker perspectives and aligns threat modeling with business objectives and risk.</p><p><strong>In everyday terms:</strong> Where STRIDE asks 'what kind of threat is this?', PASTA asks 'would a real attacker bother, given what they'd gain?' — which is why it starts from business impact.</p>"
+                },
+                {
+                    "id": "branch-6-detail-2",
+                    "label": "LINDDUN",
+                    "desc": "<span class=\"panel-tag\">Framework</span><p>LINDDUN stands for Linkability, Identifiability, Non-repudiation, Detectability, Disclosure of information, Unawareness, and Non-compliance. It is the <strong>privacy-focused</strong> model, ideal for systems handling personal data.</p><p><strong>In everyday terms:</strong> It catches problems STRIDE misses entirely, such as an app that never leaks your name but still lets anyone link two of your sessions together.</p>"
+                },
+                {
+                    "id": "branch-6-detail-3",
+                    "label": "CVSS",
+                    "desc": "<span class=\"panel-tag\">Framework</span><p>CVSS is the Common Vulnerability Scoring System: a numeric 0–10 severity score used to prioritise which vulnerabilities to fix first, where Critical is 9.0–10.0. It is the <strong>only</strong> model in the list that produces numbers.</p><p><strong>In everyday terms:</strong> If a question mentions scoring or rating a vulnerability's severity, the answer is CVSS.</p>"
+                },
+                {
+                    "id": "branch-6-detail-4",
+                    "label": "Attack Trees",
+                    "desc": "<span class=\"panel-tag\">Framework</span><p>Attack trees are visual, hierarchical diagrams that model how an attacker can reach a goal: the root is the attack goal and the branches are the different paths or methods to achieve it.</p><p><strong>In everyday terms:</strong> Root: 'steal the car'. Branches: take the keys, break the window, clone the fob. Each branch then splits again, which is how the diagram exposes the cheapest path.</p>"
+                },
+                {
+                    "id": "branch-6-detail-5",
+                    "label": "Persona non Grata",
+                    "desc": "<span class=\"panel-tag\">Framework</span><p>Persona non Grata focuses on identifying misuse patterns by defining the <strong>anti-user</strong> — someone who intentionally misuses the system. It creates negative personas to discover abuse cases.</p><p><strong>In everyday terms:</strong> Product teams write personas like 'Sara, a busy student'. This model adds 'Sara, a student who wants to change her grade' — same system, deliberately hostile goals.</p>"
+                },
+                {
+                    "id": "branch-6-detail-6",
+                    "label": "OCTAVE",
+                    "desc": "<span class=\"panel-tag\">Framework</span><p>OCTAVE is Operationally Critical Threat, Asset, and Vulnerability Evaluation: an organization-wide, self-directed approach focused on operational risk and organizational practices rather than just technical vulnerabilities.</p><p><strong>In everyday terms:</strong> It asks 'is our access review process actually followed?' rather than 'is this server patched?'</p>"
+                }
+            ]
+        },
+        {
+            "id": "branch-7",
+            "label": "Modern Approaches",
+            "desc": "<span class=\"panel-tag\">Core Concept</span><p>Five additional lenses for systems the classic models were never designed to cover.</p>",
+            "children": [
+                {
+                    "id": "branch-7-detail-1",
+                    "label": "Architecture-Focused",
+                    "desc": "<span class=\"panel-tag\">Modern Lens</span><p>This lens focuses on system components, interactions, and trust boundaries, and is critical for distributed systems, microservices, and cloud architectures. Slide examples include exposed internal APIs allowing data exfiltration, misconfigured firewall rules between containers enabling lateral movement, and IoT devices sharing a network segment with critical servers.</p><p><strong>In everyday terms:</strong> The danger is almost always at the joins — services that trust each other completely because they are 'internal', long after 'internal' stopped meaning anything.</p>"
+                },
+                {
+                    "id": "branch-7-detail-2",
+                    "label": "Data-Focused",
+                    "desc": "<span class=\"panel-tag\">Modern Lens</span><p>This lens follows sensitive data through storage, transmission, and processing, because data breaches are the most common impact of modern cyber incidents. Slide examples include customer PII stored unencrypted in a cloud database, logs containing PII sent over unsecured channels, and GDPR-regulated data processed by third-party SaaS without consent.</p><p><strong>In everyday terms:</strong> Logs are the recurring surprise: teams encrypt the database carefully and then write the same personal data into plain-text log files nobody classified.</p>"
+                },
+                {
+                    "id": "branch-7-detail-3",
+                    "label": "Supply Chain-Focused",
+                    "desc": "<span class=\"panel-tag\">Modern Lens</span><p>This lens examines vendors, libraries, APIs, and external dependencies, because attackers increasingly exploit weak links outside the organization. Slide examples include a compromised third-party software update used in corporate software (a SolarWinds-style attack) and a malicious npm package injected into a widely-used open-source library.</p><p><strong>In everyday terms:</strong> A modern app can pull in hundreds of small open-source packages. You are trusting every one of those authors, most of whose names you will never read.</p>"
+                },
+                {
+                    "id": "branch-7-detail-4",
+                    "label": "Deployment-Focused",
+                    "desc": "<span class=\"panel-tag\">Modern Lens</span><p>This lens looks at <em>where</em> the system runs — cloud, on-premises, hybrid, or containerized — because misconfigurations are a top attack vector in modern systems. Slide examples include an S3 bucket left public exposing sensitive files and an unpatched container image used in production.</p><p><strong>In everyday terms:</strong> The public storage bucket is the defining mistake of the cloud era: no exploit, no attacker skill, just a setting left on its default.</p>"
+                },
+                {
+                    "id": "branch-7-detail-5",
+                    "label": "Emerging Technology",
+                    "desc": "<span class=\"panel-tag\">Modern Lens</span><p>This lens addresses AI-powered systems and IoT/OT environments — new attack surfaces classic models do not cover. Slide examples include agentic-AI automated decisions exploited by adversarial inputs and IoT sensors attacked physically or over the network to disrupt industrial control systems.</p><p><strong>In everyday terms:</strong> An AI assistant that reads your email and can also send email will do whatever a cleverly worded incoming message tells it to, unless someone modelled that threat first.</p>"
+                }
+            ]
+        },
+        {
+            "id": "branch-8",
+            "label": "Supply Chain Modeling",
+            "desc": "<span class=\"panel-tag\">Core Concept</span><p>Most systems are assembled from many external vendors, so trust boundaries extend well outside the organisation.</p>",
+            "children": [
+                {
+                    "id": "branch-8-detail-1",
+                    "label": "What a Supply Chain Is",
+                    "desc": "<span class=\"panel-tag\">Concept</span><p>A supply chain is a network between a company and its suppliers to produce and distribute a product. Most computers, devices, and systems are not built by a single entity — they rely on dozens of external vendors and components.</p><p><strong>In everyday terms:</strong> A single laptop contains parts from a dozen countries and firmware from several companies, none of which the buyer chose or can inspect.</p>"
+                },
+                {
+                    "id": "branch-8-detail-2",
+                    "label": "Secure Supply Chain",
+                    "desc": "<span class=\"panel-tag\">Concept</span><p>A secure supply chain is one where all vendors are reliable, trustworthy, reputable organizations that disclose their practices. The goal is a finished product meeting quality, performance, and security standards with no counterfeiting or unauthorized manipulation at any link.</p>"
+                },
+                {
+                    "id": "branch-8-detail-3",
+                    "label": "On-Site Assessment",
+                    "desc": "<span class=\"panel-tag\">Inspection Method</span><p>Visit the supplier's physical location to interview personnel and observe their operating habits and security practices firsthand. It is the only method that shows you what people actually do rather than what the documents claim.</p><p><strong>In everyday terms:</strong> A supplier's policy may say badges are always worn. A site visit shows you the propped-open door.</p>"
+                },
+                {
+                    "id": "branch-8-detail-4",
+                    "label": "Document Exchange",
+                    "desc": "<span class=\"panel-tag\">Inspection Method</span><p>Investigate how datasets and documentation are exchanged between the organisations, and review their formal assessment and review processes. How a vendor transfers data tells you a great deal about how they treat it.</p><p><strong>In everyday terms:</strong> A supplier emailing customer lists as unprotected spreadsheets has answered the question before you finished asking it.</p>"
+                },
+                {
+                    "id": "branch-8-detail-5",
+                    "label": "Process & Policy Review",
+                    "desc": "<span class=\"panel-tag\">Inspection Method</span><p>Request copies of their security policies, procedures, and incident response documentation for evaluation. The absence of an incident response plan is itself the finding.</p>"
+                },
+                {
+                    "id": "branch-8-detail-6",
+                    "label": "Third-Party Audit",
+                    "desc": "<span class=\"panel-tag\">Inspection Method</span><p>Engage an independent third-party auditor to objectively evaluate the supplier's security posture and practices. Independence is the point: the supplier grading their own homework proves nothing.</p>"
+                },
+                {
+                    "id": "branch-8-detail-7",
+                    "label": "Trust Boundaries Extend",
+                    "desc": "<span class=\"panel-tag\">Key Principle</span><p>Integrating security assessments when working with external entities is just as important as ensuring a product was designed with security in mind. Your trust boundary is wherever your suppliers' security ends, not where your building ends.</p><p><strong>In everyday terms:</strong> If a question involves a third-party vendor, supplier, or library being compromised, the expected answer is supply chain threat modeling.</p>"
+                }
+            ]
+        }
+    ]
+};
+
+        // ─────────────────────────────────────────────
+        // STATE
+        // ─────────────────────────────────────────────
+        const state = {
+            expanded: new Set(['root']),
+            selected: null,
+            panX: 0,
+            panY: 0,
+            scale: 1,
+            dragging: false,
+            dragStartX: 0,
+            dragStartY: 0,
+            dragStartPanX: 0,
+            dragStartPanY: 0
+        };
+
+        const NODE_W = 200;
+        const NODE_H = 44;
+        const H_GAP = 80;
+        const V_GAP = 28;
+
+        function estimateNodeHeight(node) {
+            const text = String(node.label || "");
+            const charsPerLine = node._level === 0 ? 22 : 18;
+            const lines = Math.max(1, Math.ceil(text.length / charsPerLine));
+            return Math.max(NODE_H, 24 + lines * 22);
+        }
+
+        // ─────────────────────────────────────────────
+        // LAYOUT ENGINE
+        // ─────────────────────────────────────────────
+        function shiftSubtree(node, deltaY) {
+            node._y += deltaY;
+            if (node.children && state.expanded.has(node.id)) {
+                node.children.forEach(child => shiftSubtree(child, deltaY));
+            }
+        }
+
+        function computeLayout(node, level = 0, x = 100, y = 0) {
+            node._level = level;
+            node._x = x;
+            node._y = y;
+            node._w = NODE_W;
+            node._h = estimateNodeHeight(node);
+
+            if (!node.children || !state.expanded.has(node.id)) {
+                node._subtreeH = node._h;
+                return node._subtreeH;
+            }
+
+            const childX = x + NODE_W + H_GAP;
+            let totalH = 0;
+            node.children.forEach(child => {
+                totalH += computeLayout(child, level + 1, childX, 0);
+                totalH += V_GAP;
+            });
+            totalH -= V_GAP;
+
+            let cy = y + (node._h / 2) - (totalH / 2);
+            node.children.forEach(child => {
+                const nextY = cy + (child._subtreeH / 2) - (child._h / 2);
+                shiftSubtree(child, nextY - child._y);
+                cy += child._subtreeH + V_GAP;
+            });
+
+            node._subtreeH = Math.max(node._h, totalH);
+            return node._subtreeH;
+        }
+
+        // ─────────────────────────────────────────────
+        // RENDER
+        // ─────────────────────────────────────────────
+        const canvas = document.getElementById('canvas');
+        const svgLayer = document.getElementById('svg-layer');
+        let nodeEls = {};
+
+        function render() {
+            computeLayout(DATA, 0, 100, 2000);
+            renderNodes(DATA);
+            renderConnectors(DATA);
+        }
+
+        function renderNodes(node) {
+            let el = nodeEls[node.id];
+            if (!el) {
+                el = document.createElement('div');
+                el.className = 'node';
+                el.dataset.id = node.id;
+                el.innerHTML = buildNodeHTML(node);
+                el.addEventListener('click', () => onNodeClick(node));
+                canvas.appendChild(el);
+                nodeEls[node.id] = el;
+            }
+
+            const levelClass = node._level === 0 ? 'root' : `level-${Math.min(node._level, 3)}`;
+            el.className = `node ${levelClass}${state.selected === node.id ? ' selected' : ''}${state.expanded.has(node.id) ? ' expanded' : ''}`;
+            el.style.left = node._x + 'px';
+            el.style.top = node._y + 'px';
+            el.style.width = node._w + 'px';
+            el.style.minHeight = node._h + 'px';
+            el.style.display = 'flex';
+
+            if (node.children && state.expanded.has(node.id)) {
+                node.children.forEach(renderNodes);
+            }
+
+            // Remove orphaned children
+            if (!node.children || !state.expanded.has(node.id)) {
+                collapseChildren(node);
+            }
+        }
+
+        function buildNodeHTML(node) {
+            const isParent = node.children && node.children.length > 0;
+            const icon = isParent
+                ? `<svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>`
+                : `<div class="leaf-dot"></div>`;
+            return `<div class="node-text">${node.label}</div>${icon}`;
+        }
+
+        function collapseChildren(node) {
+            if (!node.children) return;
+            node.children.forEach(child => {
+                if (nodeEls[child.id]) {
+                    nodeEls[child.id].style.display = 'none';
+                }
+                collapseChildren(child);
+            });
+        }
+
+        function renderConnectors(node) {
+            svgLayer.innerHTML = '';
+            drawConnectors(node);
+        }
+
+        function drawConnectors(node) {
+            if (!node.children || !state.expanded.has(node.id)) return;
+            node.children.forEach(child => {
+                const x1 = node._x + node._w;
+                const y1 = node._y + node._h / 2;
+                const x2 = child._x;
+                const y2 = child._y + child._h / 2;
+                const cx1 = x1 + (x2 - x1) * 0.55;
+                const cx2 = x2 - (x2 - x1) * 0.55;
+                const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                path.setAttribute('class', 'connector');
+                path.setAttribute('d', `M${x1},${y1} C${cx1},${y1} ${cx2},${y2} ${x2},${y2}`);
+                svgLayer.appendChild(path);
+                drawConnectors(child);
+            });
+        }
+
+        // ─────────────────────────────────────────────
+        // INTERACTION
+        // ─────────────────────────────────────────────
+        function onNodeClick(node) {
+            if (node.children && node.children.length > 0) {
+                if (state.expanded.has(node.id)) {
+                    state.expanded.delete(node.id);
+                } else {
+                    state.expanded.add(node.id);
+                }
+                state.selected = node.id;
+                render();
+            } else {
+                state.selected = node.id;
+                render();
+                openPanel(node);
+            }
+        }
+
+        function openPanel(node) {
+            document.getElementById('panel-title').textContent = node.label;
+            document.getElementById('panel-body').innerHTML = node.desc || `<p>No description available.</p>`;
+            document.getElementById('panel').classList.add('open');
+        }
+
+        function closePanel() {
+            document.getElementById('panel').classList.remove('open');
+            state.selected = null;
+            render();
+        }
+
+        // ─────────────────────────────────────────────
+        // PAN & ZOOM
+        // ─────────────────────────────────────────────
+        const wrap = document.getElementById('canvas-wrap');
+
+        function applyTransform() {
+            canvas.style.transform = `translate(${state.panX}px, ${state.panY}px) scale(${state.scale})`;
+            document.getElementById('zoom-badge').textContent = Math.round(state.scale * 100) + '%';
+        }
+
+        wrap.addEventListener('mousedown', e => {
+            if (e.target.closest('.node')) return;
+            state.dragging = true;
+            state.dragStartX = e.clientX;
+            state.dragStartY = e.clientY;
+            state.dragStartPanX = state.panX;
+            state.dragStartPanY = state.panY;
+            wrap.classList.add('grabbing');
+        });
+
+        window.addEventListener('mousemove', e => {
+            if (!state.dragging) return;
+            state.panX = state.dragStartPanX + (e.clientX - state.dragStartX);
+            state.panY = state.dragStartPanY + (e.clientY - state.dragStartY);
+            applyTransform();
+        });
+
+        window.addEventListener('mouseup', () => {
+            state.dragging = false;
+            wrap.classList.remove('grabbing');
+        });
+
+        wrap.addEventListener('wheel', e => {
+            e.preventDefault();
+            const delta = e.deltaY < 0 ? 0.1 : -0.1;
+            state.scale = Math.max(0.2, Math.min(2.5, state.scale + delta));
+            applyTransform();
+        }, { passive: false });
+
+        function zoom(delta) {
+            state.scale = Math.max(0.2, Math.min(2.5, state.scale + delta));
+            applyTransform();
+        }
+
+        function resetView() {
+            state.panX = 0;
+            state.panY = 0;
+            state.scale = 1;
+            applyTransform();
+        }
+
+        // ─────────────────────────────────────────────
+        // EXPAND / COLLAPSE ALL
+        // ─────────────────────────────────────────────
+        function collectIds(node, ids = []) {
+            ids.push(node.id);
+            if (node.children) node.children.forEach(c => collectIds(c, ids));
+            return ids;
+        }
+
+        function expandAll() {
+            collectIds(DATA).forEach(id => state.expanded.add(id));
+            render();
+        }
+
+        function collapseAll() {
+            state.expanded.clear();
+            state.expanded.add('root');
+            render();
+        }
+
+        // ─────────────────────────────────────────────
+        // SEARCH
+        // ─────────────────────────────────────────────
+        const searchInput = document.getElementById('search');
+        const searchResults = document.getElementById('search-results');
+
+        function flatNodes(node, path = [], results = []) {
+            results.push({ node, path: [...path, node.label] });
+            if (node.children) node.children.forEach(c => flatNodes(c, [...path, node.label], results));
+            return results;
+        }
+
+        const allNodes = flatNodes(DATA);
+
+        searchInput.addEventListener('input', () => {
+            const q = searchInput.value.trim().toLowerCase();
+            // Clear highlights
+            Object.values(nodeEls).forEach(el => el.classList.remove('highlighted'));
+
+            if (!q) {
+                searchResults.style.display = 'none';
+                return;
+            }
+
+            const matches = allNodes.filter(({ node }) => node.label.toLowerCase().includes(q));
+            if (matches.length === 0) {
+                searchResults.innerHTML = '<div class="sr-item" style="cursor:default;color:var(--text-muted)">No results found</div>';
+                searchResults.style.display = 'block';
+                return;
+            }
+
+            searchResults.innerHTML = matches.slice(0, 10).map(({ node, path }) => {
+                const hl = node.label.replace(new RegExp(`(${q})`, 'gi'), '<mark>$1</mark>');
+                const trail = path.slice(0, -1).join(' › ');
+                return `<div class="sr-item" data-id="${node.id}"><div>${hl}</div>${trail ? `<div class="sr-path">${trail}</div>` : ''}</div>`;
+            }).join('');
+
+            searchResults.querySelectorAll('.sr-item[data-id]').forEach(el => {
+                el.addEventListener('click', () => {
+                    const id = el.dataset.id;
+                    navigateTo(id);
+                    searchResults.style.display = 'none';
+                    searchInput.value = '';
+                });
+            });
+
+            matches.forEach(({ node }) => {
+                if (nodeEls[node.id]) nodeEls[node.id].classList.add('highlighted');
+            });
+
+            searchResults.style.display = 'block';
+        });
+
+        document.addEventListener('click', e => {
+            if (!e.target.closest('#search-wrap')) searchResults.style.display = 'none';
+        });
+
+        function navigateTo(id) {
+            // Expand path to node
+            function findPath(node, targetId, path = []) {
+                if (node.id === targetId) return [...path, node.id];
+                if (node.children) {
+                    for (const c of node.children) {
+                        const r = findPath(c, targetId, [...path, node.id]);
+                        if (r) return r;
+                    }
+                }
+                return null;
+            }
+            const path = findPath(DATA, id);
+            if (path) path.forEach(pid => state.expanded.add(pid));
+            state.selected = id;
+            render();
+            // Center on node
+            setTimeout(() => {
+                function findNode(node, id) {
+                    if (node.id === id) return node;
+                    if (node.children) for (const c of node.children) { const r = findNode(c, id); if (r) return r; }
+                    return null;
+                }
+                const n = findNode(DATA, id);
+                if (n) {
+                    const vpW = wrap.clientWidth;
+                    const vpH = wrap.clientHeight;
+                    state.panX = vpW / 2 - (n._x + n._w / 2) * state.scale;
+                    state.panY = vpH / 2 - (n._y + n._h / 2) * state.scale;
+                    applyTransform();
+                }
+            }, 100);
+        }
+
+        // ─────────────────────────────────────────────
+        // THEME
+        // ─────────────────────────────────────────────
+        const themeBtn = document.getElementById('theme-toggle');
+        let isDark = true;
+
+        function applyTheme(dark) {
+            document.body.dataset.theme = dark ? 'dark' : 'light';
+            themeBtn.textContent = dark ? '🌙' : '☀️';
+            localStorage.setItem('mm-theme', dark ? 'dark' : 'light');
+            try { localStorage.setItem('shoug-theme', dark ? 'dark' : 'light'); } catch(_e) {}
+        }
+
+        themeBtn.addEventListener('click', () => {
+            isDark = !isDark;
+            applyTheme(isDark);
+        });
+
+        // Restore
+        const saved = localStorage.getItem('shoug-theme') || localStorage.getItem('mm-theme');
+        if (saved === 'light') { isDark = false; applyTheme(false); }
+
+        // ─────────────────────────────────────────────
+        // EXPORT PNG
+        // ─────────────────────────────────────────────
+        async function exportPNG() {
+            const msg = document.createElement('div');
+            msg.style.cssText = 'position:fixed;top:70px;left:50%;transform:translateX(-50%);background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 20px;font-size:13px;z-index:999;';
+            msg.textContent = 'Preparing export… (open browser print for full export)';
+            document.body.appendChild(msg);
+            setTimeout(() => msg.remove(), 3000);
+            window.print();
+        }
+
+        // ─────────────────────────────────────────────
+        // INIT
+        // ─────────────────────────────────────────────
+        function init() {
+            state.panX = 40;
+            state.panY = -1820;
+            applyTransform();
+            render();
+        }
+
+        init();
+    </script>
+
+
+    <script src="/javascripts/mindmap-controls.js"></script>
+</body>
+
+</html>

@@ -161,6 +161,15 @@ def mindmap_html(chapter_no: int, title: str, branches: list) -> str:
     text = re.sub(r'(<meta property="og:description" content=")[^"]*(">)', rf'\1{html.escape(description, quote=True)}\2', text)
     text = re.sub(r'(<meta name="twitter:title" content=")[^"]*(">)', rf'\1{html.escape(page_title, quote=True)}\2', text)
     text = re.sub(r'(<meta name="twitter:description" content=")[^"]*(">)', rf'\1{html.escape(description, quote=True)}\2', text)
+    # Without these the map keeps the ETHCS303 template's canonical, so every
+    # generated map declares itself a duplicate of that one ethics page.
+    # scripts/fix_mindmap_canonicals.py repairs the URL once the real output
+    # folder is known (callers rename the course and slug afterwards).
+    text = re.sub(r'(<link rel="canonical" href=")[^"]*(">)', rf'\1{canonical}\2', text, count=1)
+    text = re.sub(r'(<meta property="og:url" content=")[^"]*(">)', rf'\1{canonical}\2', text, count=1)
+    text = re.sub(r'(<link rel="alternate" hreflang="(?:en|x-default)" href=")[^"]*(">)', rf'\1{canonical}\2', text)
+    text = re.sub(r'(<link rel="alternate" hreflang="ar" href=")[^"]*(">)',
+                  rf'\1{canonical.replace("shoug-tech.com/", "shoug-tech.com/ar/")}\2', text, count=1)
     raw_schema = '<script type="application/ld+json">' + json.dumps({"@context":"https://schema.org","@type":"WebPage","url":canonical,"name":page_title,"description":description,"isPartOf":{"@type":"WebSite","name":"Shoug's Digital Garden","url":"https://shoug-tech.com/"}}) + '</script>'
     text = re.sub(r'<script\s+type="application/ld\+json">.*?</script>', lambda _m: raw_schema, text, count=1, flags=re.S)
     text = text.replace('Moral Systems, Ethical Concepts, and Theories Mindmap', f'{html.escape(title)} Mindmap')

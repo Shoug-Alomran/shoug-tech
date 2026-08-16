@@ -1739,6 +1739,20 @@
         padding: 28px 14px 76px
       }
 
+      .item {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 8px
+      }
+
+      .item-actions {
+        justify-content: flex-start;
+        gap: 14px
+      }
+
+      .attendance-chip {
+        white-space: normal
+      }
+
       .hero {
         display: flex;
         align-items: flex-start;
@@ -2353,7 +2367,7 @@
   <script>
     (function () {
       "use strict";
-      var currentUser = null, currentMonth = new Date(), examPickerMonth = new Date(), datePickers = {}, profileRef = null, profileUnsub = null, activeUid = null, exams = [], classes = [], items = [], classAttendance = [], classOverrides = [], examMap = {}, editingExamId = "", activeDayKey = "", pendingClassRemoval = null, pendingClassEdit = null, calendarNeedsCleanup = false, selectedSemester = loadSemesterScope();
+      var currentUser = null, currentMonth = new Date(), examPickerMonth = new Date(), datePickers = {}, profileRef = null, profileUnsub = null, activeUid = null, exams = [], classes = [], items = [], classAttendance = [], classOverrides = [], examMap = {}, editingExamId = "", activeDayKey = "", pendingClassRemoval = null, pendingClassEdit = null, calendarNeedsCleanup = false, duplicateExamIds = [], selectedSemester = loadSemesterScope();
       var viewFilters = loadViewFilters();
       var STUDY_TEMPLATES = {
         "review-slides": { title: "Review slides", start: "16:00", end: "17:30" },
@@ -2586,6 +2600,15 @@
         var rawItems = Array.isArray(data.calendarEvents) ? data.calendarEvents : [];
         examMap = map;
         exams = Object.keys(map).map(function (id) { return normalizeExam(id, map[id] || {}); }).filter(function (e) { return /^\d{4}-\d{2}-\d{2}$/.test(e.date); });
+        // Collapse exams saved twice with identical details; the extra copies are dropped from the profile.
+        var seenExams = {};
+        duplicateExamIds = [];
+        exams = exams.filter(function (e) {
+          var sig = [e.course, e.type, e.date, e.start || "", e.end || "", e.location || ""].join("|").toLowerCase();
+          if (seenExams[sig]) { duplicateExamIds.push(e.id); return false; }
+          seenExams[sig] = true;
+          return true;
+        });
         var fallbackTerm = termForDate(todayKey()), classesChanged = false;
         classes = (Array.isArray(data.calendarClassSchedules) ? data.calendarClassSchedules : []).filter(Boolean).map(function (c) {
           if (!c) return c;
@@ -2783,13 +2806,13 @@
         for (var i = 0; i < 42; i++) { var d = new Date(start); d.setDate(start.getDate() + i); cells.push(d); }
         $("month-grid").innerHTML = [0, 1, 2, 3, 4, 5].map(function (row) { return renderWeekRow(cells.slice(row * 7, row * 7 + 7), m); }).join("");
         $("month-grid").querySelectorAll(".day[data-date]").forEach(function (day) { day.addEventListener("click", function () { openDay(day.dataset.date); }); });
-        $("calendar-summary").textContent = futureExams().length + " upcoming exams · " + (scopedClasses().length + items.filter(function (i) { return isInSemesterScope(i); }).length) + " saved items · PSU dates automatic";
+        $("calendar-summary").textContent = futureExams().length + " upcoming exams · " + (scopedClasses().length + items.filter(function (i) { return isInSemesterScope(i) && !isFinishedItem(i); }).length) + " saved items · PSU dates automatic";
         renderAttendanceSummary();
         renderTodayDashboard();
       }
       function renderAttendanceSummary() {
         var stats = attendanceStats();
-        $("attendance-summary").innerHTML = stats.length ? stats.slice(0, 3).map(function (s) { return '<span class="attendance-chip">' + esc(s.title) + ': <strong>' + s.skipped + '</strong> skipped · <strong>' + s.cancelled + '</strong> cancelled · <strong>' + s.exam + '</strong> exam conflicts · <strong>' + s.partial + '</strong> excused</span>'; }).join("") : '<span class="attendance-chip">No skipped, cancelled, exam-conflict, or excused classes</span>';
+        $("attendance-summary").innerHTML = stats.length ? stats.map(function (s) { return '<span class="attendance-chip">' + esc(s.title) + ': <strong>' + s.skipped + '</strong> skipped · <strong>' + s.cancelled + '</strong> cancelled · <strong>' + s.exam + '</strong> exam conflicts · <strong>' + s.partial + '</strong> excused</span>'; }).join("") : '<span class="attendance-chip">No skipped, cancelled, exam-conflict, or excused classes</span>';
       }
       function firstEditableClassDate(c) {
         var start = selectedPeriod() && selectedPeriod().start ? fromKey(selectedPeriod().start) : new Date();
@@ -2803,10 +2826,12 @@
         }
         return todayKey();
       }
+      // Saved Items only lists what is still ahead; past one-off events stay on their calendar day.
+      function isFinishedItem(it) { return (it.endDate || it.date || "") < todayKey(); }
       function renderLists() {
         var saved = [];
         classes.forEach(function (c, i) { if (!isInSemesterScope(c)) return; saved.push('<div class="item"><div><div class="item-title">' + esc(c.title || "Class") + '</div><div class="item-meta">' + (c.days || []).join(", ") + ' · ' + esc(timeRange(c.start, c.end)) + (c.onlineOnly ? ' · Fully online' : '') + (c.location ? ' · ' + esc(c.location) : '') + (c.onlineLink ? ' · Online link saved' : ((c.onlineOnly || (c.days || []).indexOf("tuesday") > -1) ? ' · Online link can be added later' : '')) + (c.termId ? ' · Term ' + esc(c.termId) : '') + '</div></div><div class="item-actions">' + (c.onlineLink ? '<a class="remove-btn edit" href="' + esc(c.onlineLink) + '" target="_blank" rel="noopener noreferrer">Open Link</a>' : '') + '<button class="remove-btn edit" data-class-edit-schedule="' + esc(c.id) + '">Edit Schedule</button><button class="remove-btn" data-class="' + i + '">Delete Schedule</button></div></div>'); });
-        items.forEach(function (it, i) { if (!isInSemesterScope(it)) return; saved.push('<div class="item"><div><div class="item-title">' + esc(it.title || "Event") + '</div><div class="item-meta">' + esc(dateRange(it.date, it.endDate || it.date)) + ' · ' + esc(timeRange(it.start, it.end)) + (it.location ? ' · ' + esc(it.location) : '') + '</div></div><button class="remove-btn" data-event="' + i + '">Remove</button></div>'); });
+        items.forEach(function (it, i) { if (!isInSemesterScope(it) || isFinishedItem(it)) return; saved.push('<div class="item"><div><div class="item-title">' + esc(it.title || "Event") + '</div><div class="item-meta">' + esc(dateRange(it.date, it.endDate || it.date)) + ' · ' + esc(timeRange(it.start, it.end)) + (it.location ? ' · ' + esc(it.location) : '') + '</div></div><button class="remove-btn" data-event="' + i + '">Remove</button></div>'); });
         $("saved-list").innerHTML = saved.length ? saved.join("") : '<div class="empty">No active class schedules or custom events yet. Completed semesters stay visible when you browse past calendar dates.</div>';
         $("saved-list").querySelectorAll("[data-class-edit-schedule]").forEach(function (b) { b.addEventListener("click", function () { openClassEdit(b.dataset.classEditSchedule, firstEditableClassDate(classes.find(function (c) { return c.id === b.dataset.classEditSchedule; }) || {}), "schedule"); }); });
         $("saved-list").querySelectorAll("[data-class]").forEach(function (b) { b.addEventListener("click", function () { var removed = classes.splice(Number(b.dataset.class), 1)[0]; if (removed) { classAttendance = classAttendance.filter(function (r) { return r.classId !== removed.id; }); classOverrides = classOverrides.filter(function (o) { return o.classId !== removed.id; }); } persist().then(function () { renderAll(); toast("Class schedule deleted"); }); }); });
@@ -3024,12 +3049,22 @@
       }
       function deleteExamById(id) {
         if (!profileRef || !id) { toast("Choose an exam first"); return; }
-        var nextExams = Object.assign({}, examMap);
-        delete nextExams[id];
-        profileRef.set({ exams: nextExams, updatedAt: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true }).then(function () {
+        // A merge write never removes map keys, so the field has to be deleted explicitly.
+        var payload = { exams: {}, updatedAt: firebase.firestore.FieldValue.serverTimestamp() };
+        payload.exams[id] = firebase.firestore.FieldValue.delete();
+        delete examMap[id];
+        exams = exams.filter(function (e) { return e.id !== id; });
+        renderAll();
+        profileRef.set(payload, { merge: true }).then(function () {
           if (editingExamId === id) closeExamEditor();
           toast("Exam deleted");
-        });
+        }, function () { toast("Could not delete that exam"); });
+      }
+      function purgeDuplicateExams(ids) {
+        if (!profileRef || !ids.length) return;
+        var payload = { exams: {}, updatedAt: firebase.firestore.FieldValue.serverTimestamp() };
+        ids.forEach(function (id) { payload.exams[id] = firebase.firestore.FieldValue.delete(); });
+        profileRef.set(payload, { merge: true });
       }
       function deleteExam() { deleteExamById(editingExamId); }
       function addClass() {
@@ -3189,7 +3224,7 @@
         if (activeUid === user.uid) return;
         currentUser = user; activeUid = user.uid; profileRef = firebase.firestore().collection("users").doc(user.uid);
         if (profileUnsub) profileUnsub();
-        profileUnsub = profileRef.onSnapshot(function (doc) { hydrate(doc.exists ? doc.data() : {}); show("calendar-app"); renderDayChecks(); renderAll(); if (calendarNeedsCleanup) persist({ calendarPsuAcademicVersion: "" }); }, function () { show("calendar-app"); renderDayChecks(); renderAll(); toast("Could not load saved calendar"); });
+        profileUnsub = profileRef.onSnapshot(function (doc) { hydrate(doc.exists ? doc.data() : {}); show("calendar-app"); renderDayChecks(); renderAll(); if (calendarNeedsCleanup) persist({ calendarPsuAcademicVersion: "" }); purgeDuplicateExams(duplicateExamIds); }, function () { show("calendar-app"); renderDayChecks(); renderAll(); toast("Could not load saved calendar"); });
       };
       renderDayChecks();
       var poll = setInterval(function () { try { firebase.app(); clearInterval(poll); firebase.auth().onAuthStateChanged(window.__shoug_onAuth); } catch (e) { } }, 200);
