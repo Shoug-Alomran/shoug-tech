@@ -1,0 +1,1232 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark" data-sg-styled="true">
+
+<head>
+    <link rel="icon" type="image/png" sizes="256x256" href="/assets/shoug-favicon-v4.png">
+    <link rel="shortcut icon" type="image/png" href="/assets/shoug-favicon-v4.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/shoug-apple-touch-icon-v4.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JavaScript in the Front End &mdash; SE371 Slide Breakdown</title>
+    <meta name="description" content="Slide-by-slide breakdown of SE371 Chapter 5 — the DOM, selection methods, element manipulation, event handling, propagation and delegation, form validation and regular expressions.">
+    <link rel="canonical" href="https://shoug-tech.com/academics/software-engineering/se371/slide-breakdowns/05-javascript-in-the-front-end/javascript-in-the-front-end.html">
+    <meta property="og:title" content="JavaScript in the Front End &mdash; SE371 Slide Breakdown">
+    <meta property="og:description" content="Slide-by-slide breakdown of SE371 Chapter 5 — the DOM, selection methods, element manipulation, event handling, propagation and delegation, form validation and regular expressions.">
+    <meta property="og:url" content="https://shoug-tech.com/academics/software-engineering/se371/slide-breakdowns/05-javascript-in-the-front-end/javascript-in-the-front-end.html">
+    <meta property="og:type" content="article">
+    <meta property="og:image" content="https://shoug-tech.com/assets/og-banner.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="JavaScript in the Front End &mdash; SE371 Slide Breakdown">
+    <meta name="twitter:description" content="Slide-by-slide breakdown of SE371 Chapter 5 — the DOM, selection methods, element manipulation, event handling, propagation and delegation, form validation and regular expressions.">
+    <meta name="twitter:image" content="https://shoug-tech.com/assets/og-banner.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+/* ── palette ───────────────────────────────────────────────────────────────
+   Eight hue tokens drive the per-section colour: each <section> carries
+   --sec, and its label, rule, cards and table headers all derive from it. */
+
+:root[data-theme="dark"] {
+    --bg: #0a0611;
+    --bg2: #150d21;
+    --bg3: #1d1330;
+    --code-bg: #0d0716;
+    --border: rgba(255, 255, 255, 0.10);
+    --border2: rgba(255, 255, 255, 0.18);
+    --text: #f4f0fa;
+    --text2: #aaa2bb;
+    --text3: #756e88;
+    --accent: #c77dff;
+    --accent2: #e6b8ff;
+
+    --c1: #c77dff;   /* violet   */
+    --c2: #4cc9f0;   /* cyan     */
+    --c3: #4ade80;   /* green    */
+    --c4: #fbbf24;   /* amber    */
+    --c5: #fb7185;   /* rose     */
+    --c6: #818cf8;   /* indigo   */
+    --c7: #f472b6;   /* pink     */
+    --c8: #2dd4bf;   /* teal     */
+
+    --green: var(--c3);
+    --red: var(--c5);
+    --amber: var(--c4);
+    --blue: var(--c2);
+
+    --shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+    --shadow-lift: 0 6px 24px -12px rgba(0, 0, 0, 0.8);
+    --hero-wash: radial-gradient(120% 140% at 8% 0%, rgba(199,125,255,0.20), transparent 60%),
+                 radial-gradient(90% 120% at 92% 10%, rgba(76,201,240,0.16), transparent 62%);
+}
+
+:root[data-theme="light"] {
+    --bg: #fbf9fe;
+    --bg2: #f4eefb;
+    --bg3: #ffffff;
+    --code-bg: #f6f1fc;
+    --border: rgba(24, 12, 40, 0.10);
+    --border2: rgba(24, 12, 40, 0.18);
+    --text: #180d26;
+    --text2: #574d68;
+    --text3: #8a8299;
+    --accent: #7b2cbf;
+    --accent2: #9d4edd;
+
+    --c1: #7b2cbf;
+    --c2: #0369a1;
+    --c3: #047857;
+    --c4: #a16207;
+    --c5: #be123c;
+    --c6: #4338ca;
+    --c7: #a21caf;
+    --c8: #0f766e;
+
+    --green: var(--c3);
+    --red: var(--c5);
+    --amber: var(--c4);
+    --blue: var(--c2);
+
+    --shadow: 0 1px 4px rgba(24, 12, 40, 0.07);
+    --shadow-lift: 0 8px 26px -16px rgba(24, 12, 40, 0.4);
+    --hero-wash: radial-gradient(120% 140% at 8% 0%, rgba(123,44,191,0.12), transparent 60%),
+                 radial-gradient(90% 120% at 92% 10%, rgba(3,105,161,0.10), transparent 62%);
+}
+
+/* ── fluid scale ───────────────────────────────────────────────────────────
+   One root font-size ramp scales every rem on the page with the viewport,
+   so the layout uses a phone and a 32" monitor equally well. */
+
+html {
+    font-size: clamp(15px, calc(13.4px + 0.34vw), 20px);
+    scroll-behavior: smooth;
+    overflow-x: clip;   /* clip, not hidden: hidden would break the sticky rail */
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    * { animation: none !important; transition: none !important; }
+}
+
+:root {
+    --navh: 3.4rem;
+    --gutter: clamp(1rem, 3.2vw, 3rem);
+    --maxw: 74rem;
+    --radius: 0.85rem;
+    --sec: var(--c1);
+    --sec-soft: color-mix(in srgb, var(--sec) 14%, transparent);
+    --sec-line: color-mix(in srgb, var(--sec) 40%, transparent);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* html-theme-sync.js injects `html, body { overflow-x: hidden }` at runtime,
+   which turns the root into a scroll container and silently disables the
+   sticky TOC rail. overflow-x: clip contains the same overflow without
+   creating a scroll container; these selectors outrank the injected rule. */
+html:root { overflow-x: clip; }
+:root > body { overflow-x: clip; }
+
+body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    width: 100%;
+    overflow-x: clip;
+    -webkit-font-smoothing: antialiased;
+    transition: background 0.3s, color 0.3s;
+}
+
+/* ── reading progress ──────────────────────────────────────────────────── */
+#progress {
+    position: fixed; top: 0; left: 0; height: 3px; width: 0;
+    z-index: 200; transform-origin: left;
+    background: linear-gradient(90deg, var(--c1), var(--c7), var(--c2), var(--c3));
+}
+
+/* ── top bar ───────────────────────────────────────────────────────────
+   Scoped to .topbar: the TOC rail is a <nav> too, and bare `nav` rules
+   used to leak their sticky positioning and gradient rule into it. */
+nav.topbar {
+    position: sticky; top: 0; z-index: 100;
+    background: color-mix(in srgb, var(--bg) 86%, transparent);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--border);
+    padding-inline: var(--gutter);
+    display: flex; align-items: center; gap: 1rem;
+    min-height: var(--navh);
+}
+nav.topbar::after {
+    content: ''; position: absolute; inset: auto 0 -1px 0; height: 2px;
+    background: linear-gradient(90deg, var(--c1), var(--c7), var(--c2), var(--c3), var(--c4));
+    opacity: 0.85;
+}
+.nav-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.82rem; font-weight: 700; white-space: nowrap; flex-shrink: 0;
+    background: linear-gradient(90deg, var(--c1), var(--c7));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.nav-links {
+    display: flex; gap: clamp(0.7rem, 1.4vw, 1.5rem); list-style: none;
+    overflow-x: auto; min-width: 0; scrollbar-width: none;
+}
+.nav-links::-webkit-scrollbar { display: none; }
+.nav-links a {
+    color: var(--text2); text-decoration: none; font-size: 0.8rem;
+    white-space: nowrap; padding: 0.15rem 0; border-bottom: 2px solid transparent;
+    transition: color 0.2s, border-color 0.2s;
+}
+.nav-links a:hover, .nav-links a.active { color: var(--accent); border-bottom-color: var(--accent); }
+.nav-actions {
+    margin-left: auto; display: flex; align-items: center; gap: 0.55rem;
+    flex-shrink: 0; flex-wrap: wrap; justify-content: flex-end;
+}
+.toggle-btn {
+    background: var(--bg2); border: 1px solid var(--border2); color: var(--text2);
+    border-radius: 0.6rem; padding: 0.3rem 0.8rem; cursor: pointer;
+    font-size: 0.76rem; font-family: inherit; transition: all 0.2s;
+}
+.toggle-btn:hover { color: var(--accent); border-color: var(--accent); background: var(--sec-soft); }
+
+/* ── hero ──────────────────────────────────────────────────────────────── */
+.hero-band {
+    background: var(--hero-wash);
+    border-bottom: 1px solid var(--border);
+}
+.hero {
+    width: min(100% - 2 * var(--gutter), var(--maxw));
+    margin-inline: auto;
+    padding-block: clamp(2rem, 5vw, 4rem);
+}
+.hero-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.18em;
+    color: var(--accent); margin-bottom: 0.9rem;
+    display: inline-flex; align-items: center; gap: 0.6rem;
+}
+.hero-eyebrow::before {
+    content: ''; width: 2rem; height: 3px; border-radius: 2px;
+    background: linear-gradient(90deg, var(--c1), var(--c2));
+}
+.hero h1 {
+    font-size: clamp(2rem, 1.2rem + 3.4vw, 4.4rem);
+    line-height: 1.05; font-weight: 800; letter-spacing: -0.025em;
+    background: linear-gradient(115deg, var(--text) 20%, var(--c1) 60%, var(--c7) 90%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    padding-bottom: 0.1em;
+}
+.hero-sub {
+    color: var(--text2); font-size: clamp(0.95rem, 0.88rem + 0.3vw, 1.15rem);
+    margin-top: 1rem; max-width: 62ch;
+}
+.hero-stats { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1.5rem; }
+.stat {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.7rem;
+    border-radius: 999px; padding: 0.3rem 0.85rem;
+    text-transform: uppercase; letter-spacing: 0.08em; white-space: nowrap;
+    color: var(--sec);
+    background: color-mix(in srgb, var(--sec) 13%, transparent);
+    border: 1px solid color-mix(in srgb, var(--sec) 38%, transparent);
+}
+.stat:nth-child(1) { --sec: var(--c1); }
+.stat:nth-child(2) { --sec: var(--c2); }
+.stat:nth-child(3) { --sec: var(--c3); }
+.stat:nth-child(4) { --sec: var(--c4); }
+.stat:nth-child(5) { --sec: var(--c7); }
+
+/* ── layout: prose column, plus a sticky TOC rail on wide screens ─────── */
+.layout {
+    width: min(100% - 2 * var(--gutter), var(--maxw));
+    margin-inline: auto;
+    padding-block: clamp(1.5rem, 3vw, 3rem) clamp(3rem, 6vw, 6rem);
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: clamp(1.5rem, 3vw, 3rem);
+    align-items: start;
+}
+
+.chapter-toc {
+    display: flex; flex-wrap: wrap; gap: 0.4rem;
+    padding: 0.9rem; background: var(--bg2);
+    border: 1px solid var(--border); border-radius: var(--radius);
+}
+.chapter-toc a {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.72rem;
+    color: var(--text2); text-decoration: none;
+    padding: 0.28rem 0.65rem; border-radius: 0.5rem;
+    border: 1px solid transparent; transition: all 0.18s;
+}
+.chapter-toc a:hover { color: var(--accent); border-color: var(--border2); background: var(--bg3); }
+.chapter-toc a.active {
+    color: var(--accent); background: color-mix(in srgb, var(--accent) 14%, transparent);
+    border-color: color-mix(in srgb, var(--accent) 40%, transparent);
+}
+
+@media (min-width: 68rem) {
+    :root { --maxw: 88rem; }
+    .layout { grid-template-columns: 14rem minmax(0, 1fr); }
+    .toc-rail {
+        position: sticky; top: calc(var(--navh) + 1rem); align-self: start;
+        max-height: calc(100vh - var(--navh) - 2rem); overflow-y: auto;
+    }
+    .chapter-toc {
+        flex-direction: column; flex-wrap: nowrap; align-items: stretch;
+        gap: 0.1rem; padding: 0.75rem;
+    }
+    .chapter-toc a { text-align: left; border-left: 2px solid transparent; border-radius: 0 0.4rem 0.4rem 0; }
+    .chapter-toc a.active { border-left-color: var(--accent); }
+}
+@media (min-width: 100rem) { :root { --maxw: 100rem; } .layout { grid-template-columns: 16rem minmax(0, 1fr); } }
+
+/* ── sections ──────────────────────────────────────────────────────────── */
+section {
+    margin-bottom: clamp(2.5rem, 4.5vw, 4.5rem);
+    scroll-margin-top: calc(var(--navh) + 1rem);
+}
+.section-label {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace; font-size: 0.68rem;
+    text-transform: uppercase; letter-spacing: 0.16em;
+    color: var(--sec); margin-bottom: 0.7rem;
+    background: var(--sec-soft);
+    border: 1px solid color-mix(in srgb, var(--sec) 32%, transparent);
+    border-radius: 999px; padding: 0.22rem 0.75rem;
+}
+.section-title {
+    font-size: clamp(1.35rem, 1.05rem + 1.1vw, 2.2rem);
+    font-weight: 750; line-height: 1.2; letter-spacing: -0.015em;
+    margin-bottom: 1.4rem; position: relative; padding-left: 0.85rem;
+}
+.section-title::before {
+    content: ''; position: absolute; left: 0; top: 0.15em; bottom: 0.15em;
+    width: 4px; border-radius: 4px;
+    background: linear-gradient(180deg, var(--sec), color-mix(in srgb, var(--sec) 25%, transparent));
+}
+
+h3 {
+    font-size: clamp(1rem, 0.95rem + 0.25vw, 1.2rem);
+    font-weight: 680; margin: 1.8rem 0 0.7rem; color: var(--text);
+}
+h4 { font-size: 0.92rem; font-weight: 650; margin: 1.1rem 0 0.5rem; }
+p { margin-bottom: 0.9rem; color: var(--text2); }
+p strong, li strong { color: var(--text); font-weight: 600; }
+ul, ol { margin: 0 0 1rem 1.3rem; color: var(--text2); }
+li { margin-bottom: 0.4rem; }
+li::marker { color: var(--sec); }
+a { color: var(--accent); }
+
+/* ── cards ─────────────────────────────────────────────────────────────── */
+.card {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-top: 3px solid var(--sec);
+    border-radius: var(--radius); padding: 1.1rem 1.25rem;
+    margin-bottom: 1rem; box-shadow: var(--shadow);
+}
+.card h4 { margin-top: 0; color: var(--sec); }
+.card p:last-child, .card ul:last-child { margin-bottom: 0; }
+.grid-2 {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
+    gap: 1rem;
+}
+.grid-2 > .card:nth-child(2n) { --sec: var(--c2); }
+.grid-2 > .card:nth-child(3n) { --sec: var(--c3); }
+.grid-2 > .card:nth-child(4n) { --sec: var(--c4); }
+
+/* ── tables ────────────────────────────────────────────────────────────── */
+.table-wrap {
+    overflow-x: auto; border: 1px solid var(--border);
+    border-radius: var(--radius); margin-bottom: 1.4rem; background: var(--bg2);
+}
+table { border-collapse: collapse; width: 100%; min-width: 32rem; font-size: 0.86rem; }
+th {
+    text-align: left; padding: 0.75rem 0.9rem;
+    background: color-mix(in srgb, var(--sec) 12%, var(--bg3));
+    font-family: 'JetBrains Mono', monospace; font-size: 0.68rem;
+    text-transform: uppercase; letter-spacing: 0.1em; color: var(--sec);
+    border-bottom: 2px solid var(--sec-line); white-space: nowrap;
+}
+td { padding: 0.7rem 0.9rem; border-bottom: 1px solid var(--border); color: var(--text2); vertical-align: top; }
+tbody tr:last-child td { border-bottom: none; }
+tbody tr:hover td { background: color-mix(in srgb, var(--sec) 5%, transparent); }
+td strong { color: var(--text); }
+td code, li code, p code, h4 code, th code, .cheat-col code {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.85em;
+    background: var(--code-bg); border: 1px solid var(--border);
+    border-radius: 0.3rem; padding: 0.05rem 0.35rem; color: var(--accent2);
+}
+th code { color: inherit; background: transparent; border: none; padding: 0; }
+.w-memorize, .w-write, .w-skim {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.62rem;
+    padding: 0.18rem 0.55rem; border-radius: 999px; white-space: nowrap;
+    text-transform: uppercase; letter-spacing: 0.07em; font-weight: 700;
+}
+.w-memorize { background: color-mix(in srgb, var(--c4) 16%, transparent); color: var(--c4); border: 1px solid color-mix(in srgb, var(--c4) 42%, transparent); }
+.w-write    { background: color-mix(in srgb, var(--c3) 16%, transparent); color: var(--c3); border: 1px solid color-mix(in srgb, var(--c3) 42%, transparent); }
+.w-skim     { background: color-mix(in srgb, var(--text3) 14%, transparent); color: var(--text3); border: 1px solid var(--border2); }
+
+/* ── code blocks ───────────────────────────────────────────────────────── */
+.code-block {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: var(--radius); margin-bottom: 1.2rem;
+    overflow: hidden; box-shadow: var(--shadow);
+}
+.code-head {
+    display: flex; align-items: center; gap: 0.7rem; flex-wrap: wrap;
+    padding: 0.6rem 1rem;
+    background: linear-gradient(90deg, color-mix(in srgb, var(--sec) 13%, var(--bg3)), var(--bg3));
+    border-bottom: 1px solid var(--border);
+}
+.code-file {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.74rem;
+    color: var(--text); font-weight: 600;
+    display: inline-flex; align-items: center; gap: 0.5rem;
+}
+.code-file::before {
+    content: ''; width: 0.55rem; height: 0.55rem; border-radius: 50%;
+    background: var(--sec); flex-shrink: 0;
+}
+.code-note { font-size: 0.7rem; color: var(--text3); }
+.code-run {
+    margin-left: auto; font-family: 'JetBrains Mono', monospace; font-size: 0.66rem;
+    text-decoration: none; color: var(--sec); white-space: nowrap;
+    border: 1px solid color-mix(in srgb, var(--sec) 45%, transparent);
+    border-radius: 999px; padding: 0.22rem 0.7rem; transition: all 0.18s;
+}
+.code-run:hover { background: var(--sec); color: var(--bg); }
+.code-block pre {
+    margin: 0; padding: clamp(0.8rem, 1.6vw, 1.2rem);
+    overflow-x: auto; background: var(--code-bg);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: clamp(0.7rem, 0.66rem + 0.16vw, 0.84rem);
+    line-height: 1.65; color: var(--text); tab-size: 4;
+}
+.code-block pre .c { color: var(--text3); font-style: italic; }
+.code-block pre .k { color: var(--c1); }
+.code-block pre .s { color: var(--c3); }
+.code-block pre .t { color: var(--c2); }
+
+/* ── traps & hooks ─────────────────────────────────────────────────────── */
+.trap {
+    background: linear-gradient(90deg, color-mix(in srgb, var(--c5) 9%, var(--bg2)), var(--bg2) 40%);
+    border: 1px solid var(--border); border-left: 4px solid var(--c5);
+    border-radius: var(--radius); padding: 1rem 1.2rem; margin-bottom: 0.9rem;
+}
+.trap-title { font-weight: 660; color: var(--text); margin-bottom: 0.4rem; font-size: 0.98rem; }
+.trap p { margin-bottom: 0.5rem; font-size: 0.9rem; }
+.trap p:last-child { margin-bottom: 0; }
+.trap .fix { color: var(--c3); font-weight: 700; }
+
+.hook {
+    background: linear-gradient(115deg,
+        color-mix(in srgb, var(--c1) 12%, transparent),
+        color-mix(in srgb, var(--c2) 10%, transparent));
+    border: 1px solid color-mix(in srgb, var(--c1) 28%, transparent);
+    border-left: 4px solid var(--c1);
+    border-radius: var(--radius); padding: 0.95rem 1.2rem; margin: 1.2rem 0;
+    font-size: 0.9rem; color: var(--text2);
+}
+.hook strong { color: var(--accent2); }
+
+/* ── cheat sheet ───────────────────────────────────────────────────────── */
+.cheat {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+    gap: 1rem;
+}
+.cheat-col {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-top: 3px solid var(--sec);
+    border-radius: var(--radius);
+    padding: 1rem 1.1rem;
+    box-shadow: var(--shadow);
+}
+.cheat-col:nth-child(8n+1) { --sec: var(--c1); }
+.cheat-col:nth-child(8n+2) { --sec: var(--c2); }
+.cheat-col:nth-child(8n+3) { --sec: var(--c3); }
+.cheat-col:nth-child(8n+4) { --sec: var(--c4); }
+.cheat-col:nth-child(8n+5) { --sec: var(--c5); }
+.cheat-col:nth-child(8n+6) { --sec: var(--c6); }
+.cheat-col:nth-child(8n+7) { --sec: var(--c7); }
+.cheat-col:nth-child(8n+8) { --sec: var(--c8); }
+.cheat-col h4 {
+    margin-top: 0; font-family: 'JetBrains Mono', monospace; font-size: 0.68rem;
+    text-transform: uppercase; letter-spacing: 0.12em; color: var(--sec);
+    border-bottom: 1px solid var(--border); padding-bottom: 0.4rem;
+}
+.cheat-col ul { list-style: none; margin: 0.65rem 0 0; font-size: 0.8rem; }
+.cheat-col li { margin-bottom: 0.42rem; line-height: 1.5; }
+
+/* ── drills ────────────────────────────────────────────────────────────── */
+.drill { counter-reset: drill; list-style: none; margin-left: 0; }
+.drill li {
+    counter-increment: drill; position: relative;
+    padding-left: 2.6rem; margin-bottom: 0.75rem; font-size: 0.92rem;
+}
+.drill li::before {
+    content: counter(drill, decimal-leading-zero);
+    position: absolute; left: 0; top: 0.15rem;
+    font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; font-weight: 700;
+    color: var(--sec);
+    background: color-mix(in srgb, var(--sec) 13%, transparent);
+    border: 1px solid color-mix(in srgb, var(--sec) 35%, transparent);
+    border-radius: 0.45rem; padding: 0.1rem 0.4rem;
+}
+.drill li:nth-child(6n+1) { --sec: var(--c1); }
+.drill li:nth-child(6n+2) { --sec: var(--c2); }
+.drill li:nth-child(6n+3) { --sec: var(--c3); }
+.drill li:nth-child(6n+4) { --sec: var(--c4); }
+.drill li:nth-child(6n+5) { --sec: var(--c7); }
+.drill li:nth-child(6n+6) { --sec: var(--c8); }
+
+/* ── quiz ──────────────────────────────────────────────────────────────── */
+.test-card {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow-lift);
+}
+.test-head {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 1rem; padding: 0.9rem 1.2rem;
+    background: linear-gradient(90deg,
+        color-mix(in srgb, var(--c1) 18%, var(--bg3)),
+        color-mix(in srgb, var(--c2) 12%, var(--bg3)));
+    border-bottom: 1px solid var(--border);
+}
+.test-head h3 { margin: 0; font-size: 0.92rem; }
+.tag {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.65rem;
+    background: color-mix(in srgb, var(--accent) 18%, transparent);
+    color: var(--accent); border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+    border-radius: 999px; padding: 0.2rem 0.65rem;
+    text-transform: uppercase; letter-spacing: 0.08em; white-space: nowrap;
+}
+.test-body { padding: clamp(1rem, 2vw, 1.5rem); }
+.test-question { font-size: 1rem; color: var(--text); margin-bottom: 1rem; white-space: pre-wrap; }
+.test-options { display: grid; gap: 0.5rem; }
+.opt {
+    text-align: left; padding: 0.7rem 0.95rem; border-radius: 0.6rem;
+    border: 1px solid var(--border2); background: var(--bg3); color: var(--text2);
+    cursor: pointer; font-family: inherit; font-size: 0.88rem; transition: all 0.15s;
+}
+.opt:hover:not(:disabled) { border-color: var(--accent); color: var(--text); transform: translateX(2px); }
+.opt.correct { border-color: var(--c3); color: var(--c3); background: color-mix(in srgb, var(--c3) 12%, transparent); }
+.opt.wrong   { border-color: var(--c5); color: var(--c5); background: color-mix(in srgb, var(--c5) 12%, transparent); }
+.opt:disabled { cursor: default; }
+.test-feedback { margin-top: 0.9rem; font-size: 0.88rem; color: var(--text2); display: none; }
+.test-feedback.show { display: block; }
+.next-btn {
+    display: none; margin-top: 1rem; padding: 0.6rem 1.3rem; border-radius: 0.6rem;
+    border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
+    background: color-mix(in srgb, var(--accent) 15%, transparent);
+    color: var(--accent); cursor: pointer; font-family: inherit; font-size: 0.85rem;
+}
+.next-btn:hover { background: var(--accent); color: var(--bg); }
+.next-btn.show { display: inline-block; }
+#quiz-score {
+    display: none; text-align: center; padding: clamp(1.2rem, 3vw, 2rem); margin-top: 1rem;
+    background: var(--hero-wash), var(--bg2);
+    border: 1px solid var(--border); border-radius: var(--radius);
+}
+#quiz-score.show { display: block; }
+#quiz-score p {
+    font-size: clamp(1.6rem, 1.2rem + 1.5vw, 2.6rem); font-weight: 800; margin-bottom: 0.2rem;
+    background: linear-gradient(90deg, var(--c1), var(--c7));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+
+/* ── footer ────────────────────────────────────────────────────────────── */
+footer {
+    border-top: 1px solid var(--border);
+    background: var(--hero-wash);
+    padding: clamp(1.75rem, 4vw, 3rem) var(--gutter);
+    text-align: center; color: var(--text2); font-size: 0.85rem;
+}
+
+@media (max-width: 40rem) {
+    .nav-links { display: none; }
+    table { min-width: 26rem; }
+}
+</style>
+</head>
+
+<body>
+    <div id="progress"></div>
+
+    <nav class="topbar" aria-label="Chapter sections">
+        <div class="nav-title">SE371 // CH05</div>
+        <ul class="nav-links"><li><a href="#orient">Start Here</a></li><li><a href="#map">Slide Map</a></li><li><a href="#dom">The DOM</a></li><li><a href="#events">Events</a></li><li><a href="#forms">Forms &amp; Regex</a></li><li><a href="#traps">Traps</a></li><li><a href="#cheat">Cheat Sheet</a></li><li><a href="#drills">Drills</a></li><li><a href="#quiz">Quiz</a></li></ul>
+        <div class="nav-actions" data-page-search-host>
+            <button class="toggle-btn" id="theme-btn" type="button">Light</button>
+        </div>
+    </nav>
+
+    <div class="hero-band">
+        <header class="hero">
+            <div class="hero-eyebrow">Chapter 05 &middot; Slide Breakdown</div>
+            <h1>JavaScript in the Front End</h1>
+            <p class="hero-sub">Where JavaScript stops being a language exercise and starts changing pages. Every lab from here uses this chapter, and three of its ideas — DOM timing, event propagation and preventDefault — cause most of the bugs you will hit all semester.</p>
+            <div class="hero-stats"><span class="stat">58 slides</span><span class="stat">Single deck</span><span class="stat">Pure write-it</span><span class="stat">Book ch. 9</span></div>
+        </header>
+    </div>
+
+    <div class="layout">
+        <aside class="toc-rail">
+            <nav class="chapter-toc" aria-label="On this page"><a href="#orient">01 Start Here</a><a href="#map">02 Slide Map</a><a href="#dom">03 The DOM</a><a href="#events">04 Events</a><a href="#forms">05 Forms &amp; Regex</a><a href="#traps">06 Traps</a><a href="#cheat">07 Cheat Sheet</a><a href="#drills">08 Drills</a><a href="#quiz">09 Quiz</a></nav>
+        </aside>
+
+        <main>
+        <section id="orient" style="--sec: var(--c1)">
+            <div class="section-label">Orientation</div>
+            <h2 class="section-title">What this chapter is really for</h2>
+
+<p>One continuous deck, and it moves in a straight line: <strong>find nodes &rarr; change nodes &rarr;
+respond to events &rarr; validate forms</strong>. Read it in that order and each section explains the
+next.</p>
+
+<div class="grid-2">
+  <div class="card">
+    <h4>The three ideas that cause every bug</h4>
+    <p><strong>1. Timing</strong> &mdash; you cannot touch the DOM before it exists (slides 23, 28).
+    <strong>2. Propagation</strong> &mdash; a click on a button also fires the handlers of everything
+    around it (slides 32&ndash;35). <strong>3. <code>preventDefault</code></strong> &mdash; without it
+    a form submits regardless of what your validation decided (slides 43, 48, 54).</p>
+  </div>
+  <div class="card">
+    <h4>Where it connects</h4>
+    <p>The callbacks from chapter 4 become event handlers here. The forms from chapter 2 become
+    interactive here. The regular expressions at the end reappear as Sequelize validators in chapter 7.
+    And the "validate on the server too" warning from chapter 2 slide 65 is repeated on slide 47 for
+    the same reason.</p>
+  </div>
+</div>
+
+        </section>
+        <section id="map" style="--sec: var(--c2)">
+            <div class="section-label">Navigation</div>
+            <h2 class="section-title">All 58 slides, weighted</h2>
+<div class="table-wrap"><table><thead><tr><th>Slides</th><th>Topic</th><th>Weight</th><th>What to do with it</th></tr></thead><tbody><tr><td><strong>1&ndash;2</strong></td><td><strong>Title; SweetAlert as a third-party output library</strong></td><td><span class="w-skim">Skim</span></td><td>A CDN script tag and a <code>Swal.fire({...})</code> call. Nice for labs, unlikely to be examined.</td></tr><tr><td><strong>3&ndash;4</strong></td><td><strong>The DOM; the document object</strong></td><td><span class="w-memorize">Memorize</span></td><td><code>document</code> is the root object representing the entire HTML document, globally accessible.</td></tr><tr><td><strong>5&ndash;6</strong></td><td><strong>Nodes, NodeLists, node properties</strong></td><td><span class="w-memorize">Memorize</span></td><td>A NodeList behaves like an array. The examinable footnote: <code>forEach</code> works on a NodeList but <strong>not</strong> on an HTMLCollection.</td></tr><tr><td><strong>7&ndash;8</strong></td><td><strong>Selection methods, old and new</strong></td><td><span class="w-write">Write it</span></td><td>The three old ones and the two query methods. <code>querySelector</code> returns the <em>first</em> match.</td></tr><tr><td><strong>9&ndash;11</strong></td><td><strong>Element node properties; tag-specific properties</strong></td><td><span class="w-write">Write it</span></td><td><code>classList</code>, <code>className</code>, <code>id</code>, <code>innerHTML</code>, <code>style</code>, <code>tagName</code>, plus <code>href</code>/<code>name</code>/<code>src</code>/<code>value</code>.</td></tr><tr><td><strong>12&ndash;13</strong></td><td><strong>Changing an element&rsquo;s style</strong></td><td><span class="w-write">Write it</span></td><td>You <em>can</em> set <code>.style.x</code> directly, but the slides say it is preferable to change <code>className</code> or <code>classList</code>.</td></tr><tr><td><strong>14&ndash;15</strong></td><td><strong>innerHTML vs textContent vs DOM manipulation</strong></td><td><span class="w-memorize">Memorize</span></td><td>The performance argument is given explicitly: every time <code>innerHTML</code> is set, the HTML must be parsed, a DOM constructed and inserted. Also flagged <em>not secure</em>.</td></tr><tr><td><strong>16&ndash;20</strong></td><td><strong>Family relations; DOM manipulation methods; the exercise</strong></td><td><span class="w-write">Write it</span></td><td>Seven manipulation methods. Slide 20 asks you to redo the makeArticle exercise with them &mdash; do both versions and compare.</td></tr><tr><td><strong>21</strong></td><td><strong>The dataset property and data-* attributes</strong></td><td><span class="w-write">Write it</span></td><td>Note the naming rule: <code>data-user-name</code> becomes <code>dataset.userName</code>.</td></tr><tr><td><strong>22&ndash;23</strong></td><td><strong>Handling events; DOM timing</strong></td><td><span class="w-memorize">Memorize</span></td><td>You cannot access or modify the DOM until it has loaded. This is the setup for slide 28.</td></tr><tr><td><strong>24&ndash;27</strong></td><td><strong>Event handlers, anonymous functions, NodeList arrays</strong></td><td><span class="w-write">Write it</span></td><td>Register with <code>addEventListener()</code>, passing a callback. Three equivalent forms on slide 26.</td></tr><tr><td><strong>28&ndash;29</strong></td><td><strong>window.load vs DOMContentLoaded</strong></td><td><span class="w-memorize">Memorize</span></td><td><code>load</code> waits for images and stylesheets too; <code>DOMContentLoaded</code> fires when the HTML is downloaded and parsed. <strong>Generally the one you want.</strong></td></tr><tr><td><strong>30&ndash;31</strong></td><td><strong>The event object</strong></td><td><span class="w-write">Write it</span></td><td>Add a parameter, conventionally <code>e</code>, to the callback. <code>e.target</code> matters for delegation.</td></tr><tr><td><strong>32&ndash;35</strong></td><td><strong>Propagation: capturing, bubbling, stopPropagation</strong></td><td><span class="w-memorize">Memorize</span></td><td>The most conceptually examinable block in the chapter. Learn the two phases and their directions.</td></tr><tr><td><strong>36&ndash;38</strong></td><td><strong>Event delegation</strong></td><td><span class="w-write">Write it</span></td><td>One listener on the parent instead of one per child. Note the warning: <code>nodeName</code> always returns <strong>upper case</strong>.</td></tr><tr><td><strong>39&ndash;42</strong></td><td><strong>Event types: mouse, keyboard, form</strong></td><td><span class="w-memorize">Memorize</span></td><td>Five categories. Learn the seven mouse events, the two keyboard events and the six form events.</td></tr><tr><td><strong>43&ndash;46</strong></td><td><strong>The submit event; the three form event interests</strong></td><td><span class="w-write">Write it</span></td><td>Movement between elements, data changing, and final submission. <code>e.preventDefault()</code> is the whole trick.</td></tr><tr><td><strong>47&ndash;54</strong></td><td><strong>Validation: empty fields, multiselect, numbers, matching emails</strong></td><td><span class="w-write">Write it</span></td><td>Copy each listing out. Slide 47 repeats the rule: validate on the server for security, on the client for speed and perceived responsiveness.</td></tr><tr><td><strong>55&ndash;58</strong></td><td><strong>Regular expressions: literals, metacharacters, syntax, methods</strong></td><td><span class="w-memorize">Memorize</span></td><td>The fourteen metacharacters, the quantifiers, and the five methods on slide 58. Reappears in chapter 7 as Sequelize validators.</td></tr></tbody></table></div>
+        </section>
+        <section id="dom" style="--sec: var(--c3)">
+            <div class="section-label">Slides 3&ndash;21</div>
+            <h2 class="section-title">Finding and changing nodes</h2>
+
+<h3>Selecting elements &mdash; five methods</h3>
+<div class="code-block"><div class="code-head"><span class="code-file">selection.js</span><span class="code-note">Slides 7–8</span><a class="code-run" href="/academics/software-engineering/se371/extra-resources/resource-viewers/i-collection-vs-node-list-165b7600/" target="_blank" rel="noopener">[ RUN IT &rarr; ]</a></div><pre><span class="c">// ── the three original methods ─────────────────────────────────</span>
+document.getElementById(<span class="s">"here"</span>);              <span class="c">// ONE element (ids are unique)</span>
+document.getElementsByClassName(<span class="s">"thumb"</span>);     <span class="c">// an HTMLCollection</span>
+document.getElementsByTagName(<span class="s">"li"</span>);          <span class="c">// an HTMLCollection</span>
+
+<span class="c">// ── the newer query methods: you write CSS SELECTORS ───────────</span>
+document.querySelector(<span class="s">"#main a"</span>);             <span class="c">// the FIRST element that matches</span>
+document.querySelectorAll(<span class="s">"#menu li"</span>);         <span class="c">// a NodeList of ALL matches</span>
+
+<span class="c">// Anything you can write in a stylesheet works here:</span>
+document.querySelectorAll(<span class="s">"section &gt; p.intro:first-child"</span>);
+document.querySelectorAll(<span class="s">'a[href$=".pdf"]'</span>);
+
+<span class="c">// ── THE COLLECTION TRAP (slide 6) ──────────────────────────────
+//   querySelectorAll  → NodeList      → forEach WORKS
+//   getElementsBy*    → HTMLCollection → forEach DOES NOT</span>
+document.querySelectorAll(<span class="s">"li"</span>).forEach(li =&gt; console.log(li.textContent));   <span class="c">// ✓</span>
+document.getElementsByTagName(<span class="s">"li"</span>).forEach(...);                          <span class="c">// ✗ TypeError</span>
+
+<span class="c">// Two ways round it:</span>
+[...document.getElementsByTagName(<span class="s">"li"</span>)].forEach(li =&gt; { });   <span class="c">// spread into an array</span>
+<span class="k">for</span> (<span class="k">let</span> li <span class="k">of</span> document.getElementsByTagName(<span class="s">"li"</span>)) { }       <span class="c">// for…of works on both</span></pre></div>
+
+<h3>Node and element properties</h3>
+<div class="table-wrap"><table><thead><tr><th>Property</th><th>What it gives you</th></tr></thead><tbody><tr><td><code>childNodes</code></td><td>A NodeList of this node&rsquo;s children.</td></tr><tr><td><code>firstChild</code> &middot; <code>lastChild</code></td><td>First and last child node.</td></tr><tr><td><code>nextSibling</code> &middot; <code>previousSibling</code></td><td>The neighbouring nodes.</td></tr><tr><td><code>parentNode</code></td><td>The parent node.</td></tr><tr><td><code>nodeName</code></td><td>The name of the node &mdash; <strong>always upper case</strong> for elements.</td></tr><tr><td><code>textContent</code></td><td>The text content, stripped of any tags.</td></tr><tr><td><code>classList</code></td><td>A read-only list of the element&rsquo;s CSS classes, with helper methods (<code>add</code>, <code>remove</code>, <code>toggle</code>, <code>contains</code>).</td></tr><tr><td><code>className</code></td><td>The raw string value of the <code>class</code> attribute.</td></tr><tr><td><code>id</code></td><td>The element&rsquo;s id.</td></tr><tr><td><code>innerHTML</code></td><td>All the content of the element &mdash; text <em>and</em> tags. Flagged on the slide as <strong>not secure</strong>.</td></tr><tr><td><code>style</code></td><td>A <code>CSSStyleDeclaration</code> whose sub-properties map to CSS properties.</td></tr><tr><td><code>tagName</code></td><td>The element&rsquo;s tag name.</td></tr></tbody></table></div>
+<p>Some properties exist only on certain tags: <code>href</code> on <code>&lt;a&gt;</code>;
+<code>name</code> on <code>a</code>, <code>input</code>, <code>textarea</code> and <code>form</code>
+only (unlike <code>id</code>, which every tag has); <code>src</code> on <code>img</code>,
+<code>input</code>, <code>iframe</code> and <code>script</code>; and <code>value</code> on
+<code>input</code>, <code>textarea</code> and <code>submit</code> &mdash; which is how you read what
+the user typed.</p>
+
+<div class="code-block"><div class="code-head"><span class="code-file">accessing-elements.js</span><span class="code-note">Slide 11</span><a class="code-run" href="/academics/software-engineering/se371/extra-resources/resource-viewers/iv-index-d768e469/" target="_blank" rel="noopener">[ RUN IT &rarr; ]</a></div><pre><span class="c">&lt;!-- given this markup --&gt;
+&lt;p id="here"&gt;hello &lt;span&gt;there&lt;/span&gt;&lt;/p&gt;
+&lt;ul&gt;&lt;li&gt;France&lt;/li&gt;&lt;li&gt;Spain&lt;/li&gt;&lt;li&gt;Thailand&lt;/li&gt;&lt;/ul&gt;
+&lt;div id="main"&gt;
+  &lt;a href="somewhere.html"&gt;&lt;img src="whatever.gif" class="thumb"&gt;&lt;/a&gt;
+&lt;/div&gt;</span>
+
+<span class="k">const</span> node = document.getElementById(<span class="s">"here"</span>);
+console.log(node.innerHTML);    <span class="c">// hello &lt;span&gt;there&lt;/span&gt;   ← tags INCLUDED</span>
+console.log(node.textContent);  <span class="c">// "hello there"              ← tags STRIPPED</span>
+
+<span class="k">const</span> items = document.getElementsByTagName(<span class="s">"li"</span>);
+<span class="k">for</span> (<span class="k">let</span> i = <span class="s">0</span>; i &lt; items.length; i++) console.log(items[i].textContent);
+<span class="c">// France, Spain, Thailand</span>
+
+<span class="k">const</span> link = document.querySelector(<span class="s">"#main a"</span>);
+console.log(link.href);         <span class="c">// somewhere.html</span>
+<span class="k">const</span> img  = document.querySelector(<span class="s">"#main img"</span>);
+console.log(img.src);           <span class="c">// whatever.gif</span>
+console.log(img.className);     <span class="c">// thumb</span></pre></div>
+
+<h3>Changing appearance &mdash; three ways, in order of preference</h3>
+<div class="code-block"><div class="code-head"><span class="code-file">styling.js</span><span class="code-note">Slides 12–13</span><a class="code-run" href="/academics/software-engineering/se371/extra-resources/resource-viewers/ii-classlist-27f5e3be/" target="_blank" rel="noopener">[ RUN IT &rarr; ]</a></div><pre><span class="c">// ── 1. Direct style property. Works, but sets an INLINE style.
+//      Note the naming: CSS background-color → JS backgroundColor.</span>
+<span class="k">const</span> node = document.getElementById(<span class="s">"someId"</span>);
+node.style.backgroundColor = <span class="s">"#FFFF00"</span>;
+node.style.borderWidth = <span class="s">"3px"</span>;
+
+<span class="c">// ── 2. className — replaces the WHOLE class attribute</span>
+node.className = <span class="s">"card active"</span>;
+
+<span class="c">// ── 3. classList — PREFERRED. Surgical, and reads better.</span>
+node.classList.add(<span class="s">"active"</span>);
+node.classList.remove(<span class="s">"hidden"</span>);
+node.classList.toggle(<span class="s">"shadow"</span>);      <span class="c">// on if off, off if on</span>
+node.classList.contains(<span class="s">"active"</span>);    <span class="c">// true / false</span>
+
+<span class="c">// WHY 3 beats 1: the styling stays in the stylesheet where it belongs,
+// so you change the element's STATE and let CSS decide what that looks like.
+// It is the same separation-of-concerns argument from chapter 3.</span></pre></div>
+
+<h3><code>innerHTML</code> vs <code>textContent</code> vs DOM methods</h3>
+<div class="table-wrap"><table><thead><tr><th>Approach</th><th>Cost</th><th>When to use it</th></tr></thead><tbody><tr><td><code>innerHTML</code></td><td>Every time it is set, the HTML must be <strong>parsed, a DOM constructed, and inserted</strong> into the document. This takes time. Also <strong>not secure</strong> &mdash; user-supplied text can inject markup.</td><td>Quick prototypes, and content you generated yourself.</td></tr><tr><td><code>textContent</code></td><td>Cheap, and safe &mdash; it inserts text, never markup.</td><td>Any time you are inserting <em>text</em>. Should be your default.</td></tr><tr><td><code>createElement</code> + <code>appendChild</code></td><td>More lines, but no reparse and no injection risk.</td><td>Building structure, especially inside a loop.</td></tr></tbody></table></div><div class="code-block"><div class="code-head"><span class="code-file">three-ways.js</span><span class="code-note">Slide 15</span><a class="code-run" href="/academics/software-engineering/se371/extra-resources/chapter-5/js-front-end-all-examples/03-ex-inner-html/" target="_blank" rel="noopener">[ RUN IT &rarr; ]</a></div><pre><span class="c">// The slide 15 exercise, all three ways.
+// makeArticle("manager", "Director", "Salah", "Abed", "salah@abc.com")</span>
+
+<span class="c">// ── 1. innerHTML, as a declaration ─────────────────────────────</span>
+<span class="k">function</span> makeArticle(id, position, name, lastName, email) {
+    document.getElementById(id).innerHTML = `
+        &lt;article&gt;
+            &lt;h2&gt;Position: ${position}&lt;/h2&gt;
+            &lt;p&gt;Name: ${name}&lt;/p&gt;
+            &lt;p&gt;Last Name: ${lastName}&lt;/p&gt;
+            &lt;p&gt;Email: ${email}&lt;/p&gt;
+        &lt;/article&gt;`;
+}
+
+<span class="c">// ── 2. the same thing as an ARROW function ─────────────────────</span>
+<span class="k">const</span> makeArticle2 = (id, position, name, lastName, email) =&gt; {
+    document.getElementById(id).innerHTML =
+        `&lt;article&gt;&lt;h2&gt;Position: ${position}&lt;/h2&gt;&lt;p&gt;Name: ${name}&lt;/p&gt;` +
+        `&lt;p&gt;Last Name: ${lastName}&lt;/p&gt;&lt;p&gt;Email: ${email}&lt;/p&gt;&lt;/article&gt;`;
+};
+
+<span class="c">// ── 3. as a CONSTRUCTOR with a method (chapter 4, slide 50) ────</span>
+<span class="k">function</span> Employee(position, name, lastName, email) {
+    <span class="k">this</span>.position = position; <span class="k">this</span>.name = name;
+    <span class="k">this</span>.lastName = lastName; <span class="k">this</span>.email = email;
+    <span class="k">this</span>.toHTML = <span class="k">function</span> () {
+        <span class="k">return</span> `&lt;article&gt;&lt;h2&gt;Position: ${<span class="k">this</span>.position}&lt;/h2&gt;` +
+               `&lt;p&gt;Name: ${<span class="k">this</span>.name}&lt;/p&gt;&lt;p&gt;Last Name: ${<span class="k">this</span>.lastName}&lt;/p&gt;` +
+               `&lt;p&gt;Email: ${<span class="k">this</span>.email}&lt;/p&gt;&lt;/article&gt;`;
+    };
+}
+document.getElementById(<span class="s">"manager"</span>).innerHTML =
+    <span class="k">new</span> Employee(<span class="s">"Director"</span>, <span class="s">"Salah"</span>, <span class="s">"Abed"</span>, <span class="s">"salah@abc.com"</span>).toHTML();</pre></div>
+
+<h3>DOM manipulation methods &mdash; the slide 20 version of the same exercise</h3>
+<div class="table-wrap"><table><thead><tr><th>Method</th><th>What it does</th></tr></thead><tbody><tr><td><code>createElement</code></td><td>Creates an HTML element node.</td></tr><tr><td><code>createTextNode</code></td><td>Creates a text node.</td></tr><tr><td><code>appendChild</code></td><td>Adds a new child node to the <strong>end</strong> of the current node.</td></tr><tr><td><code>insertAdjacentElement</code></td><td>Inserts a new child node at one of four positions relative to the current node.</td></tr><tr><td><code>insertAdjacentText</code></td><td>The same, for a text node.</td></tr><tr><td><code>removeChild</code></td><td>Removes a child from the current node.</td></tr><tr><td><code>replaceChild</code></td><td>Replaces a child node with a different one.</td></tr></tbody></table></div><div class="code-block"><div class="code-head"><span class="code-file">dom-manipulation.js</span><span class="code-note">Slides 17–20</span></div><pre><span class="c">// The four insertAdjacent* positions:
+//   &lt;!-- beforebegin --&gt;
+//   &lt;p&gt;
+//     &lt;!-- afterbegin --&gt;   foo   &lt;!-- beforeend --&gt;
+//   &lt;/p&gt;
+//   &lt;!-- afterend --&gt;</span>
+
+<span class="c">// The slide 20 exercise: makeArticle with DOM methods instead of innerHTML.
+// More lines, but no reparse and nothing can be injected.</span>
+<span class="k">function</span> makeArticleDOM(id, position, name, lastName, email) {
+    <span class="k">const</span> target  = document.getElementById(id);
+    <span class="k">const</span> article = document.createElement(<span class="s">"article"</span>);
+
+    <span class="k">const</span> h2 = document.createElement(<span class="s">"h2"</span>);
+    h2.textContent = `Position: ${position}`;         <span class="c">// textContent, not innerHTML</span>
+    article.appendChild(h2);
+
+    [[<span class="s">"Name"</span>, name], [<span class="s">"Last Name"</span>, lastName], [<span class="s">"Email"</span>, email]]
+        .forEach(([label, val]) =&gt; {
+            <span class="k">const</span> p = document.createElement(<span class="s">"p"</span>);
+            p.appendChild(document.createTextNode(`${label}: ${val}`));
+            article.appendChild(p);
+        });
+
+    target.replaceChildren(article);   <span class="c">// or: target.innerHTML = ""; target.appendChild(article);</span>
+}</pre></div>
+
+<h3>The dataset property</h3>
+<div class="code-block"><div class="code-head"><span class="code-file">dataset.html</span><span class="code-note">Slide 21</span><a class="code-run" href="/academics/software-engineering/se371/extra-resources/chapter-5/js-front-end-all-examples/05-dataset/" target="_blank" rel="noopener">[ RUN IT &rarr; ]</a></div><pre><span class="c">&lt;!-- Custom data-* attributes let you attach data to an element --&gt;</span>
+<span class="k">&lt;div</span> <span class="t">id</span>=<span class="s">"container"</span> <span class="t">data-userid</span>=<span class="s">"2356"</span> <span class="t">data-user-name</span>=<span class="s">"Salah"</span><span class="k">&gt;</span>
+  <span class="k">&lt;p</span> <span class="t">id</span>=<span class="s">"display"</span><span class="k">&gt;</span>The user ID is:<span class="k">&lt;/p&gt;</span>
+<span class="k">&lt;/div&gt;</span>
+
+<span class="k">&lt;script&gt;</span>
+<span class="k">const</span> container = document.getElementById(<span class="s">"container"</span>);
+<span class="k">const</span> user_id   = container.dataset.userid;    <span class="c">// data-userid    → userid</span>
+<span class="k">const</span> user_name = container.dataset.userName;  <span class="c">// data-user-NAME → userName  ← camelCase!</span>
+
+container.appendChild(document.createTextNode(`User info: ${user_id}, ${user_name}`));
+<span class="k">&lt;/script&gt;</span>
+
+<span class="c">// NAMING RULE: hyphens in the attribute become camelCase in dataset.
+// data-user-name → dataset.userName. Getting this wrong gives undefined
+// with no error, which makes it a nasty bug to find.</span></pre></div>
+        </section>
+        <section id="events" style="--sec: var(--c4)">
+            <div class="section-label">Slides 22&ndash;42</div>
+            <h2 class="section-title">Event handling, timing, propagation and delegation</h2>
+
+<h3>Timing &mdash; read this before anything else breaks</h3>
+<p>Slide 23 states it plainly: <strong>you cannot access or modify the DOM until it has been
+loaded.</strong> Putting your script after the markup is one way to be sure the elements exist. The
+robust way is to wait for an event.</p>
+<div class="table-wrap"><table><thead><tr><th>Event</th><th>Fires when</th><th>Use it?</th></tr></thead><tbody><tr><td><code>window.load</code></td><td>The <strong>entire</strong> page has loaded, including images and stylesheets. On a slow connection or an image-heavy page this can take a long time.</td><td>Only when you genuinely need images measured.</td></tr><tr><td><code>document.DOMContentLoaded</code></td><td>The HTML document has been completely <strong>downloaded and parsed</strong>.</td><td><strong>Generally the one you want.</strong></td></tr></tbody></table></div><div class="code-block"><div class="code-head"><span class="code-file">dom-timing.js</span><span class="code-note">Slides 28–29</span><a class="code-run" href="/academics/software-engineering/se371/extra-resources/chapter-5/js-front-end-all-examples/06-eventwindows/" target="_blank" rel="noopener">[ RUN IT &rarr; ]</a></div><pre><span class="c">// With one of these, your DOM code can live ANYWHERE — even in &lt;head&gt; —
+// as long as it does not touch the DOM outside the handler.</span>
+document.addEventListener(<span class="s">'DOMContentLoaded'</span>, <span class="k">function</span> () {
+
+    <span class="k">const</span> menu = document.querySelectorAll(<span class="s">"#menu li"</span>);
+    <span class="k">for</span> (<span class="k">let</span> item <span class="k">of</span> menu) {
+        item.addEventListener(<span class="s">"click"</span>, <span class="k">function</span> () {
+            item.classList.toggle(<span class="s">'shadow'</span>);
+        });
+    }
+
+    <span class="k">const</span> heading = document.querySelector(<span class="s">"h3"</span>);
+    heading.addEventListener(<span class="s">'click'</span>, <span class="k">function</span> () {
+        heading.classList.toggle(<span class="s">'shadow'</span>);
+    });
+});</pre></div><div class="hook"><strong>Diagnostic worth memorising:</strong> if a selector returns <code>null</code> and the element is definitely in the HTML, it is a timing problem, not a typo. Your script ran before the parser reached that element.</div>
+
+<h3>Registering a handler</h3>
+<div class="code-block"><div class="code-head"><span class="code-file">handlers.js</span><span class="code-note">Slides 24–26, 30–31</span><a class="code-run" href="/academics/software-engineering/se371/extra-resources/chapter-5/js-front-end-all-examples/07-event-handler/" target="_blank" rel="noopener">[ RUN IT &rarr; ]</a></div><pre><span class="c">// Define a handler, then REGISTER it on an element node by passing
+// the callback to addEventListener().</span>
+<span class="k">function</span> named() { alert(<span class="s">"a named handler"</span>); }
+document.getElementById(<span class="s">"btn"</span>).addEventListener(<span class="s">"click"</span>, named);
+<span class="c">//                                                        ↑ NO parentheses.
+//   named   passes the function.   named()  CALLS it and passes the result.</span>
+
+<span class="c">// Far more common: an ANONYMOUS function. Three equivalent versions:</span>
+<span class="k">const</span> btn = document.getElementById(<span class="s">"btn"</span>);
+btn.addEventListener(<span class="s">"click"</span>, <span class="k">function</span> () { alert(<span class="s">"anonymous function"</span>); });
+
+document.querySelector(<span class="s">"#btn"</span>).addEventListener(<span class="s">"click"</span>, <span class="k">function</span> () {
+    alert(<span class="s">"a different approach, same result"</span>);
+});
+
+document.querySelector(<span class="s">"#btn"</span>).addEventListener(<span class="s">"click"</span>, () =&gt; {
+    alert(<span class="s">"arrow syntax, same result"</span>);
+});
+
+<span class="c">// THE EVENT OBJECT: add a parameter (conventionally e) and the browser
+// hands you an object describing what happened.</span>
+btn.addEventListener(<span class="s">"click"</span>, <span class="k">function</span> (e) {
+    console.log(e.type);           <span class="c">// "click"</span>
+    console.log(e.target);         <span class="c">// the element that GENERATED the event</span>
+    console.log(e.currentTarget);  <span class="c">// the element the handler is ATTACHED to</span>
+});</pre></div>
+
+<h3>Propagation: capturing and bubbling</h3>
+<p>When an event fires on an element that has ancestors, it propagates to those ancestors in
+<strong>two phases</strong>.</p>
+<div class="code-block"><div class="code-head"><span class="code-file">propagation</span><span class="code-note">Slides 32–33</span><a class="code-run" href="/academics/software-engineering/se371/extra-resources/resource-viewers/event-propagation-0aa36bf7/" target="_blank" rel="noopener">[ RUN IT &rarr; ]</a></div><pre><span class="c">   &lt;html&gt;
+     &lt;aside id="cart"&gt;
+       &lt;div class="item"&gt;
+         &lt;button class="plus"&gt;+&lt;/button&gt;   ← you click HERE (the event TARGET)
+       &lt;/div&gt;
+     &lt;/aside&gt;
+   &lt;/html&gt;
+
+   ① CAPTURING PHASE  — outermost inward
+        html → aside → div → button
+        The browser checks each ancestor starting from the OUTERMOST
+        (&lt;html&gt;) and runs any handler registered FOR THIS PHASE,
+        until it reaches the element that triggered the event.
+
+   ② BUBBLING PHASE   — target outward   ← THE DEFAULT
+        button → div → aside → html
+        The opposite: it checks the triggering element first, then
+        works back out through every ancestor.</span>
+
+<span class="c">// addEventListener's third argument picks the phase:</span>
+el.addEventListener(<span class="s">"click"</span>, handler);          <span class="c">// bubbling  (default)</span>
+el.addEventListener(<span class="s">"click"</span>, handler, <span class="k">true</span>);    <span class="c">// capturing</span></pre></div><div class="code-block"><div class="code-head"><span class="code-file">stop-propagation.js</span><span class="code-note">Slides 34–35</span><a class="code-run" href="/academics/software-engineering/se371/extra-resources/chapter-5/js-front-end-all-examples/08-eventprop/" target="_blank" rel="noopener">[ RUN IT &rarr; ]</a></div><pre><span class="c">// THE PROBLEM (slide 34): nested elements each with their own click
+// behaviour. Clicking the increment button fires the button's handler —
+// and then the div's, and then the aside's. The cart minimises itself
+// every time you add an item.</span>
+
+<span class="c">// THE FIX: e.stopPropagation()</span>
+<span class="k">const</span> btns = document.querySelectorAll(<span class="s">".plus"</span>);
+<span class="k">for</span> (<span class="k">let</span> b <span class="k">of</span> btns) {
+    b.addEventListener(<span class="s">"click"</span>, <span class="k">function</span> (e) {
+        e.stopPropagation();       <span class="c">// ← the event stops here</span>
+        incrementCount(e);
+    });
+}
+
+<span class="k">const</span> items = document.querySelectorAll(<span class="s">".item"</span>);
+<span class="k">for</span> (<span class="k">let</span> it <span class="k">of</span> items) {
+    it.addEventListener(<span class="s">"click"</span>, <span class="k">function</span> (e) {
+        e.stopPropagation();
+        removeItemFromCart(e);
+    });
+}
+
+<span class="k">const</span> aside = document.querySelector(<span class="s">"aside#cart"</span>);
+aside.addEventListener(<span class="s">"click"</span>, <span class="k">function</span> () { minimizeCart(); });
+
+<span class="c">// DO NOT CONFUSE THESE TWO:
+//   e.stopPropagation()  stops the event travelling to other ELEMENTS
+//   e.preventDefault()   stops the BROWSER's default action (submitting,
+//                        following a link). They are unrelated.</span></pre></div>
+
+<h3>Event delegation &mdash; bubbling used deliberately</h3>
+<div class="code-block"><div class="code-head"><span class="code-file">event-delegation.js</span><span class="code-note">Slides 36–38</span><a class="code-run" href="/academics/software-engineering/se371/extra-resources/chapter-5/js-front-end-all-examples/08b-event-delegation/" target="_blank" rel="noopener">[ RUN IT &rarr; ]</a></div><pre><span class="c">// THE NAIVE WAY: one listener per element. With 200 thumbnails that is
+// 200 listeners — and any image added later has none at all.</span>
+<span class="k">const</span> images = document.querySelectorAll(<span class="s">"#list img"</span>);
+<span class="k">for</span> (<span class="k">let</span> img <span class="k">of</span> images) {
+    img.addEventListener(<span class="s">"click"</span>, someHandler);
+}
+
+<span class="c">// DELEGATION: ONE listener on the parent, using bubbling. Since the user
+// can click on any element inside the section, the handler must work out
+// whether an &lt;img&gt; was clicked.</span>
+<span class="k">const</span> parent = document.querySelector(<span class="s">"#list"</span>);
+parent.addEventListener(<span class="s">"click"</span>, <span class="k">function</span> (e) {
+    <span class="c">// e.target is the object that GENERATED the event.
+    // NOTE: nodeName ALWAYS RETURNS UPPER CASE.</span>
+    <span class="k">if</span> (e.target &amp;&amp; e.target.nodeName === <span class="s">"IMG"</span>) {
+        doSomething(e.target);
+    }
+});
+
+<span class="c">// Two wins: one listener instead of hundreds, and elements added to the
+// list LATER are handled automatically — no re-registration needed.</span></pre></div>
+
+<h3>Event types</h3>
+<p>Five categories: <strong>mouse</strong>, <strong>keyboard</strong>, <strong>touch</strong>,
+<strong>form</strong> and <strong>frame</strong> events.</p>
+<div class="table-wrap"><table><thead><tr><th>Mouse (slide 40)</th><th>Keyboard (41)</th><th>Form (42)</th></tr></thead><tbody><tr><td><code>click</code> &mdash; clicked on an element</td><td><code>keydown</code> &mdash; a key is being pressed (<strong>first</strong>)</td><td><code>focus</code> &mdash; an element gains focus</td></tr><tr><td><code>dblclick</code> &mdash; double clicked</td><td><code>keyup</code> &mdash; a key is released (<strong>last</strong>)</td><td><code>blur</code> &mdash; an element lost focus, by click or Tab</td></tr><tr><td><code>mousedown</code> &mdash; pressed down over an element</td><td><code>e.key</code> gives the key pressed</td><td><code>change</code> &mdash; an input, textarea or select had its value changed</td></tr><tr><td><code>mouseup</code> &mdash; released over an element</td><td></td><td><code>select</code> &mdash; the user selected some text</td></tr><tr><td><code>mouseover</code> &mdash; moved (not clicked) over an element</td><td></td><td><code>reset</code> &mdash; the form was reset</td></tr><tr><td><code>mouseout</code> &mdash; moved off an element</td><td></td><td><code>submit</code> &mdash; the form was submitted</td></tr><tr><td><code>mousemove</code> &mdash; moved while over an element</td><td></td><td></td></tr></tbody></table></div><div class="code-block"><div class="code-head"><span class="code-file">key-event.js</span><span class="code-note">Slide 41</span><a class="code-run" href="/academics/software-engineering/se371/extra-resources/resource-viewers/key-event-0e280756/" target="_blank" rel="noopener">[ RUN IT &rarr; ]</a></div><pre>document.getElementById(<span class="s">"pagebody"</span>).addEventListener(<span class="s">"keydown"</span>, <span class="k">function</span> (e) {
+    <span class="k">let</span> keyPressed = e.key;
+    alert(<span class="s">"Key "</span> + keyPressed + <span class="s">" was pressed"</span>);
+});</pre></div>
+<p>Slide 40 also sets a practice task: build a board game where tiles change colour on a mouse event.
+The worked version is in your study material as
+<a href="/academics/software-engineering/se371/extra-resources/chapter-5/js-front-end-all-examples/09-tiles-game/" target="_blank" rel="noopener">09-tiles-game</a>.</p>
+
+        </section>
+        <section id="forms" style="--sec: var(--c5)">
+            <div class="section-label">Slides 43&ndash;58</div>
+            <h2 class="section-title">Form validation and regular expressions</h2>
+
+<p>Slide 44 frames it: with forms in JavaScript you care about three kinds of event &mdash;
+<strong>movement between elements</strong>, <strong>data being changed</strong>, and <strong>the final
+submission</strong>. And slide 47 restates the rule from chapter 2: validation <em>must</em> happen on
+the server for security, in case JavaScript was circumvented; doing it on the client as well
+<strong>reduces server load and increases the perceived speed and responsiveness</strong> of the form.</p>
+
+<h3><code>preventDefault</code> &mdash; the single most useful line in the chapter</h3>
+<div class="code-block"><div class="code-head"><span class="code-file">submit-validation.js</span><span class="code-note">Slides 43, 48, 52</span><a class="code-run" href="/academics/software-engineering/se371/extra-resources/chapter-5/js-front-end-all-examples/10b-form-submit-event/" target="_blank" rel="noopener">[ RUN IT &rarr; ]</a></div><pre><span class="c">// Slide 43: block submission when the password is empty</span>
+document.querySelector(<span class="s">"#loginForm"</span>).addEventListener(<span class="s">"submit"</span>, <span class="k">function</span> (e) {
+    <span class="k">let</span> pass = document.querySelector(<span class="s">"#pw"</span>).value;
+    <span class="k">if</span> (pass == <span class="s">""</span>) {
+        alert(<span class="s">"enter a password"</span>);
+        e.preventDefault();          <span class="c">// ← prevents form submission</span>
+    }
+});
+
+<span class="c">// Slide 48: the same pattern, with an arrow function</span>
+<span class="k">const</span> form = document.querySelector(<span class="s">"#loginForm"</span>);
+form.addEventListener(<span class="s">"submit"</span>, (e) =&gt; {
+    <span class="k">const</span> fieldValue = document.querySelector(<span class="s">"#username"</span>).value;
+    <span class="k">if</span> (fieldValue == <span class="k">null</span> || fieldValue == <span class="s">""</span>) {
+        e.preventDefault();          <span class="c">// stop the submission FIRST</span>
+        console.log(<span class="s">"you must enter a username"</span>);   <span class="c">// then tell the user</span>
+    }
+});
+
+<span class="c">// To submit a form FROM JavaScript — often paired with preventDefault:</span>
+<span class="k">const</span> formExample = document.getElementById(<span class="s">"loginForm"</span>);
+formExample.submit();</pre></div>
+
+<h3>Reading a multiselect list</h3>
+<div class="code-block"><div class="code-head"><span class="code-file">multiselect.js</span><span class="code-note">Slide 49</span><a class="code-run" href="/academics/software-engineering/se371/extra-resources/chapter-5/js-front-end-all-examples/11-multiselect-validation/" target="_blank" rel="noopener">[ RUN IT &rarr; ]</a></div><pre><span class="k">const</span> multi = document.querySelector(<span class="s">"#listbox"</span>);
+
+<span class="c">// Technique 1: loop EVERY option and test .selected</span>
+<span class="k">for</span> (<span class="k">let</span> i = <span class="s">0</span>; i &lt; multi.options.length; i++) {
+    <span class="k">if</span> (multi.options[i].selected) {
+        console.log(multi.options[i].textContent);
+    }
+}
+
+<span class="c">// Technique 2: SIMPLER — selectedOptions only contains the chosen ones</span>
+<span class="k">for</span> (<span class="k">let</span> i = <span class="s">0</span>; i &lt; multi.selectedOptions.length; i++) {
+    console.log(multi.selectedOptions[i].textContent);
+}</pre></div>
+
+<h3>Number validation, and the HTML5 validity object</h3>
+<div class="code-block"><div class="code-head"><span class="code-file">number-validation.js</span><span class="code-note">Slides 50–51</span></div><pre><span class="c">// No simple built-in exists. Build one from parseFloat, isNaN and isFinite.</span>
+<span class="k">function</span> isNumeric(n) {
+    <span class="k">return</span> !isNaN(parseFloat(n)) &amp;&amp; isFinite(n);
+}
+<span class="c">// You need BOTH: 1/0 is Infinity, which isNaN() considers a number.</span>
+
+isNumeric(<span class="s">"42"</span>);       <span class="c">// true</span>
+isNumeric(<span class="s">"abc"</span>);      <span class="c">// false — parseFloat gives NaN</span>
+isNumeric(<span class="s">1</span>/<span class="s">0</span>);        <span class="c">// false — Infinity is not finite</span>
+
+<span class="c">// You can also read the browser's own verdict via the validity object.
+// Slide 50: some browsers may not support HTML5 validation, and you want
+// more control over how you react to bad input — so prefer JS validation.</span>
+<span class="k">function</span> validateTextA() {
+    <span class="k">let</span> value = <span class="s">""</span>;
+    <span class="k">if</span> (document.getElementById(<span class="s">"textA"</span>).validity.rangeOverflow) {
+        value = <span class="s">"The value must not be greater than 100"</span>;
+    }
+    document.getElementById(<span class="s">"output"</span>).innerHTML = value;
+}
+<span class="c">// other validity flags: valueMissing, typeMismatch, patternMismatch,
+// rangeUnderflow, tooLong, stepMismatch</span></pre></div>
+
+<h3>Comparison validation &mdash; and the mistake slides 53&ndash;54 walk you through</h3>
+<div class="code-block"><div class="code-head"><span class="code-file">matching-emails.js</span><span class="code-note">Slides 53–54</span></div><pre><span class="c">// SLIDE 53 — first attempt. onchange fires when you leave the field,
+// so the user is warned early. BUT the form can still be submitted:
+// nothing blocks the request.</span>
+<span class="k">function</span> check(e) {
+    <span class="k">var</span> email1 = document.getElementById(<span class="s">'email_addr'</span>);
+    <span class="k">var</span> email2 = document.getElementById(<span class="s">'email_repeat'</span>);
+    <span class="k">if</span> (email1.value !== email2.value) {
+        e.preventDefault();
+        alert(<span class="s">"The two emails have to match"</span>);
+    }
+}
+
+<span class="c">// SLIDE 54 — the fix is a SECOND check that blocks the HTTP request,
+// wired to the submit button as well as to onchange.</span>
+<span class="c">//   &lt;input type="email" id="email_repeat" name="email2" required onchange="check(e)"&gt;
+//   &lt;input type="submit" value="Send" onclick="check(e);"&gt;</span>
+
+<span class="c">// CLEANER — one handler on the form's submit event, no inline attributes:</span>
+document.querySelector(<span class="s">"form"</span>).addEventListener(<span class="s">"submit"</span>, <span class="k">function</span> (e) {
+    <span class="k">const</span> a = document.getElementById(<span class="s">'email_addr'</span>).value;
+    <span class="k">const</span> b = document.getElementById(<span class="s">'email_repeat'</span>).value;
+    <span class="k">if</span> (a !== b) {
+        e.preventDefault();
+        alert(<span class="s">"The two emails have to match"</span>);
+    }
+});</pre></div>
+
+<h3>Regular expressions</h3>
+<p>A regular expression is a set of special characters defining a pattern, built from two kinds of
+character: <strong>literals</strong> (a character you want to match in the target text) and
+<strong>metacharacters</strong> (a symbol that commands the parser). There are fourteen
+metacharacters:</p>
+<div class="code-block"><div class="code-head"><span class="code-file">regex.js</span><span class="code-note">Slides 55–58</span></div><pre><span class="c">// THE FOURTEEN METACHARACTERS:    . [ ] \ ( ) ^ $ | * ? { } +</span>
+
+<span class="c">// In JavaScript a regex is CASE SENSITIVE and lives between forward slashes.</span>
+<span class="k">let</span> pattern = /ala/;
+<span class="c">// matches inside:  'Salah Althobeiti'   and   'Al malaz district'</span>
+
+<span class="s">"Salah Althobeiti"</span>.match(/ala/);      <span class="c">// matched text, or null</span>
+/ala/.test(<span class="s">"Salah Althobeiti"</span>);       <span class="c">// true / false</span>
+
+<span class="c">// ── CHARACTER CLASSES (slide 57, left) ─────────────────────────
+//   [abc]      any one of a, b or c
+//   [^abc]     any character EXCEPT a, b or c
+//   [a-z]      any lower-case letter
+//   [A-Z]      any upper-case letter
+//   [a-zA-Z]   any letter
+//   [0-9]      any digit</span>
+
+<span class="c">// ── QUANTIFIERS AND ANCHORS (slide 57, right) ──────────────────
+//   a?         0 or 1 times
+//   a+         1 or more times
+//   a*         0 or more times
+//   a{n}       exactly n times
+//   a{n,}      n or more times
+//   a{x,y}     at least x, at most y times
+//   ^a         STARTS with a
+//   a$         ENDS with a
+//   (?=ae)     any string FOLLOWED BY "ae"      (lookahead)
+//   (?!ae)     any string NOT followed by "ae"  (negative lookahead)</span>
+
+<span class="c">// ── /pattern/modifier ──────────────────────────────────────────
+//   /[a-z][0-9]/ig     i = case-insensitive,  g = global (all matches)</span>
+
+<span class="c">// ── THE FIVE METHODS (slide 58) ────────────────────────────────</span>
+pattern.exec(text);                <span class="c">// 1. matched text, or null</span>
+pattern.test(text);                <span class="c">// 2. true or false</span>
+text.match(pattern);               <span class="c">// 3. matched text or null; ALL matches with /g</span>
+text.search(pattern);              <span class="c">// 4. the INDEX of the match</span>
+text.replace(pattern, <span class="s">"newvalue"</span>);  <span class="c">// 5. a new string with replacements</span>
+
+<span class="c">// The slide's own phone-number example, as an HTML5 pattern attribute:
+//   &lt;input pattern="[+]?[0-9]{10,14}"&gt;
+//   optional +, then 10 to 14 digits</span>
+
+<span class="c">// Practical validators built the same way:</span>
+<span class="k">const</span> saudiMobile = /^05[0-9]{8}$/;                <span class="c">// exactly 05 + 8 digits</span>
+<span class="k">const</span> simpleEmail = /^[^@\s]+@[^@\s]+\.[a-z]{2,}$/i;</pre></div><div class="hook"><strong>Which regex method?</strong> Just need yes or no &rarr; <code>test()</code>. Need the matched text &rarr; <code>match()</code>. Need where it is &rarr; <code>search()</code>. Need to change it &rarr; <code>replace()</code>. For validation you almost always want <code>test()</code>, and you almost always want <code>^</code> and <code>$</code> so the pattern must match the <em>whole</em> value.</div>
+        </section>
+        <section id="traps" style="--sec: var(--c6)">
+            <div class="section-label">Marks Lost Here</div>
+            <h2 class="section-title">The eight things people get wrong</h2>
+<div class="trap"><div class="trap-title">Running DOM code before the DOM exists</div><p>A <code>querySelector</code> returns <code>null</code> and the next line throws "cannot read property of null" &mdash; but the element is right there in the HTML. The script simply ran before the parser reached it.</p><p><span class="fix">Fix:</span> Wrap the code in <code>document.addEventListener('DOMContentLoaded', ...)</code>, or put the script at the end of <code>&lt;body&gt;</code>. Use <code>DOMContentLoaded</code> rather than <code>window.load</code> &mdash; the latter also waits for every image.</p></div><div class="trap"><div class="trap-title">Confusing <code>stopPropagation</code> with <code>preventDefault</code></div><p>They sound similar and do unrelated things. Calling <code>stopPropagation()</code> in a submit handler will not stop the form submitting, and <code>preventDefault()</code> will not stop the parent&rsquo;s click handler firing.</p><p><span class="fix">Fix:</span> <code>stopPropagation()</code> stops the event reaching other <em>elements</em>. <code>preventDefault()</code> stops the <em>browser</em> doing its default thing &mdash; submitting, following a link, checking a box.</p></div><div class="trap"><div class="trap-title">Calling the handler instead of passing it</div><p><code>btn.addEventListener("click", myHandler())</code> runs <code>myHandler</code> immediately, at registration time, and then registers whatever it <em>returned</em> &mdash; usually <code>undefined</code>.</p><p><span class="fix">Fix:</span> Pass the function, do not call it: <code>addEventListener("click", myHandler)</code>. No parentheses.</p></div><div class="trap"><div class="trap-title"><code>forEach</code> on the result of <code>getElementsBy*</code></div><p>Those methods return an <strong>HTMLCollection</strong>, not a NodeList, and slide 6 notes the difference explicitly: <code>forEach</code> works on a NodeList, not on an HTMLCollection.</p><p><span class="fix">Fix:</span> Use <code>querySelectorAll</code> (which returns a NodeList), or spread the collection into an array with <code>[...collection]</code>, or just use <code>for…of</code> &mdash; which works on both.</p></div><div class="trap"><div class="trap-title">Case-sensitive <code>nodeName</code> in delegation</div><p><code>if (e.target.nodeName === "img")</code> is silently never true. The slide warns about this in the code comment: <strong>nodeName always returns upper case.</strong></p><p><span class="fix">Fix:</span> Compare against <code>"IMG"</code>, or use <code>e.target.matches("img")</code> which takes a CSS selector and is case-insensitive.</p></div><div class="trap"><div class="trap-title">Building markup in a loop with <code>innerHTML</code></div><p>Setting <code>innerHTML</code> inside a loop re-parses the HTML and rebuilds a DOM on every iteration. Slide 14 explains exactly this cost. It also opens an injection hole if any of the values came from a user.</p><p><span class="fix">Fix:</span> Build the string once and assign at the end, or use <code>createElement</code> + <code>appendChild</code>. Use <code>textContent</code> for anything that is only text.</p></div><div class="trap"><div class="trap-title">Wrong dataset name</div><p><code>data-user-name</code> is <strong>not</strong> <code>dataset.user-name</code> or <code>dataset.username</code> &mdash; it is <code>dataset.userName</code>. The wrong name gives <code>undefined</code> silently.</p><p><span class="fix">Fix:</span> Hyphens become camelCase. <code>data-user-name</code> &rarr; <code>userName</code>; single-word <code>data-userid</code> stays <code>userid</code>.</p></div><div class="trap"><div class="trap-title">Believing client-side validation is enough</div><p>The third time this appears in the course, because it is the point that most often loses marks. Slide 47 spells out the reasoning: check on the server for security, <em>in case JavaScript was circumvented</em>.</p><p><span class="fix">Fix:</span> Client-side validation buys you reduced server load and perceived responsiveness. Server-side validation buys you correctness. You need both, and only one of them is optional.</p></div>
+        </section>
+        <section id="cheat" style="--sec: var(--c7)">
+            <div class="section-label">One Screen</div>
+            <h2 class="section-title">Chapter 5 on a single screen</h2>
+<div class="cheat"><div class="cheat-col"><h4>Selecting</h4><ul><li><code>getElementById("id")</code></li><li><code>getElementsByClassName()</code> &rarr; HTMLCollection</li><li><code>getElementsByTagName()</code> &rarr; HTMLCollection</li><li><code>querySelector(css)</code> &rarr; first match</li><li><code>querySelectorAll(css)</code> &rarr; NodeList</li><li>forEach: NodeList yes, HTMLCollection no</li></ul></div><div class="cheat-col"><h4>Reading &amp; writing</h4><ul><li><code>.textContent</code> &mdash; text, tags stripped</li><li><code>.innerHTML</code> &mdash; text + tags, reparses, unsafe</li><li><code>.value</code> &mdash; what the user typed</li><li><code>.classList.add/remove/toggle/contains</code></li><li><code>.style.backgroundColor</code> (camelCase)</li><li><code>.dataset.userName</code> &larr; <code>data-user-name</code></li></ul></div><div class="cheat-col"><h4>Building</h4><ul><li><code>createElement("p")</code></li><li><code>createTextNode("hi")</code></li><li><code>appendChild(node)</code></li><li><code>insertAdjacentElement/Text</code></li><li><code>removeChild</code> &middot; <code>replaceChild</code></li></ul></div><div class="cheat-col"><h4>Events</h4><ul><li><code>el.addEventListener("click", fn)</code></li><li>Pass <code>fn</code>, never <code>fn()</code></li><li><code>e.target</code> &mdash; what generated it</li><li><code>e.currentTarget</code> &mdash; where the handler is</li><li><code>e.key</code> &mdash; the key pressed</li></ul></div><div class="cheat-col"><h4>Timing</h4><ul><li><code>DOMContentLoaded</code> &mdash; HTML parsed. <strong>Use this.</strong></li><li><code>window.load</code> &mdash; images and CSS too</li><li>Or put the script at the end of <code>&lt;body&gt;</code></li></ul></div><div class="cheat-col"><h4>Propagation</h4><ul><li>① capturing: <code>html</code> &rarr; target</li><li>② bubbling: target &rarr; <code>html</code> (default)</li><li><code>e.stopPropagation()</code> &mdash; stop travelling</li><li><code>e.preventDefault()</code> &mdash; stop the browser</li><li>Delegation: one listener on the parent + <code>e.target</code></li></ul></div><div class="cheat-col"><h4>Event types</h4><ul><li>Mouse: <code>click dblclick mousedown mouseup</code></li><li><code>mouseover mouseout mousemove</code></li><li>Keyboard: <code>keydown</code> then <code>keyup</code></li><li>Form: <code>focus blur change select reset submit</code></li></ul></div><div class="cheat-col"><h4>Regex</h4><ul><li>Metacharacters: <code>. [ ] \ ( ) ^ $ | * ? { } +</code></li><li><code>[a-z] [A-Z] [0-9] [^abc]</code></li><li><code>? + *</code> &middot; <code>{n} {n,} {x,y}</code></li><li><code>^</code> starts &middot; <code>$</code> ends</li><li><code>/pattern/ig</code></li><li><code>test exec match search replace</code></li></ul></div></div>
+        </section>
+        <section id="drills" style="--sec: var(--c8)">
+            <div class="section-label">Type It Blind</div>
+            <h2 class="section-title">Build these with the browser open</h2>
+
+<p>Every one of these takes under ten minutes and each corresponds to a real slide. The DevTools
+console is the tool for this chapter &mdash; select things, poke at them, watch what changes.</p>
+<ol class="drill"><li>Select the same element five ways: by id, by class, by tag, and with both query methods.</li><li>Prove the collection trap to yourself: call <code>forEach</code> on the result of <code>querySelectorAll</code> and on <code>getElementsByTagName</code>, and read the error.</li><li>Log the same element&rsquo;s <code>innerHTML</code> and <code>textContent</code> side by side and explain the difference in one sentence.</li><li>Change one element&rsquo;s appearance three ways: <code>style</code>, <code>className</code> and <code>classList.toggle</code>. Say why the third is preferred.</li><li>Write the slide 15 <code>makeArticle</code> function with <code>innerHTML</code>, then as an arrow function, then as a constructor with a method.</li><li>Rewrite it again with <code>createElement</code> and <code>appendChild</code> only &mdash; the slide 20 version.</li><li>Put three <code>data-*</code> attributes on an element, including a hyphenated one, and read all three through <code>dataset</code>.</li><li>Break your own page: put a <code>querySelector</code> in <code>&lt;head&gt;</code> with no wrapper, read the error, then fix it with <code>DOMContentLoaded</code>.</li><li>Nest a button inside a div inside an aside, give each a click handler that logs its name, and click the button. Write down the order before you run it.</li><li>Add <code>true</code> as the third argument to one of those listeners and observe the order change.</li><li>Add <code>stopPropagation()</code> to the innermost handler and watch the other two go quiet.</li><li>Replace ten per-image listeners with one delegated listener on the parent, using <code>e.target.nodeName</code>.</li><li>Write a submit handler that blocks submission when a field is empty, then delete <code>preventDefault()</code> and watch the page navigate away.</li><li>Read every selected option out of a multiselect, both ways from slide 49.</li><li>Write <code>isNumeric</code> from memory and test it with <code>"42"</code>, <code>"abc"</code> and <code>1/0</code>.</li><li>Write regular expressions for: a Saudi mobile number, a string of exactly four digits, and a string that starts with a capital letter.</li><li>Test each of those three with all five regex methods and note what each returns.</li></ol>
+<p>The complete example set is at
+<a href="/academics/software-engineering/se371/extra-resources/chapter-5/js-front-end-all-examples/" target="_blank" rel="noopener">chapter-5/js-front-end-all-examples/</a>,
+including the <a href="/academics/software-engineering/se371/extra-resources/resource-viewers/event-propagation-0aa36bf7/" target="_blank" rel="noopener">event propagation demo</a>
+and the tiles game from the slide 40 practice task.</p>
+
+        </section>
+
+        <section id="quiz" style="--sec: var(--c7)">
+            <div class="section-label">Self-Check</div>
+            <h2 class="section-title">Can you answer these without scrolling up?</h2>
+            <div class="test-card">
+                <div class="test-head">
+                    <h3 id="quiz-header">Question 1</h3>
+                    <span class="tag" id="quiz-tag">&nbsp;</span>
+                </div>
+                <div class="test-body">
+                    <div class="test-question" id="quiz-q"></div>
+                    <div class="test-options" id="quiz-opts"></div>
+                    <div class="test-feedback" id="quiz-fb"></div>
+                    <button class="next-btn" id="quiz-next" type="button" onclick="nextQuestion()">Next question &rarr;</button>
+                </div>
+            </div>
+            <div id="quiz-score">
+                <p id="score-text"></p>
+                <span id="score-sub"></span><br><br>
+                <button class="toggle-btn" type="button" onclick="restartQuiz()">Restart quiz</button>
+            </div>
+        </section>
+        </main>
+    </div>
+
+    <footer>
+        <div style="font-size:0.7rem;text-transform:uppercase;letter-spacing:0.12em;color:var(--text3);margin-bottom:0.4rem">Prepared by</div>
+        <strong>Shoug Alomran</strong>
+        <div style="margin-top:0.5rem;font-size:0.78rem;color:var(--text3)">SE371 Web Engineering &mdash; Chapter 05: JavaScript in the Front End</div>
+    </footer>
+
+    <script>const questions = [{"tag": "Timing", "q": "A script in <head> does document.querySelector(\"#box\") and gets null, but #box is definitely in the HTML. Why?", "opts": ["The selector syntax is wrong for ids", "The script ran before the parser reached that element", "querySelector cannot select by id", "The element needs a class as well as an id"], "a": 1, "why": "You cannot access the DOM until it has loaded. Wrap the code in a DOMContentLoaded handler, or move the script to the end of body."}, {"tag": "Events", "q": "What is the difference between e.stopPropagation() and e.preventDefault()?", "opts": ["They are aliases for the same thing", "stopPropagation stops the event reaching other elements; preventDefault stops the browser default action", "preventDefault works on forms only; stopPropagation works everywhere", "stopPropagation cancels the event entirely, preventDefault only delays it"], "a": 1, "why": "They are unrelated. stopPropagation halts travel through the element tree; preventDefault cancels the browser behaviour such as submitting a form or following a link."}, {"tag": "Propagation", "q": "In which order does the capturing phase visit elements?", "opts": ["From the target outward to <html>", "From <html> inward to the target", "Only the target, then it stops", "In document source order"], "a": 1, "why": "Capturing runs outermost inward — the browser checks <html> first and works down to the element that triggered the event. Bubbling is the opposite and is the default phase."}, {"tag": "DOM", "q": "Why do the slides prefer classList over setting .style properties directly?", "opts": ["classList is faster to execute", "style properties do not work on all browsers", "It keeps the appearance in the stylesheet and changes only the element state", "style can only set one property at a time"], "a": 2, "why": "Slide 13 says it is preferable to change appearance through className or classList. Your JavaScript changes the element state and CSS decides what that state looks like — the same separation of concerns as chapter 3."}, {"tag": "Collections", "q": "Why does forEach fail on the result of getElementsByTagName?", "opts": ["It returns a plain array with no methods", "It returns an HTMLCollection, and forEach exists on NodeList only", "The collection is empty until the page loads", "forEach requires an arrow function"], "a": 1, "why": "Slide 6 notes it directly. querySelectorAll returns a NodeList which has forEach; getElementsBy* returns an HTMLCollection which does not. Spread it into an array or use for…of."}, {"tag": "Delegation", "q": "In a delegated handler, why does if (e.target.nodeName === \"img\") never match?", "opts": ["e.target is always the parent element", "nodeName always returns upper case", "nodeName returns the id, not the tag", "Images do not bubble click events"], "a": 1, "why": "The slide 38 code comment warns about it explicitly. Compare against \"IMG\", or use e.target.matches(\"img\") which takes a CSS selector."}, {"tag": "Forms", "q": "Which event fires when a select or input has its value changed by the user?", "opts": ["<code>focus</code>", "<code>blur</code>", "<code>change</code>", "<code>select</code>"], "a": 2, "why": "change fires when an input, textarea or select had its value changed. focus and blur are about gaining and losing focus, and select fires when the user selects some text."}, {"tag": "Regex", "q": "What does the pattern /^05[0-9]{8}$/ match?", "opts": ["Any string containing 05 followed by digits", "A string that is exactly 05 followed by exactly eight digits", "A string starting with 0 or 5", "Between 0 and 5 repeated eight times"], "a": 1, "why": "^ anchors the start and $ anchors the end, so the whole string must match. {8} means exactly eight, and [0-9] is any digit. Without ^ and $ it would match anywhere inside a longer string."}];
+let currentQ = 0, score = 0, answered = false;
+
+function renderQuestion() {
+    const q = questions[currentQ];
+    answered = false;
+    document.getElementById('quiz-header').textContent = `Question ${currentQ + 1} of ${questions.length}`;
+    document.getElementById('quiz-tag').textContent = q.tag;
+    document.getElementById('quiz-q').textContent = q.q;
+    const opts = document.getElementById('quiz-opts');
+    opts.innerHTML = '';
+    q.opts.forEach((text, i) => {
+        const b = document.createElement('button');
+        b.className = 'opt';
+        b.type = 'button';
+        b.innerHTML = text;
+        b.onclick = () => answer(i, b);
+        opts.appendChild(b);
+    });
+    const fb = document.getElementById('quiz-fb');
+    fb.className = 'test-feedback';
+    fb.textContent = '';
+    document.getElementById('quiz-next').className = 'next-btn';
+}
+
+function answer(i, btn) {
+    if (answered) return;
+    answered = true;
+    const q = questions[currentQ];
+    document.querySelectorAll('#quiz-opts .opt').forEach((b, j) => {
+        b.disabled = true;
+        if (j === q.a) b.classList.add('correct');
+    });
+    if (i !== q.a) btn.classList.add('wrong'); else score++;
+    const fb = document.getElementById('quiz-fb');
+    fb.className = 'test-feedback show';
+    fb.textContent = (i === q.a ? 'Correct — ' : 'Not quite — ') + q.why;
+    document.getElementById('quiz-next').className = 'next-btn show';
+}
+
+function nextQuestion() {
+    currentQ++;
+    if (currentQ < questions.length) { renderQuestion(); return; }
+    document.querySelector('.test-card').style.display = 'none';
+    document.getElementById('quiz-score').classList.add('show');
+    document.getElementById('score-text').textContent = `${score} / ${questions.length}`;
+    document.getElementById('score-sub').textContent =
+        score === questions.length ? 'Clean sweep. Move on to the drills.'
+        : score >= questions.length * 0.6 ? 'Solid. Re-read the traps you missed.'
+        : 'Go back through the slide map before the next chapter.';
+}
+
+function restartQuiz() {
+    currentQ = 0; score = 0;
+    document.getElementById('quiz-score').classList.remove('show');
+    document.querySelector('.test-card').style.display = '';
+    renderQuestion();
+}
+
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    // Persist both keys: html-theme-sync.js resolves from localStorage only and
+    // runs after this file, so without agreeing with it the page would flip.
+    try {
+        localStorage.setItem('shoug-theme', theme);
+        localStorage.setItem('theme', theme);
+    } catch (e) { }
+    const btn = document.getElementById('theme-btn');
+    if (btn) btn.textContent = theme === 'dark' ? 'Light' : 'Dark';
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Default to dark — matching the site chrome this page is embedded in —
+    // unless the reader has explicitly chosen light.
+    let saved = null;
+    try { saved = localStorage.getItem('shoug-theme') || localStorage.getItem('theme'); } catch (e) { }
+    applyTheme(saved === 'light' ? 'light' : 'dark');
+
+    const btn = document.getElementById('theme-btn');
+    if (btn) {
+        btn.addEventListener('click', () => {
+            applyTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+        });
+    }
+    renderQuestion();
+
+    // reading progress
+    const bar = document.getElementById('progress');
+    const onScroll = () => {
+        const h = document.documentElement.scrollHeight - window.innerHeight;
+        bar.style.width = (h > 0 ? (window.scrollY / h) * 100 : 0) + '%';
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+
+    // highlight the section currently in view, in both the rail and the nav
+    const links = [...document.querySelectorAll('.chapter-toc a, .nav-links a')];
+    const byHash = id => links.filter(a => a.getAttribute('href') === '#' + id);
+    const io = new IntersectionObserver(entries => {
+        entries.forEach(e => {
+            if (!e.isIntersecting) return;
+            links.forEach(a => a.classList.remove('active'));
+            byHash(e.target.id).forEach(a => a.classList.add('active'));
+        });
+    }, { rootMargin: '-25% 0px -65% 0px' });
+    document.querySelectorAll('section[id]').forEach(s => io.observe(s));
+});
+</script>
+    <script src="/javascripts/standalone-theme.js"></script>
+    <script src="/javascripts/html-theme-sync.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,1294 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark" data-sg-styled="true">
+
+<head>
+    <link rel="icon" type="image/png" sizes="256x256" href="/assets/shoug-favicon-v4.png">
+    <link rel="shortcut icon" type="image/png" href="/assets/shoug-favicon-v4.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/shoug-apple-touch-icon-v4.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Server-Side: Node.js and Express &mdash; SE371 Slide Breakdown</title>
+    <meta name="description" content="Slide-by-slide breakdown of SE371 Chapter 6 — Node modules, the fs and http modules, blocking vs non-blocking architecture, callbacks, promises, fetch, CORS, npm, Express routing, middleware and EJS templates.">
+    <link rel="canonical" href="https://shoug-tech.com/academics/software-engineering/se371/slide-breakdowns/06-server-side-node/server-side-node.html">
+    <meta property="og:title" content="Server-Side: Node.js and Express &mdash; SE371 Slide Breakdown">
+    <meta property="og:description" content="Slide-by-slide breakdown of SE371 Chapter 6 — Node modules, the fs and http modules, blocking vs non-blocking architecture, callbacks, promises, fetch, CORS, npm, Express routing, middleware and EJS templates.">
+    <meta property="og:url" content="https://shoug-tech.com/academics/software-engineering/se371/slide-breakdowns/06-server-side-node/server-side-node.html">
+    <meta property="og:type" content="article">
+    <meta property="og:image" content="https://shoug-tech.com/assets/og-banner.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Server-Side: Node.js and Express &mdash; SE371 Slide Breakdown">
+    <meta name="twitter:description" content="Slide-by-slide breakdown of SE371 Chapter 6 — Node modules, the fs and http modules, blocking vs non-blocking architecture, callbacks, promises, fetch, CORS, npm, Express routing, middleware and EJS templates.">
+    <meta name="twitter:image" content="https://shoug-tech.com/assets/og-banner.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+/* ── palette ───────────────────────────────────────────────────────────────
+   Eight hue tokens drive the per-section colour: each <section> carries
+   --sec, and its label, rule, cards and table headers all derive from it. */
+
+:root[data-theme="dark"] {
+    --bg: #0a0611;
+    --bg2: #150d21;
+    --bg3: #1d1330;
+    --code-bg: #0d0716;
+    --border: rgba(255, 255, 255, 0.10);
+    --border2: rgba(255, 255, 255, 0.18);
+    --text: #f4f0fa;
+    --text2: #aaa2bb;
+    --text3: #756e88;
+    --accent: #c77dff;
+    --accent2: #e6b8ff;
+
+    --c1: #c77dff;   /* violet   */
+    --c2: #4cc9f0;   /* cyan     */
+    --c3: #4ade80;   /* green    */
+    --c4: #fbbf24;   /* amber    */
+    --c5: #fb7185;   /* rose     */
+    --c6: #818cf8;   /* indigo   */
+    --c7: #f472b6;   /* pink     */
+    --c8: #2dd4bf;   /* teal     */
+
+    --green: var(--c3);
+    --red: var(--c5);
+    --amber: var(--c4);
+    --blue: var(--c2);
+
+    --shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+    --shadow-lift: 0 6px 24px -12px rgba(0, 0, 0, 0.8);
+    --hero-wash: radial-gradient(120% 140% at 8% 0%, rgba(199,125,255,0.20), transparent 60%),
+                 radial-gradient(90% 120% at 92% 10%, rgba(76,201,240,0.16), transparent 62%);
+}
+
+:root[data-theme="light"] {
+    --bg: #fbf9fe;
+    --bg2: #f4eefb;
+    --bg3: #ffffff;
+    --code-bg: #f6f1fc;
+    --border: rgba(24, 12, 40, 0.10);
+    --border2: rgba(24, 12, 40, 0.18);
+    --text: #180d26;
+    --text2: #574d68;
+    --text3: #8a8299;
+    --accent: #7b2cbf;
+    --accent2: #9d4edd;
+
+    --c1: #7b2cbf;
+    --c2: #0369a1;
+    --c3: #047857;
+    --c4: #a16207;
+    --c5: #be123c;
+    --c6: #4338ca;
+    --c7: #a21caf;
+    --c8: #0f766e;
+
+    --green: var(--c3);
+    --red: var(--c5);
+    --amber: var(--c4);
+    --blue: var(--c2);
+
+    --shadow: 0 1px 4px rgba(24, 12, 40, 0.07);
+    --shadow-lift: 0 8px 26px -16px rgba(24, 12, 40, 0.4);
+    --hero-wash: radial-gradient(120% 140% at 8% 0%, rgba(123,44,191,0.12), transparent 60%),
+                 radial-gradient(90% 120% at 92% 10%, rgba(3,105,161,0.10), transparent 62%);
+}
+
+/* ── fluid scale ───────────────────────────────────────────────────────────
+   One root font-size ramp scales every rem on the page with the viewport,
+   so the layout uses a phone and a 32" monitor equally well. */
+
+html {
+    font-size: clamp(15px, calc(13.4px + 0.34vw), 20px);
+    scroll-behavior: smooth;
+    overflow-x: clip;   /* clip, not hidden: hidden would break the sticky rail */
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    * { animation: none !important; transition: none !important; }
+}
+
+:root {
+    --navh: 3.4rem;
+    --gutter: clamp(1rem, 3.2vw, 3rem);
+    --maxw: 74rem;
+    --radius: 0.85rem;
+    --sec: var(--c1);
+    --sec-soft: color-mix(in srgb, var(--sec) 14%, transparent);
+    --sec-line: color-mix(in srgb, var(--sec) 40%, transparent);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* html-theme-sync.js injects `html, body { overflow-x: hidden }` at runtime,
+   which turns the root into a scroll container and silently disables the
+   sticky TOC rail. overflow-x: clip contains the same overflow without
+   creating a scroll container; these selectors outrank the injected rule. */
+html:root { overflow-x: clip; }
+:root > body { overflow-x: clip; }
+
+body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    width: 100%;
+    overflow-x: clip;
+    -webkit-font-smoothing: antialiased;
+    transition: background 0.3s, color 0.3s;
+}
+
+/* ── reading progress ──────────────────────────────────────────────────── */
+#progress {
+    position: fixed; top: 0; left: 0; height: 3px; width: 0;
+    z-index: 200; transform-origin: left;
+    background: linear-gradient(90deg, var(--c1), var(--c7), var(--c2), var(--c3));
+}
+
+/* ── top bar ───────────────────────────────────────────────────────────
+   Scoped to .topbar: the TOC rail is a <nav> too, and bare `nav` rules
+   used to leak their sticky positioning and gradient rule into it. */
+nav.topbar {
+    position: sticky; top: 0; z-index: 100;
+    background: color-mix(in srgb, var(--bg) 86%, transparent);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--border);
+    padding-inline: var(--gutter);
+    display: flex; align-items: center; gap: 1rem;
+    min-height: var(--navh);
+}
+nav.topbar::after {
+    content: ''; position: absolute; inset: auto 0 -1px 0; height: 2px;
+    background: linear-gradient(90deg, var(--c1), var(--c7), var(--c2), var(--c3), var(--c4));
+    opacity: 0.85;
+}
+.nav-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.82rem; font-weight: 700; white-space: nowrap; flex-shrink: 0;
+    background: linear-gradient(90deg, var(--c1), var(--c7));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.nav-links {
+    display: flex; gap: clamp(0.7rem, 1.4vw, 1.5rem); list-style: none;
+    overflow-x: auto; min-width: 0; scrollbar-width: none;
+}
+.nav-links::-webkit-scrollbar { display: none; }
+.nav-links a {
+    color: var(--text2); text-decoration: none; font-size: 0.8rem;
+    white-space: nowrap; padding: 0.15rem 0; border-bottom: 2px solid transparent;
+    transition: color 0.2s, border-color 0.2s;
+}
+.nav-links a:hover, .nav-links a.active { color: var(--accent); border-bottom-color: var(--accent); }
+.nav-actions {
+    margin-left: auto; display: flex; align-items: center; gap: 0.55rem;
+    flex-shrink: 0; flex-wrap: wrap; justify-content: flex-end;
+}
+.toggle-btn {
+    background: var(--bg2); border: 1px solid var(--border2); color: var(--text2);
+    border-radius: 0.6rem; padding: 0.3rem 0.8rem; cursor: pointer;
+    font-size: 0.76rem; font-family: inherit; transition: all 0.2s;
+}
+.toggle-btn:hover { color: var(--accent); border-color: var(--accent); background: var(--sec-soft); }
+
+/* ── hero ──────────────────────────────────────────────────────────────── */
+.hero-band {
+    background: var(--hero-wash);
+    border-bottom: 1px solid var(--border);
+}
+.hero {
+    width: min(100% - 2 * var(--gutter), var(--maxw));
+    margin-inline: auto;
+    padding-block: clamp(2rem, 5vw, 4rem);
+}
+.hero-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.18em;
+    color: var(--accent); margin-bottom: 0.9rem;
+    display: inline-flex; align-items: center; gap: 0.6rem;
+}
+.hero-eyebrow::before {
+    content: ''; width: 2rem; height: 3px; border-radius: 2px;
+    background: linear-gradient(90deg, var(--c1), var(--c2));
+}
+.hero h1 {
+    font-size: clamp(2rem, 1.2rem + 3.4vw, 4.4rem);
+    line-height: 1.05; font-weight: 800; letter-spacing: -0.025em;
+    background: linear-gradient(115deg, var(--text) 20%, var(--c1) 60%, var(--c7) 90%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    padding-bottom: 0.1em;
+}
+.hero-sub {
+    color: var(--text2); font-size: clamp(0.95rem, 0.88rem + 0.3vw, 1.15rem);
+    margin-top: 1rem; max-width: 62ch;
+}
+.hero-stats { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1.5rem; }
+.stat {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.7rem;
+    border-radius: 999px; padding: 0.3rem 0.85rem;
+    text-transform: uppercase; letter-spacing: 0.08em; white-space: nowrap;
+    color: var(--sec);
+    background: color-mix(in srgb, var(--sec) 13%, transparent);
+    border: 1px solid color-mix(in srgb, var(--sec) 38%, transparent);
+}
+.stat:nth-child(1) { --sec: var(--c1); }
+.stat:nth-child(2) { --sec: var(--c2); }
+.stat:nth-child(3) { --sec: var(--c3); }
+.stat:nth-child(4) { --sec: var(--c4); }
+.stat:nth-child(5) { --sec: var(--c7); }
+
+/* ── layout: prose column, plus a sticky TOC rail on wide screens ─────── */
+.layout {
+    width: min(100% - 2 * var(--gutter), var(--maxw));
+    margin-inline: auto;
+    padding-block: clamp(1.5rem, 3vw, 3rem) clamp(3rem, 6vw, 6rem);
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: clamp(1.5rem, 3vw, 3rem);
+    align-items: start;
+}
+
+.chapter-toc {
+    display: flex; flex-wrap: wrap; gap: 0.4rem;
+    padding: 0.9rem; background: var(--bg2);
+    border: 1px solid var(--border); border-radius: var(--radius);
+}
+.chapter-toc a {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.72rem;
+    color: var(--text2); text-decoration: none;
+    padding: 0.28rem 0.65rem; border-radius: 0.5rem;
+    border: 1px solid transparent; transition: all 0.18s;
+}
+.chapter-toc a:hover { color: var(--accent); border-color: var(--border2); background: var(--bg3); }
+.chapter-toc a.active {
+    color: var(--accent); background: color-mix(in srgb, var(--accent) 14%, transparent);
+    border-color: color-mix(in srgb, var(--accent) 40%, transparent);
+}
+
+@media (min-width: 68rem) {
+    :root { --maxw: 88rem; }
+    .layout { grid-template-columns: 14rem minmax(0, 1fr); }
+    .toc-rail {
+        position: sticky; top: calc(var(--navh) + 1rem); align-self: start;
+        max-height: calc(100vh - var(--navh) - 2rem); overflow-y: auto;
+    }
+    .chapter-toc {
+        flex-direction: column; flex-wrap: nowrap; align-items: stretch;
+        gap: 0.1rem; padding: 0.75rem;
+    }
+    .chapter-toc a { text-align: left; border-left: 2px solid transparent; border-radius: 0 0.4rem 0.4rem 0; }
+    .chapter-toc a.active { border-left-color: var(--accent); }
+}
+@media (min-width: 100rem) { :root { --maxw: 100rem; } .layout { grid-template-columns: 16rem minmax(0, 1fr); } }
+
+/* ── sections ──────────────────────────────────────────────────────────── */
+section {
+    margin-bottom: clamp(2.5rem, 4.5vw, 4.5rem);
+    scroll-margin-top: calc(var(--navh) + 1rem);
+}
+.section-label {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace; font-size: 0.68rem;
+    text-transform: uppercase; letter-spacing: 0.16em;
+    color: var(--sec); margin-bottom: 0.7rem;
+    background: var(--sec-soft);
+    border: 1px solid color-mix(in srgb, var(--sec) 32%, transparent);
+    border-radius: 999px; padding: 0.22rem 0.75rem;
+}
+.section-title {
+    font-size: clamp(1.35rem, 1.05rem + 1.1vw, 2.2rem);
+    font-weight: 750; line-height: 1.2; letter-spacing: -0.015em;
+    margin-bottom: 1.4rem; position: relative; padding-left: 0.85rem;
+}
+.section-title::before {
+    content: ''; position: absolute; left: 0; top: 0.15em; bottom: 0.15em;
+    width: 4px; border-radius: 4px;
+    background: linear-gradient(180deg, var(--sec), color-mix(in srgb, var(--sec) 25%, transparent));
+}
+
+h3 {
+    font-size: clamp(1rem, 0.95rem + 0.25vw, 1.2rem);
+    font-weight: 680; margin: 1.8rem 0 0.7rem; color: var(--text);
+}
+h4 { font-size: 0.92rem; font-weight: 650; margin: 1.1rem 0 0.5rem; }
+p { margin-bottom: 0.9rem; color: var(--text2); }
+p strong, li strong { color: var(--text); font-weight: 600; }
+ul, ol { margin: 0 0 1rem 1.3rem; color: var(--text2); }
+li { margin-bottom: 0.4rem; }
+li::marker { color: var(--sec); }
+a { color: var(--accent); }
+
+/* ── cards ─────────────────────────────────────────────────────────────── */
+.card {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-top: 3px solid var(--sec);
+    border-radius: var(--radius); padding: 1.1rem 1.25rem;
+    margin-bottom: 1rem; box-shadow: var(--shadow);
+}
+.card h4 { margin-top: 0; color: var(--sec); }
+.card p:last-child, .card ul:last-child { margin-bottom: 0; }
+.grid-2 {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
+    gap: 1rem;
+}
+.grid-2 > .card:nth-child(2n) { --sec: var(--c2); }
+.grid-2 > .card:nth-child(3n) { --sec: var(--c3); }
+.grid-2 > .card:nth-child(4n) { --sec: var(--c4); }
+
+/* ── tables ────────────────────────────────────────────────────────────── */
+.table-wrap {
+    overflow-x: auto; border: 1px solid var(--border);
+    border-radius: var(--radius); margin-bottom: 1.4rem; background: var(--bg2);
+}
+table { border-collapse: collapse; width: 100%; min-width: 32rem; font-size: 0.86rem; }
+th {
+    text-align: left; padding: 0.75rem 0.9rem;
+    background: color-mix(in srgb, var(--sec) 12%, var(--bg3));
+    font-family: 'JetBrains Mono', monospace; font-size: 0.68rem;
+    text-transform: uppercase; letter-spacing: 0.1em; color: var(--sec);
+    border-bottom: 2px solid var(--sec-line); white-space: nowrap;
+}
+td { padding: 0.7rem 0.9rem; border-bottom: 1px solid var(--border); color: var(--text2); vertical-align: top; }
+tbody tr:last-child td { border-bottom: none; }
+tbody tr:hover td { background: color-mix(in srgb, var(--sec) 5%, transparent); }
+td strong { color: var(--text); }
+td code, li code, p code, h4 code, th code, .cheat-col code {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.85em;
+    background: var(--code-bg); border: 1px solid var(--border);
+    border-radius: 0.3rem; padding: 0.05rem 0.35rem; color: var(--accent2);
+}
+th code { color: inherit; background: transparent; border: none; padding: 0; }
+.w-memorize, .w-write, .w-skim {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.62rem;
+    padding: 0.18rem 0.55rem; border-radius: 999px; white-space: nowrap;
+    text-transform: uppercase; letter-spacing: 0.07em; font-weight: 700;
+}
+.w-memorize { background: color-mix(in srgb, var(--c4) 16%, transparent); color: var(--c4); border: 1px solid color-mix(in srgb, var(--c4) 42%, transparent); }
+.w-write    { background: color-mix(in srgb, var(--c3) 16%, transparent); color: var(--c3); border: 1px solid color-mix(in srgb, var(--c3) 42%, transparent); }
+.w-skim     { background: color-mix(in srgb, var(--text3) 14%, transparent); color: var(--text3); border: 1px solid var(--border2); }
+
+/* ── code blocks ───────────────────────────────────────────────────────── */
+.code-block {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: var(--radius); margin-bottom: 1.2rem;
+    overflow: hidden; box-shadow: var(--shadow);
+}
+.code-head {
+    display: flex; align-items: center; gap: 0.7rem; flex-wrap: wrap;
+    padding: 0.6rem 1rem;
+    background: linear-gradient(90deg, color-mix(in srgb, var(--sec) 13%, var(--bg3)), var(--bg3));
+    border-bottom: 1px solid var(--border);
+}
+.code-file {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.74rem;
+    color: var(--text); font-weight: 600;
+    display: inline-flex; align-items: center; gap: 0.5rem;
+}
+.code-file::before {
+    content: ''; width: 0.55rem; height: 0.55rem; border-radius: 50%;
+    background: var(--sec); flex-shrink: 0;
+}
+.code-note { font-size: 0.7rem; color: var(--text3); }
+.code-run {
+    margin-left: auto; font-family: 'JetBrains Mono', monospace; font-size: 0.66rem;
+    text-decoration: none; color: var(--sec); white-space: nowrap;
+    border: 1px solid color-mix(in srgb, var(--sec) 45%, transparent);
+    border-radius: 999px; padding: 0.22rem 0.7rem; transition: all 0.18s;
+}
+.code-run:hover { background: var(--sec); color: var(--bg); }
+.code-block pre {
+    margin: 0; padding: clamp(0.8rem, 1.6vw, 1.2rem);
+    overflow-x: auto; background: var(--code-bg);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: clamp(0.7rem, 0.66rem + 0.16vw, 0.84rem);
+    line-height: 1.65; color: var(--text); tab-size: 4;
+}
+.code-block pre .c { color: var(--text3); font-style: italic; }
+.code-block pre .k { color: var(--c1); }
+.code-block pre .s { color: var(--c3); }
+.code-block pre .t { color: var(--c2); }
+
+/* ── traps & hooks ─────────────────────────────────────────────────────── */
+.trap {
+    background: linear-gradient(90deg, color-mix(in srgb, var(--c5) 9%, var(--bg2)), var(--bg2) 40%);
+    border: 1px solid var(--border); border-left: 4px solid var(--c5);
+    border-radius: var(--radius); padding: 1rem 1.2rem; margin-bottom: 0.9rem;
+}
+.trap-title { font-weight: 660; color: var(--text); margin-bottom: 0.4rem; font-size: 0.98rem; }
+.trap p { margin-bottom: 0.5rem; font-size: 0.9rem; }
+.trap p:last-child { margin-bottom: 0; }
+.trap .fix { color: var(--c3); font-weight: 700; }
+
+.hook {
+    background: linear-gradient(115deg,
+        color-mix(in srgb, var(--c1) 12%, transparent),
+        color-mix(in srgb, var(--c2) 10%, transparent));
+    border: 1px solid color-mix(in srgb, var(--c1) 28%, transparent);
+    border-left: 4px solid var(--c1);
+    border-radius: var(--radius); padding: 0.95rem 1.2rem; margin: 1.2rem 0;
+    font-size: 0.9rem; color: var(--text2);
+}
+.hook strong { color: var(--accent2); }
+
+/* ── cheat sheet ───────────────────────────────────────────────────────── */
+.cheat {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+    gap: 1rem;
+}
+.cheat-col {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-top: 3px solid var(--sec);
+    border-radius: var(--radius);
+    padding: 1rem 1.1rem;
+    box-shadow: var(--shadow);
+}
+.cheat-col:nth-child(8n+1) { --sec: var(--c1); }
+.cheat-col:nth-child(8n+2) { --sec: var(--c2); }
+.cheat-col:nth-child(8n+3) { --sec: var(--c3); }
+.cheat-col:nth-child(8n+4) { --sec: var(--c4); }
+.cheat-col:nth-child(8n+5) { --sec: var(--c5); }
+.cheat-col:nth-child(8n+6) { --sec: var(--c6); }
+.cheat-col:nth-child(8n+7) { --sec: var(--c7); }
+.cheat-col:nth-child(8n+8) { --sec: var(--c8); }
+.cheat-col h4 {
+    margin-top: 0; font-family: 'JetBrains Mono', monospace; font-size: 0.68rem;
+    text-transform: uppercase; letter-spacing: 0.12em; color: var(--sec);
+    border-bottom: 1px solid var(--border); padding-bottom: 0.4rem;
+}
+.cheat-col ul { list-style: none; margin: 0.65rem 0 0; font-size: 0.8rem; }
+.cheat-col li { margin-bottom: 0.42rem; line-height: 1.5; }
+
+/* ── drills ────────────────────────────────────────────────────────────── */
+.drill { counter-reset: drill; list-style: none; margin-left: 0; }
+.drill li {
+    counter-increment: drill; position: relative;
+    padding-left: 2.6rem; margin-bottom: 0.75rem; font-size: 0.92rem;
+}
+.drill li::before {
+    content: counter(drill, decimal-leading-zero);
+    position: absolute; left: 0; top: 0.15rem;
+    font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; font-weight: 700;
+    color: var(--sec);
+    background: color-mix(in srgb, var(--sec) 13%, transparent);
+    border: 1px solid color-mix(in srgb, var(--sec) 35%, transparent);
+    border-radius: 0.45rem; padding: 0.1rem 0.4rem;
+}
+.drill li:nth-child(6n+1) { --sec: var(--c1); }
+.drill li:nth-child(6n+2) { --sec: var(--c2); }
+.drill li:nth-child(6n+3) { --sec: var(--c3); }
+.drill li:nth-child(6n+4) { --sec: var(--c4); }
+.drill li:nth-child(6n+5) { --sec: var(--c7); }
+.drill li:nth-child(6n+6) { --sec: var(--c8); }
+
+/* ── quiz ──────────────────────────────────────────────────────────────── */
+.test-card {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow-lift);
+}
+.test-head {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 1rem; padding: 0.9rem 1.2rem;
+    background: linear-gradient(90deg,
+        color-mix(in srgb, var(--c1) 18%, var(--bg3)),
+        color-mix(in srgb, var(--c2) 12%, var(--bg3)));
+    border-bottom: 1px solid var(--border);
+}
+.test-head h3 { margin: 0; font-size: 0.92rem; }
+.tag {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.65rem;
+    background: color-mix(in srgb, var(--accent) 18%, transparent);
+    color: var(--accent); border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+    border-radius: 999px; padding: 0.2rem 0.65rem;
+    text-transform: uppercase; letter-spacing: 0.08em; white-space: nowrap;
+}
+.test-body { padding: clamp(1rem, 2vw, 1.5rem); }
+.test-question { font-size: 1rem; color: var(--text); margin-bottom: 1rem; white-space: pre-wrap; }
+.test-options { display: grid; gap: 0.5rem; }
+.opt {
+    text-align: left; padding: 0.7rem 0.95rem; border-radius: 0.6rem;
+    border: 1px solid var(--border2); background: var(--bg3); color: var(--text2);
+    cursor: pointer; font-family: inherit; font-size: 0.88rem; transition: all 0.15s;
+}
+.opt:hover:not(:disabled) { border-color: var(--accent); color: var(--text); transform: translateX(2px); }
+.opt.correct { border-color: var(--c3); color: var(--c3); background: color-mix(in srgb, var(--c3) 12%, transparent); }
+.opt.wrong   { border-color: var(--c5); color: var(--c5); background: color-mix(in srgb, var(--c5) 12%, transparent); }
+.opt:disabled { cursor: default; }
+.test-feedback { margin-top: 0.9rem; font-size: 0.88rem; color: var(--text2); display: none; }
+.test-feedback.show { display: block; }
+.next-btn {
+    display: none; margin-top: 1rem; padding: 0.6rem 1.3rem; border-radius: 0.6rem;
+    border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
+    background: color-mix(in srgb, var(--accent) 15%, transparent);
+    color: var(--accent); cursor: pointer; font-family: inherit; font-size: 0.85rem;
+}
+.next-btn:hover { background: var(--accent); color: var(--bg); }
+.next-btn.show { display: inline-block; }
+#quiz-score {
+    display: none; text-align: center; padding: clamp(1.2rem, 3vw, 2rem); margin-top: 1rem;
+    background: var(--hero-wash), var(--bg2);
+    border: 1px solid var(--border); border-radius: var(--radius);
+}
+#quiz-score.show { display: block; }
+#quiz-score p {
+    font-size: clamp(1.6rem, 1.2rem + 1.5vw, 2.6rem); font-weight: 800; margin-bottom: 0.2rem;
+    background: linear-gradient(90deg, var(--c1), var(--c7));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+
+/* ── footer ────────────────────────────────────────────────────────────── */
+footer {
+    border-top: 1px solid var(--border);
+    background: var(--hero-wash);
+    padding: clamp(1.75rem, 4vw, 3rem) var(--gutter);
+    text-align: center; color: var(--text2); font-size: 0.85rem;
+}
+
+@media (max-width: 40rem) {
+    .nav-links { display: none; }
+    table { min-width: 26rem; }
+}
+</style>
+</head>
+
+<body>
+    <div id="progress"></div>
+
+    <nav class="topbar" aria-label="Chapter sections">
+        <div class="nav-title">SE371 // CH06</div>
+        <ul class="nav-links"><li><a href="#orient">Start Here</a></li><li><a href="#map">Slide Map</a></li><li><a href="#node">Node Basics</a></li><li><a href="#async">Async</a></li><li><a href="#express">npm &amp; Express</a></li><li><a href="#ejs">EJS</a></li><li><a href="#traps">Traps</a></li><li><a href="#cheat">Cheat Sheet</a></li><li><a href="#drills">Drills</a></li><li><a href="#quiz">Quiz</a></li></ul>
+        <div class="nav-actions" data-page-search-host>
+            <button class="toggle-btn" id="theme-btn" type="button">Light</button>
+        </div>
+    </nav>
+
+    <div class="hero-band">
+        <header class="hero">
+            <div class="hero-eyebrow">Chapter 06 &middot; Slide Breakdown</div>
+            <h1>Server-Side: Node.js and Express</h1>
+            <p class="hero-sub">JavaScript moves to the server. This is the chapter where the course stops being about pages and starts being about applications — and where asynchronous code stops being optional. Everything in chapter 7 is built on top of the Express app you write here.</p>
+            <div class="hero-stats"><span class="stat">51 slides</span><span class="stat">Single deck</span><span class="stat">Pure write-it</span><span class="stat">Book ch. 13</span></div>
+        </header>
+    </div>
+
+    <div class="layout">
+        <aside class="toc-rail">
+            <nav class="chapter-toc" aria-label="On this page"><a href="#orient">01 Start Here</a><a href="#map">02 Slide Map</a><a href="#node">03 Node Basics</a><a href="#async">04 Async</a><a href="#express">05 npm &amp; Express</a><a href="#ejs">06 EJS</a><a href="#traps">07 Traps</a><a href="#cheat">08 Cheat Sheet</a><a href="#drills">09 Drills</a><a href="#quiz">10 Quiz</a></nav>
+        </aside>
+
+        <main>
+        <section id="orient" style="--sec: var(--c1)">
+            <div class="section-label">Orientation</div>
+            <h2 class="section-title">What this chapter is really for</h2>
+
+<p>Slide 1 is a leftover chapter 5 task (make a table appear when a heading is clicked using DOM
+manipulation) &mdash; do it, then start here.</p>
+
+<p>The deck moves through four stages, and each one exists because the previous one hit a wall:</p>
+<ol>
+  <li><strong>Node basics</strong> (3&ndash;14) &mdash; modules, <code>fs</code>, <code>http</code>. You build a server by hand and immediately see how tedious routing is.</li>
+  <li><strong>Async</strong> (15&ndash;28) &mdash; why Node is non-blocking, callback hell, promises, <code>fetch</code>. Because the raw callbacks in stage 1 do not scale.</li>
+  <li><strong>npm and Express</strong> (29&ndash;45) &mdash; packages, middleware, routing, three ways to receive parameters. Because hand-written routing does not scale either.</li>
+  <li><strong>EJS</strong> (46&ndash;50) &mdash; generating HTML from data on the server.</li>
+</ol>
+
+<div class="grid-2">
+  <div class="card">
+    <h4>The idea that makes Node make sense</h4>
+    <p>Node is <strong>non-blocking, asynchronous and single-threaded</strong>. One worker services
+    every request in one event loop, delegating slow work to other agents. That single sentence
+    explains the advantages, the disadvantages, and why every file operation takes a callback.</p>
+  </div>
+  <div class="card">
+    <h4>Where it connects</h4>
+    <p>Chapter 1&rsquo;s HTTP methods and ports become <code>app.get</code> and
+    <code>app.listen</code>. Chapter 2&rsquo;s form <code>action</code> and <code>method</code>
+    finally point somewhere real. Chapter 4&rsquo;s callbacks become promises. And chapter 7 plugs a
+    database into the routes you write here.</p>
+  </div>
+</div>
+
+        </section>
+        <section id="map" style="--sec: var(--c2)">
+            <div class="section-label">Navigation</div>
+            <h2 class="section-title">All 51 slides, weighted</h2>
+<div class="table-wrap"><table><thead><tr><th>Slides</th><th>Topic</th><th>Weight</th><th>What to do with it</th></tr></thead><tbody><tr><td><strong>1</strong></td><td><strong>Chapter 5 leftover task</strong></td><td><span class="w-write">Write it</span></td><td>DOM manipulation to show a table on click. Ten minutes, and it revises the previous chapter.</td></tr><tr><td><strong>2&ndash;4</strong></td><td><strong>Introducing Node; JavaScript everywhere</strong></td><td><span class="w-memorize">Memorize</span></td><td>Five advantages: JavaScript everywhere, push architectures, non-blocking architectures, a rich tool ecosystem, broad adoption.</td></tr><tr><td><strong>5&ndash;6</strong></td><td><strong>Name conflicts; what a module is</strong></td><td><span class="w-memorize">Memorize</span></td><td>There is <strong>no function overloading in JavaScript</strong> &mdash; the second declaration simply replaces the first. Modules solve the resulting name conflicts.</td></tr><tr><td><strong>7&ndash;8</strong></td><td><strong>Running a Node app; import/export</strong></td><td><span class="w-write">Write it</span></td><td><code>node app.js</code> or just <code>node app</code>; <code>Ctrl-C</code> to stop. <code>module.exports</code> and <code>require</code>.</td></tr><tr><td><strong>9</strong></td><td><strong>Node core modules</strong></td><td><span class="w-memorize">Memorize</span></td><td>Six to know: <code>http</code>, <code>url</code>, <code>querystring</code>, <code>path</code>, <code>fs</code>, <code>util</code>.</td></tr><tr><td><strong>10&ndash;14</strong></td><td><strong>fs module; http module; simple and static servers</strong></td><td><span class="w-write">Write it</span></td><td>Type the simplest HTTP server from memory. It is nine lines and it is the most likely practical question in the first half.</td></tr><tr><td><strong>15&ndash;18</strong></td><td><strong>Blocking vs non-blocking; high volume; disadvantages</strong></td><td><span class="w-memorize">Memorize</span></td><td>The restaurant analogy is the exam answer. Learn both disadvantages: relational databases were awkward, and computation-heavy work blocks the single thread.</td></tr><tr><td><strong>19&ndash;21</strong></td><td><strong>Asynchronous coding; the async fs example; callback hell</strong></td><td><span class="w-memorize">Memorize</span></td><td>Slide 21 is the deliberate demonstration of callback hell &mdash; nested <code>readFile</code>s so the second can see the first result.</td></tr><tr><td><strong>22&ndash;23</strong></td><td><strong>Promises</strong></td><td><span class="w-write">Write it</span></td><td>The single most important construct in the chapter. Know <code>resolve</code>/<code>reject</code>, <code>then</code>/<code>catch</code>, and how to wrap a callback API in one.</td></tr><tr><td><strong>24&ndash;28</strong></td><td><strong>fetch; what it returns; common mistakes</strong></td><td><span class="w-write">Write it</span></td><td><code>fetch</code> does <strong>not</strong> return the data &mdash; it returns a Promise. A web API is a web resource that returns data instead of HTML, CSS, JavaScript or images.</td></tr><tr><td><strong>29</strong></td><td><strong>npm, package.json, dependencies</strong></td><td><span class="w-memorize">Memorize</span></td><td><code>npm init -y</code> then <code>npm install express</code>. Know what each does.</td></tr><tr><td><strong>30</strong></td><td><strong>CORS</strong></td><td><span class="w-memorize">Memorize</span></td><td>Browsers block cross-origin requests by default. <code>Access-Control-Allow-Origin: *</code>, or <code>app.use(cors())</code> in Node.</td></tr><tr><td><strong>31&ndash;33</strong></td><td><strong>Semantic versioning; .gitignore; dev dependencies</strong></td><td><span class="w-memorize">Memorize</span></td><td>MAJOR.MINOR.PATCH, and what <code>~</code> and <code>^</code> each allow. Never commit <code>node_modules</code>.</td></tr><tr><td><strong>34&ndash;36</strong></td><td><strong>Express, static files, middleware</strong></td><td><span class="w-write">Write it</span></td><td>Middleware is the <strong>chain of responsibility</strong> pattern. <code>app.use()</code> installs a function on that chain.</td></tr><tr><td><strong>37&ndash;38</strong></td><td><strong>Routing; chained middleware</strong></td><td><span class="w-write">Write it</span></td><td>The four-handler pattern &mdash; static, two routes, and a catch-all 404 &mdash; is the shape of every Express app you will write.</td></tr><tr><td><strong>39&ndash;40</strong></td><td><strong>Environment variables; a simple API</strong></td><td><span class="w-write">Write it</span></td><td><code>dotenv</code>, a <code>.env</code> file, and <code>process.env.PORT</code>. Used in every later example.</td></tr><tr><td><strong>41&ndash;42</strong></td><td><strong>Separating functionality into modules</strong></td><td><span class="w-write">Write it</span></td><td>Once you have five or six routes a single file becomes too complex. This is the refactor pattern for the project.</td></tr><tr><td><strong>43&ndash;45</strong></td><td><strong>Three ways to receive parameters</strong></td><td><span class="w-write">Write it</span></td><td>Route params <code>:word</code>, query params <code>?first=</code>, and form bodies. <strong>Know which object each lands in.</strong></td></tr><tr><td><strong>46&ndash;50</strong></td><td><strong>View engines and EJS, including partials</strong></td><td><span class="w-write">Write it</span></td><td>Learn the two tag forms &mdash; <code>&lt;% %&gt;</code> runs code, <code>&lt;%= %&gt;</code> prints a value &mdash; and the <code>&lt;%- include %&gt;</code> partial.</td></tr><tr><td><strong>51</strong></td><td><strong>Supporting material</strong></td><td><span class="w-skim">Skim</span></td><td>Installation links and a video walkthrough.</td></tr></tbody></table></div>
+        </section>
+        <section id="node" style="--sec: var(--c3)">
+            <div class="section-label">Slides 3&ndash;14</div>
+            <h2 class="section-title">Modules, files and a server by hand</h2>
+
+<h3>Why modules exist</h3>
+<div class="code-block"><div class="code-head"><span class="code-file">the problem — slide 5</span><span class="code-note">Slide 5</span></div><pre><span class="c">// JavaScript has NO FUNCTION OVERLOADING. The second declaration
+// simply replaces the first — silently.</span>
+<span class="k">let</span> product = (x, y)    =&gt; x * y;
+<span class="k">let</span> product = (x, y, z) =&gt; x * y * z;
+
+console.log(product(<span class="s">2</span>, <span class="s">3</span>));   <span class="c">// NaN  — z is undefined, and 6 * undefined = NaN</span>
+
+<span class="c">// With hundreds of literals across dozens of .js files, you need some
+// way to prevent name conflicts. That way is MODULES: literals defined
+// within a module are SCOPED TO THAT MODULE.</span></pre></div><div class="code-block"><div class="code-head"><span class="code-file">modules — CommonJS</span><span class="code-note">Slides 6–8</span></div><pre><span class="c">// ── mod-names.js ───────────────────────────────────────────────</span>
+<span class="k">const</span> secret = <span class="s">'SECRET PHRASE'</span>;      <span class="c">// local — NOT exported, stays private</span>
+
+<span class="k">const</span> first_name = <span class="s">'salah'</span>;
+<span class="k">const</span> last_name  = <span class="s">'abid'</span>;
+module.exports = { first_name, last_name };   <span class="c">// export an OBJECT</span>
+
+<span class="c">// ── mod-utils.js ───────────────────────────────────────────────</span>
+<span class="k">const</span> saySelem = (name) =&gt; { console.log(`Selem Mr ${name}`); };
+module.exports = saySelem;                    <span class="c">// export a FUNCTION (default style)</span>
+
+<span class="c">// ── app.js ─────────────────────────────────────────────────────</span>
+<span class="k">const</span> names = require(<span class="s">'./mod-names'</span>);    <span class="c">// ./ — a LOCAL file, not an npm package</span>
+<span class="k">const</span> selem = require(<span class="s">'./mod-utils'</span>);
+
+selem(names.first_name);   <span class="c">// "Selem Mr salah"</span>
+selem(names.secret);       <span class="c">// "Selem Mr undefined"  ← not exported = not visible</span>
+
+<span class="c">// RUN IT:   node app.js     or just   node app
+// STOP IT:  Ctrl-C</span>
+
+<span class="c">// On the CLIENT side you must tell the browser a file is a module:
+//   &lt;script src="art.js" type="module"&gt;&lt;/script&gt;
+// In Node every file is a module by default (CommonJS).</span></pre></div>
+
+<h3>Core modules</h3>
+<div class="table-wrap"><table><thead><tr><th>Module</th><th>What it gives you</th></tr></thead><tbody><tr><td><code>http</code></td><td>Classes, methods and events to create a Node HTTP server.</td></tr><tr><td><code>url</code></td><td>Methods for URL resolution and parsing.</td></tr><tr><td><code>querystring</code></td><td>Methods to deal with query strings.</td></tr><tr><td><code>path</code></td><td>Methods to deal with file paths.</td></tr><tr><td><code>fs</code></td><td>Classes, methods and events for file I/O.</td></tr><tr><td><code>util</code></td><td>Utility functions.</td></tr></tbody></table></div>
+
+<h3>The <code>fs</code> module &mdash; synchronous first</h3>
+<div class="code-block"><div class="code-head"><span class="code-file">app.js — 02-files</span><span class="code-note">Slide 10</span></div><pre><span class="k">const</span> { readFileSync, writeFileSync } = require(<span class="s">'fs'</span>);   <span class="c">// destructured import</span>
+
+console.log(<span class="s">'start'</span>);
+
+<span class="k">const</span> first  = readFileSync(<span class="s">'./content/first.txt'</span>,  <span class="s">'utf8'</span>);
+<span class="k">const</span> second = readFileSync(<span class="s">'./content/second.txt'</span>, <span class="s">'utf8'</span>);
+
+writeFileSync(
+    <span class="s">'./content/result.txt'</span>,
+    `Here is the result : ${first}, ${second}` + <span class="s">"\n"</span>,
+    { flag: <span class="s">'a'</span> }        <span class="c">// 'a' for APPENDING (default would overwrite)</span>
+);
+
+console.log(<span class="s">'Task completed!'</span>);
+
+<span class="c">// OUTPUT:  start
+//          Task completed!
+// …in that order, because Sync versions BLOCK until they finish.</span></pre></div>
+
+<h3>A server by hand &mdash; the <code>http</code> module</h3>
+<div class="code-block"><div class="code-head"><span class="code-file">simplest-server.js</span><span class="code-note">Slide 12</span></div><pre><span class="k">const</span> http = require(<span class="s">'http'</span>);
+
+<span class="k">const</span> server = http.createServer((req, res) =&gt; {
+    res.write(<span class="s">"This is my response to your request!"</span>);
+    res.end();                     <span class="c">// end() is REQUIRED — without it the browser hangs</span>
+    <span class="k">return</span>;
+});
+
+server.listen(<span class="s">5000</span>);
+console.log(<span class="s">"Listening on port 5000"</span>);
+
+<span class="c">// &gt; node simplest-server
+// Then open http://127.0.0.1:5000 in the browser.
+//
+// NOTE: http://127.0.0.1:5000/anything/at/all gives the SAME response.
+// There is no routing here at all — which is the point of the next slide.</span></pre></div><div class="code-block"><div class="code-head"><span class="code-file">simplest-server-2.js — routing by hand</span><span class="code-note">Slide 13</span></div><pre><span class="k">const</span> http = require(<span class="s">'http'</span>);
+
+<span class="k">const</span> server = http.createServer((req, res) =&gt; {
+    <span class="k">if</span> (req.url === <span class="s">'/'</span>) {
+        res.end(<span class="s">"This is the homepage!"</span>);
+    } <span class="k">else</span> <span class="k">if</span> (req.url === <span class="s">'/about'</span>) {
+        res.end(<span class="s">"This is the ABOUT page!"</span>);
+    } <span class="k">else</span> {
+        res.end(`&lt;h1&gt;Page not Found!&lt;/h1&gt;
+                 &lt;p&gt;&lt;a href="/"&gt;Homepage&lt;/a&gt;&lt;/p&gt;`);
+    }
+    <span class="k">return</span>;
+});
+
+server.listen(<span class="s">5000</span>);
+
+<span class="c">// A fuller version writes headers explicitly:
+//   res.writeHead(200, {"Content-Type": "text/plain"});
+//
+// Now imagine twenty routes in this if/else chain. That is why Express
+// exists — and why slide 34 arrives when it does.</span></pre></div>
+        </section>
+        <section id="async" style="--sec: var(--c4)">
+            <div class="section-label">Slides 15&ndash;28</div>
+            <h2 class="section-title">Non-blocking architecture, promises and fetch</h2>
+
+<h3>Blocking vs non-blocking &mdash; the restaurant analogy</h3>
+<div class="table-wrap"><table><thead><tr><th>Blocking (Apache with JEE or PHP)</th><th>Non-blocking (Node)</th></tr></thead><tbody><tr><td>A blocking multiprocessing or multithreaded model.</td><td>A single worker services all requests in a single <strong>event loop</strong> thread.</td></tr><tr><td>As though <strong>a single person had to handle every task for each table</strong> &mdash; so you need one person per table.</td><td>The worker can only do one thing at a time, but <strong>delegates other tasks to other agents</strong> and carries on.</td></tr><tr><td>Scales by adding processes or threads.</td><td>Node is <strong>non-blocking, asynchronous and single-threaded</strong>.</td></tr></tbody></table></div>
+<p><strong>Where Node shines:</strong> data-intensive real-time applications talking to distributed
+computers, with NoSQL data sources. The slide&rsquo;s example is a Like button handling a massive
+number of concurrent writes &mdash; a memory-based message queue records the changes and they are
+persisted eventually.</p>
+<p><strong>Where Node does not:</strong> sites whose data lives in a traditional relational database
+such as MySQL, where access was a complex programming task; and computationally heavy work such as
+video processing or scientific computing, which stalls the single thread.</p>
+
+<h3>Callback hell &mdash; the problem, demonstrated</h3>
+<div class="code-block"><div class="code-head"><span class="code-file">app.js — 04-files-async</span><span class="code-note">Slide 20</span></div><pre><span class="k">const</span> { readFile, writeFile } = require(<span class="s">'fs'</span>);   <span class="c">// the ASYNC versions</span>
+
+console.log(<span class="s">'Starting task A...'</span>);
+
+readFile(<span class="s">'./content/first.txt'</span>, <span class="s">'utf8'</span>, (err, result) =&gt; {
+    <span class="k">if</span> (err) { console.log(err); <span class="k">return</span>; }      <span class="c">// error-first callback convention</span>
+
+    writeFile(<span class="s">'./content/result-async.txt'</span>,
+        `Here is the Async result : ${result}`,
+        (err, result) =&gt; {
+            <span class="k">if</span> (err) { console.log(err); <span class="k">return</span>; }
+            console.log(<span class="s">'Task A completed!'</span>);
+        }
+    );
+});
+
+console.log(<span class="s">'starting next task...'</span>);
+
+<span class="c">// OUTPUT ORDER — the whole point:
+//   Starting task A...
+//   starting next task...     ← this line runs BEFORE the file is read
+//   Task A completed!         ← the callback fires last</span></pre></div><div class="code-block"><div class="code-head"><span class="code-file">the same thing with TWO files — slide 21</span><span class="code-note">Slide 21</span></div><pre><span class="c">// To let the second read see the first result, the second readFile has
+// to be called INSIDE the first callback. Add a third file and a fourth
+// and you get a staircase drifting off the right of the screen.</span>
+readFile(<span class="s">'./content/first.txt'</span>, <span class="s">'utf8'</span>, (err, result) =&gt; {
+    <span class="k">if</span> (err) { console.log(err); <span class="k">return</span>; }
+    <span class="k">const</span> first = result;
+
+    readFile(<span class="s">'./content/second.txt'</span>, <span class="s">'utf8'</span>, (err, result) =&gt; {
+        <span class="k">if</span> (err) { console.log(err); <span class="k">return</span>; }
+        <span class="k">const</span> second = result;
+
+        writeFile(<span class="s">'./content/result-async.txt'</span>,
+            `Here is the result : ${first}, ${second}`,
+            (err, result) =&gt; {
+                <span class="k">if</span> (err) { console.log(err); <span class="k">return</span>; }
+                console.log(<span class="s">'done with this task'</span>);
+            }
+        );
+    });
+});
+
+<span class="c">//                    ← ← ←   CALLBACK HELL   → → →</span></pre></div>
+
+<h3>Promises &mdash; the solution</h3>
+<p>A Promise object <strong>represents the eventual completion (or failure) of an asynchronous
+operation and its resulting value.</strong> Probably the promise will complete and you receive the
+data; or it will not, and you receive an error instead.</p>
+<div class="code-block"><div class="code-head"><span class="code-file">promises.js</span><span class="code-note">Slides 22–23</span></div><pre><span class="c">// ── DECLARATION AND INSTANTIATION ──────────────────────────────
+// The handler passed to the constructor takes TWO parameters. </span>
+<span class="k">const</span> promiseObj = <span class="k">new</span> Promise((resolve, reject) =&gt; {
+    doWork();
+    <span class="k">if</span> (someCondition)
+        resolve(someValue);      <span class="c">// works like a return</span>
+    <span class="k">else</span>
+        reject(someMessage);     <span class="c">// works like a throw</span>
+});
+
+<span class="c">// ── CONSUMING IT ───────────────────────────────────────────────</span>
+promiseObj
+    .then(someValue =&gt; {
+        <span class="c">// success — the promise was achieved</span>
+    })
+    .catch(someMessage =&gt; {
+        <span class="c">// the promise was not satisfied</span>
+    });
+
+<span class="c">// ── WRAPPING A CALLBACK API IN A PROMISE (slide 23) ────────────</span>
+<span class="k">const</span> { readFile } = require(<span class="s">'fs'</span>);
+
+<span class="k">const</span> read = (path) =&gt; {
+    <span class="k">return</span> <span class="k">new</span> Promise((resolve, reject) =&gt; {
+        readFile(path, <span class="s">'utf8'</span>, (err, data) =&gt; {
+            <span class="k">if</span> (err) reject(err);
+            <span class="k">else</span>     resolve(data);
+        });
+    });
+};
+
+read(<span class="s">'./content/first.txt'</span>)
+    .then(data =&gt; console.log(data))
+    .catch(err  =&gt; console.log(err));
+
+<span class="c">// ── CHAINING beats nesting — the whole payoff ──────────────────</span>
+read(<span class="s">'./content/first.txt'</span>)
+    .then(first  =&gt; read(<span class="s">'./content/second.txt'</span>))
+    .then(second =&gt; console.log(second))
+    .catch(err   =&gt; console.log(err));      <span class="c">// ONE catch for the whole chain</span></pre></div>
+
+<h3><code>fetch</code> &mdash; asynchronous data requests</h3>
+<p>A <strong>web API is simply a web resource that returns data</strong> instead of HTML, CSS,
+JavaScript or images. <code>fetch</code> is done from the client side to get that data
+asynchronously, and it replaces the older AJAX technology.</p>
+<div class="code-block"><div class="code-head"><span class="code-file">fetch.js</span><span class="code-note">Slides 25–28</span></div><pre><span class="k">let</span> cities = fetch(<span class="s">'/api/cities?country=italy'</span>);
+
+<span class="c">// What does `cities` contain? NOT the JSON data. It takes time for the
+// service to execute and respond, so fetch returns a PROMISE object.</span>
+
+fetch(<span class="s">'/api/cities?country=italy'</span>)
+    .then(response =&gt; {
+        console.warn(<span class="s">'response received!!!'</span>);
+        <span class="k">return</span> response.json();      <span class="c">// ← ALSO returns a promise</span>
+    })
+    .then(data =&gt; {
+        console.log(data);              <span class="c">// finally the actual data</span>
+    })
+    .catch(err =&gt; console.log(err));
+
+<span class="c">// COMMON MISTAKES (slide 28):
+//   1. expecting fetch to return the data directly
+//   2. forgetting that response.json() is ALSO asynchronous
+//   3. nesting multiple fetches inside each other — callback hell again.
+//      CHAIN them with .then, or use async/await:</span>
+
+<span class="k">async</span> <span class="k">function</span> load() {
+    <span class="k">try</span> {
+        <span class="k">const</span> response = <span class="k">await</span> fetch(<span class="s">'/api/cities?country=italy'</span>);
+        <span class="k">const</span> data     = <span class="k">await</span> response.json();
+        console.log(data);
+    } <span class="k">catch</span> (err) {
+        console.log(err);
+    }
+}</pre></div><div class="hook"><strong>The single sentence to remember about <code>fetch</code>:</strong> it returns a Promise, not data &mdash; and <code>response.json()</code> returns another one. Two <code>await</code>s, or two <code>.then()</code>s. Nearly every broken fetch in a lab is one of those two missing.</div>
+
+<h3>CORS</h3>
+<div class="code-block"><div class="code-head"><span class="code-file">cors</span><span class="code-note">Slide 30</span></div><pre><span class="c">// Modern browsers PREVENT cross-origin requests by default, which makes
+// legitimate sharing between two domains harder.
+//
+// An ORIGIN is a protocol + domain + port. All three must match.
+//   https://a.com      vs  http://a.com       ← different (protocol)
+//   https://a.com      vs  https://b.com      ← different (domain)
+//   http://a.com:3000  vs  http://a.com:5000  ← different (port)</span>
+
+<span class="c">// An API that wants to allow ANY domain adds this header to responses:
+//   Access-Control-Allow-Origin: *</span>
+
+<span class="c">// In Node:</span>
+<span class="c">// &gt; npm install cors</span>
+<span class="k">const</span> cors = require(<span class="s">'cors'</span>);
+app.use(cors());   <span class="c">// allows the API to be accessed through JavaScript</span></pre></div>
+        </section>
+        <section id="express" style="--sec: var(--c5)">
+            <div class="section-label">Slides 29&ndash;45</div>
+            <h2 class="section-title">Packages, routing, middleware and parameters</h2>
+
+<h3>npm and <code>package.json</code></h3>
+<div class="code-block"><div class="code-head"><span class="code-file">terminal + package.json</span><span class="code-note">Slides 29, 32–33</span></div><pre><span class="c"># npm = Node Package Manager</span>
+npm init -y                <span class="c"># creates a basic package.json (-y skips the questionnaire)</span>
+npm install express        <span class="c"># installs into node_modules AND adds it to dependencies</span>
+npm install nodemon -D     <span class="c"># a DEV dependency — needed at development time only</span>
+npm install -g nodemon     <span class="c"># or globally</span>
+npm install                <span class="c"># restores node_modules from package.json</span>
+npm run start              <span class="c"># runs the "start" script</span>
+npm run dev                <span class="c"># runs the "dev" script — nodemon restarts on save</span>
+
+<span class="c">// package.json</span>
+{
+  <span class="s">"name"</span>: <span class="s">"05-npm-demo"</span>,
+  <span class="s">"version"</span>: <span class="s">"1.0.0"</span>,
+  <span class="s">"main"</span>: <span class="s">"index.js"</span>,
+  <span class="s">"scripts"</span>: {
+    <span class="s">"start"</span>: <span class="s">"node app.js"</span>,
+    <span class="s">"dev"</span>:   <span class="s">"nodemon app.js"</span>
+  },
+  <span class="s">"dependencies"</span>:    { <span class="s">"express"</span>: <span class="s">"^4.18.2"</span> },
+  <span class="s">"devDependencies"</span>: { <span class="s">"nodemon"</span>: <span class="s">"^2.0.20"</span> }
+}
+
+<span class="c"># .gitignore — node_modules is NEVER shared. Teammates recreate it
+# from package.json with `npm install`.</span>
+/node-modules</pre></div>
+<h4>Semantic versioning &mdash; <code>MAJOR.MINOR.PATCH</code></h4>
+<div class="table-wrap"><table><thead><tr><th>Part</th><th>Increments when&hellip;</th><th>Breaks your code?</th></tr></thead><tbody><tr><td><strong>MAJOR</strong></td><td>You make incompatible API changes.</td><td>Yes &mdash; will not work with earlier versions.</td></tr><tr><td><strong>MINOR</strong></td><td>You add functionality in a backwards-compatible way.</td><td>No.</td></tr><tr><td><strong>PATCH</strong></td><td>You make backwards-compatible bug fixes.</td><td>No.</td></tr><tr><td><code>~1.3.8</code></td><td>Allows automatic update to the latest <strong>PATCH</strong>.</td><td>No.</td></tr><tr><td><code>^1.3.8</code></td><td>Allows automatic update to the latest <strong>MINOR</strong>.</td><td>No.</td></tr></tbody></table></div>
+
+<h3>Express: static files, routing and the 404</h3>
+<div class="code-block"><div class="code-head"><span class="code-file">app.js — 08-express-server</span><span class="code-note">Slides 34, 37</span></div><pre><span class="k">const</span> express = require(<span class="s">'express'</span>);
+<span class="k">const</span> app = express();
+
+<span class="c">// A — the public folder becomes visible to HTTP requests, so
+//     http://localhost:3000/css/styles.css works if css/ is inside public/</span>
+app.use( express.static(<span class="s">'public'</span>) );
+
+<span class="c">// B — a route is a URL: a series of folders, files, or parameter data</span>
+app.get(<span class="s">'/'</span>, (request, response) =&gt; {
+    response.sendFile(<span class="s">'./pages/index.html'</span>);
+});
+
+<span class="c">// C</span>
+app.get(<span class="s">'/about'</span>, (request, response) =&gt; {
+    response.sendFile(<span class="s">'./pages/about.html'</span>);
+});
+
+<span class="c">// D — ANY other request falls through to here. Order matters:
+//     this must come LAST or it swallows everything.</span>
+app.use( (request, response) =&gt; {
+    response.status(<span class="s">404</span>).sendFile(<span class="s">'./pages/404.html'</span>);
+});
+
+app.listen(<span class="s">3000</span>, () =&gt; { console.log(<span class="s">'listening on 3000'</span>); });
+
+<span class="c">// A request tries A, then B, then C, then D — the FIRST match wins.</span></pre></div>
+
+<h3>Middleware &mdash; the chain of responsibility</h3>
+<p>Middleware is <strong>software that is a bridge between an application and the data</strong>, and
+Express arranges it as a chain of responsibility. The slides give the reason to use it: it splits
+server operations into smaller units, such as performing validation on the data, which leads to
+better app structure and reuse &mdash; and you can block the execution of the current chain and pass
+control to functions that handle errors.</p>
+<div class="code-block"><div class="code-head"><span class="code-file">middleware.js</span><span class="code-note">Slides 35–36, 38</span></div><pre><span class="c">// app.use() INSTALLS a middleware function on the chain.</span>
+
+<span class="c">// At the ROOT of the route — runs for EVERY request</span>
+app.use( (req, res, next) =&gt; {
+    console.log(`${req.method} ${req.path} - ${req.ip}`);
+    next();          <span class="c">// ← WITHOUT next() the request HANGS FOREVER</span>
+});
+
+<span class="c">// Mounted at a SPECIFIC route:  app.METHOD(path, middleware, callback)</span>
+app.get(<span class="s">'/now'</span>,
+    <span class="k">function</span> (req, res, next) {
+        req.time = <span class="k">new</span> Date().toString();    <span class="c">// attach data to the request</span>
+        next();                                <span class="c">// hand on to the next function</span>
+    },
+    <span class="k">function</span> (req, res) {
+        res.json({ time: req.time });          <span class="c">// the last one SENDS the response</span>
+    }
+);
+
+<span class="c">// Built-in and third-party middleware you have already met:</span>
+app.use(express.static(<span class="s">'public'</span>));                        <span class="c">// serve static files</span>
+app.use(cors());                                          <span class="c">// allow cross-origin</span>
+app.use(bodyParser.urlencoded({ extended: <span class="k">false</span> }));     <span class="c">// parse form bodies</span></pre></div><div class="hook"><strong>The bug that will cost you an hour:</strong> a middleware function that forgets <code>next()</code>. There is no error, no crash, no log &mdash; the browser just spins until it times out. If a request hangs, look for a missing <code>next()</code> before you look anywhere else.</div>
+
+<h3>Environment variables</h3>
+<div class="code-block"><div class="code-head"><span class="code-file">.env + app.js — 09-env-variables</span><span class="code-note">Slide 39</span></div><pre><span class="c"># .env — any number of key=value pairs</span>
+PORT=8080
+BUILD=development
+
+<span class="c">// &gt; npm install dotenv</span>
+require(<span class="s">'dotenv'</span>).config();          <span class="c">// load .env into process.env</span>
+
+console.log(process.env);            <span class="c">// see everything available</span>
+console.log(<span class="s">"build type="</span> + process.env.BUILD);
+
+app.listen(process.env.PORT);        <span class="c">// never hard-code the port again</span>
+
+<span class="c">// .env belongs in .gitignore too — it holds secrets.</span></pre></div>
+
+<h3>A simple API, and splitting it into modules</h3>
+<div class="code-block"><div class="code-head"><span class="code-file">app.js + data-module.js — 10-simple-api</span><span class="code-note">Slides 40–42</span></div><pre><span class="c">// ── data-module.js — slide 42 ──────────────────────────────────</span>
+<span class="k">const</span> fs   = require(<span class="s">'fs'</span>);
+<span class="k">const</span> path = require(<span class="s">'path'</span>);
+
+<span class="k">const</span> jsonPath = path.join(__dirname, <span class="s">'data'</span>, <span class="s">'SE2022.json'</span>);
+<span class="c">//   __dirname = the folder THIS file is in. path.join builds a path
+//   that works on Windows and Linux alike.</span>
+
+<span class="k">let</span> curriculum;
+fs.readFile(jsonPath, (err, data) =&gt; {
+    <span class="k">if</span> (err) console.log(<span class="s">'Unable to read json data file'</span>);
+    <span class="k">else</span>     curriculum = JSON.parse(data);
+});
+
+<span class="k">const</span> getData = () =&gt; { <span class="k">return</span> curriculum; };
+module.exports = getData;
+
+<span class="c">// ── app.js ─────────────────────────────────────────────────────</span>
+<span class="k">const</span> express = require(<span class="s">'express'</span>);
+require(<span class="s">'dotenv'</span>).config();
+<span class="k">const</span> getData = require(<span class="s">'./data-module'</span>);
+
+<span class="k">const</span> app = express();
+
+app.get(<span class="s">'/'</span>, (req, resp) =&gt; { resp.json(getData()); });   <span class="c">// res.json sends JSON</span>
+
+app.listen(process.env.PORT, () =&gt; {
+    console.log(<span class="s">"Listening at port… "</span> + process.env.PORT);
+});
+
+<span class="c">// WHY: with five or six routes a single Node file becomes too complex.
+// Separate the routing, and separate the handler logic, into modules.</span></pre></div>
+
+<h3>Three ways to receive parameters &mdash; know which object each lands in</h3>
+<div class="table-wrap"><table><thead><tr><th>Way</th><th>URL / source</th><th>Read it from</th><th>Needs</th></tr></thead><tbody><tr><td><strong>Route params</strong></td><td><code>/echo/hello</code></td><td><code>req.params.word</code></td><td>The <code>:param</code> syntax in the route.</td></tr><tr><td><strong>Query params</strong></td><td><code>/employee?first=skander&amp;last=turki</code></td><td><code>req.query.first</code></td><td>Nothing &mdash; no library needed.</td></tr><tr><td><strong>Form body</strong></td><td>A POSTed <code>&lt;form&gt;</code></td><td><code>req.body.first</code></td><td><code>body-parser</code> middleware.</td></tr></tbody></table></div><div class="code-block"><div class="code-head"><span class="code-file">parameters.js</span><span class="code-note">Slides 43–45</span></div><pre><span class="c">// ── 1. ROUTE PARAMS — the :param syntax (slide 43) ─────────────</span>
+app.get(<span class="s">'/echo/:word'</span>, (req, res) =&gt; {
+    <span class="k">let</span> param = req.params.word;
+    res.json({ echo: param });
+});
+<span class="c">// GET https://ip:port/echo/hello  →  'hello' lands in req.params.word</span>
+
+<span class="c">// ── 2. QUERY PARAMS — URL-encoded queries (slide 44) ───────────</span>
+app.get(<span class="s">'/employee'</span>, (req, res) =&gt; {
+    res.json({ employee: `${req.query.first} ${req.query.last}` });
+});
+app.post(<span class="s">'/employee'</span>, (req, res) =&gt; {
+    res.json({ employee: `${req.query.first} ${req.query.last}` });
+});
+<span class="c">// http://ip:port/employee?first=skander&amp;last=turki</span>
+
+<span class="c">// ── 3. FORM BODY (slide 45) ────────────────────────────────────
+//   &lt;form action="/name" method="post"&gt;
+//     &lt;label&gt;First Name :&lt;/label&gt;&lt;input type="text" name="first"&gt;&lt;br&gt;
+//     &lt;label&gt;Last Name :&lt;/label&gt;&lt;input type="text" name="last"&gt;&lt;br&gt;
+//     &lt;input type="submit" value="Submit"&gt;
+//   &lt;/form&gt;
+
+// A payload (POST, DELETE…) needs middleware to be parsed:</span>
+<span class="k">const</span> bodyParser = require(<span class="s">'body-parser'</span>);
+app.use(bodyParser.urlencoded({ extended: <span class="k">false</span> }));
+
+app.post(<span class="s">'/name'</span>, (req, res) =&gt; {
+    <span class="k">let</span> p_first = req.body.first;      <span class="c">// ← req.BODY, not query, not params</span>
+    res.send(`Hello ${p_first}`);
+});
+
+<span class="c">// Modern Express has this built in: app.use(express.urlencoded({extended:false}))</span></pre></div>
+        </section>
+        <section id="ejs" style="--sec: var(--c6)">
+            <div class="section-label">Slides 46&ndash;50</div>
+            <h2 class="section-title">View engines: generating HTML on the server</h2>
+
+<p>A view engine lets Node generate HTML from data. Install the package, tell Express which engine to
+use and which folder holds the views, and render instead of sending files.</p>
+<div class="code-block"><div class="code-head"><span class="code-file">setting up EJS</span><span class="code-note">Slides 46–47</span></div><pre><span class="c">// &gt; npm install ejs</span>
+
+<span class="c">// register the view engine</span>
+app.set(<span class="s">'view engine'</span>, <span class="s">'ejs'</span>);
+
+<span class="c">// templates go in /views by DEFAULT — configure only if you want another</span>
+app.set(<span class="s">'views'</span>, <span class="s">'otherThanViewsFolder'</span>);
+
+<span class="c">// response.render() sends the template — 'index' means views/index.ejs</span>
+app.get(<span class="s">'/'</span>, (request, response) =&gt; {
+    response.render(<span class="s">'index'</span>);
+});</pre></div><div class="code-block"><div class="code-head"><span class="code-file">app.js — injecting data</span><span class="code-note">Slide 48</span></div><pre><span class="k">const</span> express = require(<span class="s">'express'</span>);
+<span class="k">const</span> app = express();
+
+app.set(<span class="s">'view engine'</span>, <span class="s">'ejs'</span>);
+app.use(express.static(<span class="s">'public'</span>));
+
+app.get(<span class="s">'/'</span>, (req, res) =&gt; {
+    <span class="k">const</span> blogs = [
+        { title: <span class="s">'First post'</span>,  snippet: <span class="s">'…'</span> },
+        { title: <span class="s">'Second post'</span>, snippet: <span class="s">'…'</span> },
+    ];
+    <span class="c">// SECOND ARGUMENT = the data sent to the template</span>
+    res.render(<span class="s">'index'</span>, { title: <span class="s">'Home'</span>, blogs: blogs });
+});
+
+app.get(<span class="s">'/about'</span>,  (req, res) =&gt; res.render(<span class="s">'about'</span>,  { title: <span class="s">'About'</span> }));
+app.get(<span class="s">'/create'</span>, (req, res) =&gt; res.render(<span class="s">'create'</span>, { title: <span class="s">'Create a new blog'</span> }));
+
+<span class="c">// catch-all 404, rendered rather than sent as a file</span>
+app.use((req, res) =&gt; {
+    res.status(<span class="s">404</span>).render(<span class="s">'404'</span>, { title: <span class="s">'404'</span> });
+});
+
+app.listen(<span class="s">3000</span>);</pre></div>
+
+<h3>The two EJS tag forms &mdash; and partials</h3>
+<div class="code-block"><div class="code-head"><span class="code-file">views/index.ejs</span><span class="code-note">Slides 49–50</span></div><pre><span class="k">&lt;html</span> <span class="t">lang</span>=<span class="s">"en"</span><span class="k">&gt;</span>
+<span class="s">&lt;%- include("./partials/head.ejs") %&gt;</span>
+
+<span class="k">&lt;body&gt;</span>
+  <span class="s">&lt;%- include("./partials/nav.ejs") %&gt;</span>
+
+  <span class="k">&lt;div</span> <span class="t">class</span>=<span class="s">"blogs content"</span><span class="k">&gt;</span>
+    <span class="k">&lt;h2&gt;</span><span class="s">&lt;%= title %&gt;</span>: All Blogs<span class="k">&lt;/h2&gt;</span>
+
+    <span class="s">&lt;% if (blogs.length &gt; 0) { %&gt;</span>
+      <span class="s">&lt;% blogs.forEach(blog =&gt; { %&gt;</span>
+        <span class="k">&lt;h3</span> <span class="t">class</span>=<span class="s">"title"</span><span class="k">&gt;</span><span class="s">&lt;%= blog.title %&gt;</span><span class="k">&lt;/h3&gt;</span>
+        <span class="k">&lt;p</span> <span class="t">class</span>=<span class="s">"snippet"</span><span class="k">&gt;</span><span class="s">&lt;%= blog.snippet %&gt;</span><span class="k">&lt;/p&gt;</span>
+      <span class="s">&lt;% }) %&gt;</span>
+    <span class="s">&lt;% } else { %&gt;</span>
+      <span class="k">&lt;p&gt;</span>There are no blogs to display...<span class="k">&lt;/p&gt;</span>
+    <span class="s">&lt;% } %&gt;</span>
+  <span class="k">&lt;/div&gt;</span>
+
+  <span class="s">&lt;%- include("./partials/footer.ejs") %&gt;</span>
+<span class="k">&lt;/body&gt;</span>
+<span class="k">&lt;/html&gt;</span>
+
+<span class="c">&lt;!-- THE THREE TAGS:
+     &lt;%  %&gt;   runs JavaScript, outputs NOTHING       (if, forEach, loops)
+     &lt;%= %&gt;   outputs the VALUE of an expression      (escaped — safe)
+     &lt;%- %&gt;   outputs UNESCAPED — used for include()
+
+     PARTIALS let one .ejs file be included in another so shared parts
+     are reused. Organise them under views/partials/ :
+        /views/partials/head.ejs
+        /views/partials/header.ejs
+        /views/partials/footer.ejs                                 --&gt;</span></pre></div><div class="hook"><strong>The EJS tag you will get wrong once:</strong> <code>&lt;% %&gt;</code> versus <code>&lt;%= %&gt;</code>. Anything that <em>controls flow</em> uses the plain form; anything that <em>appears on the page</em> needs the equals sign. Writing <code>&lt;% title %&gt;</code> renders nothing at all, silently.</div>
+        </section>
+        <section id="traps" style="--sec: var(--c7)">
+            <div class="section-label">Marks Lost Here</div>
+            <h2 class="section-title">The eight things people get wrong</h2>
+<div class="trap"><div class="trap-title">Middleware with no <code>next()</code></div><p>The request hangs. No error, no stack trace, no log line &mdash; the browser spins until it times out. The chain of responsibility simply stopped.</p><p><span class="fix">Fix:</span> Every middleware function either calls <code>next()</code> or sends a response. Exactly one of the two, never neither.</p></div><div class="trap"><div class="trap-title">The 404 handler placed too early</div><p><code>app.use((req,res) =&gt; res.status(404)...)</code> written before your routes catches <strong>every</strong> request, and your real routes never run.</p><p><span class="fix">Fix:</span> Order is everything in Express: static, then specific routes, then the catch-all last. The first match wins.</p></div><div class="trap"><div class="trap-title">Expecting <code>fetch</code> to return data</div><p><code>let cities = fetch(url)</code> gives you a Promise object, not the cities. Logging it shows <code>Promise { &lt;pending&gt; }</code> and people conclude the API is broken.</p><p><span class="fix">Fix:</span> Chain <code>.then(r =&gt; r.json()).then(data =&gt; ...)</code>, or <code>await</code> twice. Slide 26 asks this exact question.</p></div><div class="trap"><div class="trap-title">Reading a form body from <code>req.query</code></div><p>A POSTed form puts its data in the request <strong>body</strong>, not the URL. <code>req.query.first</code> is <code>undefined</code> and so is <code>req.body.first</code> until the parser is installed.</p><p><span class="fix">Fix:</span> Three sources, three objects: <code>req.params</code> for <code>:route</code> params, <code>req.query</code> for <code>?query=</code> strings, <code>req.body</code> for form payloads &mdash; and the last one needs <code>body-parser</code> or <code>express.urlencoded</code>.</p></div><div class="trap"><div class="trap-title">Committing <code>node_modules</code></div><p>Thousands of files in the repository, huge diffs, and merge conflicts in code nobody wrote. Slide 32 is explicit that the folder does not have to be shared.</p><p><span class="fix">Fix:</span> Add <code>/node_modules</code> to <code>.gitignore</code>. Teammates run <code>npm install</code> and get the same tree from <code>package.json</code>.</p></div><div class="trap"><div class="trap-title">Hard-coding the port</div><p><code>app.listen(3000)</code> works on your laptop and fails wherever the platform assigns a port. It also means every teammate edits the same line.</p><p><span class="fix">Fix:</span> <code>require('dotenv').config()</code> and <code>app.listen(process.env.PORT)</code>. Put <code>.env</code> in <code>.gitignore</code> as well &mdash; it holds secrets.</p></div><div class="trap"><div class="trap-title">Blaming the API for a CORS error</div><p>The request works in Postman and in the address bar but fails from your page. That is the browser enforcing the same-origin policy, not the API refusing you.</p><p><span class="fix">Fix:</span> The <em>server</em> must send <code>Access-Control-Allow-Origin</code>. In your own Node app: <code>npm install cors</code>, then <code>app.use(cors())</code>. Remember an origin is protocol + domain + port &mdash; a different port is a different origin.</p></div><div class="trap"><div class="trap-title"><code>&lt;% %&gt;</code> where <code>&lt;%= %&gt;</code> was needed</div><p><code>&lt;h2&gt;&lt;% title %&gt;&lt;/h2&gt;</code> renders an empty heading. The tag evaluated the expression and threw the result away.</p><p><span class="fix">Fix:</span> <code>&lt;% %&gt;</code> runs code. <code>&lt;%= %&gt;</code> prints a value. <code>&lt;%- %&gt;</code> prints unescaped, which is what <code>include()</code> needs.</p></div>
+        </section>
+        <section id="cheat" style="--sec: var(--c8)">
+            <div class="section-label">One Screen</div>
+            <h2 class="section-title">Chapter 6 on a single screen</h2>
+<div class="cheat"><div class="cheat-col"><h4>Modules</h4><ul><li><code>module.exports = { a, b }</code></li><li><code>module.exports = fn</code></li><li><code>const x = require('./file')</code></li><li>Not exported = not visible</li><li>Client side: <code>&lt;script type="module"&gt;</code></li></ul></div><div class="cheat-col"><h4>Core modules</h4><ul><li><code>http</code> &mdash; create a server</li><li><code>url</code> &mdash; parse URLs</li><li><code>querystring</code> &mdash; query strings</li><li><code>path</code> &mdash; file paths</li><li><code>fs</code> &mdash; file I/O</li><li><code>util</code> &mdash; utilities</li></ul></div><div class="cheat-col"><h4>Terminal</h4><ul><li><code>node app</code> &middot; <code>Ctrl-C</code></li><li><code>npm init -y</code></li><li><code>npm install express</code></li><li><code>npm install nodemon -D</code></li><li><code>npm install</code> &mdash; restore modules</li><li><code>npm run dev</code></li></ul></div><div class="cheat-col"><h4>Async</h4><ul><li>Node: non-blocking, async, single-threaded</li><li>Callback: <code>(err, result) =&gt; {}</code></li><li><code>new Promise((resolve, reject) =&gt; {})</code></li><li><code>.then()</code> &middot; <code>.catch()</code></li><li><code>await</code> inside <code>async function</code></li><li><code>fetch</code> returns a Promise, not data</li></ul></div><div class="cheat-col"><h4>Express</h4><ul><li><code>app.use(express.static('public'))</code></li><li><code>app.get(path, (req, res) =&gt; {})</code></li><li><code>app.post</code> <code>app.put</code> <code>app.delete</code></li><li><code>res.send</code> <code>res.json</code> <code>res.sendFile</code> <code>res.render</code></li><li><code>res.status(404)</code></li><li><code>app.listen(process.env.PORT)</code></li></ul></div><div class="cheat-col"><h4>Middleware</h4><ul><li>Chain of responsibility</li><li><code>app.use((req,res,next) =&gt; { next(); })</code></li><li>Always <code>next()</code> or send a response</li><li>Order matters &mdash; 404 handler goes LAST</li><li><code>cors()</code> &middot; <code>bodyParser.urlencoded()</code></li></ul></div><div class="cheat-col"><h4>Parameters</h4><ul><li><code>/echo/:word</code> &rarr; <code>req.params.word</code></li><li><code>?first=x</code> &rarr; <code>req.query.first</code></li><li>POSTed form &rarr; <code>req.body.first</code></li><li>Bodies need a parser middleware</li></ul></div><div class="cheat-col"><h4>EJS</h4><ul><li><code>app.set('view engine', 'ejs')</code></li><li>Templates live in <code>/views</code></li><li><code>res.render('index', { title })</code></li><li><code>&lt;% %&gt;</code> run &middot; <code>&lt;%= %&gt;</code> print</li><li><code>&lt;%- include("./partials/head.ejs") %&gt;</code></li></ul></div><div class="cheat-col"><h4>SemVer</h4><ul><li><code>MAJOR.MINOR.PATCH</code></li><li>MAJOR &mdash; breaking changes</li><li>MINOR &mdash; new features, compatible</li><li>PATCH &mdash; bug fixes, compatible</li><li><code>~1.3.8</code> latest patch &middot; <code>^1.3.8</code> latest minor</li></ul></div></div>
+        </section>
+        <section id="drills" style="--sec: var(--c1)">
+            <div class="section-label">Build It</div>
+            <h2 class="section-title">Build one app, one slide at a time</h2>
+
+<p>This chapter cannot be revised from paper &mdash; every idea in it is something a server either
+does or fails to do. Work through the list as <em>one growing project</em> rather than fifteen
+throwaway files, and by the end you will have the skeleton chapter 7 needs.</p>
+<ol class="drill"><li>Do the slide 1 leftover task first: show a table when a heading is clicked, using DOM manipulation methods.</li><li>Write two modules and an app that imports both. Deliberately leave one constant unexported and confirm it reads as <code>undefined</code>.</li><li>Read two files with <code>readFileSync</code> and append the result to a third with <code>{ flag: 'a' }</code>.</li><li>Write the simplest HTTP server from memory in nine lines, then visit a nonsense URL and confirm it gives the same response.</li><li>Add hand-written routing with <code>req.url</code>, including a 404 branch. Then imagine twenty routes and decide you want Express.</li><li>Rewrite the same two-file read asynchronously and log the output order &mdash; predict it before running.</li><li>Nest a second <code>readFile</code> inside the first callback so it can see the first result. That is callback hell; look at the indentation.</li><li>Wrap <code>readFile</code> in a Promise and chain two reads with <code>.then</code>. Compare the shape to the previous drill.</li><li>Fetch from a public API, log the raw <code>fetch</code> return value, then fix it with two <code>.then</code>s, then rewrite with <code>async/await</code>.</li><li>Run <code>npm init -y</code>, install express and nodemon (one as a dev dependency), and read the resulting <code>package.json</code> line by line.</li><li>Add <code>start</code> and <code>dev</code> scripts, run <code>npm run dev</code>, and edit a file while it is running.</li><li>Build the four-handler Express app: static, two routes, catch-all 404. Then move the 404 to the top and watch everything break.</li><li>Add a logging middleware that prints method, path and IP. Then delete its <code>next()</code> and watch the request hang.</li><li>Move the port into a <code>.env</code> file and read it with <code>dotenv</code>.</li><li>Write three endpoints that take a parameter three different ways &mdash; route, query, and a POSTed form &mdash; and note which <code>req</code> object each uses.</li><li>Split the routes and the data loading into separate modules, as slides 41&ndash;42 describe.</li><li>Convert the pages to EJS templates, pass real data into one, and factor the header and footer into partials.</li></ol>
+<p>There is no chapter-6 example folder in your study material, but two solved labs cover exactly this
+ground: <a href="/academics/software-engineering/se371/extra-resources/resource-viewers/lab-09-express-ejs-solution-b6cf6ffc/" target="_blank" rel="noopener">lab 09 &mdash; Express and EJS</a>
+and <a href="/academics/software-engineering/se371/extra-resources/resource-viewers/lab-08-solution-5a3bdaf0/" target="_blank" rel="noopener">lab 08</a>.
+Slide 51 and chapter 3 slide 85 both point to the full code repository at
+<code>github.com/skanderturki/se371</code>.</p>
+
+        </section>
+
+        <section id="quiz" style="--sec: var(--c7)">
+            <div class="section-label">Self-Check</div>
+            <h2 class="section-title">Can you answer these without scrolling up?</h2>
+            <div class="test-card">
+                <div class="test-head">
+                    <h3 id="quiz-header">Question 1</h3>
+                    <span class="tag" id="quiz-tag">&nbsp;</span>
+                </div>
+                <div class="test-body">
+                    <div class="test-question" id="quiz-q"></div>
+                    <div class="test-options" id="quiz-opts"></div>
+                    <div class="test-feedback" id="quiz-fb"></div>
+                    <button class="next-btn" id="quiz-next" type="button" onclick="nextQuestion()">Next question &rarr;</button>
+                </div>
+            </div>
+            <div id="quiz-score">
+                <p id="score-text"></p>
+                <span id="score-sub"></span><br><br>
+                <button class="toggle-btn" type="button" onclick="restartQuiz()">Restart quiz</button>
+            </div>
+        </section>
+        </main>
+    </div>
+
+    <footer>
+        <div style="font-size:0.7rem;text-transform:uppercase;letter-spacing:0.12em;color:var(--text3);margin-bottom:0.4rem">Prepared by</div>
+        <strong>Shoug Alomran</strong>
+        <div style="margin-top:0.5rem;font-size:0.78rem;color:var(--text3)">SE371 Web Engineering &mdash; Chapter 06: Server-Side: Node.js and Express</div>
+    </footer>
+
+    <script>const questions = [{"tag": "Express", "q": "A middleware function runs but the browser never receives a response and eventually times out. What is the most likely cause?", "opts": ["The port is already in use", "The middleware did not call next() or send a response", "CORS blocked the response", "express.static was not configured"], "a": 1, "why": "app.use() installs the function on a chain of responsibility. If it neither passes control on with next() nor sends a response itself, the request simply stops there — with no error at all."}, {"tag": "Async", "q": "let cities = fetch('/api/cities'); What does cities contain?", "opts": ["The JSON data from the API", "A Promise object", "The raw response text", "undefined until the request finishes"], "a": 1, "why": "It takes time for the service to respond, so fetch returns a Promise. Handle it with .then() for success and .catch() for failure — and remember response.json() returns another promise."}, {"tag": "Express", "q": "A form posts to /name with <input name=\"first\">. Where do you read the value?", "opts": ["<code>req.params.first</code>", "<code>req.query.first</code>", "<code>req.body.first</code>, with a body parser installed", "<code>req.form.first</code>"], "a": 2, "why": "A POSTed form sends its data in the request payload, so it arrives in req.body — but only after middleware such as bodyParser.urlencoded() has parsed it. req.params is for :route params and req.query for ?query strings."}, {"tag": "Node", "q": "Which describes Node's architecture?", "opts": ["Blocking and multithreaded", "Non-blocking, asynchronous and single-threaded", "Non-blocking and multiprocess", "Blocking with an event loop"], "a": 1, "why": "A single worker services all requests in one event loop thread, delegating other tasks to other agents. It is also why Node is a poor fit for computationally heavy work such as video processing."}, {"tag": "Modules", "q": "A module defines a constant but does not include it in module.exports. What does the importing file see?", "opts": ["The value, since everything in a file is exported", "undefined — literals are scoped to their module", "A ReferenceError", "An empty string"], "a": 1, "why": "Literals defined within a module are scoped to that module. The slide 8 example does exactly this: names.secret prints \"Selem Mr undefined\" because secret was never exported."}, {"tag": "CORS", "q": "Your page cannot call an API that works fine in the address bar. Which header must the API send?", "opts": ["<code>Content-Type: application/json</code>", "<code>Access-Control-Allow-Origin</code>", "<code>Cache-Control: no-store</code>", "<code>X-Requested-With</code>"], "a": 1, "why": "Browsers block cross-origin requests by default. The server has to opt in with Access-Control-Allow-Origin — in a Node app, npm install cors then app.use(cors())."}, {"tag": "npm", "q": "In \"express\": \"^4.18.2\", what does the caret allow npm to update to?", "opts": ["Patch versions only", "The latest minor version", "The latest major version", "Nothing — it pins the version"], "a": 1, "why": "Under semantic versioning, ^ allows updates to the latest MINOR version (new features, backwards compatible) and ~ allows the latest PATCH only. MAJOR changes are never taken automatically because they break compatibility."}, {"tag": "EJS", "q": "You write <h2><% title %></h2> and the heading renders empty. Why?", "opts": ["title was not passed to render", "<% %> runs code but outputs nothing", "EJS needs double quotes around variables", "Headings cannot contain EJS tags"], "a": 1, "why": "<% %> executes JavaScript without printing anything. To output a value you need <%= title %>. The third form, <%- %>, prints unescaped and is what include() uses."}];
+let currentQ = 0, score = 0, answered = false;
+
+function renderQuestion() {
+    const q = questions[currentQ];
+    answered = false;
+    document.getElementById('quiz-header').textContent = `Question ${currentQ + 1} of ${questions.length}`;
+    document.getElementById('quiz-tag').textContent = q.tag;
+    document.getElementById('quiz-q').textContent = q.q;
+    const opts = document.getElementById('quiz-opts');
+    opts.innerHTML = '';
+    q.opts.forEach((text, i) => {
+        const b = document.createElement('button');
+        b.className = 'opt';
+        b.type = 'button';
+        b.innerHTML = text;
+        b.onclick = () => answer(i, b);
+        opts.appendChild(b);
+    });
+    const fb = document.getElementById('quiz-fb');
+    fb.className = 'test-feedback';
+    fb.textContent = '';
+    document.getElementById('quiz-next').className = 'next-btn';
+}
+
+function answer(i, btn) {
+    if (answered) return;
+    answered = true;
+    const q = questions[currentQ];
+    document.querySelectorAll('#quiz-opts .opt').forEach((b, j) => {
+        b.disabled = true;
+        if (j === q.a) b.classList.add('correct');
+    });
+    if (i !== q.a) btn.classList.add('wrong'); else score++;
+    const fb = document.getElementById('quiz-fb');
+    fb.className = 'test-feedback show';
+    fb.textContent = (i === q.a ? 'Correct — ' : 'Not quite — ') + q.why;
+    document.getElementById('quiz-next').className = 'next-btn show';
+}
+
+function nextQuestion() {
+    currentQ++;
+    if (currentQ < questions.length) { renderQuestion(); return; }
+    document.querySelector('.test-card').style.display = 'none';
+    document.getElementById('quiz-score').classList.add('show');
+    document.getElementById('score-text').textContent = `${score} / ${questions.length}`;
+    document.getElementById('score-sub').textContent =
+        score === questions.length ? 'Clean sweep. Move on to the drills.'
+        : score >= questions.length * 0.6 ? 'Solid. Re-read the traps you missed.'
+        : 'Go back through the slide map before the next chapter.';
+}
+
+function restartQuiz() {
+    currentQ = 0; score = 0;
+    document.getElementById('quiz-score').classList.remove('show');
+    document.querySelector('.test-card').style.display = '';
+    renderQuestion();
+}
+
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    // Persist both keys: html-theme-sync.js resolves from localStorage only and
+    // runs after this file, so without agreeing with it the page would flip.
+    try {
+        localStorage.setItem('shoug-theme', theme);
+        localStorage.setItem('theme', theme);
+    } catch (e) { }
+    const btn = document.getElementById('theme-btn');
+    if (btn) btn.textContent = theme === 'dark' ? 'Light' : 'Dark';
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Default to dark — matching the site chrome this page is embedded in —
+    // unless the reader has explicitly chosen light.
+    let saved = null;
+    try { saved = localStorage.getItem('shoug-theme') || localStorage.getItem('theme'); } catch (e) { }
+    applyTheme(saved === 'light' ? 'light' : 'dark');
+
+    const btn = document.getElementById('theme-btn');
+    if (btn) {
+        btn.addEventListener('click', () => {
+            applyTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+        });
+    }
+    renderQuestion();
+
+    // reading progress
+    const bar = document.getElementById('progress');
+    const onScroll = () => {
+        const h = document.documentElement.scrollHeight - window.innerHeight;
+        bar.style.width = (h > 0 ? (window.scrollY / h) * 100 : 0) + '%';
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+
+    // highlight the section currently in view, in both the rail and the nav
+    const links = [...document.querySelectorAll('.chapter-toc a, .nav-links a')];
+    const byHash = id => links.filter(a => a.getAttribute('href') === '#' + id);
+    const io = new IntersectionObserver(entries => {
+        entries.forEach(e => {
+            if (!e.isIntersecting) return;
+            links.forEach(a => a.classList.remove('active'));
+            byHash(e.target.id).forEach(a => a.classList.add('active'));
+        });
+    }, { rootMargin: '-25% 0px -65% 0px' });
+    document.querySelectorAll('section[id]').forEach(s => io.observe(s));
+});
+</script>
+    <script src="/javascripts/standalone-theme.js"></script>
+    <script src="/javascripts/html-theme-sync.js"></script>
+</body>
+
+</html>

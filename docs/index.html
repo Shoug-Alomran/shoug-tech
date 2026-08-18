@@ -43,7 +43,8 @@
             position: fixed;
             inset: 0;
             background: var(--bg);
-            z-index: 9999;
+            /* above the site header (10000) so the boot screen covers everything */
+            z-index: 100000;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -57,6 +58,55 @@
             letter-spacing: 2px;
         }
 
+        /* The boot overlay hides itself even if the script never runs, so a JS
+           error can never leave the site behind a blank screen. */
+        #intro-overlay {
+            animation: introFallbackOut .5s ease 2.4s forwards;
+        }
+
+        #intro-overlay.is-done {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transition: opacity .55s ease, visibility 0s linear .55s;
+        }
+
+        @keyframes introFallbackOut {
+            to {
+                opacity: 0;
+                visibility: hidden;
+                pointer-events: none;
+            }
+        }
+
+        .terminal-init::after {
+            content: "_";
+            animation: introCaret 1s step-end infinite;
+        }
+
+        @keyframes introCaret {
+            50% { opacity: 0 }
+        }
+
+        .scan-line.is-sweeping {
+            animation: introScan 1.1s ease-in-out forwards;
+        }
+
+        @keyframes introScan {
+            to { transform: translateY(100vh) }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            #intro-overlay {
+                animation-delay: .6s;
+            }
+
+            .terminal-init::after,
+            .scan-line.is-sweeping {
+                animation: none;
+            }
+        }
+
         .scan-line {
             position: absolute;
             top: -100px;
@@ -65,7 +115,7 @@
             height: 100px;
             background: linear-gradient(to bottom, transparent, rgba(157, 80, 187, 0.2), transparent);
             pointer-events: none;
-            z-index: 10000;
+            z-index: 100001;
             position: fixed;
             transform: translateY(-100%);
             will-change: transform;
@@ -1641,6 +1691,11 @@
 </head>
 
 <body vid="10">
+
+    <div id="intro-overlay" aria-hidden="true">
+        <div class="terminal-init" id="typewriter"></div>
+    </div>
+    <div class="scan-line" id="global-scan" aria-hidden="true"></div>
     <div class="cursor-follower" id="follower" aria-hidden="true"></div>
     <script>if (localStorage.getItem('shoug-theme') === 'light') document.body.classList.add('shoug-light-mode');</script>
 
@@ -2276,6 +2331,43 @@
                     applyLang(document.documentElement.lang && document.documentElement.lang.indexOf('ar') === 0 ? 'en' : 'ar');
                 });
             }
+        })();
+    </script>
+
+    <script>
+        // Boot overlay: types "> INITIALIZING... SHOUG.TECH", sweeps the scan
+        // line, then clears — about 1.9s in total.
+        (function () {
+            var overlay = document.getElementById('intro-overlay');
+            var typewriter = document.getElementById('typewriter');
+            var scan = document.getElementById('global-scan');
+            if (!overlay || !typewriter) return;
+
+            var isArabic = (document.documentElement.lang || '').toLowerCase().indexOf('ar') === 0;
+            var text = isArabic ? '> جار التهيئة... SHOUG.TECH' : '> INITIALIZING... SHOUG.TECH';
+            var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+            function dismiss() {
+                if (scan) scan.classList.add('is-sweeping');
+                overlay.classList.add('is-done');
+                setTimeout(function () { overlay.style.display = 'none'; }, 700);
+            }
+
+            if (reduced) {
+                typewriter.textContent = text;
+                setTimeout(dismiss, 400);
+                return;
+            }
+
+            var i = 0;
+            (function type() {
+                if (i < text.length) {
+                    typewriter.textContent += text.charAt(i++);
+                    setTimeout(type, 45);
+                } else {
+                    setTimeout(dismiss, 320);
+                }
+            })();
         })();
     </script>
 
