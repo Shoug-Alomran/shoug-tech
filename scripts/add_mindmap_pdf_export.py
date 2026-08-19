@@ -1,14 +1,32 @@
 #!/usr/bin/env python3
-"""Give SE322 (and other) mindmap pages a real landscape PDF export.
+"""Give every interactive mindmap a real landscape PDF export.
 
-The old Export button just called window.print(), which printed the live
-canvas: portrait, clipped, and only whatever branches happened to be open.
-This replaces it with a purpose-built print sheet — every node expanded,
-laid out horizontally as branch cards, scaled to fit one landscape page.
+The original Export button called window.print() on the live canvas, which
+printed whatever happened to be on screen: portrait, clipped at the viewport,
+and missing every collapsed branch. This replaces it with a purpose-built
+print sheet — all branches expanded, laid out as balanced columns, scaled to
+fit exactly one landscape page.
+
+The mindmaps are generated from the ETHCS303 chapter-1 page (see
+build_se401_study_tools.ETHICS_MAP_TEMPLATE), so patching that template makes
+the export survive regeneration; the already-generated pages are patched too.
+
+    python3 scripts/add_mindmap_pdf_export.py [path ...]
+
+Idempotent: pages that already carry the sheet are skipped.
 """
+from __future__ import annotations
+
 import re
 import sys
 from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+
+DEFAULT_TARGETS = [
+    ROOT / "docs/academics/other-courses/ethcs303/extra-resources/mindmap",
+    ROOT / "docs/academics",
+]
 
 PRINT_CSS = """
         /* ─────────────────────────────────────────────
@@ -61,20 +79,21 @@ PRINT_CSS = """
 
         #print-inner .ps-meta {
             font-size: 11px;
-            color: #5b6472;
-            text-align: right;
             line-height: 1.5;
+            text-align: right;
             white-space: nowrap;
+            color: #5b6472;
         }
 
         #print-inner .ps-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 14px;
-            align-items: start;
+            column-width: 300px;
+            column-gap: 14px;
         }
 
         #print-inner .ps-card {
+            display: inline-block;
+            width: 100%;
+            margin: 0 0 14px;
             border: 1.5px solid #d8dee7;
             border-top: 5px solid var(--c, #0969da);
             border-radius: 10px;
@@ -137,6 +156,13 @@ PRINT_CSS = """
             background: var(--c, #0969da);
         }
 
+        #print-inner .ps-group > .ps-leaf-label {
+            display: block;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 4px;
+        }
+
         #print-inner .ps-sub {
             list-style: none;
             margin: 5px 0 0;
@@ -144,7 +170,7 @@ PRINT_CSS = """
             border-left: 1px dashed #cdd5e0;
             display: flex;
             flex-direction: column;
-            gap: 4px;
+            gap: 5px;
         }
 
         #print-inner .ps-sub .ps-leaf {
@@ -190,6 +216,14 @@ PRINT_CSS = """
                 left: auto !important;
             }
 
+            /* A transform does not shrink the layout box, so a scaled sheet
+               would still paginate by its full size. Clamp it to one page. */
+            #print-sheet.one-page {
+                width: 1520px;
+                height: 1050px;
+                overflow: hidden;
+            }
+
             #print-inner {
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
@@ -200,7 +234,8 @@ PRINT_CSS = """
 EXPORT_JS = """        // ─────────────────────────────────────────────
         // EXPORT — LANDSCAPE PDF (every node expanded)
         // ─────────────────────────────────────────────
-        const PRINT_PAGE_H = 1050;   // A3 landscape content height @96dpi
+        const PRINT_PAGE_W = 1520;   // A3 landscape content box @96dpi
+        const PRINT_PAGE_H = 1050;
         const PRINT_ACCENTS = ['#0969da', '#1a7f37', '#8250df', '#bc4c00', '#cf222e', '#0550ae'];
 
         function psEscape(text) {
@@ -220,18 +255,25 @@ EXPORT_JS = """        // ──────────────────
         function psLeaves(nodes) {
             return (nodes || []).map(node => {
                 const text = psDesc(node.desc) || node.label;
-                const sub = node.children && node.children.length
-                    ? `<ul class="ps-sub">${psLeaves(node.children)}</ul>`
-                    : '';
-                return `<li class="ps-leaf">${psEscape(text)}${sub}</li>`;
+                if (node.children && node.children.length) {
+                    // A grouping node (e.g. "Examples") keeps its own label as a
+                    // heading so the nesting still reads on paper.
+                    return `<li class="ps-leaf ps-group"><span class="ps-leaf-label">${psEscape(node.label)}</span>` +
+                        `<ul class="ps-sub">${psLeaves(node.children)}</ul></li>`;
+                }
+                return `<li class="ps-leaf">${psEscape(text)}</li>`;
             }).join('');
+        }
+
+        function printKicker() {
+            const parts = document.title.split('—').map(s => s.trim()).filter(Boolean);
+            return parts.find(p => /[A-Z]{2,4}\\s?\\d{3}|chapter/i.test(p)) || parts[parts.length - 1] || '';
         }
 
         function buildPrintSheet() {
             const old = document.getElementById('print-sheet');
             if (old) old.remove();
 
-            const kicker = (document.title.split('—')[0] || '').trim();
             const cards = (DATA.children || []).map((branch, i) => {
                 const color = PRINT_ACCENTS[i % PRINT_ACCENTS.length];
                 const intro = psDesc(branch.desc);
@@ -250,7 +292,7 @@ EXPORT_JS = """        // ──────────────────
             sheet.innerHTML = `<div id="print-inner">
                 <header class="ps-head">
                     <div>
-                        <div class="ps-kicker">${psEscape(kicker)}</div>
+                        <div class="ps-kicker">${psEscape(printKicker())}</div>
                         <h1 class="ps-title">${psEscape(DATA.label)}</h1>
                     </div>
                     <div class="ps-meta">Full mindmap — all branches expanded</div>
@@ -267,13 +309,31 @@ EXPORT_JS = """        // ──────────────────
             const sheet = buildPrintSheet();
             const inner = sheet.querySelector('#print-inner');
 
-            // Measure off-screen at full size, then scale down to one page.
+            // Measure off-screen, then binary-search the largest scale that still
+            // fits one landscape page — sparse maps grow, dense ones shrink.
             sheet.classList.add('measuring');
-            inner.style.transform = 'none';
             try { await document.fonts.ready; } catch (_e) { }
             await new Promise(r => requestAnimationFrame(r));
-            const scale = Math.min(1, PRINT_PAGE_H / inner.scrollHeight);
-            inner.style.transform = scale < 1 ? `scale(${scale})` : 'none';
+
+            const fits = s => {
+                inner.style.transform = 'none';
+                inner.style.width = (PRINT_PAGE_W / s) + 'px';
+                return inner.scrollHeight <= PRINT_PAGE_H / s;
+            };
+
+            let lo = 0.45, hi = 1.75;
+            if (!fits(lo)) hi = lo;                 // even the floor overflows: accept it
+            else if (fits(hi)) lo = hi;
+            else {
+                for (let i = 0; i < 12; i++) {
+                    const mid = (lo + hi) / 2;
+                    if (fits(mid)) lo = mid; else hi = mid;
+                }
+            }
+            const onePage = fits(lo);   // false only if even the floor overflows
+            inner.style.width = (PRINT_PAGE_W / lo) + 'px';
+            inner.style.transform = `scale(${lo})`;
+            sheet.classList.toggle('one-page', onePage);
             sheet.classList.remove('measuring');
 
             window.addEventListener('afterprint', () => sheet.remove(), { once: true });
@@ -290,49 +350,49 @@ OLD_EXPORT_RE = re.compile(
 )
 
 
-def patch(path: Path) -> bool:
-    src = path.read_text()
-
-    if "id=\"print-sheet\"" in src or "exportPDF()" in src:
-        print(f"skip (already patched): {path}")
-        return False
-
+def patch_text(src: str) -> str | None:
+    """Return the patched page, or None when it is not a patchable mindmap."""
+    if 'id="print-sheet"' in src or "exportPDF()" in src:
+        return None
     if not OLD_EXPORT_RE.search(src):
-        print(f"!! no exportPNG block: {path}")
-        return False
+        return None
 
     src = OLD_EXPORT_RE.sub(lambda _m: EXPORT_JS, src, count=1)
 
-    # CSS goes just before the page's own </style>
     head, sep, tail = src.partition("    </style>")
     if not sep:
-        print(f"!! no </style>: {path}")
-        return False
+        return None
     src = head + PRINT_CSS + sep + tail
 
     src = src.replace('onclick="exportPNG()" title="Export PNG"',
                       'onclick="exportPDF()" title="Export PDF (landscape, fully expanded)"')
     src = re.sub(r"(\n\s+)Export\n(\s+</button>)", r"\1Export PDF\n\2", src, count=1)
-
-    # Keep the meta descriptions honest.
     src = src.replace("details, and PNG export.", "details, and landscape PDF export.")
+    src = src.replace("zoom, pan, or export the full map.", "zoom, pan, or export the full map as a PDF.")
+    return src
 
-    path.write_text(src)
-    print(f"patched: {path}")
+
+def patch_file(path: Path) -> bool:
+    out = patch_text(path.read_text())
+    if out is None:
+        return False
+    path.write_text(out)
+    print(f"patched: {path.relative_to(ROOT)}")
     return True
 
 
-def main(argv):
-    roots = [Path(a) for a in argv[1:]] or [
-        Path("docs/academics/software-engineering/se322/extra-resources/mindmaps")
-    ]
+def main(argv: list[str]) -> None:
+    targets = [Path(a) for a in argv[1:]] or DEFAULT_TARGETS
+    seen: set[Path] = set()
     count = 0
-    for root in roots:
-        for f in sorted(root.rglob("*.html")):
-            if f.name == "index.html":
+    for target in targets:
+        files = [target] if target.is_file() else sorted(target.rglob("*.html"))
+        for f in files:
+            if f in seen or f.name == "index.html":
                 continue
-            count += patch(f)
-    print(f"\n{count} file(s) patched")
+            seen.add(f)
+            count += patch_file(f)
+    print(f"\n{count} page(s) patched")
 
 
 if __name__ == "__main__":
