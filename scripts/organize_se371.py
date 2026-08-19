@@ -133,6 +133,11 @@ def create_resource_indexes() -> None:
         for number, child in enumerate(sorted((child for child in directory.iterdir() if not child.name.startswith(".") and child.name != "index.html"), key=lambda path: (not path.is_dir(), path.name)), 1):
             href = quote(child.name) + ("/" if child.is_dir() else "")
             label = title_from_slug(child.stem if child.is_file() else child.name)
+            # Spell out the file type. Several folders sit next to an archive of
+            # the same name (lab-03a-css-solution/ and lab-03a-css-solution.rar),
+            # which otherwise renders as two identical rows.
+            if child.is_file() and child.suffix.lower() not in {".html", ".htm"}:
+                label += f" ({child.suffix.lstrip('.').upper()})"
             icon = folder_icon if child.is_dir() else ""
             items.append(f'<a class="dir-row" href="{href}"><div class="dir-num">{number:02d}</div><div class="dir-title"><span class="dir-title-text">{html.escape(label)}</span>{icon}</div><div class="dir-status"><span class="status-tag available">AVAILABLE</span></div><div class="dir-arrow">-&gt;</div></a>')
         canonical = f"https://shoug-tech.com/{relative}/"

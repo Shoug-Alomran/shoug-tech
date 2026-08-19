@@ -2134,8 +2134,8 @@ layout slides are pictures. Open a file, open the browser, and build.</p>
 <a href="/academics/software-engineering/se371/extra-resources/chapter-3/example-codes-css/" target="_blank" rel="noopener">CSS example folder</a>,
 the <a href="/academics/software-engineering/se371/extra-resources/resource-viewers/css-layout-tutorial-handout-with-starter-and-exercises-507e502d/" target="_blank" rel="noopener">CSS layout handout with exercises</a>,
 and the two solved CSS labs
-(<a href="/academics/software-engineering/se371/extra-resources/resource-viewers/home-1e1aa162/" target="_blank" rel="noopener">lab 03a</a>,
-<a href="/academics/software-engineering/se371/extra-resources/resource-viewers/home-014d2312/" target="_blank" rel="noopener">lab 03b</a>).
+(<a href="/academics/software-engineering/se371/extra-resources/resource-viewers/home-e140c164/" target="_blank" rel="noopener">lab 03a</a>,
+<a href="/academics/software-engineering/se371/extra-resources/resource-viewers/home-e35bd0d8/" target="_blank" rel="noopener">lab 03b</a>).
 Slide 85 also gives the repository for every chapter&rsquo;s code:
 <code>github.com/skanderturki/se371</code>.</p>
 """
@@ -5243,7 +5243,7 @@ connect, and exercise GET, POST, DELETE and PUT. Everything below builds on that
                 'Finally: wire an EJS page from chapter 6 to display <code>findAll()</code> results in a table. That is the whole course in one file.',
             ]) + """
 <p>There is no chapter-7 example folder in your study material, but two solved labs cover this ground:
-<a href="/academics/software-engineering/se371/extra-resources/resource-viewers/solution-lab-10-c78cded5/" target="_blank" rel="noopener">lab 10</a> and
+<a href="/academics/software-engineering/se371/extra-resources/resource-viewers/lab-10-solution-4dbe568d/" target="_blank" rel="noopener">lab 10</a> and
 <a href="/academics/software-engineering/se371/extra-resources/resource-viewers/lab-11-solution-405367e1/" target="_blank" rel="noopener">lab 11</a>.
 The full code repository for every chapter is at <code>github.com/skanderturki/se371</code>.</p>
 """
