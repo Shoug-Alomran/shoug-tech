@@ -23,7 +23,10 @@ def chapter_entries(maps: Path):
     return entries
 
 
-def apply_course(code: str, base: Path) -> None:
+def apply_course(code: str, base: Path, labels: dict[str, str] | None = None) -> None:
+    """`labels` maps a mindmap folder name to the sidebar text for that chapter;
+    folders left out fall back to the legacy "Chapter N Mindmap" wording."""
+    labels = labels or {}
     maps = base / "extra-resources/mindmaps"
     if not maps.exists():
         return
@@ -44,7 +47,8 @@ def apply_course(code: str, base: Path) -> None:
             for number, folder in entries:
                 active = " file-active" if folder == active_folder else ""
                 dot = '<span class="status-dot"></span>' if active else ""
-                children.append(f'<li class="tree-item tree-viewer{active}"><a class="tree-file" href="{route}/extra-resources/mindmaps/{folder}/">{dot}Chapter {number} Mindmap</a></li>')
+                label = labels.get(folder, f"Chapter {number} Mindmap")
+                children.append(f'<li class="tree-item tree-viewer{active}"><a class="tree-file" href="{route}/extra-resources/mindmaps/{folder}/">{dot}{label}</a></li>')
         replacement = (
             f'<li class="tree-item tree-section file-active"><a class="tree-file" href="{route}/extra-resources/" '
             'data-en-text="STUDY MATERIAL" data-ar-text="المواد الدراسية"><span class="status-dot"></span>STUDY MATERIAL</a></li>'

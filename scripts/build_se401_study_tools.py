@@ -129,13 +129,26 @@ CHAPTERS = [
 ]
 
 
+def branch_parts(branch):
+    """Unpack a chapter branch, tolerating the optional 4th examples element.
+
+    Chapters may be written as (name, desc, facts) or
+    (name, desc, facts, examples); examples are worked illustrations that
+    belong on the mindmap but should not become extra exam questions.
+    """
+    name, desc, facts = branch[0], branch[1], branch[2]
+    examples = list(branch[3]) if len(branch) > 3 else []
+    return name, desc, list(facts), examples
+
+
 def slug_label(value: str) -> str:
     return re.sub(r"[^a-z0-9]+", "-", value.lower()).strip("-")
 
 
 def mindmap_html(chapter_no: int, title: str, branches: list) -> str:
     tree = {"id": "root", "label": title, "desc": f'<span class="panel-tag">SE401 · Chapter {chapter_no}</span><p>A comprehensive concept map for <strong>{html.escape(title)}</strong>. Expand branches, select a node for detail, search topics, zoom, pan, or export the full map.</p>', "children": []}
-    for branch_index, (name, desc, facts) in enumerate(branches, 1):
+    for branch_index, raw_branch in enumerate(branches, 1):
+        name, desc, facts, examples = branch_parts(raw_branch)
         branch = {
             "id": f"branch-{branch_index}",
             "label": name,
@@ -150,6 +163,20 @@ def mindmap_html(chapter_no: int, title: str, branches: list) -> str:
                 "label": label,
                 "desc": f'<span class="panel-tag">Key Detail</span><p>{html.escape(fact)}</p>',
             })
+        if examples:
+            example_node = {
+                "id": f"branch-{branch_index}-examples",
+                "label": "Examples",
+                "desc": f'<span class="panel-tag">Examples</span><p>Worked illustrations of <strong>{html.escape(name)}</strong> in real systems and code.</p>',
+                "children": [],
+            }
+            for example_index, (example_label, example_text) in enumerate(examples, 1):
+                example_node["children"].append({
+                    "id": f"branch-{branch_index}-example-{example_index}",
+                    "label": example_label,
+                    "desc": f'<span class="panel-tag">Example</span><p>{html.escape(example_text)}</p>',
+                })
+            branch["children"].append(example_node)
         tree["children"].append(branch)
     text = ETHICS_MAP_TEMPLATE.read_text()
     page_title = f"{title} — SE401 Mindmap"
@@ -199,7 +226,8 @@ def mindmap_html(chapter_no: int, title: str, branches: list) -> str:
 
 def exam_html(chapter_no: int, title: str, branches: list) -> str:
     facts = []
-    for name, desc, details in branches:
+    for raw_branch in branches:
+        name, desc, details, _examples = branch_parts(raw_branch)
         facts.append((name, desc))
         facts.extend((name, d) for d in details)
     # Every concept written into the slide-audited chapter model becomes an MCQ.
@@ -220,7 +248,8 @@ def exam_html(chapter_no: int, title: str, branches: list) -> str:
         opts = opts[shift:] + opts[:shift]
         mcqs.append({"q": prompts[i % len(prompts)].format(statement=statement), "options": opts, "correct": opts.index(topic), "why": f"{topic} is correct because this statement describes its defining purpose or practice. The other choices cover different concerns within {title}."})
     shorts = []
-    for topic, statement, _details in branches:
+    for raw_branch in branches:
+        topic, statement = raw_branch[0], raw_branch[1]
         words = [w.lower() for w in re.findall(r"[A-Za-z]{5,}", statement) if w.lower() not in {"which","their","about","these","through","where","every"}][:3]
         shorts.append({"q": f"In 1–2 sentences, explain {topic} and include one important detail.", "keywords": [topic.lower()] + words, "answer": statement})
     payload_m = json.dumps(mcqs).replace("</", "<\\/")
@@ -253,7 +282,7 @@ def transform_reference(text: str, chapter_no: int, old_slug: str, old_title: st
     text = sitegen.replace_academic_sidebar(text, "SE401", active_section)
     if kind == "exam":
         rows = []
-        for index, (slug, label, _branches) in enumerate(CHAPTERS, 1):
+        for index, (slug, label, *_rest) in enumerate(CHAPTERS, 1):
             folder = f"{index:02d}-{slug}-quiz"
             active = slug == new_slug
             rows.append(
@@ -303,7 +332,7 @@ def write_wrappers() -> None:
         ("software-engineering", "Software Engineering"), ("stakeholders", "Stakeholders"),
         ("tailoring-models-methods-and-artifacts", "Tailoring Models, Methods & Artifacts"), ("team", "Team"),
     ]
-    for i, (slug, title, _branches) in enumerate(CHAPTERS, 1):
+    for i, (slug, title, *_rest) in enumerate(CHAPTERS, 1):
         ref_i = min(i, 12)
         old_slug, old_title = old[ref_i - 1]
         map_ref = REF / f"extra-resources/mindmaps/{ref_i:02d}-{old_slug}/index.html"
@@ -317,7 +346,7 @@ def write_wrappers() -> None:
 
 def replace_rows(hub: str, kind: str) -> str:
     rows = []
-    for i, (slug, title, _branches) in enumerate(CHAPTERS, 1):
+    for i, (slug, title, *_rest) in enumerate(CHAPTERS, 1):
         folder = f"{i:02d}-{slug}" + ("-quiz" if kind == "exam" else "")
         label = f"Chapter {i}: {title}" + (" Quiz" if kind == "exam" else " Mindmap")
         route_base = "exams" if kind == "exam" else "extra-resources/mindmaps"
