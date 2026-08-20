@@ -2,7 +2,12 @@
   "use strict";
 
   var INDEX_URL = "/search-index.json?v=20260729-resources-1";
+  // Text pulled out of the course PDFs. Fetched separately and only once the
+  // page index is in, so opening search stays as fast as it was.
+  var PDF_INDEX_URL = "/search-pdf-index.json";
   var index = null;
+  var pdfIndex = null;
+  var pdfIndexState = "idle";
   var modal = null;
   var input = null;
   var results = null;
@@ -17,6 +22,7 @@
     "academic-plan-themes": "Academic Plan",
     policy: "Policy",
     "career-development": "Career",
+    slides: "In slide decks",
   };
 
   function sectionLabel(s) {
@@ -141,6 +147,59 @@
     return hits > 0 ? (hits / words.length) * 30 : -1;
   }
 
+  /* Slide entries carry a bag of terms rather than prose, so scoring counts how
+     many of the query words appear rather than looking for the phrase. */
+  function scorePdf(item, q) {
+    var lq = q.toLowerCase();
+    var title = item.t.toLowerCase();
+    if (title.includes(lq)) return 55;
+
+    var words = lq.split(/\s+/).filter(function (w) { return w.length > 2; });
+    if (!words.length) return -1;
+
+    var terms = item.k;
+    var hits = words.filter(function (w) {
+      return terms.indexOf(w) !== -1 || title.indexOf(w) !== -1;
+    }).length;
+    if (!hits) return -1;
+    // Capped below title matches on real pages: a page whose title matches is
+    // still the better answer than a deck that merely mentions the word.
+    return (hits / words.length) * 45;
+  }
+
+  function searchPdfs(q) {
+    if (!Array.isArray(pdfIndex)) return [];
+    return pdfIndex
+      .map(function (item) { return { item: item, s: scorePdf(item, q) }; })
+      .filter(function (x) { return x.s > 0; })
+      .sort(function (a, b) { return b.s - a.s; })
+      .slice(0, 8)
+      .map(function (x) {
+        return {
+          url: x.item.u,
+          title: x.item.t,
+          description: x.item.p,
+          section: "slides",
+        };
+      });
+  }
+
+  function loadPdfIndex(onReady) {
+    if (pdfIndexState !== "idle") return;
+    pdfIndexState = "loading";
+    fetch(PDF_INDEX_URL)
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        pdfIndex = data;
+        pdfIndexState = "ready";
+        if (onReady) onReady();
+      })
+      .catch(function () {
+        // Slide search is an enhancement; page search carries on without it.
+        pdfIndexState = "failed";
+      });
+  }
+
   function search(q) {
     if (!q || q.length < 2) return [];
     var scored = index
@@ -155,7 +214,7 @@
       results.innerHTML = '<div class="shoug-sr-empty">' + searchHint() + '</div>';
       return;
     }
-    var matches = search(q);
+    var matches = search(q).concat(searchPdfs(q));
     if (!matches.length) {
       results.innerHTML = '<div class="shoug-sr-empty">No results for &ldquo;' + escHtml(q) + '&rdquo;</div>';
       return;
@@ -243,6 +302,10 @@
           index = data;
           if (input.value.trim().length < 2) results.innerHTML = '<div class="shoug-sr-empty">' + searchHint() + '</div>';
           if (input.value.trim().length >= 2) renderResults(input.value.trim());
+          loadPdfIndex(function () {
+            var current = input.value.trim();
+            if (current.length >= 2) renderResults(current);
+          });
         })
         .catch(function () {
           results.innerHTML = '<div class="shoug-sr-empty">Search index unavailable.</div>';
