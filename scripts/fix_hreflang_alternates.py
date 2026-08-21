@@ -1,12 +1,19 @@
 #!/usr/bin/env python3
-"""Point the Arabic hreflang alternates at the URL that actually serves Arabic.
+"""Rebuild the hreflang alternates from each page's canonical URL.
 
-The alternates were written as https://shoug-tech.com/ar/<path>, but there is
-no /ar/ tree: javascripts/arabic-localization.js switches language in place off
-a ?lang=ar query parameter. Every Arabic alternate therefore resolved to a 404,
-which tells search engines the translation does not exist.
+Two separate defects produced alternates that resolved to 404s:
 
-Rewrites each ar alternate to the page's own canonical URL plus ?lang=ar.
+  * Arabic alternates were written as https://shoug-tech.com/ar/<path>, but
+    there is no /ar/ tree -- javascripts/arabic-localization.js switches
+    language in place off a ?lang=ar query parameter.
+
+  * Some pages kept en/x-default alternates pointing at paths from an earlier
+    site structure (flat slide-breakdowns/Chapter-2/ rather than the numbered
+    folders used now).
+
+The canonical is the one URL each page already asserts is correct, so all
+three alternates are derived from it: en and x-default match it exactly, ar
+appends ?lang=ar.
 """
 from __future__ import annotations
 
@@ -16,10 +23,15 @@ from pathlib import Path
 
 DOCS = Path(__file__).resolve().parent.parent / "docs"
 
-AR_ALT = re.compile(
-    r'<link\s+rel="alternate"\s+hreflang="ar"\s+href="([^"]*)"\s*/?>',
-    re.I,
-)
+def alt_pattern(lang: str) -> re.Pattern[str]:
+    return re.compile(
+        r'<link\s+rel="alternate"\s+hreflang="' + re.escape(lang)
+        + r'"\s+href="([^"]*)"\s*/?>',
+        re.I,
+    )
+
+
+ALTS = {lang: alt_pattern(lang) for lang in ("en", "ar", "x-default")}
 CANONICAL = re.compile(r'<link\s+rel="canonical"\s+href="([^"]*)"\s*/?>', re.I)
 
 
@@ -29,8 +41,7 @@ def main() -> int:
 
     for p in sorted(DOCS.rglob("*.html")):
         text = p.read_text(encoding="utf-8", errors="ignore")
-        m = AR_ALT.search(text)
-        if not m:
+        if "hreflang" not in text:
             continue
 
         canon = CANONICAL.search(text)
@@ -39,18 +50,31 @@ def main() -> int:
             continue
 
         base = canon.group(1)
-        target = base + ("&" if "?" in base else "?") + "lang=ar"
-        if m.group(1) == target:
+        targets = {
+            "en": base,
+            "x-default": base,
+            "ar": base + ("&" if "?" in base else "?") + "lang=ar",
+        }
+
+        changed = False
+        for lang, pattern in ALTS.items():
+            m = pattern.search(text)
+            if not m or m.group(1) == targets[lang]:
+                continue
+            tag = (f'<link rel="alternate" hreflang="{lang}" '
+                   f'href="{targets[lang]}">')
+            text = text[: m.start()] + tag + text[m.end():]
+            changed = True
+
+        if not changed:
             continue
 
-        new_tag = f'<link rel="alternate" hreflang="ar" href="{target}">'
-        out = text[: m.start()] + new_tag + text[m.end():]
         fixed += 1
         if apply:
-            p.write_text(out, encoding="utf-8")
+            p.write_text(text, encoding="utf-8")
 
     verb = "fixed" if apply else "would fix"
-    print(f"{verb} {fixed} Arabic alternates")
+    print(f"{verb} hreflang alternates on {fixed} pages")
     if skipped:
         print(f"{skipped} pages skipped (no canonical to derive the URL from)")
     if not apply:

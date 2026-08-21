@@ -1046,7 +1046,16 @@ var COURSE_PAGES = [
     "courseTitle": "CS331 // Data Communications and Computer Networks"
   },
   {
-    "url": "/academics/computer-science/cs331/slide-breakdowns/02-data-link-layer-control/",
+    "url": "/academics/computer-science/cs331/slide-breakdowns/02-protocol-layering-and-network-models/",
+    "title": "CS331 | Breakdown: Protocol Layering and Network Models",
+    "track": "computer-science",
+    "course": "cs331",
+    "section": "slide-breakdowns",
+    "courseUrl": "/academics/computer-science/cs331/",
+    "courseTitle": "CS331 // Data Communications and Computer Networks"
+  },
+  {
+    "url": "/academics/computer-science/cs331/slide-breakdowns/03-data-link-layer-control/",
     "title": "CS331 | Breakdown: Data Link Layer Control",
     "track": "computer-science",
     "course": "cs331",
@@ -1055,17 +1064,8 @@ var COURSE_PAGES = [
     "courseTitle": "CS331 // Data Communications and Computer Networks"
   },
   {
-    "url": "/academics/computer-science/cs331/slide-breakdowns/03-data-link-layer-mac-protocols/",
+    "url": "/academics/computer-science/cs331/slide-breakdowns/04-data-link-layer-mac-protocols/",
     "title": "CS331 | Breakdown: Data Link Layer MAC Protocols",
-    "track": "computer-science",
-    "course": "cs331",
-    "section": "slide-breakdowns",
-    "courseUrl": "/academics/computer-science/cs331/",
-    "courseTitle": "CS331 // Data Communications and Computer Networks"
-  },
-  {
-    "url": "/academics/computer-science/cs331/slide-breakdowns/04-dns-and-application-layer/",
-    "title": "CS331 | Breakdown: DNS and Application Layer",
     "track": "computer-science",
     "course": "cs331",
     "section": "slide-breakdowns",
@@ -1109,8 +1109,8 @@ var COURSE_PAGES = [
     "courseTitle": "CS331 // Data Communications and Computer Networks"
   },
   {
-    "url": "/academics/computer-science/cs331/slide-breakdowns/09-protocol-layering-and-network-models/",
-    "title": "CS331 | Breakdown: Protocol Layering and Network Models",
+    "url": "/academics/computer-science/cs331/slide-breakdowns/09-transport-layer/",
+    "title": "CS331 | Breakdown: Transport Layer",
     "track": "computer-science",
     "course": "cs331",
     "section": "slide-breakdowns",
@@ -1118,8 +1118,8 @@ var COURSE_PAGES = [
     "courseTitle": "CS331 // Data Communications and Computer Networks"
   },
   {
-    "url": "/academics/computer-science/cs331/slide-breakdowns/10-transport-layer/",
-    "title": "CS331 | Breakdown: Transport Layer",
+    "url": "/academics/computer-science/cs331/slide-breakdowns/10-dns-and-application-layer/",
+    "title": "CS331 | Breakdown: DNS and Application Layer",
     "track": "computer-science",
     "course": "cs331",
     "section": "slide-breakdowns",
@@ -1708,6 +1708,96 @@ var COURSE_PAGES = [
     "track": "cybersecurity",
     "course": "cys401",
     "section": "exams",
+    "courseUrl": "/academics/cybersecurity/cys401/",
+    "courseTitle": "CYS401 // Fundamentals of Cybersecurity"
+  },
+  {
+    "url": "/academics/cybersecurity/cys401/extra-resources/mindmaps/01-introduction-to-cybersecurity/",
+    "title": "CYS401 | Chapter 1 Mindmap",
+    "track": "cybersecurity",
+    "course": "cys401",
+    "section": "extra-resources",
+    "courseUrl": "/academics/cybersecurity/cys401/",
+    "courseTitle": "CYS401 // Fundamentals of Cybersecurity"
+  },
+  {
+    "url": "/academics/cybersecurity/cys401/extra-resources/mindmaps/02-security-foundations-and-principles/",
+    "title": "CYS401 | Chapter 2 Mindmap",
+    "track": "cybersecurity",
+    "course": "cys401",
+    "section": "extra-resources",
+    "courseUrl": "/academics/cybersecurity/cys401/",
+    "courseTitle": "CYS401 // Fundamentals of Cybersecurity"
+  },
+  {
+    "url": "/academics/cybersecurity/cys401/extra-resources/mindmaps/03-threat-modeling/",
+    "title": "CYS401 | Chapter 3 Mindmap",
+    "track": "cybersecurity",
+    "course": "cys401",
+    "section": "extra-resources",
+    "courseUrl": "/academics/cybersecurity/cys401/",
+    "courseTitle": "CYS401 // Fundamentals of Cybersecurity"
+  },
+  {
+    "url": "/academics/cybersecurity/cys401/extra-resources/mindmaps/04-protection-of-information-assets/",
+    "title": "CYS401 | Chapter 4 Mindmap",
+    "track": "cybersecurity",
+    "course": "cys401",
+    "section": "extra-resources",
+    "courseUrl": "/academics/cybersecurity/cys401/",
+    "courseTitle": "CYS401 // Fundamentals of Cybersecurity"
+  },
+  {
+    "url": "/academics/cybersecurity/cys401/extra-resources/mindmaps/05-cryptography/",
+    "title": "CYS401 | Chapter 5 Mindmap",
+    "track": "cybersecurity",
+    "course": "cys401",
+    "section": "extra-resources",
+    "courseUrl": "/academics/cybersecurity/cys401/",
+    "courseTitle": "CYS401 // Fundamentals of Cybersecurity"
+  },
+  {
+    "url": "/academics/cybersecurity/cys401/extra-resources/mindmaps/06-asymmetric-cryptography-and-pki/",
+    "title": "CYS401 | Chapter 6 Mindmap",
+    "track": "cybersecurity",
+    "course": "cys401",
+    "section": "extra-resources",
+    "courseUrl": "/academics/cybersecurity/cys401/",
+    "courseTitle": "CYS401 // Fundamentals of Cybersecurity"
+  },
+  {
+    "url": "/academics/cybersecurity/cys401/extra-resources/mindmaps/07-principles-of-security-design-models-and-capabilities/",
+    "title": "CYS401 | Chapter 7 Mindmap",
+    "track": "cybersecurity",
+    "course": "cys401",
+    "section": "extra-resources",
+    "courseUrl": "/academics/cybersecurity/cys401/",
+    "courseTitle": "CYS401 // Fundamentals of Cybersecurity"
+  },
+  {
+    "url": "/academics/cybersecurity/cys401/extra-resources/mindmaps/08-security-vulnerabilities-threats-and-countermeasures/",
+    "title": "CYS401 | Chapter 8 Mindmap",
+    "track": "cybersecurity",
+    "course": "cys401",
+    "section": "extra-resources",
+    "courseUrl": "/academics/cybersecurity/cys401/",
+    "courseTitle": "CYS401 // Fundamentals of Cybersecurity"
+  },
+  {
+    "url": "/academics/cybersecurity/cys401/extra-resources/mindmaps/09-ics-scada-system-security/",
+    "title": "CYS401 | Chapter 9 Mindmap",
+    "track": "cybersecurity",
+    "course": "cys401",
+    "section": "extra-resources",
+    "courseUrl": "/academics/cybersecurity/cys401/",
+    "courseTitle": "CYS401 // Fundamentals of Cybersecurity"
+  },
+  {
+    "url": "/academics/cybersecurity/cys401/extra-resources/mindmaps/10-authentication-and-access-control/",
+    "title": "CYS401 | Chapter 10 Mindmap",
+    "track": "cybersecurity",
+    "course": "cys401",
+    "section": "extra-resources",
     "courseUrl": "/academics/cybersecurity/cys401/",
     "courseTitle": "CYS401 // Fundamentals of Cybersecurity"
   },
@@ -5465,6 +5555,87 @@ var COURSE_PAGES = [
     "courseTitle": "SE201 // Introduction to Software Engineering"
   },
   {
+    "url": "/academics/software-engineering/se201/extra-resources/mindmaps/01-software-engineering-practices-and-ethics/",
+    "title": "SE201 · Chapter 1 Mindmap — Software Engineering Practices and Ethics",
+    "track": "software-engineering",
+    "course": "se201",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se201/",
+    "courseTitle": "SE201 // Introduction to Software Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se201/extra-resources/mindmaps/02-software-processes/",
+    "title": "SE201 · Chapter 2 Mindmap — Software Processes",
+    "track": "software-engineering",
+    "course": "se201",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se201/",
+    "courseTitle": "SE201 // Introduction to Software Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se201/extra-resources/mindmaps/03-agile-software-engineering/",
+    "title": "SE201 · Chapter 3 Mindmap — Agile Software Engineering",
+    "track": "software-engineering",
+    "course": "se201",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se201/",
+    "courseTitle": "SE201 // Introduction to Software Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se201/extra-resources/mindmaps/04-software-project-management/",
+    "title": "SE201 · Chapter 4 Mindmap — Software Project Management",
+    "track": "software-engineering",
+    "course": "se201",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se201/",
+    "courseTitle": "SE201 // Introduction to Software Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se201/extra-resources/mindmaps/05-uml-diagram-symbols/",
+    "title": "SE201 · Chapter 5 Mindmap — UML Diagram Symbols",
+    "track": "software-engineering",
+    "course": "se201",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se201/",
+    "courseTitle": "SE201 // Introduction to Software Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se201/extra-resources/mindmaps/06-requirements-engineering/",
+    "title": "SE201 · Chapter 6 Mindmap — Requirements Engineering",
+    "track": "software-engineering",
+    "course": "se201",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se201/",
+    "courseTitle": "SE201 // Introduction to Software Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se201/extra-resources/mindmaps/07-software-design/",
+    "title": "SE201 · Chapter 7 Mindmap — Software Design",
+    "track": "software-engineering",
+    "course": "se201",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se201/",
+    "courseTitle": "SE201 // Introduction to Software Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se201/extra-resources/mindmaps/08-software-construction/",
+    "title": "SE201 · Chapter 8 Mindmap — Software Construction",
+    "track": "software-engineering",
+    "course": "se201",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se201/",
+    "courseTitle": "SE201 // Introduction to Software Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se201/extra-resources/mindmaps/09-software-testing/",
+    "title": "SE201 · Chapter 9 Mindmap — Software Testing",
+    "track": "software-engineering",
+    "course": "se201",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se201/",
+    "courseTitle": "SE201 // Introduction to Software Engineering"
+  },
+  {
     "url": "/academics/software-engineering/se201/slide-breakdowns/01-chapter-1-software-engineering-practices-and-ethics/",
     "title": "SE201 | Breakdown: Chapter 1 Software Engineering Practices and Ethics",
     "track": "software-engineering",
@@ -6815,7 +6986,7 @@ var COURSE_PAGES = [
     "courseTitle": "SE371 // Web Engineering"
   },
   {
-    "url": "/academics/software-engineering/se371/extra-resources/labs/solutions/lab-03-solution/lab-03a-css-solution/solution/css/",
+    "url": "/academics/software-engineering/se371/extra-resources/labs/solutions/lab-03a-css-solution/css/",
     "title": "CSS | SE371 Web Engineering",
     "track": "software-engineering",
     "course": "se371",
@@ -6824,7 +6995,7 @@ var COURSE_PAGES = [
     "courseTitle": "SE371 // Web Engineering"
   },
   {
-    "url": "/academics/software-engineering/se371/extra-resources/labs/solutions/lab-03-solution/lab-03a-css-solution/solution/images/",
+    "url": "/academics/software-engineering/se371/extra-resources/labs/solutions/lab-03a-css-solution/images/",
     "title": "Images | SE371 Web Engineering",
     "track": "software-engineering",
     "course": "se371",
@@ -6833,7 +7004,7 @@ var COURSE_PAGES = [
     "courseTitle": "SE371 // Web Engineering"
   },
   {
-    "url": "/academics/software-engineering/se371/extra-resources/labs/solutions/lab-03-solution/lab-03b-css-solution/solution-lab03b/css/",
+    "url": "/academics/software-engineering/se371/extra-resources/labs/solutions/lab-03b-css-solution/css/",
     "title": "CSS | SE371 Web Engineering",
     "track": "software-engineering",
     "course": "se371",
@@ -6842,7 +7013,7 @@ var COURSE_PAGES = [
     "courseTitle": "SE371 // Web Engineering"
   },
   {
-    "url": "/academics/software-engineering/se371/extra-resources/labs/solutions/lab-03-solution/lab-03b-css-solution/solution-lab03b/images/",
+    "url": "/academics/software-engineering/se371/extra-resources/labs/solutions/lab-03b-css-solution/images/",
     "title": "Images | SE371 Web Engineering",
     "track": "software-engineering",
     "course": "se371",
@@ -6860,7 +7031,7 @@ var COURSE_PAGES = [
     "courseTitle": "SE371 // Web Engineering"
   },
   {
-    "url": "/academics/software-engineering/se371/extra-resources/labs/solutions/lab-6b-solution/",
+    "url": "/academics/software-engineering/se371/extra-resources/labs/solutions/lab-06b-solution/",
     "title": "Lab 6B Solution | SE371 Web Engineering Resource",
     "track": "software-engineering",
     "course": "se371",
@@ -7157,7 +7328,7 @@ var COURSE_PAGES = [
     "courseTitle": "SE371 // Web Engineering"
   },
   {
-    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/banner-3f3f2c25/",
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/banner-0ac20d68/",
     "title": "Banner | SE371 Resource Viewer",
     "track": "software-engineering",
     "course": "se371",
@@ -7166,7 +7337,7 @@ var COURSE_PAGES = [
     "courseTitle": "SE371 // Web Engineering"
   },
   {
-    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/banner-d7810432/",
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/banner-92db1903/",
     "title": "Banner | SE371 Resource Viewer",
     "track": "software-engineering",
     "course": "se371",
@@ -7202,6 +7373,15 @@ var COURSE_PAGES = [
     "courseTitle": "SE371 // Web Engineering"
   },
   {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/css-reset-0980ec7c/",
+    "title": "CSS Reset | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
     "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/css-reset-0f228b39/",
     "title": "CSS Reset | SE371 Resource Viewer",
     "track": "software-engineering",
@@ -7212,15 +7392,6 @@ var COURSE_PAGES = [
   },
   {
     "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/css-reset-14eb9cf0/",
-    "title": "CSS Reset | SE371 Resource Viewer",
-    "track": "software-engineering",
-    "course": "se371",
-    "section": "extra-resources",
-    "courseUrl": "/academics/software-engineering/se371/",
-    "courseTitle": "SE371 // Web Engineering"
-  },
-  {
-    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/css-reset-21804088/",
     "title": "CSS Reset | SE371 Resource Viewer",
     "track": "software-engineering",
     "course": "se371",
@@ -7256,7 +7427,7 @@ var COURSE_PAGES = [
     "courseTitle": "SE371 // Web Engineering"
   },
   {
-    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/css-reset-ce8ac39b/",
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/css-reset-c5fbf63e/",
     "title": "CSS Reset | SE371 Resource Viewer",
     "track": "software-engineering",
     "course": "se371",
@@ -7265,7 +7436,7 @@ var COURSE_PAGES = [
     "courseTitle": "SE371 // Web Engineering"
   },
   {
-    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/css-reset-e86cb54a/",
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/css-reset-ce8ac39b/",
     "title": "CSS Reset | SE371 Resource Viewer",
     "track": "software-engineering",
     "course": "se371",
@@ -7364,7 +7535,7 @@ var COURSE_PAGES = [
     "courseTitle": "SE371 // Web Engineering"
   },
   {
-    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/home-014d2312/",
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/home-e140c164/",
     "title": "Home | SE371 Resource Viewer",
     "track": "software-engineering",
     "course": "se371",
@@ -7373,7 +7544,7 @@ var COURSE_PAGES = [
     "courseTitle": "SE371 // Web Engineering"
   },
   {
-    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/home-1e1aa162/",
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/home-e35bd0d8/",
     "title": "Home | SE371 Resource Viewer",
     "track": "software-engineering",
     "course": "se371",
@@ -7778,6 +7949,15 @@ var COURSE_PAGES = [
     "courseTitle": "SE371 // Web Engineering"
   },
   {
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/lab-10-solution-4dbe568d/",
+    "title": "Lab 10 Solution | SE371 Resource Viewer",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
     "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/lab-11-solution-405367e1/",
     "title": "Lab 11 Solution | SE371 Resource Viewer",
     "track": "software-engineering",
@@ -7904,7 +8084,7 @@ var COURSE_PAGES = [
     "courseTitle": "SE371 // Web Engineering"
   },
   {
-    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/register-c0cc7e4a/",
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/register-89945807/",
     "title": "Register | SE371 Resource Viewer",
     "track": "software-engineering",
     "course": "se371",
@@ -7913,7 +8093,7 @@ var COURSE_PAGES = [
     "courseTitle": "SE371 // Web Engineering"
   },
   {
-    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/register-c31358d4/",
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/register-ff620324/",
     "title": "Register | SE371 Resource Viewer",
     "track": "software-engineering",
     "course": "se371",
@@ -7931,16 +8111,7 @@ var COURSE_PAGES = [
     "courseTitle": "SE371 // Web Engineering"
   },
   {
-    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/solution-lab-10-c78cded5/",
-    "title": "Solution Lab 10 | SE371 Resource Viewer",
-    "track": "software-engineering",
-    "course": "se371",
-    "section": "extra-resources",
-    "courseUrl": "/academics/software-engineering/se371/",
-    "courseTitle": "SE371 // Web Engineering"
-  },
-  {
-    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/styles-10298c16/",
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/styles-0b9f9a20/",
     "title": "Styles | SE371 Resource Viewer",
     "track": "software-engineering",
     "course": "se371",
@@ -7967,7 +8138,7 @@ var COURSE_PAGES = [
     "courseTitle": "SE371 // Web Engineering"
   },
   {
-    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/styles-60093006/",
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/styles-65520016/",
     "title": "Styles | SE371 Resource Viewer",
     "track": "software-engineering",
     "course": "se371",
@@ -7976,7 +8147,7 @@ var COURSE_PAGES = [
     "courseTitle": "SE371 // Web Engineering"
   },
   {
-    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/styles-65520016/",
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/styles-77394ed1/",
     "title": "Styles | SE371 Resource Viewer",
     "track": "software-engineering",
     "course": "se371",
@@ -7994,7 +8165,7 @@ var COURSE_PAGES = [
     "courseTitle": "SE371 // Web Engineering"
   },
   {
-    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/styles-newcss-9dd5d704/",
+    "url": "/academics/software-engineering/se371/extra-resources/resource-viewers/styles-newcss-034f76f2/",
     "title": "Styles Newcss | SE371 Resource Viewer",
     "track": "software-engineering",
     "course": "se371",
@@ -8089,6 +8260,69 @@ var COURSE_PAGES = [
     "track": "software-engineering",
     "course": "se371",
     "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/slide-breakdowns/01-introduction-to-the-web/",
+    "title": "SE371 Introduction to the Web",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "slide-breakdowns",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/slide-breakdowns/02-html/",
+    "title": "SE371 HTML: Documents, Tables and Forms",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "slide-breakdowns",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/slide-breakdowns/03-css/",
+    "title": "SE371 CSS: Selectors, Cascade and Layout",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "slide-breakdowns",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/slide-breakdowns/04-javascript/",
+    "title": "SE371 JavaScript Fundamentals",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "slide-breakdowns",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/slide-breakdowns/05-javascript-in-the-front-end/",
+    "title": "SE371 JavaScript in the Front End",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "slide-breakdowns",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/slide-breakdowns/06-server-side-node/",
+    "title": "SE371 Server-Side: Node.js and Express",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "slide-breakdowns",
+    "courseUrl": "/academics/software-engineering/se371/",
+    "courseTitle": "SE371 // Web Engineering"
+  },
+  {
+    "url": "/academics/software-engineering/se371/slide-breakdowns/07-working-with-databases/",
+    "title": "SE371 Working with Databases",
+    "track": "software-engineering",
+    "course": "se371",
+    "section": "slide-breakdowns",
     "courseUrl": "/academics/software-engineering/se371/",
     "courseTitle": "SE371 // Web Engineering"
   },
@@ -8858,34 +9092,7 @@ var COURSE_PAGES = [
     "courseTitle": "SE423 // Software Project Management"
   },
   {
-    "url": "/academics/software-engineering/se423/slide-breakdowns/01-change-management/",
-    "title": "SE423 | Change Management",
-    "track": "software-engineering",
-    "course": "se423",
-    "section": "slide-breakdowns",
-    "courseUrl": "/academics/software-engineering/se423/",
-    "courseTitle": "SE423 // Software Project Management"
-  },
-  {
-    "url": "/academics/software-engineering/se423/slide-breakdowns/02-development-approach/",
-    "title": "SE423 | Development Approach",
-    "track": "software-engineering",
-    "course": "se423",
-    "section": "slide-breakdowns",
-    "courseUrl": "/academics/software-engineering/se423/",
-    "courseTitle": "SE423 // Software Project Management"
-  },
-  {
-    "url": "/academics/software-engineering/se423/slide-breakdowns/03-estimation/",
-    "title": "SE423 | Estimation",
-    "track": "software-engineering",
-    "course": "se423",
-    "section": "slide-breakdowns",
-    "courseUrl": "/academics/software-engineering/se423/",
-    "courseTitle": "SE423 // Software Project Management"
-  },
-  {
-    "url": "/academics/software-engineering/se423/slide-breakdowns/04-introduction/",
+    "url": "/academics/software-engineering/se423/slide-breakdowns/01-introduction/",
     "title": "SE423 | Introduction",
     "track": "software-engineering",
     "course": "se423",
@@ -8894,7 +9101,7 @@ var COURSE_PAGES = [
     "courseTitle": "SE423 // Software Project Management"
   },
   {
-    "url": "/academics/software-engineering/se423/slide-breakdowns/05-project-performance-domains/",
+    "url": "/academics/software-engineering/se423/slide-breakdowns/02-project-performance-domains/",
     "title": "SE423 | Project Performance Domains",
     "track": "software-engineering",
     "course": "se423",
@@ -8903,8 +9110,35 @@ var COURSE_PAGES = [
     "courseTitle": "SE423 // Software Project Management"
   },
   {
-    "url": "/academics/software-engineering/se423/slide-breakdowns/06-quality/",
-    "title": "SE423 | Quality",
+    "url": "/academics/software-engineering/se423/slide-breakdowns/03-tailoring-models-methods-and-artifacts/",
+    "title": "SE423 | Tailoring Models Methods And Artifacts",
+    "track": "software-engineering",
+    "course": "se423",
+    "section": "slide-breakdowns",
+    "courseUrl": "/academics/software-engineering/se423/",
+    "courseTitle": "SE423 // Software Project Management"
+  },
+  {
+    "url": "/academics/software-engineering/se423/slide-breakdowns/04-software-engineering/",
+    "title": "SE423 | Software Engineering",
+    "track": "software-engineering",
+    "course": "se423",
+    "section": "slide-breakdowns",
+    "courseUrl": "/academics/software-engineering/se423/",
+    "courseTitle": "SE423 // Software Project Management"
+  },
+  {
+    "url": "/academics/software-engineering/se423/slide-breakdowns/05-team/",
+    "title": "SE423 | Team",
+    "track": "software-engineering",
+    "course": "se423",
+    "section": "slide-breakdowns",
+    "courseUrl": "/academics/software-engineering/se423/",
+    "courseTitle": "SE423 // Software Project Management"
+  },
+  {
+    "url": "/academics/software-engineering/se423/slide-breakdowns/06-development-approach/",
+    "title": "SE423 | Development Approach",
     "track": "software-engineering",
     "course": "se423",
     "section": "slide-breakdowns",
@@ -8921,7 +9155,16 @@ var COURSE_PAGES = [
     "courseTitle": "SE423 // Software Project Management"
   },
   {
-    "url": "/academics/software-engineering/se423/slide-breakdowns/08-scheduling-and-tracking/",
+    "url": "/academics/software-engineering/se423/slide-breakdowns/08-estimation/",
+    "title": "SE423 | Estimation",
+    "track": "software-engineering",
+    "course": "se423",
+    "section": "slide-breakdowns",
+    "courseUrl": "/academics/software-engineering/se423/",
+    "courseTitle": "SE423 // Software Project Management"
+  },
+  {
+    "url": "/academics/software-engineering/se423/slide-breakdowns/09-scheduling-and-tracking/",
     "title": "SE423 | Scheduling And Tracking",
     "track": "software-engineering",
     "course": "se423",
@@ -8930,8 +9173,8 @@ var COURSE_PAGES = [
     "courseTitle": "SE423 // Software Project Management"
   },
   {
-    "url": "/academics/software-engineering/se423/slide-breakdowns/09-software-engineering/",
-    "title": "SE423 | Software Engineering",
+    "url": "/academics/software-engineering/se423/slide-breakdowns/10-quality/",
+    "title": "SE423 | Quality",
     "track": "software-engineering",
     "course": "se423",
     "section": "slide-breakdowns",
@@ -8939,7 +9182,7 @@ var COURSE_PAGES = [
     "courseTitle": "SE423 // Software Project Management"
   },
   {
-    "url": "/academics/software-engineering/se423/slide-breakdowns/10-stakeholders/",
+    "url": "/academics/software-engineering/se423/slide-breakdowns/11-stakeholders/",
     "title": "SE423 | Stakeholders",
     "track": "software-engineering",
     "course": "se423",
@@ -8948,17 +9191,8 @@ var COURSE_PAGES = [
     "courseTitle": "SE423 // Software Project Management"
   },
   {
-    "url": "/academics/software-engineering/se423/slide-breakdowns/11-tailoring-models-methods-and-artifacts/",
-    "title": "SE423 | Tailoring Models Methods And Artifacts",
-    "track": "software-engineering",
-    "course": "se423",
-    "section": "slide-breakdowns",
-    "courseUrl": "/academics/software-engineering/se423/",
-    "courseTitle": "SE423 // Software Project Management"
-  },
-  {
-    "url": "/academics/software-engineering/se423/slide-breakdowns/12-team/",
-    "title": "SE423 | Team",
+    "url": "/academics/software-engineering/se423/slide-breakdowns/12-change-management/",
+    "title": "SE423 | Change Management",
     "track": "software-engineering",
     "course": "se423",
     "section": "slide-breakdowns",
@@ -9082,7 +9316,7 @@ var COURSE_MANIFEST = {
   "cs330": 35,
   "cs331": 46,
   "cs340": 36,
-  "cys401": 29,
+  "cys401": 39,
   "cys405": 44,
   "cys406": 64,
   "math221": 39,
@@ -9095,10 +9329,10 @@ var COURSE_MANIFEST = {
   "eng103": 7,
   "ethcs303": 91,
   "isc113": 23,
-  "se201": 32,
+  "se201": 41,
   "se311": 33,
   "se322": 55,
-  "se371": 193,
+  "se371": 200,
   "se401": 53,
   "se423": 49
 };
@@ -9110,7 +9344,7 @@ var COURSE_MANIFEST_BY_TRACK = {
   "computer-science/cs330": 35,
   "computer-science/cs331": 46,
   "computer-science/cs340": 36,
-  "cybersecurity/cys401": 29,
+  "cybersecurity/cys401": 39,
   "cybersecurity/cys405": 44,
   "cybersecurity/cys406": 64,
   "math/math221": 39,
@@ -9123,10 +9357,10 @@ var COURSE_MANIFEST_BY_TRACK = {
   "other-courses/eng103": 7,
   "other-courses/ethcs303": 91,
   "other-courses/isc113": 23,
-  "software-engineering/se201": 32,
+  "software-engineering/se201": 41,
   "software-engineering/se311": 33,
   "software-engineering/se322": 55,
-  "software-engineering/se371": 193,
+  "software-engineering/se371": 200,
   "software-engineering/se401": 53,
   "software-engineering/se423": 49
 };

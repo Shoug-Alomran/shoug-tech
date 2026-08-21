@@ -6,8 +6,9 @@ Three things, all idempotent:
   2. insert a "Skip to content" link as the first focusable element
   3. give <main> an id + tabindex="-1" so the skip link can land on it
 
-Standalone documents (mindmaps, cheat sheets rendered inside an iframe) have
-no navigation to skip past, so they only get the stylesheet.
+A skip link only earns its place where there is navigation to skip: pages
+with the site chrome, and standalone study documents that carry their own
+in-page <nav>. Documents with neither get the stylesheet only.
 """
 from __future__ import annotations
 
@@ -26,6 +27,10 @@ SKIP_LINK = (
 BODY_OPEN = re.compile(r"<body\b[^>]*>", re.I)
 MAIN_OPEN = re.compile(r"<main\b([^>]*)>", re.I)
 HEAD_CLOSE = re.compile(r"</head>", re.I)
+# One page's CSS comment describes the layout using the literal text "<main>".
+# Matching that instead of the element put the skip target inside a comment,
+# so anything before </style> or inside a comment is masked out first.
+MASKED = re.compile(r"<style\b.*?</style>|<script\b.*?</script>|<!--.*?-->", re.S | re.I)
 
 
 def add_stylesheet(text: str) -> str:
@@ -41,7 +46,10 @@ def add_skip_link(text: str) -> str:
     if "shoug-skip-link" in text:
         return text
 
-    m = MAIN_OPEN.search(text)
+    # Search a copy with style/script/comment regions blanked so offsets still
+    # line up with the real document.
+    haystack = MASKED.sub(lambda mm: " " * len(mm.group(0)), text)
+    m = MAIN_OPEN.search(haystack)
     if not m:
         return text
 
@@ -75,8 +83,12 @@ def main() -> int:
         if text != original:
             styled += 1
 
-        has_chrome = "shoug-site-header" in text
-        if has_chrome:
+        # Either the site chrome, or a document with its own table-of-contents
+        # nav that a keyboard user would otherwise tab through every visit.
+        needs_skip = "shoug-site-header" in text or (
+            "<nav" in text and "<main" in text
+        )
+        if needs_skip:
             before = text
             text = add_skip_link(text)
             if text != before:
