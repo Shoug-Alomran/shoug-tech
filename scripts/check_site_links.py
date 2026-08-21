@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import subprocess
 import sys
 import re
 from html.parser import HTMLParser
@@ -106,6 +107,49 @@ NON_WEB_SCHEMES = IGNORED_SCHEMES - {"http", "https"}
 LOCAL_HOSTS = {"", "site.local"}
 
 
+# Written by the build steps that run before this check, so they are present
+# in the deployed site without ever being committed.
+BUILD_OUTPUTS = {
+    "search-index.json",
+    "search-pdf-index.json",
+    "sitemap.xml",
+    "standalone-sitemap.xml",
+    "javascripts/course-manifest.js",
+}
+
+
+def is_untracked_build_output(rel: str) -> bool:
+    return rel in BUILD_OUTPUTS
+
+
+def git_tracked_paths() -> set[str] | None:
+    """Site-relative paths exactly as git records them.
+
+    exact_case() reads the working tree, which on a case-insensitive
+    filesystem reports whatever name the directory happens to hold. When git's
+    index and the working tree disagree on casing -- a rename macOS never
+    surfaced -- the working tree looks correct locally and the checkout on
+    Linux carries the other name. Comparing against git catches that class of
+    break before it reaches CI. Returns None outside a git checkout.
+    """
+    try:
+        out = subprocess.run(
+            ["git", "-C", str(ROOT), "ls-files", "-z", "--", SITE.name],
+            capture_output=True, check=True, timeout=60,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return None
+    paths = set()
+    for raw in out.stdout.split(b"\0"):
+        if not raw:
+            continue
+        rel = raw.decode("utf-8", "surrogateescape")
+        prefix = SITE.name + "/"
+        if rel.startswith(prefix):
+            paths.add(rel[len(prefix):])
+    return paths or None
+
+
 def exact_case(target: Path) -> Path | None:
     """Resolve `target` walking each segment against the real directory
     listing, so casing differences surface on case-insensitive filesystems.
@@ -150,6 +194,7 @@ def main() -> int:
         print("[error] site directory not found. Run `mkdocs build` first.")
         return 1
 
+    tracked = git_tracked_paths()
     parsed = {path: parse_html(path) for path in html_files()}
     anchors_by_file = {path: parser.anchors for path, parser in parsed.items()}
     failures: list[str] = []
@@ -180,6 +225,16 @@ def main() -> int:
                     f"file is {actual.relative_to(SITE).as_posix()}"
                 )
                 continue
+
+            if tracked is not None:
+                rel_target = target.relative_to(SITE).as_posix()
+                if rel_target not in tracked and not is_untracked_build_output(rel_target):
+                    failures.append(
+                        f"{rel_source}: {attr}={ref!r} -> resolves locally but "
+                        f"git does not track {rel_target} (casing differs, or "
+                        f"the file is uncommitted)"
+                    )
+                    continue
 
             if fragment and target.suffix.lower() in HTML_SUFFIXES:
                 anchors = anchors_by_file.get(target)
