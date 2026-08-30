@@ -911,6 +911,15 @@ var COURSE_PAGES = [
     "courseTitle": "CS330 // Introduction to Operating Systems"
   },
   {
+    "url": "/academics/computer-science/cs331/extra-resources/listing-vault/",
+    "title": "CS331 | Listing Vault",
+    "track": "computer-science",
+    "course": "cs331",
+    "section": "extra-resources",
+    "courseUrl": "/academics/computer-science/cs331/",
+    "courseTitle": "CS331 // Data Communications and Computer Networks"
+  },
+  {
     "url": "/academics/computer-science/cs331/extra-resources/mindmap/01-cs331-complete-course-mind-map/",
     "title": "CS331 | CS331 Complete Course Mindmap",
     "track": "computer-science",
@@ -1708,6 +1717,24 @@ var COURSE_PAGES = [
     "track": "cybersecurity",
     "course": "cys401",
     "section": "exams",
+    "courseUrl": "/academics/cybersecurity/cys401/",
+    "courseTitle": "CYS401 // Fundamentals of Cybersecurity"
+  },
+  {
+    "url": "/academics/cybersecurity/cys401/exams/08-chapters-1-2-practice-exam/",
+    "title": "CYS401 | Chapters 1 & 2 Practice Exam",
+    "track": "cybersecurity",
+    "course": "cys401",
+    "section": "exams",
+    "courseUrl": "/academics/cybersecurity/cys401/",
+    "courseTitle": "CYS401 // Fundamentals of Cybersecurity"
+  },
+  {
+    "url": "/academics/cybersecurity/cys401/extra-resources/listing-vault/",
+    "title": "CYS401 | Listing Vault",
+    "track": "cybersecurity",
+    "course": "cys401",
+    "section": "extra-resources",
     "courseUrl": "/academics/cybersecurity/cys401/",
     "courseTitle": "CYS401 // Fundamentals of Cybersecurity"
   },
@@ -9314,9 +9341,9 @@ var COURSE_MANIFEST = {
   "cs210": 31,
   "cs285": 16,
   "cs330": 35,
-  "cs331": 46,
+  "cs331": 47,
   "cs340": 36,
-  "cys401": 39,
+  "cys401": 41,
   "cys405": 44,
   "cys406": 64,
   "math221": 39,
@@ -9342,9 +9369,9 @@ var COURSE_MANIFEST_BY_TRACK = {
   "computer-science/cs210": 31,
   "computer-science/cs285": 16,
   "computer-science/cs330": 35,
-  "computer-science/cs331": 46,
+  "computer-science/cs331": 47,
   "computer-science/cs340": 36,
-  "cybersecurity/cys401": 39,
+  "cybersecurity/cys401": 41,
   "cybersecurity/cys405": 44,
   "cybersecurity/cys406": 64,
   "math/math221": 39,
