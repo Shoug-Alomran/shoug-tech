@@ -1,0 +1,135 @@
+/* ==========================================================================
+   CYS401 slide-breakdown shared design layer
+   Loaded AFTER each page's own <style>. Provides:
+     · neutral theme tokens for light + dark (--bd-*)
+     · floating control rail (theme toggle, top, print)
+     · reading-progress bar
+     · typography, table, code, focus, scrollbar and print polish
+   Each page keeps its own accent palette and layout.
+   ========================================================================== */
+
+:root {
+    --bd-bg: #f4f6fa;
+    --bd-bg-alt: #eaeef6;
+    --bd-surface: #ffffff;
+    --bd-surface-2: #f7f9fc;
+    --bd-border: #dbe2ee;
+    --bd-border-soft: rgba(20, 32, 55, .08);
+    --bd-text: #131a26;
+    --bd-text-dim: #5a6779;
+    --bd-shadow: 0 1px 2px rgba(15, 25, 45, .05), 0 10px 30px rgba(15, 25, 45, .07);
+    --bd-ring: rgba(56, 132, 232, .45);
+    --bd-radius: 14px;
+}
+
+html[data-theme="dark"] {
+    --bd-bg: #080c14;
+    --bd-bg-alt: #0c121d;
+    --bd-surface: #111926;
+    --bd-surface-2: #0d141f;
+    --bd-border: #22304a;
+    --bd-border-soft: rgba(190, 214, 255, .10);
+    --bd-text: #e6ecf6;
+    --bd-text-dim: #93a3bb;
+    --bd-shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 14px 36px rgba(0, 0, 0, .45);
+    --bd-ring: rgba(120, 190, 255, .5);
+}
+
+/* ---------- typography polish (inherits each page's own fonts) ---------- */
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+@media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; }
+}
+body { text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased; }
+h1, h2, h3, h4 { text-wrap: balance; }
+p, li { text-wrap: pretty; }
+
+/* ---------- readable tables everywhere ---------- */
+.bd-table-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: var(--bd-radius);
+    scrollbar-width: thin;
+}
+.bd-table-scroll > table { min-width: 460px; }
+
+/* ---------- focus + selection ---------- */
+a:focus-visible, button:focus-visible, select:focus-visible,
+input:focus-visible, [tabindex]:focus-visible, summary:focus-visible {
+    outline: 2px solid var(--bd-ring);
+    outline-offset: 2px;
+    border-radius: 6px;
+}
+
+/* ---------- scrollbar ---------- */
+* { scrollbar-color: var(--bd-border) transparent; }
+::-webkit-scrollbar { width: 11px; height: 11px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+    background: var(--bd-border);
+    border-radius: 999px;
+    border: 3px solid transparent;
+    background-clip: content-box;
+}
+::-webkit-scrollbar-thumb:hover { background: var(--bd-text-dim); background-clip: content-box; }
+
+/* ---------- reading progress ---------- */
+.bd-progress {
+    position: fixed; inset: 0 0 auto 0; height: 3px; z-index: 2147483000;
+    background: transparent; pointer-events: none;
+}
+.bd-progress > i {
+    display: block; height: 100%; width: 0;
+    background: linear-gradient(90deg, #3b82f6, #8b5cf6, #ec4899);
+    transition: width .1s linear;
+}
+
+/* ---------- floating control rail ---------- */
+.bd-rail {
+    position: fixed; right: 18px; bottom: 18px; z-index: 2147483000;
+    display: flex; flex-direction: column; gap: 8px;
+    font-family: ui-monospace, 'JetBrains Mono', SFMono-Regular, Menlo, monospace;
+}
+.bd-rail button {
+    width: 42px; height: 42px; border-radius: 12px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--bd-surface);
+    color: var(--bd-text-dim);
+    border: 1px solid var(--bd-border);
+    box-shadow: var(--bd-shadow);
+    transition: transform .18s ease, color .18s ease, border-color .18s ease, opacity .25s ease;
+    padding: 0;
+}
+.bd-rail button:hover { transform: translateY(-2px); color: var(--bd-text); border-color: var(--bd-ring); }
+.bd-rail button:active { transform: translateY(0); }
+.bd-rail button svg { width: 18px; height: 18px; stroke-width: 2; }
+.bd-rail button.bd-hidden { opacity: 0; pointer-events: none; transform: translateY(8px); }
+.bd-rail .bd-tip {
+    position: absolute; right: 52px; white-space: nowrap;
+    background: var(--bd-text); color: var(--bd-bg);
+    font-size: 11px; padding: 5px 9px; border-radius: 7px;
+    opacity: 0; pointer-events: none; transition: opacity .16s ease;
+}
+.bd-rail button:hover .bd-tip { opacity: .95; }
+
+@media (max-width: 600px) {
+    .bd-rail { right: 12px; bottom: 12px; }
+    .bd-rail button { width: 38px; height: 38px; }
+    .bd-rail .bd-tip { display: none; }
+}
+
+/* ---------- theme transition (skipped on first paint) ---------- */
+html.bd-ready body,
+html.bd-ready body * {
+    transition: background-color .28s ease, border-color .28s ease, color .28s ease;
+}
+html.bd-ready body *:hover { transition-duration: .18s; }
+
+/* ---------- print ---------- */
+@media print {
+    .bd-rail, .bd-progress { display: none !important; }
+    body { background: #fff !important; color: #000 !important; }
+    * { box-shadow: none !important; }
+    a[href^="http"]::after { content: " (" attr(href) ")"; font-size: 10px; color: #555; }
+}
