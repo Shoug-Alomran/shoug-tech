@@ -277,8 +277,8 @@ def hardcoded_dark(css):
 #       'hard'   -> no vars at all, derive dark overrides from literals
 #       'sync'   -> already has both data-theme blocks, only needs the assets
 PAGES = [
-    ("01-chapter-1-introduction-to-cybersecurity/chapter-1.html", "hard", None),
-    ("02-chapter-2-security-foundations-and-principles/chapter-2.html", "hard", None),
+    ("01-chapter-1-introduction-to-cybersecurity/chapter-1.html", "sync", None),
+    ("02-chapter-2-security-foundations-and-principles/chapter-2.html", "sync", None),
     ("03-chapter-3-threat-modeling/chapter-3.html", "media", None),
     ("04-chapter-4-protection-of-information-assets/chapter-4.html", "media", None),
     ("05-chapter-5-cryptography/chapter-5.html", "sync", None),

@@ -76,13 +76,11 @@ THEMES = {
         subject="Introduction · CIA triad, defence in depth",
         accents=["#1f6feb", "#0e7490", "#3b82c4"],
         motif="shield",
-        swap={"#667eea": 0, "#764ba2": 1},
     ),
     "02-chapter-2-security-foundations-and-principles/chapter-2.html": dict(
         subject="Threats, malware, social engineering",
         accents=["#c0392b", "#d97706", "#8c2f39"],
         motif="hazard",
-        swap={"#667eea": 0, "#764ba2": 2},
     ),
     "03-chapter-3-threat-modeling/chapter-3.html": dict(
         subject="Threat modelling · STRIDE, attack trees",
