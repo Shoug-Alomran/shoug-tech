@@ -277,17 +277,17 @@ def hardcoded_dark(css):
 #       'hard'   -> no vars at all, derive dark overrides from literals
 #       'sync'   -> already has both data-theme blocks, only needs the assets
 PAGES = [
-    ("chapter-1/chapter-1.html", "hard", None),
-    ("02-chapter-2-security-foundations-and-principles/chapter-2/chapter-2.html", "hard", None),
-    ("03-chapter-3-threat-modeling/chapter-3/chapter-3.html", "media", None),
-    ("chapter-4/chapter-4.html", "media", None),
-    ("chapter-5/chapter-5.html", "sync", None),
-    ("06-chapter-6-asymmetric-cryptography-and-pki/chapter-6/chapter-6.html", "sync", None),
-    ("07-chapter-7-principles-of-security-design-models-and-capabilities/chapter-7/chapter-7.html", "media", None),
-    ("08-chapter-8-security-vulnerabilities-threats-and-countermeasures/chapter-8/"
+    ("01-chapter-1-introduction-to-cybersecurity/chapter-1.html", "hard", None),
+    ("02-chapter-2-security-foundations-and-principles/chapter-2.html", "hard", None),
+    ("03-chapter-3-threat-modeling/chapter-3.html", "media", None),
+    ("04-chapter-4-protection-of-information-assets/chapter-4.html", "media", None),
+    ("05-chapter-5-cryptography/chapter-5.html", "sync", None),
+    ("06-chapter-6-asymmetric-cryptography-and-pki/chapter-6.html", "sync", None),
+    ("07-chapter-7-principles-of-security-design-models-and-capabilities/chapter-7.html", "media", None),
+    ("08-chapter-8-security-vulnerabilities-threats-and-countermeasures/"
      "security-vulnerabilities-threats-and-countermeasures.html", "sync", None),
-    ("09-chapter-9-ics-scada-system-security/chapter-9/ics-scada-system-security.html", "gen", "light"),
-    ("chapter-10/authentication-and-access-control.html", "gen", "dark"),
+    ("09-chapter-9-ics-scada-system-security/ics-scada-system-security.html", "gen", "light"),
+    ("10-chapter-10-authentication-and-access-control/authentication-and-access-control.html", "gen", "dark"),
 ]
 
 
@@ -348,7 +348,11 @@ def patch(path, mode, gen_theme):
     if MARK in s:
         print("  %-46s already upgraded — refreshing" % name)
         s = re.sub(r"\n<style>%s.*?</style>" % re.escape(MARK), "", s, flags=re.S)
-        s = s.replace(ASSETS, "")
+    # strip the shared assets unconditionally: pages that need no generated
+    # style block carry no MARK, and would otherwise collect a link per run
+    s = s.replace(ASSETS, "")
+    s = re.sub(r'\s*<link rel="stylesheet" href="/styles/breakdown\.css">', "", s)
+    s = re.sub(r'\s*<script src="/styles/breakdown-theme\.js" defer></script>', "", s)
 
     notes = []
 
