@@ -5,17 +5,17 @@
 
   var route = location.pathname.replace(/index\.html$/, "");
   if (!/\/(slides|slide-breakdowns)\/[^/]+\/$/.test(route)) return;
-  var endpoint = window.SHOUG_AI_ENDPOINT || "https://ai.shoug-tech.com/v1/slide-assistant";
+  var endpoint = window.SHOUG_AI_ENDPOINT || "https://shoug-tech.shoug-alomran.workers.dev/v1/slide-assistant";
   var history = [];
 
   var style = document.createElement("style");
   style.textContent = [
-    ".sg-ai-launch{position:fixed;right:22px;bottom:22px;z-index:99970;height:44px;padding:0 17px;border:1px solid #ff2a4b;background:#0a0514;color:#ff2a4b;font:800 .68rem 'JetBrains Mono',monospace;letter-spacing:.12em;text-transform:uppercase;box-shadow:0 12px 36px rgba(0,0,0,.35)}",
+    ".sg-ai-launch{position:fixed;right:22px;bottom:96px;z-index:99970;height:44px;padding:0 17px;border:1px solid #ff2a4b;background:#0a0514;color:#ff2a4b;font:800 .68rem 'JetBrains Mono',monospace;letter-spacing:.12em;text-transform:uppercase;box-shadow:0 12px 36px rgba(0,0,0,.35);transition:opacity .16s ease,transform .16s ease}",
     ".sg-ai-launch:hover{background:#ff2a4b;color:#050508}.sg-ai-panel{position:fixed;z-index:99980;right:0;top:68px;bottom:0;width:min(410px,100vw);display:flex;flex-direction:column;background:#09050f;color:#f8f7fb;border-left:1px solid rgba(255,42,75,.35);box-shadow:-20px 0 60px rgba(0,0,0,.42);transform:translateX(105%);transition:transform .2s ease}",
-    ".sg-ai-panel.is-open{transform:none}.sg-ai-head{padding:18px;border-bottom:1px solid rgba(255,255,255,.1);display:flex;justify-content:space-between;gap:16px}.sg-ai-kicker{color:#ff2a4b;font:800 .58rem 'JetBrains Mono',monospace;letter-spacing:.16em;text-transform:uppercase}.sg-ai-title{margin-top:5px;font:800 .9rem 'JetBrains Mono',monospace}.sg-ai-close{color:#f8f7fb;border:1px solid rgba(255,255,255,.14);width:32px;height:32px;background:transparent;font-size:1.1rem}",
+    ".sg-ai-panel.is-open{transform:none}.sg-ai-launch[aria-expanded='true']{opacity:0;pointer-events:none;transform:translateY(8px)}.sg-ai-head{padding:18px;border-bottom:1px solid rgba(255,255,255,.1);display:flex;justify-content:space-between;gap:16px}.sg-ai-kicker{color:#ff2a4b;font:800 .58rem 'JetBrains Mono',monospace;letter-spacing:.16em;text-transform:uppercase}.sg-ai-title{margin-top:5px;font:800 .9rem 'JetBrains Mono',monospace}.sg-ai-close{color:#f8f7fb;border:1px solid rgba(255,255,255,.14);width:32px;height:32px;background:transparent;font-size:1.1rem}",
     ".sg-ai-note{padding:10px 18px;color:#9b96a4;border-bottom:1px solid rgba(255,255,255,.07);font-size:.72rem;line-height:1.5}.sg-ai-chat{flex:1;overflow:auto;padding:18px;display:flex;flex-direction:column;gap:12px}.sg-ai-msg{padding:11px 12px;border:1px solid rgba(255,255,255,.1);font-size:.82rem;line-height:1.6;white-space:pre-wrap}.sg-ai-msg.user{margin-left:30px;background:rgba(255,42,75,.08);border-color:rgba(255,42,75,.24)}.sg-ai-msg.bot{margin-right:20px;background:rgba(255,255,255,.025)}",
     ".sg-ai-sources{display:block;margin-top:8px;color:#9b96a4;font:600 .58rem 'JetBrains Mono',monospace}.sg-ai-form{padding:14px;border-top:1px solid rgba(255,255,255,.1);display:grid;grid-template-columns:1fr auto;gap:8px}.sg-ai-input{min-width:0;resize:none;height:66px;background:#110b18;color:#fff;border:1px solid rgba(255,255,255,.14);padding:10px;font:inherit}.sg-ai-send{width:70px;background:#ff2a4b;color:#050508;border:0;font:800 .62rem 'JetBrains Mono',monospace;text-transform:uppercase}.sg-ai-send:disabled{opacity:.45}.sg-ai-panel button,.sg-ai-launch{cursor:pointer}",
-    "body.shoug-light-mode .sg-ai-panel{background:#fff;color:#16111f}.shoug-light-mode .sg-ai-msg.bot,.shoug-light-mode .sg-ai-input{background:#f5f1f8;color:#16111f}.shoug-light-mode .sg-ai-close{color:#16111f}@media(max-width:600px){.sg-ai-panel{top:0}.sg-ai-launch{right:14px;bottom:14px}}"
+    "body.shoug-light-mode .sg-ai-panel{background:#fff;color:#16111f}.shoug-light-mode .sg-ai-msg.bot,.shoug-light-mode .sg-ai-input{background:#f5f1f8;color:#16111f}.shoug-light-mode .sg-ai-close{color:#16111f}@media(max-width:600px){.sg-ai-panel{top:0}.sg-ai-launch{right:14px;bottom:86px}}"
   ].join("");
   document.head.appendChild(style);
 

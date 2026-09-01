@@ -13,7 +13,7 @@ function json(body, status = 200, origin = "") {
 
 function allowedOrigin(request, env) {
   const origin = request.headers.get("origin") || "";
-  const configured = env.ALLOWED_ORIGINS || "https://shoug-tech.com,https://www.shoug-tech.com,https://shoug-alomran.github.io";
+  const configured = "https://shoug-tech.com,https://www.shoug-tech.com,https://shoug-alomran.github.io,http://127.0.0.1:8001,http://localhost:8001," + (env.ALLOWED_ORIGINS || "");
   const allowed = new Set(configured.split(",").map((x) => x.trim()).filter(Boolean));
   return allowed.has(origin) ? origin : "";
 }
