@@ -1,0 +1,143 @@
+#!/usr/bin/env python3
+"""Build grounded AI context files for slide and slide-breakdown pages."""
+from __future__ import annotations
+
+import html
+import json
+import re
+import subprocess
+from html.parser import HTMLParser
+from pathlib import Path
+from urllib.parse import unquote, urlsplit
+
+ROOT = Path(__file__).resolve().parent.parent
+DOCS = ROOT / "docs"
+OUT = DOCS / "ai-context"
+ELIGIBLE = re.compile(r"/(slides|slide-breakdowns)/.+/index\.html$")
+PDF_REF = re.compile(r'data-pdf-src="([^"]+)"|<iframe[^>]*\bsrc="([^"]+\.pdf(?:[?#][^"]*)?)"', re.I)
+IFRAME_REF = re.compile(r'<iframe[^>]*\bsrc="([^"]+\.html(?:[?#][^"]*)?)"', re.I)
+TITLE = re.compile(r"<title[^>]*>(.*?)</title>", re.I | re.S)
+MAX_CHUNK_CHARS = 4200
+
+
+class VisibleText(HTMLParser):
+    def __init__(self) -> None:
+        super().__init__()
+        self.skip = 0
+        self.parts: list[str] = []
+
+    def handle_starttag(self, tag: str, attrs) -> None:
+        if tag in {"script", "style", "svg", "nav", "header", "footer", "noscript"}:
+            self.skip += 1
+        elif not self.skip and tag in {"h1", "h2", "h3", "h4", "p", "li", "tr", "section", "br"}:
+            self.parts.append("\n")
+
+    def handle_endtag(self, tag: str) -> None:
+        if tag in {"script", "style", "svg", "nav", "header", "footer", "noscript"} and self.skip:
+            self.skip -= 1
+        elif not self.skip and tag in {"h1", "h2", "h3", "h4", "p", "li", "tr", "section"}:
+            self.parts.append("\n")
+
+    def handle_data(self, data: str) -> None:
+        if not self.skip:
+            self.parts.append(data)
+
+    def text(self) -> str:
+        value = html.unescape(" ".join(self.parts))
+        value = re.sub(r"[ \t]+", " ", value)
+        value = re.sub(r"\n\s*\n+", "\n\n", value)
+        return value.strip()
+
+
+def route_for(page: Path) -> str:
+    rel = page.relative_to(DOCS).as_posix()
+    return "/" + rel[: -len("index.html")]
+
+
+def resolve(page: Path, src: str) -> Path | None:
+    path = unquote(urlsplit(src).path)
+    target = DOCS / path.lstrip("/") if path.startswith("/") else page.parent / path
+    try:
+        target = target.resolve()
+        target.relative_to(DOCS.resolve())
+        return target
+    except (OSError, ValueError):
+        return None
+
+
+def chunk_text(text: str, prefix: str) -> list[dict[str, str]]:
+    paragraphs = [p.strip() for p in re.split(r"\n\s*\n|(?<=\.)\s+(?=[A-Z])", text) if p.strip()]
+    chunks: list[dict[str, str]] = []
+    current: list[str] = []
+    size = 0
+    for paragraph in paragraphs:
+        if current and size + len(paragraph) > MAX_CHUNK_CHARS:
+            chunks.append({"label": f"{prefix} {len(chunks) + 1}", "text": "\n".join(current)})
+            current, size = [], 0
+        current.append(paragraph[:MAX_CHUNK_CHARS])
+        size += len(paragraph)
+    if current:
+        chunks.append({"label": f"{prefix} {len(chunks) + 1}", "text": "\n".join(current)})
+    return chunks
+
+
+def pdf_chunks(pdf: Path) -> list[dict[str, str]]:
+    try:
+        result = subprocess.run(
+            ["pdftotext", "-q", "-layout", str(pdf), "-"],
+            capture_output=True, text=True, timeout=180, check=False,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return []
+    chunks = []
+    for number, page in enumerate(result.stdout.split("\f"), 1):
+        text = re.sub(r"[ \t]+", " ", page)
+        text = re.sub(r"\n{3,}", "\n\n", text).strip()
+        if text:
+            chunks.append({"label": f"Slide {number}", "text": text[:MAX_CHUNK_CHARS]})
+    return chunks
+
+
+def html_text(page: Path, source: str) -> str:
+    parser = VisibleText()
+    parser.feed(source)
+    text = parser.text()
+    for src in IFRAME_REF.findall(source):
+        child = resolve(page, src)
+        if child and child.is_file():
+            child_parser = VisibleText()
+            child_parser.feed(child.read_text(encoding="utf-8", errors="ignore"))
+            text += "\n\n" + child_parser.text()
+    return text
+
+
+def main() -> int:
+    pages = [p for p in DOCS.rglob("index.html") if ELIGIBLE.search("/" + p.relative_to(DOCS).as_posix())]
+    written = skipped = 0
+    for page in pages:
+        source = page.read_text(encoding="utf-8", errors="ignore")
+        route = route_for(page)
+        title_match = TITLE.search(source)
+        title = re.sub(r"\s+", " ", html.unescape(title_match.group(1))).strip() if title_match else page.parent.name
+        chunks: list[dict[str, str]] = []
+        for a, b in PDF_REF.findall(source):
+            pdf = resolve(page, a or b)
+            if pdf and pdf.is_file():
+                chunks.extend(pdf_chunks(pdf))
+                break
+        if not chunks:
+            chunks = chunk_text(html_text(page, source), "Section")
+        if not chunks:
+            skipped += 1
+            continue
+        destination = OUT / route.lstrip("/") / "context.json"
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        payload = {"route": route, "title": title, "chunks": chunks}
+        destination.write_text(json.dumps(payload, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+        written += 1
+    print(f"wrote {written} AI contexts; skipped {skipped} empty pages")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

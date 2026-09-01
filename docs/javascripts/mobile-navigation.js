@@ -104,6 +104,17 @@
   }
 })();
 
+// Slide and breakdown pages share one grounded AI assistant client.
+(function () {
+  if (!/\/(slides|slide-breakdowns)\/[^/]+\/?(?:index\.html)?$/.test(location.pathname)) return;
+  if (document.getElementById("shoug-slide-assistant-script")) return;
+  var script = document.createElement("script");
+  script.id = "shoug-slide-assistant-script";
+  script.src = "/javascripts/slide-assistant.js?v=20260901-1";
+  script.defer = true;
+  document.head.appendChild(script);
+})();
+
 // Keep the copyright notice present on every page that uses the shared footer.
 (function () {
   var footer = document.querySelector(".shoug-site-footer");
