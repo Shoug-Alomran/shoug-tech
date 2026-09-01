@@ -11,11 +11,22 @@ function json(body, status = 200, origin = "") {
   return new Response(JSON.stringify(body), { status, headers });
 }
 
+const SITE_HOSTS = new Set(["shoug-tech.com", "www.shoug-tech.com", "shoug-alomran.github.io"]);
+const DEV_HOSTS = new Set(["localhost", "127.0.0.1", "[::1]", "::1", "0.0.0.0"]);
+
 function allowedOrigin(request, env) {
   const origin = request.headers.get("origin") || "";
-  const configured = "https://shoug-tech.com,https://www.shoug-tech.com,https://shoug-alomran.github.io,http://127.0.0.1:8001,http://localhost:8001," + (env.ALLOWED_ORIGINS || "");
-  const allowed = new Set(configured.split(",").map((x) => x.trim()).filter(Boolean));
-  return allowed.has(origin) ? origin : "";
+  if (!origin) return "";
+  const extra = new Set(String(env.ALLOWED_ORIGINS || "").split(",").map((x) => x.trim()).filter(Boolean));
+  if (extra.has(origin)) return origin;
+  let url;
+  try { url = new URL(origin); } catch { return ""; }
+  if (url.protocol !== "https:" && url.protocol !== "http:") return "";
+  const host = url.hostname;
+  if (DEV_HOSTS.has(host)) return origin;
+  if (SITE_HOSTS.has(host)) return origin;
+  if (host.endsWith(".pages.dev")) return origin;
+  return "";
 }
 
 function cleanRoute(value) {
@@ -93,8 +104,9 @@ async function handle(request, env, origin) {
 export default {
   async fetch(request, env) {
     const origin = allowedOrigin(request, env);
-    if (!origin) return json({ error: "Origin not allowed." }, 403);
     const url = new URL(request.url);
+    if (url.pathname === "/health") return new Response("ok", { status: 200, headers: { "cache-control": "no-store" } });
+    if (!origin) return json({ error: `Origin not allowed: ${request.headers.get("origin") || "(none)"}` }, 403);
     if (request.method === "OPTIONS") return new Response(null, { status: 204, headers: { "access-control-allow-origin": origin, "access-control-allow-methods": "POST, OPTIONS", "access-control-allow-headers": "content-type", "access-control-max-age": "86400", "vary": "Origin" } });
     if (url.pathname !== "/v1/slide-assistant" || request.method !== "POST") return json({ error: "Not found." }, 404, origin);
     try { return await handle(request, env, origin); } catch (error) { console.error(error); return json({ error: "The assistant is temporarily unavailable." }, 500, origin); }
