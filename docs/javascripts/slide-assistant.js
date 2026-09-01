@@ -36,27 +36,33 @@
   var send = panel.querySelector(".sg-ai-send");
   function setOpen(open) { panel.classList.toggle("is-open", open); launch.setAttribute("aria-expanded", open ? "true" : "false"); if (open) input.focus(); }
   // Keep the launcher clear of the bookmark/notes rail and the "mark as
-  // complete" pill, both injected asynchronously by firebase-auth.js.
+  // complete" pill, both injected asynchronously by firebase-auth.js. Those
+  // are position:fixed, so offsetParent is null even when visible — measure
+  // the rect instead.
+  function box(id) {
+    var el = document.getElementById(id);
+    if (!el) return null;
+    var rect = el.getBoundingClientRect();
+    return rect.width && rect.height ? rect : null;
+  }
   function placeLaunch() {
-    var rail = document.getElementById("shoug-page-icons");
-    var anchorEl = rail && rail.offsetParent !== null ? rail : document.getElementById("shoug-complete-btn");
-    var gap = window.innerWidth <= 600 ? 8 : 10;
-    if (!anchorEl || anchorEl.offsetParent === null) {
+    var anchorBox = box("shoug-page-icons") || box("shoug-complete-btn");
+    if (!anchorBox) {
       launch.style.right = "";
       launch.style.bottom = "";
       return;
     }
-    var box = anchorEl.getBoundingClientRect();
-    if (!box.width) return;
-    launch.style.bottom = Math.max(12, window.innerHeight - box.bottom) + "px";
-    launch.style.right = Math.max(12, window.innerWidth - box.left + gap) + "px";
+    var gap = window.innerWidth <= 600 ? 8 : 10;
+    launch.style.bottom = Math.max(12, window.innerHeight - anchorBox.bottom) + "px";
+    launch.style.right = Math.max(12, window.innerWidth - anchorBox.left + gap) + "px";
   }
   placeLaunch();
   window.addEventListener("resize", placeLaunch);
+  window.addEventListener("load", placeLaunch);
   new MutationObserver(function () {
     clearTimeout(placeLaunch.timer);
     placeLaunch.timer = setTimeout(placeLaunch, 60);
-  }).observe(document.body, { childList: true });
+  }).observe(document.body, { childList: true, subtree: false });
 
   launch.addEventListener("click", function () { setOpen(!panel.classList.contains("is-open")); });
   panel.querySelector(".sg-ai-close").addEventListener("click", function () { setOpen(false); });

@@ -110,7 +110,7 @@
   if (document.getElementById("shoug-slide-assistant-script")) return;
   var script = document.createElement("script");
   script.id = "shoug-slide-assistant-script";
-  script.src = "/javascripts/slide-assistant.js?v=20260902-1";
+  script.src = "/javascripts/slide-assistant.js?v=20260902-2";
   script.defer = true;
   document.head.appendChild(script);
 })();
