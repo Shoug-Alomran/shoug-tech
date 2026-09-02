@@ -805,7 +805,8 @@
       });
       (Array.isArray(data.calendarEvents) ? data.calendarEvents : []).forEach(function (item) {
         if (!item || item.kind !== "assignment" || item.submitted || item.remindersEnabled === false) return;
-        upcoming.push({ id: item.id, title: item.title, date: item.date, days: daysUntilExam(item.date), reminderKind: "assignment" });
+        var dueDate = item.endDate || item.date;
+        upcoming.push({ id: item.id, title: item.title, date: dueDate, days: daysUntilExam(dueDate), reminderKind: "assignment" });
       });
       upcoming = upcoming.filter(function (e) {
         return e.days !== null && e.days >= 0 && e.days <= 7;

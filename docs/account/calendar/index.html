@@ -564,6 +564,19 @@
       color: #c084fc
     }
 
+    .range-bar.assignment {
+      min-height: 27px;
+      padding-block: 3px;
+      border-style: dashed;
+      background: linear-gradient(90deg, rgba(192, 132, 252, .09), rgba(192, 132, 252, .22));
+      box-shadow: inset -4px 0 0 #c084fc
+    }
+
+    .range-bar.assignment .event-meta {
+      display: inline;
+      margin-left: 8px
+    }
+
     .range-bar.exam {
       background: rgba(255, 42, 75, .13);
       color: var(--red)
@@ -2317,7 +2330,7 @@
       <div class="exam-form-body">
         <div class="field"><label>Title</label><input id="event-edit-title" placeholder="Travel"></div>
         <div class="grid-2">
-          <div class="field"><label>Starts</label><input id="event-edit-date" type="hidden">
+          <div class="field"><label id="event-edit-start-date-label">Starts</label><input id="event-edit-date" type="hidden">
             <div class="mini-date compact-date" id="event-edit-date-picker">
               <button class="mini-date-trigger is-empty" id="event-edit-date-trigger" type="button">Choose start
                 date</button>
@@ -2336,7 +2349,7 @@
               </div>
             </div>
           </div>
-          <div class="field"><label>Ends</label><input id="event-edit-end-date" type="hidden">
+          <div class="field"><label id="event-edit-end-date-label">Ends</label><input id="event-edit-end-date" type="hidden">
             <div class="mini-date compact-date" id="event-edit-end-date-picker">
               <button class="mini-date-trigger is-empty" id="event-edit-end-date-trigger" type="button">Choose end
                 date</button>
@@ -2365,8 +2378,8 @@
             <option value="academic">Academic calendar</option>
           </select></div>
         <div class="grid-2">
-          <div class="field"><label>Start</label><input id="event-edit-start" type="time"></div>
-          <div class="field"><label>End</label><input id="event-edit-end" type="time"></div>
+          <div class="field" id="event-edit-start-time-field"><label>Start</label><input id="event-edit-start" type="time"></div>
+          <div class="field"><label id="event-edit-end-time-label">End</label><input id="event-edit-end" type="time"></div>
         </div>
         <div class="field"><label>Location</label><input id="event-edit-location" placeholder="Optional"></div>
         <button class="btn solid" id="save-event-btn" type="button">Save Event</button>
@@ -2424,7 +2437,7 @@
     </section>
   </div>
   <script src="/javascripts/mobile-navigation.js?v=61" defer></script>
-  <script src="/javascripts/firebase-auth.js?v=61"></script>
+  <script src="/javascripts/firebase-auth.js?v=62"></script>
   <script src="/javascripts/psu-academic-calendar.js?v=2"></script>
   <script>
     (function () {
@@ -2540,8 +2553,16 @@
         setDatePickerValue(id, $(id).value);
       }
       function eventMeta(i) {
+        if (i.kind === "assignment") return assignmentWindowMeta(i);
         var parts = [timeRange(i.start, i.end)];
         if (i.endDate && i.endDate !== i.date) parts.push(dateRange(i.date, i.endDate));
+        if (i.location) parts.push(i.location);
+        return parts.join(" · ");
+      }
+      function assignmentWindowMeta(i) {
+        var due = i.endDate || i.date;
+        var span = Math.max(1, Math.round((fromKey(due) - fromKey(i.date)) / 86400000) + 1);
+        var parts = [span + "-day work window", "Due " + prettyDate(due) + (i.end ? " at " + timeLabel(i.end) : "")];
         if (i.location) parts.push(i.location);
         return parts.join(" · ");
       }
@@ -2812,7 +2833,10 @@
             out.push({ kind: "class", termId: c.termId || "", classId: c.id, title: c.title || "Class", meta: classMetaFor(c, k, seg.start || effective.start || "", seg.end || effective.end || "", seg.adjusted), date: k, endDate: k, start: seg.start || effective.start || "", end: seg.end || effective.end || "", online: online, onlineLink: online ? effective.onlineLink || "" : effective.onlineLink || "", adjusted: seg.adjusted, sort: seg.start || effective.start || "99:99" });
           });
         });
-        items.filter(function (i) { return inDateRange(k, i.date, i.endDate || i.date); }).forEach(function (i) { out.push({ kind: i.kind || "personal", itemId: i.id, title: i.title || "Event", meta: eventMeta(i), date: i.date, endDate: i.endDate || i.date, start: i.start || "", end: i.end || "", location: i.location || "", submitted: Boolean(i.submitted), sort: i.start || "99:99" }); });
+        items.filter(function (i) { return inDateRange(k, i.date, i.endDate || i.date); }).forEach(function (i) {
+          var assignment = i.kind === "assignment", due = i.endDate || i.date;
+          out.push({ kind: i.kind || "personal", itemId: i.id, title: assignment && k === due ? "DUE · " + (i.title || "Assignment") : (i.title || "Event"), meta: eventMeta(i), date: i.date, endDate: due, start: assignment ? "" : (i.start || ""), end: assignment ? "" : (i.end || ""), location: i.location || "", submitted: Boolean(i.submitted), sort: assignment ? "00:01" : (i.start || "99:99") });
+        });
         officialEventsFor(k).forEach(function (e) { out.push(e); });
         return out.filter(isInSemesterScope).filter(isVisibleEvent).sort(function (a, b) { return a.sort.localeCompare(b.sort) || a.title.localeCompare(b.title); });
       }
@@ -2839,7 +2863,7 @@
         var start = minutes(e.start), end = minutes(e.end), duration = (end && end > start ? end : start + 60) - start, top = Math.max(0, (start - startHour * 60) / 60 * pxPerHour), compact = duration <= 35, height = Math.max(compact ? 52 : 56, duration / 60 * pxPerHour - 4);
         return '<div class="timeline-event ' + eventClasses(e) + (compact ? ' compact' : '') + '" style="top:' + top + 'px;height:' + height + 'px"><div class="timeline-event-title">' + eventTitleHtml(e) + (e.online ? ' <span class="online-badge">Online</span>' : '') + '</div><div class="timeline-event-meta">' + esc(e.meta) + '</div>' + eventActionsHtml(e) + '</div>';
       }
-      function isRangeEvent(e) { return !e.start && e.endDate && e.endDate !== e.date; }
+      function isRangeEvent(e) { return (e.kind === "assignment" || !e.start) && e.endDate && e.endDate !== e.date; }
       function eventIdentity(e) { return e.examId || e.classId || e.itemId || e.sourceId || [e.kind, e.title, e.date, e.endDate].join("|"); }
       function rangeBarHtml(e, weekStart, weekEnd, lane) {
         var visibleStart = e.date > weekStart ? e.date : weekStart, visibleEnd = e.endDate < weekEnd ? e.endDate : weekEnd;
@@ -2899,10 +2923,10 @@
         $("saved-list").querySelectorAll("[data-class-edit-schedule]").forEach(function (b) { b.addEventListener("click", function () { openClassEdit(b.dataset.classEditSchedule, firstEditableClassDate(classes.find(function (c) { return c.id === b.dataset.classEditSchedule; }) || {}), "schedule"); }); });
         $("saved-list").querySelectorAll("[data-class]").forEach(function (b) { b.addEventListener("click", function () { var removed = classes.splice(Number(b.dataset.class), 1)[0]; if (removed) { classAttendance = classAttendance.filter(function (r) { return r.classId !== removed.id; }); classOverrides = classOverrides.filter(function (o) { return o.classId !== removed.id; }); } persist().then(function () { renderAll(); toast("Class schedule deleted"); }); }); });
         $("saved-list").querySelectorAll("[data-event]").forEach(function (b) { b.addEventListener("click", function () { items.splice(Number(b.dataset.event), 1); persist().then(renderAll); }); });
-        var assignments = items.filter(function (it) { return it.kind === "assignment" && isInSemesterScope(it); }).sort(function (a, b) { return Boolean(a.submitted) - Boolean(b.submitted) || String(a.date).localeCompare(String(b.date)); });
+        var assignments = items.filter(function (it) { return it.kind === "assignment" && isInSemesterScope(it); }).sort(function (a, b) { return Boolean(a.submitted) - Boolean(b.submitted) || String(a.endDate || a.date).localeCompare(String(b.endDate || b.date)); });
         $("assignment-list").innerHTML = assignments.length ? assignments.map(function (it) {
           var due = assignmentDueLabel(it);
-          return '<div class="item' + (it.submitted ? ' assignment-submitted' : '') + '"><div><div class="item-title">' + esc(it.title || "Assignment") + '</div><div class="item-meta assignment-due">' + esc(it.submitted ? "Submitted" : due) + (it.start ? ' · ' + esc(timeLabel(it.start)) : '') + '</div></div><div class="item-actions"><button class="remove-btn edit" data-assignment-toggle="' + esc(it.id) + '">' + (it.submitted ? 'Mark Not Submitted' : 'Mark Submitted') + '</button><button class="remove-btn" data-assignment-delete="' + esc(it.id) + '">Delete</button></div></div>';
+          return '<div class="item' + (it.submitted ? ' assignment-submitted' : '') + '"><div><div class="item-title">' + esc(it.title || "Assignment") + '</div><div class="item-meta assignment-due">' + esc(it.submitted ? "Submitted" : due) + (it.end ? ' · Due at ' + esc(timeLabel(it.end)) : '') + '</div></div><div class="item-actions"><button class="remove-btn edit" data-assignment-toggle="' + esc(it.id) + '">' + (it.submitted ? 'Mark Not Submitted' : 'Mark Submitted') + '</button><button class="remove-btn" data-assignment-delete="' + esc(it.id) + '">Delete</button></div></div>';
         }).join("") : '<div class="empty">No assignments yet. Add one to track its due date.</div>';
         $("assignment-list").querySelectorAll("[data-assignment-toggle]").forEach(function (b) { b.addEventListener("click", function () { toggleAssignmentSubmitted(b.dataset.assignmentToggle); }); });
         $("assignment-list").querySelectorAll("[data-assignment-delete]").forEach(function (b) { b.addEventListener("click", function () { deleteEventById(b.dataset.assignmentDelete); }); });
@@ -3027,7 +3051,7 @@
         persist().then(function () { renderAll(); if (activeDayKey) openDay(activeDayKey); toast(wasAssignment ? "Assignment deleted" : "Event deleted"); });
       }
       function assignmentDueLabel(item) {
-        var days = Math.round((fromKey(item.date) - fromKey(todayKey())) / 86400000);
+        var days = Math.round((fromKey(item.endDate || item.date) - fromKey(todayKey())) / 86400000);
         if (days < 0) return "Overdue by " + Math.abs(days) + " day" + (days === -1 ? "" : "s");
         if (days === 0) return "Due today";
         if (days === 1) return "Due tomorrow";
@@ -3203,11 +3227,15 @@
         setDatePickerValue("event-edit-date", k);
         setDatePickerValue("event-edit-end-date", k);
         $("event-edit-kind").value = isAssignment ? "assignment" : "travel";
+        $("event-edit-start-date-label").textContent = isAssignment ? "Available from" : "Starts";
+        $("event-edit-end-date-label").textContent = isAssignment ? "Due date" : "Ends";
+        $("event-edit-start-time-field").style.display = isAssignment ? "none" : "flex";
+        $("event-edit-end-time-label").textContent = isAssignment ? "Due time" : "End";
         $("event-edit-start").value = "";
         $("event-edit-end").value = "";
         $("event-edit-location").value = "";
         $("event-editor-title").textContent = isAssignment ? "Add Assignment" : "Add Event";
-        $("event-editor-sub").textContent = isAssignment ? "Due on " + k + ". Add an optional time or location." : "Starts on " + k + ". Set an end date to make a connected range.";
+        $("event-editor-sub").textContent = isAssignment ? "Choose when work opens and the final due date. It will display as a compact work window." : "Starts on " + k + ". Set an end date to make a connected range.";
         $("save-event-btn").textContent = isAssignment ? "Save Assignment" : "Save Event";
         $("event-editor").classList.add("open"); $("event-editor").setAttribute("aria-hidden", "false"); document.body.style.overflow = "hidden";
         setTimeout(function () { $("event-edit-title").focus(); }, 0);
