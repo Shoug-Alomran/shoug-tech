@@ -2,6 +2,32 @@ const MODEL = "@cf/meta/llama-3.1-8b-instruct-fast";
 const MAX_QUESTION = 800;
 const MAX_CONTEXT = 26000;
 
+const FALLBACK_MODEL = "@cf/meta/llama-3.1-8b-instruct";
+
+function aiText(value) {
+  if (typeof value === "string") return value.trim();
+  if (!value || typeof value !== "object") return "";
+  const candidates = [
+    value.response,
+    value.generated_text,
+    value.result && value.result.response,
+    value.output_text,
+    value.choices && value.choices[0] && value.choices[0].message && value.choices[0].message.content,
+    value.choices && value.choices[0] && value.choices[0].text
+  ];
+  const found = candidates.find((item) => typeof item === "string" && item.trim());
+  return found ? found.trim() : "";
+}
+
+async function runTextGeneration(env, input) {
+  const first = await env.AI.run(MODEL, input);
+  const firstText = aiText(first);
+  if (firstText) return firstText;
+  const retry = await env.AI.run(FALLBACK_MODEL, { ...input, temperature: 0 });
+  return aiText(retry);
+}
+
+
 function json(body, status = 200, origin = "") {
   const headers = { "content-type": "application/json; charset=utf-8", "cache-control": "no-store" };
   if (origin) {
@@ -96,7 +122,7 @@ async function handle(request, env, origin) {
     ? "the lecture slide deck itself, extracted page by page (each [Slide N] is slide number N)"
     : "the written breakdown page for this material (each [Section N] is a consecutive part of that page, not a slide number)";
   const history = Array.isArray(body.history) ? body.history.slice(-6).filter((item) => item && ["user", "assistant"].includes(item.role) && typeof item.content === "string").map((item) => ({ role: item.role, content: item.content.slice(0, 1200) })) : [];
-  const response = await env.AI.run(MODEL, {
+  const answer = await runTextGeneration(env, {
     messages: [
       { role: "system", content: [
         `You are the study assistant for one piece of course material. Your source is ${sourceKind}.`,
@@ -117,7 +143,6 @@ async function handle(request, env, origin) {
     temperature: 0.2,
     max_tokens: 800
   });
-  const answer = typeof response.response === "string" ? response.response.trim() : "";
   if (!answer) return json({ error: "The model returned an empty answer." }, 502, origin);
   const labels = selected.map((chunk) => chunk.label);
   const cited = labels.filter((label) => answer.includes(`[${label}]`));
@@ -289,6 +314,9 @@ async function handleCalendar(request, env, origin) {
   const today = DATE_KEY.test(body.today) ? body.today : new Date().toISOString().slice(0, 10);
   const snapshot = sanitizeSnapshot(body.snapshot);
   const schedule = renderSnapshot(snapshot, today);
+  if (intent === "plan" && !snapshot.exams.some((exam) => exam.date >= today)) {
+    return json({ answer: "Add the quiz or exam date to your calendar first. Once its date is saved, I can place study sessions before it without overlapping your classes." }, 200, origin);
+  }
 
   let material = "";
   let labels = [];
@@ -307,7 +335,7 @@ async function handleCalendar(request, env, origin) {
     ? body.history.slice(-6).filter((item) => item && ["user", "assistant"].includes(item.role) && typeof item.content === "string").map((item) => ({ role: item.role, content: item.content.slice(0, 1200) }))
     : [];
 
-  const response = await env.AI.run(MODEL, {
+  const answer = await runTextGeneration(env, {
     messages: [
       { role: "system", content: CAL_PROMPTS[intent].join("\n") },
       ...history,
@@ -316,7 +344,6 @@ async function handleCalendar(request, env, origin) {
     temperature: intent === "chat" || intent === "brief" ? 0.2 : 0,
     max_tokens: intent === "brief" ? 900 : 700
   });
-  const answer = typeof response.response === "string" ? response.response.trim() : "";
   if (!answer) return json({ error: "The model returned an empty answer." }, 502, origin);
 
   if (intent === "parse" || intent === "plan") {
