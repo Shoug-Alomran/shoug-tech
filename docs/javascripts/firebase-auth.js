@@ -186,6 +186,9 @@
       "#shoug-exam-toast.warn{border-color:rgba(245,158,11,.32);}",
       "#shoug-exam-toast.warn::before{background:#f59e0b;box-shadow:0 0 18px rgba(245,158,11,.75);}",
       "#shoug-exam-toast.warn .shoug-exam-toast-when{color:#f59e0b;}",
+      "#shoug-exam-toast.assignment{border-color:rgba(192,132,252,.4);}",
+      "#shoug-exam-toast.assignment::before{background:#c084fc;box-shadow:0 0 18px rgba(192,132,252,.75);}",
+      "#shoug-exam-toast.assignment .shoug-exam-toast-when{color:#c084fc;}",
       "html[dir='rtl'] #shoug-exam-toast,body.shoug-arabic-mode #shoug-exam-toast{direction:rtl;text-align:right;}",
       "html[dir='rtl'] .shoug-exam-toast-when,body.shoug-arabic-mode .shoug-exam-toast-when{margin-left:0;margin-right:auto;}",
       "@media(max-width:640px){#shoug-exam-toast{top:auto;bottom:86px;width:calc(100vw - 24px);} .shoug-exam-toast-main{padding:14px;gap:10px;} .shoug-exam-toast-when{padding:0 12px;font-size:.62rem;} .shoug-exam-toast-title{font-size:.68rem;} .shoug-exam-toast-meta{font-size:.52rem;white-space:normal;}}",
@@ -732,7 +735,8 @@
     var days = daysUntilExam(exam.date);
     if (days === null || days < 0 || days > 7) return;
 
-    var storageKey = "shoug-exam-toast:" + user.uid + ":" + exam.id + ":d" + days;
+    var reminderKind = exam.reminderKind === "assignment" ? "assignment" : "exam";
+    var storageKey = "shoug-" + reminderKind + "-toast:" + user.uid + ":" + exam.id + ":d" + days;
     try {
       if (localStorage.getItem(storageKey) === "dismissed") return;
     } catch (e) { }
@@ -741,14 +745,14 @@
 
     var toast = document.createElement("div");
     toast.id = "shoug-exam-toast";
-    toast.className = days <= 1 ? "urgent" : (days <= 3 ? "warn" : "notice");
+    toast.className = reminderKind === "assignment" ? "assignment" : (days <= 1 ? "urgent" : (days <= 3 ? "warn" : "notice"));
     toast.setAttribute("role", "status");
     toast.setAttribute("aria-live", "polite");
     toast.innerHTML = [
       '<div class="shoug-exam-toast-main">',
-      '  <span class="shoug-exam-toast-icon">EXAM</span>',
+      '  <span class="shoug-exam-toast-icon">' + (reminderKind === "assignment" ? "DUE" : "EXAM") + '</span>',
       '  <div class="shoug-exam-toast-text">',
-      '    <div class="shoug-exam-toast-title">' + escHtml((exam.course || "Exam") + " " + examTypeLabel(exam.type)) + '</div>',
+      '    <div class="shoug-exam-toast-title">' + escHtml(reminderKind === "assignment" ? (exam.title || "Assignment") : ((exam.course || "Exam") + " " + examTypeLabel(exam.type))) + '</div>',
       '    <div class="shoug-exam-toast-meta">' + escHtml(examDateLabel(exam.date)) + '</div>',
       '  </div>',
       '</div>',
@@ -771,13 +775,15 @@
     if (!user || !exam || !("Notification" in window) || Notification.permission !== "granted") return;
     var days = daysUntilExam(exam.date);
     if (days !== 7 && days !== 3 && days !== 1 && days !== 0) return;
-    var key = "exam-notif-" + user.uid + "-" + exam.id + "-d" + days;
+    var reminderKind = exam.reminderKind === "assignment" ? "assignment" : "exam";
+    var key = reminderKind + "-notif-" + user.uid + "-" + exam.id + "-d" + days;
     try {
       if (localStorage.getItem(key)) return;
       localStorage.setItem(key, "1");
     } catch (e) { }
-    new Notification("Exam Reminder - " + (exam.course || "Exam"), {
-      body: (exam.course || "Exam") + " " + examTypeLabel(exam.type) + " is " + examWhenLabel(days).toLowerCase() + " (" + examDateLabel(exam.date) + ")",
+    var title = reminderKind === "assignment" ? (exam.title || "Assignment") : (exam.course || "Exam");
+    new Notification((reminderKind === "assignment" ? "Assignment Due - " : "Exam Reminder - ") + title, {
+      body: (reminderKind === "assignment" ? title : title + " " + examTypeLabel(exam.type)) + " is due " + examWhenLabel(days).toLowerCase() + " (" + examDateLabel(exam.date) + ")",
       icon: "/assets/shoug-favicon-v3.png",
       badge: "/assets/shoug-favicon-v3.png",
       tag: key
@@ -790,15 +796,21 @@
 
     firebase.firestore().collection("users").doc(user.uid).get().then(function (doc) {
       if (!doc.exists || _examReminderUid !== user.uid) return;
-      var examsMap = doc.data().exams || {};
+      var data = doc.data();
+      var examsMap = data.exams || {};
       var upcoming = Object.keys(examsMap).map(function (id) {
         var e = examsMap[id] || {};
         var days = daysUntilExam(e.date);
-        return { id: id, course: e.course, type: e.type, date: e.date, days: days };
-      }).filter(function (e) {
+        return { id: id, course: e.course, type: e.type, date: e.date, days: days, reminderKind: "exam" };
+      });
+      (Array.isArray(data.calendarEvents) ? data.calendarEvents : []).forEach(function (item) {
+        if (!item || item.kind !== "assignment" || item.submitted || item.remindersEnabled === false) return;
+        upcoming.push({ id: item.id, title: item.title, date: item.date, days: daysUntilExam(item.date), reminderKind: "assignment" });
+      });
+      upcoming = upcoming.filter(function (e) {
         return e.days !== null && e.days >= 0 && e.days <= 7;
       }).sort(function (a, b) {
-        return a.days - b.days;
+        return a.days - b.days || (a.reminderKind === "assignment" ? -1 : 1);
       });
 
       if (!upcoming.length) return;
@@ -811,6 +823,15 @@
     _examReminderUid = null;
     removeExamToast();
   }
+
+  document.addEventListener("shoug:calendar-reminders-changed", function () {
+    removeExamToast();
+    _examReminderUid = null;
+    try {
+      var user = firebase.auth().currentUser;
+      if (user) startExamReminder(user);
+    } catch (e) { }
+  });
 
   // ── Header button ─────────────────────────────────────────────────────────
 

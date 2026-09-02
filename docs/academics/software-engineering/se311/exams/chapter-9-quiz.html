@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en" data-sg-styled>
 <head>
     <link rel="icon" type="image/png" sizes="256x256" href="/assets/shoug-favicon-v4.png">
     <link rel="shortcut icon" type="image/png" href="/assets/shoug-favicon-v4.png">
@@ -7,525 +7,83 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SE311 · Chapter 9 Quiz  -  Nonfunctional Requirements</title>
+    <link rel="stylesheet" href="/styles/se311.css">
+    <script>
+        /* Theme resolution, in priority order:
+             1. the stored site preference (what the toggle writes);
+             2. the embedding page -- these pages are iframed by their wrapper,
+                and the wrapper only marks itself when it is in LIGHT mode, so an
+                unmarked same-origin parent means the site's dark chrome;
+             3. the OS preference, for the standalone URL.
+           It runs before first paint, and re-asserts afterwards because the
+           shared theme scripts fall back to the OS setting and would otherwise
+           leave a light page sitting inside a dark one. */
+        (function () {
+            var root = document.documentElement;
+
+            function parentTheme() {
+                try {
+                    if (!window.parent || window.parent === window) return null;
+                    var pdoc = window.parent.document;
+                    if (!pdoc) return null;
+                    var body = pdoc.body;
+                    if (body && body.classList.contains("shoug-light-mode")) return "light";
+                    var attr = (body && body.getAttribute("data-theme")) ||
+                        pdoc.documentElement.getAttribute("data-theme");
+                    if (attr === "dark" || attr === "light") return attr;
+                    var scheme = (body && body.getAttribute("data-md-color-scheme")) ||
+                        pdoc.documentElement.getAttribute("data-md-color-scheme");
+                    if (scheme) return scheme === "slate" ? "dark" : "light";
+                    return "dark";
+                } catch (e) {
+                    return null;    // cross-origin: fall through to the OS setting
+                }
+            }
+
+            function stored() {
+                try {
+                    var saved = localStorage.getItem("shoug-theme") || localStorage.getItem("theme");
+                    if (saved === "dark" || saved === "light") return saved;
+                } catch (e) { }
+                return null;
+            }
+
+            function resolve() {
+                var saved = stored();
+                if (saved) return saved;
+                var inherited = parentTheme();
+                if (inherited) {
+                    /* Record what the embedding page is showing: the shared theme
+                       scripts read this key, and without it their first toggle
+                       just re-applies the theme already on screen. */
+                    try {
+                        localStorage.setItem("shoug-theme", inherited);
+                        localStorage.setItem("theme", inherited);
+                    } catch (e) { }
+                    return inherited;
+                }
+                return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches
+                    ? "dark" : "light";
+            }
+
+            function apply() {
+                var theme = resolve();
+                if (root.getAttribute("data-theme") !== theme) root.setAttribute("data-theme", theme);
+                if (root.style.colorScheme !== theme) root.style.colorScheme = theme;
+            }
+
+            apply();
+            if (window.MutationObserver) {
+                new MutationObserver(apply).observe(root, {
+                    attributes: true, attributeFilter: ["data-theme"]
+                });
+            }
+            document.addEventListener("DOMContentLoaded", apply);
+            window.addEventListener("load", apply);
+        })();
+    </script>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Epilogue:ital,wght@0,300;0,400;0,500;0,600;1,300&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<style>
-:root {
-  --bg: #f7f4ef;
-  --bg2: #edeae3;
-  --surface: #ffffff;
-  --surface2: #f2efe9;
-  --border: #ddd9cf;
-  --text: #18160f;
-  --text2: #6b6456;
-  --text3: #9c9185;
-  --accent: #d4410a;
-  --accent-dim: #f5e8e3;
-  --green: #1a7a4a;
-  --green-dim: #e2f4eb;
-  --red: #c0290e;
-  --red-dim: #fdecea;
-  --gold: #c47c00;
-  --gold-dim: #fef8e6;
-  --blue: #1a5fa8;
-  --blue-dim: #e6eef8;
-  --shadow-sm: 0 2px 8px rgba(0,0,0,.06);
-  --shadow: 0 4px 20px rgba(0,0,0,.09);
-  --shadow-lg: 0 8px 40px rgba(0,0,0,.13);
-  --r: 14px;
-  --tr: .25s ease;
-}
-[data-theme="dark"] {
-  --bg: #0d0c0a;
-  --bg2: #151310;
-  --surface: #1c1a16;
-  --surface2: #242018;
-  --border: #302c24;
-  --text: #f0ece2;
-  --text2: #a89f8e;
-  --text3: #6b6050;
-  --accent: #f0571c;
-  --accent-dim: #2a1508;
-  --green: #34c274;
-  --green-dim: #0a2218;
-  --red: #f05050;
-  --red-dim: #2a0d0d;
-  --gold: #e8a020;
-  --gold-dim: #2a1e04;
-  --blue: #5b9ef5;
-  --blue-dim: #0d1e38;
-  --shadow-sm: 0 2px 8px rgba(0,0,0,.3);
-  --shadow: 0 4px 20px rgba(0,0,0,.4);
-  --shadow-lg: 0 8px 40px rgba(0,0,0,.5);
-}
-
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { width: 100%; }
-
-body {
-  font-family: 'Epilogue', sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  min-height: 100vh;
-  width: 100%;
-  overflow-x: hidden;
-  transition: background var(--tr), color var(--tr);
-  line-height: 1.65;
-}
-
-/* ─── TOPBAR ─── */
-.topbar {
-  position: sticky; top: 0; z-index: 100;
-  background: var(--surface);
-  border-bottom: 1px solid var(--border);
-  padding: .75rem 1.5rem;
-  display: flex; align-items: center; justify-content: space-between;
-  box-shadow: var(--shadow-sm);
-  transition: background var(--tr), border-color var(--tr);
-}
-.topbar-left { display: flex; flex-direction: column; gap: .1rem; }
-.course-label {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: .68rem; letter-spacing: .12em;
-  text-transform: uppercase; color: var(--accent); font-weight: 500;
-}
-.topbar h1 { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; }
-
-.topbar-right { display: flex; align-items: center; gap: 1.25rem; }
-.score-pill {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: .8rem; padding: .35rem .9rem;
-  background: var(--surface2); border: 1px solid var(--border);
-  border-radius: 999px; color: var(--text2);
-  transition: all var(--tr);
-}
-.score-pill span { color: var(--accent); font-weight: 700; }
-
-/* Dark toggle */
-.mode-toggle { display: flex; align-items: center; gap: .6rem; cursor: pointer; }
-.mode-label { font-size: .75rem; color: var(--text3); font-family: 'JetBrains Mono', monospace; }
-.toggle-track {
-  width: 42px; height: 24px; border-radius: 999px;
-  background: var(--border); position: relative;
-  transition: background var(--tr); cursor: pointer;
-}
-.toggle-track.on { background: var(--accent); }
-.toggle-knob {
-  position: absolute; top: 3px; left: 3px;
-  width: 18px; height: 18px; border-radius: 50%;
-  background: white; transition: transform var(--tr);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 10px; box-shadow: 0 1px 4px rgba(0,0,0,.2);
-}
-.toggle-track.on .toggle-knob { transform: translateX(18px); }
-
-/* ─── HERO ─── */
-.hero {
-  width: min(100%, 1040px); margin: 0 auto;
-  padding: 2.5rem clamp(1rem, 4vw, 2rem) 0;
-}
-.hero-chip {
-  display: inline-flex; align-items: center; gap: .4rem;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: .7rem; letter-spacing: .1em; text-transform: uppercase;
-  color: var(--text3); background: var(--surface2);
-  border: 1px solid var(--border); border-radius: 999px;
-  padding: .25rem .75rem; margin-bottom: 1rem;
-}
-.hero h2 {
-  font-family: 'Syne', sans-serif;
-  font-size: clamp(1.6rem, 4vw, 2.4rem); font-weight: 800;
-  line-height: 1.2; margin-bottom: .6rem;
-}
-.hero h2 em { font-style: italic; color: var(--accent); }
-.hero p { color: var(--text2); font-size: .95rem; max-width: 580px; }
-
-/* Progress bar */
-.progress-wrap { margin: 1.5rem 0 .3rem; }
-.progress-info { display: flex; justify-content: space-between; font-size: .78rem; color: var(--text3); margin-bottom: .4rem; font-family: 'JetBrains Mono', monospace; }
-.progress-bar { height: 5px; background: var(--border); border-radius: 999px; overflow: hidden; }
-.progress-fill { height: 100%; background: var(--accent); border-radius: 999px; transition: width .5s cubic-bezier(.4,0,.2,1); }
-
-/* ─── QUIZ CONTAINER ─── */
-.quiz-wrap { width: min(100%, 1040px); margin: 0 auto; padding: 1.5rem clamp(1rem, 4vw, 2rem); }
-
-/* ─── QUESTION CARD ─── */
-.q-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--r);
-  padding: 1.6rem 1.8rem;
-  margin-bottom: 1.5rem;
-  box-shadow: var(--shadow-sm);
-  transition: box-shadow var(--tr), border-color var(--tr), background var(--tr);
-  position: relative;
-}
-.q-card:hover { box-shadow: var(--shadow); }
-.q-card.correct { border-color: var(--green); box-shadow: 0 0 0 3px color-mix(in srgb, var(--green) 15%, transparent); }
-.q-card.wrong { border-color: var(--red); box-shadow: 0 0 0 3px color-mix(in srgb, var(--red) 15%, transparent); }
-.q-card.partial { border-color: var(--gold); box-shadow: 0 0 0 3px color-mix(in srgb, var(--gold) 15%, transparent); }
-
-.q-header { display: flex; align-items: flex-start; gap: .8rem; margin-bottom: 1rem; }
-.q-num {
-  font-family: 'JetBrains Mono', monospace; font-size: .7rem;
-  color: var(--text3); background: var(--surface2);
-  border: 1px solid var(--border); border-radius: 6px;
-  padding: .2rem .55rem; white-space: nowrap; margin-top: .1rem;
-  transition: background var(--tr);
-}
-.q-badges { display: flex; gap: .4rem; flex-wrap: wrap; align-items: center; }
-.badge {
-  font-family: 'JetBrains Mono', monospace; font-size: .63rem;
-  letter-spacing: .08em; text-transform: uppercase;
-  padding: .18rem .55rem; border-radius: 999px; font-weight: 500;
-}
-.badge.mcq { background: var(--blue-dim); color: var(--blue); }
-.badge.tf { background: var(--gold-dim); color: var(--gold); }
-.badge.write { background: var(--accent-dim); color: var(--accent); }
-.badge.past { background: var(--gold-dim); color: var(--gold); border: 1px solid var(--gold); }
-.badge.pts { background: var(--surface2); color: var(--text3); border: 1px solid var(--border); }
-
-.q-text {
-  font-size: 1rem; font-weight: 500; color: var(--text);
-  line-height: 1.55; margin-bottom: 1.1rem;
-}
-
-/* ─── MCQ OPTIONS ─── */
-.options { display: flex; flex-direction: column; gap: .55rem; }
-.option {
-  display: flex; align-items: center; gap: .8rem;
-  padding: .75rem 1rem; border-radius: 10px;
-  border: 1.5px solid var(--border);
-  cursor: pointer; transition: all .18s ease;
-  background: var(--surface);
-  user-select: none;
-}
-.option:hover:not(.locked) { border-color: var(--accent); background: var(--accent-dim); }
-.option.selected:not(.locked) { border-color: var(--accent); background: var(--accent-dim); }
-.option.correct-ans { border-color: var(--green); background: var(--green-dim); }
-.option.wrong-ans { border-color: var(--red); background: var(--red-dim); }
-.option.locked { cursor: default; }
-.opt-letter {
-  width: 26px; height: 26px; border-radius: 6px;
-  background: var(--surface2); border: 1px solid var(--border);
-  display: flex; align-items: center; justify-content: center;
-  font-family: 'JetBrains Mono', monospace; font-size: .75rem; font-weight: 500;
-  color: var(--text2); flex-shrink: 0; transition: all .18s;
-}
-.option.correct-ans .opt-letter { background: var(--green); color: white; border-color: var(--green); }
-.option.wrong-ans .opt-letter { background: var(--red); color: white; border-color: var(--red); }
-.option.selected:not(.locked) .opt-letter { background: var(--accent); color: white; border-color: var(--accent); }
-.opt-text { font-size: .92rem; color: var(--text); }
-
-/* ─── TRUE/FALSE ─── */
-.tf-options { display: flex; gap: .75rem; }
-.tf-btn {
-  flex: 1; padding: .75rem; border-radius: 10px;
-  border: 1.5px solid var(--border); background: var(--surface);
-  cursor: pointer; font-family: 'Syne', sans-serif;
-  font-weight: 700; font-size: .95rem; text-align: center;
-  transition: all .18s ease; color: var(--text2);
-}
-.tf-btn:hover:not(.locked) { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
-.tf-btn.selected:not(.locked) { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
-.tf-btn.correct-ans { border-color: var(--green); color: var(--green); background: var(--green-dim); }
-.tf-btn.wrong-ans { border-color: var(--red); color: var(--red); background: var(--red-dim); }
-.tf-btn.locked { cursor: default; }
-
-/* ─── WRITING QUESTION ─── */
-.write-area {
-  width: 100%; min-height: 110px; resize: vertical;
-  border: 1.5px solid var(--border); border-radius: 10px;
-  padding: .85rem 1rem; font-family: 'Epilogue', sans-serif;
-  font-size: .92rem; color: var(--text); background: var(--surface2);
-  outline: none; transition: border-color var(--tr), background var(--tr);
-  line-height: 1.6;
-}
-.write-area:focus { border-color: var(--accent); }
-.write-area:disabled { opacity: .7; cursor: not-allowed; }
-.write-meta {
-  display: flex; justify-content: space-between; align-items: center;
-  margin-top: .5rem; margin-bottom: .75rem;
-}
-.write-hint { font-size: .78rem; color: var(--text3); font-family: 'JetBrains Mono', monospace; }
-.keyword-track { display: flex; gap: .3rem; flex-wrap: wrap; }
-.kw-pill {
-  font-family: 'JetBrains Mono', monospace; font-size: .65rem;
-  padding: .15rem .5rem; border-radius: 999px;
-  background: var(--surface2); border: 1px solid var(--border);
-  color: var(--text3); transition: all .2s;
-}
-.kw-pill.hit { background: var(--green-dim); border-color: var(--green); color: var(--green); }
-.model-answer {
-  background: var(--surface2); border: 1px solid var(--border);
-  border-radius: 10px; padding: 1rem 1.2rem;
-  font-size: .88rem; color: var(--text2); margin-top: .75rem;
-  display: none;
-  border-left: 3px solid var(--accent);
-}
-.model-answer strong { color: var(--accent); display: block; font-size: .73rem; text-transform: uppercase; letter-spacing: .1em; margin-bottom: .4rem; font-family: 'JetBrains Mono', monospace; }
-.model-answer ul { padding-left: 1.2rem; }
-.model-answer li { margin: .3rem 0; }
-
-/* ─── SUBMIT BTN ─── */
-.q-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 1rem; gap: .75rem; flex-wrap: wrap; }
-.submit-btn {
-  padding: .55rem 1.4rem; border-radius: 8px;
-  background: var(--accent); color: white; border: none;
-  font-family: 'Syne', sans-serif; font-weight: 700; font-size: .88rem;
-  cursor: pointer; transition: all .18s ease;
-  letter-spacing: .02em;
-}
-.submit-btn:hover { opacity: .88; transform: translateY(-1px); }
-.submit-btn:disabled { opacity: .4; cursor: not-allowed; transform: none; }
-.submit-btn.submitted { background: var(--surface2); color: var(--text3); border: 1px solid var(--border); }
-
-/* ─── FEEDBACK ─── */
-.feedback {
-  display: none; margin-top: 1rem;
-  padding: 1rem 1.2rem; border-radius: 10px;
-  font-size: .88rem; line-height: 1.55;
-  border-left: 3px solid transparent;
-  animation: slideDown .25s ease;
-}
-@keyframes slideDown { from { opacity:0; transform:translateY(-6px); } to { opacity:1; transform:translateY(0); } }
-.feedback.correct-fb { background: var(--green-dim); border-color: var(--green); color: var(--text); }
-.feedback.wrong-fb { background: var(--red-dim); border-color: var(--red); color: var(--text); }
-.feedback.partial-fb { background: var(--gold-dim); border-color: var(--gold); color: var(--text); }
-.fb-icon { font-size: 1.1rem; margin-right: .4rem; }
-.fb-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: .92rem; margin-bottom: .3rem; display: flex; align-items: center; }
-.fb-body { color: var(--text2); }
-.fb-body ul { padding-left: 1.2rem; margin-top: .35rem; }
-.fb-body li { margin: .25rem 0; }
-.fb-score-tag {
-  display: inline-flex; font-family: 'JetBrains Mono', monospace; font-size: .72rem;
-  padding: .2rem .6rem; border-radius: 999px; margin-left: auto;
-}
-.fb-score-tag.full { background: var(--green-dim); color: var(--green); }
-.fb-score-tag.partial-s { background: var(--gold-dim); color: var(--gold); }
-.fb-score-tag.zero { background: var(--red-dim); color: var(--red); }
-
-/* ─── RESULTS PANEL ─── */
-.results-panel {
-  display: none; width: min(100%, 1040px); margin: 0 auto;
-  padding: 0 clamp(1rem, 4vw, 2rem) 4rem;
-}
-.results-card {
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: var(--r); padding: 2.5rem 2rem;
-  text-align: center; box-shadow: var(--shadow-lg);
-  position: relative; overflow: hidden;
-}
-.results-card::before {
-  content: ''; position: absolute; inset: 0;
-  background: radial-gradient(ellipse at 50% 0%, color-mix(in srgb, var(--accent) 8%, transparent) 0%, transparent 70%);
-  pointer-events: none;
-}
-.results-score {
-  font-family: 'Syne', sans-serif; font-size: 4rem; font-weight: 800;
-  color: var(--accent); line-height: 1;
-}
-.results-score span { font-size: 1.5rem; color: var(--text3); }
-.results-label { font-size: 1.1rem; color: var(--text2); margin: .5rem 0 1.5rem; }
-.grade-badge {
-  display: inline-block; font-family: 'Syne', sans-serif;
-  font-size: 1.4rem; font-weight: 800; padding: .5rem 2rem;
-  border-radius: 999px; margin-bottom: 1.5rem;
-}
-.results-breakdown {
-  display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; margin: 1.5rem 0;
-}
-.rb-item { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: .85rem; }
-.rb-num { font-family: 'Syne', sans-serif; font-size: 1.5rem; font-weight: 800; }
-.rb-label { font-size: .78rem; color: var(--text3); }
-.retry-btn {
-  padding: .7rem 2rem; background: var(--accent); color: white;
-  border: none; border-radius: 8px; font-family: 'Syne', sans-serif;
-  font-weight: 700; font-size: 1rem; cursor: pointer;
-  transition: all .18s; margin-top: .5rem;
-}
-.retry-btn:hover { opacity: .88; transform: translateY(-2px); }
-
-/* ─── NAV FOOTER ─── */
-.quiz-nav {
-  width: min(100%, 1040px); margin: 0 auto;
-  padding: 0 clamp(1rem, 4vw, 2rem) 1.5rem;
-  display: flex; justify-content: flex-end; gap: .75rem;
-}
-.nav-btn {
-  padding: .6rem 1.4rem; border-radius: 8px; font-family: 'Syne', sans-serif;
-  font-weight: 700; font-size: .88rem; cursor: pointer; transition: all .18s;
-}
-.nav-finish { background: var(--accent); color: white; border: none; }
-.nav-finish:hover { opacity: .88; }
-
-/* ─── SECTION DIVIDER ─── */
-.section-divider {
-  width: min(100%, 1040px); margin: .5rem auto 0; padding: 0 clamp(1rem, 4vw, 2rem);
-  display: flex; align-items: center; gap: 1rem;
-}
-.sd-line { flex: 1; height: 1px; background: var(--border); }
-.sd-label {
-  font-family: 'JetBrains Mono', monospace; font-size: .7rem;
-  text-transform: uppercase; letter-spacing: .12em; color: var(--text3);
-  white-space: nowrap;
-}
-img, svg, canvas, video { max-width: 100%; height: auto; }
-
-@media (max-width:580px) {
-  .topbar { align-items: flex-start; flex-direction: column; gap: .75rem; }
-  .topbar-right { width: 100%; justify-content: space-between; }
-  .q-card { padding: 1.2rem; }
-  .results-breakdown { grid-template-columns: 1fr 1fr; }
-  .tf-options { flex-direction: column; }
-}
-
-/* SE311 responsive + embedded theme bridge */
-html, body {
-  width: 100%;
-  max-width: 100%;
-  overflow-x: hidden;
-}
-body {
-  transition: background-color 0.25s ease, color 0.25s ease;
-}
-img, svg, video, canvas, iframe {
-  max-width: 100% !important;
-  height: auto;
-}
-.container,
-.quiz-container,
-.wrapper,
-.content,
-.quiz-content,
-main,
-header,
-.header,
-.section,
-.question,
-.question-block,
-.card,
-.panel,
-.results-panel,
-.result-container {
-  max-width: min(100%, 1120px) !important;
-}
-.container,
-.quiz-container,
-.wrapper,
-.content,
-.quiz-content,
-main,
-.results-panel,
-.result-container {
-  width: min(100%, 1120px) !important;
-}
-.table-wrap,
-.table-scroll,
-.overflow-x,
-table {
-  max-width: 100% !important;
-}
-.table-wrap,
-.table-scroll,
-.overflow-x {
-  overflow-x: auto !important;
-}
-pre, code {
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
-}
-html[data-theme="dark"] body,
-html[data-parent-theme="dark"] body {
-  background-color: #111827 !important;
-  color: #f3f4f6 !important;
-}
-html[data-theme="dark"] .container,
-html[data-theme="dark"] .quiz-container,
-html[data-theme="dark"] .wrapper,
-html[data-theme="dark"] .content,
-html[data-theme="dark"] .quiz-content,
-html[data-theme="dark"] main,
-html[data-theme="dark"] .section,
-html[data-theme="dark"] .question,
-html[data-theme="dark"] .question-block,
-html[data-theme="dark"] .quiz-info,
-html[data-theme="dark"] .card,
-html[data-theme="dark"] .panel,
-html[data-parent-theme="dark"] .container,
-html[data-parent-theme="dark"] .quiz-container,
-html[data-parent-theme="dark"] .wrapper,
-html[data-parent-theme="dark"] .content,
-html[data-parent-theme="dark"] .quiz-content,
-html[data-parent-theme="dark"] main,
-html[data-parent-theme="dark"] .section,
-html[data-parent-theme="dark"] .question,
-html[data-parent-theme="dark"] .question-block,
-html[data-parent-theme="dark"] .quiz-info,
-html[data-parent-theme="dark"] .card,
-html[data-parent-theme="dark"] .panel {
-  background-color: #1f2937 !important;
-  color: #f3f4f6 !important;
-  border-color: #374151 !important;
-}
-html[data-theme="dark"] p,
-html[data-theme="dark"] li,
-html[data-theme="dark"] label,
-html[data-theme="dark"] span,
-html[data-theme="dark"] .question-text,
-html[data-theme="dark"] .answer,
-html[data-parent-theme="dark"] p,
-html[data-parent-theme="dark"] li,
-html[data-parent-theme="dark"] label,
-html[data-parent-theme="dark"] span,
-html[data-parent-theme="dark"] .question-text,
-html[data-parent-theme="dark"] .answer {
-  color: inherit;
-}
-html[data-theme="dark"] input,
-html[data-theme="dark"] textarea,
-html[data-theme="dark"] select,
-html[data-parent-theme="dark"] input,
-html[data-parent-theme="dark"] textarea,
-html[data-parent-theme="dark"] select {
-  background-color: #111827 !important;
-  color: #f3f4f6 !important;
-  border-color: #4b5563 !important;
-}
-@media (max-width: 768px) {
-  body {
-    padding-left: 12px !important;
-    padding-right: 12px !important;
-  }
-  .container,
-  .quiz-container,
-  .wrapper,
-  .content,
-  .quiz-content,
-  main,
-  header,
-  .header,
-  .question,
-  .question-block,
-  .card,
-  .panel {
-    width: 100% !important;
-    max-width: 100% !important;
-    padding-left: clamp(12px, 4vw, 20px) !important;
-    padding-right: clamp(12px, 4vw, 20px) !important;
-  }
-  .controls,
-  .question-header,
-  .button-group,
-  .toggle-buttons,
-  .header-inner,
-  .topbar,
-  .topbar-right {
-    flex-wrap: wrap !important;
-  }
-}
-
-</style>
-    <script src="/javascripts/html-theme-sync.js"></script>
+<script src="/javascripts/html-theme-sync.js"></script>
 
     <meta name="description" content="Answer all questions, then check your results. Writing questions use keyword detection - aim to include the key concepts in your answer.">
     <link rel="canonical" href="https://shoug-tech.com/academics/software-engineering/se311/exams/chapter-9-quiz.html">
@@ -554,196 +112,17 @@ html[data-parent-theme="dark"] select {
     </script>
 
     <!-- SE311 INTERACTIVE EXAM ENHANCEMENT -->
-    <style>
-
-        :root {
-            --se311-accent: #a855f7;
-            --se311-accent-2: #60a5fa;
-            --se311-glow: color-mix(in srgb, var(--se311-accent) 22%, transparent);
-        }
-
-        html { scroll-behavior: smooth; }
-
-        body {
-            min-height: 100vh;
-            background-image:
-                radial-gradient(circle at 66% 6%, color-mix(in srgb, var(--se311-accent) 17%, transparent), transparent 34rem),
-                radial-gradient(circle at 50% 36%, color-mix(in srgb, var(--se311-accent-2) 13%, transparent), transparent 32rem),
-                linear-gradient(180deg, rgba(8, 7, 20, .035), transparent 48%);
-            background-attachment: fixed;
-        }
-
-        /* Theme-debugged header contract: never derive a background from a text variable. */
-        html[data-theme="light"] :where(body > header, .container > header, .quiz-container > header, .topbar) {
-            color: #20283c !important;
-            border-color: color-mix(in srgb, var(--se311-accent) 24%, #d9deea) !important;
-            background:
-                radial-gradient(circle at 14% 30%, color-mix(in srgb, var(--se311-accent) 15%, transparent), transparent 24rem),
-                radial-gradient(circle at 86% 55%, color-mix(in srgb, var(--se311-accent-2) 12%, transparent), transparent 22rem),
-                linear-gradient(110deg, #fdfbff, #f3f5ff 58%, #effcff) !important;
-        }
-
-        html[data-theme="dark"] :where(body > header, .container > header, .quiz-container > header, .topbar) {
-            color: #f5f7ff !important;
-            border-color: color-mix(in srgb, var(--se311-accent) 32%, #27334a) !important;
-            background:
-                radial-gradient(circle at 14% 30%, color-mix(in srgb, var(--se311-accent) 24%, transparent), transparent 25rem),
-                radial-gradient(circle at 86% 55%, color-mix(in srgb, var(--se311-accent-2) 15%, transparent), transparent 23rem),
-                linear-gradient(110deg, #121326, #101a2d 58%, #0b2632) !important;
-        }
-
-        html[data-theme="light"] :where(body > header, .container > header, .quiz-container > header, .topbar)
-            :where(p, .title, .subtitle, .header-text, .topbar-left, .mode-label) {
-            color: #38445e !important;
-        }
-
-        html[data-theme="dark"] :where(body > header, .container > header, .quiz-container > header, .topbar)
-            :where(p, .title, .subtitle, .header-text, .topbar-left, .mode-label) {
-            color: #dbe5f6 !important;
-        }
-
-        html[data-theme="light"] :where(.toggle-btn, .mode-toggle, .theme-toggle) {
-            color: #27324a !important;
-            background: rgba(255, 255, 255, .72) !important;
-            border-color: color-mix(in srgb, var(--se311-accent) 28%, #cad2e2) !important;
-        }
-
-        html[data-theme="dark"] :where(.toggle-btn, .mode-toggle, .theme-toggle) {
-            color: #f5f7ff !important;
-            background: rgba(8, 13, 28, .58) !important;
-            border-color: color-mix(in srgb, var(--se311-accent-2) 30%, #3b465c) !important;
-        }
-
-        :where(.quiz-container, .container, .quiz-content, .quiz-wrap, .hero, main) {
-            width: min(100% - clamp(24px, 5vw, 80px), 1320px) !important;
-            max-width: 1320px !important;
-            margin-inline: auto !important;
-        }
-
-        :where(.quiz-container, .quiz-content, .quiz-wrap, main) > :where(h1, header, .quiz-header):first-child,
-        :where(header, .hero, .topbar) {
-            animation: se311-hero-in .66s cubic-bezier(.2, .8, .2, 1) both;
-        }
-
-        :where(h1, .quiz-title, header h1, .hero h2, .topbar h1) {
-            background: linear-gradient(105deg, var(--se311-accent), var(--se311-accent-2));
-            background-clip: text;
-            -webkit-background-clip: text;
-            color: transparent !important;
-            text-shadow: 0 0 34px var(--se311-glow);
-        }
-
-        :where(.quiz-info, .info-box, .instructions, .exam-info) {
-            position: relative;
-            overflow: hidden;
-            border-color: color-mix(in srgb, var(--se311-accent) 48%, transparent) !important;
-            background-image: linear-gradient(120deg,
-                color-mix(in srgb, var(--se311-accent) 13%, transparent),
-                color-mix(in srgb, var(--se311-accent-2) 9%, transparent)) !important;
-            box-shadow: 0 14px 38px rgba(5, 4, 18, .16);
-        }
-
-        :where(.question, .question-block, .question-card, .q-card) {
-            position: relative;
-            overflow: hidden;
-            border-color: color-mix(in srgb, var(--se311-accent) 32%, transparent) !important;
-            background-image: linear-gradient(135deg,
-                color-mix(in srgb, var(--se311-accent) 8%, transparent),
-                transparent 42%,
-                color-mix(in srgb, var(--se311-accent-2) 6%, transparent)) !important;
-            box-shadow: 0 12px 34px rgba(5, 4, 18, .14);
-            animation: se311-card-in .54s cubic-bezier(.2, .8, .2, 1) both;
-            transition: transform .23s ease, border-color .23s ease, box-shadow .23s ease;
-        }
-
-        :where(.question, .question-block, .question-card, .q-card)::before {
-            content: '';
-            position: absolute;
-            inset: 0 auto 0 0;
-            width: 3px;
-            background: linear-gradient(180deg, var(--se311-accent), var(--se311-accent-2));
-        }
-
-        :where(.question, .question-block, .question-card, .q-card):hover {
-            transform: translateY(-3px);
-            border-color: var(--se311-accent) !important;
-            box-shadow: 0 18px 46px rgba(5, 4, 18, .21), 0 0 28px var(--se311-glow);
-        }
-
-        :where(.option, .answer-option, label.option, .true-false-option, .opt, .tf-btn) {
-            transition: transform .18s ease, border-color .18s ease, background .18s ease, box-shadow .18s ease !important;
-        }
-
-        :where(.option, .answer-option, label.option, .true-false-option, .opt, .tf-btn):hover {
-            transform: translateX(5px);
-            border-color: var(--se311-accent) !important;
-            background-image: linear-gradient(90deg,
-                color-mix(in srgb, var(--se311-accent) 14%, transparent),
-                color-mix(in srgb, var(--se311-accent-2) 8%, transparent)) !important;
-            box-shadow: 0 8px 24px var(--se311-glow);
-        }
-
-        :where(input[type="radio"], input[type="checkbox"]) { accent-color: var(--se311-accent); }
-
-        :where(.toggle-answer-btn, .submit-btn, .submit-all-btn, .check-btn, .restart-btn,
-            .retry-btn, .nav-btn, button[type="submit"]) {
-            border: 0 !important;
-            color: #fff !important;
-            background: linear-gradient(105deg, var(--se311-accent), var(--se311-accent-2)) !important;
-            box-shadow: 0 10px 28px var(--se311-glow);
-            transition: transform .2s ease, box-shadow .2s ease, filter .2s ease !important;
-        }
-
-        :where(.toggle-answer-btn, .submit-btn, .submit-all-btn, .check-btn, .restart-btn,
-            .retry-btn, .nav-btn, button[type="submit"]):hover {
-            transform: translateY(-2px) scale(1.015);
-            box-shadow: 0 15px 38px var(--se311-glow);
-            filter: saturate(1.15) brightness(1.05);
-        }
-
-        :where(.answer, .answer-key, .feedback, .explanation, .mock-answer, .model-answer,
-            .result-panel, .results-panel) {
-            border-color: color-mix(in srgb, var(--se311-accent-2) 55%, transparent) !important;
-            background-image: linear-gradient(110deg,
-                color-mix(in srgb, var(--se311-accent-2) 11%, transparent), transparent) !important;
-        }
-
-        @keyframes se311-hero-in {
-            from { opacity: 0; transform: translateY(-12px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes se311-card-in {
-            from { opacity: 0; transform: translateY(16px) scale(.992); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
-        }
-
-        @media (max-width: 768px) {
-            :where(.quiz-container, .container, .quiz-content, .quiz-wrap, .hero, main) {
-                width: min(100% - 20px, 1320px) !important;
-            }
-            :where(.question, .question-block, .question-card, .q-card):hover,
-            :where(.option, .answer-option, label.option, .true-false-option, .opt, .tf-btn):hover {
-                transform: none;
-            }
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-            :where(.quiz-container, .quiz-content, .quiz-wrap, main, .question, .question-block, .question-card, .q-card) {
-                animation: none !important;
-            }
-            :where(.question, .question-block, .question-card, .q-card, .option, .answer-option,
-                .opt, .tf-btn, .toggle-answer-btn, .submit-btn, .submit-all-btn, .check-btn,
-                .restart-btn, .retry-btn, .nav-btn):hover { transform: none !important; }
-        }
-
-
-    </style>
-    <link rel="stylesheet" href="/styles/a11y.css">
+<link rel="stylesheet" href="/styles/a11y.css">
+    <script src="/javascripts/se311.js" defer></script>
 </head>
 <body>
 
 
+    <button class="sg-theme-toggle" type="button" onclick="toggleTheme()" aria-label="Toggle dark and light mode">
+        <svg class="sg-icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.2 14.6A8.4 8.4 0 0 1 9.4 3.8a8.4 8.4 0 1 0 10.8 10.8Z"/></svg>
+        <svg class="sg-icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4.1"/><path d="M12 2.4v2.3M12 19.3v2.3M2.4 12h2.3M19.3 12h2.3M5.2 5.2l1.6 1.6M17.2 17.2l1.6 1.6M18.8 5.2l-1.6 1.6M6.8 17.2l-1.6 1.6"/></svg>
+        <span data-theme-label>Dark</span>
+    </button>
 <!-- TOPBAR -->
 <header class="topbar">
   <div class="topbar-left">
@@ -752,12 +131,6 @@ html[data-parent-theme="dark"] select {
   </div>
   <div class="topbar-right">
     <div class="score-pill">Score: <span id="liveScore">0</span> / <span id="totalPts">0</span></div>
-    <div class="mode-toggle" onclick="toggleTheme()">
-      <span class="mode-label" id="modeLabel">LIGHT</span>
-      <div class="toggle-track" id="toggleTrack">
-        <div class="toggle-knob" id="toggleKnob">☀️</div>
-      </div>
-    </div>
   </div>
 </header>
 
@@ -1057,51 +430,7 @@ const questions = [
 let answers = {};
 let submitted = {};
 let totalPts = questions.reduce((s,q)=>s+q.pts,0);
-let isDark = false;
-const systemTheme = window.matchMedia('(prefers-color-scheme: dark)');
-
 document.getElementById('totalPts').textContent = totalPts;
-
-// ═══════════════════════════════════════════════
-// THEME
-// ═══════════════════════════════════════════════
-function applyTheme() {
-  document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
-  const track = document.getElementById('toggleTrack');
-  const knob = document.getElementById('toggleKnob');
-  const label = document.getElementById('modeLabel');
-  track.classList.toggle('on', isDark);
-  knob.textContent = isDark ? '🌙' : '☀️';
-  label.textContent = isDark ? 'DARK' : 'LIGHT';
-}
-function toggleTheme() { isDark = !isDark; applyTheme(); }
-
-function syncParentTheme() {
-  const parentTheme = document.documentElement.getAttribute('data-parent-theme');
-  if (parentTheme === 'dark' || parentTheme === 'light') {
-    isDark = parentTheme === 'dark';
-    applyTheme();
-    return true;
-  }
-  return false;
-}
-
-if (!syncParentTheme()) {
-  isDark = systemTheme.matches;
-  applyTheme();
-}
-
-systemTheme.addEventListener('change', event => {
-  if (!document.documentElement.getAttribute('data-parent-theme')) {
-    isDark = event.matches;
-    applyTheme();
-  }
-});
-
-new MutationObserver(syncParentTheme).observe(document.documentElement, {
-  attributes: true,
-  attributeFilter: ['data-parent-theme']
-});
 
 // ═══════════════════════════════════════════════
 // RENDER QUIZ
@@ -1372,41 +701,6 @@ function retryQuiz() {
 // INIT
 render();
 updateProgress();
-</script>
-
-<script id="se311-theme-bridge">
-(() => {
-  const root = document.documentElement;
-  const systemTheme = window.matchMedia('(prefers-color-scheme: dark)');
-
-  function setTheme(theme) {
-    root.setAttribute('data-theme', theme === 'dark' ? 'dark' : 'light');
-  }
-
-  function syncParentTheme() {
-    const parentTheme = root.getAttribute('data-parent-theme');
-    if (parentTheme === 'dark' || parentTheme === 'light') {
-      setTheme(parentTheme);
-      return true;
-    }
-    return false;
-  }
-
-  if (!syncParentTheme()) {
-    setTheme(systemTheme.matches ? 'dark' : 'light');
-  }
-
-  systemTheme.addEventListener('change', (event) => {
-    if (!root.getAttribute('data-parent-theme')) {
-      setTheme(event.matches ? 'dark' : 'light');
-    }
-  });
-
-  new MutationObserver(syncParentTheme).observe(root, {
-    attributes: true,
-    attributeFilter: ['data-parent-theme']
-  });
-})();
 </script>
 
 

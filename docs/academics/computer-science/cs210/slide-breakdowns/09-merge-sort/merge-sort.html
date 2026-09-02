@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-sg-styled>
 <head>
     <link rel="icon" type="image/png" sizes="256x256" href="/assets/shoug-favicon-v4.png">
     <link rel="shortcut icon" type="image/png" href="/assets/shoug-favicon-v4.png">
@@ -7,484 +7,81 @@
 <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mergesort - Comprehensive Study Guide</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        <link rel="stylesheet" href="/styles/cs210.css">
+    <script>
+        /* Theme resolution, in priority order:
+             1. the stored site preference (what the toggle writes);
+             2. the embedding page -- these pages are iframed by their wrapper,
+                and the wrapper only marks itself when it is in LIGHT mode, so an
+                unmarked same-origin parent means the site's dark chrome;
+             3. the OS preference, for the standalone URL.
+           It runs before first paint, and re-asserts afterwards because the
+           shared theme scripts fall back to the OS setting and would otherwise
+           leave a light page sitting inside a dark one. */
+        (function () {
+            var root = document.documentElement;
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background: white;
-            padding: 40px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-        }
-
-        h1 {
-            color: #8B3A3A;
-            text-align: center;
-            font-size: 3em;
-            margin-bottom: 10px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
-        .subtitle {
-            text-align: center;
-            color: #666;
-            font-size: 1.2em;
-            margin-bottom: 40px;
-            font-style: italic;
-        }
-
-        h2 {
-            color: #8B3A3A;
-            border-bottom: 3px solid #8B3A3A;
-            padding-bottom: 10px;
-            margin-top: 40px;
-            margin-bottom: 20px;
-            font-size: 2em;
-        }
-
-        h3 {
-            color: #A0522D;
-            margin-top: 25px;
-            margin-bottom: 15px;
-            font-size: 1.5em;
-        }
-
-        .highlight-box {
-            background: #fff3cd;
-            border-left: 5px solid #ffc107;
-            padding: 20px;
-            margin: 20px 0;
-            border-radius: 5px;
-        }
-
-        .important-box {
-            background: #f8d7da;
-            border-left: 5px solid #dc3545;
-            padding: 20px;
-            margin: 20px 0;
-            border-radius: 5px;
-        }
-
-        .info-box {
-            background: #d1ecf1;
-            border-left: 5px solid #17a2b8;
-            padding: 20px;
-            margin: 20px 0;
-            border-radius: 5px;
-        }
-
-        .success-box {
-            background: #d4edda;
-            border-left: 5px solid #28a745;
-            padding: 20px;
-            margin: 20px 0;
-            border-radius: 5px;
-        }
-
-        code {
-            background: #f4f4f4;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            padding: 2px 6px;
-            font-family: 'Courier New', monospace;
-            font-size: 0.9em;
-        }
-
-        pre {
-            background: #2d2d2d;
-            color: #f8f8f2;
-            padding: 20px;
-            border-radius: 8px;
-            overflow-x: auto;
-            margin: 20px 0;
-            line-height: 1.4;
-        }
-
-        pre code {
-            background: transparent;
-            border: none;
-            color: inherit;
-            padding: 0;
-        }
-
-        .keyword { color: #ff79c6; }
-        .function { color: #50fa7b; }
-        .type { color: #8be9fd; }
-        .comment { color: #6272a4; font-style: italic; }
-        .string { color: #f1fa8c; }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-
-        th {
-            background: #8B3A3A;
-            color: white;
-            padding: 15px;
-            text-align: left;
-            font-weight: 600;
-        }
-
-        td {
-            padding: 12px 15px;
-            border-bottom: 1px solid #ddd;
-        }
-
-        tr:hover {
-            background: #f5f5f5;
-        }
-
-        .visual-example {
-            background: #f9f9f9;
-            border: 2px solid #ddd;
-            padding: 20px;
-            margin: 20px 0;
-            border-radius: 8px;
-            text-align: center;
-        }
-
-        .array-box {
-            display: inline-block;
-            background: #fff;
-            border: 2px solid #333;
-            padding: 10px 15px;
-            margin: 5px;
-            font-weight: bold;
-            border-radius: 5px;
-            min-width: 40px;
-            text-align: center;
-        }
-
-        .sorted {
-            background: #d4edda;
-            border-color: #28a745;
-        }
-
-        .unsorted {
-            background: #f8d7da;
-            border-color: #dc3545;
-        }
-
-        .merging {
-            background: #fff3cd;
-            border-color: #ffc107;
-        }
-
-        ul, ol {
-            margin-left: 30px;
-            margin-bottom: 15px;
-        }
-
-        li {
-            margin-bottom: 8px;
-        }
-
-        .complexity {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin: 20px 0;
-        }
-
-        .complexity-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 25px;
-            border-radius: 10px;
-            text-align: center;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        }
-
-        .complexity-card h4 {
-            font-size: 1.2em;
-            margin-bottom: 10px;
-            opacity: 0.9;
-        }
-
-        .complexity-card .value {
-            font-size: 2.5em;
-            font-weight: bold;
-            margin: 10px 0;
-        }
-
-        .pros-cons {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin: 20px 0;
-        }
-
-        .pros, .cons {
-            padding: 20px;
-            border-radius: 8px;
-        }
-
-        .pros {
-            background: #d4edda;
-            border: 2px solid #28a745;
-        }
-
-        .cons {
-            background: #f8d7da;
-            border: 2px solid #dc3545;
-        }
-
-        .pros h4, .cons h4 {
-            margin-bottom: 15px;
-            font-size: 1.3em;
-        }
-
-        .algorithm-steps {
-            counter-reset: step-counter;
-            list-style: none;
-            margin-left: 0;
-        }
-
-        .algorithm-steps li {
-            counter-increment: step-counter;
-            margin-bottom: 20px;
-            padding-left: 60px;
-            position: relative;
-        }
-
-        .algorithm-steps li::before {
-            content: counter(step-counter);
-            position: absolute;
-            left: 0;
-            top: 0;
-            background: #8B3A3A;
-            color: white;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 1.2em;
-        }
-
-        @media print {
-            body {
-                background: white;
+            function parentTheme() {
+                try {
+                    if (!window.parent || window.parent === window) return null;
+                    var pdoc = window.parent.document;
+                    if (!pdoc) return null;
+                    var body = pdoc.body;
+                    if (body && body.classList.contains("shoug-light-mode")) return "light";
+                    var attr = (body && body.getAttribute("data-theme")) ||
+                        pdoc.documentElement.getAttribute("data-theme");
+                    if (attr === "dark" || attr === "light") return attr;
+                    var scheme = (body && body.getAttribute("data-md-color-scheme")) ||
+                        pdoc.documentElement.getAttribute("data-md-color-scheme");
+                    if (scheme) return scheme === "slate" ? "dark" : "light";
+                    return "dark";
+                } catch (e) {
+                    return null;    // cross-origin: fall through to the OS setting
+                }
             }
-            .container {
-                box-shadow: none;
+
+            function stored() {
+                try {
+                    var saved = localStorage.getItem("shoug-theme") || localStorage.getItem("theme");
+                    if (saved === "dark" || saved === "light") return saved;
+                } catch (e) { }
+                return null;
             }
-        }
 
-        .toc {
-            background: #f8f9fa;
-            padding: 25px;
-            border-radius: 8px;
-            margin: 30px 0;
-            border: 2px solid #dee2e6;
-        }
+            function resolve() {
+                var saved = stored();
+                if (saved) return saved;
+                var inherited = parentTheme();
+                if (inherited) {
+                    /* Record what the embedding page is showing: the shared theme
+                       scripts read this key, and without it their first toggle
+                       just re-applies the theme already on screen. */
+                    try {
+                        localStorage.setItem("shoug-theme", inherited);
+                        localStorage.setItem("theme", inherited);
+                    } catch (e) { }
+                    return inherited;
+                }
+                return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches
+                    ? "dark" : "light";
+            }
 
-        .toc h3 {
-            color: #8B3A3A;
-            margin-top: 0;
-        }
+            function apply() {
+                var theme = resolve();
+                if (root.getAttribute("data-theme") !== theme) root.setAttribute("data-theme", theme);
+                if (root.style.colorScheme !== theme) root.style.colorScheme = theme;
+            }
 
-        .toc ul {
-            list-style: none;
-            margin-left: 0;
-        }
-
-        .toc a {
-            color: #495057;
-            text-decoration: none;
-            display: block;
-            padding: 8px 15px;
-            border-radius: 5px;
-            transition: all 0.3s;
-        }
-
-        .toc a:hover {
-            background: #8B3A3A;
-            color: white;
-            transform: translateX(10px);
-        }
-        html[data-theme='dark'] {
-            color-scheme: dark;
-        }
-
-        html[data-theme='dark'] body {
-            background: linear-gradient(135deg, #0f172a 0%, #111827 55%, #1e293b 100%) !important;
-            color: #e5e7eb !important;
-        }
-
-        html[data-theme='dark'] .container,
-        html[data-theme='dark'] .content,
-        html[data-theme='dark'] .main-content,
-        html[data-theme='dark'] .topic-section,
-        html[data-theme='dark'] .topic-section.active,
-        html[data-theme='dark'] section,
-        html[data-theme='dark'] .section,
-        html[data-theme='dark'] .card,
-        html[data-theme='dark'] .comparison-card,
-        html[data-theme='dark'] .comparison > div,
-        html[data-theme='dark'] .mini-card,
-        html[data-theme='dark'] .rotation-card,
-        html[data-theme='dark'] .complexity-card,
-        html[data-theme='dark'] .comparison-item,
-        html[data-theme='dark'] .visual,
-        html[data-theme='dark'] .visual-example,
-        html[data-theme='dark'] .visual-diagram,
-        html[data-theme='dark'] .tree-diagram,
-        html[data-theme='dark'] .diagram,
-        html[data-theme='dark'] .array-visual,
-        html[data-theme='dark'] .stack-visual,
-        html[data-theme='dark'] .queue-visual,
-        html[data-theme='dark'] .table-container,
-        html[data-theme='dark'] .toc,
-        html[data-theme='dark'] .menu,
-        html[data-theme='dark'] .quote,
-        html[data-theme='dark'] .operation-example {
-            background: #111827 !important;
-            color: #e5e7eb !important;
-            border-color: #334155 !important;
-            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.28) !important;
-        }
-
-        html[data-theme='dark'] header,
-        html[data-theme='dark'] nav,
-        html[data-theme='dark'] .nav,
-        html[data-theme='dark'] footer,
-        html[data-theme='dark'] .footer {
-            color: #e5e7eb !important;
-            border-color: #334155 !important;
-        }
-
-        html[data-theme='dark'] h1,
-        html[data-theme='dark'] h2,
-        html[data-theme='dark'] h3,
-        html[data-theme='dark'] h4,
-        html[data-theme='dark'] p,
-        html[data-theme='dark'] li,
-        html[data-theme='dark'] td,
-        html[data-theme='dark'] th,
-        html[data-theme='dark'] strong,
-        html[data-theme='dark'] .subtitle,
-        html[data-theme='dark'] .visual-title,
-        html[data-theme='dark'] .section-title {
-            color: #e5e7eb !important;
-        }
-
-        html[data-theme='dark'] a,
-        html[data-theme='dark'] .toc a,
-        html[data-theme='dark'] .nav a,
-        html[data-theme='dark'] .menu-item,
-        html[data-theme='dark'] .nav-item {
-            color: #bfdbfe !important;
-        }
-
-        html[data-theme='dark'] .definition,
-        html[data-theme='dark'] .definition-box,
-        html[data-theme='dark'] .info,
-        html[data-theme='dark'] .info-box,
-        html[data-theme='dark'] .formula,
-        html[data-theme='dark'] .explanation,
-        html[data-theme='dark'] .solution {
-            background: #13263a !important;
-            border-color: #38bdf8 !important;
-            color: #e0f2fe !important;
-        }
-
-        html[data-theme='dark'] .important,
-        html[data-theme='dark'] .important-box,
-        html[data-theme='dark'] .warning-box,
-        html[data-theme='dark'] .danger-box,
-        html[data-theme='dark'] .critical,
-        html[data-theme='dark'] .cons {
-            background: #3a1d24 !important;
-            border-color: #fb7185 !important;
-            color: #ffe4e6 !important;
-        }
-
-        html[data-theme='dark'] .example,
-        html[data-theme='dark'] .example-box,
-        html[data-theme='dark'] .highlight,
-        html[data-theme='dark'] .highlight-box,
-        html[data-theme='dark'] .success,
-        html[data-theme='dark'] .success-box,
-        html[data-theme='dark'] .tip,
-        html[data-theme='dark'] .tip-box,
-        html[data-theme='dark'] .hack,
-        html[data-theme='dark'] .key-point,
-        html[data-theme='dark'] .key-points,
-        html[data-theme='dark'] .note,
-        html[data-theme='dark'] .pros {
-            background: #142b26 !important;
-            border-color: #34d399 !important;
-            color: #d1fae5 !important;
-        }
-
-        html[data-theme='dark'] table {
-            background: #0f172a !important;
-            color: #e5e7eb !important;
-        }
-
-        html[data-theme='dark'] th {
-            background: #1d4ed8 !important;
-            color: #eff6ff !important;
-        }
-
-        html[data-theme='dark'] td {
-            background: #111827 !important;
-            border-color: #334155 !important;
-        }
-
-        html[data-theme='dark'] tr:hover,
-        html[data-theme='dark'] tr:hover td,
-        html[data-theme='dark'] .comparison-table tr:nth-child(even),
-        html[data-theme='dark'] .bigo-table tr:nth-child(even) td {
-            background: #1f2937 !important;
-        }
-
-        html[data-theme='dark'] code,
-        html[data-theme='dark'] pre {
-            background: #0f172a !important;
-            color: #e5e7eb !important;
-            border-color: #334155 !important;
-        }
-
-        html[data-theme='dark'] .sidebar {
-            background: #0f172a !important;
-            border-right-color: #334155 !important;
-        }
-
-        html[data-theme='dark'] .nav-item,
-        html[data-theme='dark'] .menu-item {
-            background: rgba(148, 163, 184, 0.08) !important;
-            border-color: #334155 !important;
-        }
-
-        html[data-theme='dark'] .nav-item.active,
-        html[data-theme='dark'] .nav a:hover,
-        html[data-theme='dark'] .toc a:hover,
-        html[data-theme='dark'] .menu-item:hover {
-            background: rgba(96, 165, 250, 0.18) !important;
-        }
-    </style>
+            apply();
+            if (window.MutationObserver) {
+                new MutationObserver(apply).observe(root, {
+                    attributes: true, attributeFilter: ["data-theme"]
+                });
+            }
+            document.addEventListener("DOMContentLoaded", apply);
+            window.addEventListener("load", apply);
+        })();
+    </script>
   <script src="/javascripts/standalone-theme.js"></script>
     <script src="/javascripts/html-theme-sync.js"></script>
 
@@ -515,14 +112,20 @@
     </script>
     <link rel="stylesheet" href="/styles/a11y.css">
 </head>
-<body>
+<body data-cs210="guide" data-cs210-page="merge-sort">
+    <button class="sg-theme-toggle" type="button" onclick="toggleTheme()" aria-label="Toggle dark and light mode">
+        <svg class="sg-icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.2 14.6A8.4 8.4 0 0 1 9.4 3.8a8.4 8.4 0 1 0 10.8 10.8Z"/></svg>
+        <svg class="sg-icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4.1"/><path d="M12 2.4v2.3M12 19.3v2.3M2.4 12h2.3M19.3 12h2.3M5.2 5.2l1.6 1.6M17.2 17.2l1.6 1.6M18.8 5.2l-1.6 1.6M6.8 17.2l-1.6 1.6"/></svg>
+        <span data-theme-label>Dark</span>
+    </button>
+
 
     <div class="container">
-        <h1>🎯 Mergesort</h1>
+        <h1>Mergesort</h1>
         <p class="subtitle">A Comprehensive Study Guide</p>
 
         <div class="toc">
-            <h3>📚 Table of Contents</h3>
+            <h3>Table of Contents</h3>
             <ul>
                 <li><a href="#overview">Overview</a></li>
                 <li><a href="#how-it-works">How Mergesort Works</a></li>
@@ -536,7 +139,7 @@
         </div>
 
         <section id="overview">
-            <h2>📖 Overview</h2>
+            <h2>Overview</h2>
             
             <div class="highlight-box">
                 <h3>What is Mergesort?</h3>
@@ -544,7 +147,7 @@
             </div>
 
             <div class="info-box">
-                <h3>🎯 Basic Plan</h3>
+                <h3>Basic Plan</h3>
                 <ol class="algorithm-steps">
                     <li><strong>Divide:</strong> Split the array into two halves</li>
                     <li><strong>Conquer:</strong> Recursively sort each half</li>
@@ -573,7 +176,7 @@
                     <span class="array-box unsorted">L</span>
                     <span class="array-box unsorted">E</span>
                 </div>
-                <p style="margin: 20px 0;">⬇️ After sorting left half ⬇️</p>
+                <p style="margin: 20px 0;">⬇ After sorting left half ⬇</p>
                 <div style="margin: 20px 0;">
                     <span class="array-box sorted">E</span>
                     <span class="array-box sorted">E</span>
@@ -592,7 +195,7 @@
                     <span class="array-box unsorted">L</span>
                     <span class="array-box unsorted">E</span>
                 </div>
-                <p style="margin: 20px 0;">⬇️ After sorting right half ⬇️</p>
+                <p style="margin: 20px 0;">⬇ After sorting right half ⬇</p>
                 <div style="margin: 20px 0;">
                     <span class="array-box sorted">E</span>
                     <span class="array-box sorted">E</span>
@@ -611,7 +214,7 @@
                     <span class="array-box sorted">T</span>
                     <span class="array-box sorted">X</span>
                 </div>
-                <p style="margin: 20px 0;">⬇️ After merging ⬇️</p>
+                <p style="margin: 20px 0;">⬇ After merging ⬇</p>
                 <div style="margin: 20px 0;">
                     <span class="array-box sorted">A</span>
                     <span class="array-box sorted">E</span>
@@ -634,7 +237,7 @@
         </section>
 
         <section id="how-it-works">
-            <h2>⚙️ How Mergesort Works</h2>
+            <h2>How Mergesort Works</h2>
 
             <h3>The Merge Operation</h3>
             <div class="info-box">
@@ -657,7 +260,7 @@
                     <span class="array-box sorted">R</span>
                     <span class="array-box sorted">T</span>
                 </div>
-                <p style="margin: 20px 0;">⬇️ After merging ⬇️</p>
+                <p style="margin: 20px 0;">⬇ After merging ⬇</p>
                 <div style="margin: 15px 0;">
                     <span class="array-box sorted">A</span>
                     <span class="array-box sorted">C</span>
@@ -682,7 +285,7 @@
         </section>
 
         <section id="implementation">
-            <h2>💻 Java Implementation</h2>
+            <h2>Java Implementation</h2>
 
             <h3>Merge Method</h3>
             <pre><code><span class="keyword">private static void</span> <span class="function">merge</span>(<span class="type">Comparable</span>[] a, <span class="type">Comparable</span>[] aux, <span class="keyword">int</span> lo, <span class="keyword">int</span> mid, <span class="keyword">int</span> hi) {
@@ -722,7 +325,7 @@
 }</code></pre>
 
             <div class="highlight-box">
-                <h4>📝 Key Implementation Notes</h4>
+                <h4>Key Implementation Notes</h4>
                 <ul>
                     <li>The auxiliary array is created once and reused throughout recursion</li>
                     <li>The merge operation is <strong>in-place</strong> (modifies original array)</li>
@@ -733,7 +336,7 @@
         </section>
 
         <section id="complexity">
-            <h2>📊 Complexity Analysis</h2>
+            <h2>Complexity Analysis</h2>
 
             <div class="complexity">
                 <div class="complexity-card">
@@ -800,14 +403,14 @@
             </table>
 
             <div class="success-box">
-                <h4>✨ Bottom Line</h4>
+                <h4>Bottom Line</h4>
                 <p><strong>Good algorithms are better than supercomputers!</strong></p>
                 <p style="margin-top: 10px;">Mergesort on a home computer beats Insertion Sort (O(N²)) on a supercomputer for large datasets.</p>
             </div>
         </section>
 
         <section id="bottom-up">
-            <h2>🔄 Bottom-Up Mergesort</h2>
+            <h2>Bottom-Up Mergesort</h2>
 
             <div class="info-box">
                 <h3>Alternative Approach: Non-Recursive</h3>
@@ -838,7 +441,7 @@
 
             <div class="pros-cons">
                 <div class="pros">
-                    <h4>✅ Advantages</h4>
+                    <h4>✓ Advantages</h4>
                     <ul>
                         <li>Simple and elegant</li>
                         <li>No recursion overhead</li>
@@ -847,7 +450,7 @@
                     </ul>
                 </div>
                 <div class="cons">
-                    <h4>❌ Disadvantages</h4>
+                    <h4>✗ Disadvantages</h4>
                     <ul>
                         <li>About 10% slower than top-down on typical systems</li>
                         <li>Less cache-friendly</li>
@@ -858,7 +461,7 @@
         </section>
 
         <section id="stability">
-            <h2>⚖️ Stability</h2>
+            <h2>Stability</h2>
 
             <div class="highlight-box">
                 <h3>What is Stability?</h3>
@@ -905,7 +508,7 @@
 
             <h3>Is Mergesort Stable?</h3>
             <div class="success-box">
-                <h4>✅ Yes! Mergesort is Stable</h4>
+                <h4>✓ Yes! Mergesort is Stable</h4>
                 <p><strong>Key insight:</strong> The merge operation takes from the <strong>left</strong> subarray when keys are equal.</p>
                 <pre><code><span class="keyword">if</span> (less(aux[j], aux[i])) a[k] = aux[j++];
 <span class="keyword">else</span>                      a[k] = aux[i++];  <span class="comment">// Takes from left if equal</span></code></pre>
@@ -946,7 +549,7 @@
         </section>
 
         <section id="comparators">
-            <h2>🔧 Comparators</h2>
+            <h2>Comparators</h2>
 
             <div class="info-box">
                 <h3>What is a Comparator?</h3>
@@ -1035,7 +638,7 @@ Arrays.sort(students, <span class="keyword">new</span> Student.BySection());</co
         </section>
 
         <section id="summary">
-            <h2>📝 Summary & Comparison</h2>
+            <h2>Summary & Comparison</h2>
 
             <h3>Sorting Algorithm Comparison</h3>
             <table>
@@ -1092,7 +695,7 @@ Arrays.sort(students, <span class="keyword">new</span> Student.BySection());</co
 
             <div class="pros-cons">
                 <div class="pros">
-                    <h4>✅ Mergesort Advantages</h4>
+                    <h4>✓ Mergesort Advantages</h4>
                     <ul>
                         <li><strong>Guaranteed O(N log N)</strong> in all cases</li>
                         <li><strong>Stable</strong> - preserves relative order</li>
@@ -1103,7 +706,7 @@ Arrays.sort(students, <span class="keyword">new</span> Student.BySection());</co
                     </ul>
                 </div>
                 <div class="cons">
-                    <h4>❌ Mergesort Disadvantages</h4>
+                    <h4>✗ Mergesort Disadvantages</h4>
                     <ul>
                         <li><strong>Not in-place</strong> - requires O(N) extra space</li>
                         <li>Slower than quicksort in practice</li>
@@ -1114,7 +717,7 @@ Arrays.sort(students, <span class="keyword">new</span> Student.BySection());</co
             </div>
 
             <div class="highlight-box">
-                <h3>🎯 When to Use Mergesort</h3>
+                <h3>When to Use Mergesort</h3>
                 <ul>
                     <li><strong>Stability is required</strong> (sorting by multiple keys)</li>
                     <li><strong>Guaranteed O(N log N)</strong> is essential</li>
@@ -1126,7 +729,7 @@ Arrays.sort(students, <span class="keyword">new</span> Student.BySection());</co
             </div>
 
             <div class="important-box">
-                <h3>🔑 Key Takeaways</h3>
+                <h3>Key Takeaways</h3>
                 <ol>
                     <li>Mergesort achieves <strong>O(N log N)</strong> through divide-and-conquer</li>
                     <li>The <strong>merge operation</strong> is the key to the algorithm</li>
@@ -1140,7 +743,7 @@ Arrays.sort(students, <span class="keyword">new</span> Student.BySection());</co
 
         <!-- PRACTICE QUESTIONS SECTION -->
         <section id="practice-questions">
-            <h2>🎓 Practice Questions</h2>
+            <h2>Practice Questions</h2>
 
             <div class="highlight-box">
                 <h4>Question 1: The Divide-and-Conquer Recurrence</h4>
@@ -1204,24 +807,24 @@ Arrays.sort(students, <span class="keyword">new</span> Student.BySection());</co
         </section>
 
         <div style="margin-top: 60px; padding: 30px; background: #f8f9fa; border-radius: 10px; text-align: center;">
-            <h2 style="color: #8B3A3A; margin-bottom: 20px;">🎓 Study Tips</h2>
+            <h2 style="color: #8B3A3A; margin-bottom: 20px;">Study Tips</h2>
             <div style="text-align: left; max-width: 800px; margin: 0 auto;">
                 <ul style="font-size: 1.1em; line-height: 2;">
-                    <li>✏️ <strong>Practice tracing</strong> the algorithm on paper with small examples</li>
-                    <li>💡 <strong>Understand the recurrence:</strong> T(N) = 2T(N/2) + N</li>
-                    <li>🔍 <strong>Focus on the merge operation</strong> - it's the heart of the algorithm</li>
-                    <li>📊 <strong>Compare with other sorts</strong> - know the trade-offs</li>
-                    <li>💻 <strong>Implement both versions</strong> - top-down and bottom-up</li>
-                    <li>🎯 <strong>Remember stability</strong> - key advantage over quicksort</li>
-                    <li>📝 <strong>Practice complexity analysis</strong> - time and space</li>
+                    <li><strong>Practice tracing</strong> the algorithm on paper with small examples</li>
+                    <li><strong>Understand the recurrence:</strong> T(N) = 2T(N/2) + N</li>
+                    <li><strong>Focus on the merge operation</strong> - it's the heart of the algorithm</li>
+                    <li><strong>Compare with other sorts</strong> - know the trade-offs</li>
+                    <li><strong>Implement both versions</strong> - top-down and bottom-up</li>
+                    <li><strong>Remember stability</strong> - key advantage over quicksort</li>
+                    <li><strong>Practice complexity analysis</strong> - time and space</li>
                 </ul>
             </div>
         </div>
 
         <footer style="margin-top: 60px; padding: 30px; text-align: center; border-top: 2px solid #8B3A3A; color: #666;">
-            <p style="font-size: 1.1em;">📚 Based on <em>Algorithms, Fourth Edition</em> by Robert Sedgewick and Kevin Wayne</p>
-            <p style="margin-top: 10px;">🌐 <a href="http://algs4.cs.princeton.edu" style="color: #8B3A3A;">algs4.cs.princeton.edu</a></p>
-            <p style="margin-top: 20px; font-style: italic;">Good luck with your studies! 🚀</p>
+            <p style="font-size: 1.1em;">Based on <em>Algorithms, Fourth Edition</em> by Robert Sedgewick and Kevin Wayne</p>
+            <p style="margin-top: 10px;"><a href="http://algs4.cs.princeton.edu" style="color: #8B3A3A;">algs4.cs.princeton.edu</a></p>
+            <p style="margin-top: 20px; font-style: italic;">Good luck with your studies!</p>
         </footer>
     </div>
 

@@ -558,6 +558,12 @@
       color: var(--purple)
     }
 
+    .event.assignment,
+    .range-bar.assignment {
+      background: rgba(168, 85, 247, .16);
+      color: #c084fc
+    }
+
     .range-bar.exam {
       background: rgba(255, 42, 75, .13);
       color: var(--red)
@@ -934,6 +940,10 @@
       color: #a3e635
     }
 
+    .legend-chip.assignment {
+      color: #c084fc
+    }
+
     .legend-chip.personal {
       color: var(--green)
     }
@@ -1190,7 +1200,26 @@
     .day-sheet-actions {
       display: flex;
       align-items: center;
+      justify-content: flex-end;
+      flex-wrap: wrap;
       gap: 10px
+    }
+
+    .assignment-panel {
+      border-color: rgba(192, 132, 252, .42)
+    }
+
+    .assignment-panel .panel-title,
+    .assignment-due {
+      color: #c084fc
+    }
+
+    .assignment-submitted {
+      opacity: .62
+    }
+
+    .assignment-submitted .item-title {
+      text-decoration: line-through
     }
 
     .day-sheet-title,
@@ -1264,6 +1293,16 @@
 
     .day-card.academic {
       border-left-color: var(--purple)
+    }
+
+    .day-card.assignment {
+      border-left-color: #c084fc
+    }
+
+    .day-card.assignment.submitted,
+    .timeline-event.assignment.submitted,
+    .event.assignment.submitted {
+      opacity: .58
     }
 
     .day-card-title {
@@ -1433,6 +1472,11 @@
     .timeline-event.academic {
       background: rgba(184, 41, 234, .16);
       color: var(--purple)
+    }
+
+    .timeline-event.assignment {
+      background: rgba(168, 85, 247, .16);
+      color: #c084fc
     }
 
     .timeline-event-title {
@@ -1939,7 +1983,8 @@
                       class="legend-dot"></span>Midterm</span><span class="legend-chip final"><span
                       class="legend-dot"></span>Final</span><span class="legend-chip class"><span
                       class="legend-dot"></span>Class</span><span class="legend-chip study"><span
-                      class="legend-dot"></span>Study</span><span class="legend-chip personal"><span
+                      class="legend-dot"></span>Study</span><span class="legend-chip assignment"><span
+                      class="legend-dot"></span>Assignment</span><span class="legend-chip personal"><span
                       class="legend-dot"></span>Personal</span><span class="legend-chip academic"><span
                       class="legend-dot"></span>PSU</span></div>
                 <div class="attendance-strip" id="attendance-summary"></div>
@@ -1996,6 +2041,19 @@
             </div>
             <div class="panel-body">
               <div class="filter-grid" id="view-filters"></div>
+            </div>
+          </section>
+          <section class="panel assignment-panel" id="calendar-assignment-panel">
+            <div class="panel-head">
+              <div>
+                <div class="panel-title">Assignments</div>
+                <div class="panel-sub">Due dates and submission status</div>
+              </div>
+              <button class="btn muted" id="side-add-assignment-btn" type="button">Add Assignment</button>
+            </div>
+            <div class="panel-body">
+              <div class="list" id="assignment-list"></div>
+              <button class="btn muted" id="enable-assignment-reminders-btn" type="button">Enable Due Notifications</button>
             </div>
           </section>
           <section class="panel" id="calendar-class-panel">
@@ -2121,6 +2179,7 @@
                 </div>
               </div>
               <div class="field"><label>Type</label><select id="event-kind">
+                  <option value="assignment">Assignment</option>
                   <option value="travel">Travel</option>
                   <option value="study">Study</option>
                   <option value="personal">Personal</option>
@@ -2193,7 +2252,7 @@
           <div class="day-sheet-sub" id="day-detail-sub">Events</div>
         </div>
         <div class="day-sheet-actions"><button class="btn solid" id="day-add-exam-btn" type="button">Add
-            Exam</button><button class="btn muted" id="day-add-event-btn" type="button">Add Event</button><button class="day-sheet-close" id="day-detail-close" type="button"
+            Exam</button><button class="btn muted" id="day-add-assignment-btn" type="button">Add Assignment</button><button class="btn muted" id="day-add-event-btn" type="button">Add Event</button><button class="day-sheet-close" id="day-detail-close" type="button"
             aria-label="Close day view">&times;</button></div>
       </div>
       <div class="day-list" id="day-list"></div>
@@ -2298,6 +2357,7 @@
           </div>
         </div>
         <div class="field"><label>Type</label><select id="event-edit-kind">
+            <option value="assignment">Assignment</option>
             <option value="travel">Travel</option>
             <option value="study">Study</option>
             <option value="personal">Personal</option>
@@ -2390,7 +2450,7 @@
       function show(id) { ["loading-state", "signed-out-state", "calendar-app"].forEach(function (x) { var el = $(x); if (el) el.style.display = x === id ? (x === "calendar-app" ? "block" : "flex") : "none"; }); }
       function toast(msg) { var t = $("toast"); t.textContent = msg; t.classList.add("show"); setTimeout(function () { t.classList.remove("show"); }, 2200); }
       function cleanUrl(url) { url = String(url || "").trim(); if (!url) return ""; return /^https?:\/\//i.test(url) ? url : "https://" + url; }
-      function loadViewFilters() { var defaults = { exam: true, class: true, study: true, personal: true, academic: true }; try { var saved = JSON.parse(localStorage.getItem("calendar-view-filters") || "{}"); Object.keys(defaults).forEach(function (k) { if (typeof saved[k] === "boolean") defaults[k] = saved[k]; }); } catch (e) { } return defaults; }
+      function loadViewFilters() { var defaults = { exam: true, class: true, study: true, assignment: true, personal: true, academic: true }; try { var saved = JSON.parse(localStorage.getItem("calendar-view-filters") || "{}"); Object.keys(defaults).forEach(function (k) { if (typeof saved[k] === "boolean") defaults[k] = saved[k]; }); } catch (e) { } return defaults; }
       function saveViewFilters() { try { localStorage.setItem("calendar-view-filters", JSON.stringify(viewFilters)); } catch (e) { } }
       function loadSemesterScope() { try { return localStorage.getItem("calendar-semester-scope") || ""; } catch (e) { return ""; } }
       function saveSemesterScope() { try { localStorage.setItem("calendar-semester-scope", selectedSemester || ""); } catch (e) { } }
@@ -2541,11 +2601,12 @@
         box.innerHTML = messages.length ? "<strong>Exam conflict / schedule note</strong>" + messages.map(esc).join("<br>") : "";
         return messages;
       }
-      function eventClasses(e) { return [e.kind, e.examType || "", e.online ? "online" : "", e.adjusted ? "adjusted" : ""].filter(Boolean).map(esc).join(" "); }
+      function eventClasses(e) { return [e.kind, e.examType || "", e.online ? "online" : "", e.adjusted ? "adjusted" : "", e.submitted ? "submitted" : ""].filter(Boolean).map(esc).join(" "); }
       function filterBucket(e) {
         if (e.kind === "exam") return "exam";
         if (e.kind === "class") return "class";
         if (e.kind === "study") return "study";
+        if (e.kind === "assignment") return "assignment";
         if (e.kind === "academic") return "academic";
         return "personal";
       }
@@ -2751,7 +2812,7 @@
             out.push({ kind: "class", termId: c.termId || "", classId: c.id, title: c.title || "Class", meta: classMetaFor(c, k, seg.start || effective.start || "", seg.end || effective.end || "", seg.adjusted), date: k, endDate: k, start: seg.start || effective.start || "", end: seg.end || effective.end || "", online: online, onlineLink: online ? effective.onlineLink || "" : effective.onlineLink || "", adjusted: seg.adjusted, sort: seg.start || effective.start || "99:99" });
           });
         });
-        items.filter(function (i) { return inDateRange(k, i.date, i.endDate || i.date); }).forEach(function (i) { out.push({ kind: i.kind || "personal", itemId: i.id, title: i.title || "Event", meta: eventMeta(i), date: i.date, endDate: i.endDate || i.date, start: i.start || "", end: i.end || "", location: i.location || "", sort: i.start || "99:99" }); });
+        items.filter(function (i) { return inDateRange(k, i.date, i.endDate || i.date); }).forEach(function (i) { out.push({ kind: i.kind || "personal", itemId: i.id, title: i.title || "Event", meta: eventMeta(i), date: i.date, endDate: i.endDate || i.date, start: i.start || "", end: i.end || "", location: i.location || "", submitted: Boolean(i.submitted), sort: i.start || "99:99" }); });
         officialEventsFor(k).forEach(function (e) { out.push(e); });
         return out.filter(isInSemesterScope).filter(isVisibleEvent).sort(function (a, b) { return a.sort.localeCompare(b.sort) || a.title.localeCompare(b.title); });
       }
@@ -2838,6 +2899,13 @@
         $("saved-list").querySelectorAll("[data-class-edit-schedule]").forEach(function (b) { b.addEventListener("click", function () { openClassEdit(b.dataset.classEditSchedule, firstEditableClassDate(classes.find(function (c) { return c.id === b.dataset.classEditSchedule; }) || {}), "schedule"); }); });
         $("saved-list").querySelectorAll("[data-class]").forEach(function (b) { b.addEventListener("click", function () { var removed = classes.splice(Number(b.dataset.class), 1)[0]; if (removed) { classAttendance = classAttendance.filter(function (r) { return r.classId !== removed.id; }); classOverrides = classOverrides.filter(function (o) { return o.classId !== removed.id; }); } persist().then(function () { renderAll(); toast("Class schedule deleted"); }); }); });
         $("saved-list").querySelectorAll("[data-event]").forEach(function (b) { b.addEventListener("click", function () { items.splice(Number(b.dataset.event), 1); persist().then(renderAll); }); });
+        var assignments = items.filter(function (it) { return it.kind === "assignment" && isInSemesterScope(it); }).sort(function (a, b) { return Boolean(a.submitted) - Boolean(b.submitted) || String(a.date).localeCompare(String(b.date)); });
+        $("assignment-list").innerHTML = assignments.length ? assignments.map(function (it) {
+          var due = assignmentDueLabel(it);
+          return '<div class="item' + (it.submitted ? ' assignment-submitted' : '') + '"><div><div class="item-title">' + esc(it.title || "Assignment") + '</div><div class="item-meta assignment-due">' + esc(it.submitted ? "Submitted" : due) + (it.start ? ' · ' + esc(timeLabel(it.start)) : '') + '</div></div><div class="item-actions"><button class="remove-btn edit" data-assignment-toggle="' + esc(it.id) + '">' + (it.submitted ? 'Mark Not Submitted' : 'Mark Submitted') + '</button><button class="remove-btn" data-assignment-delete="' + esc(it.id) + '">Delete</button></div></div>';
+        }).join("") : '<div class="empty">No assignments yet. Add one to track its due date.</div>';
+        $("assignment-list").querySelectorAll("[data-assignment-toggle]").forEach(function (b) { b.addEventListener("click", function () { toggleAssignmentSubmitted(b.dataset.assignmentToggle); }); });
+        $("assignment-list").querySelectorAll("[data-assignment-delete]").forEach(function (b) { b.addEventListener("click", function () { deleteEventById(b.dataset.assignmentDelete); }); });
         $("exam-list").innerHTML = futureExams().length ? futureExams().slice(0, 8).map(function (e) { return '<div class="item"><div><div class="item-title">' + esc(e.course) + '</div><div class="item-meta">' + esc(examTypeLabel(e.type)) + ' · ' + esc(e.date) + (e.start ? ' · ' + esc(timeRange(e.start, e.end)) : '') + (e.location ? ' · ' + esc(e.location) : '') + '</div></div><div class="item-actions"><button class="remove-btn edit" data-exam-edit="' + esc(e.id) + '">Edit</button><button class="remove-btn" data-exam-delete="' + esc(e.id) + '">Delete</button></div></div>'; }).join("") : '<div class="empty">No upcoming exams yet. Add one here or from your profile.</div>';
         $("exam-list").querySelectorAll("[data-exam-edit]").forEach(function (b) { b.addEventListener("click", function () { openExamEditor(b.dataset.examEdit); }); });
         $("exam-list").querySelectorAll("[data-exam-delete]").forEach(function (b) { b.addEventListener("click", function () { deleteExamById(b.dataset.examDelete); }); });
@@ -2846,7 +2914,7 @@
         renderStudyOptions();
       }
       function renderViewFilters() {
-        var labels = { exam: "Exams", class: "Classes", study: "Study", personal: "Personal", academic: "PSU" };
+        var labels = { exam: "Exams", class: "Classes", study: "Study", assignment: "Assignments", personal: "Personal", academic: "PSU" };
         $("view-filters").innerHTML = Object.keys(labels).map(function (k) { return '<label class="filter-toggle"><input type="checkbox" value="' + k + '" ' + (viewFilters[k] !== false ? 'checked' : '') + '>' + labels[k] + '</label>'; }).join("");
         $("view-filters").querySelectorAll("input").forEach(function (input) { input.addEventListener("change", function () { viewFilters[input.value] = input.checked; saveViewFilters(); renderCalendar(); if (activeDayKey) { openDay(activeDayKey); } }); });
       }
@@ -2926,6 +2994,7 @@
           '<div class="day-timeline"><div class="hour-labels">' + hours.map(function (h) { return '<div class="hour-label">' + hourLabel(h) + '</div>'; }).join("") + '</div><div class="hour-grid">' + hours.map(function () { return '<div class="hour-line"></div>'; }).join("") + '<div class="timed-layer">' + timed.map(function (e) { return timelineEventHtml(e, startHour, pxPerHour); }).join("") + '</div></div></div>';
         $("day-list").querySelectorAll("[data-exam-edit]").forEach(function (b) { b.addEventListener("click", function () { openExamEditor(b.dataset.examEdit); }); });
         $("day-list").querySelectorAll("[data-item-delete]").forEach(function (b) { b.addEventListener("click", function () { deleteEventById(b.dataset.itemDelete); }); });
+        $("day-list").querySelectorAll("[data-assignment-toggle]").forEach(function (b) { b.addEventListener("click", function () { toggleAssignmentSubmitted(b.dataset.assignmentToggle); }); });
         $("day-list").querySelectorAll("[data-class-remove]").forEach(function (b) { b.addEventListener("click", function () { openClassRemoval(b.dataset.classRemove, b.dataset.date); }); });
         $("day-list").querySelectorAll("[data-class-edit]").forEach(function (b) { b.addEventListener("click", function () { openClassEdit(b.dataset.classEdit, b.dataset.date); }); });
         $("day-detail").classList.add("open"); $("day-detail").setAttribute("aria-hidden", "false"); document.body.style.overflow = "hidden";
@@ -2933,7 +3002,7 @@
       function eventActionsHtml(e) {
         if (e.examId) return '<div class="day-card-actions"><button class="mini-btn" data-exam-edit="' + esc(e.examId) + '" type="button">Edit Exam</button></div>';
         if (e.classId) return '<div class="day-card-actions">' + (e.online && e.onlineLink ? '<a class="mini-btn" href="' + esc(e.onlineLink) + '" target="_blank" rel="noopener noreferrer">Join Meeting</a>' : '') + (e.online && !e.onlineLink ? '<button class="mini-btn" data-class-edit="' + esc(e.classId) + '" data-date="' + esc(e.date) + '" type="button">Add Meeting Link</button>' : '') + '<button class="mini-btn" data-class-edit="' + esc(e.classId) + '" data-date="' + esc(e.date) + '" type="button">Edit This Class</button><button class="mini-btn danger" data-class-remove="' + esc(e.classId) + '" data-date="' + esc(e.date) + '" type="button">Remove This Class</button></div>';
-        if (e.itemId) return '<div class="day-card-actions"><button class="mini-btn danger" data-item-delete="' + esc(e.itemId) + '" type="button">Delete Event</button></div>';
+        if (e.itemId) return '<div class="day-card-actions">' + (e.kind === "assignment" ? '<button class="mini-btn" data-assignment-toggle="' + esc(e.itemId) + '" type="button">' + (e.submitted ? 'Mark Not Submitted' : 'Mark Submitted') + '</button>' : '') + '<button class="mini-btn danger" data-item-delete="' + esc(e.itemId) + '" type="button">Delete ' + (e.kind === "assignment" ? 'Assignment' : 'Event') + '</button></div>';
         return "";
       }
       function eventTitleHtml(e) { return e.onlineLink ? '<a href="' + esc(e.onlineLink) + '" target="_blank" rel="noopener noreferrer">' + esc(e.title) + '</a>' : esc(e.title); }
@@ -2953,8 +3022,28 @@
       function deleteEventById(id) {
         var index = items.findIndex(function (i) { return i.id === id; });
         if (index < 0) { toast("Could not find that event"); return; }
+        var wasAssignment = items[index].kind === "assignment";
         items.splice(index, 1);
-        persist().then(function () { renderAll(); if (activeDayKey) openDay(activeDayKey); toast("Event deleted"); });
+        persist().then(function () { renderAll(); if (activeDayKey) openDay(activeDayKey); toast(wasAssignment ? "Assignment deleted" : "Event deleted"); });
+      }
+      function assignmentDueLabel(item) {
+        var days = Math.round((fromKey(item.date) - fromKey(todayKey())) / 86400000);
+        if (days < 0) return "Overdue by " + Math.abs(days) + " day" + (days === -1 ? "" : "s");
+        if (days === 0) return "Due today";
+        if (days === 1) return "Due tomorrow";
+        return "Due in " + days + " days";
+      }
+      function toggleAssignmentSubmitted(id) {
+        var item = items.find(function (entry) { return entry.id === id && entry.kind === "assignment"; });
+        if (!item) { toast("Could not find that assignment"); return; }
+        item.submitted = !item.submitted;
+        item.submittedAt = item.submitted ? new Date().toISOString() : "";
+        persist().then(function () {
+          renderAll();
+          if (activeDayKey) openDay(activeDayKey);
+          document.dispatchEvent(new CustomEvent("shoug:calendar-reminders-changed"));
+          toast(item.submitted ? "Assignment marked submitted. Reminders stopped." : "Assignment reopened. Reminders enabled.");
+        });
       }
       function openClassRemoval(classId, date) {
         var c = classes.find(function (item) { return item.id === classId; });
@@ -3087,8 +3176,8 @@
         data.endDate = data.endDate || data.date;
         if (data.endDate < data.date) { toast("End date cannot be before start date"); return Promise.resolve(false); }
         if (data.start && data.end && data.end <= data.start && data.date === data.endDate) { toast("End time must be after start time"); return Promise.resolve(false); }
-        items.push({ id: uid(), title: data.title, date: data.date, endDate: data.endDate, kind: data.kind || "personal", start: data.start || "", end: data.end || "", location: data.location || "", linkedExamId: data.linkedExamId || "" });
-        return persist().then(function () { renderAll(); if (activeDayKey) openDay(activeDayKey); toast(data.kind === "study" ? "Study session added" : "Event added"); return true; });
+        items.push({ id: uid(), title: data.title, date: data.date, endDate: data.endDate, kind: data.kind || "personal", start: data.start || "", end: data.end || "", location: data.location || "", linkedExamId: data.linkedExamId || "", submitted: Boolean(data.submitted), remindersEnabled: data.kind === "assignment" ? true : undefined });
+        return persist().then(function () { renderAll(); if (activeDayKey) openDay(activeDayKey); if (data.kind === "assignment") document.dispatchEvent(new CustomEvent("shoug:calendar-reminders-changed")); toast(data.kind === "study" ? "Study session added" : (data.kind === "assignment" ? "Assignment added" : "Event added")); return true; });
       }
       function addStudySession() {
         var examId = $("study-exam").value, exam = exams.find(function (e) { return e.id === examId; });
@@ -3106,16 +3195,20 @@
           if (saved) { ["event-title", "event-start", "event-end", "event-location"].forEach(function (id) { $(id).value = ""; }); setDatePickerValue("event-date", ""); setDatePickerValue("event-end-date", ""); }
         });
       }
-      function openEventEditor(date) {
+      function openEventEditor(date, kind) {
         var k = date || activeDayKey || todayKey();
+        var isAssignment = kind === "assignment";
         $("event-edit-title").value = "";
+        $("event-edit-title").placeholder = isAssignment ? "Assignment title" : "Travel";
         setDatePickerValue("event-edit-date", k);
         setDatePickerValue("event-edit-end-date", k);
-        $("event-edit-kind").value = "travel";
+        $("event-edit-kind").value = isAssignment ? "assignment" : "travel";
         $("event-edit-start").value = "";
         $("event-edit-end").value = "";
         $("event-edit-location").value = "";
-        $("event-editor-sub").textContent = "Starts on " + k + ". Set an end date to make a connected range.";
+        $("event-editor-title").textContent = isAssignment ? "Add Assignment" : "Add Event";
+        $("event-editor-sub").textContent = isAssignment ? "Due on " + k + ". Add an optional time or location." : "Starts on " + k + ". Set an end date to make a connected range.";
+        $("save-event-btn").textContent = isAssignment ? "Save Assignment" : "Save Event";
         $("event-editor").classList.add("open"); $("event-editor").setAttribute("aria-hidden", "false"); document.body.style.overflow = "hidden";
         setTimeout(function () { $("event-edit-title").focus(); }, 0);
       }
@@ -3200,7 +3293,14 @@
       $("open-signin-btn").addEventListener("click", function () { var b = document.querySelector(".shoug-auth-btn"); if (b) b.click(); });
       $("day-detail-close").addEventListener("click", closeDay);
       $("day-add-exam-btn").addEventListener("click", function () { openExamEditor("", activeDayKey || todayKey()); });
+      $("day-add-assignment-btn").addEventListener("click", function () { openEventEditor(activeDayKey, "assignment"); });
+      $("side-add-assignment-btn").addEventListener("click", function () { openEventEditor(activeDayKey || todayKey(), "assignment"); });
       $("day-add-event-btn").addEventListener("click", function () { openEventEditor(activeDayKey); });
+      $("enable-assignment-reminders-btn").addEventListener("click", function () {
+        if (!("Notification" in window)) { toast("This browser does not support notifications"); return; }
+        if (Notification.permission === "granted") { toast("Due notifications are already enabled"); return; }
+        Notification.requestPermission().then(function (permission) { if (permission === "granted") document.dispatchEvent(new CustomEvent("shoug:calendar-reminders-changed")); toast(permission === "granted" ? "Due notifications enabled" : "Notifications were not enabled"); });
+      });
       $("day-detail").addEventListener("click", function (e) { if (e.target === $("day-detail")) closeDay(); });
       $("exam-editor-close").addEventListener("click", closeExamEditor);
       $("exam-editor").addEventListener("click", function (e) { if (e.target === $("exam-editor")) closeExamEditor(); });

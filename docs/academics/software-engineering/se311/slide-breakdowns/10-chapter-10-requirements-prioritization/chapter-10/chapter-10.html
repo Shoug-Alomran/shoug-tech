@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en" data-sg-styled>
 <head>
     <link rel="icon" type="image/png" sizes="256x256" href="/assets/shoug-favicon-v4.png">
     <link rel="shortcut icon" type="image/png" href="/assets/shoug-favicon-v4.png">
@@ -7,251 +7,83 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Chapter 10  -  Requirements Prioritization | SE311</title>
+    <link rel="stylesheet" href="/styles/se311.css">
+    <script>
+        /* Theme resolution, in priority order:
+             1. the stored site preference (what the toggle writes);
+             2. the embedding page -- these pages are iframed by their wrapper,
+                and the wrapper only marks itself when it is in LIGHT mode, so an
+                unmarked same-origin parent means the site's dark chrome;
+             3. the OS preference, for the standalone URL.
+           It runs before first paint, and re-asserts afterwards because the
+           shared theme scripts fall back to the OS setting and would otherwise
+           leave a light page sitting inside a dark one. */
+        (function () {
+            var root = document.documentElement;
+
+            function parentTheme() {
+                try {
+                    if (!window.parent || window.parent === window) return null;
+                    var pdoc = window.parent.document;
+                    if (!pdoc) return null;
+                    var body = pdoc.body;
+                    if (body && body.classList.contains("shoug-light-mode")) return "light";
+                    var attr = (body && body.getAttribute("data-theme")) ||
+                        pdoc.documentElement.getAttribute("data-theme");
+                    if (attr === "dark" || attr === "light") return attr;
+                    var scheme = (body && body.getAttribute("data-md-color-scheme")) ||
+                        pdoc.documentElement.getAttribute("data-md-color-scheme");
+                    if (scheme) return scheme === "slate" ? "dark" : "light";
+                    return "dark";
+                } catch (e) {
+                    return null;    // cross-origin: fall through to the OS setting
+                }
+            }
+
+            function stored() {
+                try {
+                    var saved = localStorage.getItem("shoug-theme") || localStorage.getItem("theme");
+                    if (saved === "dark" || saved === "light") return saved;
+                } catch (e) { }
+                return null;
+            }
+
+            function resolve() {
+                var saved = stored();
+                if (saved) return saved;
+                var inherited = parentTheme();
+                if (inherited) {
+                    /* Record what the embedding page is showing: the shared theme
+                       scripts read this key, and without it their first toggle
+                       just re-applies the theme already on screen. */
+                    try {
+                        localStorage.setItem("shoug-theme", inherited);
+                        localStorage.setItem("theme", inherited);
+                    } catch (e) { }
+                    return inherited;
+                }
+                return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches
+                    ? "dark" : "light";
+            }
+
+            function apply() {
+                var theme = resolve();
+                if (root.getAttribute("data-theme") !== theme) root.setAttribute("data-theme", theme);
+                if (root.style.colorScheme !== theme) root.style.colorScheme = theme;
+            }
+
+            apply();
+            if (window.MutationObserver) {
+                new MutationObserver(apply).observe(root, {
+                    attributes: true, attributeFilter: ["data-theme"]
+                });
+            }
+            document.addEventListener("DOMContentLoaded", apply);
+            window.addEventListener("load", apply);
+        })();
+    </script>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --bg: #f8f6f2;
-    --surface: #ffffff;
-    --surface2: #f0ece4;
-    --surface3: #e8e2d8;
-    --border: #ddd7cc;
-    --text: #1c1916;
-    --text-muted: #6e6660;
-    --text-light: #9a9390;
-    --accent: #c0390a;
-    --accent-soft: #fde9e2;
-    --blue: #1a5c8a;
-    --blue-soft: #ddeaf5;
-    --green: #237a4f;
-    --green-soft: #d5f0e2;
-    --gold: #a8760c;
-    --gold-soft: #fdf1d0;
-    --purple: #5a3ea0;
-    --purple-soft: #ece7f8;
-    --teal: #147a78;
-    --teal-soft: #d0f0ef;
-    --shadow-sm: 0 1px 6px rgba(0,0,0,0.06);
-    --shadow: 0 3px 16px rgba(0,0,0,0.09);
-    --radius: 16px;
-    --radius-sm: 10px;
-  }
-  :root[data-theme="dark"] {
-    --bg: #131110;
-    --surface: #1d1b18;
-    --surface2: #242220;
-    --surface3: #2e2b28;
-    --border: #383430;
-    --text: #ede9e3;
-    --text-muted: #9a9490;
-    --text-light: #6a6460;
-    --accent: #e8603a;
-    --accent-soft: #3a1808;
-    --blue: #5aaad8;
-    --blue-soft: #0c2236;
-    --green: #4ec87a;
-    --green-soft: #0c2e1a;
-    --gold: #e0b040;
-    --gold-soft: #2a1e08;
-    --purple: #9a7ee0;
-    --purple-soft: #1e1438;
-    --teal: #3ecece;
-    --teal-soft: #062626;
-    --shadow-sm: 0 1px 6px rgba(0,0,0,0.3);
-    --shadow: 0 3px 16px rgba(0,0,0,0.4);
-  }
-  * { margin:0; padding:0; box-sizing:border-box; }
-  html { scroll-behavior:smooth; width:100%; }
-  body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif; font-size:15px; line-height:1.75; min-height:100vh; width:100%; overflow-x:hidden; transition:background .25s ease,color .25s ease; }
-
-  /* TOPBAR */
-  .topbar { position:sticky; top:0; z-index:200; background:var(--surface); border-bottom:1px solid var(--border); min-height:54px; display:flex; align-items:center; justify-content:space-between; gap:18px; padding:10px clamp(16px,4vw,28px); box-shadow:var(--shadow-sm); transition:background .25s ease,border-color .25s ease; }
-  .topbar-brand { font-family:'DM Mono',monospace; font-size:12px; font-weight:500; color:var(--text-muted); letter-spacing:.1em; }
-  .topbar-brand span { color:var(--accent); }
-  .topbar-nav { display:flex; gap:4px; flex-wrap:wrap; }
-  .topbar-nav a { font-size:12px; font-weight:500; color:var(--text-muted); text-decoration:none; padding:4px 10px; border-radius:20px; transition:all .18s; }
-  .topbar-nav a:hover { color:var(--accent); background:var(--accent-soft); }
-  .theme-toggle { border:1px solid var(--border); background:var(--surface2); color:var(--text); border-radius:999px; padding:4px 11px; font:500 12px 'DM Mono',monospace; cursor:pointer; transition:background .2s ease,color .2s ease,border-color .2s ease; }
-  .theme-toggle:hover { color:var(--accent); border-color:var(--accent); }
-
-  /* HERO */
-  .hero { width:min(100%,1120px); margin:0 auto; padding:64px clamp(18px,4vw,36px) 48px; }
-  .hero-chip { display:inline-flex; align-items:center; gap:6px; background:var(--text); color:var(--bg); font-family:'DM Mono',monospace; font-size:10px; font-weight:500; letter-spacing:.14em; text-transform:uppercase; padding:4px 12px; border-radius:20px; margin-bottom:20px; }
-  .hero h1 { font-family:'Playfair Display',serif; font-size:clamp(38px,6vw,62px); font-weight:900; line-height:1.08; letter-spacing:-.025em; margin-bottom:14px; }
-  .hero h1 em { font-style:normal; color:var(--accent); }
-  .hero-sub { font-size:16px; color:var(--text-muted); max-width:600px; margin-bottom:32px; }
-  .hero-stats { display:flex; gap:32px; flex-wrap:wrap; padding-top:24px; border-top:1px solid var(--border); }
-  .stat-num { font-family:'Playfair Display',serif; font-size:30px; font-weight:700; color:var(--accent); line-height:1; }
-  .stat-label { font-size:11px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.08em; font-weight:500; margin-top:3px; }
-
-  /* CONTENT */
-  .content { width:min(100%,1120px); margin:0 auto; padding:0 clamp(18px,4vw,36px) 100px; }
-
-  /* SECTION */
-  .section { margin-bottom:60px; animation:fadeUp .45s ease both; }
-  .section:nth-child(1){animation-delay:.05s}.section:nth-child(2){animation-delay:.1s}
-  .section:nth-child(3){animation-delay:.15s}.section:nth-child(4){animation-delay:.2s}
-  .section:nth-child(5){animation-delay:.25s}.section:nth-child(6){animation-delay:.3s}
-  .section:nth-child(7){animation-delay:.35s}.section:nth-child(8){animation-delay:.4s}
-  .section:nth-child(9){animation-delay:.45s}.section:nth-child(10){animation-delay:.5s}
-  @keyframes fadeUp { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
-
-  .section-header { display:flex; align-items:center; gap:12px; margin-bottom:22px; padding-bottom:14px; border-bottom:2px solid var(--border); }
-  .section-num { font-family:'DM Mono',monospace; font-size:11px; font-weight:500; color:var(--text-light); background:var(--surface2); padding:3px 9px; border-radius:20px; flex-shrink:0; }
-  .section-title { font-family:'Playfair Display',serif; font-size:22px; font-weight:700; letter-spacing:-.01em; }
-
-  /* CARDS */
-  .card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:22px 24px; box-shadow:var(--shadow-sm); margin-bottom:16px; }
-  .card-title { font-weight:600; font-size:14px; margin-bottom:10px; display:flex; align-items:center; gap:8px; }
-  .card-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:16px; }
-  @media(max-width:620px){.card-grid{grid-template-columns:1fr}}
-  .card-accent  { border-left:4px solid var(--accent);  background:var(--accent-soft);  }
-  .card-blue    { border-left:4px solid var(--blue);    background:var(--blue-soft);    }
-  .card-green   { border-left:4px solid var(--green);   background:var(--green-soft);   }
-  .card-gold    { border-left:4px solid var(--gold);    background:var(--gold-soft);    }
-  .card-purple  { border-left:4px solid var(--purple);  background:var(--purple-soft);  }
-  .card-teal    { border-left:4px solid var(--teal);    background:var(--teal-soft);    }
-
-  /* BADGES */
-  .badge { display:inline-flex; align-items:center; font-family:'DM Mono',monospace; font-size:10px; font-weight:500; letter-spacing:.08em; text-transform:uppercase; padding:2px 8px; border-radius:12px; vertical-align:middle; margin-left:6px; }
-  .badge-exam   { background:var(--gold-soft);   color:var(--gold);   border:1px solid var(--gold);   }
-  .badge-key    { background:var(--purple-soft); color:var(--purple); border:1px solid var(--purple); }
-  .badge-opt    { background:var(--surface2);    color:var(--text-muted); border:1px solid var(--border); }
-
-  /* CALLOUT */
-  .callout { display:flex; gap:14px; align-items:flex-start; padding:16px 18px; border-radius:var(--radius-sm); margin:18px 0; }
-  .callout-icon { font-size:20px; flex-shrink:0; margin-top:2px; }
-  .callout-body { flex:1; font-size:14px; }
-  .callout-title { font-weight:600; font-size:13px; margin-bottom:5px; }
-  .callout-blue   { background:var(--blue-soft);   border-left:3px solid var(--blue);   }
-  .callout-green  { background:var(--green-soft);  border-left:3px solid var(--green);  }
-  .callout-gold   { background:var(--gold-soft);   border-left:3px solid var(--gold);   }
-  .callout-red    { background:var(--accent-soft); border-left:3px solid var(--accent); }
-  .callout-purple { background:var(--purple-soft); border-left:3px solid var(--purple); }
-  .callout-teal   { background:var(--teal-soft);   border-left:3px solid var(--teal);   }
-
-  /* LISTS */
-  ul.styled { list-style:none; display:flex; flex-direction:column; gap:8px; }
-  ul.styled li { display:flex; gap:10px; align-items:flex-start; font-size:14px; }
-  ul.styled li::before { content:''; flex-shrink:0; width:6px; height:6px; border-radius:50%; background:var(--accent); margin-top:8px; }
-  ul.styled.blue   li::before { background:var(--blue); }
-  ul.styled.green  li::before { background:var(--green); }
-  ul.styled.gold   li::before { background:var(--gold); }
-  ul.styled.purple li::before { background:var(--purple); }
-  ul.styled.teal   li::before { background:var(--teal); }
-
-  /* TABLE */
-  .table-wrap { overflow-x:auto; margin:16px 0; border-radius:var(--radius-sm); border:1px solid var(--border); }
-  table { width:100%; border-collapse:collapse; font-size:13.5px; }
-  th { background:var(--surface2); color:var(--text); font-weight:600; text-align:left; padding:10px 14px; border-bottom:2px solid var(--border); font-size:12px; letter-spacing:.04em; text-transform:uppercase; }
-  td { padding:10px 14px; border-bottom:1px solid var(--border); vertical-align:top; }
-  tr:last-child td { border-bottom:none; }
-  tr:nth-child(even) td { background:var(--surface2); }
-  td.hi { color:var(--green); font-weight:600; }
-  td.lo { color:var(--accent); font-weight:500; }
-
-  /* MONO */
-  .mono { font-family:'DM Mono',monospace; font-size:12.5px; background:var(--surface2); border:1px solid var(--border); padding:2px 7px; border-radius:6px; color:var(--accent); }
-
-  /* PRO/CON */
-  .procon { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:12px 0; }
-  @media(max-width:580px){.procon{grid-template-columns:1fr}}
-  .procon-box { border-radius:var(--radius-sm); padding:13px 15px; }
-  .procon-box.pro { background:var(--green-soft); border:1px solid var(--green); }
-  .procon-box.con { background:var(--accent-soft); border:1px solid var(--accent); }
-  .procon-title { font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.07em; margin-bottom:7px; }
-  .procon-box.pro .procon-title { color:var(--green); }
-  .procon-box.con .procon-title { color:var(--accent); }
-
-  /* TECHNIQUE CARD */
-  .technique { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:24px 26px; margin-bottom:20px; box-shadow:var(--shadow-sm); }
-  .technique-header { display:flex; align-items:center; gap:12px; margin-bottom:16px; }
-  .technique-num { width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:'Playfair Display',serif; font-size:18px; font-weight:700; color:#fff; flex-shrink:0; }
-  .technique-title { font-family:'Playfair Display',serif; font-size:18px; font-weight:700; }
-
-  /* KANO TABLE */
-  .kano-table { border-radius:var(--radius-sm); overflow:hidden; border:2px solid var(--border); margin:14px 0; }
-  .kano-table table { font-size:12.5px; }
-  .kano-table th { font-size:11px; padding:8px 10px; }
-  .kano-table td { padding:8px 10px; text-align:center; font-weight:500; }
-  .kano-basic       { background:var(--blue-soft);   color:var(--blue);   }
-  .kano-performance { background:var(--green-soft);  color:var(--green);  }
-  .kano-excitement  { background:var(--gold-soft);   color:var(--gold);   }
-  .kano-indiff      { background:var(--surface2);    color:var(--text-muted); }
-  .kano-reverse     { background:var(--accent-soft); color:var(--accent); }
-  .kano-q           { background:var(--purple-soft); color:var(--purple); }
-
-  /* MATRIX (Three-level) */
-  .matrix-2x2 { display:grid; grid-template-columns:1fr 1fr; gap:0; border:2px solid var(--border); border-radius:var(--radius-sm); overflow:hidden; margin:14px 0; }
-  .matrix-cell { padding:20px 18px; text-align:center; border:1px solid var(--border); }
-  .matrix-label { font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.07em; margin-bottom:6px; }
-  .matrix-val { font-family:'Playfair Display',serif; font-size:26px; font-weight:900; }
-  .cell-h { background:var(--green-soft); }
-  .cell-m { background:var(--gold-soft); }
-  .cell-l { background:var(--accent-soft); }
-  .cell-d { background:var(--surface3); }
-  .matrix-header { display:grid; grid-template-columns:80px 1fr 1fr; font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.06em; color:var(--text-muted); margin-bottom:4px; text-align:center; }
-  .matrix-axis { display:grid; grid-template-rows:1fr 1fr; font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.06em; color:var(--text-muted); text-align:right; align-items:center; padding-right:10px; }
-  .matrix-wrap { display:grid; grid-template-columns:auto 1fr; gap:0; margin:14px 0; }
-
-  /* 80-20 RULE */
-  .rule-8020 { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin:14px 0; }
-  @media(max-width:580px){.rule-8020{grid-template-columns:1fr}}
-  .rule-box { border-radius:var(--radius-sm); padding:18px 20px; text-align:center; border:2px solid; }
-  .rule-box.twenty { border-color:var(--accent); background:var(--accent-soft); }
-  .rule-box.eighty { border-color:var(--green); background:var(--green-soft); }
-  .rule-pct { font-family:'Playfair Display',serif; font-size:48px; font-weight:900; line-height:1; }
-  .rule-box.twenty .rule-pct { color:var(--accent); }
-  .rule-box.eighty .rule-pct { color:var(--green); }
-  .rule-desc { font-size:13px; font-weight:500; margin-top:6px; color:var(--text-muted); }
-
-  /* FORMULA BOX */
-  .formula { background:var(--surface2); border:2px solid var(--border); border-radius:var(--radius-sm); padding:16px 20px; text-align:center; font-family:'DM Mono',monospace; font-size:14px; color:var(--text); margin:14px 0; line-height:2; }
-  .formula .frac { color:var(--accent); font-size:16px; font-weight:500; }
-
-  /* TIPS */
-  .tips-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:14px; }
-  @media(max-width:620px){.tips-grid{grid-template-columns:1fr}}
-  .tip-item { background:var(--green-soft); border:1px solid var(--green); border-radius:var(--radius-sm); padding:14px 16px; }
-  .tip-label { font-size:11px; font-weight:600; color:var(--green); text-transform:uppercase; letter-spacing:.08em; margin-bottom:5px; }
-  .tip-text { font-size:13px; color:var(--text); }
-
-  /* QUICK REF */
-  .quick-ref { background:var(--surface); border:2px solid var(--accent); border-radius:var(--radius); padding:24px 26px; margin-bottom:40px; }
-  .quick-ref-title { font-family:'Playfair Display',serif; font-size:18px; font-weight:700; margin-bottom:16px; color:var(--accent); }
-  .qr-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
-  @media(max-width:580px){.qr-grid{grid-template-columns:1fr}}
-  .qr-item { background:var(--surface2); border-radius:var(--radius-sm); padding:10px 14px; }
-  .qr-term { font-weight:600; color:var(--accent); margin-bottom:2px; font-size:13px; }
-  .qr-def  { color:var(--text-muted); font-size:12.5px; }
-
-  /* DIVIDER */
-  .divider { border:none; border-top:1px solid var(--border); margin:32px 0; }
-
-  /* OPTIONAL PILL */
-  .opt-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:10px; margin-top:14px; }
-  @media(max-width:700px){.opt-grid{grid-template-columns:1fr 1fr}}
-  .opt-item { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-sm); padding:14px 12px; text-align:center; }
-  .opt-icon { font-size:22px; margin-bottom:6px; }
-  .opt-text { font-size:12px; font-weight:500; color:var(--text); }
-
-  /* FOOTER */
-  footer { background:var(--surface); border-top:1px solid var(--border); padding:24px 28px; text-align:center; font-size:12.5px; color:var(--text-muted); }
-  footer strong { color:var(--text); }
-  .course-tag { display:inline-block; font-family:'DM Mono',monospace; font-size:11px; background:var(--accent); color:#fff; padding:2px 10px; border-radius:20px; margin-bottom:6px; }
-
-  /* SCROLL TOP */
-  .scroll-top { position:fixed; bottom:28px; right:28px; z-index:100; width:40px; height:40px; background:var(--accent); color:#fff; border-radius:50%; border:none; cursor:pointer; font-size:18px; display:flex; align-items:center; justify-content:center; box-shadow:var(--shadow); transition:transform .2s; }
-  .scroll-top:hover { transform:translateY(-3px); }
-  img, svg, canvas, video { max-width:100%; height:auto; }
-  @media(max-width:720px){
-    .topbar { align-items:flex-start; flex-direction:column; padding:12px 18px; }
-    .topbar-nav { width:100%; overflow-x:auto; flex-wrap:nowrap; padding-bottom:4px; }
-    .theme-toggle { position:absolute; top:10px; right:12px; }
-    .hero { padding-top:44px; }
-    .scroll-top { right:18px; bottom:18px; }
-  }
-</style>
-    <script src="/javascripts/html-theme-sync.js"></script>
+<script src="/javascripts/html-theme-sync.js"></script>
 
     <meta name="description" content="Deciding which requirements matter most - and when. With limited time, budget, and resources, prioritization is the skill that separates a deliverable.">
     <link rel="canonical" href="https://shoug-tech.com/academics/software-engineering/se311/slide-breakdowns/10-chapter-10-requirements-prioritization/">
@@ -279,8 +111,14 @@
         })(window, document, "clarity", "script", "xub0eqmvs9");
     </script>
     <link rel="stylesheet" href="/styles/a11y.css">
+    <script src="/javascripts/se311.js" defer></script>
 </head>
 <body>
+    <button class="sg-theme-toggle" type="button" onclick="toggleTheme()" aria-label="Toggle dark and light mode">
+        <svg class="sg-icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.2 14.6A8.4 8.4 0 0 1 9.4 3.8a8.4 8.4 0 1 0 10.8 10.8Z"/></svg>
+        <svg class="sg-icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4.1"/><path d="M12 2.4v2.3M12 19.3v2.3M2.4 12h2.3M19.3 12h2.3M5.2 5.2l1.6 1.6M17.2 17.2l1.6 1.6M18.8 5.2l-1.6 1.6M6.8 17.2l-1.6 1.6"/></svg>
+        <span data-theme-label>Dark</span>
+    </button>
 <a class="shoug-skip-link" href="#main-content">Skip to content</a>
 
 
@@ -297,7 +135,6 @@
     <a href="#other">Other</a>
     <a href="#optional">Optional</a>
     <a href="#studytips">Study Tips</a>
-    <button class="theme-toggle" type="button" onclick="toggleTheme()" id="themeToggle">Dark</button>
   </div>
 </nav>
 
@@ -322,7 +159,7 @@
     <div class="qr-grid">
       <div class="qr-item"><div class="qr-term">Triage</div><div class="qr-def">Another word for requirements prioritization &mdash; deciding what gets implemented and when</div></div>
       <div class="qr-item"><div class="qr-term">80-20 Rule (Pareto)</div><div class="qr-def">80% of value comes from 20% of features. Focus on the impactful 20%</div></div>
-      <div class="qr-item"><div class="qr-term">Wiegers'-Method</div><div-class="qr-def">Semi-quantitative: uses Benefit, Penalty, Cost, and Risk with weights and a formula</div></div>
+      <div class="qr-item"><div class="qr-term">Wiegers'-Method</div><div class="qr-def">Semi-quantitative: uses Benefit, Penalty, Cost, and Risk with weights and a formula</div></div>
       <div class="qr-item"><div class="qr-term">Kano Model</div><div class="qr-def">Groups requirements by customer perception: Basic, Performance, Excitement, Indifferent, Reverse</div></div>
       <div class="qr-item"><div class="qr-term">Three-Level Scale</div><div class="qr-def">Subjective High/Medium/Low based on Importance &times; Urgency</div></div>
       <div class="qr-item"><div class="qr-term">Prioritization Scales</div><div class="qr-def">Simple urgency/importance scales: High, Medium, Low or Essential, Conditional, Optional</div></div>
@@ -899,7 +736,7 @@
         </tr>
         <tr>
           <td><strong>2</strong></td>
-          <td><strong>Wiegers'-Prioritization</strong><br><span-style="font-size:12px; color:var(--text-muted);">Value / Cost / Risk formula</span></td>
+          <td><strong>Wiegers'-Prioritization</strong><br><span style="font-size:12px; color:var(--text-muted);">Value / Cost / Risk formula</span></td>
           <td>Semi-quantitative</td>
           <td>Large projects needing analytical, formula-based ranking</td>
           <td>Requires calibration; still depends on estimates; interdependencies are hard</td>
@@ -995,46 +832,6 @@
 </footer>
 
 <button class="scroll-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Back to top">&#8593;</button>
-
-<script>
-const root = document.documentElement;
-const systemTheme = window.matchMedia('(prefers-color-scheme: dark)');
-
-function setTheme(theme) {
-  const next = theme === 'dark' ? 'dark' : 'light';
-  root.setAttribute('data-theme', next);
-  const button = document.getElementById('themeToggle');
-  if (button) button.textContent = next === 'dark' ? 'Light' : 'Dark';
-}
-
-function toggleTheme() {
-  setTheme(root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
-}
-
-function syncParentTheme() {
-  const parentTheme = root.getAttribute('data-parent-theme');
-  if (parentTheme === 'dark' || parentTheme === 'light') {
-    setTheme(parentTheme);
-    return true;
-  }
-  return false;
-}
-
-if (!syncParentTheme()) {
-  setTheme(systemTheme.matches ? 'dark' : 'light');
-}
-
-systemTheme.addEventListener('change', event => {
-  if (!root.getAttribute('data-parent-theme')) {
-    setTheme(event.matches ? 'dark' : 'light');
-  }
-});
-
-new MutationObserver(syncParentTheme).observe(root, {
-  attributes: true,
-  attributeFilter: ['data-parent-theme']
-});
-</script>
 
 </body>
 </html>

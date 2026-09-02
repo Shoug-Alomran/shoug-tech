@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-sg-styled>
 <head>
     <link rel="icon" type="image/png" sizes="256x256" href="/assets/shoug-favicon-v4.png">
     <link rel="shortcut icon" type="image/png" href="/assets/shoug-favicon-v4.png">
@@ -7,387 +7,83 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SE311  -  Chapter 8: Requirements Specification</title>
+    <link rel="stylesheet" href="/styles/se311.css">
+    <script>
+        /* Theme resolution, in priority order:
+             1. the stored site preference (what the toggle writes);
+             2. the embedding page -- these pages are iframed by their wrapper,
+                and the wrapper only marks itself when it is in LIGHT mode, so an
+                unmarked same-origin parent means the site's dark chrome;
+             3. the OS preference, for the standalone URL.
+           It runs before first paint, and re-asserts afterwards because the
+           shared theme scripts fall back to the OS setting and would otherwise
+           leave a light page sitting inside a dark one. */
+        (function () {
+            var root = document.documentElement;
+
+            function parentTheme() {
+                try {
+                    if (!window.parent || window.parent === window) return null;
+                    var pdoc = window.parent.document;
+                    if (!pdoc) return null;
+                    var body = pdoc.body;
+                    if (body && body.classList.contains("shoug-light-mode")) return "light";
+                    var attr = (body && body.getAttribute("data-theme")) ||
+                        pdoc.documentElement.getAttribute("data-theme");
+                    if (attr === "dark" || attr === "light") return attr;
+                    var scheme = (body && body.getAttribute("data-md-color-scheme")) ||
+                        pdoc.documentElement.getAttribute("data-md-color-scheme");
+                    if (scheme) return scheme === "slate" ? "dark" : "light";
+                    return "dark";
+                } catch (e) {
+                    return null;    // cross-origin: fall through to the OS setting
+                }
+            }
+
+            function stored() {
+                try {
+                    var saved = localStorage.getItem("shoug-theme") || localStorage.getItem("theme");
+                    if (saved === "dark" || saved === "light") return saved;
+                } catch (e) { }
+                return null;
+            }
+
+            function resolve() {
+                var saved = stored();
+                if (saved) return saved;
+                var inherited = parentTheme();
+                if (inherited) {
+                    /* Record what the embedding page is showing: the shared theme
+                       scripts read this key, and without it their first toggle
+                       just re-applies the theme already on screen. */
+                    try {
+                        localStorage.setItem("shoug-theme", inherited);
+                        localStorage.setItem("theme", inherited);
+                    } catch (e) { }
+                    return inherited;
+                }
+                return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches
+                    ? "dark" : "light";
+            }
+
+            function apply() {
+                var theme = resolve();
+                if (root.getAttribute("data-theme") !== theme) root.setAttribute("data-theme", theme);
+                if (root.style.colorScheme !== theme) root.style.colorScheme = theme;
+            }
+
+            apply();
+            if (window.MutationObserver) {
+                new MutationObserver(apply).observe(root, {
+                    attributes: true, attributeFilter: ["data-theme"]
+                });
+            }
+            document.addEventListener("DOMContentLoaded", apply);
+            window.addEventListener("load", apply);
+        })();
+    </script>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --bg: #f5f0e8;
-    --bg2: #ede8df;
-    --card: #ffffff;
-    --text: #1a1612;
-    --text2: #4a4540;
-    --accent: #c0392b;
-    --accent2: #e67e22;
-    --accent3: #2980b9;
-    --border: #d4cfc6;
-    --tag-past: #c0392b;
-    --tag-tip: #27ae60;
-    --tag-key: #2980b9;
-    --shadow: 0 4px 24px rgba(0,0,0,0.08);
-    --radius: 12px;
-    --mono: 'JetBrains Mono', monospace;
-  }
-  [data-theme="dark"] {
-    --bg: #12100e;
-    --bg2: #1a1815;
-    --card: #1f1c19;
-    --text: #f0ebe3;
-    --text2: #a09890;
-    --accent: #e05c50;
-    --accent2: #f0994a;
-    --accent3: #5dade2;
-    --border: #2e2a25;
-    --shadow: 0 4px 24px rgba(0,0,0,0.4);
-  }
-
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    transition: background 0.3s, color 0.3s;
-    min-height: 100vh;
-  }
-
-  /* HEADER */
-  header {
-    background: var(--text);
-    color: var(--bg);
-    padding: 3rem 2rem 2rem;
-    position: relative;
-    overflow: hidden;
-  }
-  header::before {
-    content: '8';
-    position: absolute;
-    right: -0.1em;
-    top: -0.15em;
-    font-family: 'Playfair Display', serif;
-    font-size: 14rem;
-    font-weight: 700;
-    color: rgba(255,255,255,0.04);
-    pointer-events: none;
-    line-height: 1;
-  }
-  .header-inner { max-width: 900px; margin: 0 auto; position: relative; }
-  .course-tag {
-    display: inline-block;
-    font-family: var(--mono);
-    font-size: 0.72rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    background: var(--accent);
-    color: #fff;
-    padding: 0.3em 0.8em;
-    border-radius: 4px;
-    margin-bottom: 1rem;
-  }
-  header h1 {
-    font-family: 'Playfair Display', serif;
-    font-size: clamp(2rem, 5vw, 3.2rem);
-    line-height: 1.15;
-    margin-bottom: 0.5rem;
-  }
-  header p {
-    font-size: 1rem;
-    opacity: 0.65;
-    font-weight: 300;
-  }
-
-  /* DARK MODE TOGGLE */
-  .toggle-wrap {
-    position: fixed;
-    top: 1.2rem;
-    right: 1.5rem;
-    z-index: 999;
-  }
-  .toggle-btn {
-    background: var(--card);
-    border: 1.5px solid var(--border);
-    color: var(--text);
-    border-radius: 50px;
-    padding: 0.45rem 1rem;
-    font-family: var(--mono);
-    font-size: 0.78rem;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    box-shadow: var(--shadow);
-    transition: all 0.2s;
-  }
-  .toggle-btn:hover { border-color: var(--accent); color: var(--accent); }
-  .toggle-icon { font-size: 1rem; }
-
-  /* LAYOUT */
-  main { max-width: 900px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; }
-
-  /* TOC */
-  .toc {
-    background: var(--card);
-    border: 1.5px solid var(--border);
-    border-radius: var(--radius);
-    padding: 1.5rem 2rem;
-    margin-bottom: 2.5rem;
-    box-shadow: var(--shadow);
-  }
-  .toc h2 {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.1rem;
-    margin-bottom: 1rem;
-    color: var(--accent);
-  }
-  .toc ol { padding-left: 1.4rem; }
-  .toc li { margin-bottom: 0.4rem; }
-  .toc a { color: var(--text2); text-decoration: none; font-size: 0.93rem; transition: color 0.2s; }
-  .toc a:hover { color: var(--accent); }
-
-  /* SECTION */
-  .section {
-    background: var(--card);
-    border: 1.5px solid var(--border);
-    border-radius: var(--radius);
-    margin-bottom: 2rem;
-    overflow: hidden;
-    box-shadow: var(--shadow);
-    animation: fadeUp 0.4s ease both;
-  }
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(16px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-  .section-header {
-    background: var(--bg2);
-    border-bottom: 1.5px solid var(--border);
-    padding: 1.2rem 1.8rem;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-  }
-  .sec-num {
-    font-family: var(--mono);
-    font-size: 0.78rem;
-    color: var(--accent);
-    background: rgba(192,57,43,0.1);
-    padding: 0.25em 0.6em;
-    border-radius: 4px;
-    white-space: nowrap;
-  }
-  .section-header h2 {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.25rem;
-    color: var(--text);
-  }
-  .section-body { padding: 1.5rem 1.8rem; }
-
-  /* SUBSECTION */
-  .subsec { margin-bottom: 1.4rem; }
-  .subsec h3 {
-    font-size: 0.95rem;
-    font-weight: 600;
-    color: var(--accent3);
-    margin-bottom: 0.6rem;
-    font-family: var(--mono);
-    letter-spacing: 0.02em;
-  }
-
-  p, li { font-size: 0.93rem; line-height: 1.7; color: var(--text2); }
-  ul, ol { padding-left: 1.4rem; margin-top: 0.4rem; }
-  li { margin-bottom: 0.3rem; }
-  strong { color: var(--text); font-weight: 600; }
-
-  /* TAGS */
-  .tag {
-    display: inline-block;
-    font-family: var(--mono);
-    font-size: 0.68rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    padding: 0.2em 0.6em;
-    border-radius: 4px;
-    margin-right: 0.4rem;
-    vertical-align: middle;
-    font-weight: 500;
-  }
-  .tag.past { background: rgba(192,57,43,0.12); color: var(--tag-past); border: 1px solid rgba(192,57,43,0.3); }
-  .tag.tip  { background: rgba(39,174,96,0.1);  color: var(--tag-tip);  border: 1px solid rgba(39,174,96,0.3); }
-  .tag.key  { background: rgba(41,128,185,0.1); color: var(--tag-key);  border: 1px solid rgba(41,128,185,0.3); }
-
-  /* CALLOUT BOXES */
-  .box {
-    border-radius: 8px;
-    padding: 1rem 1.2rem;
-    margin: 0.8rem 0;
-    font-size: 0.9rem;
-    line-height: 1.65;
-  }
-  .box.tip  { background: rgba(39,174,96,0.07);  border-left: 3px solid var(--tag-tip);  color: var(--text2); }
-  .box.warn { background: rgba(192,57,43,0.07);  border-left: 3px solid var(--accent);   color: var(--text2); }
-  .box.info { background: rgba(41,128,185,0.07); border-left: 3px solid var(--accent3);  color: var(--text2); }
-  .box.exam { background: rgba(192,57,43,0.06);  border: 1.5px dashed rgba(192,57,43,0.4); color: var(--text2); }
-  .box-title { font-weight: 600; color: var(--text); margin-bottom: 0.4rem; display: block; font-size: 0.88rem; }
-
-  /* TABLE */
-  .tbl-wrap { overflow-x: auto; margin: 0.8rem 0; }
-  table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
-  th {
-    background: var(--bg2);
-    color: var(--text);
-    font-weight: 600;
-    padding: 0.7rem 1rem;
-    text-align: left;
-    border-bottom: 2px solid var(--border);
-    font-family: var(--mono);
-    font-size: 0.8rem;
-    letter-spacing: 0.04em;
-  }
-  td {
-    padding: 0.65rem 1rem;
-    border-bottom: 1px solid var(--border);
-    color: var(--text2);
-    vertical-align: top;
-  }
-  tr:last-child td { border-bottom: none; }
-  tr:hover td { background: var(--bg2); }
-
-  /* CODE SNIPPET */
-  .code-block {
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 1rem 1.2rem;
-    font-family: var(--mono);
-    font-size: 0.82rem;
-    color: var(--text2);
-    margin: 0.8rem 0;
-    white-space: pre-wrap;
-    line-height: 1.7;
-  }
-  .code-block .hl { color: var(--accent); font-weight: 500; }
-  .code-block .hl2 { color: var(--accent3); }
-
-  /* MEMORY GRID */
-  .mem-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 0.8rem;
-    margin: 0.8rem 0;
-  }
-  .mem-card {
-    background: var(--bg2);
-    border: 1.5px solid var(--border);
-    border-radius: 8px;
-    padding: 0.9rem 1rem;
-    text-align: center;
-  }
-  .mem-card .emoji { font-size: 1.5rem; margin-bottom: 0.4rem; display: block; }
-  .mem-card .label { font-size: 0.82rem; font-weight: 600; color: var(--text); margin-bottom: 0.25rem; }
-  .mem-card .desc { font-size: 0.78rem; color: var(--text2); }
-
-  /* FOOTER */
-  footer {
-    text-align: center;
-    padding: 2rem;
-    font-size: 0.82rem;
-    color: var(--text2);
-    border-top: 1.5px solid var(--border);
-    font-family: var(--mono);
-  }
-  footer span { color: var(--accent); }
-
-  /* ACCORDION */
-  details { margin: 0.5rem 0; }
-  details summary {
-    cursor: pointer;
-    font-weight: 600;
-    font-size: 0.9rem;
-    color: var(--text);
-    padding: 0.5rem 0;
-    list-style: none;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-  details summary::before { content: '▶'; font-size: 0.6rem; color: var(--accent); transition: transform 0.2s; }
-  details[open] summary::before { transform: rotate(90deg); }
-  details .det-body { padding: 0.5rem 0 0.5rem 1.2rem; }
-
-  hr.divider { border: none; border-top: 1px solid var(--border); margin: 1.2rem 0; }
-</style>
-<style id="codex-responsive-html">
-  html { width: 100%; }
-  body {
-    width: 100%;
-    max-width: 100%;
-    overflow-x: hidden;
-  }
-  img, svg, video, canvas, iframe {
-    max-width: 100% !important;
-    height: auto;
-  }
-  table {
-    max-width: 100% !important;
-  }
-  .table-wrap, .table-scroll, .overflow-x, .comparison-table, .acm-table, .matrix-wrap {
-    max-width: 100% !important;
-    overflow-x: auto !important;
-    -webkit-overflow-scrolling: touch;
-  }
-  header,
-  main,
-  .header-inner,
-  .hero,
-  .hero-inner,
-  .content,
-  .container,
-  .wrap,
-  .page,
-  .page-shell,
-  .page-wrap,
-  .layout,
-  .content-wrap,
-  .exam-container,
-  .quiz-container,
-  .cheat-sheet,
-  .toc,
-  .section,
-  .section-body,
-  .card,
-  .panel {
-    width: min(100%, calc(100vw - 24px)) !important;
-    max-width: min(1600px, calc(100vw - 24px)) !important;
-  }
-  @media (max-width: 768px) {
-    header,
-    main,
-    .header-inner,
-    .hero,
-    .hero-inner,
-    .content,
-    .container,
-    .wrap,
-    .page,
-    .page-shell,
-    .page-wrap,
-    .layout,
-    .content-wrap,
-    .exam-container,
-    .quiz-container,
-    .cheat-sheet,
-    .toc,
-    .section,
-    .section-body,
-    .card,
-    .panel {
-      width: min(100%, calc(100vw - 16px)) !important;
-      max-width: min(100%, calc(100vw - 16px)) !important;
-    }
-    body {
-      overflow-x: hidden;
-    }
-  }
-</style>
-    <script src="/javascripts/html-theme-sync.js"></script>
+<script src="/javascripts/html-theme-sync.js"></script>
 
     <meta name="description" content="The SRS Template · Writing Quality Requirements · Documenting for Stakeholders">
     <link rel="canonical" href="https://shoug-tech.com/academics/software-engineering/se311/slide-breakdowns/08-chapter-8-requirements-specification/">
@@ -415,16 +111,16 @@
         })(window, document, "clarity", "script", "xub0eqmvs9");
     </script>
     <link rel="stylesheet" href="/styles/a11y.css">
+    <script src="/javascripts/se311.js" defer></script>
 </head>
 <body>
+    <button class="sg-theme-toggle" type="button" onclick="toggleTheme()" aria-label="Toggle dark and light mode">
+        <svg class="sg-icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.2 14.6A8.4 8.4 0 0 1 9.4 3.8a8.4 8.4 0 1 0 10.8 10.8Z"/></svg>
+        <svg class="sg-icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4.1"/><path d="M12 2.4v2.3M12 19.3v2.3M2.4 12h2.3M19.3 12h2.3M5.2 5.2l1.6 1.6M17.2 17.2l1.6 1.6M18.8 5.2l-1.6 1.6M6.8 17.2l-1.6 1.6"/></svg>
+        <span data-theme-label>Dark</span>
+    </button>
 <a class="shoug-skip-link" href="#main-content">Skip to content</a>
 
-
-<div class="toggle-wrap">
-  <button class="toggle-btn" onclick="toggleDark()" id="darkBtn">
-    <span class="toggle-icon">🌙</span><span id="darkLabel">Dark</span>
-  </button>
-</div>
 
 <header>
   <div class="header-inner">
@@ -1080,48 +776,6 @@
 </footer>
 
 <script>
-  function applySystemTheme() {
-    const stored = localStorage.getItem('shoug-theme');
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const dark = stored === 'dark' ? true : stored === 'light' ? false : prefersDark;
-    if (dark) {
-      document.documentElement.setAttribute('data-theme', 'dark');
-      document.getElementById('darkLabel').textContent = 'Light';
-      document.querySelector('.toggle-icon').textContent = '☀️';
-    }
-  }
-
-  function toggleDark() {
-    const root = document.documentElement;
-    const isDark = root.getAttribute('data-theme') === 'dark';
-    if (isDark) {
-      root.removeAttribute('data-theme');
-      try { localStorage.setItem('shoug-theme', 'light'); } catch(e) {}
-      document.getElementById('darkLabel').textContent = 'Dark';
-      document.querySelector('.toggle-icon').textContent = '🌙';
-    } else {
-      root.setAttribute('data-theme', 'dark');
-      try { localStorage.setItem('shoug-theme', 'dark'); } catch(e) {}
-      document.getElementById('darkLabel').textContent = 'Light';
-      document.querySelector('.toggle-icon').textContent = '☀️';
-    }
-  }
-
-  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
-    if (localStorage.getItem('shoug-theme')) return;
-    if (e.matches) {
-      document.documentElement.setAttribute('data-theme', 'dark');
-      document.getElementById('darkLabel').textContent = 'Light';
-      document.querySelector('.toggle-icon').textContent = '☀️';
-    } else {
-      document.documentElement.removeAttribute('data-theme');
-      document.getElementById('darkLabel').textContent = 'Dark';
-      document.querySelector('.toggle-icon').textContent = '🌙';
-    }
-  });
-
-  applySystemTheme();
-
   // Staggered section animations
   const sections = document.querySelectorAll('.section');
   sections.forEach((s, i) => s.style.animationDelay = `${i * 0.06}s`);

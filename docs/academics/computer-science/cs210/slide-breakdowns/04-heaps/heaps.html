@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-sg-styled>
 <head>
     <link rel="icon" type="image/png" sizes="256x256" href="/assets/shoug-favicon-v4.png">
     <link rel="shortcut icon" type="image/png" href="/assets/shoug-favicon-v4.png">
@@ -7,530 +7,81 @@
 <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Heaps & Priority Queues - Comprehensive Study Guide</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        <link rel="stylesheet" href="/styles/cs210.css">
+    <script>
+        /* Theme resolution, in priority order:
+             1. the stored site preference (what the toggle writes);
+             2. the embedding page -- these pages are iframed by their wrapper,
+                and the wrapper only marks itself when it is in LIGHT mode, so an
+                unmarked same-origin parent means the site's dark chrome;
+             3. the OS preference, for the standalone URL.
+           It runs before first paint, and re-asserts afterwards because the
+           shared theme scripts fall back to the OS setting and would otherwise
+           leave a light page sitting inside a dark one. */
+        (function () {
+            var root = document.documentElement;
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            overflow: hidden;
-        }
-
-        header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 40px;
-            text-align: center;
-        }
-
-        header h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        }
-
-        header p {
-            font-size: 1.2em;
-            opacity: 0.9;
-        }
-
-        .content {
-            padding: 40px;
-        }
-
-        .toc {
-            background: #f8f9fa;
-            padding: 25px;
-            border-radius: 10px;
-            margin-bottom: 30px;
-            border-left: 5px solid #667eea;
-        }
-
-        .toc h2 {
-            color: #667eea;
-            margin-bottom: 15px;
-        }
-
-        .toc ul {
-            list-style: none;
-        }
-
-        .toc li {
-            margin: 10px 0;
-        }
-
-        .toc a {
-            color: #764ba2;
-            text-decoration: none;
-            font-weight: 500;
-            transition: all 0.3s;
-            display: inline-block;
-        }
-
-        .toc a:hover {
-            color: #667eea;
-            transform: translateX(5px);
-        }
-
-        section {
-            margin: 40px 0;
-            padding: 30px;
-            background: #fff;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-        }
-
-        h2 {
-            color: #667eea;
-            font-size: 2em;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 3px solid #667eea;
-        }
-
-        h3 {
-            color: #764ba2;
-            font-size: 1.5em;
-            margin: 25px 0 15px 0;
-        }
-
-        h4 {
-            color: #555;
-            font-size: 1.2em;
-            margin: 20px 0 10px 0;
-        }
-
-        .definition {
-            background: #e3f2fd;
-            padding: 20px;
-            border-left: 5px solid #2196F3;
-            border-radius: 5px;
-            margin: 20px 0;
-        }
-
-        .key-concept {
-            background: #f3e5f5;
-            padding: 20px;
-            border-left: 5px solid #9c27b0;
-            border-radius: 5px;
-            margin: 20px 0;
-        }
-
-        .important {
-            background: #fff3e0;
-            padding: 20px;
-            border-left: 5px solid #ff9800;
-            border-radius: 5px;
-            margin: 20px 0;
-        }
-
-        .code-block {
-            background: #263238;
-            color: #aed581;
-            padding: 20px;
-            border-radius: 8px;
-            overflow-x: auto;
-            margin: 20px 0;
-            font-family: 'Courier New', monospace;
-            font-size: 0.95em;
-            line-height: 1.5;
-        }
-
-        .code-block .keyword {
-            color: #c792ea;
-        }
-
-        .code-block .comment {
-            color: #546e7a;
-            font-style: italic;
-        }
-
-        .code-block .string {
-            color: #c3e88d;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-
-        th {
-            background: #667eea;
-            color: white;
-            padding: 15px;
-            text-align: left;
-            font-weight: 600;
-        }
-
-        td {
-            padding: 12px 15px;
-            border-bottom: 1px solid #e0e0e0;
-        }
-
-        tr:nth-child(even) {
-            background: #f8f9fa;
-        }
-
-        tr:hover {
-            background: #f0f0f0;
-        }
-
-        .complexity {
-            display: inline-block;
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-weight: bold;
-            font-size: 0.9em;
-        }
-
-        .complexity.fast {
-            background: #c8e6c9;
-            color: #2e7d32;
-        }
-
-        .complexity.medium {
-            background: #fff9c4;
-            color: #f57f17;
-        }
-
-        .complexity.slow {
-            background: #ffcdd2;
-            color: #c62828;
-        }
-
-        .visualization {
-            background: #fafafa;
-            padding: 25px;
-            border-radius: 10px;
-            margin: 20px 0;
-            text-align: center;
-        }
-
-        .array-visual {
-            display: flex;
-            justify-content: center;
-            gap: 5px;
-            margin: 20px 0;
-            flex-wrap: wrap;
-        }
-
-        .array-cell {
-            width: 50px;
-            height: 50px;
-            border: 2px solid #667eea;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            background: white;
-            border-radius: 5px;
-            position: relative;
-        }
-
-        .array-cell .index {
-            position: absolute;
-            top: -20px;
-            font-size: 0.8em;
-            color: #999;
-        }
-
-        .tree-visual {
-            margin: 30px 0;
-            text-align: center;
-        }
-
-        .example {
-            background: #f5f5f5;
-            padding: 20px;
-            border-radius: 8px;
-            margin: 20px 0;
-            border: 2px dashed #667eea;
-        }
-
-        .example h4 {
-            color: #667eea;
-            margin-bottom: 10px;
-        }
-
-        .operations-list {
-            list-style: none;
-            padding: 0;
-        }
-
-        .operations-list li {
-            padding: 10px;
-            margin: 8px 0;
-            background: #f8f9fa;
-            border-left: 4px solid #667eea;
-            border-radius: 4px;
-        }
-
-        .operations-list li strong {
-            color: #764ba2;
-        }
-
-        .note {
-            background: #fff9c4;
-            padding: 15px;
-            border-left: 5px solid #fbc02d;
-            border-radius: 5px;
-            margin: 15px 0;
-        }
-
-        .note strong {
-            color: #f57f17;
-        }
-
-        .pros-cons {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin: 20px 0;
-        }
-
-        .pros, .cons {
-            padding: 20px;
-            border-radius: 8px;
-        }
-
-        .pros {
-            background: #e8f5e9;
-            border-left: 5px solid #4caf50;
-        }
-
-        .cons {
-            background: #ffebee;
-            border-left: 5px solid #f44336;
-        }
-
-        .pros h4, .cons h4 {
-            margin-top: 0;
-        }
-
-        ul.styled-list {
-            margin-left: 20px;
-        }
-
-        ul.styled-list li {
-            margin: 8px 0;
-        }
-
-        footer {
-            background: #263238;
-            color: white;
-            text-align: center;
-            padding: 20px;
-        }
-
-        @media (max-width: 768px) {
-            .pros-cons {
-                grid-template-columns: 1fr;
+            function parentTheme() {
+                try {
+                    if (!window.parent || window.parent === window) return null;
+                    var pdoc = window.parent.document;
+                    if (!pdoc) return null;
+                    var body = pdoc.body;
+                    if (body && body.classList.contains("shoug-light-mode")) return "light";
+                    var attr = (body && body.getAttribute("data-theme")) ||
+                        pdoc.documentElement.getAttribute("data-theme");
+                    if (attr === "dark" || attr === "light") return attr;
+                    var scheme = (body && body.getAttribute("data-md-color-scheme")) ||
+                        pdoc.documentElement.getAttribute("data-md-color-scheme");
+                    if (scheme) return scheme === "slate" ? "dark" : "light";
+                    return "dark";
+                } catch (e) {
+                    return null;    // cross-origin: fall through to the OS setting
+                }
             }
-            
-            .array-visual {
-                flex-direction: column;
-                align-items: center;
+
+            function stored() {
+                try {
+                    var saved = localStorage.getItem("shoug-theme") || localStorage.getItem("theme");
+                    if (saved === "dark" || saved === "light") return saved;
+                } catch (e) { }
+                return null;
             }
-            
-            header h1 {
-                font-size: 2em;
+
+            function resolve() {
+                var saved = stored();
+                if (saved) return saved;
+                var inherited = parentTheme();
+                if (inherited) {
+                    /* Record what the embedding page is showing: the shared theme
+                       scripts read this key, and without it their first toggle
+                       just re-applies the theme already on screen. */
+                    try {
+                        localStorage.setItem("shoug-theme", inherited);
+                        localStorage.setItem("theme", inherited);
+                    } catch (e) { }
+                    return inherited;
+                }
+                return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches
+                    ? "dark" : "light";
             }
-        }
 
-        .quote {
-            border-left: 5px solid #667eea;
-            padding: 15px 20px;
-            margin: 20px 0;
-            background: #f8f9fa;
-            font-style: italic;
-            color: #555;
-        }
+            function apply() {
+                var theme = resolve();
+                if (root.getAttribute("data-theme") !== theme) root.setAttribute("data-theme", theme);
+                if (root.style.colorScheme !== theme) root.style.colorScheme = theme;
+            }
 
-        .highlight {
-            background: linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%);
-            padding: 2px 6px;
-            border-radius: 3px;
-            font-weight: 600;
-        }
-        html[data-theme='dark'] {
-            color-scheme: dark;
-        }
-
-        html[data-theme='dark'] body {
-            background: linear-gradient(135deg, #0f172a 0%, #111827 55%, #1e293b 100%) !important;
-            color: #e5e7eb !important;
-        }
-
-        html[data-theme='dark'] .container,
-        html[data-theme='dark'] .content,
-        html[data-theme='dark'] .main-content,
-        html[data-theme='dark'] .topic-section,
-        html[data-theme='dark'] .topic-section.active,
-        html[data-theme='dark'] section,
-        html[data-theme='dark'] .section,
-        html[data-theme='dark'] .card,
-        html[data-theme='dark'] .comparison-card,
-        html[data-theme='dark'] .comparison > div,
-        html[data-theme='dark'] .mini-card,
-        html[data-theme='dark'] .rotation-card,
-        html[data-theme='dark'] .complexity-card,
-        html[data-theme='dark'] .comparison-item,
-        html[data-theme='dark'] .visual,
-        html[data-theme='dark'] .visual-example,
-        html[data-theme='dark'] .visual-diagram,
-        html[data-theme='dark'] .tree-diagram,
-        html[data-theme='dark'] .diagram,
-        html[data-theme='dark'] .array-visual,
-        html[data-theme='dark'] .stack-visual,
-        html[data-theme='dark'] .queue-visual,
-        html[data-theme='dark'] .table-container,
-        html[data-theme='dark'] .toc,
-        html[data-theme='dark'] .menu,
-        html[data-theme='dark'] .quote,
-        html[data-theme='dark'] .operation-example {
-            background: #111827 !important;
-            color: #e5e7eb !important;
-            border-color: #334155 !important;
-            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.28) !important;
-        }
-
-        html[data-theme='dark'] header,
-        html[data-theme='dark'] nav,
-        html[data-theme='dark'] .nav,
-        html[data-theme='dark'] footer,
-        html[data-theme='dark'] .footer {
-            color: #e5e7eb !important;
-            border-color: #334155 !important;
-        }
-
-        html[data-theme='dark'] h1,
-        html[data-theme='dark'] h2,
-        html[data-theme='dark'] h3,
-        html[data-theme='dark'] h4,
-        html[data-theme='dark'] p,
-        html[data-theme='dark'] li,
-        html[data-theme='dark'] td,
-        html[data-theme='dark'] th,
-        html[data-theme='dark'] strong,
-        html[data-theme='dark'] .subtitle,
-        html[data-theme='dark'] .visual-title,
-        html[data-theme='dark'] .section-title {
-            color: #e5e7eb !important;
-        }
-
-        html[data-theme='dark'] a,
-        html[data-theme='dark'] .toc a,
-        html[data-theme='dark'] .nav a,
-        html[data-theme='dark'] .menu-item,
-        html[data-theme='dark'] .nav-item {
-            color: #bfdbfe !important;
-        }
-
-        html[data-theme='dark'] .definition,
-        html[data-theme='dark'] .definition-box,
-        html[data-theme='dark'] .info,
-        html[data-theme='dark'] .info-box,
-        html[data-theme='dark'] .formula,
-        html[data-theme='dark'] .explanation,
-        html[data-theme='dark'] .solution {
-            background: #13263a !important;
-            border-color: #38bdf8 !important;
-            color: #e0f2fe !important;
-        }
-
-        html[data-theme='dark'] .important,
-        html[data-theme='dark'] .important-box,
-        html[data-theme='dark'] .warning-box,
-        html[data-theme='dark'] .danger-box,
-        html[data-theme='dark'] .critical,
-        html[data-theme='dark'] .cons {
-            background: #3a1d24 !important;
-            border-color: #fb7185 !important;
-            color: #ffe4e6 !important;
-        }
-
-        html[data-theme='dark'] .example,
-        html[data-theme='dark'] .example-box,
-        html[data-theme='dark'] .highlight,
-        html[data-theme='dark'] .highlight-box,
-        html[data-theme='dark'] .success,
-        html[data-theme='dark'] .success-box,
-        html[data-theme='dark'] .tip,
-        html[data-theme='dark'] .tip-box,
-        html[data-theme='dark'] .hack,
-        html[data-theme='dark'] .key-point,
-        html[data-theme='dark'] .key-points,
-        html[data-theme='dark'] .note,
-        html[data-theme='dark'] .pros {
-            background: #142b26 !important;
-            border-color: #34d399 !important;
-            color: #d1fae5 !important;
-        }
-
-        html[data-theme='dark'] table {
-            background: #0f172a !important;
-            color: #e5e7eb !important;
-        }
-
-        html[data-theme='dark'] th {
-            background: #1d4ed8 !important;
-            color: #eff6ff !important;
-        }
-
-        html[data-theme='dark'] td {
-            background: #111827 !important;
-            border-color: #334155 !important;
-        }
-
-        html[data-theme='dark'] tr:hover,
-        html[data-theme='dark'] tr:hover td,
-        html[data-theme='dark'] .comparison-table tr:nth-child(even),
-        html[data-theme='dark'] .bigo-table tr:nth-child(even) td {
-            background: #1f2937 !important;
-        }
-
-        html[data-theme='dark'] code,
-        html[data-theme='dark'] pre {
-            background: #0f172a !important;
-            color: #e5e7eb !important;
-            border-color: #334155 !important;
-        }
-
-        html[data-theme='dark'] .sidebar {
-            background: #0f172a !important;
-            border-right-color: #334155 !important;
-        }
-
-        html[data-theme='dark'] .nav-item,
-        html[data-theme='dark'] .menu-item {
-            background: rgba(148, 163, 184, 0.08) !important;
-            border-color: #334155 !important;
-        }
-
-        html[data-theme='dark'] .nav-item.active,
-        html[data-theme='dark'] .nav a:hover,
-        html[data-theme='dark'] .toc a:hover,
-        html[data-theme='dark'] .menu-item:hover {
-            background: rgba(96, 165, 250, 0.18) !important;
-        }
-    </style>
+            apply();
+            if (window.MutationObserver) {
+                new MutationObserver(apply).observe(root, {
+                    attributes: true, attributeFilter: ["data-theme"]
+                });
+            }
+            document.addEventListener("DOMContentLoaded", apply);
+            window.addEventListener("load", apply);
+        })();
+    </script>
   <script src="/javascripts/standalone-theme.js"></script>
     <script src="/javascripts/html-theme-sync.js"></script>
 
@@ -561,18 +112,24 @@
     </script>
     <link rel="stylesheet" href="/styles/a11y.css">
 </head>
-<body>
+<body data-cs210="guide" data-cs210-page="heaps">
+    <button class="sg-theme-toggle" type="button" onclick="toggleTheme()" aria-label="Toggle dark and light mode">
+        <svg class="sg-icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.2 14.6A8.4 8.4 0 0 1 9.4 3.8a8.4 8.4 0 1 0 10.8 10.8Z"/></svg>
+        <svg class="sg-icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4.1"/><path d="M12 2.4v2.3M12 19.3v2.3M2.4 12h2.3M19.3 12h2.3M5.2 5.2l1.6 1.6M17.2 17.2l1.6 1.6M18.8 5.2l-1.6 1.6M6.8 17.2l-1.6 1.6"/></svg>
+        <span data-theme-label>Dark</span>
+    </button>
+
 
     <div class="container">
         <header>
-            <h1>📚 Heaps & Priority Queues</h1>
+            <h1>Heaps & Priority Queues</h1>
             <p>A Comprehensive Study Guide for CS210</p>
         </header>
 
         <div class="content">
             <!-- Table of Contents -->
             <div class="toc">
-                <h2>📑 Table of Contents</h2>
+                <h2>Table of Contents</h2>
                 <ul>
                     <li><a href="#intro">1. Introduction to Collections</a></li>
                     <li><a href="#priority-queue">2. Priority Queue ADT</a></li>
@@ -681,7 +238,7 @@
                 </div>
 
                 <div class="important">
-                    <strong>⚠️ Important:</strong> The generic type <code>Key</code> must implement <code>Comparable&lt;Key&gt;</code> so that items can be ordered.
+                    <strong>Important:</strong> The generic type <code>Key</code> must implement <code>Comparable&lt;Key&gt;</code> so that items can be ordered.
                 </div>
 
                 <h3>Example Operations</h3>
@@ -757,7 +314,7 @@
                 <p>Priority queues generalize stacks, queues, and randomized queues, and have numerous real-world applications:</p>
 
                 <div class="key-concept">
-                    <h3>🌟 Real-World Applications</h3>
+                    <h3>Real-World Applications</h3>
                     <ul class="styled-list">
                         <li><strong>Event-driven simulation:</strong> Customers in a line, colliding particles</li>
                         <li><strong>Numerical computation:</strong> Reducing roundoff error</li>
@@ -802,7 +359,7 @@
                 </div>
 
                 <div class="key-concept">
-                    <h3>📐 Important Property</h3>
+                    <h3>Important Property</h3>
                     <p><strong>Height of a complete tree with N nodes is ⌊lg N⌋</strong></p>
                     <p>The height increases only when N is a power of 2.</p>
                     <p>This logarithmic height is what makes heaps efficient!</p>
@@ -811,7 +368,7 @@
                 <h3>Why Complete Binary Trees?</h3>
                 <div class="pros-cons">
                     <div class="pros">
-                        <h4>✅ Advantages</h4>
+                        <h4>✓ Advantages</h4>
                         <ul>
                             <li>Guaranteed logarithmic height</li>
                             <li>Can be stored efficiently in an array</li>
@@ -820,7 +377,7 @@
                         </ul>
                     </div>
                     <div class="cons">
-                        <h4>⚠️ Constraints</h4>
+                        <h4>Constraints</h4>
                         <ul>
                             <li>Must maintain completeness property</li>
                             <li>Insertions must go at the end</li>
@@ -877,7 +434,7 @@
                 </table>
 
                 <div class="note">
-                    <strong>📝 Note:</strong> By default, when we say "heap" we typically mean a <strong>max heap</strong>. This study guide focuses on max heaps, but the concepts apply equally to min heaps with reversed comparisons.
+                    <strong>Note:</strong> By default, when we say "heap" we typically mean a <strong>max heap</strong>. This study guide focuses on max heaps, but the concepts apply equally to min heaps with reversed comparisons.
                 </div>
 
                 <h3>Array Representation</h3>
@@ -925,7 +482,7 @@
                 </div>
 
                 <div class="important">
-                    <h4>🎯 Key Properties</h4>
+                    <h4>Key Properties</h4>
                     <ul class="styled-list">
                         <li>The <strong>largest key</strong> is always at <code>a[1]</code> (the root)</li>
                         <li>We can navigate the tree using simple <strong>arithmetic on array indices</strong></li>
@@ -986,7 +543,7 @@ Heap: T P R N H    → T P R N H S  →  S T R N H P
                 </div>
 
                 <div class="key-concept">
-                    <h4>⏱️ Time Complexity of Insert</h4>
+                    <h4>Time Complexity of Insert</h4>
                     <p><strong>At most 1 + lg N compares</strong></p>
                     <p>Why? In the worst case, we swim from the bottom to the top of the tree, and the height is ⌊lg N⌋.</p>
                 </div>
@@ -1052,18 +609,18 @@ Remove T  →  Exchange with H  →  Sink H down
                 </div>
 
                 <div class="important">
-                    <h4>❓ Why swap with the <em>larger</em> child?</h4>
+                    <h4>Why swap with the <em>larger</em> child?</h4>
                     <p>If we swapped with the smaller child, we might end up with a parent smaller than its other child, violating heap order. By swapping with the larger child, we ensure both children will be smaller than the promoted parent.</p>
                 </div>
 
                 <div class="key-concept">
-                    <h4>⏱️ Time Complexity of Delete Max</h4>
+                    <h4>Time Complexity of Delete Max</h4>
                     <p><strong>At most 2 lg N compares</strong></p>
                     <p>Why 2? At each level, we compare the two children (1 compare) and then compare with parent (1 more compare). Height is ⌊lg N⌋.</p>
                 </div>
 
                 <div class="note">
-                    <strong>💡 "Peter Principle":</strong> In swim, a node is promoted to its level of incompetence (can't go higher). In sink, there's a "power struggle" where the better subordinate gets promoted!
+                    <strong>"Peter Principle":</strong> In swim, a node is promoted to its level of incompetence (can't go higher). In sink, there's a "power struggle" where the better subordinate gets promoted!
                 </div>
             </section>
 
@@ -1144,7 +701,7 @@ Remove T  →  Exchange with H  →  Sink H down
                 </div>
 
                 <div class="note">
-                    <strong>📝 Implementation Notes:</strong>
+                    <strong>Implementation Notes:</strong>
                     <ul class="styled-list">
                         <li>Array indices start at 1 (index 0 is not used)</li>
                         <li>For simplicity, this uses fixed capacity (could be made resizing)</li>
@@ -1191,7 +748,7 @@ Remove T  →  Exchange with H  →  Sink H down
                 </table>
 
                 <div class="key-concept">
-                    <h3>🎯 Why Binary Heap is Optimal</h3>
+                    <h3>Why Binary Heap is Optimal</h3>
                     <ul class="styled-list">
                         <li><strong>Logarithmic operations:</strong> Both insert and delete max are O(log N)</li>
                         <li><strong>Constant time max:</strong> Getting the maximum is O(1)</li>
@@ -1220,7 +777,7 @@ Remove T  →  Exchange with H  →  Sink H down
                 </div>
 
                 <div class="note">
-                    <strong>💡 Why log N?</strong> Because the height of a complete binary tree with N nodes is ⌊log₂ N⌋, and in the worst case, we traverse from one end to the other.
+                    <strong>Why log N?</strong> Because the height of a complete binary tree with N nodes is ⌊log₂ N⌋, and in the worst case, we traverse from one end to the other.
                 </div>
             </section>
 
@@ -1258,7 +815,7 @@ Remove T  →  Exchange with H  →  Sink H down
 
                 <h3>Time Complexity</h3>
                 <div class="key-concept">
-                    <h4>⏱️ Runtime Analysis</h4>
+                    <h4>Runtime Analysis</h4>
                     <ul class="styled-list">
                         <li><strong>Building heap:</strong> O(N log N) with repeated inserts</li>
                         <li><strong>Removing all elements:</strong> O(N log N)</li>
@@ -1282,31 +839,31 @@ Remove T  →  Exchange with H  →  Sink H down
                             <td>Insertion Sort</td>
                             <td><span class="complexity slow">O(N²)</span></td>
                             <td><span class="complexity fast">O(1)</span></td>
-                            <td>✅ Yes</td>
+                            <td>✓ Yes</td>
                         </tr>
                         <tr>
                             <td>Selection Sort</td>
                             <td><span class="complexity slow">O(N²)</span></td>
                             <td><span class="complexity fast">O(1)</span></td>
-                            <td>❌ No</td>
+                            <td>✗ No</td>
                         </tr>
                         <tr>
                             <td>Merge Sort</td>
                             <td><span class="complexity medium">O(N log N)</span></td>
                             <td><span class="complexity slow">O(N)</span></td>
-                            <td>✅ Yes</td>
+                            <td>✓ Yes</td>
                         </tr>
                         <tr style="background: #e8f5e9;">
                             <td><strong>Heap Sort</strong></td>
                             <td><span class="complexity medium">O(N log N)</span></td>
                             <td><span class="complexity fast">O(N)</span></td>
-                            <td>❌ No</td>
+                            <td>✗ No</td>
                         </tr>
                         <tr>
                             <td>Quick Sort</td>
                             <td><span class="complexity medium">O(N log N)*</span></td>
                             <td><span class="complexity fast">O(log N)</span></td>
-                            <td>❌ No</td>
+                            <td>✗ No</td>
                         </tr>
                     </tbody>
                 </table>
@@ -1314,7 +871,7 @@ Remove T  →  Exchange with H  →  Sink H down
 
                 <div class="pros-cons">
                     <div class="pros">
-                        <h4>✅ Advantages of Heapsort</h4>
+                        <h4>✓ Advantages of Heapsort</h4>
                         <ul>
                             <li>Guaranteed O(N log N) performance</li>
                             <li>In-place sorting (no extra array needed)</li>
@@ -1323,7 +880,7 @@ Remove T  →  Exchange with H  →  Sink H down
                         </ul>
                     </div>
                     <div class="cons">
-                        <h4>⚠️ Disadvantages</h4>
+                        <h4>Disadvantages</h4>
                         <ul>
                             <li>Not stable</li>
                             <li>Poor cache performance</li>
@@ -1383,7 +940,7 @@ Remove T  →  Exchange with H  →  Sink H down
                     <p><strong>NO</strong> - The smallest element in a heap should always be found in the root node. Here, 8 is the root but it's smaller than its children (30 and 12), violating the heap-order property.</p>
                 </div>
 
-                <h3>🎯 Key Concepts to Remember</h3>
+                <h3>Key Concepts to Remember</h3>
                 <div class="important">
                     <ul class="styled-list">
                         <li><strong>Complete Binary Tree:</strong> All levels filled except possibly last, which fills left-to-right</li>
@@ -1399,7 +956,7 @@ Remove T  →  Exchange with H  →  Sink H down
                     </ul>
                 </div>
 
-                <h3>📚 Study Tips</h3>
+                <h3>Study Tips</h3>
                 <div class="note">
                     <ul class="styled-list">
                         <li><strong>Draw it out:</strong> Visualize heap operations by drawing trees</li>
@@ -1414,12 +971,12 @@ Remove T  →  Exchange with H  →  Sink H down
                 <h3>Common Mistakes to Avoid</h3>
                 <div class="important">
                     <ul class="styled-list">
-                        <li>❌ Starting array at index 0 (makes parent/child math harder)</li>
-                        <li>❌ Forgetting to set deleted elements to null (memory leak)</li>
-                        <li>❌ Swapping with smaller child in sink (violates heap order)</li>
-                        <li>❌ Not checking array bounds in sink</li>
-                        <li>❌ Confusing max heap with min heap properties</li>
-                        <li>❌ Thinking heap is sorted (it's only partially ordered)</li>
+                        <li>✗ Starting array at index 0 (makes parent/child math harder)</li>
+                        <li>✗ Forgetting to set deleted elements to null (memory leak)</li>
+                        <li>✗ Swapping with smaller child in sink (violates heap order)</li>
+                        <li>✗ Not checking array bounds in sink</li>
+                        <li>✗ Confusing max heap with min heap properties</li>
+                        <li>✗ Thinking heap is sorted (it's only partially ordered)</li>
                     </ul>
                 </div>
             </section>
@@ -1427,7 +984,7 @@ Remove T  →  Exchange with H  →  Sink H down
 
             <!-- PRACTICE QUESTIONS SECTION -->
             <section id="practice-questions">
-                <h2>🎓 Practice Questions</h2>
+                <h2>Practice Questions</h2>
 
                 <div class="example">
                     <h4>Question 1: Heap vs. Sorted Array for Priority Queue</h4>
@@ -1495,8 +1052,8 @@ Remove T  →  Exchange with H  →  Sink H down
         </div>
 
         <footer>
-            <p>📚 CS210 - Data Structures and Algorithms</p>
-            <p>Study Guide: Heaps & Priority Queues | Good luck with your studies! 🚀</p>
+            <p>CS210 - Data Structures and Algorithms</p>
+            <p>Study Guide: Heaps & Priority Queues | Good luck with your studies!</p>
         </footer>
     </div>
 

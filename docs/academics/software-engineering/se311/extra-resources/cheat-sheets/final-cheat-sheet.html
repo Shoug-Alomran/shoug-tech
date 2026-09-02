@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-sg-styled>
 
 <head>
     <link rel="icon" type="image/png" sizes="256x256" href="/assets/shoug-favicon-v4.png">
@@ -8,649 +8,85 @@
 <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SE311 – Final Exam Mastery Guide</title>
+    <link rel="stylesheet" href="/styles/se311.css">
+    <script>
+        /* Theme resolution, in priority order:
+             1. the stored site preference (what the toggle writes);
+             2. the embedding page -- these pages are iframed by their wrapper,
+                and the wrapper only marks itself when it is in LIGHT mode, so an
+                unmarked same-origin parent means the site's dark chrome;
+             3. the OS preference, for the standalone URL.
+           It runs before first paint, and re-asserts afterwards because the
+           shared theme scripts fall back to the OS setting and would otherwise
+           leave a light page sitting inside a dark one. */
+        (function () {
+            var root = document.documentElement;
+
+            function parentTheme() {
+                try {
+                    if (!window.parent || window.parent === window) return null;
+                    var pdoc = window.parent.document;
+                    if (!pdoc) return null;
+                    var body = pdoc.body;
+                    if (body && body.classList.contains("shoug-light-mode")) return "light";
+                    var attr = (body && body.getAttribute("data-theme")) ||
+                        pdoc.documentElement.getAttribute("data-theme");
+                    if (attr === "dark" || attr === "light") return attr;
+                    var scheme = (body && body.getAttribute("data-md-color-scheme")) ||
+                        pdoc.documentElement.getAttribute("data-md-color-scheme");
+                    if (scheme) return scheme === "slate" ? "dark" : "light";
+                    return "dark";
+                } catch (e) {
+                    return null;    // cross-origin: fall through to the OS setting
+                }
+            }
+
+            function stored() {
+                try {
+                    var saved = localStorage.getItem("shoug-theme") || localStorage.getItem("theme");
+                    if (saved === "dark" || saved === "light") return saved;
+                } catch (e) { }
+                return null;
+            }
+
+            function resolve() {
+                var saved = stored();
+                if (saved) return saved;
+                var inherited = parentTheme();
+                if (inherited) {
+                    /* Record what the embedding page is showing: the shared theme
+                       scripts read this key, and without it their first toggle
+                       just re-applies the theme already on screen. */
+                    try {
+                        localStorage.setItem("shoug-theme", inherited);
+                        localStorage.setItem("theme", inherited);
+                    } catch (e) { }
+                    return inherited;
+                }
+                return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches
+                    ? "dark" : "light";
+            }
+
+            function apply() {
+                var theme = resolve();
+                if (root.getAttribute("data-theme") !== theme) root.setAttribute("data-theme", theme);
+                if (root.style.colorScheme !== theme) root.style.colorScheme = theme;
+            }
+
+            apply();
+            if (window.MutationObserver) {
+                new MutationObserver(apply).observe(root, {
+                    attributes: true, attributeFilter: ["data-theme"]
+                });
+            }
+            document.addEventListener("DOMContentLoaded", apply);
+            window.addEventListener("load", apply);
+        })();
+    </script>
     <link
         href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&family=Lora:ital,wght@0,400;0,600;1,400&display=swap"
         rel="stylesheet">
-    <style>
-        :root[data-theme="dark"] {
-            --bg: #0d0f14;
-            --surface: #161b24;
-            --surface2: #1e2535;
-            --border: #2a3347;
-            --text: #e8eaf0;
-            --text-muted: #8892a4;
-            --accent: #4fc3f7;
-            --accent2: #f48fb1;
-            --accent3: #a5d6a7;
-            --accent4: #ffcc80;
-            --accent5: #ce93d8;
-            --tag-bg: rgba(79, 195, 247, 0.12);
-            --tag-color: #4fc3f7;
-            --shadow: 0 4px 32px rgba(0, 0, 0, 0.5);
-            --card-glow: 0 0 0 1px rgba(79, 195, 247, 0.08);
-        }
-
-        :root[data-theme="light"] {
-            --bg: #f5f6fa;
-            --surface: #ffffff;
-            --surface2: #eef0f6;
-            --border: #d8dce8;
-            --text: #1a1d2e;
-            --text-muted: #6b7280;
-            --accent: #0277bd;
-            --accent2: #c2185b;
-            --accent3: #2e7d32;
-            --accent4: #e65100;
-            --accent5: #6a1b9a;
-            --tag-bg: rgba(2, 119, 189, 0.10);
-            --tag-color: #0277bd;
-            --shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
-            --card-glow: 0 0 0 1px rgba(0, 0, 0, 0.06);
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: 'Lora', Georgia, serif;
-            background: var(--bg);
-            color: var(--text);
-            line-height: 1.7;
-            transition: background 0.3s, color 0.3s;
-        }
-
-        /* ── HEADER ── */
-        header {
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            background: var(--surface);
-            border-bottom: 1px solid var(--border);
-            padding: 0 1.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            height: 56px;
-            box-shadow: var(--shadow);
-        }
-
-        .logo {
-            font-family: 'Syne', sans-serif;
-            font-weight: 800;
-            font-size: 1.1rem;
-            color: var(--accent);
-            letter-spacing: -.5px;
-        }
-
-        .logo span {
-            color: var(--text);
-        }
-
-        .header-right {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .progress-bar-wrap {
-            width: 120px;
-            height: 6px;
-            background: var(--surface2);
-            border-radius: 99px;
-            overflow: hidden;
-            display: none;
-        }
-
-        @media(min-width:600px) {
-            .progress-bar-wrap {
-                display: block;
-            }
-        }
-
-        #readingProgress {
-            height: 100%;
-            width: 0;
-            background: linear-gradient(90deg, var(--accent), var(--accent5));
-            border-radius: 99px;
-            transition: width 0.1s;
-        }
-
-        .toggle-btn {
-            background: var(--surface2);
-            border: 1px solid var(--border);
-            color: var(--text);
-            padding: .35rem .75rem;
-            border-radius: 99px;
-            cursor: pointer;
-            font-size: .8rem;
-            font-family: 'Syne', sans-serif;
-            font-weight: 600;
-            transition: all .2s;
-        }
-
-        .toggle-btn:hover {
-            background: var(--accent);
-            color: #fff;
-            border-color: var(--accent);
-        }
-
-        /* ── HERO ── */
-        .hero {
-            text-align: center;
-            padding: 4rem 1.5rem 3rem;
-            background: var(--surface);
-            border-bottom: 1px solid var(--border);
-        }
-
-        .hero-badge {
-            display: inline-block;
-            font-family: 'DM Mono', monospace;
-            font-size: .7rem;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            color: var(--accent);
-            background: var(--tag-bg);
-            padding: .3rem .9rem;
-            border-radius: 99px;
-            margin-bottom: 1.2rem;
-            border: 1px solid rgba(79, 195, 247, 0.2);
-        }
-
-        .hero h1 {
-            font-family: 'Syne', sans-serif;
-            font-weight: 800;
-            font-size: clamp(1.8rem, 5vw, 3.2rem);
-            line-height: 1.15;
-            margin-bottom: .8rem;
-        }
-
-        .hero h1 em {
-            color: var(--accent);
-            font-style: normal;
-        }
-
-        .hero p {
-            color: var(--text-muted);
-            font-size: 1rem;
-            max-width: 520px;
-            margin: 0 auto 2rem;
-        }
-
-        .chapter-pills {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: .5rem;
-            max-width: 700px;
-            margin: 0 auto;
-        }
-
-        .chapter-pill {
-            font-family: 'DM Mono', monospace;
-            font-size: .7rem;
-            padding: .3rem .8rem;
-            border-radius: 99px;
-            background: var(--surface2);
-            color: var(--text-muted);
-            border: 1px solid var(--border);
-            cursor: pointer;
-            text-decoration: none;
-            transition: all .2s;
-        }
-
-        .chapter-pill:hover {
-            background: var(--accent);
-            color: #fff;
-            border-color: var(--accent);
-        }
-
-        /* ── LAYOUT ── */
-        .main-wrap {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 2.5rem 1.25rem 5rem;
-            display: flex;
-            flex-direction: column;
-            gap: 2.5rem;
-        }
-
-        /* ── CHAPTER CARD ── */
-        .chapter-card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: var(--card-glow);
-            transition: box-shadow .2s;
-        }
-
-        .chapter-card:hover {
-            box-shadow: var(--shadow);
-        }
-
-        .chapter-header {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            padding: 1.25rem 1.5rem;
-            cursor: pointer;
-            background: var(--surface2);
-            border-bottom: 1px solid var(--border);
-            user-select: none;
-        }
-
-        .chapter-num {
-            font-family: 'DM Mono', monospace;
-            font-size: .65rem;
-            font-weight: 500;
-            color: var(--accent);
-            background: var(--tag-bg);
-            border: 1px solid rgba(79, 195, 247, 0.2);
-            padding: .2rem .6rem;
-            border-radius: 6px;
-            white-space: nowrap;
-            letter-spacing: 1px;
-        }
-
-        .chapter-title {
-            font-family: 'Syne', sans-serif;
-            font-weight: 700;
-            font-size: 1rem;
-            flex: 1;
-        }
-
-        .chevron {
-            font-size: .8rem;
-            color: var(--text-muted);
-            transition: transform .25s;
-        }
-
-        .chapter-card.open .chevron {
-            transform: rotate(180deg);
-        }
-
-        .chapter-body {
-            display: none;
-            padding: 1.5rem;
-        }
-
-        .chapter-card.open .chapter-body {
-            display: block;
-        }
-
-        /* ── SECTIONS inside body ── */
-        .section {
-            margin-bottom: 1.75rem;
-        }
-
-        .section:last-child {
-            margin-bottom: 0;
-        }
-
-        .section-title {
-            font-family: 'Syne', sans-serif;
-            font-weight: 700;
-            font-size: .85rem;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-            color: var(--accent);
-            margin-bottom: .85rem;
-            display: flex;
-            align-items: center;
-            gap: .5rem;
-        }
-
-        .section-title::after {
-            content: '';
-            flex: 1;
-            height: 1px;
-            background: var(--border);
-        }
-
-        /* ── DEFINITION LIST ── */
-        .def-list {
-            display: flex;
-            flex-direction: column;
-            gap: .6rem;
-        }
-
-        .def-item {
-            padding: .75rem 1rem;
-            background: var(--surface2);
-            border-radius: 10px;
-            border-left: 3px solid var(--accent);
-            font-size: .9rem;
-        }
-
-        .def-item strong {
-            font-family: 'DM Mono', monospace;
-            font-size: .8rem;
-            color: var(--accent);
-            display: block;
-            margin-bottom: .2rem;
-        }
-
-        /* ── KEY POINT BOXES ── */
-        .kp-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-            gap: .75rem;
-        }
-
-        .kp {
-            padding: .9rem 1rem;
-            border-radius: 10px;
-            font-size: .88rem;
-            line-height: 1.5;
-            border: 1px solid var(--border);
-            background: var(--surface2);
-        }
-
-        .kp .kp-icon {
-            font-size: 1.2rem;
-            margin-bottom: .4rem;
-            display: block;
-        }
-
-        /* ── ORDERED LIST STYLE ── */
-        .styled-ol {
-            padding-left: 0;
-            list-style: none;
-            display: flex;
-            flex-direction: column;
-            gap: .5rem;
-            counter-reset: item;
-        }
-
-        .styled-ol li {
-            font-size: .9rem;
-            padding: .6rem 1rem .6rem 2.8rem;
-            background: var(--surface2);
-            border-radius: 8px;
-            position: relative;
-            counter-increment: item;
-            border: 1px solid var(--border);
-        }
-
-        .styled-ol li::before {
-            content: counter(item);
-            position: absolute;
-            left: .75rem;
-            top: 50%;
-            transform: translateY(-50%);
-            font-family: 'DM Mono', monospace;
-            font-size: .7rem;
-            font-weight: 500;
-            color: var(--accent);
-            background: var(--tag-bg);
-            border-radius: 50%;
-            width: 1.4rem;
-            height: 1.4rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        /* ── COMPARISON TABLE ── */
-        .tbl-wrap {
-            overflow-x: auto;
-            border-radius: 10px;
-            border: 1px solid var(--border);
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: .85rem;
-        }
-
-        thead tr {
-            background: var(--surface2);
-        }
-
-        th {
-            font-family: 'Syne', sans-serif;
-            font-weight: 700;
-            font-size: .75rem;
-            letter-spacing: .5px;
-            text-transform: uppercase;
-            color: var(--accent);
-            padding: .75rem 1rem;
-            text-align: left;
-            border-bottom: 2px solid var(--border);
-        }
-
-        td {
-            padding: .65rem 1rem;
-            border-bottom: 1px solid var(--border);
-            vertical-align: top;
-            line-height: 1.5;
-        }
-
-        tbody tr:last-child td {
-            border-bottom: none;
-        }
-
-        tbody tr:nth-child(even) td {
-            background: rgba(255, 255, 255, 0.015);
-        }
-
-        [data-theme="light"] tbody tr:nth-child(even) td {
-            background: rgba(0, 0, 0, 0.025);
-        }
-
-        /* ── HIGHLIGHT BOXES ── */
-        .box {
-            padding: 1rem 1.2rem;
-            border-radius: 10px;
-            font-size: .9rem;
-            margin: .5rem 0;
-            border: 1px solid;
-        }
-
-        .box-blue {
-            background: rgba(79, 195, 247, .08);
-            border-color: rgba(79, 195, 247, .25);
-        }
-
-        .box-green {
-            background: rgba(165, 214, 167, .08);
-            border-color: rgba(165, 214, 167, .25);
-            color: var(--accent3);
-        }
-
-        .box-red {
-            background: rgba(244, 143, 177, .08);
-            border-color: rgba(244, 143, 177, .25);
-        }
-
-        .box-yellow {
-            background: rgba(255, 204, 128, .08);
-            border-color: rgba(255, 204, 128, .25);
-        }
-
-        .box-purple {
-            background: rgba(206, 147, 216, .08);
-            border-color: rgba(206, 147, 216, .25);
-        }
-
-        .box strong {
-            font-family: 'Syne', sans-serif;
-            display: block;
-            margin-bottom: .3rem;
-            font-size: .8rem;
-            letter-spacing: .5px;
-            text-transform: uppercase;
-        }
-
-        /* ── TAGS ── */
-        .tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: .4rem;
-            margin-top: .5rem;
-        }
-
-        .tag {
-            font-family: 'DM Mono', monospace;
-            font-size: .7rem;
-            padding: .2rem .6rem;
-            border-radius: 99px;
-            background: var(--tag-bg);
-            color: var(--tag-color);
-            border: 1px solid rgba(79, 195, 247, .15);
-        }
-
-        .tag.green {
-            background: rgba(165, 214, 167, .12);
-            color: var(--accent3);
-            border-color: rgba(165, 214, 167, .2);
-        }
-
-        .tag.pink {
-            background: rgba(244, 143, 177, .12);
-            color: var(--accent2);
-            border-color: rgba(244, 143, 177, .2);
-        }
-
-        .tag.yellow {
-            background: rgba(255, 204, 128, .12);
-            color: var(--accent4);
-            border-color: rgba(255, 204, 128, .2);
-        }
-
-        .tag.purple {
-            background: rgba(206, 147, 216, .12);
-            color: var(--accent5);
-            border-color: rgba(206, 147, 216, .2);
-        }
-
-        /* ── FORMULA BOX ── */
-        .formula {
-            font-family: 'DM Mono', monospace;
-            font-size: .85rem;
-            background: var(--surface2);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: .8rem 1.2rem;
-            color: var(--accent4);
-            margin: .5rem 0;
-        }
-
-        /* ── PROCESS FLOW ── */
-        .flow {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            gap: .5rem;
-            margin: .5rem 0;
-        }
-
-        .flow-step {
-            font-family: 'Syne', sans-serif;
-            font-weight: 700;
-            font-size: .78rem;
-            padding: .4rem .9rem;
-            border-radius: 8px;
-            background: var(--tag-bg);
-            color: var(--accent);
-            border: 1px solid rgba(79, 195, 247, .2);
-            white-space: nowrap;
-        }
-
-        .flow-arrow {
-            color: var(--text-muted);
-            font-size: .9rem;
-        }
-
-        /* ── QUICK QUIZ ── */
-        .quiz-block {
-            margin-top: 1rem;
-        }
-
-        .quiz-q {
-            padding: .9rem 1rem;
-            background: var(--surface2);
-            border-radius: 10px;
-            border: 1px solid var(--border);
-            margin-bottom: .5rem;
-            font-size: .88rem;
-            cursor: pointer;
-            user-select: none;
-            transition: border-color .2s;
-        }
-
-        .quiz-q:hover {
-            border-color: var(--accent);
-        }
-
-        .quiz-q strong {
-            font-family: 'Syne', sans-serif;
-            font-size: .8rem;
-            color: var(--accent);
-            display: block;
-            margin-bottom: .2rem;
-        }
-
-        .quiz-ans {
-            display: none;
-            padding: .75rem 1rem;
-            background: rgba(165, 214, 167, .07);
-            border: 1px solid rgba(165, 214, 167, .2);
-            border-radius: 8px;
-            font-size: .88rem;
-            margin-bottom: .75rem;
-            color: var(--accent3);
-        }
-
-        .quiz-q.revealed+.quiz-ans {
-            display: block;
-        }
-
-        /* ── SEPARATOR ── */
-        hr {
-            border: none;
-            border-top: 1px solid var(--border);
-            margin: 1.25rem 0;
-        }
-
-        /* ── BACK TO TOP ── */
-        #btt {
-            position: fixed;
-            bottom: 1.5rem;
-            right: 1.5rem;
-            background: var(--accent);
-            color: #fff;
-            border: none;
-            width: 42px;
-            height: 42px;
-            border-radius: 50%;
-            font-size: 1rem;
-            cursor: pointer;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, .3);
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity .3s;
-            z-index: 99;
-        }
-
-        #btt.visible {
-            opacity: 1;
-            pointer-events: all;
-        }
-
-        p {
-            margin-bottom: .5rem;
-        }
-
-        li {
-            font-size: .9rem;
-        }
-    </style>
-    <script src="/javascripts/html-theme-sync.js"></script>
+<script src="/javascripts/html-theme-sync.js"></script>
 
     <meta name="description" content="Every concept, definition, technique, and trap from all 13 chapters — organized for exam success.">
     <link rel="canonical" href="https://shoug-tech.com/academics/software-engineering/se311/extra-resources/cheat-sheets/final-cheat-sheet.html">
@@ -678,18 +114,23 @@
         })(window, document, "clarity", "script", "xub0eqmvs9");
     </script>
     <link rel="stylesheet" href="/styles/a11y.css">
+    <script src="/javascripts/se311.js" defer></script>
 </head>
 
 <body>
 
 
-    <header>
+        <button class="sg-theme-toggle" type="button" onclick="toggleTheme()" aria-label="Toggle dark and light mode">
+        <svg class="sg-icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.2 14.6A8.4 8.4 0 0 1 9.4 3.8a8.4 8.4 0 1 0 10.8 10.8Z"/></svg>
+        <svg class="sg-icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4.1"/><path d="M12 2.4v2.3M12 19.3v2.3M2.4 12h2.3M19.3 12h2.3M5.2 5.2l1.6 1.6M17.2 17.2l1.6 1.6M18.8 5.2l-1.6 1.6M6.8 17.2l-1.6 1.6"/></svg>
+        <span data-theme-label>Dark</span>
+    </button>
+<header>
         <div class="logo">SE311 <span>Exam Guide</span></div>
         <div class="header-right">
             <div class="progress-bar-wrap">
                 <div id="readingProgress"></div>
             </div>
-            <button class="toggle-btn" id="themeToggle">☀ Light</button>
         </div>
     </header>
 
@@ -721,7 +162,7 @@
             <div class="chapter-header" onclick="toggleCard(this)">
                 <span class="chapter-num">CH 01</span>
                 <span class="chapter-title">Fundamentals of Software Requirements Engineering</span>
-                <span class="chevron">▼</span>
+                <span class="chevron">▶</span>
             </div>
             <div class="chapter-body">
 
@@ -850,7 +291,7 @@
             <div class="chapter-header" onclick="toggleCard(this)">
                 <span class="chapter-num">CH 02</span>
                 <span class="chapter-title">Requirements Inception & Vision and Scope</span>
-                <span class="chevron">▼</span>
+                <span class="chevron">▶</span>
             </div>
             <div class="chapter-body">
 
@@ -956,7 +397,7 @@
             <div class="chapter-header" onclick="toggleCard(this)">
                 <span class="chapter-num">CH 03</span>
                 <span class="chapter-title">Requirements Elicitation — Process</span>
-                <span class="chevron">▼</span>
+                <span class="chevron">▶</span>
             </div>
             <div class="chapter-body">
 
@@ -1061,7 +502,7 @@
             <div class="chapter-header" onclick="toggleCard(this)">
                 <span class="chapter-num">CH 04</span>
                 <span class="chapter-title">Elicitation Techniques</span>
-                <span class="chevron">▼</span>
+                <span class="chevron">▶</span>
             </div>
             <div class="chapter-body">
 
@@ -1198,7 +639,7 @@
             <div class="chapter-header" onclick="toggleCard(this)">
                 <span class="chapter-num">CH 05</span>
                 <span class="chapter-title">Requirements Analysis & Modeling</span>
-                <span class="chevron">▼</span>
+                <span class="chevron">▶</span>
             </div>
             <div class="chapter-body">
 
@@ -1313,7 +754,7 @@
             <div class="chapter-header" onclick="toggleCard(this)">
                 <span class="chapter-num">CH 06</span>
                 <span class="chapter-title">Writing Excellent Requirements</span>
-                <span class="chevron">▼</span>
+                <span class="chevron">▶</span>
             </div>
             <div class="chapter-body">
 
@@ -1421,7 +862,7 @@
             <div class="chapter-header" onclick="toggleCard(this)">
                 <span class="chapter-num">CH 07</span>
                 <span class="chapter-title">Requirements Specification & SRS</span>
-                <span class="chevron">▼</span>
+                <span class="chevron">▶</span>
             </div>
             <div class="chapter-body">
 
@@ -1521,7 +962,7 @@
             <div class="chapter-header" onclick="toggleCard(this)">
                 <span class="chapter-num">CH 08</span>
                 <span class="chapter-title">SRS Standards & Structural Templates</span>
-                <span class="chevron">▼</span>
+                <span class="chevron">▶</span>
             </div>
             <div class="chapter-body">
 
@@ -1578,7 +1019,7 @@
             <div class="chapter-header" onclick="toggleCard(this)">
                 <span class="chapter-num">CH 09</span>
                 <span class="chapter-title">Non-Functional Requirements (NFRs)</span>
-                <span class="chevron">▼</span>
+                <span class="chevron">▶</span>
             </div>
             <div class="chapter-body">
 
@@ -1662,7 +1103,7 @@
             <div class="chapter-header" onclick="toggleCard(this)">
                 <span class="chapter-num">CH 10</span>
                 <span class="chapter-title">Requirements Prioritization</span>
-                <span class="chevron">▼</span>
+                <span class="chevron">▶</span>
             </div>
             <div class="chapter-body">
 
@@ -1754,7 +1195,7 @@
             <div class="chapter-header" onclick="toggleCard(this)">
                 <span class="chapter-num">CH 11</span>
                 <span class="chapter-title">Data Requirements & Modeling</span>
-                <span class="chevron">▼</span>
+                <span class="chevron">▶</span>
             </div>
             <div class="chapter-body">
 
@@ -1834,7 +1275,7 @@
             <div class="chapter-header" onclick="toggleCard(this)">
                 <span class="chapter-num">CH 12</span>
                 <span class="chapter-title">Requirements Validation & Verification</span>
-                <span class="chevron">▼</span>
+                <span class="chevron">▶</span>
             </div>
             <div class="chapter-body">
 
@@ -1930,7 +1371,7 @@
             <div class="chapter-header" onclick="toggleCard(this)">
                 <span class="chapter-num">CH 13</span>
                 <span class="chapter-title">Requirements Management</span>
-                <span class="chevron">▼</span>
+                <span class="chevron">▶</span>
             </div>
             <div class="chapter-body">
 
@@ -2033,7 +1474,7 @@
             <div class="chapter-header" onclick="toggleCard(this)">
                 <span class="chapter-num">BONUS</span>
                 <span class="chapter-title">Quick Exam Practice — Tap to Reveal Answers</span>
-                <span class="chevron">▼</span>
+                <span class="chevron">▶</span>
             </div>
             <div class="chapter-body">
                 <div class="quiz-block">
@@ -2139,15 +1580,6 @@
     <button id="btt" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
 
     <script>
-        // ── THEME TOGGLE ──
-        const root = document.documentElement;
-        const btn = document.getElementById('themeToggle');
-        btn.addEventListener('click', () => {
-            const isDark = root.dataset.theme === 'dark';
-            root.dataset.theme = isDark ? 'light' : 'dark';
-            btn.textContent = isDark ? '☾ Dark' : '☀ Light';
-        });
-
         // ── CARD TOGGLE ──
         function toggleCard(header) {
             const card = header.parentElement;

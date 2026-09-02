@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en" data-sg-styled>
 <head>
     <link rel="icon" type="image/png" sizes="256x256" href="/assets/shoug-favicon-v4.png">
     <link rel="shortcut icon" type="image/png" href="/assets/shoug-favicon-v4.png">
@@ -7,415 +7,83 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SE311  -  Chapter 8 Quiz</title>
+    <link rel="stylesheet" href="/styles/se311.css">
+    <script>
+        /* Theme resolution, in priority order:
+             1. the stored site preference (what the toggle writes);
+             2. the embedding page -- these pages are iframed by their wrapper,
+                and the wrapper only marks itself when it is in LIGHT mode, so an
+                unmarked same-origin parent means the site's dark chrome;
+             3. the OS preference, for the standalone URL.
+           It runs before first paint, and re-asserts afterwards because the
+           shared theme scripts fall back to the OS setting and would otherwise
+           leave a light page sitting inside a dark one. */
+        (function () {
+            var root = document.documentElement;
+
+            function parentTheme() {
+                try {
+                    if (!window.parent || window.parent === window) return null;
+                    var pdoc = window.parent.document;
+                    if (!pdoc) return null;
+                    var body = pdoc.body;
+                    if (body && body.classList.contains("shoug-light-mode")) return "light";
+                    var attr = (body && body.getAttribute("data-theme")) ||
+                        pdoc.documentElement.getAttribute("data-theme");
+                    if (attr === "dark" || attr === "light") return attr;
+                    var scheme = (body && body.getAttribute("data-md-color-scheme")) ||
+                        pdoc.documentElement.getAttribute("data-md-color-scheme");
+                    if (scheme) return scheme === "slate" ? "dark" : "light";
+                    return "dark";
+                } catch (e) {
+                    return null;    // cross-origin: fall through to the OS setting
+                }
+            }
+
+            function stored() {
+                try {
+                    var saved = localStorage.getItem("shoug-theme") || localStorage.getItem("theme");
+                    if (saved === "dark" || saved === "light") return saved;
+                } catch (e) { }
+                return null;
+            }
+
+            function resolve() {
+                var saved = stored();
+                if (saved) return saved;
+                var inherited = parentTheme();
+                if (inherited) {
+                    /* Record what the embedding page is showing: the shared theme
+                       scripts read this key, and without it their first toggle
+                       just re-applies the theme already on screen. */
+                    try {
+                        localStorage.setItem("shoug-theme", inherited);
+                        localStorage.setItem("theme", inherited);
+                    } catch (e) { }
+                    return inherited;
+                }
+                return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches
+                    ? "dark" : "light";
+            }
+
+            function apply() {
+                var theme = resolve();
+                if (root.getAttribute("data-theme") !== theme) root.setAttribute("data-theme", theme);
+                if (root.style.colorScheme !== theme) root.style.colorScheme = theme;
+            }
+
+            apply();
+            if (window.MutationObserver) {
+                new MutationObserver(apply).observe(root, {
+                    attributes: true, attributeFilter: ["data-theme"]
+                });
+            }
+            document.addEventListener("DOMContentLoaded", apply);
+            window.addEventListener("load", apply);
+        })();
+    </script>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<style>
-:root {
-  --bg: #f7f4ef;
-  --bg2: #eeeae2;
-  --card: #ffffff;
-  --text: #1a1612;
-  --text2: #5a5550;
-  --text3: #888380;
-  --border: #ddd9d0;
-  --accent: #b03a2e;
-  --accent2: #2471a3;
-  --correct: #1e8449;
-  --correct-bg: #eafaf1;
-  --correct-border: #a9dfbf;
-  --wrong: #b03a2e;
-  --wrong-bg: #fdedec;
-  --wrong-border: #f1948a;
-  --partial: #d68910;
-  --partial-bg: #fef9e7;
-  --partial-border: #f9e79f;
-  --shadow: 0 2px 16px rgba(0,0,0,0.07);
-  --radius: 12px;
-  --mono: 'JetBrains Mono', monospace;
-}
-[data-theme="dark"] {
-  --bg: #111009;
-  --bg2: #1a1815;
-  --card: #1f1c18;
-  --text: #f0ebe2;
-  --text2: #a09890;
-  --text3: #6a6460;
-  --border: #2e2a24;
-  --accent: #e05c50;
-  --accent2: #5dade2;
-  --correct: #27ae60;
-  --correct-bg: #0d2b1a;
-  --correct-border: #1e6b3a;
-  --wrong: #e05c50;
-  --wrong-bg: #2b0e0b;
-  --wrong-border: #7a2020;
-  --partial: #f39c12;
-  --partial-bg: #2b1f05;
-  --partial-border: #7a5510;
-  --shadow: 0 2px 16px rgba(0,0,0,0.35);
-}
-
-* { margin: 0; padding: 0; box-sizing: border-box; }
-html { width: 100%; }
-body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; width: 100%; overflow-x: hidden; transition: background 0.3s, color 0.3s; }
-
-header {
-  background: var(--text);
-  color: var(--bg);
-  padding: 2.5rem 2rem 1.8rem;
-  position: relative;
-  overflow: hidden;
-}
-header::before {
-  content: 'Q';
-  position: absolute; right: -0.05em; top: -0.2em;
-  font-family: 'Playfair Display', serif;
-  font-size: 13rem; font-weight: 700;
-  color: rgba(255,255,255,0.04);
-  pointer-events: none; line-height: 1;
-}
-.header-inner { width: min(100%, 1040px); margin: 0 auto; position: relative; display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; }
-.header-text .course-tag {
-  display: inline-block; font-family: var(--mono); font-size: 0.68rem;
-  letter-spacing: 0.12em; text-transform: uppercase;
-  background: var(--accent); color: #fff;
-  padding: 0.25em 0.7em; border-radius: 4px; margin-bottom: 0.8rem;
-}
-header h1 { font-family: 'Playfair Display', serif; font-size: clamp(1.6rem, 4vw, 2.4rem); line-height: 1.2; margin-bottom: 0.3rem; }
-header p { font-size: 0.9rem; opacity: 0.6; font-weight: 300; }
-
-.toggle-btn {
-  background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
-  color: rgba(255,255,255,0.85); border-radius: 50px;
-  padding: 0.4rem 1rem; font-family: var(--mono); font-size: 0.75rem;
-  cursor: pointer; display: flex; align-items: center; gap: 0.5rem;
-  transition: all 0.2s; white-space: nowrap; margin-top: 0.3rem;
-}
-.toggle-btn:hover { background: rgba(255,255,255,0.18); }
-
-main { width: min(100%, 1040px); margin: 0 auto; padding: 2rem clamp(1rem, 4vw, 2rem) 5rem; }
-
-/* PROGRESS */
-.progress-bar-wrap { background: var(--bg2); border-radius: 50px; height: 6px; margin-bottom: 0.6rem; overflow: hidden; }
-.progress-bar-fill { height: 100%; background: var(--accent); border-radius: 50px; transition: width 0.4s ease; }
-.progress-meta { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 0.72rem; color: var(--text3); margin-bottom: 2rem; }
-
-/* SCORE PANEL */
-.score-panel {
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.8rem; margin-bottom: 2rem;
-}
-.score-card {
-  background: var(--card); border: 1px solid var(--border); border-radius: 10px;
-  padding: 0.9rem 1rem; text-align: center; box-shadow: var(--shadow);
-}
-.score-card .num { font-size: 1.6rem; font-weight: 600; line-height: 1; margin-bottom: 0.2rem; }
-.score-card .lbl { font-size: 0.75rem; color: var(--text3); font-family: var(--mono); letter-spacing: 0.05em; }
-.score-card.s-correct .num { color: var(--correct); }
-.score-card.s-wrong .num { color: var(--wrong); }
-.score-card.s-total .num { color: var(--accent2); }
-
-/* QUESTION CARD */
-.q-card {
-  background: var(--card); border: 1px solid var(--border);
-  border-radius: var(--radius); margin-bottom: 1.4rem;
-  box-shadow: var(--shadow); overflow: hidden;
-  animation: fadeUp 0.35s ease both;
-}
-@keyframes fadeUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
-
-.q-header {
-  background: var(--bg2); border-bottom: 1px solid var(--border);
-  padding: 1rem 1.4rem; display: flex; align-items: center; gap: 0.8rem; flex-wrap: wrap;
-}
-.q-num {
-  font-family: var(--mono); font-size: 0.7rem; color: var(--accent);
-  background: rgba(176,58,46,0.1); padding: 0.2em 0.6em; border-radius: 4px; white-space: nowrap;
-}
-.q-text { font-size: 0.95rem; font-weight: 500; color: var(--text); flex: 1; line-height: 1.5; }
-.tag { display: inline-block; font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.07em; text-transform: uppercase; padding: 0.2em 0.55em; border-radius: 4px; font-weight: 500; }
-.tag.past { background: rgba(176,58,46,0.1); color: var(--accent); border: 1px solid rgba(176,58,46,0.25); }
-.tag.mcq { background: rgba(36,113,163,0.1); color: var(--accent2); border: 1px solid rgba(36,113,163,0.25); }
-.tag.written { background: rgba(100,80,20,0.1); color: var(--partial); border: 1px solid rgba(212,136,16,0.25); }
-.tag.tf { background: rgba(30,132,73,0.1); color: var(--correct); border: 1px solid rgba(30,132,73,0.25); }
-
-.q-body { padding: 1.2rem 1.4rem; }
-
-/* MCQ OPTIONS */
-.options { display: flex; flex-direction: column; gap: 0.5rem; }
-.opt {
-  display: flex; align-items: flex-start; gap: 0.8rem;
-  padding: 0.75rem 1rem; border: 1px solid var(--border);
-  border-radius: 8px; cursor: pointer; transition: all 0.15s;
-  background: var(--bg); font-size: 0.9rem; color: var(--text2);
-}
-.opt:hover:not(.disabled) { border-color: var(--accent2); color: var(--text); background: var(--card); }
-.opt .opt-letter {
-  font-family: var(--mono); font-size: 0.72rem; font-weight: 500;
-  min-width: 22px; height: 22px; border-radius: 50%;
-  background: var(--bg2); border: 1px solid var(--border);
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0; margin-top: 1px; transition: all 0.15s;
-  color: var(--text3);
-}
-.opt.selected { border-color: var(--accent2); background: rgba(36,113,163,0.05); color: var(--text); }
-.opt.selected .opt-letter { background: var(--accent2); color: #fff; border-color: var(--accent2); }
-.opt.correct-ans { border-color: var(--correct); background: var(--correct-bg); color: var(--text); }
-.opt.correct-ans .opt-letter { background: var(--correct); color: #fff; border-color: var(--correct); }
-.opt.wrong-ans { border-color: var(--wrong); background: var(--wrong-bg); color: var(--text); }
-.opt.wrong-ans .opt-letter { background: var(--wrong); color: #fff; border-color: var(--wrong); }
-.opt.disabled { cursor: default; }
-
-/* TRUE/FALSE */
-.tf-options { display: flex; gap: 0.8rem; }
-.tf-btn {
-  flex: 1; padding: 0.75rem; border: 1px solid var(--border);
-  border-radius: 8px; cursor: pointer; transition: all 0.15s;
-  background: var(--bg); font-size: 0.9rem; font-weight: 500;
-  color: var(--text2); text-align: center; font-family: 'DM Sans', sans-serif;
-}
-.tf-btn:hover:not(.disabled) { border-color: var(--accent2); color: var(--text); background: var(--card); }
-.tf-btn.selected { border-color: var(--accent2); background: rgba(36,113,163,0.07); color: var(--accent2); }
-.tf-btn.correct-ans { border-color: var(--correct); background: var(--correct-bg); color: var(--correct); }
-.tf-btn.wrong-ans { border-color: var(--wrong); background: var(--wrong-bg); color: var(--wrong); }
-.tf-btn.disabled { cursor: default; }
-
-/* WRITTEN */
-.written-area {
-  width: 100%; min-height: 110px; padding: 0.85rem 1rem;
-  border: 1px solid var(--border); border-radius: 8px;
-  background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif;
-  font-size: 0.9rem; line-height: 1.6; resize: vertical;
-  transition: border-color 0.2s;
-}
-.written-area:focus { outline: none; border-color: var(--accent2); }
-.written-area.disabled { opacity: 0.8; cursor: default; }
-.keyword-hint { font-size: 0.78rem; color: var(--text3); font-family: var(--mono); margin-top: 0.4rem; }
-.keyword-found { display: inline-block; margin: 0.15rem; padding: 0.15em 0.5em; border-radius: 4px; font-size: 0.72rem; }
-.keyword-found.hit { background: var(--correct-bg); color: var(--correct); border: 1px solid var(--correct-border); }
-.keyword-found.miss { background: var(--wrong-bg); color: var(--wrong); border: 1px solid var(--wrong-border); }
-
-.mock-answer-wrap { margin-top: 0.8rem; }
-.mock-toggle {
-  font-family: var(--mono); font-size: 0.72rem; color: var(--accent2);
-  cursor: pointer; border: none; background: none; padding: 0; text-decoration: underline; text-underline-offset: 3px;
-}
-.mock-answer {
-  margin-top: 0.6rem; background: var(--bg2); border: 1px solid var(--border);
-  border-radius: 8px; padding: 0.85rem 1rem; font-size: 0.88rem;
-  color: var(--text2); line-height: 1.65; display: none;
-}
-.mock-answer.visible { display: block; }
-
-/* FEEDBACK */
-.feedback {
-  margin-top: 0.9rem; padding: 0.85rem 1rem;
-  border-radius: 8px; font-size: 0.88rem; line-height: 1.6; display: none;
-}
-.feedback.correct { background: var(--correct-bg); border: 1px solid var(--correct-border); color: var(--correct); }
-.feedback.wrong { background: var(--wrong-bg); border: 1px solid var(--wrong-border); color: var(--wrong); }
-.feedback.partial { background: var(--partial-bg); border: 1px solid var(--partial-border); color: var(--partial); }
-.feedback.visible { display: block; }
-.feedback .fb-title { font-weight: 600; margin-bottom: 0.3rem; display: block; }
-.feedback .fb-body { color: var(--text2); }
-
-/* CHECK BUTTON */
-.check-btn {
-  margin-top: 1rem; padding: 0.6rem 1.4rem;
-  background: var(--text); color: var(--bg);
-  border: none; border-radius: 8px; cursor: pointer;
-  font-family: 'DM Sans', sans-serif; font-size: 0.88rem; font-weight: 500;
-  transition: opacity 0.2s;
-}
-.check-btn:hover { opacity: 0.82; }
-.check-btn:disabled { opacity: 0.35; cursor: default; }
-
-/* RESULT PANEL */
-.result-panel {
-  display: none; background: var(--card); border: 1px solid var(--border);
-  border-radius: var(--radius); padding: 2rem; text-align: center;
-  box-shadow: var(--shadow); margin-top: 2rem;
-}
-.result-panel.visible { display: block; }
-.result-panel h2 { font-family: 'Playfair Display', serif; font-size: 2rem; margin-bottom: 0.4rem; }
-.result-panel .score-big { font-family: var(--mono); font-size: 3.5rem; font-weight: 500; line-height: 1; margin: 1rem 0 0.3rem; }
-.result-panel .score-label { font-size: 0.88rem; color: var(--text3); margin-bottom: 1.2rem; }
-.result-panel .grade { font-size: 1.2rem; font-weight: 600; margin-bottom: 1.5rem; }
-.restart-btn {
-  padding: 0.7rem 2rem; background: var(--text); color: var(--bg);
-  border: none; border-radius: 8px; cursor: pointer;
-  font-family: 'DM Sans', sans-serif; font-size: 0.92rem; font-weight: 500;
-}
-.restart-btn:hover { opacity: 0.82; }
-
-/* SUBMIT ALL */
-.submit-all-wrap { text-align: center; margin-top: 2rem; }
-.submit-all-btn {
-  padding: 0.85rem 2.5rem; background: var(--accent); color: #fff;
-  border: none; border-radius: 10px; cursor: pointer;
-  font-family: 'DM Sans', sans-serif; font-size: 1rem; font-weight: 500;
-  transition: opacity 0.2s; box-shadow: var(--shadow);
-}
-.submit-all-btn:hover { opacity: 0.88; }
-
-footer { text-align: center; padding: 2rem; font-size: 0.8rem; color: var(--text3); font-family: var(--mono); border-top: 1px solid var(--border); }
-footer span { color: var(--accent); }
-img, svg, canvas, video { max-width: 100%; height: auto; }
-@media (max-width: 680px) {
-  header { padding: 2rem 1rem 1.4rem; }
-  .header-inner { flex-direction: column; }
-  .toggle-btn { align-self: flex-start; }
-  .score-panel { grid-template-columns: 1fr; }
-  .q-header { align-items: flex-start; }
-  .q-actions { flex-direction: column; }
-  .btn { width: 100%; }
-}
-
-/* SE311 responsive + embedded theme bridge */
-html, body {
-  width: 100%;
-  max-width: 100%;
-  overflow-x: hidden;
-}
-body {
-  transition: background-color 0.25s ease, color 0.25s ease;
-}
-img, svg, video, canvas, iframe {
-  max-width: 100% !important;
-  height: auto;
-}
-.container,
-.quiz-container,
-.wrapper,
-.content,
-.quiz-content,
-main,
-header,
-.header,
-.section,
-.question,
-.question-block,
-.card,
-.panel,
-.results-panel,
-.result-container {
-  max-width: min(100%, 1120px) !important;
-}
-.container,
-.quiz-container,
-.wrapper,
-.content,
-.quiz-content,
-main,
-.results-panel,
-.result-container {
-  width: min(100%, 1120px) !important;
-}
-.table-wrap,
-.table-scroll,
-.overflow-x,
-table {
-  max-width: 100% !important;
-}
-.table-wrap,
-.table-scroll,
-.overflow-x {
-  overflow-x: auto !important;
-}
-pre, code {
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
-}
-html[data-theme="dark"] body,
-html[data-parent-theme="dark"] body {
-  background-color: #111827 !important;
-  color: #f3f4f6 !important;
-}
-html[data-theme="dark"] .container,
-html[data-theme="dark"] .quiz-container,
-html[data-theme="dark"] .wrapper,
-html[data-theme="dark"] .content,
-html[data-theme="dark"] .quiz-content,
-html[data-theme="dark"] main,
-html[data-theme="dark"] .section,
-html[data-theme="dark"] .question,
-html[data-theme="dark"] .question-block,
-html[data-theme="dark"] .quiz-info,
-html[data-theme="dark"] .card,
-html[data-theme="dark"] .panel,
-html[data-parent-theme="dark"] .container,
-html[data-parent-theme="dark"] .quiz-container,
-html[data-parent-theme="dark"] .wrapper,
-html[data-parent-theme="dark"] .content,
-html[data-parent-theme="dark"] .quiz-content,
-html[data-parent-theme="dark"] main,
-html[data-parent-theme="dark"] .section,
-html[data-parent-theme="dark"] .question,
-html[data-parent-theme="dark"] .question-block,
-html[data-parent-theme="dark"] .quiz-info,
-html[data-parent-theme="dark"] .card,
-html[data-parent-theme="dark"] .panel {
-  background-color: #1f2937 !important;
-  color: #f3f4f6 !important;
-  border-color: #374151 !important;
-}
-html[data-theme="dark"] p,
-html[data-theme="dark"] li,
-html[data-theme="dark"] label,
-html[data-theme="dark"] span,
-html[data-theme="dark"] .question-text,
-html[data-theme="dark"] .answer,
-html[data-parent-theme="dark"] p,
-html[data-parent-theme="dark"] li,
-html[data-parent-theme="dark"] label,
-html[data-parent-theme="dark"] span,
-html[data-parent-theme="dark"] .question-text,
-html[data-parent-theme="dark"] .answer {
-  color: inherit;
-}
-html[data-theme="dark"] input,
-html[data-theme="dark"] textarea,
-html[data-theme="dark"] select,
-html[data-parent-theme="dark"] input,
-html[data-parent-theme="dark"] textarea,
-html[data-parent-theme="dark"] select {
-  background-color: #111827 !important;
-  color: #f3f4f6 !important;
-  border-color: #4b5563 !important;
-}
-@media (max-width: 768px) {
-  body {
-    padding-left: 12px !important;
-    padding-right: 12px !important;
-  }
-  .container,
-  .quiz-container,
-  .wrapper,
-  .content,
-  .quiz-content,
-  main,
-  header,
-  .header,
-  .question,
-  .question-block,
-  .card,
-  .panel {
-    width: 100% !important;
-    max-width: 100% !important;
-    padding-left: clamp(12px, 4vw, 20px) !important;
-    padding-right: clamp(12px, 4vw, 20px) !important;
-  }
-  .controls,
-  .question-header,
-  .button-group,
-  .toggle-buttons,
-  .header-inner,
-  .topbar,
-  .topbar-right {
-    flex-wrap: wrap !important;
-  }
-}
-
-</style>
-    <script src="/javascripts/html-theme-sync.js"></script>
+<script src="/javascripts/html-theme-sync.js"></script>
 
     <meta name="description" content="20 questions · MCQ, True/False, and Written · Auto-graded">
     <link rel="canonical" href="https://shoug-tech.com/academics/software-engineering/se311/exams/chapter-8-quiz.html">
@@ -444,196 +112,17 @@ html[data-parent-theme="dark"] select {
     </script>
 
     <!-- SE311 INTERACTIVE EXAM ENHANCEMENT -->
-    <style>
-
-        :root {
-            --se311-accent: #f59e0b;
-            --se311-accent-2: #f472b6;
-            --se311-glow: color-mix(in srgb, var(--se311-accent) 22%, transparent);
-        }
-
-        html { scroll-behavior: smooth; }
-
-        body {
-            min-height: 100vh;
-            background-image:
-                radial-gradient(circle at 58% 6%, color-mix(in srgb, var(--se311-accent) 17%, transparent), transparent 34rem),
-                radial-gradient(circle at 56% 36%, color-mix(in srgb, var(--se311-accent-2) 13%, transparent), transparent 32rem),
-                linear-gradient(180deg, rgba(8, 7, 20, .035), transparent 48%);
-            background-attachment: fixed;
-        }
-
-        /* Theme-debugged header contract: never derive a background from a text variable. */
-        html[data-theme="light"] :where(body > header, .container > header, .quiz-container > header, .topbar) {
-            color: #20283c !important;
-            border-color: color-mix(in srgb, var(--se311-accent) 24%, #d9deea) !important;
-            background:
-                radial-gradient(circle at 14% 30%, color-mix(in srgb, var(--se311-accent) 15%, transparent), transparent 24rem),
-                radial-gradient(circle at 86% 55%, color-mix(in srgb, var(--se311-accent-2) 12%, transparent), transparent 22rem),
-                linear-gradient(110deg, #fdfbff, #f3f5ff 58%, #effcff) !important;
-        }
-
-        html[data-theme="dark"] :where(body > header, .container > header, .quiz-container > header, .topbar) {
-            color: #f5f7ff !important;
-            border-color: color-mix(in srgb, var(--se311-accent) 32%, #27334a) !important;
-            background:
-                radial-gradient(circle at 14% 30%, color-mix(in srgb, var(--se311-accent) 24%, transparent), transparent 25rem),
-                radial-gradient(circle at 86% 55%, color-mix(in srgb, var(--se311-accent-2) 15%, transparent), transparent 23rem),
-                linear-gradient(110deg, #121326, #101a2d 58%, #0b2632) !important;
-        }
-
-        html[data-theme="light"] :where(body > header, .container > header, .quiz-container > header, .topbar)
-            :where(p, .title, .subtitle, .header-text, .topbar-left, .mode-label) {
-            color: #38445e !important;
-        }
-
-        html[data-theme="dark"] :where(body > header, .container > header, .quiz-container > header, .topbar)
-            :where(p, .title, .subtitle, .header-text, .topbar-left, .mode-label) {
-            color: #dbe5f6 !important;
-        }
-
-        html[data-theme="light"] :where(.toggle-btn, .mode-toggle, .theme-toggle) {
-            color: #27324a !important;
-            background: rgba(255, 255, 255, .72) !important;
-            border-color: color-mix(in srgb, var(--se311-accent) 28%, #cad2e2) !important;
-        }
-
-        html[data-theme="dark"] :where(.toggle-btn, .mode-toggle, .theme-toggle) {
-            color: #f5f7ff !important;
-            background: rgba(8, 13, 28, .58) !important;
-            border-color: color-mix(in srgb, var(--se311-accent-2) 30%, #3b465c) !important;
-        }
-
-        :where(.quiz-container, .container, .quiz-content, .quiz-wrap, .hero, main) {
-            width: min(100% - clamp(24px, 5vw, 80px), 1320px) !important;
-            max-width: 1320px !important;
-            margin-inline: auto !important;
-        }
-
-        :where(.quiz-container, .quiz-content, .quiz-wrap, main) > :where(h1, header, .quiz-header):first-child,
-        :where(header, .hero, .topbar) {
-            animation: se311-hero-in .66s cubic-bezier(.2, .8, .2, 1) both;
-        }
-
-        :where(h1, .quiz-title, header h1, .hero h2, .topbar h1) {
-            background: linear-gradient(105deg, var(--se311-accent), var(--se311-accent-2));
-            background-clip: text;
-            -webkit-background-clip: text;
-            color: transparent !important;
-            text-shadow: 0 0 34px var(--se311-glow);
-        }
-
-        :where(.quiz-info, .info-box, .instructions, .exam-info) {
-            position: relative;
-            overflow: hidden;
-            border-color: color-mix(in srgb, var(--se311-accent) 48%, transparent) !important;
-            background-image: linear-gradient(120deg,
-                color-mix(in srgb, var(--se311-accent) 13%, transparent),
-                color-mix(in srgb, var(--se311-accent-2) 9%, transparent)) !important;
-            box-shadow: 0 14px 38px rgba(5, 4, 18, .16);
-        }
-
-        :where(.question, .question-block, .question-card, .q-card) {
-            position: relative;
-            overflow: hidden;
-            border-color: color-mix(in srgb, var(--se311-accent) 32%, transparent) !important;
-            background-image: linear-gradient(135deg,
-                color-mix(in srgb, var(--se311-accent) 8%, transparent),
-                transparent 42%,
-                color-mix(in srgb, var(--se311-accent-2) 6%, transparent)) !important;
-            box-shadow: 0 12px 34px rgba(5, 4, 18, .14);
-            animation: se311-card-in .54s cubic-bezier(.2, .8, .2, 1) both;
-            transition: transform .23s ease, border-color .23s ease, box-shadow .23s ease;
-        }
-
-        :where(.question, .question-block, .question-card, .q-card)::before {
-            content: '';
-            position: absolute;
-            inset: 0 auto 0 0;
-            width: 3px;
-            background: linear-gradient(180deg, var(--se311-accent), var(--se311-accent-2));
-        }
-
-        :where(.question, .question-block, .question-card, .q-card):hover {
-            transform: translateY(-3px);
-            border-color: var(--se311-accent) !important;
-            box-shadow: 0 18px 46px rgba(5, 4, 18, .21), 0 0 28px var(--se311-glow);
-        }
-
-        :where(.option, .answer-option, label.option, .true-false-option, .opt, .tf-btn) {
-            transition: transform .18s ease, border-color .18s ease, background .18s ease, box-shadow .18s ease !important;
-        }
-
-        :where(.option, .answer-option, label.option, .true-false-option, .opt, .tf-btn):hover {
-            transform: translateX(5px);
-            border-color: var(--se311-accent) !important;
-            background-image: linear-gradient(90deg,
-                color-mix(in srgb, var(--se311-accent) 14%, transparent),
-                color-mix(in srgb, var(--se311-accent-2) 8%, transparent)) !important;
-            box-shadow: 0 8px 24px var(--se311-glow);
-        }
-
-        :where(input[type="radio"], input[type="checkbox"]) { accent-color: var(--se311-accent); }
-
-        :where(.toggle-answer-btn, .submit-btn, .submit-all-btn, .check-btn, .restart-btn,
-            .retry-btn, .nav-btn, button[type="submit"]) {
-            border: 0 !important;
-            color: #fff !important;
-            background: linear-gradient(105deg, var(--se311-accent), var(--se311-accent-2)) !important;
-            box-shadow: 0 10px 28px var(--se311-glow);
-            transition: transform .2s ease, box-shadow .2s ease, filter .2s ease !important;
-        }
-
-        :where(.toggle-answer-btn, .submit-btn, .submit-all-btn, .check-btn, .restart-btn,
-            .retry-btn, .nav-btn, button[type="submit"]):hover {
-            transform: translateY(-2px) scale(1.015);
-            box-shadow: 0 15px 38px var(--se311-glow);
-            filter: saturate(1.15) brightness(1.05);
-        }
-
-        :where(.answer, .answer-key, .feedback, .explanation, .mock-answer, .model-answer,
-            .result-panel, .results-panel) {
-            border-color: color-mix(in srgb, var(--se311-accent-2) 55%, transparent) !important;
-            background-image: linear-gradient(110deg,
-                color-mix(in srgb, var(--se311-accent-2) 11%, transparent), transparent) !important;
-        }
-
-        @keyframes se311-hero-in {
-            from { opacity: 0; transform: translateY(-12px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes se311-card-in {
-            from { opacity: 0; transform: translateY(16px) scale(.992); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
-        }
-
-        @media (max-width: 768px) {
-            :where(.quiz-container, .container, .quiz-content, .quiz-wrap, .hero, main) {
-                width: min(100% - 20px, 1320px) !important;
-            }
-            :where(.question, .question-block, .question-card, .q-card):hover,
-            :where(.option, .answer-option, label.option, .true-false-option, .opt, .tf-btn):hover {
-                transform: none;
-            }
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-            :where(.quiz-container, .quiz-content, .quiz-wrap, main, .question, .question-block, .question-card, .q-card) {
-                animation: none !important;
-            }
-            :where(.question, .question-block, .question-card, .q-card, .option, .answer-option,
-                .opt, .tf-btn, .toggle-answer-btn, .submit-btn, .submit-all-btn, .check-btn,
-                .restart-btn, .retry-btn, .nav-btn):hover { transform: none !important; }
-        }
-
-
-    </style>
-    <link rel="stylesheet" href="/styles/a11y.css">
+<link rel="stylesheet" href="/styles/a11y.css">
+    <script src="/javascripts/se311.js" defer></script>
 </head>
 <body>
 
 
+    <button class="sg-theme-toggle" type="button" onclick="toggleTheme()" aria-label="Toggle dark and light mode">
+        <svg class="sg-icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.2 14.6A8.4 8.4 0 0 1 9.4 3.8a8.4 8.4 0 1 0 10.8 10.8Z"/></svg>
+        <svg class="sg-icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4.1"/><path d="M12 2.4v2.3M12 19.3v2.3M2.4 12h2.3M19.3 12h2.3M5.2 5.2l1.6 1.6M17.2 17.2l1.6 1.6M18.8 5.2l-1.6 1.6M6.8 17.2l-1.6 1.6"/></svg>
+        <span data-theme-label>Dark</span>
+    </button>
 <header>
   <div class="header-inner">
     <div class="header-text">
@@ -641,9 +130,6 @@ html[data-parent-theme="dark"] select {
       <h1>Requirements Specification Quiz</h1>
       <p>20 questions · MCQ, True/False, and Written · Auto-graded</p>
     </div>
-    <button class="toggle-btn" onclick="toggleDark()" id="darkBtn">
-      <span id="darkIcon">🌙</span><span id="darkLabel">Dark</span>
-    </button>
   </div>
 </header>
 
@@ -1132,80 +618,7 @@ function restartQuiz() {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-const root = document.documentElement;
-const systemTheme = window.matchMedia('(prefers-color-scheme: dark)');
-
-function setTheme(theme) {
-  const next = theme === 'dark' ? 'dark' : 'light';
-  root.setAttribute('data-theme', next);
-  document.getElementById('darkLabel').textContent = next === 'dark' ? 'Light' : 'Dark';
-  document.getElementById('darkIcon').textContent = next === 'dark' ? '☀️' : '🌙';
-}
-
-function toggleDark() {
-  setTheme(root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
-}
-
-function syncParentTheme() {
-  const parentTheme = root.getAttribute('data-parent-theme');
-  if (parentTheme === 'dark' || parentTheme === 'light') {
-    setTheme(parentTheme);
-    return true;
-  }
-  return false;
-}
-
-if (!syncParentTheme()) {
-  setTheme(systemTheme.matches ? 'dark' : 'light');
-}
-
-systemTheme.addEventListener('change', event => {
-  if (!root.getAttribute('data-parent-theme')) {
-    setTheme(event.matches ? 'dark' : 'light');
-  }
-});
-
-new MutationObserver(syncParentTheme).observe(root, {
-  attributes: true,
-  attributeFilter: ['data-parent-theme']
-});
-
 buildQuiz();
-</script>
-
-<script id="se311-theme-bridge">
-(() => {
-  const root = document.documentElement;
-  const systemTheme = window.matchMedia('(prefers-color-scheme: dark)');
-
-  function setTheme(theme) {
-    root.setAttribute('data-theme', theme === 'dark' ? 'dark' : 'light');
-  }
-
-  function syncParentTheme() {
-    const parentTheme = root.getAttribute('data-parent-theme');
-    if (parentTheme === 'dark' || parentTheme === 'light') {
-      setTheme(parentTheme);
-      return true;
-    }
-    return false;
-  }
-
-  if (!syncParentTheme()) {
-    setTheme(systemTheme.matches ? 'dark' : 'light');
-  }
-
-  systemTheme.addEventListener('change', (event) => {
-    if (!root.getAttribute('data-parent-theme')) {
-      setTheme(event.matches ? 'dark' : 'light');
-    }
-  });
-
-  new MutationObserver(syncParentTheme).observe(root, {
-    attributes: true,
-    attributeFilter: ['data-parent-theme']
-  });
-})();
 </script>
 
 

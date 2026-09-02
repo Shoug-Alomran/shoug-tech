@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="en" dir="ltr" data-sg-styled>
 <head>
     <link rel="icon" type="image/png" sizes="256x256" href="/assets/shoug-favicon-v4.png">
     <link rel="shortcut icon" type="image/png" href="/assets/shoug-favicon-v4.png">
@@ -8,392 +8,83 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>SE311 Chapter 4: Problem Analysis</title>
 
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    <link rel="stylesheet" href="/styles/se311.css">
+    <script>
+        /* Theme resolution, in priority order:
+             1. the stored site preference (what the toggle writes);
+             2. the embedding page -- these pages are iframed by their wrapper,
+                and the wrapper only marks itself when it is in LIGHT mode, so an
+                unmarked same-origin parent means the site's dark chrome;
+             3. the OS preference, for the standalone URL.
+           It runs before first paint, and re-asserts afterwards because the
+           shared theme scripts fall back to the OS setting and would otherwise
+           leave a light page sitting inside a dark one. */
+        (function () {
+            var root = document.documentElement;
 
-    /* ===== Base theme (your original look) ===== */
-    body{
-      font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
-      line-height:1.6;
-      color:#333;
-      background:linear-gradient(135deg,#f093fb 0%,#f5576c 100%);
-      padding:20px;
-      transition: background-color .3s ease, color .3s ease;
-    }
+            function parentTheme() {
+                try {
+                    if (!window.parent || window.parent === window) return null;
+                    var pdoc = window.parent.document;
+                    if (!pdoc) return null;
+                    var body = pdoc.body;
+                    if (body && body.classList.contains("shoug-light-mode")) return "light";
+                    var attr = (body && body.getAttribute("data-theme")) ||
+                        pdoc.documentElement.getAttribute("data-theme");
+                    if (attr === "dark" || attr === "light") return attr;
+                    var scheme = (body && body.getAttribute("data-md-color-scheme")) ||
+                        pdoc.documentElement.getAttribute("data-md-color-scheme");
+                    if (scheme) return scheme === "slate" ? "dark" : "light";
+                    return "dark";
+                } catch (e) {
+                    return null;    // cross-origin: fall through to the OS setting
+                }
+            }
 
-    .container{
-      max-width:1200px;
-      margin:0 auto;
-      background:white;
-      border-radius:15px;
-      box-shadow:0 20px 60px rgba(0,0,0,0.3);
-      overflow:hidden;
-    }
+            function stored() {
+                try {
+                    var saved = localStorage.getItem("shoug-theme") || localStorage.getItem("theme");
+                    if (saved === "dark" || saved === "light") return saved;
+                } catch (e) { }
+                return null;
+            }
 
-    header{
-      background:linear-gradient(135deg,#f093fb 0%,#f5576c 100%);
-      color:white;
-      padding:40px;
-      text-align:center;
-    }
+            function resolve() {
+                var saved = stored();
+                if (saved) return saved;
+                var inherited = parentTheme();
+                if (inherited) {
+                    /* Record what the embedding page is showing: the shared theme
+                       scripts read this key, and without it their first toggle
+                       just re-applies the theme already on screen. */
+                    try {
+                        localStorage.setItem("shoug-theme", inherited);
+                        localStorage.setItem("theme", inherited);
+                    } catch (e) { }
+                    return inherited;
+                }
+                return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches
+                    ? "dark" : "light";
+            }
 
-    header h1{ font-size:2.5em; margin-bottom:10px; }
-    header p{ font-size:1.2em; opacity:.9; }
+            function apply() {
+                var theme = resolve();
+                if (root.getAttribute("data-theme") !== theme) root.setAttribute("data-theme", theme);
+                if (root.style.colorScheme !== theme) root.style.colorScheme = theme;
+            }
 
-    .controls{
-      display:flex;
-      justify-content:center;
-      gap:12px;
-      padding:16px 24px;
-      background:rgba(255,255,255,0.6);
-      backdrop-filter: blur(8px);
-      border-bottom:1px solid rgba(0,0,0,0.08);
-    }
-
-    .toggle-btn{
-      background:#ffffff;
-      border:2px solid rgba(0,0,0,0.12);
-      padding:10px 16px;
-      border-radius:10px;
-      cursor:pointer;
-      font-size:15px;
-      color:#222;
-      transition: all .2s ease;
-      display:flex;
-      align-items:center;
-      gap:8px;
-    }
-    .toggle-btn:hover{
-      transform:translateY(-1px);
-      border-color:#f093fb;
-    }
-    .toggle-btn.active{
-      background:#f093fb;
-      color:#fff;
-      border-color:#f093fb;
-    }
-
-    .content{ padding:40px; }
-
-    .section{
-      margin-bottom:40px;
-      padding:30px;
-      background:#f8f9fa;
-      border-radius:10px;
-      border-left:5px solid #f093fb;
-    }
-
-    h2{
-      color:#f093fb;
-      font-size:2em;
-      margin-bottom:20px;
-      padding-bottom:10px;
-      border-bottom:3px solid #f093fb;
-    }
-
-    h3{
-      color:#f5576c;
-      font-size:1.5em;
-      margin-top:25px;
-      margin-bottom:15px;
-    }
-
-    h4{
-      color:#555;
-      font-size:1.2em;
-      margin-top:20px;
-      margin-bottom:10px;
-    }
-
-    .highlight-box{
-      background:linear-gradient(135deg,#f093fb15 0%,#f5576c15 100%);
-      border-left:4px solid #f093fb;
-      padding:20px;
-      margin:20px 0;
-      border-radius:5px;
-    }
-
-    .tip-box{
-      background:#e8f5e9;
-      border-left:4px solid #4caf50;
-      padding:20px;
-      margin:20px 0;
-      border-radius:5px;
-    }
-
-    .tip-box h4{ color:#2e7d32; margin-top:0; }
-
-    .exam-question{
-      background:#fff3e0;
-      border-left:4px solid #ff9800;
-      padding:20px;
-      margin:20px 0;
-      border-radius:5px;
-    }
-    .exam-question h4{ color:#e65100; margin-top:0; }
-
-    .past-exam{
-      background:#fce4ec;
-      border-left:4px solid #e91e63;
-      padding:20px;
-      margin:20px 0;
-      border-radius:5px;
-    }
-    .past-exam h4{ color:#c2185b; margin-top:0; }
-
-    ul,ol{ margin-left:30px; margin-top:10px; margin-bottom:10px; }
-    li{ margin-bottom:8px; }
-
-    .process-flow{
-      display:flex;
-      justify-content:space-between;
-      flex-wrap:wrap;
-      margin:20px 0;
-    }
-
-    .process-step{
-      flex:1;
-      min-width:180px;
-      background:white;
-      padding:20px;
-      margin:10px;
-      border-radius:8px;
-      box-shadow:0 2px 10px rgba(0,0,0,0.1);
-      text-align:center;
-      position:relative;
-    }
-
-    .process-step::after{
-      content:'→';
-      position:absolute;
-      right:-20px;
-      top:50%;
-      transform:translateY(-50%);
-      font-size:2em;
-      color:#f093fb;
-    }
-    .process-step:last-child::after{ content:''; }
-
-    .template-box{
-      background:#e3f2fd;
-      border:2px solid #2196f3;
-      padding:20px;
-      margin:20px 0;
-      border-radius:5px;
-    }
-    .template-box h4{ color:#1565c0; margin-top:0; }
-
-    .comparison-table{
-      width:100%;
-      border-collapse:collapse;
-      margin:20px 0;
-      box-shadow:0 2px 10px rgba(0,0,0,0.1);
-      background:#fff;
-    }
-
-    .comparison-table th{
-      background:#f093fb;
-      color:white;
-      padding:15px;
-      text-align:left;
-    }
-
-    .comparison-table td{
-      padding:15px;
-      border-bottom:1px solid #ddd;
-      vertical-align:top;
-    }
-
-    .comparison-table tr:nth-child(even){ background:#f8f9fa; }
-
-    .memory-trick{
-      background:#e1f5fe;
-      border-left:4px solid #0288d1;
-      padding:20px;
-      margin:20px 0;
-      border-radius:5px;
-    }
-    .memory-trick h4{ color:#01579b; margin-top:0; }
-
-    .warning-box{
-      background:#fff3cd;
-      border-left:4px solid #ffc107;
-      padding:20px;
-      margin:20px 0;
-      border-radius:5px;
-    }
-    .warning-box h4{ color:#856404; margin-top:0; }
-
-    strong{ color:#f093fb; }
-
-    code{
-      background:#f5f5f5;
-      padding:2px 6px;
-      border-radius:3px;
-      font-family:'Courier New',monospace;
-    }
-
-    .numbered-step{
-      background:white;
-      padding:15px;
-      margin:15px 0;
-      border-left:4px solid #f5576c;
-      border-radius:5px;
-    }
-
-    .numbered-step h4{ color:#f5576c; margin-top:0; }
-
-    /* ===== Language blocks (simple + safe) ===== */
-    .lang-block{ display:none; }
-    .lang-block.active{ display:block; }
-
-    /* ===== RTL tweaks ===== */
-    html[dir="rtl"] body{ text-align:right; }
-    html[dir="rtl"] ul, html[dir="rtl"] ol{ margin-left:0; margin-right:30px; }
-    html[dir="rtl"] .comparison-table th, html[dir="rtl"] .comparison-table td{ text-align:right; }
-    html[dir="rtl"] .section{ border-left:none; border-right:5px solid #f093fb; }
-    html[dir="rtl"] .highlight-box,
-    html[dir="rtl"] .tip-box,
-    html[dir="rtl"] .exam-question,
-    html[dir="rtl"] .past-exam,
-    html[dir="rtl"] .warning-box,
-    html[dir="rtl"] .memory-trick,
-    html[dir="rtl"] .template-box,
-    html[dir="rtl"] .numbered-step{
-      border-left:none;
-      border-right-width:4px;
-      border-right-style:solid;
-    }
-    html[dir="rtl"] .highlight-box{ border-right-color:#f093fb; }
-    html[dir="rtl"] .tip-box{ border-right-color:#4caf50; }
-    html[dir="rtl"] .exam-question{ border-right-color:#ff9800; }
-    html[dir="rtl"] .past-exam{ border-right-color:#e91e63; }
-    html[dir="rtl"] .warning-box{ border-right-color:#ffc107; }
-    html[dir="rtl"] .memory-trick{ border-right-color:#0288d1; }
-    html[dir="rtl"] .template-box{ border-right:2px solid #2196f3; }
-
-    html[dir="rtl"] .process-step::after{
-      content:'←';
-      right:auto;
-      left:-20px;
-    }
-
-    /* ===== AUTO DARK MODE (no toggle button) ===== */
-    @media (prefers-color-scheme: dark){
-      body{
-        color:#e9ecef;
-        background:linear-gradient(135deg,#1f1f1f 0%,#2b2b2b 100%);
-      }
-
-      .container{ background:#1e1e1e; }
-      .controls{ background:rgba(0,0,0,0.25); border-bottom:1px solid rgba(255,255,255,0.12); }
-
-      .toggle-btn{
-        background:#222;
-        color:#e9ecef;
-        border-color:rgba(255,255,255,0.18);
-      }
-      .toggle-btn:hover{ border-color:#f093fb; }
-      .toggle-btn.active{ background:#f093fb; color:#101010; }
-
-      .section{ background:#2a2a2a; }
-
-      h2{ border-bottom-color:#f093fb; }
-      h2,h3,h4,p,li,td,th{ color:#e9ecef; }
-
-      .highlight-box,
-      .tip-box,
-      .exam-question,
-      .past-exam,
-      .warning-box,
-      .memory-trick,
-      .template-box,
-      .numbered-step{
-        background:#2f2f2f !important;
-      }
-
-      .comparison-table{ background:#262626; }
-      .comparison-table tr:nth-child(even){ background:#2b2b2b; }
-      .comparison-table td{ border-bottom:1px solid rgba(255,255,255,0.12); }
-
-      code{ background:#333; color:#e9ecef; }
-    }
-  </style>
-  <script src="/javascripts/standalone-theme.js"></script>
-<style id="codex-responsive-html">
-  html { width: 100%; }
-  body {
-    width: 100%;
-    max-width: 100%;
-    overflow-x: hidden;
-  }
-  img, svg, video, canvas, iframe {
-    max-width: 100% !important;
-    height: auto;
-  }
-  table {
-    max-width: 100% !important;
-  }
-  .table-wrap, .table-scroll, .overflow-x, .comparison-table, .acm-table, .matrix-wrap {
-    max-width: 100% !important;
-    overflow-x: auto !important;
-    -webkit-overflow-scrolling: touch;
-  }
-  header,
-  main,
-  .header-inner,
-  .hero,
-  .hero-inner,
-  .content,
-  .container,
-  .wrap,
-  .page,
-  .page-shell,
-  .page-wrap,
-  .layout,
-  .content-wrap,
-  .exam-container,
-  .quiz-container,
-  .cheat-sheet,
-  .toc,
-  .section,
-  .section-body,
-  .card,
-  .panel {
-    width: min(100%, calc(100vw - 24px)) !important;
-    max-width: min(1600px, calc(100vw - 24px)) !important;
-  }
-  @media (max-width: 768px) {
-    header,
-    main,
-    .header-inner,
-    .hero,
-    .hero-inner,
-    .content,
-    .container,
-    .wrap,
-    .page,
-    .page-shell,
-    .page-wrap,
-    .layout,
-    .content-wrap,
-    .exam-container,
-    .quiz-container,
-    .cheat-sheet,
-    .toc,
-    .section,
-    .section-body,
-    .card,
-    .panel {
-      width: min(100%, calc(100vw - 16px)) !important;
-      max-width: min(100%, calc(100vw - 16px)) !important;
-    }
-    body {
-      overflow-x: hidden;
-    }
-  }
-</style>
-    <script src="/javascripts/html-theme-sync.js"></script>
+            apply();
+            if (window.MutationObserver) {
+                new MutationObserver(apply).observe(root, {
+                    attributes: true, attributeFilter: ["data-theme"]
+                });
+            }
+            document.addEventListener("DOMContentLoaded", apply);
+            window.addEventListener("load", apply);
+        })();
+    </script>
+<script src="/javascripts/standalone-theme.js"></script>
+<script src="/javascripts/html-theme-sync.js"></script>
 
     <meta name="description" content="SE 311 - Chapter 4 Complete Study Guide">
     <link rel="canonical" href="https://shoug-tech.com/academics/software-engineering/se311/slide-breakdowns/04-chapter-4-requirements-elicitation/">
@@ -421,11 +112,17 @@
         })(window, document, "clarity", "script", "xub0eqmvs9");
     </script>
     <link rel="stylesheet" href="/styles/a11y.css">
+    <script src="/javascripts/se311.js" defer></script>
 </head>
 
 <body>
 
-  <div class="container">
+      <button class="sg-theme-toggle" type="button" onclick="toggleTheme()" aria-label="Toggle dark and light mode">
+        <svg class="sg-icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.2 14.6A8.4 8.4 0 0 1 9.4 3.8a8.4 8.4 0 1 0 10.8 10.8Z"/></svg>
+        <svg class="sg-icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4.1"/><path d="M12 2.4v2.3M12 19.3v2.3M2.4 12h2.3M19.3 12h2.3M5.2 5.2l1.6 1.6M17.2 17.2l1.6 1.6M18.8 5.2l-1.6 1.6M6.8 17.2l-1.6 1.6"/></svg>
+        <span data-theme-label>Dark</span>
+    </button>
+<div class="container">
     <header>
       <h1>🔍 Problem Analysis</h1>
       <p>SE 311 - Chapter 4 Complete Study Guide</p>

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-sg-styled>
 <head>
     <link rel="icon" type="image/png" sizes="256x256" href="/assets/shoug-favicon-v4.png">
     <link rel="shortcut icon" type="image/png" href="/assets/shoug-favicon-v4.png">
@@ -7,322 +7,83 @@
 <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chapter 2: Requirements Inception - SE311 Study Guide</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+    <link rel="stylesheet" href="/styles/se311.css">
+    <script>
+        /* Theme resolution, in priority order:
+             1. the stored site preference (what the toggle writes);
+             2. the embedding page -- these pages are iframed by their wrapper,
+                and the wrapper only marks itself when it is in LIGHT mode, so an
+                unmarked same-origin parent means the site's dark chrome;
+             3. the OS preference, for the standalone URL.
+           It runs before first paint, and re-asserts afterwards because the
+           shared theme scripts fall back to the OS setting and would otherwise
+           leave a light page sitting inside a dark one. */
+        (function () {
+            var root = document.documentElement;
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f0f2f5;
-            color: #2c3e50;
-            line-height: 1.8;
-            padding: 20px;
-        }
+            function parentTheme() {
+                try {
+                    if (!window.parent || window.parent === window) return null;
+                    var pdoc = window.parent.document;
+                    if (!pdoc) return null;
+                    var body = pdoc.body;
+                    if (body && body.classList.contains("shoug-light-mode")) return "light";
+                    var attr = (body && body.getAttribute("data-theme")) ||
+                        pdoc.documentElement.getAttribute("data-theme");
+                    if (attr === "dark" || attr === "light") return attr;
+                    var scheme = (body && body.getAttribute("data-md-color-scheme")) ||
+                        pdoc.documentElement.getAttribute("data-md-color-scheme");
+                    if (scheme) return scheme === "slate" ? "dark" : "light";
+                    return "dark";
+                } catch (e) {
+                    return null;    // cross-origin: fall through to the OS setting
+                }
+            }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-        }
+            function stored() {
+                try {
+                    var saved = localStorage.getItem("shoug-theme") || localStorage.getItem("theme");
+                    if (saved === "dark" || saved === "light") return saved;
+                } catch (e) { }
+                return null;
+            }
 
-        header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 40px;
-            text-align: center;
-        }
+            function resolve() {
+                var saved = stored();
+                if (saved) return saved;
+                var inherited = parentTheme();
+                if (inherited) {
+                    /* Record what the embedding page is showing: the shared theme
+                       scripts read this key, and without it their first toggle
+                       just re-applies the theme already on screen. */
+                    try {
+                        localStorage.setItem("shoug-theme", inherited);
+                        localStorage.setItem("theme", inherited);
+                    } catch (e) { }
+                    return inherited;
+                }
+                return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches
+                    ? "dark" : "light";
+            }
 
-        header h1 {
-            font-size: 3em;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-        }
+            function apply() {
+                var theme = resolve();
+                if (root.getAttribute("data-theme") !== theme) root.setAttribute("data-theme", theme);
+                if (root.style.colorScheme !== theme) root.style.colorScheme = theme;
+            }
 
-        header p {
-            font-size: 1.2em;
-            opacity: 0.95;
-        }
-
-        .content {
-            padding: 40px;
-        }
-
-        .section {
-            margin-bottom: 40px;
-            padding: 30px;
-            background: #fff9f0;
-            border-radius: 15px;
-            border-left: 5px solid #ff6b6b;
-        }
-
-        .section:nth-child(even) {
-            background: #f0f9ff;
-            border-left-color: #4dabf7;
-        }
-
-        .section:nth-child(3n) {
-            background: #f4fce3;
-            border-left-color: #82c91e;
-        }
-
-        h2 {
-            color: #2d3436;
-            font-size: 2em;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 3px solid rgba(0, 0, 0, 0.1);
-        }
-
-        h3 {
-            color: #636e72;
-            font-size: 1.5em;
-            margin: 25px 0 15px;
-        }
-
-        h4 {
-            color: #2d3436;
-            font-size: 1.2em;
-            margin: 20px 0 10px;
-        }
-
-        .definition {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            margin: 15px 0;
-            border-left: 4px solid #20c997;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-        }
-
-        .key-point {
-            background: #4dabf7;
-            color: white;
-            padding: 20px;
-            border-radius: 10px;
-            margin: 15px 0;
-            font-weight: 500;
-            box-shadow: 0 2px 8px rgba(77, 171, 247, 0.3);
-        }
-
-        .example {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            margin: 15px 0;
-            border: 2px solid #845ef7;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-        }
-
-        .example h4 {
-            color: #845ef7;
-            margin-top: 0;
-        }
-
-        .tip {
-            background: #20c997;
-            color: white;
-            padding: 15px 20px;
-            border-radius: 10px;
-            margin: 15px 0;
-            display: flex;
-            align-items: center;
-            box-shadow: 0 2px 8px rgba(32, 201, 151, 0.3);
-        }
-
-        .tip::before {
-            content: "💡";
-            font-size: 1.5em;
-            margin-right: 15px;
-        }
-
-        .warning {
-            background: #ff6b6b;
-            color: white;
-            padding: 15px 20px;
-            border-radius: 10px;
-            margin: 15px 0;
-            display: flex;
-            align-items: center;
-            box-shadow: 0 2px 8px rgba(255, 107, 107, 0.3);
-        }
-
-        .warning::before {
-            content: "⚠️";
-            font-size: 1.5em;
-            margin-right: 15px;
-        }
-
-        ul, ol {
-            margin: 15px 0 15px 30px;
-        }
-
-        li {
-            margin: 10px 0;
-        }
-
-        .exam-question {
-            background: white;
-            padding: 25px;
-            border-radius: 10px;
-            margin: 20px 0;
-            border: 3px solid #ff8787;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-        }
-
-        .exam-question h4 {
-            color: #ff6b6b;
-            margin-top: 0;
-        }
-
-        .comparison-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-            background: white;
-            border-radius: 10px;
-            overflow: hidden;
-        }
-
-        .comparison-table th {
-            background: #5f3dc4;
-            color: white;
-            padding: 15px;
-            text-align: left;
-        }
-
-        .comparison-table td {
-            padding: 15px;
-            border-bottom: 1px solid #dfe6e9;
-        }
-
-        .comparison-table tr:nth-child(even) {
-            background: #f8f9fa;
-        }
-
-        footer {
-            background: #343a40;
-            color: white;
-            padding: 30px;
-            text-align: center;
-        }
-
-        .quote {
-            font-style: italic;
-            background: white;
-            padding: 20px;
-            border-left: 5px solid #ffd43b;
-            margin: 20px 0;
-            border-radius: 5px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-        }
-
-        .quote::before {
-            content: '"';
-            font-size: 3em;
-            color: #ffd43b;
-            opacity: 0.5;
-        }
-
-        .highlight {
-            background: #fff3bf;
-            padding: 3px 8px;
-            border-radius: 4px;
-            font-weight: 600;
-            color: #495057;
-        }
-
-        .formula {
-            background: #2d3436;
-            color: #00b894;
-            padding: 15px;
-            border-radius: 8px;
-            font-family: 'Courier New', monospace;
-            margin: 15px 0;
-            text-align: center;
-            font-size: 1.1em;
-        }
-    </style>
-  <script src="/javascripts/standalone-theme.js"></script>
-<style id="codex-responsive-html">
-  html { width: 100%; }
-  body {
-    width: 100%;
-    max-width: 100%;
-    overflow-x: hidden;
-  }
-  img, svg, video, canvas, iframe {
-    max-width: 100% !important;
-    height: auto;
-  }
-  table {
-    max-width: 100% !important;
-  }
-  .table-wrap, .table-scroll, .overflow-x, .comparison-table, .acm-table, .matrix-wrap {
-    max-width: 100% !important;
-    overflow-x: auto !important;
-    -webkit-overflow-scrolling: touch;
-  }
-  header,
-  main,
-  .header-inner,
-  .hero,
-  .hero-inner,
-  .content,
-  .container,
-  .wrap,
-  .page,
-  .page-shell,
-  .page-wrap,
-  .layout,
-  .content-wrap,
-  .exam-container,
-  .quiz-container,
-  .cheat-sheet,
-  .toc,
-  .section,
-  .section-body,
-  .card,
-  .panel {
-    width: min(100%, calc(100vw - 24px)) !important;
-    max-width: min(1600px, calc(100vw - 24px)) !important;
-  }
-  @media (max-width: 768px) {
-    header,
-    main,
-    .header-inner,
-    .hero,
-    .hero-inner,
-    .content,
-    .container,
-    .wrap,
-    .page,
-    .page-shell,
-    .page-wrap,
-    .layout,
-    .content-wrap,
-    .exam-container,
-    .quiz-container,
-    .cheat-sheet,
-    .toc,
-    .section,
-    .section-body,
-    .card,
-    .panel {
-      width: min(100%, calc(100vw - 16px)) !important;
-      max-width: min(100%, calc(100vw - 16px)) !important;
-    }
-    body {
-      overflow-x: hidden;
-    }
-  }
-</style>
-    <script src="/javascripts/html-theme-sync.js"></script>
+            apply();
+            if (window.MutationObserver) {
+                new MutationObserver(apply).observe(root, {
+                    attributes: true, attributeFilter: ["data-theme"]
+                });
+            }
+            document.addEventListener("DOMContentLoaded", apply);
+            window.addEventListener("load", apply);
+        })();
+    </script>
+<script src="/javascripts/standalone-theme.js"></script>
+<script src="/javascripts/html-theme-sync.js"></script>
 
     <meta name="description" content="SE311 - Software Requirements Engineering">
     <link rel="canonical" href="https://shoug-tech.com/academics/software-engineering/se311/slide-breakdowns/02-chapter-2-documentation-standards/">
@@ -350,10 +111,16 @@
         })(window, document, "clarity", "script", "xub0eqmvs9");
     </script>
     <link rel="stylesheet" href="/styles/a11y.css">
+    <script src="/javascripts/se311.js" defer></script>
 </head>
 <body>
 
-    <div class="container">
+        <button class="sg-theme-toggle" type="button" onclick="toggleTheme()" aria-label="Toggle dark and light mode">
+        <svg class="sg-icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.2 14.6A8.4 8.4 0 0 1 9.4 3.8a8.4 8.4 0 1 0 10.8 10.8Z"/></svg>
+        <svg class="sg-icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4.1"/><path d="M12 2.4v2.3M12 19.3v2.3M2.4 12h2.3M19.3 12h2.3M5.2 5.2l1.6 1.6M17.2 17.2l1.6 1.6M18.8 5.2l-1.6 1.6M6.8 17.2l-1.6 1.6"/></svg>
+        <span data-theme-label>Dark</span>
+    </button>
+<div class="container">
         <header>
             <h1>📋 Chapter 2: Requirements Inception</h1>
             <p>SE311 - Software Requirements Engineering</p>

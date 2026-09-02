@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-sg-styled>
 
 <head>
     <link rel="icon" type="image/png" sizes="256x256" href="/assets/shoug-favicon-v4.png">
@@ -8,517 +8,82 @@
 <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SE311  -  Software Requirements Engineering</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap');
+    <link rel="stylesheet" href="/styles/se311.css">
+    <script>
+        /* Theme resolution, in priority order:
+             1. the stored site preference (what the toggle writes);
+             2. the embedding page -- these pages are iframed by their wrapper,
+                and the wrapper only marks itself when it is in LIGHT mode, so an
+                unmarked same-origin parent means the site's dark chrome;
+             3. the OS preference, for the standalone URL.
+           It runs before first paint, and re-asserts afterwards because the
+           shared theme scripts fall back to the OS setting and would otherwise
+           leave a light page sitting inside a dark one. */
+        (function () {
+            var root = document.documentElement;
 
-        :root {
-            --bg: #0f0f13;
-            --surface: #1a1a24;
-            --surface2: #22222e;
-            --border: #2e2e3e;
-            --accent: #7c6af7;
-            --accent2: #4ecdc4;
-            --accent3: #ff6b6b;
-            --accent4: #ffd166;
-            --text: #e8e8f0;
-            --text-dim: #8888aa;
-            --leaf-bg: #1e1e2e;
-            --leaf-border: #3a3a52;
-            --popup-bg: #1c1c28;
-            --connector: #3a3a55;
-            --node-hover: #2a2a3e;
-        }
-
-        [data-theme="light"] {
-            --bg: #f4f4f8;
-            --surface: #ffffff;
-            --surface2: #eeeef5;
-            --border: #d0d0e0;
-            --accent: #5b4de0;
-            --accent2: #2ab4aa;
-            --accent3: #e05050;
-            --accent4: #d4a017;
-            --text: #1a1a2e;
-            --text-dim: #555577;
-            --leaf-bg: #ffffff;
-            --leaf-border: #c0c0d8;
-            --popup-bg: #ffffff;
-            --connector: #b0b0cc;
-            --node-hover: #e8e8f8;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'DM Mono', monospace;
-            background: var(--bg);
-            color: var(--text);
-            min-height: 100vh;
-            transition: background 0.3s, color 0.3s;
-        }
-
-        header {
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            background: var(--surface);
-            border-bottom: 1px solid var(--border);
-            padding: 14px 28px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            backdrop-filter: blur(10px);
-        }
-
-        header h1 {
-            font-family: 'Syne', sans-serif;
-            font-size: 1.1rem;
-            font-weight: 800;
-            letter-spacing: -0.02em;
-            background: linear-gradient(90deg, var(--accent), var(--accent2));
-            background-clip: text;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        header small {
-            display: block;
-            font-size: 0.65rem;
-            color: var(--text-dim);
-            margin-top: 2px;
-        }
-
-        .controls {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-
-        .btn-theme {
-            background: var(--surface2);
-            border: 1px solid var(--border);
-            color: var(--text);
-            padding: 6px 14px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-family: 'DM Mono', monospace;
-            font-size: 0.75rem;
-            transition: all 0.2s;
-        }
-
-        .btn-theme:hover {
-            border-color: var(--accent);
-            color: var(--accent);
-        }
-
-        .search-wrap {
-            position: relative;
-        }
-
-        .search-wrap input {
-            background: var(--surface2);
-            border: 1px solid var(--border);
-            color: var(--text);
-            padding: 6px 12px 6px 30px;
-            border-radius: 20px;
-            font-family: 'DM Mono', monospace;
-            font-size: 0.75rem;
-            width: 180px;
-            transition: all 0.2s;
-            outline: none;
-        }
-
-        .search-wrap input:focus {
-            border-color: var(--accent);
-            width: 220px;
-        }
-
-        .search-wrap .icon {
-            position: absolute;
-            left: 9px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 0.7rem;
-            color: var(--text-dim);
-            pointer-events: none;
-        }
-
-        .tree-container {
-            padding: 32px 24px 80px;
-            max-width: 1100px;
-            margin: 0 auto;
-        }
-
-        /* Chapter group */
-        .chapter {
-            margin-bottom: 12px;
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            overflow: hidden;
-            transition: border-color 0.2s;
-        }
-
-        .chapter:hover {
-            border-color: var(--accent);
-        }
-
-        .chapter-header {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 14px 20px;
-            background: var(--surface);
-            cursor: pointer;
-            user-select: none;
-            transition: background 0.2s;
-        }
-
-        .chapter-header:hover {
-            background: var(--node-hover);
-        }
-
-        .ch-icon {
-            width: 32px;
-            height: 32px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.8rem;
-            font-weight: 700;
-            font-family: 'Syne', sans-serif;
-            flex-shrink: 0;
-        }
-
-        .chapter-title {
-            font-family: 'Syne', sans-serif;
-            font-size: 0.95rem;
-            font-weight: 700;
-            flex: 1;
-        }
-
-        .chapter-subtitle {
-            font-size: 0.68rem;
-            color: var(--text-dim);
-            margin-top: 2px;
-        }
-
-        .chevron {
-            color: var(--text-dim);
-            font-size: 0.75rem;
-            transition: transform 0.3s;
-        }
-
-        .chapter.open .chevron {
-            transform: rotate(90deg);
-        }
-
-        .chapter-body {
-            display: none;
-            padding: 6px 16px 16px 16px;
-            background: var(--surface);
-            border-top: 1px solid var(--border);
-        }
-
-        .chapter.open .chapter-body {
-            display: block;
-        }
-
-        /* Topic nodes inside a chapter */
-        .topic {
-            margin: 8px 0;
-            margin-left: 20px;
-            border-left: 2px solid var(--connector);
-            padding-left: 16px;
-            position: relative;
-        }
-
-        .topic::before {
-            content: '';
-            position: absolute;
-            left: -5px;
-            top: 14px;
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: var(--connector);
-        }
-
-        .topic-header {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 12px;
-            background: var(--surface2);
-            border-radius: 10px;
-            cursor: pointer;
-            user-select: none;
-            transition: background 0.15s;
-            border: 1px solid transparent;
-        }
-
-        .topic-header:hover {
-            background: var(--node-hover);
-            border-color: var(--leaf-border);
-        }
-
-        .topic-header.has-info {
-            cursor: pointer;
-        }
-
-        .topic-title {
-            font-size: 0.82rem;
-            font-weight: 600;
-            font-family: 'Syne', sans-serif;
-            flex: 1;
-        }
-
-        .topic-tag {
-            font-size: 0.6rem;
-            padding: 2px 7px;
-            border-radius: 10px;
-            background: var(--surface);
-            color: var(--text-dim);
-            border: 1px solid var(--border);
-        }
-
-        /* Leaf nodes */
-        .leaves {
-            display: none;
-            margin-top: 6px;
-        }
-
-        .topic.open>.leaves {
-            display: block;
-        }
-
-        .leaf-grid {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-            padding: 6px 0;
-        }
-
-        .leaf {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 5px 12px;
-            background: var(--leaf-bg);
-            border: 1px solid var(--leaf-border);
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 0.72rem;
-            transition: all 0.15s;
-            position: relative;
-        }
-
-        .leaf:hover {
-            border-color: var(--accent);
-            color: var(--accent);
-            transform: translateY(-1px);
-        }
-
-        .leaf.active {
-            border-color: var(--accent);
-            background: color-mix(in srgb, var(--accent) 15%, transparent);
-            color: var(--accent);
-        }
-
-        .leaf-dot {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            flex-shrink: 0;
-        }
-
-        /* Info popup */
-        .info-panel {
-            display: none;
-            background: var(--popup-bg);
-            border: 1px solid var(--accent);
-            border-radius: 12px;
-            padding: 14px 16px;
-            margin-top: 6px;
-            font-size: 0.75rem;
-            line-height: 1.7;
-            animation: slideIn 0.2s ease;
-            position: relative;
-        }
-
-        .info-panel.show {
-            display: block;
-        }
-
-        .info-panel .close-btn {
-            position: absolute;
-            top: 8px;
-            right: 10px;
-            background: none;
-            border: none;
-            color: var(--text-dim);
-            cursor: pointer;
-            font-size: 1rem;
-            line-height: 1;
-        }
-
-        .info-panel h4 {
-            font-family: 'Syne', sans-serif;
-            font-size: 0.8rem;
-            font-weight: 700;
-            color: var(--accent);
-            margin-bottom: 8px;
-        }
-
-        .info-panel ul {
-            padding-left: 16px;
-        }
-
-        .info-panel ul li {
-            margin-bottom: 4px;
-        }
-
-        .info-panel p {
-            margin-bottom: 6px;
-        }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(-4px);
+            function parentTheme() {
+                try {
+                    if (!window.parent || window.parent === window) return null;
+                    var pdoc = window.parent.document;
+                    if (!pdoc) return null;
+                    var body = pdoc.body;
+                    if (body && body.classList.contains("shoug-light-mode")) return "light";
+                    var attr = (body && body.getAttribute("data-theme")) ||
+                        pdoc.documentElement.getAttribute("data-theme");
+                    if (attr === "dark" || attr === "light") return attr;
+                    var scheme = (body && body.getAttribute("data-md-color-scheme")) ||
+                        pdoc.documentElement.getAttribute("data-md-color-scheme");
+                    if (scheme) return scheme === "slate" ? "dark" : "light";
+                    return "dark";
+                } catch (e) {
+                    return null;    // cross-origin: fall through to the OS setting
+                }
             }
 
-            to {
-                opacity: 1;
-                transform: translateY(0);
+            function stored() {
+                try {
+                    var saved = localStorage.getItem("shoug-theme") || localStorage.getItem("theme");
+                    if (saved === "dark" || saved === "light") return saved;
+                } catch (e) { }
+                return null;
             }
-        }
 
-        /* Highlight for search */
-        .highlight {
-            background: color-mix(in srgb, var(--accent4) 40%, transparent);
-            border-radius: 3px;
-        }
+            function resolve() {
+                var saved = stored();
+                if (saved) return saved;
+                var inherited = parentTheme();
+                if (inherited) {
+                    /* Record what the embedding page is showing: the shared theme
+                       scripts read this key, and without it their first toggle
+                       just re-applies the theme already on screen. */
+                    try {
+                        localStorage.setItem("shoug-theme", inherited);
+                        localStorage.setItem("theme", inherited);
+                    } catch (e) { }
+                    return inherited;
+                }
+                return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches
+                    ? "dark" : "light";
+            }
 
-        .hidden-search {
-            display: none !important;
-        }
+            function apply() {
+                var theme = resolve();
+                if (root.getAttribute("data-theme") !== theme) root.setAttribute("data-theme", theme);
+                if (root.style.colorScheme !== theme) root.style.colorScheme = theme;
+            }
 
-        /* Legend */
-        .legend {
-            display: flex;
-            gap: 16px;
-            flex-wrap: wrap;
-            padding: 14px 20px;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            margin-bottom: 20px;
-            font-size: 0.68rem;
-            color: var(--text-dim);
-        }
-
-        .legend span {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .leg-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-        }
-
-        /* Color palette per chapter */
-        .c1 {
-            background: #7c6af7;
-        }
-
-        .border1 {
-            border-color: #7c6af7;
-        }
-
-        .c2 {
-            background: #4ecdc4;
-        }
-
-        .border2 {
-            border-color: #4ecdc4;
-        }
-
-        .c3 {
-            background: #ff6b6b;
-        }
-
-        .border3 {
-            border-color: #ff6b6b;
-        }
-
-        .c4 {
-            background: #ffd166;
-        }
-
-        .border4 {
-            border-color: #ffd166;
-        }
-
-        .c5 {
-            background: #a8e6cf;
-        }
-
-        .border5 {
-            border-color: #a8e6cf;
-        }
-
-        .c6 {
-            background: #f7b2bd;
-        }
-
-        .border6 {
-            border-color: #f7b2bd;
-        }
-
-        .c7 {
-            background: #b5ead7;
-        }
-
-        .border7 {
-            border-color: #b5ead7;
-        }
-
-        .c8 {
-            background: #c9b1ff;
-        }
-
-        .border8 {
-            border-color: #c9b1ff;
-        }
-
-        .c9 {
-            background: #fdffb6;
-        }
-
-        .border9 {
-            border-color: #fdffb6;
-        }
-
-        .sub-topic {
-            margin-left: 16px;
-            border-left-color: var(--leaf-border);
-        }
-
-        .sub-topic::before {
-            background: var(--leaf-border);
-            width: 6px;
-            height: 6px;
-        }
-    </style>
-    <script src="/javascripts/html-theme-sync.js"></script>
+            apply();
+            if (window.MutationObserver) {
+                new MutationObserver(apply).observe(root, {
+                    attributes: true, attributeFilter: ["data-theme"]
+                });
+            }
+            document.addEventListener("DOMContentLoaded", apply);
+            window.addEventListener("load", apply);
+        })();
+    </script>
+<script src="/javascripts/html-theme-sync.js"></script>
 
     <meta name="description" content="If you don&#x27;t get the requirements right, it doesn&#x27;t matter how well you execute the rest of the project.">
     <link rel="canonical" href="https://shoug-tech.com/academics/software-engineering/se311/extra-resources/mindmap/final-mindmap.html">
@@ -546,11 +111,17 @@
         })(window, document, "clarity", "script", "xub0eqmvs9");
     </script>
     <link rel="stylesheet" href="/styles/a11y.css">
+    <script src="/javascripts/se311.js" defer></script>
 </head>
 
-<body data-theme="dark">
+<body>
 
-    <header>
+        <button class="sg-theme-toggle" type="button" onclick="toggleTheme()" aria-label="Toggle dark and light mode">
+        <svg class="sg-icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.2 14.6A8.4 8.4 0 0 1 9.4 3.8a8.4 8.4 0 1 0 10.8 10.8Z"/></svg>
+        <svg class="sg-icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4.1"/><path d="M12 2.4v2.3M12 19.3v2.3M2.4 12h2.3M19.3 12h2.3M5.2 5.2l1.6 1.6M17.2 17.2l1.6 1.6M18.8 5.2l-1.6 1.6M6.8 17.2l-1.6 1.6"/></svg>
+        <span data-theme-label>Dark</span>
+    </button>
+<header>
         <div>
             <h1>SE311  -  Software Requirements Engineering</h1>
             <small>Click any node to expand · Click any leaf to see details</small>
@@ -560,7 +131,6 @@
                 <span class="icon">🔍</span>
                 <input type="text" id="searchInput" placeholder="Search topics...">
             </div>
-            <button class="btn-theme" onclick="toggleTheme()">☀️ / 🌙</button>
         </div>
     </header>
 
@@ -582,7 +152,7 @@
 ════════════════════════════════════════════ -->
         <div class="chapter" id="ch1">
             <div class="chapter-header" onclick="toggleChapter('ch1')">
-                <div class="ch-icon c1" style="color:#fff">CH1</div>
+                <div class="ch-icon c1" style="color:var(--surface)">CH1</div>
                 <div>
                     <div class="chapter-title">Software Requirements Fundamentals</div>
                     <div class="chapter-subtitle">Core truths, types of requirements, success/failure factors</div>
@@ -998,7 +568,7 @@
 ════════════════════════════════════════════ -->
         <div class="chapter" id="ch2">
             <div class="chapter-header" onclick="toggleChapter('ch2')">
-                <div class="ch-icon c2" style="color:#0a2a28">CH2</div>
+                <div class="ch-icon c2" style="color:var(--surface)">CH2</div>
                 <div>
                     <div class="chapter-title">Requirements Engineering Process</div>
                     <div class="chapter-subtitle">RE activities, stakeholders, best practices</div>
@@ -1241,7 +811,7 @@
 ════════════════════════════════════════════ -->
         <div class="chapter" id="ch3">
             <div class="chapter-header" onclick="toggleChapter('ch3')">
-                <div class="ch-icon c3" style="color:#fff">CH3</div>
+                <div class="ch-icon c3" style="color:var(--surface)">CH3</div>
                 <div>
                     <div class="chapter-title">Problem Analysis & Project Inception</div>
                     <div class="chapter-subtitle">Vision & scope, stakeholder profiles, 5 steps</div>
@@ -1422,7 +992,7 @@
 ════════════════════════════════════════════ -->
         <div class="chapter" id="ch4">
             <div class="chapter-header" onclick="toggleChapter('ch4')">
-                <div class="ch-icon c4" style="color:#2a1a00">CH4</div>
+                <div class="ch-icon c4" style="color:var(--surface)">CH4</div>
                 <div>
                     <div class="chapter-title">Requirements Elicitation</div>
                     <div class="chapter-subtitle">Techniques, use cases, prototyping, misuse cases</div>
@@ -1789,7 +1359,7 @@
 ════════════════════════════════════════════ -->
         <div class="chapter" id="ch5">
             <div class="chapter-header" onclick="toggleChapter('ch5')">
-                <div class="ch-icon c5" style="color:#0a2a1a">CH5</div>
+                <div class="ch-icon c5" style="color:var(--surface)">CH5</div>
                 <div>
                     <div class="chapter-title">Analysis, Modeling & Writing Requirements</div>
                     <div class="chapter-subtitle">UML diagrams, writing pitfalls, characteristics, prioritization</div>
@@ -2191,7 +1761,7 @@
 ════════════════════════════════════════════ -->
         <div class="chapter" id="ch6">
             <div class="chapter-header" onclick="toggleChapter('ch6')">
-                <div class="ch-icon c6" style="color:#2a0a12">CH6</div>
+                <div class="ch-icon c6" style="color:var(--surface)">CH6</div>
                 <div>
                     <div class="chapter-title">Requirements Validation & Verification</div>
                     <div class="chapter-subtitle">V&V difference, reviews, inspections, techniques</div>
@@ -2396,7 +1966,7 @@
 ════════════════════════════════════════════ -->
         <div class="chapter" id="ch7">
             <div class="chapter-header" onclick="toggleChapter('ch7')">
-                <div class="ch-icon c7" style="color:#0a2a1a">CH7</div>
+                <div class="ch-icon c7" style="color:var(--surface)">CH7</div>
                 <div>
                     <div class="chapter-title">Requirements Management</div>
                     <div class="chapter-subtitle">Traceability, baselines, change management, tools</div>
@@ -2620,7 +2190,7 @@
 ════════════════════════════════════════════ -->
         <div class="chapter" id="ch7b">
             <div class="chapter-header" onclick="toggleChapter('ch7b')">
-                <div class="ch-icon c8" style="color:#1a0a2a">SRS</div>
+                <div class="ch-icon c8" style="color:var(--surface)">SRS</div>
                 <div>
                     <div class="chapter-title">Software Requirements Specification (SRS)</div>
                     <div class="chapter-subtitle">Labeling methods, readability, TBDs, Volere shell</div>
@@ -2783,7 +2353,7 @@
 ════════════════════════════════════════════ -->
         <div class="chapter" id="ch89">
             <div class="chapter-header" onclick="toggleChapter('ch89')">
-                <div class="ch-icon c9" style="color:#2a2a00">CH8 - 9</div>
+                <div class="ch-icon c9" style="color:var(--surface)">CH8 - 9</div>
                 <div>
                     <div class="chapter-title">Agile Methods & Scrum</div>
                     <div class="chapter-subtitle">Agile values, principles, Scrum roles, artifacts, ceremonies</div>
@@ -3037,11 +2607,6 @@
             // also deactivate associated leaf
             const leaves = panel.closest('.leaves');
             if (leaves) leaves.querySelectorAll('.leaf').forEach(l => l.classList.remove('active'));
-        }
-
-        function toggleTheme() {
-            const body = document.body;
-            body.dataset.theme = body.dataset.theme === 'dark' ? 'light' : 'dark';
         }
 
         // Search functionality

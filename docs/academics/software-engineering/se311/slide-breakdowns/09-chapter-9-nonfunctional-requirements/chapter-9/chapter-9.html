@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-sg-styled>
 <head>
     <link rel="icon" type="image/png" sizes="256x256" href="/assets/shoug-favicon-v4.png">
     <link rel="shortcut icon" type="image/png" href="/assets/shoug-favicon-v4.png">
@@ -7,559 +7,83 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Chapter 9  -  Nonfunctional Requirements | SE311</title>
+    <link rel="stylesheet" href="/styles/se311.css">
+    <script>
+        /* Theme resolution, in priority order:
+             1. the stored site preference (what the toggle writes);
+             2. the embedding page -- these pages are iframed by their wrapper,
+                and the wrapper only marks itself when it is in LIGHT mode, so an
+                unmarked same-origin parent means the site's dark chrome;
+             3. the OS preference, for the standalone URL.
+           It runs before first paint, and re-asserts afterwards because the
+           shared theme scripts fall back to the OS setting and would otherwise
+           leave a light page sitting inside a dark one. */
+        (function () {
+            var root = document.documentElement;
+
+            function parentTheme() {
+                try {
+                    if (!window.parent || window.parent === window) return null;
+                    var pdoc = window.parent.document;
+                    if (!pdoc) return null;
+                    var body = pdoc.body;
+                    if (body && body.classList.contains("shoug-light-mode")) return "light";
+                    var attr = (body && body.getAttribute("data-theme")) ||
+                        pdoc.documentElement.getAttribute("data-theme");
+                    if (attr === "dark" || attr === "light") return attr;
+                    var scheme = (body && body.getAttribute("data-md-color-scheme")) ||
+                        pdoc.documentElement.getAttribute("data-md-color-scheme");
+                    if (scheme) return scheme === "slate" ? "dark" : "light";
+                    return "dark";
+                } catch (e) {
+                    return null;    // cross-origin: fall through to the OS setting
+                }
+            }
+
+            function stored() {
+                try {
+                    var saved = localStorage.getItem("shoug-theme") || localStorage.getItem("theme");
+                    if (saved === "dark" || saved === "light") return saved;
+                } catch (e) { }
+                return null;
+            }
+
+            function resolve() {
+                var saved = stored();
+                if (saved) return saved;
+                var inherited = parentTheme();
+                if (inherited) {
+                    /* Record what the embedding page is showing: the shared theme
+                       scripts read this key, and without it their first toggle
+                       just re-applies the theme already on screen. */
+                    try {
+                        localStorage.setItem("shoug-theme", inherited);
+                        localStorage.setItem("theme", inherited);
+                    } catch (e) { }
+                    return inherited;
+                }
+                return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches
+                    ? "dark" : "light";
+            }
+
+            function apply() {
+                var theme = resolve();
+                if (root.getAttribute("data-theme") !== theme) root.setAttribute("data-theme", theme);
+                if (root.style.colorScheme !== theme) root.style.colorScheme = theme;
+            }
+
+            apply();
+            if (window.MutationObserver) {
+                new MutationObserver(apply).observe(root, {
+                    attributes: true, attributeFilter: ["data-theme"]
+                });
+            }
+            document.addEventListener("DOMContentLoaded", apply);
+            window.addEventListener("load", apply);
+        })();
+    </script>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --bg: #faf8f4;
-    --surface: #ffffff;
-    --surface2: #f3f0ea;
-    --border: #e2ddd4;
-    --text: #1a1714;
-    --text2: #5a5550;
-    --accent: #c0392b;
-    --accent2: #e67e22;
-    --accent3: #2c6e49;
-    --gold: #b8860b;
-    --exam-bg: #fff8e1;
-    --exam-border: #f59f00;
-    --tip-bg: #e8f5e9;
-    --tip-border: #2c6e49;
-    --shadow: 0 4px 24px rgba(0,0,0,0.07);
-    --shadow-lg: 0 8px 40px rgba(0,0,0,0.12);
-    --transition: 0.3s cubic-bezier(0.4,0,0.2,1);
-  }
-
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --bg: #0f0e0c;
-      --surface: #1a1917;
-      --surface2: #242220;
-      --border: #38352f;
-      --text: #f0ece4;
-      --text2: #9a948a;
-      --accent: #e05247;
-      --accent2: #f0923a;
-      --accent3: #4caf7c;
-      --gold: #d4a017;
-      --exam-bg: #2a2200;
-      --exam-border: #c47d00;
-      --tip-bg: #0d2318;
-      --tip-border: #4caf7c;
-      --shadow: 0 4px 24px rgba(0,0,0,0.4);
-      --shadow-lg: 0 8px 40px rgba(0,0,0,0.6);
-    }
-  }
-
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    line-height: 1.7;
-    transition: background var(--transition), color var(--transition);
-  }
-
-  /* ── HEADER ── */
-  header {
-    background: var(--text);
-    color: var(--bg);
-    padding: 3rem 2rem 2.5rem;
-    position: relative;
-    overflow: hidden;
-  }
-  header::before {
-    content: '';
-    position: absolute;
-    top: -60px; right: -80px;
-    width: 320px; height: 320px;
-    border-radius: 50%;
-    background: var(--accent);
-    opacity: 0.15;
-  }
-  header::after {
-    content: '';
-    position: absolute;
-    bottom: -40px; left: 60px;
-    width: 180px; height: 180px;
-    border-radius: 50%;
-    background: var(--accent2);
-    opacity: 0.12;
-  }
-  .header-inner { max-width: 900px; margin: 0 auto; position: relative; z-index: 1; }
-  .course-tag {
-    font-family: 'DM Mono', monospace;
-    font-size: 0.78rem;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--accent2);
-    margin-bottom: 0.75rem;
-    display: block;
-  }
-  h1 {
-    font-family: 'Playfair Display', serif;
-    font-size: clamp(2rem, 5vw, 3.2rem);
-    font-weight: 900;
-    line-height: 1.15;
-    margin-bottom: 0.5rem;
-  }
-  .subtitle {
-    font-size: 1.05rem;
-    opacity: 0.65;
-    font-weight: 300;
-    max-width: 500px;
-  }
-
-  /* ── DARK MODE TOGGLE ── */
-  .toggle-wrap {
-    position: fixed;
-    top: 1.2rem; right: 1.5rem;
-    z-index: 999;
-    display: flex; align-items: center; gap: 0.5rem;
-  }
-  .toggle-label {
-    font-size: 0.75rem;
-    font-weight: 500;
-    color: var(--text2);
-    font-family: 'DM Mono', monospace;
-  }
-  .toggle {
-    position: relative;
-    width: 48px; height: 26px;
-    cursor: pointer;
-  }
-  .toggle input { display: none; }
-  .toggle-track {
-    width: 100%; height: 100%;
-    background: var(--border);
-    border-radius: 999px;
-    transition: background var(--transition);
-    display: flex; align-items: center;
-    padding: 3px;
-  }
-  .toggle input:checked + .toggle-track { background: var(--accent); }
-  .toggle-thumb {
-    width: 20px; height: 20px;
-    background: white;
-    border-radius: 50%;
-    transition: transform var(--transition);
-    box-shadow: 0 1px 4px rgba(0,0,0,0.2);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 11px;
-  }
-  .toggle input:checked + .toggle-track .toggle-thumb { transform: translateX(22px); }
-
-  /* ── LAYOUT ── */
-  main { max-width: 900px; margin: 0 auto; padding: 2.5rem 1.5rem 5rem; }
-
-  /* ── TOC ── */
-  .toc {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-left: 4px solid var(--accent);
-    border-radius: 10px;
-    padding: 1.5rem 1.75rem;
-    margin-bottom: 3rem;
-    box-shadow: var(--shadow);
-  }
-  .toc h2 {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.1rem;
-    margin-bottom: 0.75rem;
-    color: var(--accent);
-  }
-  .toc ol { padding-left: 1.25rem; }
-  .toc li { margin: 0.35rem 0; }
-  .toc a {
-    color: var(--text2);
-    text-decoration: none;
-    font-size: 0.9rem;
-    transition: color 0.2s;
-  }
-  .toc a:hover { color: var(--accent); }
-
-  /* ── SECTIONS ── */
-  section { margin-bottom: 3.5rem; }
-  .section-header {
-    display: flex; align-items: center; gap: 1rem;
-    margin-bottom: 1.25rem;
-    padding-bottom: 0.75rem;
-    border-bottom: 2px solid var(--border);
-  }
-  .section-num {
-    font-family: 'Playfair Display', serif;
-    font-size: 2rem;
-    font-weight: 900;
-    color: var(--border);
-    line-height: 1;
-    min-width: 2.5rem;
-  }
-  h2 {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--text);
-  }
-  h3 {
-    font-family: 'DM Sans', sans-serif;
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: var(--accent);
-    margin: 1.5rem 0 0.6rem;
-    display: flex; align-items: center; gap: 0.5rem;
-  }
-  h3::before { content: '▸'; font-size: 0.85em; }
-  p { margin-bottom: 0.9rem; color: var(--text2); }
-  strong { color: var(--text); font-weight: 600; }
-
-  /* ── CARDS ── */
-  .card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 1.4rem 1.6rem;
-    margin-bottom: 1.2rem;
-    box-shadow: var(--shadow);
-    transition: box-shadow var(--transition);
-  }
-  .card:hover { box-shadow: var(--shadow-lg); }
-  .card-title {
-    font-weight: 600;
-    font-size: 1rem;
-    margin-bottom: 0.5rem;
-    color: var(--text);
-  }
-
-  /* ── GRID ── */
-  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-  @media(max-width:600px) { .grid2 { grid-template-columns: 1fr; } }
-
-  /* ── QA CARDS ── */
-  .qa-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1rem; }
-  .qa-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 1.2rem;
-    border-top: 3px solid var(--accent);
-    box-shadow: var(--shadow);
-  }
-  .qa-card.internal { border-top-color: var(--accent3); }
-  .qa-tag {
-    font-family: 'DM Mono', monospace;
-    font-size: 0.68rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    padding: 0.2rem 0.55rem;
-    border-radius: 999px;
-    background: var(--surface2);
-    color: var(--accent);
-    margin-bottom: 0.6rem;
-    display: inline-block;
-  }
-  .qa-card.internal .qa-tag { color: var(--accent3); }
-  .qa-card h4 {
-    font-size: 0.95rem;
-    font-weight: 700;
-    margin-bottom: 0.4rem;
-    color: var(--text);
-  }
-  .qa-card p { font-size: 0.85rem; margin: 0; }
-
-  /* ── PAST EXAM ── */
-  .past-exam {
-    background: var(--exam-bg);
-    border: 1.5px solid var(--exam-border);
-    border-radius: 12px;
-    padding: 1.4rem 1.6rem;
-    margin: 1.5rem 0;
-    position: relative;
-  }
-  .exam-badge {
-    position: absolute;
-    top: -12px; left: 1.4rem;
-    background: var(--exam-border);
-    color: #fff;
-    font-family: 'DM Mono', monospace;
-    font-size: 0.68rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    padding: 0.25rem 0.75rem;
-    border-radius: 999px;
-    font-weight: 500;
-  }
-  .past-exam h4 {
-    font-size: 0.95rem;
-    font-weight: 600;
-    color: var(--text);
-    margin-bottom: 0.5rem;
-    margin-top: 0.4rem;
-  }
-  .past-exam p, .past-exam li { font-size: 0.9rem; color: var(--text2); }
-  .past-exam ul, .past-exam ol { padding-left: 1.25rem; margin-top: 0.4rem; }
-  .past-exam li { margin: 0.3rem 0; }
-  .answer-toggle {
-    margin-top: 0.75rem;
-    background: none;
-    border: 1px solid var(--exam-border);
-    color: var(--exam-border);
-    border-radius: 6px;
-    padding: 0.35rem 0.9rem;
-    font-size: 0.82rem;
-    cursor: pointer;
-    font-family: 'DM Sans', sans-serif;
-    font-weight: 500;
-    transition: all 0.2s;
-  }
-  .answer-toggle:hover { background: var(--exam-border); color: white; }
-  .answer-box {
-    display: none;
-    margin-top: 0.75rem;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 1rem 1.2rem;
-    font-size: 0.88rem;
-    color: var(--text2);
-  }
-  .answer-box ul { padding-left: 1.2rem; }
-  .answer-box li { margin: 0.3rem 0; }
-
-  /* ── TIPS ── */
-  .tip-box {
-    background: var(--tip-bg);
-    border: 1.5px solid var(--tip-border);
-    border-radius: 12px;
-    padding: 1.3rem 1.6rem;
-    margin: 1.5rem 0;
-    position: relative;
-  }
-  .tip-badge {
-    position: absolute;
-    top: -12px; left: 1.4rem;
-    background: var(--tip-border);
-    color: #fff;
-    font-family: 'DM Mono', monospace;
-    font-size: 0.68rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    padding: 0.25rem 0.75rem;
-    border-radius: 999px;
-  }
-  .tip-box h4 { font-size: 0.95rem; font-weight: 600; color: var(--text); margin: 0.4rem 0 0.5rem; }
-  .tip-box ul { padding-left: 1.25rem; }
-  .tip-box li { font-size: 0.88rem; color: var(--text2); margin: 0.3rem 0; }
-
-  /* ── CODE / EXAMPLE PILL ── */
-  .example-block {
-    background: var(--surface2);
-    border-left: 3px solid var(--accent2);
-    border-radius: 0 8px 8px 0;
-    padding: 0.9rem 1.2rem;
-    margin: 0.75rem 0;
-    font-size: 0.88rem;
-    color: var(--text2);
-  }
-  .example-block strong { color: var(--accent2); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; display: block; margin-bottom: 0.35rem; }
-
-  /* ── TABLE ── */
-  .table-wrap { overflow-x: auto; margin: 1rem 0; border-radius: 10px; box-shadow: var(--shadow); }
-  table { width: 100%; border-collapse: collapse; background: var(--surface); }
-  th {
-    background: var(--text);
-    color: var(--bg);
-    font-family: 'DM Mono', monospace;
-    font-size: 0.78rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    padding: 0.75rem 1rem;
-    text-align: left;
-  }
-  td {
-    padding: 0.7rem 1rem;
-    font-size: 0.88rem;
-    color: var(--text2);
-    border-bottom: 1px solid var(--border);
-    vertical-align: top;
-  }
-  tr:last-child td { border-bottom: none; }
-  tr:nth-child(even) td { background: var(--surface2); }
-  .pos { color: var(--accent3); font-weight: 700; }
-  .neg { color: var(--accent); font-weight: 700; }
-
-  /* ── STEPS ── */
-  .steps { counter-reset: step; }
-  .step {
-    display: flex; gap: 1rem;
-    margin-bottom: 1rem;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 1.1rem 1.3rem;
-    box-shadow: var(--shadow);
-  }
-  .step-num {
-    min-width: 36px; height: 36px;
-    background: var(--accent);
-    color: white;
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-weight: 700; font-size: 0.9rem;
-    flex-shrink: 0;
-    margin-top: 2px;
-  }
-  .step-content { flex: 1; }
-  .step-content strong { display: block; margin-bottom: 0.25rem; color: var(--text); }
-  .step-content p { font-size: 0.88rem; margin: 0; }
-
-  /* ── MNEMONIC ── */
-  .mnemonic {
-    background: linear-gradient(135deg, var(--surface) 0%, var(--surface2) 100%);
-    border: 2px solid var(--gold);
-    border-radius: 14px;
-    padding: 1.5rem 1.75rem;
-    margin: 1.5rem 0;
-    text-align: center;
-  }
-  .mnemonic .acronym {
-    font-family: 'Playfair Display', serif;
-    font-size: 2.2rem;
-    font-weight: 900;
-    color: var(--gold);
-    letter-spacing: 0.3em;
-    display: block;
-    margin-bottom: 0.5rem;
-  }
-  .mnemonic p { font-size: 0.85rem; margin: 0; }
-  .mnemonic .expand { margin-top: 1rem; display: flex; justify-content: center; gap: 0.5rem; flex-wrap: wrap; }
-  .mnemonic .letter-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 0.4rem 0.75rem;
-    font-size: 0.82rem;
-    color: var(--text);
-  }
-  .mnemonic .letter-card span { color: var(--gold); font-weight: 700; }
-
-  /* ── DIVIDER ── */
-  hr { border: none; border-top: 1px solid var(--border); margin: 2.5rem 0; }
-
-  /* ── FOOTER ── */
-  footer {
-    text-align: center;
-    padding: 2rem;
-    font-size: 0.82rem;
-    color: var(--text2);
-    border-top: 1px solid var(--border);
-    font-family: 'DM Mono', monospace;
-  }
-  footer strong { color: var(--accent); }
-
-  /* ── ANIMATIONS ── */
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(16px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  section { animation: fadeUp 0.5s ease both; }
-  section:nth-child(2) { animation-delay: 0.05s; }
-  section:nth-child(3) { animation-delay: 0.1s; }
-  section:nth-child(4) { animation-delay: 0.15s; }
-  section:nth-child(5) { animation-delay: 0.2s; }
-
-  .dark-forced {
-    --bg: #0f0e0c;
-    --surface: #1a1917;
-    --surface2: #242220;
-    --border: #38352f;
-    --text: #f0ece4;
-    --text2: #9a948a;
-    --accent: #e05247;
-    --accent2: #f0923a;
-    --accent3: #4caf7c;
-    --gold: #d4a017;
-    --exam-bg: #2a2200;
-    --exam-border: #c47d00;
-    --tip-bg: #0d2318;
-    --tip-border: #4caf7c;
-    --shadow: 0 4px 24px rgba(0,0,0,0.4);
-    --shadow-lg: 0 8px 40px rgba(0,0,0,0.6);
-  }
-</style>
-<style id="codex-responsive-html">
-  html { width: 100%; }
-  body {
-    width: 100%;
-    max-width: 100%;
-    overflow-x: hidden;
-  }
-  img, svg, video, canvas, iframe {
-    max-width: 100% !important;
-    height: auto;
-  }
-  table {
-    max-width: 100% !important;
-  }
-  .table-wrap, .table-scroll, .overflow-x, .comparison-table, .acm-table, .matrix-wrap {
-    max-width: 100% !important;
-    overflow-x: auto !important;
-    -webkit-overflow-scrolling: touch;
-  }
-  header,
-  main,
-  .header-inner,
-  .hero,
-  .hero-inner,
-  .content,
-  .container,
-  .wrap,
-  .page,
-  .page-shell,
-  .page-wrap,
-  .layout,
-  .content-wrap,
-  .exam-container,
-  .quiz-container,
-  .cheat-sheet,
-  .toc,
-  .section,
-  .section-body,
-  .card,
-  .panel {
-    width: min(100%, calc(100vw - 24px)) !important;
-    max-width: min(1600px, calc(100vw - 24px)) !important;
-  }
-  @media (max-width: 768px) {
-    header,
-    main,
-    .header-inner,
-    .hero,
-    .hero-inner,
-    .content,
-    .container,
-    .wrap,
-    .page,
-    .page-shell,
-    .page-wrap,
-    .layout,
-    .content-wrap,
-    .exam-container,
-    .quiz-container,
-    .cheat-sheet,
-    .toc,
-    .section,
-    .section-body,
-    .card,
-    .panel {
-      width: min(100%, calc(100vw - 16px)) !important;
-      max-width: min(100%, calc(100vw - 16px)) !important;
-    }
-    body {
-      overflow-x: hidden;
-    }
-  }
-</style>
-    <script src="/javascripts/html-theme-sync.js"></script>
+<script src="/javascripts/html-theme-sync.js"></script>
 
     <meta name="description" content="Quality Attributes, Constraints &amp; External Interfaces - the traits that make software truly excellent.">
     <link rel="canonical" href="https://shoug-tech.com/academics/software-engineering/se311/slide-breakdowns/09-chapter-9-nonfunctional-requirements/">
@@ -587,21 +111,16 @@
         })(window, document, "clarity", "script", "xub0eqmvs9");
     </script>
     <link rel="stylesheet" href="/styles/a11y.css">
+    <script src="/javascripts/se311.js" defer></script>
 </head>
 <body>
+    <button class="sg-theme-toggle" type="button" onclick="toggleTheme()" aria-label="Toggle dark and light mode">
+        <svg class="sg-icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.2 14.6A8.4 8.4 0 0 1 9.4 3.8a8.4 8.4 0 1 0 10.8 10.8Z"/></svg>
+        <svg class="sg-icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4.1"/><path d="M12 2.4v2.3M12 19.3v2.3M2.4 12h2.3M19.3 12h2.3M5.2 5.2l1.6 1.6M17.2 17.2l1.6 1.6M18.8 5.2l-1.6 1.6M6.8 17.2l-1.6 1.6"/></svg>
+        <span data-theme-label>Dark</span>
+    </button>
 <a class="shoug-skip-link" href="#main-content">Skip to content</a>
 
-
-<!-- Dark mode toggle -->
-<div class="toggle-wrap">
-  <span class="toggle-label">Dark</span>
-  <label class="toggle">
-    <input type="checkbox" id="darkToggle">
-    <div class="toggle-track">
-      <div class="toggle-thumb" id="toggleThumb">☀️</div>
-    </div>
-  </label>
-</div>
 
 <header>
   <div class="header-inner">
@@ -1327,43 +846,6 @@
 </footer>
 
 <script>
-  // Dark mode toggle
-  const toggle = document.getElementById('darkToggle');
-  const thumb = document.getElementById('toggleThumb');
-  const html = document.documentElement;
-  const body = document.body;
-
-  // Apply stored preference or fall back to system
-  const _stored9 = localStorage.getItem('shoug-theme');
-  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-  const _initDark = _stored9 === 'dark' ? true : _stored9 === 'light' ? false : prefersDark;
-  if (_initDark) {
-    toggle.checked = true;
-    thumb.textContent = '🌙';
-    body.classList.add('dark-forced');
-  }
-
-  toggle.addEventListener('change', () => {
-    if (toggle.checked) {
-      body.classList.add('dark-forced');
-      thumb.textContent = '🌙';
-      try { localStorage.setItem('shoug-theme', 'dark'); } catch(e) {}
-    } else {
-      body.classList.remove('dark-forced');
-      thumb.textContent = '☀️';
-      try { localStorage.setItem('shoug-theme', 'light'); } catch(e) {}
-    }
-  });
-
-  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-    if (localStorage.getItem('shoug-theme')) return;
-    if (!toggle.checked && e.matches) {
-      toggle.checked = true;
-      body.classList.add('dark-forced');
-      thumb.textContent = '🌙';
-    }
-  });
-
   // Answer toggle
   function toggleAnswer(id) {
     const box = document.getElementById(id);

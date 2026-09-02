@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html data-theme="light" lang="en" dir="ltr">
+<html lang="en" dir="ltr" data-sg-styled>
 <head>
     <link rel="icon" type="image/png" sizes="256x256" href="/assets/shoug-favicon-v4.png">
     <link rel="shortcut icon" type="image/png" href="/assets/shoug-favicon-v4.png">
@@ -7,590 +7,82 @@
 <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SE311 - Chapter 4: Requirements Elicitation - Exam</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+    <link rel="stylesheet" href="/styles/se311.css">
+    <script>
+        /* Theme resolution, in priority order:
+             1. the stored site preference (what the toggle writes);
+             2. the embedding page -- these pages are iframed by their wrapper,
+                and the wrapper only marks itself when it is in LIGHT mode, so an
+                unmarked same-origin parent means the site's dark chrome;
+             3. the OS preference, for the standalone URL.
+           It runs before first paint, and re-asserts afterwards because the
+           shared theme scripts fall back to the OS setting and would otherwise
+           leave a light page sitting inside a dark one. */
+        (function () {
+            var root = document.documentElement;
 
-        :root {
-            --bg-primary: #ffffff;
-            --bg-secondary: #f5f5f5;
-            --text-primary: #1a1a1a;
-            --text-secondary: #666666;
-            --border-color: #dddddd;
-            --accent-color: #2563eb;
-            --success-color: #10b981;
-            --error-color: #ef4444;
-            --warning-color: #f59e0b;
-            --shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        [data-theme="dark"] {
-            --bg-primary: #1a1a1a;
-            --bg-secondary: #2d2d2d;
-            --text-primary: #f5f5f5;
-            --text-secondary: #a0a0a0;
-            --border-color: #404040;
-            --accent-color: #3b82f6;
-            --success-color: #10b981;
-            --error-color: #ef4444;
-            --warning-color: #f59e0b;
-            --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background-color: var(--bg-secondary);
-            color: var(--text-primary);
-            line-height: 1.6;
-            padding: 20px;
-            transition: background-color 0.3s ease, color 0.3s ease;
-        }
-
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            background-color: var(--bg-primary);
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: var(--shadow);
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 40px;
-            border-bottom: 3px solid var(--accent-color);
-            padding-bottom: 20px;
-        }
-
-        .header h1 {
-            font-size: 2em;
-            margin-bottom: 10px;
-            color: var(--accent-color);
-        }
-
-        .header p {
-            color: var(--text-secondary);
-            font-size: 1.1em;
-        }
-
-        .controls {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-
-        .student-info {
-            flex: 1;
-            min-width: 250px;
-        }
-
-        .student-info input {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid var(--border-color);
-            border-radius: 6px;
-            background-color: var(--bg-primary);
-            color: var(--text-primary);
-            font-size: 1em;
-            margin-bottom: 10px;
-            transition: border-color 0.3s ease;
-        }
-
-        .student-info input:focus {
-            outline: none;
-            border-color: var(--accent-color);
-        }
-
-        .toggle-buttons {
-            display: flex;
-            gap: 10px;
-        }
-
-        button {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 1em;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-
-        .lang-toggle {
-            background-color: var(--accent-color);
-            color: white;
-        }
-
-        .lang-toggle:hover {
-            opacity: 0.9;
-            transform: translateY(-2px);
-        }
-
-        .question {
-            background-color: var(--bg-secondary);
-            padding: 25px;
-            margin-bottom: 25px;
-            border-radius: 8px;
-            border-left: 4px solid var(--accent-color);
-        }
-
-        .question-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-
-        .question-number {
-            font-size: 1.2em;
-            font-weight: bold;
-            color: var(--accent-color);
-        }
-
-        .question-type {
-            background-color: var(--accent-color);
-            color: white;
-            padding: 4px 12px;
-            border-radius: 4px;
-            font-size: 0.85em;
-        }
-
-        .question-text {
-            margin-bottom: 20px;
-            font-size: 1.05em;
-            line-height: 1.7;
-        }
-
-        .options {
-            margin-left: 20px;
-        }
-
-        .option {
-            margin-bottom: 12px;
-            display: flex;
-            align-items: flex-start;
-        }
-
-        .option input[type="radio"],
-        .option input[type="checkbox"] {
-            margin-right: 10px;
-            margin-top: 4px;
-            cursor: pointer;
-        }
-
-        .option label {
-            cursor: pointer;
-            flex: 1;
-        }
-
-        textarea {
-            width: 100%;
-            min-height: 120px;
-            padding: 12px;
-            border: 2px solid var(--border-color);
-            border-radius: 6px;
-            background-color: var(--bg-primary);
-            color: var(--text-primary);
-            font-size: 1em;
-            font-family: inherit;
-            resize: vertical;
-            transition: border-color 0.3s ease;
-        }
-
-        textarea:focus {
-            outline: none;
-            border-color: var(--accent-color);
-        }
-
-        .feedback {
-            margin-top: 15px;
-            padding: 15px;
-            border-radius: 6px;
-            display: none;
-            animation: slideIn 0.3s ease;
-        }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .feedback.correct {
-            background-color: rgba(16, 185, 129, 0.1);
-            border: 2px solid var(--success-color);
-            display: block;
-        }
-
-        .feedback.incorrect {
-            background-color: rgba(239, 68, 68, 0.1);
-            border: 2px solid var(--error-color);
-            display: block;
-        }
-
-        .feedback.partial {
-            background-color: rgba(245, 158, 11, 0.1);
-            border: 2px solid var(--warning-color);
-            display: block;
-        }
-
-        .feedback-header {
-            font-weight: bold;
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .feedback-icon {
-            font-size: 1.2em;
-        }
-
-        .submit-btn {
-            background-color: var(--success-color);
-            color: white;
-            width: 100%;
-            padding: 15px;
-            font-size: 1.1em;
-            margin-top: 30px;
-        }
-
-        .submit-btn:hover {
-            opacity: 0.9;
-            transform: translateY(-2px);
-        }
-
-        .submit-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .score-display {
-            background: linear-gradient(135deg, var(--accent-color), var(--success-color));
-            color: white;
-            padding: 25px;
-            border-radius: 8px;
-            text-align: center;
-            margin-top: 30px;
-            display: none;
-        }
-
-        .score-display.show {
-            display: block;
-            animation: slideIn 0.5s ease;
-        }
-
-        .score-display h2 {
-            font-size: 2em;
-            margin-bottom: 10px;
-        }
-
-        .score-display p {
-            font-size: 1.2em;
-        }
-
-        .model-answer {
-            margin-top: 10px;
-            padding: 12px;
-            background-color: var(--bg-primary);
-            border-radius: 6px;
-            border-left: 3px solid var(--success-color);
-        }
-
-        .model-answer-label {
-            font-weight: bold;
-            color: var(--success-color);
-            margin-bottom: 8px;
-        }
-
-        .generated-tag {
-            display: inline-block;
-            background-color: var(--warning-color);
-            color: white;
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-size: 0.75em;
-            margin-left: 8px;
-            font-weight: 600;
-        }
-
-        .exam-tag {
-            display: inline-block;
-            background-color: var(--success-color);
-            color: white;
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-size: 0.75em;
-            margin-left: 8px;
-            font-weight: 600;
-        }
-
-        @media (max-width: 768px) {
-            .container {
-                padding: 20px;
+            function parentTheme() {
+                try {
+                    if (!window.parent || window.parent === window) return null;
+                    var pdoc = window.parent.document;
+                    if (!pdoc) return null;
+                    var body = pdoc.body;
+                    if (body && body.classList.contains("shoug-light-mode")) return "light";
+                    var attr = (body && body.getAttribute("data-theme")) ||
+                        pdoc.documentElement.getAttribute("data-theme");
+                    if (attr === "dark" || attr === "light") return attr;
+                    var scheme = (body && body.getAttribute("data-md-color-scheme")) ||
+                        pdoc.documentElement.getAttribute("data-md-color-scheme");
+                    if (scheme) return scheme === "slate" ? "dark" : "light";
+                    return "dark";
+                } catch (e) {
+                    return null;    // cross-origin: fall through to the OS setting
+                }
             }
 
-            .controls {
-                flex-direction: column;
+            function stored() {
+                try {
+                    var saved = localStorage.getItem("shoug-theme") || localStorage.getItem("theme");
+                    if (saved === "dark" || saved === "light") return saved;
+                } catch (e) { }
+                return null;
             }
 
-            .student-info {
-                width: 100%;
+            function resolve() {
+                var saved = stored();
+                if (saved) return saved;
+                var inherited = parentTheme();
+                if (inherited) {
+                    /* Record what the embedding page is showing: the shared theme
+                       scripts read this key, and without it their first toggle
+                       just re-applies the theme already on screen. */
+                    try {
+                        localStorage.setItem("shoug-theme", inherited);
+                        localStorage.setItem("theme", inherited);
+                    } catch (e) { }
+                    return inherited;
+                }
+                return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches
+                    ? "dark" : "light";
             }
-        }
 
-        /* RTL Support */
-        [dir="rtl"] .question {
-            border-left: none;
-            border-right: 4px solid var(--accent-color);
-        }
+            function apply() {
+                var theme = resolve();
+                if (root.getAttribute("data-theme") !== theme) root.setAttribute("data-theme", theme);
+                if (root.style.colorScheme !== theme) root.style.colorScheme = theme;
+            }
 
-        [dir="rtl"] .option {
-            flex-direction: row-reverse;
-        }
-
-        [dir="rtl"] .option input {
-            margin-right: 0;
-            margin-left: 10px;
-        }
-
-        [dir="rtl"] .options {
-            margin-left: 0;
-            margin-right: 20px;
-        }
-
-/* SE311 responsive + embedded theme bridge */
-html, body {
-  width: 100%;
-  max-width: 100%;
-  overflow-x: hidden;
-}
-body {
-  transition: background-color 0.25s ease, color 0.25s ease;
-}
-img, svg, video, canvas, iframe {
-  max-width: 100% !important;
-  height: auto;
-}
-.container,
-.quiz-container,
-.wrapper,
-.content,
-.quiz-content,
-main,
-header,
-.header,
-.section,
-.question,
-.question-block,
-.card,
-.panel,
-.results-panel,
-.result-container {
-  max-width: min(100%, 1120px) !important;
-}
-.container,
-.quiz-container,
-.wrapper,
-.content,
-.quiz-content,
-main,
-.results-panel,
-.result-container {
-  width: min(100%, 1120px) !important;
-}
-.table-wrap,
-.table-scroll,
-.overflow-x,
-table {
-  max-width: 100% !important;
-}
-.table-wrap,
-.table-scroll,
-.overflow-x {
-  overflow-x: auto !important;
-}
-pre, code {
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
-}
-html[data-theme="dark"] body,
-html[data-parent-theme="dark"] body {
-  background-color: #111827 !important;
-  color: #f3f4f6 !important;
-}
-html[data-theme="dark"] .container,
-html[data-theme="dark"] .quiz-container,
-html[data-theme="dark"] .wrapper,
-html[data-theme="dark"] .content,
-html[data-theme="dark"] .quiz-content,
-html[data-theme="dark"] main,
-html[data-theme="dark"] .section,
-html[data-theme="dark"] .question,
-html[data-theme="dark"] .question-block,
-html[data-theme="dark"] .quiz-info,
-html[data-theme="dark"] .card,
-html[data-theme="dark"] .panel,
-html[data-parent-theme="dark"] .container,
-html[data-parent-theme="dark"] .quiz-container,
-html[data-parent-theme="dark"] .wrapper,
-html[data-parent-theme="dark"] .content,
-html[data-parent-theme="dark"] .quiz-content,
-html[data-parent-theme="dark"] main,
-html[data-parent-theme="dark"] .section,
-html[data-parent-theme="dark"] .question,
-html[data-parent-theme="dark"] .question-block,
-html[data-parent-theme="dark"] .quiz-info,
-html[data-parent-theme="dark"] .card,
-html[data-parent-theme="dark"] .panel {
-  background-color: #1f2937 !important;
-  color: #f3f4f6 !important;
-  border-color: #374151 !important;
-}
-html[data-theme="dark"] p,
-html[data-theme="dark"] li,
-html[data-theme="dark"] label,
-html[data-theme="dark"] span,
-html[data-theme="dark"] .question-text,
-html[data-theme="dark"] .answer,
-html[data-parent-theme="dark"] p,
-html[data-parent-theme="dark"] li,
-html[data-parent-theme="dark"] label,
-html[data-parent-theme="dark"] span,
-html[data-parent-theme="dark"] .question-text,
-html[data-parent-theme="dark"] .answer {
-  color: inherit;
-}
-html[data-theme="dark"] input,
-html[data-theme="dark"] textarea,
-html[data-theme="dark"] select,
-html[data-parent-theme="dark"] input,
-html[data-parent-theme="dark"] textarea,
-html[data-parent-theme="dark"] select {
-  background-color: #111827 !important;
-  color: #f3f4f6 !important;
-  border-color: #4b5563 !important;
-}
-@media (max-width: 768px) {
-  body {
-    padding-left: 12px !important;
-    padding-right: 12px !important;
-  }
-  .container,
-  .quiz-container,
-  .wrapper,
-  .content,
-  .quiz-content,
-  main,
-  header,
-  .header,
-  .question,
-  .question-block,
-  .card,
-  .panel {
-    width: 100% !important;
-    max-width: 100% !important;
-    padding-left: clamp(12px, 4vw, 20px) !important;
-    padding-right: clamp(12px, 4vw, 20px) !important;
-  }
-  .controls,
-  .question-header,
-  .button-group,
-  .toggle-buttons,
-  .header-inner,
-  .topbar,
-  .topbar-right {
-    flex-wrap: wrap !important;
-  }
-}
-
-</style>
-<style id="codex-responsive-html">
-  html { width: 100%; }
-  body {
-    width: 100%;
-    max-width: 100%;
-    overflow-x: hidden;
-  }
-  img, svg, video, canvas, iframe {
-    max-width: 100% !important;
-    height: auto;
-  }
-  table {
-    max-width: 100% !important;
-  }
-  .table-wrap, .table-scroll, .overflow-x, .comparison-table, .acm-table, .matrix-wrap {
-    max-width: 100% !important;
-    overflow-x: auto !important;
-    -webkit-overflow-scrolling: touch;
-  }
-  header,
-  main,
-  .header-inner,
-  .hero,
-  .hero-inner,
-  .content,
-  .container,
-  .wrap,
-  .page,
-  .page-shell,
-  .page-wrap,
-  .layout,
-  .content-wrap,
-  .exam-container,
-  .quiz-container,
-  .cheat-sheet,
-  .toc,
-  .section,
-  .section-body,
-  .card,
-  .panel {
-    width: min(100%, calc(100vw - 24px)) !important;
-    max-width: min(1600px, calc(100vw - 24px)) !important;
-  }
-  @media (max-width: 768px) {
-    header,
-    main,
-    .header-inner,
-    .hero,
-    .hero-inner,
-    .content,
-    .container,
-    .wrap,
-    .page,
-    .page-shell,
-    .page-wrap,
-    .layout,
-    .content-wrap,
-    .exam-container,
-    .quiz-container,
-    .cheat-sheet,
-    .toc,
-    .section,
-    .section-body,
-    .card,
-    .panel {
-      width: min(100%, calc(100vw - 16px)) !important;
-      max-width: min(100%, calc(100vw - 16px)) !important;
-    }
-    body {
-      overflow-x: hidden;
-    }
-  }
-</style>
-    <script src="/javascripts/html-theme-sync.js"></script>
+            apply();
+            if (window.MutationObserver) {
+                new MutationObserver(apply).observe(root, {
+                    attributes: true, attributeFilter: ["data-theme"]
+                });
+            }
+            document.addEventListener("DOMContentLoaded", apply);
+            window.addEventListener("load", apply);
+        })();
+    </script>
+<script src="/javascripts/html-theme-sync.js"></script>
 
     <meta name="description" content="Chapter 4: Requirements Elicitation - Comprehensive Exam الفصل الرابع: استخلاص المتطلبات - اختبار شامل">
     <link rel="canonical" href="https://shoug-tech.com/academics/software-engineering/se311/exams/chapter-4-quiz.html">
@@ -619,196 +111,17 @@ html[data-parent-theme="dark"] select {
     </script>
 
     <!-- SE311 INTERACTIVE EXAM ENHANCEMENT -->
-    <style>
-
-        :root {
-            --se311-accent: #fb7185;
-            --se311-accent-2: #fbbf24;
-            --se311-glow: color-mix(in srgb, var(--se311-accent) 22%, transparent);
-        }
-
-        html { scroll-behavior: smooth; }
-
-        body {
-            min-height: 100vh;
-            background-image:
-                radial-gradient(circle at 34% 6%, color-mix(in srgb, var(--se311-accent) 17%, transparent), transparent 34rem),
-                radial-gradient(circle at 74% 36%, color-mix(in srgb, var(--se311-accent-2) 13%, transparent), transparent 32rem),
-                linear-gradient(180deg, rgba(8, 7, 20, .035), transparent 48%);
-            background-attachment: fixed;
-        }
-
-        /* Theme-debugged header contract: never derive a background from a text variable. */
-        html[data-theme="light"] :where(body > header, .container > header, .quiz-container > header, .topbar) {
-            color: #20283c !important;
-            border-color: color-mix(in srgb, var(--se311-accent) 24%, #d9deea) !important;
-            background:
-                radial-gradient(circle at 14% 30%, color-mix(in srgb, var(--se311-accent) 15%, transparent), transparent 24rem),
-                radial-gradient(circle at 86% 55%, color-mix(in srgb, var(--se311-accent-2) 12%, transparent), transparent 22rem),
-                linear-gradient(110deg, #fdfbff, #f3f5ff 58%, #effcff) !important;
-        }
-
-        html[data-theme="dark"] :where(body > header, .container > header, .quiz-container > header, .topbar) {
-            color: #f5f7ff !important;
-            border-color: color-mix(in srgb, var(--se311-accent) 32%, #27334a) !important;
-            background:
-                radial-gradient(circle at 14% 30%, color-mix(in srgb, var(--se311-accent) 24%, transparent), transparent 25rem),
-                radial-gradient(circle at 86% 55%, color-mix(in srgb, var(--se311-accent-2) 15%, transparent), transparent 23rem),
-                linear-gradient(110deg, #121326, #101a2d 58%, #0b2632) !important;
-        }
-
-        html[data-theme="light"] :where(body > header, .container > header, .quiz-container > header, .topbar)
-            :where(p, .title, .subtitle, .header-text, .topbar-left, .mode-label) {
-            color: #38445e !important;
-        }
-
-        html[data-theme="dark"] :where(body > header, .container > header, .quiz-container > header, .topbar)
-            :where(p, .title, .subtitle, .header-text, .topbar-left, .mode-label) {
-            color: #dbe5f6 !important;
-        }
-
-        html[data-theme="light"] :where(.toggle-btn, .mode-toggle, .theme-toggle) {
-            color: #27324a !important;
-            background: rgba(255, 255, 255, .72) !important;
-            border-color: color-mix(in srgb, var(--se311-accent) 28%, #cad2e2) !important;
-        }
-
-        html[data-theme="dark"] :where(.toggle-btn, .mode-toggle, .theme-toggle) {
-            color: #f5f7ff !important;
-            background: rgba(8, 13, 28, .58) !important;
-            border-color: color-mix(in srgb, var(--se311-accent-2) 30%, #3b465c) !important;
-        }
-
-        :where(.quiz-container, .container, .quiz-content, .quiz-wrap, .hero, main) {
-            width: min(100% - clamp(24px, 5vw, 80px), 1320px) !important;
-            max-width: 1320px !important;
-            margin-inline: auto !important;
-        }
-
-        :where(.quiz-container, .quiz-content, .quiz-wrap, main) > :where(h1, header, .quiz-header):first-child,
-        :where(header, .hero, .topbar) {
-            animation: se311-hero-in .66s cubic-bezier(.2, .8, .2, 1) both;
-        }
-
-        :where(h1, .quiz-title, header h1, .hero h2, .topbar h1) {
-            background: linear-gradient(105deg, var(--se311-accent), var(--se311-accent-2));
-            background-clip: text;
-            -webkit-background-clip: text;
-            color: transparent !important;
-            text-shadow: 0 0 34px var(--se311-glow);
-        }
-
-        :where(.quiz-info, .info-box, .instructions, .exam-info) {
-            position: relative;
-            overflow: hidden;
-            border-color: color-mix(in srgb, var(--se311-accent) 48%, transparent) !important;
-            background-image: linear-gradient(120deg,
-                color-mix(in srgb, var(--se311-accent) 13%, transparent),
-                color-mix(in srgb, var(--se311-accent-2) 9%, transparent)) !important;
-            box-shadow: 0 14px 38px rgba(5, 4, 18, .16);
-        }
-
-        :where(.question, .question-block, .question-card, .q-card) {
-            position: relative;
-            overflow: hidden;
-            border-color: color-mix(in srgb, var(--se311-accent) 32%, transparent) !important;
-            background-image: linear-gradient(135deg,
-                color-mix(in srgb, var(--se311-accent) 8%, transparent),
-                transparent 42%,
-                color-mix(in srgb, var(--se311-accent-2) 6%, transparent)) !important;
-            box-shadow: 0 12px 34px rgba(5, 4, 18, .14);
-            animation: se311-card-in .54s cubic-bezier(.2, .8, .2, 1) both;
-            transition: transform .23s ease, border-color .23s ease, box-shadow .23s ease;
-        }
-
-        :where(.question, .question-block, .question-card, .q-card)::before {
-            content: '';
-            position: absolute;
-            inset: 0 auto 0 0;
-            width: 3px;
-            background: linear-gradient(180deg, var(--se311-accent), var(--se311-accent-2));
-        }
-
-        :where(.question, .question-block, .question-card, .q-card):hover {
-            transform: translateY(-3px);
-            border-color: var(--se311-accent) !important;
-            box-shadow: 0 18px 46px rgba(5, 4, 18, .21), 0 0 28px var(--se311-glow);
-        }
-
-        :where(.option, .answer-option, label.option, .true-false-option, .opt, .tf-btn) {
-            transition: transform .18s ease, border-color .18s ease, background .18s ease, box-shadow .18s ease !important;
-        }
-
-        :where(.option, .answer-option, label.option, .true-false-option, .opt, .tf-btn):hover {
-            transform: translateX(5px);
-            border-color: var(--se311-accent) !important;
-            background-image: linear-gradient(90deg,
-                color-mix(in srgb, var(--se311-accent) 14%, transparent),
-                color-mix(in srgb, var(--se311-accent-2) 8%, transparent)) !important;
-            box-shadow: 0 8px 24px var(--se311-glow);
-        }
-
-        :where(input[type="radio"], input[type="checkbox"]) { accent-color: var(--se311-accent); }
-
-        :where(.toggle-answer-btn, .submit-btn, .submit-all-btn, .check-btn, .restart-btn,
-            .retry-btn, .nav-btn, button[type="submit"]) {
-            border: 0 !important;
-            color: #fff !important;
-            background: linear-gradient(105deg, var(--se311-accent), var(--se311-accent-2)) !important;
-            box-shadow: 0 10px 28px var(--se311-glow);
-            transition: transform .2s ease, box-shadow .2s ease, filter .2s ease !important;
-        }
-
-        :where(.toggle-answer-btn, .submit-btn, .submit-all-btn, .check-btn, .restart-btn,
-            .retry-btn, .nav-btn, button[type="submit"]):hover {
-            transform: translateY(-2px) scale(1.015);
-            box-shadow: 0 15px 38px var(--se311-glow);
-            filter: saturate(1.15) brightness(1.05);
-        }
-
-        :where(.answer, .answer-key, .feedback, .explanation, .mock-answer, .model-answer,
-            .result-panel, .results-panel) {
-            border-color: color-mix(in srgb, var(--se311-accent-2) 55%, transparent) !important;
-            background-image: linear-gradient(110deg,
-                color-mix(in srgb, var(--se311-accent-2) 11%, transparent), transparent) !important;
-        }
-
-        @keyframes se311-hero-in {
-            from { opacity: 0; transform: translateY(-12px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes se311-card-in {
-            from { opacity: 0; transform: translateY(16px) scale(.992); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
-        }
-
-        @media (max-width: 768px) {
-            :where(.quiz-container, .container, .quiz-content, .quiz-wrap, .hero, main) {
-                width: min(100% - 20px, 1320px) !important;
-            }
-            :where(.question, .question-block, .question-card, .q-card):hover,
-            :where(.option, .answer-option, label.option, .true-false-option, .opt, .tf-btn):hover {
-                transform: none;
-            }
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-            :where(.quiz-container, .quiz-content, .quiz-wrap, main, .question, .question-block, .question-card, .q-card) {
-                animation: none !important;
-            }
-            :where(.question, .question-block, .question-card, .q-card, .option, .answer-option,
-                .opt, .tf-btn, .toggle-answer-btn, .submit-btn, .submit-all-btn, .check-btn,
-                .restart-btn, .retry-btn, .nav-btn):hover { transform: none !important; }
-        }
-
-
-    </style>
-    <link rel="stylesheet" href="/styles/a11y.css">
+<link rel="stylesheet" href="/styles/a11y.css">
+    <script src="/javascripts/se311.js" defer></script>
 </head>
 <body>
 
-    <div class="container">
+        <button class="sg-theme-toggle" type="button" onclick="toggleTheme()" aria-label="Toggle dark and light mode">
+        <svg class="sg-icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.2 14.6A8.4 8.4 0 0 1 9.4 3.8a8.4 8.4 0 1 0 10.8 10.8Z"/></svg>
+        <svg class="sg-icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4.1"/><path d="M12 2.4v2.3M12 19.3v2.3M2.4 12h2.3M19.3 12h2.3M5.2 5.2l1.6 1.6M17.2 17.2l1.6 1.6M18.8 5.2l-1.6 1.6M6.8 17.2l-1.6 1.6"/></svg>
+        <span data-theme-label>Dark</span>
+    </button>
+<div class="container">
         <div class="header">
             <h1>
                 <span class="en">SE311 - Requirements Engineering</span>
@@ -1870,41 +1183,6 @@ html[data-parent-theme="dark"] select {
             `;
         }
     </script>
-
-<script id="se311-theme-bridge">
-(() => {
-  const root = document.documentElement;
-  const systemTheme = window.matchMedia('(prefers-color-scheme: dark)');
-
-  function setTheme(theme) {
-    root.setAttribute('data-theme', theme === 'dark' ? 'dark' : 'light');
-  }
-
-  function syncParentTheme() {
-    const parentTheme = root.getAttribute('data-parent-theme');
-    if (parentTheme === 'dark' || parentTheme === 'light') {
-      setTheme(parentTheme);
-      return true;
-    }
-    return false;
-  }
-
-  if (!syncParentTheme()) {
-    setTheme(systemTheme.matches ? 'dark' : 'light');
-  }
-
-  systemTheme.addEventListener('change', (event) => {
-    if (!root.getAttribute('data-parent-theme')) {
-      setTheme(event.matches ? 'dark' : 'light');
-    }
-  });
-
-  new MutationObserver(syncParentTheme).observe(root, {
-    attributes: true,
-    attributeFilter: ['data-parent-theme']
-  });
-})();
-</script>
 
 
 </body>
