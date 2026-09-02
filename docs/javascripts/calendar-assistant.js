@@ -12,6 +12,52 @@
     brief: { tab: "Brief", intent: "brief", placeholder: "Pick an exam below, then ask for what to focus on.", hint: "Builds a revision brief from that course's material on this site." }
   };
   var mode = "chat";
+  var lastPlanProposals = [];
+
+  function timeMinutes(value) {
+    var parts = String(value || "").split(":").map(Number);
+    return parts.length === 2 && isFinite(parts[0]) && isFinite(parts[1]) ? parts[0] * 60 + parts[1] : null;
+  }
+
+  function clock(minutes) {
+    minutes = Math.max(0, Math.min(1439, Math.round(minutes)));
+    return String(Math.floor(minutes / 60)).padStart(2, "0") + ":" + String(minutes % 60).padStart(2, "0");
+  }
+
+  function localPlanRevision(question) {
+    if (!lastPlanProposals.length) return null;
+    var lower = question.toLowerCase();
+    if (!/(from scratch|haven.?t (started|touched)|beginner|no prior|shorter|fewer|evening|after class)/i.test(lower)) return null;
+    var revised = lastPlanProposals.slice();
+    var bridge = api(), course = revised[0].course || revised[0].title.split(/\s+(?:study|review|chapter|quiz)/i)[0];
+    var exam = bridge && bridge.upcomingExams().find(function (entry) { return String(entry.course || "").replace(/[^a-z0-9]/gi, "").toLowerCase() === String(course || "").replace(/[^a-z0-9]/gi, "").toLowerCase(); });
+    if (exam) revised = revised.filter(function (proposal) { return proposal.date < exam.date; });
+    if (/fewer/i.test(lower)) revised = revised.slice(0, 3);
+    if (/from scratch|haven.?t (started|touched)|beginner|no prior/i.test(lower)) {
+      var source = lastPlanProposals.map(function (proposal) { return [proposal.title, proposal.note].join(" "); }).join(" ");
+      var range = source.match(/chapters?\s*(\d+)\s*(?:-|–|to)\s*(\d+)/i), chapters = [];
+      if (range) for (var number = Number(range[1]); number <= Number(range[2]) && chapters.length < 8; number++) chapters.push(number);
+      if (!chapters.length) chapters = [1, 2, 3];
+      revised = revised.map(function (proposal, index) {
+        var chapter = chapters[Math.min(chapters.length - 1, Math.floor(index * chapters.length / Math.max(1, revised.length)))];
+        var finalStep = index === revised.length - 1;
+        return Object.assign({}, proposal, {
+          course: course,
+          title: finalStep ? course + " Mixed Practice & Recall" : course + " Learn Chapter " + chapter,
+          note: finalStep ? "Test yourself across all chapters, then revisit mistakes" : "Start from the basics: learn Chapter " + chapter + ", make notes, then use active recall"
+        });
+      });
+    }
+    revised = revised.map(function (proposal) {
+      var start = timeMinutes(proposal.start), duration = Math.max(45, (timeMinutes(proposal.end) || (start === null ? 0 : start + 90)) - (start === null ? 0 : start));
+      if (/shorter/i.test(lower)) duration = Math.min(duration, 60);
+      if (/evening|after class/i.test(lower)) start = 18 * 60;
+      if (start === null) start = 18 * 60;
+      return Object.assign({}, proposal, { start: clock(start), end: clock(start + duration) });
+    });
+    return revised;
+  }
+
 
   var style = document.createElement("style");
   style.textContent = [
@@ -181,6 +227,18 @@
     if (send.disabled) return;
     if (!question && mode !== "plan") return;
 
+    if (mode === "plan") {
+      var localRevision = localPlanRevision(question);
+      if (localRevision) {
+        say("user", question);
+        say("bot", "I revised the previous plan for " + (localRevision[0].course || "that exam") + " — nothing is saved yet:");
+        localRevision.forEach(card);
+        lastPlanProposals = localRevision;
+        input.value = "";
+        return;
+      }
+    }
+
     var config = MODES[mode];
     var payload = { intent: config.intent, question: question, today: bridge.today(), snapshot: bridge.snapshot() };
     if (mode === "chat") payload.history = history.slice(-6);
@@ -212,6 +270,7 @@
       if (data.proposals && data.proposals.length) {
         say("bot", data.proposals.length === 1 ? "Here is what I understood — nothing is saved yet:" : "Here is what I propose — nothing is saved yet:");
         data.proposals.forEach(card);
+        if (mode === "plan") lastPlanProposals = data.proposals.slice();
         return;
       }
       var node = say("bot", data.answer || "I could not work that out from your calendar.");

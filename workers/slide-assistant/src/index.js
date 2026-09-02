@@ -244,6 +244,63 @@ function normalizeProposal(raw, today) {
   };
 }
 
+function courseKey(value) {
+  return text(value, 80).toLowerCase().replace(/[^a-z0-9]/g, "");
+}
+
+function planTargetExam(snapshot, question, today) {
+  const query = courseKey(question);
+  const future = snapshot.exams.filter((exam) => exam.date >= today).sort((a, b) => a.date.localeCompare(b.date));
+  return future.find((exam) => query.includes(courseKey(exam.course))) || (future.length === 1 ? future[0] : null);
+}
+
+function overlaps(startA, endA, startB, endB) {
+  const toMinutes = (value) => {
+    const parts = String(value || "").split(":").map(Number);
+    return parts.length === 2 ? parts[0] * 60 + parts[1] : null;
+  };
+  const a1 = toMinutes(startA), a2 = toMinutes(endA), b1 = toMinutes(startB), b2 = toMinutes(endB);
+  if ([a1, a2, b1, b2].some((value) => value === null)) return false;
+  return a1 < b2 && a2 > b1;
+}
+
+function proposalConflicts(proposal, snapshot) {
+  if (!proposal.start || !proposal.end) return false;
+  const weekday = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"][new Date(proposal.date + "T12:00:00Z").getUTCDay()];
+  const classConflict = snapshot.classes.some((item) => item.days.includes(weekday) && overlaps(proposal.start, proposal.end, item.start, item.end));
+  const examConflict = snapshot.exams.some((item) => item.date === proposal.date && overlaps(proposal.start, proposal.end, item.start, item.end));
+  const eventConflict = snapshot.events.some((item) => item.date <= proposal.date && (item.endDate || item.date) >= proposal.date && overlaps(proposal.start, proposal.end, item.start, item.end));
+  return classConflict || examConflict || eventConflict;
+}
+
+function nextDate(value) {
+  const date = new Date(value + "T12:00:00Z");
+  date.setUTCDate(date.getUTCDate() + 1);
+  return date.toISOString().slice(0, 10);
+}
+
+function fallbackStudyPlan(snapshot, today, target, question) {
+  if (!target) return [];
+  const range = question.match(/chapters?\s*(\d+)\s*(?:-|–|to)\s*(\d+)/i);
+  const chapters = [];
+  if (range) for (let value = Number(range[1]); value <= Number(range[2]) && chapters.length < 8; value += 1) chapters.push(value);
+  const stages = chapters.length
+    ? chapters.map((chapter) => ({ title: `Learn Chapter ${chapter}`, note: `Start from the basics, take notes, and use active recall for Chapter ${chapter}` }))
+      .concat([{ title: `Practice Chapters ${chapters[0]}-${chapters[chapters.length - 1]}`, note: "Answer practice questions, check mistakes, and revisit weak points" }, { title: "Final Recall", note: "Recall the main ideas without notes, then review only what was missed" }])
+    : [{ title: "Learn the Foundations", note: "Start from the basics and make concise notes" }, { title: "Active Recall", note: "Explain the main ideas without looking at notes" }, { title: "Practice", note: "Answer practice questions and review mistakes" }, { title: "Final Review", note: "Review only weak points and key definitions" }];
+  const days = [];
+  for (let day = today; day < target.date && days.length < 14; day = nextDate(day)) days.push(day);
+  const proposals = [];
+  const choices = ["16:00", "18:00", "20:00"];
+  for (let index = 0; index < stages.length && index < days.length && proposals.length < 6; index += 1) {
+    const date = days[Math.floor(index * days.length / Math.min(stages.length, days.length))];
+    const stage = stages[index];
+    const slot = choices.map((start) => ({ title: `${target.course} ${stage.title}`, kind: "study", date, endDate: date, start, end: start === "20:00" ? "21:30" : start === "18:00" ? "19:30" : "17:30", location: "", course: target.course, examType: "", note: stage.note })).find((proposal) => !proposalConflicts(proposal, snapshot));
+    if (slot) proposals.push(slot);
+  }
+  return proposals;
+}
+
 async function courseMaterial(route, env, query) {
   const context = await loadContext(route, env);
   if (!context) return null;
@@ -289,6 +346,7 @@ const CAL_PROMPTS = {
     "You propose study sessions for a student, working only from the schedule below.",
     'Reply with ONE JSON array and nothing else — no prose, no code fence. Each element: {"title":string,"kind":"study","date":"YYYY-MM-DD","start":"HH:MM","end":"HH:MM","course":string,"note":string}',
     "Rules: only dates from today onward and before the exam being revised for. Never overlap an existing class, exam or event. Prefer 60-120 minute blocks, spread across days rather than stacked. Propose at most 6 sessions. note says briefly why that slot.",
+    "If the request names a course or exam, plan ONLY for that course. Never add other courses. If the student says they are starting from scratch, sequence learning chapter by chapter, then active recall and practice; do not merely rename generic sessions.",
     "If there is nothing to plan for, reply with []."
   ],
   brief: [
@@ -314,8 +372,13 @@ async function handleCalendar(request, env, origin) {
   const today = DATE_KEY.test(body.today) ? body.today : new Date().toISOString().slice(0, 10);
   const snapshot = sanitizeSnapshot(body.snapshot);
   const schedule = renderSnapshot(snapshot, today);
+  const planTarget = intent === "plan" ? planTargetExam(snapshot, question, today) : null;
   if (intent === "plan" && !snapshot.exams.some((exam) => exam.date >= today)) {
     return json({ answer: "Add the quiz or exam date to your calendar first. Once its date is saved, I can place study sessions before it without overlapping your classes." }, 200, origin);
+  }
+  if (intent === "plan" && planTarget && /from scratch|haven.?t (?:started|touched)|beginner|no prior/i.test(question)) {
+    const starterPlan = fallbackStudyPlan(snapshot, today, planTarget, question);
+    if (starterPlan.length) return json({ proposals: starterPlan }, 200, origin);
   }
 
   let material = "";
@@ -339,7 +402,7 @@ async function handleCalendar(request, env, origin) {
     messages: [
       { role: "system", content: CAL_PROMPTS[intent].join("\n") },
       ...history,
-      { role: "user", content: `${schedule}${material}\n\n${intent === "plan" ? "Request" : "Question"}: ${question || "Plan study sessions for my upcoming exams."}` }
+      { role: "user", content: `${schedule}${material}${planTarget ? `\n\nTARGET EXAM: ${planTarget.course} ${planTarget.type} on ${planTarget.date}. Plan only for this target.` : ""}\n\n${intent === "plan" ? "Request" : "Question"}: ${question || "Plan study sessions for my upcoming exams."}` }
     ],
     temperature: intent === "chat" || intent === "brief" ? 0.2 : 0,
     max_tokens: intent === "brief" ? 900 : 700
@@ -349,7 +412,20 @@ async function handleCalendar(request, env, origin) {
   if (intent === "parse" || intent === "plan") {
     const parsed = extractJson(answer);
     const raw = intent === "parse" ? [parsed] : Array.isArray(parsed) ? parsed : [];
-    const proposals = raw.map((item) => normalizeProposal(item, today)).filter(Boolean).slice(0, 6);
+    let proposals = raw.map((item) => normalizeProposal(item, today)).filter(Boolean).slice(0, 6);
+    if (intent === "plan" && planTarget) {
+      const targetKey = courseKey(planTarget.course);
+      const otherCourseKeys = snapshot.exams.map((exam) => courseKey(exam.course)).filter((value) => value && value !== targetKey);
+      proposals = proposals.filter((proposal) => {
+        const proposalKey = courseKey(proposal.course);
+        const titleKey = courseKey(proposal.title);
+        if (proposalKey && proposalKey !== targetKey) return false;
+        if (otherCourseKeys.some((value) => titleKey.includes(value))) return false;
+        if (proposal.date >= planTarget.date) return false;
+        return !proposalConflicts(proposal, snapshot);
+      }).map((proposal) => ({ ...proposal, course: planTarget.course }));
+      if (!proposals.length) proposals = fallbackStudyPlan(snapshot, today, planTarget, question);
+    }
     if (!proposals.length) {
       return json({ error: intent === "parse" ? "I could not read a date out of that. Try naming the day, like: SE322 final on 2026-05-12 at 14:00" : "I could not find any free slots to propose." }, 422, origin);
     }
