@@ -3221,6 +3221,57 @@
       $("save-class-edit-btn").addEventListener("click", saveClassEdit);
       document.addEventListener("click", function () { closeDatePickers(); });
       document.addEventListener("keydown", function (e) { if (e.key === "Escape" && Object.keys(datePickers).some(function (id) { return $(id + "-picker") && $(id + "-picker").classList.contains("open"); })) closeDatePickers(); else if (e.key === "Escape" && $("class-edit-editor").classList.contains("open")) closeClassEdit(); else if (e.key === "Escape" && $("class-remove-editor").classList.contains("open")) closeClassRemoval(); else if (e.key === "Escape" && $("event-editor").classList.contains("open")) closeEventEditor(); else if (e.key === "Escape" && $("exam-editor").classList.contains("open")) closeExamEditor(); else if (e.key === "Escape" && $("day-detail").classList.contains("open")) closeDay(); });
+      // Bridge for the AI panel in calendar-assistant.js. It hands over a
+      // sanitized snapshot (no ids, no links, no attendance) and applies any
+      // accepted proposal through the same save paths the forms use, so
+      // validation and persistence stay in one place.
+      window.__shougCalendarAI = {
+        today: todayKey,
+        signedIn: function () { return Boolean(profileRef); },
+        snapshot: function () {
+          return {
+            exams: exams.map(function (e) {
+              return { course: e.course, type: examTypeLabel(e.type), date: e.date, start: e.start || "", end: e.end || "", location: e.location || "" };
+            }),
+            classes: classes.map(function (c) {
+              return { title: c.title || "Class", days: Array.isArray(c.days) ? c.days : [], start: c.start || "", end: c.end || "", location: c.location || "" };
+            }),
+            events: items.map(function (i) {
+              return { title: i.title, kind: i.kind || "personal", date: i.date, endDate: i.endDate || i.date, start: i.start || "", end: i.end || "", location: i.location || "" };
+            })
+          };
+        },
+        upcomingExams: function () {
+          return futureExams().map(function (e) {
+            return { id: e.id, course: e.course, type: examTypeLabel(e.type), date: e.date, start: e.start || "" };
+          });
+        },
+        addEvent: function (proposal) {
+          return saveNewEvent({
+            title: proposal.title,
+            date: proposal.date,
+            endDate: proposal.endDate || proposal.date,
+            kind: proposal.kind === "study" ? "study" : "personal",
+            start: proposal.start || "",
+            end: proposal.end || "",
+            location: proposal.location || ""
+          });
+        },
+        addExam: function (proposal) {
+          if (!profileRef) { toast("Sign in to save exams"); return Promise.resolve(false); }
+          var course = (proposal.course || proposal.title || "").trim().toUpperCase();
+          if (!course || !proposal.date) { toast("That exam is missing a course or date"); return Promise.resolve(false); }
+          var candidate = { course: course, type: canonicalExamType(proposal.examType || "exam"), date: proposal.date, start: proposal.start || "", end: proposal.end || "", location: proposal.location || "" };
+          if (duplicateExam(candidate)) { toast("That exam is already on your calendar"); return Promise.resolve(false); }
+          var nextExams = Object.assign({}, examMap);
+          nextExams[uid()] = candidate;
+          return profileRef.set({ exams: nextExams, updatedAt: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true })
+            .then(function () { toast("Exam added"); return true; })
+            .catch(function () { toast("Could not save that exam"); return false; });
+        }
+      };
+      document.dispatchEvent(new CustomEvent("shoug:calendar-ai-ready"));
+
       window.__shoug_onAuth = function (user) {
         if (!user) { currentUser = null; show("signed-out-state"); return; }
         if (activeUid === user.uid) return;
@@ -3233,6 +3284,8 @@
       setTimeout(function () { clearInterval(poll); if (!currentUser) show("signed-out-state"); }, 15000);
     })();
   </script>
+<script src="/javascripts/course-routes.js?v=20260902-1" defer></script>
+<script src="/javascripts/calendar-assistant.js?v=20260902-1" defer></script>
 <script src="/javascripts/register-sw.js" defer></script>
 </body>
 

@@ -3,8 +3,12 @@
   if (window.__shougSlideAssistantLoaded) return;
   window.__shougSlideAssistantLoaded = true;
 
+  // Normalize before gating: the loader in mobile-navigation.js also fires on
+  // "/…/name" and "/…/name/index.html", so a stricter test here left those
+  // URLs with no button at all. Every page under /academics/ has a context.
   var route = location.pathname.replace(/index\.html$/, "");
-  if (!/\/(slides|slide-breakdowns)\/[^/]+\/$/.test(route)) return;
+  if (route.charAt(route.length - 1) !== "/") route += "/";
+  if (!/^\/academics\//.test(route)) return;
   var endpoint = window.SHOUG_AI_ENDPOINT || "https://shoug-tech.shoug-alomran.workers.dev/v1/slide-assistant";
   var history = [];
 
