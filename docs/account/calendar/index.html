@@ -1235,6 +1235,54 @@
       text-decoration: line-through
     }
 
+    .assignment-item {
+      grid-template-columns: 1fr;
+      gap: 12px;
+      padding: 14px 16px;
+      border-left: 4px solid #c084fc;
+      background: linear-gradient(105deg, rgba(192, 132, 252, .09), var(--item-bg) 58%)
+    }
+
+    .assignment-item-main {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px
+    }
+
+    .assignment-status {
+      flex: 0 0 auto;
+      border: 1px solid rgba(192, 132, 252, .38);
+      border-radius: 999px;
+      padding: 5px 9px;
+      color: #c084fc;
+      background: rgba(192, 132, 252, .08);
+      font: 800 .62rem/1 "JetBrains Mono", monospace;
+      text-transform: uppercase
+    }
+
+    .assignment-item .item-actions {
+      justify-content: flex-start;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding-top: 11px;
+      border-top: 1px solid var(--line)
+    }
+
+    .assignment-item .remove-btn {
+      min-height: 32px;
+      padding: 0 11px;
+      border: 1px solid currentColor;
+      border-radius: 999px;
+      background: var(--surface)
+    }
+
+    @media(max-width:560px) {
+      .assignment-item-main {
+        flex-direction: column
+      }
+    }
+
     .day-sheet-title,
     .exam-form-title {
       font-size: 1.32rem;
@@ -2442,7 +2490,7 @@
   <script>
     (function () {
       "use strict";
-      var currentUser = null, currentMonth = new Date(), examPickerMonth = new Date(), datePickers = {}, profileRef = null, profileUnsub = null, activeUid = null, exams = [], classes = [], items = [], classAttendance = [], classOverrides = [], examMap = {}, editingExamId = "", activeDayKey = "", pendingClassRemoval = null, pendingClassEdit = null, calendarNeedsCleanup = false, duplicateExamIds = [], selectedSemester = loadSemesterScope();
+      var currentUser = null, currentMonth = new Date(), examPickerMonth = new Date(), datePickers = {}, profileRef = null, profileUnsub = null, activeUid = null, exams = [], classes = [], items = [], classAttendance = [], classOverrides = [], examMap = {}, editingExamId = "", editingEventId = "", activeDayKey = "", pendingClassRemoval = null, pendingClassEdit = null, calendarNeedsCleanup = false, duplicateExamIds = [], selectedSemester = loadSemesterScope();
       var viewFilters = loadViewFilters();
       var STUDY_TEMPLATES = {
         "review-slides": { title: "Review slides", start: "16:00", end: "17:30" },
@@ -2926,8 +2974,9 @@
         var assignments = items.filter(function (it) { return it.kind === "assignment" && isInSemesterScope(it); }).sort(function (a, b) { return Boolean(a.submitted) - Boolean(b.submitted) || String(a.endDate || a.date).localeCompare(String(b.endDate || b.date)); });
         $("assignment-list").innerHTML = assignments.length ? assignments.map(function (it) {
           var due = assignmentDueLabel(it);
-          return '<div class="item' + (it.submitted ? ' assignment-submitted' : '') + '"><div><div class="item-title">' + esc(it.title || "Assignment") + '</div><div class="item-meta assignment-due">' + esc(it.submitted ? "Submitted" : due) + (it.end ? ' · Due at ' + esc(timeLabel(it.end)) : '') + '</div></div><div class="item-actions"><button class="remove-btn edit" data-assignment-toggle="' + esc(it.id) + '">' + (it.submitted ? 'Mark Not Submitted' : 'Mark Submitted') + '</button><button class="remove-btn" data-assignment-delete="' + esc(it.id) + '">Delete</button></div></div>';
+          return '<div class="item assignment-item' + (it.submitted ? ' assignment-submitted' : '') + '"><div class="assignment-item-main"><div><div class="item-title">' + esc(it.title || "Assignment") + '</div><div class="item-meta assignment-due">' + esc(it.submitted ? "Submitted" : due) + (it.end ? ' · Due at ' + esc(timeLabel(it.end)) : '') + '</div><div class="item-meta">' + esc(assignmentWindowMeta(it)) + '</div></div><span class="assignment-status">' + (it.submitted ? 'Done' : 'Open') + '</span></div><div class="item-actions"><button class="remove-btn edit" data-assignment-edit="' + esc(it.id) + '">Edit</button><button class="remove-btn edit" data-assignment-toggle="' + esc(it.id) + '">' + (it.submitted ? 'Mark Not Submitted' : 'Mark Submitted') + '</button><button class="remove-btn" data-assignment-delete="' + esc(it.id) + '">Delete</button></div></div>';
         }).join("") : '<div class="empty">No assignments yet. Add one to track its due date.</div>';
+        $("assignment-list").querySelectorAll("[data-assignment-edit]").forEach(function (b) { b.addEventListener("click", function () { openAssignmentEditor(b.dataset.assignmentEdit); }); });
         $("assignment-list").querySelectorAll("[data-assignment-toggle]").forEach(function (b) { b.addEventListener("click", function () { toggleAssignmentSubmitted(b.dataset.assignmentToggle); }); });
         $("assignment-list").querySelectorAll("[data-assignment-delete]").forEach(function (b) { b.addEventListener("click", function () { deleteEventById(b.dataset.assignmentDelete); }); });
         $("exam-list").innerHTML = futureExams().length ? futureExams().slice(0, 8).map(function (e) { return '<div class="item"><div><div class="item-title">' + esc(e.course) + '</div><div class="item-meta">' + esc(examTypeLabel(e.type)) + ' · ' + esc(e.date) + (e.start ? ' · ' + esc(timeRange(e.start, e.end)) : '') + (e.location ? ' · ' + esc(e.location) : '') + '</div></div><div class="item-actions"><button class="remove-btn edit" data-exam-edit="' + esc(e.id) + '">Edit</button><button class="remove-btn" data-exam-delete="' + esc(e.id) + '">Delete</button></div></div>'; }).join("") : '<div class="empty">No upcoming exams yet. Add one here or from your profile.</div>';
@@ -3018,6 +3067,7 @@
           '<div class="day-timeline"><div class="hour-labels">' + hours.map(function (h) { return '<div class="hour-label">' + hourLabel(h) + '</div>'; }).join("") + '</div><div class="hour-grid">' + hours.map(function () { return '<div class="hour-line"></div>'; }).join("") + '<div class="timed-layer">' + timed.map(function (e) { return timelineEventHtml(e, startHour, pxPerHour); }).join("") + '</div></div></div>';
         $("day-list").querySelectorAll("[data-exam-edit]").forEach(function (b) { b.addEventListener("click", function () { openExamEditor(b.dataset.examEdit); }); });
         $("day-list").querySelectorAll("[data-item-delete]").forEach(function (b) { b.addEventListener("click", function () { deleteEventById(b.dataset.itemDelete); }); });
+        $("day-list").querySelectorAll("[data-assignment-edit]").forEach(function (b) { b.addEventListener("click", function () { openAssignmentEditor(b.dataset.assignmentEdit); }); });
         $("day-list").querySelectorAll("[data-assignment-toggle]").forEach(function (b) { b.addEventListener("click", function () { toggleAssignmentSubmitted(b.dataset.assignmentToggle); }); });
         $("day-list").querySelectorAll("[data-class-remove]").forEach(function (b) { b.addEventListener("click", function () { openClassRemoval(b.dataset.classRemove, b.dataset.date); }); });
         $("day-list").querySelectorAll("[data-class-edit]").forEach(function (b) { b.addEventListener("click", function () { openClassEdit(b.dataset.classEdit, b.dataset.date); }); });
@@ -3026,7 +3076,7 @@
       function eventActionsHtml(e) {
         if (e.examId) return '<div class="day-card-actions"><button class="mini-btn" data-exam-edit="' + esc(e.examId) + '" type="button">Edit Exam</button></div>';
         if (e.classId) return '<div class="day-card-actions">' + (e.online && e.onlineLink ? '<a class="mini-btn" href="' + esc(e.onlineLink) + '" target="_blank" rel="noopener noreferrer">Join Meeting</a>' : '') + (e.online && !e.onlineLink ? '<button class="mini-btn" data-class-edit="' + esc(e.classId) + '" data-date="' + esc(e.date) + '" type="button">Add Meeting Link</button>' : '') + '<button class="mini-btn" data-class-edit="' + esc(e.classId) + '" data-date="' + esc(e.date) + '" type="button">Edit This Class</button><button class="mini-btn danger" data-class-remove="' + esc(e.classId) + '" data-date="' + esc(e.date) + '" type="button">Remove This Class</button></div>';
-        if (e.itemId) return '<div class="day-card-actions">' + (e.kind === "assignment" ? '<button class="mini-btn" data-assignment-toggle="' + esc(e.itemId) + '" type="button">' + (e.submitted ? 'Mark Not Submitted' : 'Mark Submitted') + '</button>' : '') + '<button class="mini-btn danger" data-item-delete="' + esc(e.itemId) + '" type="button">Delete ' + (e.kind === "assignment" ? 'Assignment' : 'Event') + '</button></div>';
+        if (e.itemId) return '<div class="day-card-actions">' + (e.kind === "assignment" ? '<button class="mini-btn" data-assignment-edit="' + esc(e.itemId) + '" type="button">Edit</button><button class="mini-btn" data-assignment-toggle="' + esc(e.itemId) + '" type="button">' + (e.submitted ? 'Mark Not Submitted' : 'Mark Submitted') + '</button>' : '') + '<button class="mini-btn danger" data-item-delete="' + esc(e.itemId) + '" type="button">Delete ' + (e.kind === "assignment" ? 'Assignment' : 'Event') + '</button></div>';
         return "";
       }
       function eventTitleHtml(e) { return e.onlineLink ? '<a href="' + esc(e.onlineLink) + '" target="_blank" rel="noopener noreferrer">' + esc(e.title) + '</a>' : esc(e.title); }
@@ -3220,6 +3270,7 @@
         });
       }
       function openEventEditor(date, kind) {
+        editingEventId = "";
         var k = date || activeDayKey || todayKey();
         var isAssignment = kind === "assignment";
         $("event-edit-title").value = "";
@@ -3240,12 +3291,33 @@
         $("event-editor").classList.add("open"); $("event-editor").setAttribute("aria-hidden", "false"); document.body.style.overflow = "hidden";
         setTimeout(function () { $("event-edit-title").focus(); }, 0);
       }
+      function openAssignmentEditor(id) {
+        var item = items.find(function (entry) { return entry.id === id && entry.kind === "assignment"; });
+        if (!item) { toast("Could not find that assignment"); return; }
+        openEventEditor(item.date, "assignment");
+        editingEventId = id;
+        $("event-edit-title").value = item.title || "";
+        setDatePickerValue("event-edit-date", item.date || todayKey());
+        setDatePickerValue("event-edit-end-date", item.endDate || item.date || todayKey());
+        $("event-edit-end").value = item.end || "";
+        $("event-edit-location").value = item.location || "";
+        $("event-editor-title").textContent = "Edit Assignment";
+        $("save-event-btn").textContent = "Update Assignment";
+      }
       function closeEventEditor() {
         $("event-editor").classList.remove("open"); $("event-editor").setAttribute("aria-hidden", "true");
         if (!$("day-detail").classList.contains("open") && !$("exam-editor").classList.contains("open") && !$("class-remove-editor").classList.contains("open") && !$("class-edit-editor").classList.contains("open")) document.body.style.overflow = "";
+        editingEventId = "";
       }
       function saveEventEditor() {
-        saveNewEvent({ title: $("event-edit-title").value.trim(), date: $("event-edit-date").value, endDate: $("event-edit-end-date").value || $("event-edit-date").value, kind: $("event-edit-kind").value, start: $("event-edit-start").value, end: $("event-edit-end").value, location: $("event-edit-location").value.trim() }).then(function (saved) { if (saved) closeEventEditor(); });
+        var data = { title: $("event-edit-title").value.trim(), date: $("event-edit-date").value, endDate: $("event-edit-end-date").value || $("event-edit-date").value, kind: $("event-edit-kind").value, start: $("event-edit-start").value, end: $("event-edit-end").value, location: $("event-edit-location").value.trim() };
+        if (!editingEventId) { saveNewEvent(data).then(function (saved) { if (saved) closeEventEditor(); }); return; }
+        if (!data.title || !data.date) { toast("Add an assignment title and date"); return; }
+        if (data.endDate < data.date) { toast("Due date cannot be before the available date"); return; }
+        var item = items.find(function (entry) { return entry.id === editingEventId; });
+        if (!item) { toast("Could not find that assignment"); return; }
+        Object.assign(item, data);
+        persist().then(function () { renderAll(); if (activeDayKey) openDay(activeDayKey); document.dispatchEvent(new CustomEvent("shoug:calendar-reminders-changed")); closeEventEditor(); toast("Assignment updated"); });
       }
       function exportDateBounds() {
         var dates = [];
