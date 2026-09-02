@@ -2038,6 +2038,11 @@
 
     <link rel="manifest" href="/site.webmanifest">
     <meta name="theme-color" content="#050508">
+
+  <style id="productivity-enhancements">
+    .weekly-agenda{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px}.agenda-day{min-height:118px;padding:11px;border:1px solid var(--line);background:var(--item-bg)}.agenda-day.today{border-color:#b829ea;box-shadow:inset 0 3px #b829ea}.agenda-date{font:800 .66rem "JetBrains Mono",monospace;color:var(--muted);text-transform:uppercase;margin-bottom:9px}.agenda-entry{display:block;width:100%;margin-top:6px;padding:7px 8px;border:0;border-left:3px solid #5ca8ff;background:rgba(92,168,255,.09);color:var(--text);text-align:left;font:700 .62rem/1.35 "JetBrains Mono",monospace;cursor:pointer}.agenda-entry.assignment{border-color:#c084fc;background:rgba(192,132,252,.1)}.agenda-empty{font-size:.68rem;color:var(--muted)}.risk-banner{grid-column:1/-1;padding:10px 12px;border:1px solid rgba(255,42,75,.35);background:rgba(255,42,75,.07);color:#ff6b82;font:700 .68rem/1.5 "JetBrains Mono",monospace}.assignment-details{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}.meta-pill{padding:4px 7px;border:1px solid var(--line);border-radius:999px;color:var(--muted);font:700 .58rem "JetBrains Mono",monospace;text-transform:uppercase}.meta-pill.high{color:#ff536f;border-color:rgba(255,42,75,.4)}.assignment-notes{margin-top:9px;color:var(--muted);font-size:.72rem;line-height:1.55}.assignment-links{display:flex;gap:10px;margin-top:8px}.assignment-links a{color:#c084fc;font:800 .62rem "JetBrains Mono",monospace}.subtask-list{display:grid;gap:6px;margin-top:10px}.subtask-check{display:flex;align-items:flex-start;gap:8px;color:var(--muted);font-size:.7rem}.subtask-check.done{text-decoration:line-through;opacity:.55}.reminder-options{display:flex;flex-wrap:wrap;gap:8px}.reminder-options label{border:1px solid var(--line);padding:8px 10px;font:700 .65rem "JetBrains Mono",monospace}.grade-summary{margin-top:14px}.grade-course-card{padding:12px;border:1px solid var(--line);background:var(--item-bg)}.grade-course-head{display:flex;justify-content:space-between;gap:10px;font-weight:900}.grade-risk{color:#ff536f}.grade-ok{color:#41d6c3}.grade-entry{display:flex;justify-content:space-between;gap:8px;margin-top:7px;color:var(--muted);font-size:.68rem}.grade-entry button{border:0;background:none;color:#ff536f;cursor:pointer}.productivity-panel .panel-head{align-items:center}textarea{box-sizing:border-box;width:100%;resize:vertical}
+    @media(max-width:900px){.weekly-agenda{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:560px){.weekly-agenda{grid-template-columns:1fr}.productivity-panel .panel-head{align-items:flex-start}.productivity-panel .panel-head .btn{margin-top:8px}}
+  </style>
 </head>
 
 <body>
@@ -2082,6 +2087,10 @@
       <section class="today-dashboard" id="today-dashboard"></section>
       <div class="calendar-shell">
         <div class="calendar-main">
+          <section class="panel productivity-panel" id="weekly-agenda-panel">
+            <div class="panel-head"><div><div class="panel-title">Your Next 7 Days</div><div class="panel-sub">A focused agenda ranked by urgency and effort</div></div><button class="btn muted" id="auto-plan-week-btn" type="button">Plan Due Work</button></div>
+            <div class="panel-body"><div class="weekly-agenda" id="weekly-agenda"></div></div>
+          </section>
           <section class="panel" id="calendar-month-panel">
             <div class="panel-head">
               <div>
@@ -2168,6 +2177,15 @@
               <div class="assignment-view" id="assignment-due-view" role="tabpanel" aria-labelledby="assignment-due-tab"><div class="list" id="assignment-due-list"></div></div>
               <div class="assignment-view" id="assignment-submitted-view" role="tabpanel" aria-labelledby="assignment-submitted-tab" hidden><div class="list" id="assignment-submitted-list"></div></div>
               <button class="btn muted assignment-reminder-action" id="enable-assignment-reminders-btn" type="button">Enable Due Notifications</button>
+            </div>
+          </section>
+          <section class="panel grade-panel" id="calendar-grade-panel">
+            <div class="panel-head"><div><div class="panel-title">Grades & Risk</div><div class="panel-sub">Track weighted results and spot courses needing attention</div></div></div>
+            <div class="panel-body">
+              <div class="grid-2"><div class="field"><label>Course</label><input id="grade-course" placeholder="SE 322"></div><div class="field"><label>Assessment</label><input id="grade-title" placeholder="Quiz 1"></div></div>
+              <div class="grid-2"><div class="field"><label>Score</label><input id="grade-earned" type="number" min="0" step="0.01" placeholder="18"></div><div class="field"><label>Out of</label><input id="grade-possible" type="number" min="0.01" step="0.01" placeholder="20"></div></div>
+              <div class="field"><label>Course weight (%)</label><input id="grade-weight" type="number" min="0" max="100" step="0.1" placeholder="10"></div>
+              <button class="btn solid" id="add-grade-btn" type="button">Add Grade</button><div class="list grade-summary" id="grade-summary"></div>
             </div>
           </section>
           <section class="panel" id="calendar-class-panel">
@@ -2483,6 +2501,14 @@
           <div class="field"><label id="event-edit-end-time-label">End</label><input id="event-edit-end" type="time"></div>
         </div>
         <div class="field"><label>Location</label><input id="event-edit-location" placeholder="Optional"></div>
+        <div id="assignment-extra-fields">
+          <div class="grid-2"><div class="field"><label>Course</label><input id="assignment-edit-course" placeholder="SE 322"></div><div class="field"><label>Priority</label><select id="assignment-edit-priority"><option value="high">High</option><option value="medium" selected>Medium</option><option value="low">Low</option></select></div></div>
+          <div class="grid-2"><div class="field"><label>Difficulty</label><select id="assignment-edit-difficulty"><option value="hard">Hard</option><option value="medium" selected>Medium</option><option value="easy">Easy</option></select></div><div class="field"><label>Estimated hours</label><input id="assignment-edit-hours" type="number" min="0.5" max="100" step="0.5" value="2"></div></div>
+          <div class="field"><label>Checklist <span class="optional-note">one task per line</span></label><textarea id="assignment-edit-subtasks" rows="4" placeholder="Read requirements&#10;Draft solution&#10;Review and submit"></textarea></div>
+          <div class="field"><label>Notes</label><textarea id="assignment-edit-notes" rows="3" placeholder="Requirements, rubric notes, or anything to remember"></textarea></div>
+          <div class="grid-2"><div class="field"><label>Resource or file link</label><input id="assignment-edit-resource" type="url" placeholder="https://..."></div><div class="field"><label>Rubric link</label><input id="assignment-edit-rubric" type="url" placeholder="https://..."></div></div><div class="field"><label>Submission link</label><input id="assignment-edit-submission" type="url" placeholder="https://..."></div>
+          <div class="field"><label>Notify me</label><div class="reminder-options"><label><input type="checkbox" name="assignment-reminder" value="7" checked> 7 days</label><label><input type="checkbox" name="assignment-reminder" value="3" checked> 3 days</label><label><input type="checkbox" name="assignment-reminder" value="1" checked> 1 day</label><label><input type="checkbox" name="assignment-reminder" value="0" checked> Due day</label></div></div>
+        </div>
         <button class="btn solid" id="save-event-btn" type="button">Save Event</button>
       </div>
     </section>
@@ -2538,12 +2564,12 @@
     </section>
   </div>
   <script src="/javascripts/mobile-navigation.js?v=61" defer></script>
-  <script src="/javascripts/firebase-auth.js?v=62"></script>
+  <script src="/javascripts/firebase-auth.js?v=63"></script>
   <script src="/javascripts/psu-academic-calendar.js?v=2"></script>
   <script>
     (function () {
       "use strict";
-      var currentUser = null, currentMonth = new Date(), examPickerMonth = new Date(), datePickers = {}, profileRef = null, profileUnsub = null, activeUid = null, exams = [], classes = [], items = [], classAttendance = [], classOverrides = [], examMap = {}, editingExamId = "", editingEventId = "", activeDayKey = "", pendingClassRemoval = null, pendingClassEdit = null, calendarNeedsCleanup = false, duplicateExamIds = [], selectedSemester = loadSemesterScope();
+      var currentUser = null, currentMonth = new Date(), examPickerMonth = new Date(), datePickers = {}, profileRef = null, profileUnsub = null, activeUid = null, exams = [], classes = [], items = [], grades = [], classAttendance = [], classOverrides = [], examMap = {}, editingExamId = "", editingEventId = "", activeDayKey = "", pendingClassRemoval = null, pendingClassEdit = null, calendarNeedsCleanup = false, duplicateExamIds = [], selectedSemester = loadSemesterScope();
       var viewFilters = loadViewFilters();
       var STUDY_TEMPLATES = {
         "review-slides": { title: "Review slides", start: "16:00", end: "17:30" },
@@ -2810,10 +2836,11 @@
         });
         classAttendance = Array.isArray(data.calendarClassAttendance) ? data.calendarClassAttendance : [];
         classOverrides = Array.isArray(data.calendarClassOverrides) ? data.calendarClassOverrides : [];
+        grades = Array.isArray(data.calendarGrades) ? data.calendarGrades : [];
         items = rawItems.filter(function (i) { return i.source !== "psu-academic"; });
         calendarNeedsCleanup = classesChanged || rawItems.length !== items.length;
       }
-      function persist(extra) { var payload = { calendarClassSchedules: classes, calendarEvents: items, calendarClassAttendance: classAttendance, calendarClassOverrides: classOverrides, updatedAt: firebase.firestore.FieldValue.serverTimestamp() }; Object.keys(extra || {}).forEach(function (k) { payload[k] = extra[k]; }); if (!profileRef) return Promise.resolve(); return profileRef.set(payload, { merge: true }); }
+      function persist(extra) { var payload = { calendarClassSchedules: classes, calendarEvents: items, calendarGrades: grades, calendarClassAttendance: classAttendance, calendarClassOverrides: classOverrides, updatedAt: firebase.firestore.FieldValue.serverTimestamp() }; Object.keys(extra || {}).forEach(function (k) { payload[k] = extra[k]; }); if (!profileRef) return Promise.resolve(); return profileRef.set(payload, { merge: true }); }
       function futureExams() { var t = todayKey(); return scopedExams(exams).filter(function (e) { return e.date && e.date >= t; }).sort(function (a, b) { return a.date.localeCompare(b.date); }); }
       function psuCalendar() { return window.SHOUG_PSU_ACADEMIC_CALENDAR || { version: "", events: [] }; }
       function psuEvents() { var calendar = psuCalendar(); return Array.isArray(calendar.events) ? calendar.events : []; }
@@ -3037,7 +3064,11 @@
         function assignmentCards(list) {
           return list.map(function (it) {
             var due = assignmentDueLabel(it);
-            return '<div class="item assignment-item' + (it.submitted ? ' assignment-submitted' : '') + '"><div class="assignment-item-main"><div><div class="item-title">' + esc(it.title || "Assignment") + '</div><div class="item-meta assignment-due">' + esc(it.submitted ? "Submitted" : due) + (it.end ? ' · Due at ' + esc(timeLabel(it.end)) : '') + '</div><div class="item-meta">' + esc(assignmentAvailableMeta(it)) + '</div></div><span class="assignment-status">' + (it.submitted ? 'Done' : 'Open') + '</span></div><div class="item-actions"><button class="remove-btn edit" data-assignment-edit="' + esc(it.id) + '">Edit</button><button class="remove-btn edit" data-assignment-toggle="' + esc(it.id) + '">' + (it.submitted ? 'Mark Not Submitted' : 'Mark Submitted') + '</button><button class="remove-btn" data-assignment-delete="' + esc(it.id) + '">Delete</button></div></div>';
+            var subtasks = Array.isArray(it.subtasks) ? it.subtasks : [], done = subtasks.filter(function (x) { return x.done; }).length;
+            var details = '<div class="assignment-details">' + (it.course ? '<span class="meta-pill">' + esc(it.course) + '</span>' : '') + '<span class="meta-pill ' + esc(it.priority || "medium") + '">' + esc(it.priority || "medium") + ' priority</span><span class="meta-pill">' + esc(it.difficulty || "medium") + '</span><span class="meta-pill">' + esc(it.estimatedHours || 2) + 'h estimate</span>' + (subtasks.length ? '<span class="meta-pill">' + done + '/' + subtasks.length + ' tasks</span>' : '') + '</div>';
+            var checks = subtasks.length ? '<div class="subtask-list">' + subtasks.map(function (sub) { return '<label class="subtask-check' + (sub.done ? ' done' : '') + '"><input type="checkbox" data-assignment-subtask="' + esc(it.id) + '" data-subtask-id="' + esc(sub.id) + '" ' + (sub.done ? 'checked' : '') + '> ' + esc(sub.text) + '</label>'; }).join("") + '</div>' : "";
+            var links = (it.resourceUrl || it.rubricUrl || it.submissionUrl) ? '<div class="assignment-links">' + (it.resourceUrl ? '<a href="' + esc(it.resourceUrl) + '" target="_blank" rel="noopener noreferrer">Resource</a>' : '') + (it.rubricUrl ? '<a href="' + esc(it.rubricUrl) + '" target="_blank" rel="noopener noreferrer">Rubric</a>' : '') + (it.submissionUrl ? '<a href="' + esc(it.submissionUrl) + '" target="_blank" rel="noopener noreferrer">Submit</a>' : '') + '</div>' : "";
+            return '<div class="item assignment-item' + (it.submitted ? ' assignment-submitted' : '') + '"><div class="assignment-item-main"><div><div class="item-title">' + esc(it.title || "Assignment") + '</div><div class="item-meta assignment-due">' + esc(it.submitted ? "Submitted" : due) + (it.end ? ' · Due at ' + esc(timeLabel(it.end)) : '') + '</div><div class="item-meta">' + esc(assignmentAvailableMeta(it)) + '</div>' + details + (it.notes ? '<div class="assignment-notes">' + esc(it.notes) + '</div>' : '') + links + checks + '</div><span class="assignment-status">' + (it.submitted ? 'Done' : 'Open') + '</span></div><div class="item-actions"><button class="remove-btn edit" data-assignment-edit="' + esc(it.id) + '">Edit</button>' + (!it.submitted ? '<button class="remove-btn edit" data-assignment-plan="' + esc(it.id) + '">Plan Work</button>' : '') + '<button class="remove-btn edit" data-assignment-toggle="' + esc(it.id) + '">' + (it.submitted ? 'Mark Not Submitted' : 'Mark Submitted') + '</button><button class="remove-btn" data-assignment-delete="' + esc(it.id) + '">Delete</button></div></div>';
           }).join("");
         }
         $("assignment-due-count").textContent = dueAssignments.length;
@@ -3045,6 +3076,8 @@
         $("assignment-due-list").innerHTML = dueAssignments.length ? assignmentCards(dueAssignments) : '<div class="empty">No assignments are currently due.</div>';
         $("assignment-submitted-list").innerHTML = submittedAssignments.length ? assignmentCards(submittedAssignments) : '<div class="empty">No submitted assignments yet.</div>';
         $("calendar-assignment-panel").querySelectorAll("[data-assignment-edit]").forEach(function (b) { b.addEventListener("click", function () { openAssignmentEditor(b.dataset.assignmentEdit); }); });
+        $("calendar-assignment-panel").querySelectorAll("[data-assignment-subtask]").forEach(function (b) { b.addEventListener("change", function () { toggleSubtask(b.dataset.assignmentSubtask, b.dataset.subtaskId); }); });
+        $("calendar-assignment-panel").querySelectorAll("[data-assignment-plan]").forEach(function (b) { b.addEventListener("click", function () { planOneAssignment(b.dataset.assignmentPlan); }); });
         $("calendar-assignment-panel").querySelectorAll("[data-assignment-toggle]").forEach(function (b) { b.addEventListener("click", function () { toggleAssignmentSubmitted(b.dataset.assignmentToggle); }); });
         $("calendar-assignment-panel").querySelectorAll("[data-assignment-delete]").forEach(function (b) { b.addEventListener("click", function () { deleteEventById(b.dataset.assignmentDelete); }); });
         $("exam-list").innerHTML = futureExams().length ? futureExams().slice(0, 8).map(function (e) { return '<div class="item"><div><div class="item-title">' + esc(e.course) + '</div><div class="item-meta">' + esc(examTypeLabel(e.type)) + ' · ' + esc(e.date) + (e.start ? ' · ' + esc(timeRange(e.start, e.end)) : '') + (e.location ? ' · ' + esc(e.location) : '') + '</div></div><div class="item-actions"><button class="remove-btn edit" data-exam-edit="' + esc(e.id) + '">Edit</button><button class="remove-btn" data-exam-delete="' + esc(e.id) + '">Delete</button></div></div>'; }).join("") : '<div class="empty">No upcoming exams yet. Add one here or from your profile.</div>';
@@ -3111,6 +3144,47 @@
           openDay(conflicts[0].date);
         });
       }
+      function assignmentUrgency(it) {
+        var days = Math.ceil((fromKey(it.endDate || it.date) - fromKey(todayKey())) / 86400000);
+        var priority = { high: 35, medium: 20, low: 8 }[it.priority || "medium"] || 20;
+        var difficulty = { hard: 18, medium: 10, easy: 4 }[it.difficulty || "medium"] || 10;
+        var progress = (it.subtasks || []).length ? (it.subtasks || []).filter(function (x) { return x.done; }).length / it.subtasks.length : 0;
+        return priority + difficulty + Math.max(0, 35 - days * 5) + Math.min(20, Number(it.estimatedHours) || 0) - progress * 20;
+      }
+      function renderWeeklyAgenda() {
+        var wrap = $("weekly-agenda"); if (!wrap) return;
+        var openAssignments = items.filter(function (it) { return it.kind === "assignment" && !it.submitted && (it.endDate || it.date) >= todayKey(); }).sort(function (a,b) { return assignmentUrgency(b) - assignmentUrgency(a); });
+        var risky = openAssignments.filter(function (it) { var days = Math.ceil((fromKey(it.endDate || it.date) - fromKey(todayKey())) / 86400000); return days <= 2 && assignmentUrgency(it) >= 45; });
+        var html = risky.length ? '<div class="risk-banner">Attention: ' + esc(risky[0].title) + ' is due soon' + (risky[0].estimatedHours ? ' with about ' + esc(risky[0].estimatedHours) + ' hours remaining.' : '.') + '</div>' : "";
+        for (var i=0;i<7;i++) {
+          var k=addDays(todayKey(),i), ev=eventsFor(k).filter(isVisibleEvent).filter(function (e) { return e.kind !== "assignment" || (e.endDate || e.date) === k; }).slice(0,5);
+          html += '<div class="agenda-day' + (i===0?' today':'') + '"><div class="agenda-date">' + (i===0?'Today':fromKey(k).toLocaleDateString("en-US",{weekday:"short"})) + ' · ' + fromKey(k).toLocaleDateString("en-US",{month:"short",day:"numeric"}) + '</div>' + (ev.length ? ev.map(function (e) { return '<button class="agenda-entry ' + esc(e.kind) + '" data-agenda-date="' + k + '">' + esc(e.title) + (e.start ? '<br>' + esc(timeLabel(e.start)) : '') + '</button>'; }).join("") : '<div class="agenda-empty">Open day</div>') + '</div>';
+        }
+        wrap.innerHTML=html;
+        wrap.querySelectorAll("[data-agenda-date]").forEach(function (b) { b.addEventListener("click",function(){ currentMonth=fromKey(b.dataset.agendaDate); renderCalendar(); openDay(b.dataset.agendaDate); }); });
+      }
+      function studySlot(day, hours) { var length=Math.round(hours*60), busy=eventsFor(day).filter(function(e){return e.start&&minutes(e.start)!==null;}).map(function(e){return {start:minutes(e.start),end:minutes(e.end)||minutes(e.start)+60};}); var choices=[16*60,18*60,20*60];var start=choices.find(function(candidate){return !busy.some(function(x){return candidate<x.end&&candidate+length>x.start;});});start=start===undefined?20*60:start;return {start:toTime(start),end:toTime(start+length)}; }
+      function planOneAssignment(id) { var it=items.find(function(x){return x.id===id;}); if(!it)return; if(items.some(function(x){return x.kind==="study"&&x.linkedAssignmentId===id;})){toast("This assignment already has a study block");return;} var due=it.endDate||it.date,day=todayKey();if(day>due)day=due;var hours=Math.min(2,Math.max(.5,Number(it.estimatedHours)||1.5)),slot=studySlot(day,hours);items.push({id:uid(),title:"Work on "+it.title,date:day,endDate:day,kind:"study",start:slot.start,end:slot.end,location:"",linkedAssignmentId:id});persist().then(function(){renderAll();toast("Study block added");}); }
+      function autoPlanDueWork() {
+        var targets=items.filter(function(it){return it.kind==="assignment"&&!it.submitted&&(it.endDate||it.date)>=todayKey()&&!items.some(function(x){return x.kind==="study"&&x.linkedAssignmentId===it.id;});}).sort(function(a,b){return assignmentUrgency(b)-assignmentUrgency(a);}).slice(0,4);
+        if(!targets.length){toast("Your open assignments are already planned");return;}
+        targets.forEach(function(it,index){var due=it.endDate||it.date, day=addDays(todayKey(),Math.min(index,Math.max(0,assignmentDuration(it)-1)));if(day>due)day=due;var hours=Math.min(2,Math.max(.5,Number(it.estimatedHours)||1.5)),slot=studySlot(day,hours);items.push({id:uid(),title:"Work on "+it.title,date:day,endDate:day,kind:"study",start:slot.start,end:slot.end,location:"",linkedAssignmentId:it.id});});
+        persist().then(function(){renderAll();toast("Study blocks added for "+targets.length+" assignment"+(targets.length===1?"":"s"));});
+      }
+      function gradeToGpa(percent) { return percent >= 95 ? 4 : percent >= 90 ? 3.75 : percent >= 85 ? 3.5 : percent >= 80 ? 3 : percent >= 75 ? 2.5 : percent >= 70 ? 2 : percent >= 65 ? 1.5 : percent >= 60 ? 1 : 0; }
+      function renderGradebook() {
+        var wrap=$("grade-summary");if(!wrap)return;var groups={};
+        grades.forEach(function(g){var c=(g.course||"OTHER").toUpperCase();(groups[c]||(groups[c]=[])).push(g);});
+        var names=Object.keys(groups).sort(), courseGpas=names.map(function(course){var weighted=0,used=0;groups[course].forEach(function(g){var w=Number(g.weight)||0,p=Number(g.possible)||0;weighted+=p?(Number(g.earned)||0)/p*w:0;used+=w;});return gradeToGpa(used?weighted/used*100:0);}),overallGpa=courseGpas.length?courseGpas.reduce(function(a,b){return a+b;},0)/courseGpas.length:0;wrap.innerHTML=names.length?'<div class="grade-course-card"><div class="grade-course-head"><span>Estimated GPA</span><span class="grade-ok">'+overallGpa.toFixed(2)+'/4.00</span></div><div class="item-meta">Equal-course estimate based on grades entered below</div></div>'+names.map(function(course){var rows=groups[course],weighted=0,used=0;rows.forEach(function(g){var w=Number(g.weight)||0,p=Number(g.possible)||0;weighted+=p>0?(Number(g.earned)||0)/p*w:0;used+=w;});var current=used?weighted/used*100:0,risk=current<70?"grade-risk":"grade-ok";return '<div class="grade-course-card"><div class="grade-course-head"><span>'+esc(course)+'</span><span class="'+risk+'">'+current.toFixed(1)+'%</span></div><div class="item-meta">'+used.toFixed(1)+'% of course graded · '+(current<70?"At risk — prioritize recovery work":current<80?"Watch closely":"On track")+'</div>'+rows.map(function(g){return '<div class="grade-entry"><span>'+esc(g.title||"Assessment")+' · '+esc(g.earned)+'/'+esc(g.possible)+' · '+esc(g.weight)+'%</span><button data-grade-delete="'+esc(g.id)+'">Delete</button></div>';}).join("")+'</div>';}).join(""):'<div class="empty">Add graded work to calculate each course average.</div>';
+        wrap.querySelectorAll("[data-grade-delete]").forEach(function(b){b.addEventListener("click",function(){grades=grades.filter(function(g){return g.id!==b.dataset.gradeDelete;});persist().then(renderGradebook);});});
+      }
+      function addGrade() {
+        var course=$("grade-course").value.trim().toUpperCase(),title=$("grade-title").value.trim(),earned=Number($("grade-earned").value),possible=Number($("grade-possible").value),weight=Number($("grade-weight").value);
+        if(!course||!title||!isFinite(earned)||!possible||!isFinite(weight)||weight<0||weight>100){toast("Add a course, assessment, valid score, and weight");return;}
+        grades.push({id:uid(),course:course,title:title,earned:earned,possible:possible,weight:weight});
+        ["grade-title","grade-earned","grade-possible","grade-weight"].forEach(function(id){$(id).value="";});persist().then(function(){renderGradebook();toast("Grade added");});
+      }
+      function toggleSubtask(assignmentId,subtaskId){var item=items.find(function(x){return x.id===assignmentId;});if(!item)return;var sub=(item.subtasks||[]).find(function(x){return x.id===subtaskId;});if(!sub)return;sub.done=!sub.done;persist().then(renderAll);}
       function renderDayChecks() {
         $("class-days").innerHTML = SHORT.map(function (s, i) { return '<label><input type="checkbox" value="' + WEEKDAYS[i] + '">' + s + '</label>'; }).join("");
       }
@@ -3120,7 +3194,7 @@
         select.innerHTML = periods.length ? periods.map(function (p) { return '<option value="' + esc(p.term) + '">' + esc(termName(p.term)) + ' · ' + esc(dateRange(p.start, p.end)) + '</option>'; }).join("") : '<option value="">PSU term dates unavailable</option>';
         if (periods.some(function (p) { return p.term === selected; })) select.value = selected; else if (viewed) select.value = viewed.term;
       }
-      function renderAll(preferViewedTerm) { renderSemesterOptions(); renderTermOptions(preferViewedTerm); renderViewFilters(); renderCalendar(); renderLists(); }
+      function renderAll(preferViewedTerm) { renderSemesterOptions(); renderTermOptions(preferViewedTerm); renderViewFilters(); renderCalendar(); renderLists(); renderWeeklyAgenda(); renderGradebook(); }
       function openDay(k) {
         var d = fromKey(k), ev = eventsFor(k);
         activeDayKey = k;
@@ -3318,7 +3392,7 @@
         data.endDate = data.endDate || data.date;
         if (data.endDate < data.date) { toast("End date cannot be before start date"); return Promise.resolve(false); }
         if (data.start && data.end && data.end <= data.start && data.date === data.endDate) { toast("End time must be after start time"); return Promise.resolve(false); }
-        items.push({ id: uid(), title: data.title, date: data.date, endDate: data.endDate, kind: data.kind || "personal", start: data.start || "", end: data.end || "", location: data.location || "", linkedExamId: data.linkedExamId || "", submitted: Boolean(data.submitted), remindersEnabled: data.kind === "assignment" ? true : undefined });
+        items.push({ id: uid(), title: data.title, date: data.date, endDate: data.endDate, kind: data.kind || "personal", start: data.start || "", end: data.end || "", location: data.location || "", linkedExamId: data.linkedExamId || "", linkedAssignmentId: data.linkedAssignmentId || "", submitted: Boolean(data.submitted), remindersEnabled: data.kind === "assignment" ? true : undefined, course: data.course || "", priority: data.priority || "medium", difficulty: data.difficulty || "medium", estimatedHours: Number(data.estimatedHours) || 2, notes: data.notes || "", resourceUrl: cleanUrl(data.resourceUrl), rubricUrl: cleanUrl(data.rubricUrl), submissionUrl: cleanUrl(data.submissionUrl), reminderDays: Array.isArray(data.reminderDays) ? data.reminderDays : [7,3,1,0], subtasks: Array.isArray(data.subtasks) ? data.subtasks : [] });
         return persist().then(function () { renderAll(); if (activeDayKey) openDay(activeDayKey); if (data.kind === "assignment") document.dispatchEvent(new CustomEvent("shoug:calendar-reminders-changed")); toast(data.kind === "study" ? "Study session added" : (data.kind === "assignment" ? "Assignment added" : "Event added")); return true; });
       }
       function addStudySession() {
@@ -3337,6 +3411,18 @@
           if (saved) { ["event-title", "event-start", "event-end", "event-location"].forEach(function (id) { $(id).value = ""; }); setDatePickerValue("event-date", ""); setDatePickerValue("event-end-date", ""); }
         });
       }
+      function assignmentFormData(existing) {
+        var previous = existing && Array.isArray(existing.subtasks) ? existing.subtasks : [];
+        var lines = $("assignment-edit-subtasks").value.split(/\n/).map(function (x) { return x.trim(); }).filter(Boolean);
+        return { course: $("assignment-edit-course").value.trim().toUpperCase(), priority: $("assignment-edit-priority").value, difficulty: $("assignment-edit-difficulty").value, estimatedHours: Number($("assignment-edit-hours").value) || 2, notes: $("assignment-edit-notes").value.trim(), resourceUrl: $("assignment-edit-resource").value.trim(), rubricUrl: $("assignment-edit-rubric").value.trim(), submissionUrl: $("assignment-edit-submission").value.trim(), reminderDays: [].slice.call(document.querySelectorAll("input[name=assignment-reminder]:checked")).map(function (x) { return Number(x.value); }), subtasks: lines.map(function (text) { var old = previous.find(function (x) { return x.text === text; }); return { id: old && old.id || uid(), text: text, done: Boolean(old && old.done) }; }) };
+      }
+      function setAssignmentFields(item, visible) {
+        $("assignment-extra-fields").style.display = visible ? "block" : "none";
+        if (!visible) return; item = item || {};
+        $("assignment-edit-course").value = item.course || ""; $("assignment-edit-priority").value = item.priority || "medium"; $("assignment-edit-difficulty").value = item.difficulty || "medium"; $("assignment-edit-hours").value = Number(item.estimatedHours) || 2;
+        $("assignment-edit-subtasks").value = (item.subtasks || []).map(function (x) { return x.text || ""; }).join("\n"); $("assignment-edit-notes").value = item.notes || ""; $("assignment-edit-resource").value = item.resourceUrl || ""; $("assignment-edit-rubric").value = item.rubricUrl || ""; $("assignment-edit-submission").value = item.submissionUrl || "";
+        var selected = Array.isArray(item.reminderDays) ? item.reminderDays : [7,3,1,0]; document.querySelectorAll("input[name=assignment-reminder]").forEach(function (x) { x.checked = selected.indexOf(Number(x.value)) > -1; });
+      }
       function openEventEditor(date, kind) {
         editingEventId = "";
         var k = date || activeDayKey || todayKey();
@@ -3353,6 +3439,7 @@
         $("event-edit-start").value = "";
         $("event-edit-end").value = "";
         $("event-edit-location").value = "";
+        setAssignmentFields({}, isAssignment);
         $("event-editor-title").textContent = isAssignment ? "Add Assignment" : "Add Event";
         $("event-editor-sub").textContent = isAssignment ? "Choose when work opens and the final due date. It will display as a compact work window." : "Starts on " + k + ". Set an end date to make a connected range.";
         $("save-event-btn").textContent = isAssignment ? "Save Assignment" : "Save Event";
@@ -3369,6 +3456,7 @@
         setDatePickerValue("event-edit-end-date", item.endDate || item.date || todayKey());
         $("event-edit-end").value = item.end || "";
         $("event-edit-location").value = item.location || "";
+        setAssignmentFields(item, true);
         $("event-editor-title").textContent = "Edit Assignment";
         $("save-event-btn").textContent = "Update Assignment";
       }
@@ -3379,6 +3467,8 @@
       }
       function saveEventEditor() {
         var data = { title: $("event-edit-title").value.trim(), date: $("event-edit-date").value, endDate: $("event-edit-end-date").value || $("event-edit-date").value, kind: $("event-edit-kind").value, start: $("event-edit-start").value, end: $("event-edit-end").value, location: $("event-edit-location").value.trim() };
+        var existingAssignment = editingEventId ? items.find(function (entry) { return entry.id === editingEventId; }) : null;
+        if (data.kind === "assignment") Object.assign(data, assignmentFormData(existingAssignment));
         if (!editingEventId) { saveNewEvent(data).then(function (saved) { if (saved) closeEventEditor(); }); return; }
         if (!data.title || !data.date) { toast("Add an assignment title and date"); return; }
         if (data.endDate < data.date) { toast("Due date cannot be before the available date"); return; }
@@ -3487,6 +3577,9 @@
       $("event-editor-close").addEventListener("click", closeEventEditor);
       $("event-editor").addEventListener("click", function (e) { if (e.target === $("event-editor")) closeEventEditor(); });
       $("save-event-btn").addEventListener("click", saveEventEditor);
+      $("event-edit-kind").addEventListener("change", function () { var assignment = this.value === "assignment"; setAssignmentFields({}, assignment); $("event-edit-start-time-field").style.display = assignment ? "none" : "flex"; $("event-edit-start-date-label").textContent = assignment ? "Available from" : "Starts"; $("event-edit-end-date-label").textContent = assignment ? "Due date" : "Ends"; $("event-edit-end-time-label").textContent = assignment ? "Due time" : "End"; });
+      $("auto-plan-week-btn").addEventListener("click", autoPlanDueWork);
+      $("add-grade-btn").addEventListener("click", addGrade);
       $("class-remove-close").addEventListener("click", closeClassRemoval);
       $("class-remove-editor").addEventListener("click", function (e) { if (e.target === $("class-remove-editor")) closeClassRemoval(); });
       $("mark-skipped-btn").addEventListener("click", function () { recordClassRemoval("skipped"); });

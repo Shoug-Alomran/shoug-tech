@@ -774,8 +774,9 @@
   function maybeFireBrowserExamNotification(user, exam) {
     if (!user || !exam || !("Notification" in window) || Notification.permission !== "granted") return;
     var days = daysUntilExam(exam.date);
-    if (days !== 7 && days !== 3 && days !== 1 && days !== 0) return;
     var reminderKind = exam.reminderKind === "assignment" ? "assignment" : "exam";
+    var allowedDays = reminderKind === "assignment" && Array.isArray(exam.reminderDays) ? exam.reminderDays : [7, 3, 1, 0];
+    if (allowedDays.indexOf(days) === -1) return;
     var key = reminderKind + "-notif-" + user.uid + "-" + exam.id + "-d" + days;
     try {
       if (localStorage.getItem(key)) return;
@@ -806,10 +807,11 @@
       (Array.isArray(data.calendarEvents) ? data.calendarEvents : []).forEach(function (item) {
         if (!item || item.kind !== "assignment" || item.submitted || item.remindersEnabled === false) return;
         var dueDate = item.endDate || item.date;
-        upcoming.push({ id: item.id, title: item.title, date: dueDate, days: daysUntilExam(dueDate), reminderKind: "assignment" });
+        upcoming.push({ id: item.id, title: item.title, date: dueDate, days: daysUntilExam(dueDate), reminderKind: "assignment", reminderDays: Array.isArray(item.reminderDays) ? item.reminderDays : [7, 3, 1, 0] });
       });
       upcoming = upcoming.filter(function (e) {
-        return e.days !== null && e.days >= 0 && e.days <= 7;
+        if (e.days === null || e.days < 0 || e.days > 7) return false;
+        return e.reminderKind !== "assignment" || !Array.isArray(e.reminderDays) || e.reminderDays.indexOf(e.days) > -1;
       }).sort(function (a, b) {
         return a.days - b.days || (a.reminderKind === "assignment" ? -1 : 1);
       });

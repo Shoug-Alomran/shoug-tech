@@ -167,7 +167,7 @@
 
     <link rel="manifest" href="/site.webmanifest">
     <meta name="theme-color" content="#050508">
-</head>
+<style id="course-work-styles">.course-work{margin:26px 0}.course-work-grid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:12px}.course-work-card{padding:18px;border:1px solid rgba(184,41,234,.18);background:rgba(184,41,234,.035)}.course-work-label{font:800 .62rem "JetBrains Mono",monospace;letter-spacing:.1em;text-transform:uppercase;color:#8f8b9a;margin-bottom:12px}.course-work-row{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-top:1px solid rgba(255,255,255,.06);font-size:.78rem}.course-work-score{font:900 1.6rem "JetBrains Mono",monospace}.course-work-score.risk{color:#ff536f}.course-work-empty{color:#8f8b9a;font-size:.7rem;line-height:1.5;margin-top:6px}@media(max-width:760px){.course-work-grid{grid-template-columns:1fr}}</style></head>
 <body>
 <h1 class="shoug-visually-hidden">SHOUG.TECH // Course Progress</h1>
 <script>if(localStorage.getItem('shoug-theme')==='light')document.body.classList.add('shoug-light-mode');</script>
@@ -376,7 +376,21 @@
     return '<div class="analytics-card"><div class="analytics-label">' + escHtml(L().activity30) + ' <span style="color:'+color+';font-weight:800">'+total+' ' + escHtml(L().completedWord) + '</span></div>'+svg+'</div>';
   }
 
-  function render(track, course, allPages, completedSet, courseDates, color) {
+  function renderCourseWork(course, profileData, color) {
+    profileData = profileData || {};
+    var norm=function(v){return String(v||"").toLowerCase().replace(/[^a-z0-9]/g,"");};
+    var today=new Date();today.setHours(0,0,0,0);
+    var assignments=(Array.isArray(profileData.calendarEvents)?profileData.calendarEvents:[]).filter(function(x){return x&&x.kind==="assignment"&&!x.submitted&&norm(x.course)===norm(course);}).sort(function(a,b){return String(a.endDate||a.date).localeCompare(String(b.endDate||b.date));}).slice(0,4);
+    var grades=(Array.isArray(profileData.calendarGrades)?profileData.calendarGrades:[]).filter(function(x){return norm(x.course)===norm(course);});
+    var weighted=0,used=0;grades.forEach(function(g){var w=Number(g.weight)||0,p=Number(g.possible)||0;weighted+=p?(Number(g.earned)||0)/p*w:0;used+=w;});
+    var average=used?weighted/used*100:null,weak=[];try{weak=JSON.parse(localStorage.getItem("shoug-weak-topics")||"[]").filter(function(x){return String(x.route||"").toLowerCase().indexOf("/"+String(course).toLowerCase()+"/")>-1;});}catch(e){}
+    var cards='<div class="course-work-card"><div class="course-work-label">Upcoming work</div>'+(assignments.length?assignments.map(function(a){return '<div class="course-work-row"><span>'+escHtml(a.title||"Assignment")+'</span><strong style="color:'+color+'">'+escHtml(a.endDate||a.date)+'</strong></div>';}).join(""):'<div class="course-work-empty">No open assignments for this course.</div>')+'</div>';
+    cards+='<div class="course-work-card"><div class="course-work-label">Grade signal</div><div class="course-work-score '+(average!==null&&average<70?'risk':'')+'">'+(average===null?'—':average.toFixed(1)+"%")+'</div><div class="course-work-empty">'+(average===null?"Add weighted grades in Calendar.":used.toFixed(1)+"% of the course is graded.")+'</div></div>';
+    cards+='<div class="course-work-card"><div class="course-work-label">Weak topics</div><div class="course-work-score">'+weak.length+'</div><div class="course-work-empty">'+(weak.length?"Saved from the slide assistant for focused review.":"Mark difficult AI answers as weak topics.")+'</div></div>';
+    return '<div class="course-work"><div class="sections-title">Course command center</div><div class="course-work-grid">'+cards+'</div></div>';
+  }
+
+  function render(track, course, allPages, completedSet, courseDates, color, profileData) {
     var coursePages = allPages.filter(function(p) {
       return p.track === track && p.course === course;
     });
@@ -497,6 +511,7 @@
       breadcrumb,
       hero,
       analytics,
+      renderCourseWork(course, profileData, color),
       '<div class="sections-title">' + escHtml(L().sectionBreakdown) + '</div>',
       '<div class="sections-grid">' + sectionCards + '</div>',
     ].join("");
@@ -538,9 +553,11 @@
         if (page.track === p.track && page.course === p.course) coursePageUrls[page.url] = true;
       });
       Promise.all([
-        firebase.firestore().collection("userProgress").doc(user.uid).collection("pages").get()
+        firebase.firestore().collection("userProgress").doc(user.uid).collection("pages").get(),
+        firebase.firestore().collection("users").doc(user.uid).get()
       ]).then(function(results) {
         var snap         = results[0];
+        var profileData  = results[1] && results[1].exists ? results[1].data() : {};
         var completedSet = {};
         var courseDates  = [];
         snap.forEach(function(doc) {
@@ -560,9 +577,9 @@
           }
           if (dt) courseDates.push(dt);
         });
-        render(p.track, p.course, allPages, completedSet, courseDates, color);
+        render(p.track, p.course, allPages, completedSet, courseDates, color, profileData);
         window.__shougRerender = function(){
-          render(p.track, p.course, allPages, completedSet, courseDates, color);
+          render(p.track, p.course, allPages, completedSet, courseDates, color, profileData);
         };
       }).catch(function() { show("error-state"); });
     });

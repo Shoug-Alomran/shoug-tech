@@ -18,7 +18,7 @@
     ".sg-ai-launch:hover{background:#ff2a4b;color:#050508}.sg-ai-panel{position:fixed;z-index:99980;right:0;top:68px;bottom:0;width:min(410px,100vw);display:flex;flex-direction:column;background:#09050f;color:#f8f7fb;border-left:1px solid rgba(255,42,75,.35);box-shadow:-20px 0 60px rgba(0,0,0,.42);transform:translateX(105%);transition:transform .2s ease}",
     ".sg-ai-panel.is-open{transform:none}.sg-ai-launch[aria-expanded='true']{opacity:0;pointer-events:none;transform:translateY(8px)}.sg-ai-head{padding:18px;border-bottom:1px solid rgba(255,255,255,.1);display:flex;justify-content:space-between;gap:16px}.sg-ai-kicker{color:#ff2a4b;font:800 .58rem 'JetBrains Mono',monospace;letter-spacing:.16em;text-transform:uppercase}.sg-ai-title{margin-top:5px;font:800 .9rem 'JetBrains Mono',monospace}.sg-ai-close{color:#f8f7fb;border:1px solid rgba(255,255,255,.14);width:32px;height:32px;background:transparent;font-size:1.1rem}",
     ".sg-ai-note{padding:10px 18px;color:#9b96a4;border-bottom:1px solid rgba(255,255,255,.07);font-size:.72rem;line-height:1.5}.sg-ai-chat{flex:1;overflow:auto;padding:18px;display:flex;flex-direction:column;gap:12px}.sg-ai-msg{padding:11px 12px;border:1px solid rgba(255,255,255,.1);font-size:.82rem;line-height:1.6;white-space:pre-wrap}.sg-ai-msg.user{margin-left:30px;background:rgba(255,42,75,.08);border-color:rgba(255,42,75,.24)}.sg-ai-msg.bot{margin-right:20px;background:rgba(255,255,255,.025)}",
-    ".sg-ai-sources{display:block;margin-top:8px;color:#9b96a4;font:600 .58rem 'JetBrains Mono',monospace}.sg-ai-form{padding:14px;border-top:1px solid rgba(255,255,255,.1);display:grid;grid-template-columns:1fr auto;gap:8px}.sg-ai-input{min-width:0;resize:none;height:66px;background:#110b18;color:#fff;border:1px solid rgba(255,255,255,.14);padding:10px;font:inherit}.sg-ai-send{width:70px;background:#ff2a4b;color:#050508;border:0;font:800 .62rem 'JetBrains Mono',monospace;text-transform:uppercase}.sg-ai-send:disabled{opacity:.45}.sg-ai-panel button,.sg-ai-launch{cursor:pointer}",
+    ".sg-ai-sources{display:block;margin-top:8px;color:#9b96a4;font:600 .58rem 'JetBrains Mono',monospace}.sg-ai-actions{padding:10px 18px;display:flex;gap:7px;flex-wrap:wrap;border-bottom:1px solid rgba(255,255,255,.07)}.sg-ai-chip,.sg-ai-weak{border:1px solid rgba(255,42,75,.35);background:rgba(255,42,75,.06);color:#ff536f;padding:7px 9px;font:800 .56rem 'JetBrains Mono',monospace;text-transform:uppercase}.sg-ai-weak{display:block;margin-top:9px;padding:5px 7px}.sg-ai-form{padding:14px;border-top:1px solid rgba(255,255,255,.1);display:grid;grid-template-columns:1fr auto;gap:8px}.sg-ai-input{min-width:0;resize:none;height:66px;background:#110b18;color:#fff;border:1px solid rgba(255,255,255,.14);padding:10px;font:inherit}.sg-ai-send{width:70px;background:#ff2a4b;color:#050508;border:0;font:800 .62rem 'JetBrains Mono',monospace;text-transform:uppercase}.sg-ai-send:disabled{opacity:.45}.sg-ai-panel button,.sg-ai-launch{cursor:pointer}",
     "body.shoug-light-mode .sg-ai-panel{background:#fff;color:#16111f}.shoug-light-mode .sg-ai-msg.bot,.shoug-light-mode .sg-ai-input{background:#f5f1f8;color:#16111f}.shoug-light-mode .sg-ai-close{color:#16111f}@media(max-width:600px){.sg-ai-panel{top:0}}"
   ].join("");
   document.head.appendChild(style);
@@ -31,7 +31,7 @@
   var panel = document.createElement("aside");
   panel.className = "sg-ai-panel";
   panel.setAttribute("aria-label", "Slide assistant");
-  panel.innerHTML = '<div class="sg-ai-head"><div><div class="sg-ai-kicker">// Grounded assistant</div><div class="sg-ai-title">Ask about this material</div></div><button class="sg-ai-close" type="button" aria-label="Close">&times;</button></div><div class="sg-ai-note">Answers use only the slides or breakdown on this page. AI can make mistakes—check the cited slide or section.</div><div class="sg-ai-chat" aria-live="polite"><div class="sg-ai-msg bot">Ask me to explain a concept, compare two ideas, make an example, or quiz you on this material.</div></div><form class="sg-ai-form"><textarea class="sg-ai-input" maxlength="800" required aria-label="Your question" placeholder="What does this concept mean?"></textarea><button class="sg-ai-send" type="submit">Ask</button></form>';
+  panel.innerHTML = '<div class="sg-ai-head"><div><div class="sg-ai-kicker">// Grounded assistant</div><div class="sg-ai-title">Ask about this material</div></div><button class="sg-ai-close" type="button" aria-label="Close">&times;</button></div><div class="sg-ai-note">Answers use only the slides or breakdown on this page. AI can make mistakes—check the cited slide or section.</div><div class="sg-ai-actions"><button class="sg-ai-chip" type="button" data-ai-prompt="Quiz me with one question at a time. Wait for my answer, then grade it and explain any mistake.">Quiz me</button><button class="sg-ai-chip" type="button" data-ai-prompt="Create five concise flashcards from the most important ideas on this page.">Flashcards</button><button class="sg-ai-chip" type="button" data-ai-prompt="Explain the hardest concept on this page in simple language with an example.">Explain simply</button><button class="sg-ai-chip" type="button" data-ai-weak-review>Weak topics</button></div><div class="sg-ai-chat" aria-live="polite"><div class="sg-ai-msg bot">Ask me to explain a concept, compare two ideas, make an example, or quiz you on this material.</div></div><form class="sg-ai-form"><textarea class="sg-ai-input" maxlength="800" required aria-label="Your question" placeholder="What does this concept mean?"></textarea><button class="sg-ai-send" type="submit">Ask</button></form>';
   document.body.appendChild(launch);
   document.body.appendChild(panel);
 
@@ -87,6 +87,14 @@
     return node;
   }
 
+  function weakTopics() { try { return JSON.parse(localStorage.getItem("shoug-weak-topics") || "[]"); } catch (e) { return []; } }
+  function addWeakButton(node, answer, sources) {
+    var button=document.createElement("button");button.type="button";button.className="sg-ai-weak";button.textContent="Mark as weak topic";
+    button.addEventListener("click",function(){var list=weakTopics();list.unshift({id:Date.now().toString(36),route:route,title:document.title,answer:String(answer||"").slice(0,500),sources:sources||[],savedAt:new Date().toISOString()});try{localStorage.setItem("shoug-weak-topics",JSON.stringify(list.slice(0,100)));}catch(e){}button.textContent="Saved for review";button.disabled=true;});
+    node.appendChild(button);
+  }
+  panel.querySelectorAll("[data-ai-prompt]").forEach(function(button){button.addEventListener("click",function(){input.value=button.dataset.aiPrompt;panel.querySelector("form").requestSubmit();});});
+  panel.querySelector("[data-ai-weak-review]").addEventListener("click",function(){var list=weakTopics().filter(function(x){return x.route===route;});input.value=list.length?"Review these weak areas from this page and quiz me on them: "+list.slice(0,5).map(function(x){return x.answer;}).join(" | "):"Identify the three concepts on this page that students are most likely to misunderstand, then quiz me on the first one.";panel.querySelector("form").requestSubmit();});
   panel.querySelector("form").addEventListener("submit", function (event) {
     event.preventDefault();
     var question = input.value.trim();
@@ -106,7 +114,8 @@
       });
     }).then(function (data) {
       pending.remove();
-      message("bot", data.answer || "I could not find that in this material.", data.sources || []);
+      var answerNode=message("bot", data.answer || "I could not find that in this material.", data.sources || []);
+      addWeakButton(answerNode, data.answer || "", data.sources || []);
       history.push({ role: "user", content: question }, { role: "assistant", content: data.answer || "" });
     }).catch(function (error) {
       var reason = error && error.message ? error.message : "";
