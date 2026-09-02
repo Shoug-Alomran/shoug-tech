@@ -368,6 +368,34 @@
       padding: 16px 18px
     }
 
+    .panel-collapse {
+      height: 28px;
+      padding: 0 12px;
+      border: 1px solid var(--soft-line);
+      border-radius: 999px;
+      background: transparent;
+      color: var(--muted);
+      font: 800 .58rem/1 "JetBrains Mono", monospace;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: color 150ms, border-color 150ms
+    }
+
+    .panel-collapse:hover {
+      color: var(--brand);
+      border-color: rgba(184, 41, 234, .42)
+    }
+
+    .panel.is-collapsed .panel-body {
+      display: none
+    }
+
+    .panel.is-collapsed .panel-head {
+      border-bottom: 0
+    }
+
     .month-tools {
       display: flex;
       align-items: center;
@@ -2234,6 +2262,8 @@
                 <div class="panel-title">Add Class</div>
                 <div class="panel-sub">Repeats during the matching PSU term</div>
               </div>
+              <button class="panel-collapse" type="button" id="class-panel-toggle" aria-controls="calendar-class-panel"
+                aria-expanded="true">Hide</button>
             </div>
             <div class="panel-body">
               <div class="field"><label>Class name</label><input id="class-title" placeholder="ETHCS303 lecture"></div>
@@ -3648,6 +3678,29 @@
       // sanitized snapshot (no ids, no links, no attendance) and applies any
       // accepted proposal through the same save paths the forms use, so
       // validation and persistence stay in one place.
+      // The class form is really only used at the start of a term, so it can be
+      // folded away. The choice is per-browser, like the view filters above.
+      function setClassPanelOpen(open) {
+        var panel = $("calendar-class-panel"), toggle = $("class-panel-toggle");
+        if (!panel || !toggle) return;
+        panel.classList.toggle("is-collapsed", !open);
+        toggle.textContent = open ? "Hide" : "Show";
+        toggle.setAttribute("aria-expanded", open ? "true" : "false");
+        toggle.setAttribute("aria-label", (open ? "Hide" : "Show") + " the add class form");
+        try { localStorage.setItem("calendar-class-panel-open", open ? "1" : "0"); } catch (e) { }
+      }
+      (function initClassPanel() {
+        var stored = "1";
+        try { stored = localStorage.getItem("calendar-class-panel-open") || "1"; } catch (e) { }
+        setClassPanelOpen(stored !== "0");
+        var toggle = $("class-panel-toggle");
+        if (toggle) {
+          toggle.addEventListener("click", function () {
+            setClassPanelOpen($("calendar-class-panel").classList.contains("is-collapsed"));
+          });
+        }
+      })();
+
       window.__shougCalendarAI = {
         today: todayKey,
         signedIn: function () { return Boolean(profileRef); },
