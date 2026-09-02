@@ -6203,6 +6203,24 @@ var COURSE_PAGES = [
     "courseTitle": "SE322 // Software Design and Architecture"
   },
   {
+    "url": "/academics/software-engineering/se322/extra-resources/activity/solved/activity-3/uml-and-tools-workshop/",
+    "title": "SE322 // UML and Tools Workshop",
+    "track": "software-engineering",
+    "course": "se322",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se322/",
+    "courseTitle": "SE322 // Software Design and Architecture"
+  },
+  {
+    "url": "/academics/software-engineering/se322/extra-resources/activity/unsolved/",
+    "title": "SE322 | Activity: Unsolved",
+    "track": "software-engineering",
+    "course": "se322",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se322/",
+    "courseTitle": "SE322 // Software Design and Architecture"
+  },
+  {
     "url": "/academics/software-engineering/se322/extra-resources/mindmaps/01-introduction-to-software-design-and-architecture/",
     "title": "SE322 · Chapter 1 Mindmap — Introduction to Software Design and Architecture",
     "track": "software-engineering",
@@ -9002,6 +9020,24 @@ var COURSE_PAGES = [
     "courseTitle": "SE423 // Software Project Management"
   },
   {
+    "url": "/academics/software-engineering/se423/extra-resources/activity/solved/",
+    "title": "SE423 | Activity: Solved",
+    "track": "software-engineering",
+    "course": "se423",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se423/",
+    "courseTitle": "SE423 // Software Project Management"
+  },
+  {
+    "url": "/academics/software-engineering/se423/extra-resources/activity/unsolved/",
+    "title": "SE423 | Activity: Unsolved",
+    "track": "software-engineering",
+    "course": "se423",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se423/",
+    "courseTitle": "SE423 // Software Project Management"
+  },
+  {
     "url": "/academics/software-engineering/se423/extra-resources/mindmaps/01-change-management/",
     "title": "SE423 | Change Management",
     "track": "software-engineering",
@@ -9103,6 +9139,51 @@ var COURSE_PAGES = [
   {
     "url": "/academics/software-engineering/se423/extra-resources/mindmaps/12-team/",
     "title": "SE423 | Team",
+    "track": "software-engineering",
+    "course": "se423",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se423/",
+    "courseTitle": "SE423 // Software Project Management"
+  },
+  {
+    "url": "/academics/software-engineering/se423/extra-resources/project/description/",
+    "title": "SE423 // Project Description",
+    "track": "software-engineering",
+    "course": "se423",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se423/",
+    "courseTitle": "SE423 // Software Project Management"
+  },
+  {
+    "url": "/academics/software-engineering/se423/extra-resources/project/scenario/scenario-01-crm-rewrite/",
+    "title": "SE423 // Scenario 1: CRM Rewrite",
+    "track": "software-engineering",
+    "course": "se423",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se423/",
+    "courseTitle": "SE423 // Software Project Management"
+  },
+  {
+    "url": "/academics/software-engineering/se423/extra-resources/project/scenario/scenario-03-state-metro-system/",
+    "title": "SE423 // Scenario 3: State Metro System",
+    "track": "software-engineering",
+    "course": "se423",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se423/",
+    "courseTitle": "SE423 // Software Project Management"
+  },
+  {
+    "url": "/academics/software-engineering/se423/extra-resources/project/scenario/scenario-04-water-monitoring-and-alert-system/",
+    "title": "SE423 // Scenario 4: Water Monitoring and Alert System",
+    "track": "software-engineering",
+    "course": "se423",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se423/",
+    "courseTitle": "SE423 // Software Project Management"
+  },
+  {
+    "url": "/academics/software-engineering/se423/extra-resources/project/scenario/scenario-05-athletic-health-compliance-and-monitoring-system/",
+    "title": "SE423 // Scenario 5: Athletic Health Compliance and Monitoring System",
     "track": "software-engineering",
     "course": "se423",
     "section": "extra-resources",
@@ -9358,10 +9439,10 @@ var COURSE_MANIFEST = {
   "isc113": 23,
   "se201": 41,
   "se311": 33,
-  "se322": 55,
+  "se322": 57,
   "se371": 200,
   "se401": 53,
-  "se423": 49
+  "se423": 56
 };
 var COURSE_MANIFEST_BY_TRACK = {
   "computer-science/cs101": 8,
@@ -9386,8 +9467,8 @@ var COURSE_MANIFEST_BY_TRACK = {
   "other-courses/isc113": 23,
   "software-engineering/se201": 41,
   "software-engineering/se311": 33,
-  "software-engineering/se322": 55,
+  "software-engineering/se322": 57,
   "software-engineering/se371": 200,
   "software-engineering/se401": 53,
-  "software-engineering/se423": 49
+  "software-engineering/se423": 56
 };
