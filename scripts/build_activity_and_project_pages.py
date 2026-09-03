@@ -265,30 +265,36 @@ def build_se423_activity():
     listing_page(
         base, 'se423', 'SE423', 'Activity',
         se423_trail(('Activity', None)),
-        rows([('Solved', './solved/', 'COMING SOON', 'coming-soon', True, False),
-              ('Unsolved', './unsolved/', '3 FILES', 'available', True, False)]),
+        rows([('Solved', './solved/', '1 FILE', 'available', True, False),
+              ('Unsolved', './unsolved/', '1 FILE, 1 FOLDER', 'available', True, False)]),
         'SE423 | Activity')
 
-    empty = ('<div class="empty-state">\n'
-             '                <div class="empty-state-title">No Solved Activities Yet</div>\n'
-             '                <p class="empty-state-text">Worked solutions land here once the activities '
-             'have been marked. The activity briefs are available under Unsolved.</p>\n'
-             '            </div>')
     listing_page(
         base + 'solved/', 'se423', 'SE423', 'Activity // Solved',
         se423_trail(('Activity', base), ('Solved', None)),
-        empty, 'SE423 | Activity: Solved')
+        rows([('Activity 2', './activity-2.pdf', 'PDF', 'pdf', False, True)]),
+        'SE423 | Activity: Solved')
 
     listing_page(
         base + 'unsolved/', 'se423', 'SE423', 'Activity // Unsolved',
         se423_trail(('Activity', base), ('Unsolved', None)),
-        rows([('Activity 1: Classic Mistakes',
-               './activity-1-classic-mistakes.docx', 'DOCX', 'docx', False, True),
-              ('Activity 1: Case Study - Giga Safe',
-               './activity-1-case-study-giga-safe.docx', 'DOCX', 'docx', False, True),
-              ('Activity 1: Examples of Classic Mistakes',
-               './activity-1-examples-of-classic-mistakes.docx', 'DOCX', 'docx', False, True)]),
+        rows([('Activity 2', './activity-2/', '3 FILES', 'available', True, False),
+              ('Activity 1', './Activity%201.docx', 'DOCX', 'docx', False, True)]),
         'SE423 | Activity: Unsolved')
+
+    listing_page(
+        base + 'unsolved/activity-2/', 'se423', 'SE423',
+        'Activity // Unsolved // Activity 2',
+        se423_trail(('Activity', base), ('Unsolved', base + 'unsolved/'),
+                    ('Activity 2', None)),
+        rows([('Classic Mistakes', './activity-2-classic-mistakes.docx',
+               'DOCX', 'docx', False, True),
+              ('Case Study - Giga Safe', './activity-2-case-study-giga-safe.docx',
+               'DOCX', 'docx', False, True),
+              ('Examples of Classic Mistakes',
+               './activity-2-examples-of-classic-mistakes.docx',
+               'DOCX', 'docx', False, True)]),
+        'SE423 | Activity 2: Unsolved')
 
 
 def build_se423_project():
