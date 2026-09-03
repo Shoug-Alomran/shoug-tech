@@ -6635,6 +6635,402 @@ var COURSE_PAGES = [
     "courseTitle": "SE322 // Software Design and Architecture"
   },
   {
+    "url": "/academics/software-engineering/se365/exams/01-introduction-to-human-computer-interaction-exam/",
+    "title": "SE365 Introduction to Human-Computer Interaction Exam",
+    "track": "software-engineering",
+    "course": "se365",
+    "section": "exams",
+    "courseUrl": "/academics/software-engineering/se365/",
+    "courseTitle": "SE365 // Human-Computer Interaction"
+  },
+  {
+    "url": "/academics/software-engineering/se365/exams/02-cognitive-aspects-exam/",
+    "title": "SE365 Cognitive Aspects Exam",
+    "track": "software-engineering",
+    "course": "se365",
+    "section": "exams",
+    "courseUrl": "/academics/software-engineering/se365/",
+    "courseTitle": "SE365 // Human-Computer Interaction"
+  },
+  {
+    "url": "/academics/software-engineering/se365/exams/03-emotional-interaction-exam/",
+    "title": "SE365 Emotional Interaction Exam",
+    "track": "software-engineering",
+    "course": "se365",
+    "section": "exams",
+    "courseUrl": "/academics/software-engineering/se365/",
+    "courseTitle": "SE365 // Human-Computer Interaction"
+  },
+  {
+    "url": "/academics/software-engineering/se365/exams/04-interaction-and-interfaces-exam/",
+    "title": "SE365 Interaction and Interfaces Exam",
+    "track": "software-engineering",
+    "course": "se365",
+    "section": "exams",
+    "courseUrl": "/academics/software-engineering/se365/",
+    "courseTitle": "SE365 // Human-Computer Interaction"
+  },
+  {
+    "url": "/academics/software-engineering/se365/exams/05-the-process-of-interaction-design-exam/",
+    "title": "SE365 The Process of Interaction Design Exam",
+    "track": "software-engineering",
+    "course": "se365",
+    "section": "exams",
+    "courseUrl": "/academics/software-engineering/se365/",
+    "courseTitle": "SE365 // Human-Computer Interaction"
+  },
+  {
+    "url": "/academics/software-engineering/se365/exams/06-establishing-requirements-exam/",
+    "title": "SE365 Establishing Requirements Exam",
+    "track": "software-engineering",
+    "course": "se365",
+    "section": "exams",
+    "courseUrl": "/academics/software-engineering/se365/",
+    "courseTitle": "SE365 // Human-Computer Interaction"
+  },
+  {
+    "url": "/academics/software-engineering/se365/exams/08-design-principles-and-guidelines-exam/",
+    "title": "SE365 Design Principles and Guidelines Exam",
+    "track": "software-engineering",
+    "course": "se365",
+    "section": "exams",
+    "courseUrl": "/academics/software-engineering/se365/",
+    "courseTitle": "SE365 // Human-Computer Interaction"
+  },
+  {
+    "url": "/academics/software-engineering/se365/exams/09-design-prototyping-and-construction-exam/",
+    "title": "SE365 Design, Prototyping and Construction Exam",
+    "track": "software-engineering",
+    "course": "se365",
+    "section": "exams",
+    "courseUrl": "/academics/software-engineering/se365/",
+    "courseTitle": "SE365 // Human-Computer Interaction"
+  },
+  {
+    "url": "/academics/software-engineering/se365/exams/11-evaluation-foundations-exam/",
+    "title": "SE365 Evaluation: Foundations Exam",
+    "track": "software-engineering",
+    "course": "se365",
+    "section": "exams",
+    "courseUrl": "/academics/software-engineering/se365/",
+    "courseTitle": "SE365 // Human-Computer Interaction"
+  },
+  {
+    "url": "/academics/software-engineering/se365/exams/12-evaluation-decide-usability-testing-and-experiments-exam/",
+    "title": "SE365 Evaluation: DECIDE, Usability Testing and Experiments Exam",
+    "track": "software-engineering",
+    "course": "se365",
+    "section": "exams",
+    "courseUrl": "/academics/software-engineering/se365/",
+    "courseTitle": "SE365 // Human-Computer Interaction"
+  },
+  {
+    "url": "/academics/software-engineering/se365/exams/13-evaluation-inspections-heuristics-and-walkthroughs-exam/",
+    "title": "SE365 Evaluation: Inspections, Heuristics and Walkthroughs Exam",
+    "track": "software-engineering",
+    "course": "se365",
+    "section": "exams",
+    "courseUrl": "/academics/software-engineering/se365/",
+    "courseTitle": "SE365 // Human-Computer Interaction"
+  },
+  {
+    "url": "/academics/software-engineering/se365/extra-resources/mindmaps/01-introduction-to-human-computer-interaction/",
+    "title": "SE365 Introduction to Human-Computer Interaction Mindmap",
+    "track": "software-engineering",
+    "course": "se365",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se365/",
+    "courseTitle": "SE365 // Human-Computer Interaction"
+  },
+  {
+    "url": "/academics/software-engineering/se365/extra-resources/mindmaps/02-cognitive-aspects/",
+    "title": "SE365 Cognitive Aspects Mindmap",
+    "track": "software-engineering",
+    "course": "se365",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se365/",
+    "courseTitle": "SE365 // Human-Computer Interaction"
+  },
+  {
+    "url": "/academics/software-engineering/se365/extra-resources/mindmaps/03-emotional-interaction/",
+    "title": "SE365 Emotional Interaction Mindmap",
+    "track": "software-engineering",
+    "course": "se365",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se365/",
+    "courseTitle": "SE365 // Human-Computer Interaction"
+  },
+  {
+    "url": "/academics/software-engineering/se365/extra-resources/mindmaps/04-interaction-and-interfaces/",
+    "title": "SE365 Interaction and Interfaces Mindmap",
+    "track": "software-engineering",
+    "course": "se365",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se365/",
+    "courseTitle": "SE365 // Human-Computer Interaction"
+  },
+  {
+    "url": "/academics/software-engineering/se365/extra-resources/mindmaps/05-the-process-of-interaction-design/",
+    "title": "SE365 The Process of Interaction Design Mindmap",
+    "track": "software-engineering",
+    "course": "se365",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se365/",
+    "courseTitle": "SE365 // Human-Computer Interaction"
+  },
+  {
+    "url": "/academics/software-engineering/se365/extra-resources/mindmaps/06-establishing-requirements/",
+    "title": "SE365 Establishing Requirements Mindmap",
+    "track": "software-engineering",
+    "course": "se365",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se365/",
+    "courseTitle": "SE365 // Human-Computer Interaction"
+  },
+  {
+    "url": "/academics/software-engineering/se365/extra-resources/mindmaps/08-design-principles-and-guidelines/",
+    "title": "SE365 Design Principles and Guidelines Mindmap",
+    "track": "software-engineering",
+    "course": "se365",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se365/",
+    "courseTitle": "SE365 // Human-Computer Interaction"
+  },
+  {
+    "url": "/academics/software-engineering/se365/extra-resources/mindmaps/09-design-prototyping-and-construction/",
+    "title": "SE365 Design, Prototyping and Construction Mindmap",
+    "track": "software-engineering",
+    "course": "se365",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se365/",
+    "courseTitle": "SE365 // Human-Computer Interaction"
+  },
+  {
+    "url": "/academics/software-engineering/se365/extra-resources/mindmaps/11-evaluation-foundations/",
+    "title": "SE365 Evaluation: Foundations Mindmap",
+    "track": "software-engineering",
+    "course": "se365",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se365/",
+    "courseTitle": "SE365 // Human-Computer Interaction"
+  },
+  {
+    "url": "/academics/software-engineering/se365/extra-resources/mindmaps/12-evaluation-decide-usability-testing-and-experiments/",
+    "title": "SE365 Evaluation: DECIDE, Usability Testing and Experiments Mindmap",
+    "track": "software-engineering",
+    "course": "se365",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se365/",
+    "courseTitle": "SE365 // Human-Computer Interaction"
+  },
+  {
+    "url": "/academics/software-engineering/se365/extra-resources/mindmaps/13-evaluation-inspections-heuristics-and-walkthroughs/",
+    "title": "SE365 Evaluation: Inspections, Heuristics and Walkthroughs Mindmap",
+    "track": "software-engineering",
+    "course": "se365",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se365/",
+    "courseTitle": "SE365 // Human-Computer Interaction"
+  },
+  {
+    "url": "/academics/software-engineering/se365/slide-breakdowns/cognitive-aspects/",
+    "title": "SE365 Cognitive Aspects",
+    "track": "software-engineering",
+    "course": "se365",
+    "section": "slide-breakdowns",
+    "courseUrl": "/academics/software-engineering/se365/",
+    "courseTitle": "SE365 // Human-Computer Interaction"
+  },
+  {
+    "url": "/academics/software-engineering/se365/slide-breakdowns/design-principles-and-guidelines/",
+    "title": "SE365 Design Principles and Guidelines",
+    "track": "software-engineering",
+    "course": "se365",
+    "section": "slide-breakdowns",
+    "courseUrl": "/academics/software-engineering/se365/",
+    "courseTitle": "SE365 // Human-Computer Interaction"
+  },
+  {
+    "url": "/academics/software-engineering/se365/slide-breakdowns/design-prototyping-and-construction/",
+    "title": "SE365 Design, Prototyping and Construction",
+    "track": "software-engineering",
+    "course": "se365",
+    "section": "slide-breakdowns",
+    "courseUrl": "/academics/software-engineering/se365/",
+    "courseTitle": "SE365 // Human-Computer Interaction"
+  },
+  {
+    "url": "/academics/software-engineering/se365/slide-breakdowns/emotional-interaction/",
+    "title": "SE365 Emotional Interaction",
+    "track": "software-engineering",
+    "course": "se365",
+    "section": "slide-breakdowns",
+    "courseUrl": "/academics/software-engineering/se365/",
+    "courseTitle": "SE365 // Human-Computer Interaction"
+  },
+  {
+    "url": "/academics/software-engineering/se365/slide-breakdowns/establishing-requirements/",
+    "title": "SE365 Establishing Requirements",
+    "track": "software-engineering",
+    "course": "se365",
+    "section": "slide-breakdowns",
+    "courseUrl": "/academics/software-engineering/se365/",
+    "courseTitle": "SE365 // Human-Computer Interaction"
+  },
+  {
+    "url": "/academics/software-engineering/se365/slide-breakdowns/evaluation-decide-usability-testing-and-experiments/",
+    "title": "SE365 Evaluation: DECIDE, Usability Testing and Experiments",
+    "track": "software-engineering",
+    "course": "se365",
+    "section": "slide-breakdowns",
+    "courseUrl": "/academics/software-engineering/se365/",
+    "courseTitle": "SE365 // Human-Computer Interaction"
+  },
+  {
+    "url": "/academics/software-engineering/se365/slide-breakdowns/evaluation-foundations/",
+    "title": "SE365 Evaluation: Foundations",
+    "track": "software-engineering",
+    "course": "se365",
+    "section": "slide-breakdowns",
+    "courseUrl": "/academics/software-engineering/se365/",
+    "courseTitle": "SE365 // Human-Computer Interaction"
+  },
+  {
+    "url": "/academics/software-engineering/se365/slide-breakdowns/evaluation-inspections-heuristics-and-walkthroughs/",
+    "title": "SE365 Evaluation: Inspections, Heuristics and Walkthroughs",
+    "track": "software-engineering",
+    "course": "se365",
+    "section": "slide-breakdowns",
+    "courseUrl": "/academics/software-engineering/se365/",
+    "courseTitle": "SE365 // Human-Computer Interaction"
+  },
+  {
+    "url": "/academics/software-engineering/se365/slide-breakdowns/interaction-and-interfaces/",
+    "title": "SE365 Interaction and Interfaces",
+    "track": "software-engineering",
+    "course": "se365",
+    "section": "slide-breakdowns",
+    "courseUrl": "/academics/software-engineering/se365/",
+    "courseTitle": "SE365 // Human-Computer Interaction"
+  },
+  {
+    "url": "/academics/software-engineering/se365/slide-breakdowns/introduction-to-human-computer-interaction/",
+    "title": "SE365 Introduction to Human-Computer Interaction",
+    "track": "software-engineering",
+    "course": "se365",
+    "section": "slide-breakdowns",
+    "courseUrl": "/academics/software-engineering/se365/",
+    "courseTitle": "SE365 // Human-Computer Interaction"
+  },
+  {
+    "url": "/academics/software-engineering/se365/slide-breakdowns/the-process-of-interaction-design/",
+    "title": "SE365 The Process of Interaction Design",
+    "track": "software-engineering",
+    "course": "se365",
+    "section": "slide-breakdowns",
+    "courseUrl": "/academics/software-engineering/se365/",
+    "courseTitle": "SE365 // Human-Computer Interaction"
+  },
+  {
+    "url": "/academics/software-engineering/se365/slides/lecture-01-introduction-to-human-computer-interaction/",
+    "title": "Lecture 1: Introduction to Human-Computer Interaction | SE365 Slides",
+    "track": "software-engineering",
+    "course": "se365",
+    "section": "slides",
+    "courseUrl": "/academics/software-engineering/se365/",
+    "courseTitle": "SE365 // Human-Computer Interaction"
+  },
+  {
+    "url": "/academics/software-engineering/se365/slides/lecture-02-cognitive-aspects/",
+    "title": "Lecture 2: Cognitive Aspects | SE365 Slides",
+    "track": "software-engineering",
+    "course": "se365",
+    "section": "slides",
+    "courseUrl": "/academics/software-engineering/se365/",
+    "courseTitle": "SE365 // Human-Computer Interaction"
+  },
+  {
+    "url": "/academics/software-engineering/se365/slides/lecture-03-emotional-interaction/",
+    "title": "Lecture 3: Emotional Interaction | SE365 Slides",
+    "track": "software-engineering",
+    "course": "se365",
+    "section": "slides",
+    "courseUrl": "/academics/software-engineering/se365/",
+    "courseTitle": "SE365 // Human-Computer Interaction"
+  },
+  {
+    "url": "/academics/software-engineering/se365/slides/lecture-04-interaction-and-interfaces/",
+    "title": "Lecture 4: Interaction and Interfaces | SE365 Slides",
+    "track": "software-engineering",
+    "course": "se365",
+    "section": "slides",
+    "courseUrl": "/academics/software-engineering/se365/",
+    "courseTitle": "SE365 // Human-Computer Interaction"
+  },
+  {
+    "url": "/academics/software-engineering/se365/slides/lecture-05-the-process-of-interaction-design/",
+    "title": "Lecture 5: The Process of Interaction Design | SE365 Slides",
+    "track": "software-engineering",
+    "course": "se365",
+    "section": "slides",
+    "courseUrl": "/academics/software-engineering/se365/",
+    "courseTitle": "SE365 // Human-Computer Interaction"
+  },
+  {
+    "url": "/academics/software-engineering/se365/slides/lecture-06-07-establishing-requirements/",
+    "title": "Lectures 6 & 7: Establishing Requirements | SE365 Slides",
+    "track": "software-engineering",
+    "course": "se365",
+    "section": "slides",
+    "courseUrl": "/academics/software-engineering/se365/",
+    "courseTitle": "SE365 // Human-Computer Interaction"
+  },
+  {
+    "url": "/academics/software-engineering/se365/slides/lecture-08-design-principles-and-guidelines/",
+    "title": "Lecture 8: Design Principles and Guidelines | SE365 Slides",
+    "track": "software-engineering",
+    "course": "se365",
+    "section": "slides",
+    "courseUrl": "/academics/software-engineering/se365/",
+    "courseTitle": "SE365 // Human-Computer Interaction"
+  },
+  {
+    "url": "/academics/software-engineering/se365/slides/lecture-09-10-design-prototyping-and-construction/",
+    "title": "Lectures 9 & 10: Design, Prototyping and Construction | SE365 Slides",
+    "track": "software-engineering",
+    "course": "se365",
+    "section": "slides",
+    "courseUrl": "/academics/software-engineering/se365/",
+    "courseTitle": "SE365 // Human-Computer Interaction"
+  },
+  {
+    "url": "/academics/software-engineering/se365/slides/lecture-11-evaluation-foundations/",
+    "title": "Lecture 11: Evaluation: Foundations | SE365 Slides",
+    "track": "software-engineering",
+    "course": "se365",
+    "section": "slides",
+    "courseUrl": "/academics/software-engineering/se365/",
+    "courseTitle": "SE365 // Human-Computer Interaction"
+  },
+  {
+    "url": "/academics/software-engineering/se365/slides/lecture-12-evaluation-decide-usability-testing-and-experiments/",
+    "title": "Lecture 12: Evaluation: DECIDE, Usability Testing and Experiments | SE365 Slides",
+    "track": "software-engineering",
+    "course": "se365",
+    "section": "slides",
+    "courseUrl": "/academics/software-engineering/se365/",
+    "courseTitle": "SE365 // Human-Computer Interaction"
+  },
+  {
+    "url": "/academics/software-engineering/se365/slides/lecture-13-evaluation-inspections-heuristics-and-walkthroughs/",
+    "title": "Lecture 13: Evaluation: Inspections, Heuristics and Walkthroughs | SE365 Slides",
+    "track": "software-engineering",
+    "course": "se365",
+    "section": "slides",
+    "courseUrl": "/academics/software-engineering/se365/",
+    "courseTitle": "SE365 // Human-Computer Interaction"
+  },
+  {
     "url": "/academics/software-engineering/se371/extra-resources/chapter-2/example-code-a/",
     "title": "Example Code A | SE371 Web Engineering",
     "track": "software-engineering",
@@ -9440,6 +9836,7 @@ var COURSE_MANIFEST = {
   "se201": 41,
   "se311": 33,
   "se322": 57,
+  "se365": 44,
   "se371": 200,
   "se401": 53,
   "se423": 56
@@ -9468,6 +9865,7 @@ var COURSE_MANIFEST_BY_TRACK = {
   "software-engineering/se201": 41,
   "software-engineering/se311": 33,
   "software-engineering/se322": 57,
+  "software-engineering/se365": 44,
   "software-engineering/se371": 200,
   "software-engineering/se401": 53,
   "software-engineering/se423": 56
