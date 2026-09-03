@@ -57,6 +57,12 @@ UNIVERSITY_CREDIT = (
     'Redistribution or reproduction without explicit permission from Prince Sultan University is prohibited.</div>'
 )
 
+NOTES_CREDIT = (
+    '<div class="university-credit"><strong>NOTES BY YARA FARIS ALBUGAMI</strong> &mdash; '
+    'The handwritten annotations and study notes on these slides were authored by Yara Faris Albugami. '
+    'All note content is her intellectual work and is shared here with credit and gratitude.</div>'
+)
+
 SLIDE_VIEWER_STYLES = '''<style id="se365-slide-viewer-styles">
 .slide-viewer-shell{margin:0 40px 48px}.university-credit{border:1px solid var(--border-purple);background:rgba(184,41,234,.07);padding:16px 18px;margin-bottom:18px;color:var(--text-secondary);line-height:1.65}.university-credit strong{color:var(--text-purple-bright);font-family:var(--font-mono);letter-spacing:.04em}.slide-actions{display:flex;justify-content:flex-end;margin-bottom:12px}.slide-open-link{border:1px solid var(--border-purple);color:var(--text-purple-bright);padding:8px 14px;font-family:var(--font-mono);font-size:.75rem}.slide-open-link:hover{background:rgba(184,41,234,.12)}.pdf-frame{display:block;width:100%;height:78vh;min-height:640px;border:1px solid var(--border-med);background:#fff}@media(max-width:760px){.slide-viewer-shell{margin:0 16px 32px}.pdf-frame{height:70vh;min-height:480px}.university-credit{font-size:.82rem}}
 </style>'''
@@ -158,8 +164,9 @@ code{background:var(--code-bg);padding:.1em .38em;border-radius:5px;font-family:
 .readbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .12s linear}
 
 /* ── layout ──────────────────────────────────────────────────────────────── */
-main{max-width:1180px;margin:0 auto;padding:0 clamp(16px,4vw,44px) 90px}
-.hero{padding:clamp(38px,7vw,84px) 0 26px}
+main{width:100%;max-width:none;margin:0;padding:0 clamp(18px,4vw,72px) 90px}
+.hero{padding:clamp(38px,7vw,84px) 0 26px;animation:heroIn .65s cubic-bezier(.2,.7,.3,1) both}
+@keyframes heroIn{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
 .eyebrow{font:700 11px/1 ui-monospace,monospace;letter-spacing:.2em;color:var(--accent)}
 h1{
   font-size:clamp(30px,5.4vw,58px); line-height:1.08; margin:16px 0 18px; font-weight:800;
@@ -177,6 +184,19 @@ h1 em{font-style:normal;opacity:.92}
 }
 .badge:hover{border-color:var(--accent);color:var(--accent)}
 
+/* ── page search ─────────────────────────────────────────────────────────── */
+.study-search{margin:26px 0 0;padding:14px;border:1px solid var(--line);border-radius:14px;background:var(--panel);box-shadow:var(--shadow)}
+.search-row{display:flex;align-items:center;gap:10px}
+.search-row label{font:800 11px/1 ui-monospace,monospace;letter-spacing:.14em;color:var(--accent);white-space:nowrap}
+.search-input{width:100%;min-width:0;border:1px solid var(--line-strong);border-radius:10px;background:var(--bg2);color:var(--ink);padding:12px 14px;font:500 16px/1.3 inherit;outline:none;transition:.2s}
+.search-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 18%,transparent)}
+.search-clear{border:1px solid var(--line-strong);border-radius:9px;background:var(--panel2);color:var(--ink);padding:11px 13px;cursor:pointer;font:700 12px/1 ui-monospace,monospace}
+.search-clear:hover{border-color:var(--accent);color:var(--accent)}
+.search-status{margin:9px 2px 0;color:var(--ink-faint);font-size:13px;min-height:1.4em}
+.search-hidden{display:none!important}
+.search-match{animation:searchPulse .55s ease both}
+@keyframes searchPulse{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--accent) 45%,transparent)}100%{box-shadow:var(--shadow)}}
+
 .outcomes{
   margin:30px 0 0; border:1px solid var(--line); border-left:3px solid var(--accent);
   border-radius:14px; background:var(--panel); padding:20px 24px; box-shadow:var(--shadow);
@@ -193,7 +213,10 @@ h1 em{font-style:normal;opacity:.92}
   font-size:14px;
 }
 .toc a span{display:block;font:700 11px/1 ui-monospace,monospace;letter-spacing:.12em;color:var(--ink-faint);margin-bottom:6px}
+.toc a{animation:tocIn .45s ease both}
+.toc a:nth-child(2n){animation-delay:.05s}.toc a:nth-child(3n){animation-delay:.1s}
 .toc a:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:var(--shadow)}
+@keyframes tocIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 
 /* ── sections ────────────────────────────────────────────────────────────── */
 section.lec{
@@ -309,9 +332,23 @@ html[data-theme="dark"] .quiz label{background:color-mix(in srgb,var(--panel) 80
 
 footer.foot{margin-top:44px;padding-top:22px;border-top:1px solid var(--line);color:var(--ink-faint);font-size:13.5px}
 
+@media(max-width:1024px){
+  main{padding-inline:clamp(18px,3.5vw,40px)}
+  .toc{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
 @media(max-width:700px){
-  .topbar-in{flex-wrap:wrap}
-  section.lec{border-radius:16px}
+  .topbar-in{flex-wrap:nowrap;padding-inline:14px}
+  .brandmark b{max-width:42vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  main{padding:0 14px calc(72px + env(safe-area-inset-bottom))}
+  .hero{padding-top:32px}
+  .search-row{align-items:stretch;flex-wrap:wrap}.search-row label{width:100%}
+  .search-input{flex:1}.search-clear{flex:0 0 auto}
+  .toc{grid-template-columns:1fr}
+  section.lec{border-radius:16px;margin:18px 0;padding:20px 16px}
+  .tablewrap{margin-inline:-16px;border-radius:0;border-left:0;border-right:0}
+}
+@media(min-width:701px) and (max-width:1180px) and (orientation:landscape){
+  main{padding-inline:28px}.toc{grid-template-columns:repeat(3,minmax(0,1fr))}
 }
 @media(prefers-reduced-motion:reduce){
   *{animation:none!important;transition:none!important}
@@ -369,6 +406,30 @@ BREAKDOWN_JS = r"""
   document.getElementById('topBtn').addEventListener('click',function(){
     window.scrollTo({top:0,behavior:'smooth'});
   });
+
+  // Fast client-side search across lecture sections and the table of contents.
+  var search=document.getElementById('studySearch'), clear=document.getElementById('searchClear');
+  var searchStatus=document.getElementById('searchStatus');
+  var searchable=[].slice.call(document.querySelectorAll('section.lec'));
+  function runSearch(){
+    var q=search.value.trim().toLowerCase(), shown=0;
+    searchable.forEach(function(section){
+      var match=!q||section.textContent.toLowerCase().indexOf(q)!==-1;
+      section.classList.toggle('search-hidden',!match);
+      section.classList.toggle('search-match',!!q&&match);
+      if(match)shown++;
+    });
+    [].slice.call(document.querySelectorAll('.toc a')).forEach(function(link){
+      var target=document.querySelector(link.getAttribute('href'));
+      link.classList.toggle('search-hidden',!!q&&target&&target.classList.contains('search-hidden'));
+    });
+    searchStatus.textContent=q?(shown+' section'+(shown===1?'':'s')+' found for “'+search.value.trim()+'”.'):
+      'Search concepts, definitions, examples, mistakes, and exam tips.';
+  }
+  search.addEventListener('input',runSearch);
+  clear.addEventListener('click',function(){search.value='';runSearch();search.focus();});
+  search.addEventListener('keydown',function(e){if(e.key==='Escape'){search.value='';runSearch();}});
+  runSearch();
 
   // pop quiz
   var mount=document.getElementById('quizBody');
@@ -479,7 +540,7 @@ def breakdown_html(lec: dict) -> str:
     toc = "".join(
         '<a href="#%s"><span>%02d</span>%s</a>' % (s["id"], i + 1, html.escape(s["title"]))
         for i, s in enumerate(lec["sections"]))
-    toc += ('<a href="#mistakes"><span>%02d</span>Common mistakes</a>'
+    toc += ('<a href="#mistakes"><span>%02d</span>Mistakes students usually make</a>'
             '<a href="#cheat"><span>%02d</span>Cheat sheet</a>'
             '<a href="#lab"><span>%02d</span>Apply it</a>'
             '<a href="#quiz"><span>%02d</span>Pop quiz</a>'
@@ -550,6 +611,14 @@ def breakdown_html(lec: dict) -> str:
     <h1>%(hero_title)s</h1>
     <p class="lede">%(hero_sub)s</p>
     <div class="badges">%(badges)s</div>
+    <div class="study-search" role="search" aria-label="Search this slide breakdown">
+      <div class="search-row">
+        <label for="studySearch">SEARCH NOTES</label>
+        <input class="search-input" id="studySearch" type="search" autocomplete="off" placeholder="Type a concept, term, or exam keyword…">
+        <button class="search-clear" id="searchClear" type="button">CLEAR</button>
+      </div>
+      <div class="search-status" id="searchStatus" role="status" aria-live="polite"></div>
+    </div>
     <div class="outcomes">
       <h2>LEARNING OUTCOMES</h2>
       <ol>%(outcomes)s</ol>
@@ -560,8 +629,8 @@ def breakdown_html(lec: dict) -> str:
         %(sections)s
 
         <section class="lec" id="mistakes">
-            <div class="kicker">COMMON MISTAKES</div>
-            <h2>What students get wrong on this lecture</h2>
+            <div class="kicker">MISTAKES STUDENTS USUALLY MAKE</div>
+            <h2>Mistakes students usually make</h2>
             <p class="lead">Each claim below is the wrong answer; the line beneath it is the correction, in the wording this course marks against.</p>
             %(mistakes)s
         </section>
@@ -624,6 +693,17 @@ def breakdown_html(lec: dict) -> str:
 # The donor page carries the accessibility baseline (id/tabindex on <main>),
 # so match the opening tag loosely rather than byte-for-byte.
 MAIN_RE = re.compile(r'        <main class="content-area"[^>]*>.*?    </main>', re.S)
+
+BREAKDOWN_SHELL_STYLES = '''<style id="se365-breakdown-fullscreen">
+/* Give the embedded study guide the full usable viewport on laptops and tablets. */
+.embed-area-wrapper{width:100%;max-width:none!important;margin:0!important;padding:0!important}
+.embed-container{width:100%!important;max-width:none!important;height:calc(100dvh - 230px)!important;min-height:680px!important;border-radius:0!important}
+.rendered-content,.legacy-html-frame{display:block;width:100%!important;height:100%!important;min-height:inherit!important}
+.rendered-content{margin:0!important;padding:0!important;max-width:none!important}
+@media(max-width:1024px){.embed-container{height:calc(100dvh - 210px)!important;min-height:620px!important}}
+@media(max-width:700px){.embed-container{height:calc(100dvh - 176px)!important;min-height:560px!important}.page-header{padding-inline:16px!important}.action-buttons{flex-wrap:wrap}}
+@supports(padding:max(0px)){@media(max-width:700px){.embed-area-wrapper{padding-bottom:env(safe-area-inset-bottom)!important}}}
+</style>'''
 
 
 def shell_main(lec: dict, prev_lec: dict | None, next_lec: dict | None) -> str:
@@ -715,7 +795,7 @@ def build_shell(lec: dict, prev_lec: dict | None, next_lec: dict | None, templat
                  "description": "%s %s: %s" % (COURSE_CODE, lec["lecture_label"], lec["tagline"]),
                  "isPartOf": {"@type": "WebSite", "name": "Shoug's Digital Garden", "url": SITE + "/"},
              }, ensure_ascii=False))
-    out = out.replace("</head>", seo + "</head>", 1)
+    out = out.replace("</head>", BREAKDOWN_SHELL_STYLES + seo + "</head>", 1)
     return re.sub(r"[ \t]+\n", "\n", out)
 
 
@@ -1221,7 +1301,7 @@ def build_slides(template: str) -> None:
             '<div class="dir-arrow">-&gt;</div></a>'
             % (COURSE_ROUTE, pdf[:-4], seq, html.escape(lec["title"])))
     directory = ('<section class="slide-viewer-shell" aria-label="SE365 slide attribution">'
-                 + UNIVERSITY_CREDIT + '</section>'
+                 + NOTES_CREDIT + UNIVERSITY_CREDIT + '</section>'
                  '<div class="directory-container" aria-label="SE365 lecture slides">'
                  '<div class="dir-header"><span>LEC</span><span>LECTURE</span>'
                  '<span>SYS_STATE</span><span></span></div>' + "".join(rows) + "</div>")
@@ -1258,7 +1338,7 @@ def build_slides(template: str) -> None:
             '<div class="slide-actions"><a class="slide-open-link" href="../%s" target="_blank" rel="noopener">'
             'OPEN PDF -&gt;</a></div>'
             '<iframe class="pdf-frame" src="../%s#view=FitH" title="%s slides"></iframe></section>'
-            % (esc(lec["title"]), UNIVERSITY_CREDIT, pdf, pdf, esc(lec["title"])))
+            % (esc(lec["title"]), NOTES_CREDIT + UNIVERSITY_CREDIT, pdf, pdf, esc(lec["title"])))
         page = slides_replace_content(page, viewer)
         folder = SLIDES / slug
         folder.mkdir(exist_ok=True)

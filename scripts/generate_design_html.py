@@ -157,7 +157,7 @@ COURSES: dict[str, dict[str, Any]] = {
             "Exams": "/academics/software-engineering/se365/exams/",
         },
         "title_override": "Human-Computer Interaction",
-        "status": "available",
+        "status": "complete",
     },
     "SE371": {
         "track": "Software Engineering",
