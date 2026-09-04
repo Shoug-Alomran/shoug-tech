@@ -1,0 +1,1463 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="icon" type="image/png" sizes="256x256" href="/assets/shoug-favicon-v4.png">
+    <link rel="shortcut icon" type="image/png" href="/assets/shoug-favicon-v4.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/shoug-apple-touch-icon-v4.png">
+<meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ch.7 — Behavioral Design Patterns | Study Blueprint</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg: #081a2e;
+            --bg-elev: #0e2440;
+            --bg-elev-2: #122b4c;
+            --grid: rgba(125, 211, 252, 0.075);
+            --grid-strong: rgba(125, 211, 252, 0.16);
+            --ink: #e9f2ff;
+            --ink-dim: #93a9c7;
+            --ink-faint: #5f7896;
+            --cyan: #7dd3fc;
+            --cyan-strong: #38bdf8;
+            --amber: #fbbf24;
+            --amber-dim: #a8791c;
+            --rose: #fb7185;
+            --green: #34d399;
+            --border: rgba(125, 211, 252, 0.28);
+            --border-soft: rgba(125, 211, 252, 0.14);
+            --shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
+            --radius: 14px;
+            --font-display: 'Space Grotesk', sans-serif;
+            --font-body: 'IBM Plex Sans', sans-serif;
+            --font-mono: 'IBM Plex Mono', monospace;
+        }
+
+        html[data-theme="light"] {
+            --bg: #eef2f7;
+            --bg-elev: #ffffff;
+            --bg-elev-2: #e4ecf5;
+            --grid: rgba(3, 105, 161, 0.07);
+            --grid-strong: rgba(3, 105, 161, 0.14);
+            --ink: #0a1929;
+            --ink-dim: #3d5674;
+            --ink-faint: #7488a3;
+            --cyan: #0369a1;
+            --cyan-strong: #075985;
+            --amber: #b45309;
+            --amber-dim: #92400e;
+            --rose: #be123c;
+            --green: #0f766e;
+            --border: rgba(3, 105, 161, 0.3);
+            --border-soft: rgba(3, 105, 161, 0.15);
+            --shadow: 0 20px 40px rgba(10, 25, 41, 0.12);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            background: radial-gradient(circle at 1px 1px, var(--grid-strong) 1px, transparent 1px) 0 0/48px 48px, linear-gradient(var(--bg), var(--bg));
+            color: var(--ink);
+            font-family: var(--font-body);
+            font-size: clamp(15px, 0.92vw + 10px, 18px);
+            line-height: 1.6;
+            transition: background-color .35s ease, color .35s ease;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        ::selection {
+            background: var(--amber);
+            color: #0a1929;
+        }
+
+        .wrap {
+            max-width: 1180px;
+            margin: 0 auto;
+            padding: 0 clamp(16px, 4vw, 56px);
+        }
+
+        .topbar {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            backdrop-filter: blur(10px);
+            background: color-mix(in srgb, var(--bg) 82%, transparent);
+            border-bottom: 1px solid var(--border-soft);
+        }
+
+        .topbar-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px clamp(16px, 4vw, 56px);
+            max-width: 1180px;
+            margin: 0 auto;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: var(--font-mono);
+            font-size: .8rem;
+            letter-spacing: .08em;
+            color: var(--ink-dim);
+            text-transform: uppercase;
+        }
+
+        .brand .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--amber);
+            box-shadow: 0 0 10px var(--amber);
+        }
+
+        .toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            padding: 4px;
+            background: var(--bg-elev);
+        }
+
+        .toggle button {
+            border: none;
+            background: transparent;
+            color: var(--ink-dim);
+            padding: 6px 12px;
+            border-radius: 999px;
+            cursor: pointer;
+            font-family: var(--font-mono);
+            font-size: .72rem;
+            letter-spacing: .05em;
+            transition: all .25s ease;
+        }
+
+        .toggle button.active {
+            background: var(--cyan);
+            color: var(--bg);
+            font-weight: 600;
+        }
+
+        html[data-theme="light"] .toggle button.active {
+            color: #fff;
+        }
+
+        .progress-track {
+            height: 2px;
+            background: var(--border-soft);
+        }
+
+        .progress-bar {
+            height: 2px;
+            width: 0%;
+            background: linear-gradient(90deg, var(--cyan), var(--amber));
+            transition: width .1s linear;
+        }
+
+        .hero {
+            padding: clamp(48px, 8vw, 96px) 0 clamp(32px, 6vw, 64px);
+        }
+
+        .eyebrow {
+            font-family: var(--font-mono);
+            font-size: .78rem;
+            letter-spacing: .16em;
+            color: var(--amber);
+            text-transform: uppercase;
+            margin: 0 0 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .eyebrow::before {
+            content: "§";
+            font-size: 1rem;
+        }
+
+        h1.title {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: clamp(2.1rem, 5vw, 3.6rem);
+            line-height: 1.08;
+            margin: 0 0 14px;
+            letter-spacing: -.01em;
+        }
+
+        h1.title span {
+            color: var(--cyan);
+        }
+
+        .subtitle {
+            color: var(--ink-dim);
+            font-size: clamp(1rem, 1.3vw, 1.2rem);
+            max-width: 660px;
+            margin: 0 0 28px;
+        }
+
+        .hero-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px 28px;
+            font-family: var(--font-mono);
+            font-size: .78rem;
+            color: var(--ink-faint);
+            border-top: 1px dashed var(--border);
+            padding-top: 18px;
+        }
+
+        .hero-meta b {
+            color: var(--ink-dim);
+            font-weight: 600;
+        }
+
+        section {
+            padding: clamp(40px, 6vw, 72px) 0;
+            border-top: 1px solid var(--border-soft);
+        }
+
+        .sec-head {
+            display: flex;
+            align-items: baseline;
+            gap: 16px;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+        }
+
+        .sec-num {
+            font-family: var(--font-mono);
+            color: var(--amber);
+            font-size: .85rem;
+            border: 1px solid var(--amber-dim);
+            padding: 2px 8px;
+            border-radius: 6px;
+        }
+
+        h2 {
+            font-family: var(--font-display);
+            font-weight: 600;
+            font-size: clamp(1.5rem, 2.6vw, 2.1rem);
+            margin: 0;
+        }
+
+        .sec-sub {
+            color: var(--ink-dim);
+            max-width: 780px;
+            margin: 14px 0 34px;
+        }
+
+        .pattern-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: var(--font-mono);
+            font-size: .72rem;
+            letter-spacing: .06em;
+            text-transform: uppercase;
+            color: var(--bg);
+            background: var(--cyan);
+            padding: 4px 12px;
+            border-radius: 999px;
+            margin-bottom: 14px;
+        }
+
+        .mnemonic {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-family: var(--font-mono);
+            font-size: .85rem;
+            background: var(--bg-elev);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 10px 16px;
+            margin: 10px 0 30px;
+            color: var(--ink-dim);
+        }
+
+        .mnemonic b {
+            color: var(--amber);
+            font-weight: 600;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 22px;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+        }
+
+        @media (max-width:820px) {
+
+            .grid-2,
+            .grid-3 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: var(--bg-elev);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 24px;
+            box-shadow: var(--shadow);
+        }
+
+        .card h3 {
+            font-family: var(--font-display);
+            margin: 0 0 10px;
+            font-size: 1.12rem;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .card p {
+            color: var(--ink-dim);
+            margin: 0 0 10px;
+            font-size: .95rem;
+        }
+
+        .card .tag {
+            display: inline-block;
+            font-family: var(--font-mono);
+            font-size: .7rem;
+            letter-spacing: .05em;
+            color: var(--cyan);
+            border: 1px solid var(--border);
+            padding: 2px 8px;
+            border-radius: 6px;
+            margin-bottom: 12px;
+        }
+
+        .blueprint-line {
+            border: none;
+            border-top: 1px dashed var(--border);
+            margin: 14px 0;
+        }
+
+        .example-box {
+            margin-top: 12px;
+            background: var(--bg-elev-2);
+            border-left: 3px solid var(--amber);
+            padding: 10px 14px;
+            border-radius: 0 8px 8px 0;
+            font-size: .88rem;
+        }
+
+        .example-box b {
+            color: var(--amber);
+            font-family: var(--font-mono);
+            font-size: .75rem;
+            letter-spacing: .04em;
+        }
+
+        .uml-wrap {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 22px;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 0;
+        }
+
+        .uml-col {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .uml-box {
+            font-family: var(--font-mono);
+            font-size: .76rem;
+            border: 1.5px solid var(--cyan);
+            border-radius: 8px;
+            background: var(--bg-elev-2);
+            min-width: 150px;
+            overflow: hidden;
+        }
+
+        .uml-box .h {
+            background: var(--cyan);
+            color: var(--bg);
+            text-align: center;
+            padding: 6px 10px;
+            font-weight: 600;
+        }
+
+        .uml-box .h.abstract {
+            font-style: italic;
+        }
+
+        .uml-box .b {
+            padding: 8px 12px;
+            color: var(--ink-dim);
+        }
+
+        .uml-box .b div {
+            padding: 2px 0;
+        }
+
+        .uml-arrow {
+            font-family: var(--font-mono);
+            color: var(--ink-faint);
+            text-align: center;
+            font-size: 1.3rem;
+        }
+
+        .uml-label {
+            font-family: var(--font-mono);
+            font-size: .64rem;
+            color: var(--amber);
+            text-align: center;
+        }
+
+        pre.code {
+            background: #05121f;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px 18px;
+            overflow-x: auto;
+            font-family: var(--font-mono);
+            font-size: .79rem;
+            color: #cde6ff;
+            line-height: 1.55;
+            margin: 14px 0 0;
+        }
+
+        html[data-theme="light"] pre.code {
+            background: #0a1929;
+        }
+
+        pre.code .c {
+            color: #5f7896;
+        }
+
+        pre.code .k {
+            color: #7dd3fc;
+        }
+
+        pre.code .s {
+            color: #fbbf24;
+        }
+
+        pre.code .f {
+            color: #a78bfa;
+        }
+
+        .step-list {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .step-item {
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+            background: var(--bg-elev);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px 18px;
+        }
+
+        .step-num {
+            font-family: var(--font-mono);
+            font-weight: 700;
+            color: var(--bg);
+            background: var(--cyan);
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .step-item b {
+            font-family: var(--font-display);
+        }
+
+        .step-item span {
+            color: var(--ink-dim);
+            display: block;
+            font-size: .9rem;
+            margin-top: 2px;
+        }
+
+        table.cmp {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: .87rem;
+        }
+
+        table.cmp th,
+        table.cmp td {
+            text-align: left;
+            padding: 12px 14px;
+            border-bottom: 1px solid var(--border-soft);
+            vertical-align: top;
+        }
+
+        table.cmp th {
+            font-family: var(--font-mono);
+            color: var(--amber);
+            font-size: .72rem;
+            letter-spacing: .06em;
+            text-transform: uppercase;
+        }
+
+        table.cmp td:first-child {
+            font-family: var(--font-display);
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        table.cmp td {
+            color: var(--ink-dim);
+        }
+
+        .task {
+            background: var(--bg-elev);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+            margin-bottom: 12px;
+        }
+
+        .task-head {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 18px 20px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .task-letter {
+            font-family: var(--font-mono);
+            font-weight: 700;
+            font-size: 1.05rem;
+            color: var(--bg);
+            background: var(--cyan);
+            width: 38px;
+            height: 38px;
+            border-radius: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .task-head b {
+            font-family: var(--font-display);
+            font-size: 1.02rem;
+        }
+
+        .task-head span.sub {
+            display: block;
+            color: var(--ink-dim);
+            font-size: .84rem;
+            font-weight: 400;
+        }
+
+        .task-chevron {
+            margin-left: auto;
+            color: var(--ink-faint);
+            transition: transform .3s ease;
+            font-family: var(--font-mono);
+        }
+
+        .task.open .task-chevron {
+            transform: rotate(45deg);
+            color: var(--amber);
+        }
+
+        .task-body {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height .35s ease;
+            padding: 0 20px;
+            color: var(--ink-dim);
+            font-size: .92rem;
+        }
+
+        .task.open .task-body {
+            padding: 0 20px 22px;
+        }
+
+        .flash-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 18px;
+        }
+
+        .flash {
+            perspective: 1200px;
+            height: 150px;
+            cursor: pointer;
+        }
+
+        .flash-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform .5s;
+            transform-style: preserve-3d;
+        }
+
+        .flash.flipped .flash-inner {
+            transform: rotateY(180deg);
+        }
+
+        .flash-face {
+            position: absolute;
+            inset: 0;
+            backface-visibility: hidden;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-size: .9rem;
+        }
+
+        .flash-front {
+            background: var(--bg-elev);
+            font-family: var(--font-display);
+            font-weight: 600;
+            color: var(--cyan);
+        }
+
+        .flash-back {
+            background: var(--bg-elev-2);
+            transform: rotateY(180deg);
+            color: var(--ink-dim);
+            font-size: .83rem;
+            padding: 14px;
+        }
+
+        .flash-hint {
+            position: absolute;
+            bottom: 8px;
+            right: 12px;
+            font-family: var(--font-mono);
+            font-size: .6rem;
+            color: var(--ink-faint);
+        }
+
+        .quiz-item {
+            background: var(--bg-elev);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 20px 22px;
+            margin-bottom: 16px;
+        }
+
+        .quiz-q {
+            font-family: var(--font-display);
+            font-weight: 600;
+            margin-bottom: 12px;
+            font-size: 1.02rem;
+        }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .quiz-option {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 10px 14px;
+            cursor: pointer;
+            font-size: .9rem;
+            transition: all .2s ease;
+        }
+
+        .quiz-option:hover {
+            border-color: var(--cyan);
+        }
+
+        .quiz-option.correct {
+            border-color: #22c55e;
+            background: color-mix(in srgb, #22c55e 12%, var(--bg-elev));
+        }
+
+        .quiz-option.wrong {
+            border-color: var(--rose);
+            background: color-mix(in srgb, var(--rose) 12%, var(--bg-elev));
+        }
+
+        .reveal-btn {
+            font-family: var(--font-mono);
+            font-size: .78rem;
+            background: transparent;
+            color: var(--cyan);
+            border: 1px solid var(--border);
+            padding: 8px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .short-answer {
+            display: none;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px dashed var(--border);
+            color: var(--ink-dim);
+            font-size: .9rem;
+        }
+
+        .short-answer.show {
+            display: block;
+        }
+
+        .short-answer b {
+            color: var(--amber);
+        }
+
+        .recap-list {
+            columns: 2;
+            column-gap: 32px;
+        }
+
+        @media (max-width:700px) {
+            .recap-list {
+                columns: 1;
+            }
+        }
+
+        .recap-list li {
+            break-inside: avoid;
+            margin-bottom: 12px;
+            color: var(--ink-dim);
+            font-size: .92rem;
+        }
+
+        .recap-list li b {
+            color: var(--ink);
+        }
+
+        footer {
+            text-align: center;
+            padding: 48px 0 60px;
+            font-family: var(--font-mono);
+            font-size: .8rem;
+            color: var(--ink-faint);
+            border-top: 1px solid var(--border-soft);
+        }
+
+        footer .made {
+            margin-top: 10px;
+            letter-spacing: .08em;
+            color: var(--cyan);
+            font-size: .75rem;
+        }
+    </style>
+
+    <meta name="description" content="Software Design &amp; Architecture · Behavioral Patterns">
+    <link rel="canonical" href="https://shoug-tech.com/academics/software-engineering/se322/slide-breakdowns/17-chapter-7-behavioral-design-patterns-lecture-2/chapter-7-behavioral-design-patterns-lecture-2.html">
+    <meta property="og:title" content="Ch.7 — Behavioral Design Patterns | Study Blueprint">
+    <meta property="og:description" content="Software Design &amp; Architecture · Behavioral Patterns">
+    <meta property="og:url" content="https://shoug-tech.com/academics/software-engineering/se322/slide-breakdowns/17-chapter-7-behavioral-design-patterns-lecture-2/chapter-7-behavioral-design-patterns-lecture-2.html">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://shoug-tech.com/logo.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Ch.7 — Behavioral Design Patterns | Study Blueprint">
+    <meta name="twitter:description" content="Software Design &amp; Architecture · Behavioral Patterns">
+    <meta name="twitter:image" content="https://shoug-tech.com/logo.png">
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","url":"https://shoug-tech.com/academics/software-engineering/se322/slide-breakdowns/17-chapter-7-behavioral-design-patterns-lecture-2/chapter-7-behavioral-design-patterns-lecture-2.html","name":"Ch.7 — Behavioral Design Patterns | Study Blueprint","description":"Software Design &amp; Architecture · Behavioral Patterns","isPartOf":{"@type":"WebSite","name":"Shoug's Digital Garden","url":"https://shoug-tech.com/"}}</script>
+
+      <link rel="alternate" hreflang="en" href="https://shoug-tech.com/academics/software-engineering/se322/slide-breakdowns/17-chapter-7-behavioral-design-patterns-lecture-2/chapter-7-behavioral-design-patterns-lecture-2.html">
+      <link rel="alternate" hreflang="ar" href="https://shoug-tech.com/academics/software-engineering/se322/slide-breakdowns/17-chapter-7-behavioral-design-patterns-lecture-2/chapter-7-behavioral-design-patterns-lecture-2.html?lang=ar">
+      <link rel="alternate" hreflang="x-default" href="https://shoug-tech.com/academics/software-engineering/se322/slide-breakdowns/17-chapter-7-behavioral-design-patterns-lecture-2/chapter-7-behavioral-design-patterns-lecture-2.html">
+    <!-- Microsoft Clarity tracking code for https://shoug-tech.com/ -->
+    <script type="text/javascript">
+        (function(c,l,a,r,i,t,y){
+            c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+            t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+            y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+        })(window, document, "clarity", "script", "xub0eqmvs9");
+    </script>
+    <link rel="stylesheet" href="/styles/a11y.css">
+</head>
+
+<body>
+
+    <div class="topbar">
+        <div class="topbar-inner">
+            <div class="brand"><span class="dot"></span> CH.07 · BEHAVIORAL PATTERNS</div>
+            <div class="toggle" id="themeToggle">
+                <button data-theme="dark" class="active">DARK</button>
+                <button data-theme="light">LIGHT</button>
+            </div>
+        </div>
+        <div class="progress-track">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+    </div>
+
+    <div class="wrap">
+
+        <section class="hero" style="border-top:none;">
+            <p class="eyebrow">Software Design &amp; Architecture · Behavioral Patterns</p>
+            <h1 class="title">Iterator <span>&amp; Observer</span></h1>
+            <p class="subtitle">Structural patterns decided how objects are <i>put together</i>. Behavioral patterns
+                decide how they <i>talk to each other</i> — who walks a collection, and who gets told when something
+                changes.</p>
+            <div class="hero-meta">
+                <span><b>Chapter</b> 07 · Lecture 02</span>
+                <span><b>Category</b> Behavioral Design Patterns</span>
+                <span><b>Previously</b> Structural Patterns</span>
+                <span><b>Next up</b> Architecture &amp; Design Evaluation</span>
+            </div>
+        </section>
+
+        <!-- 0. OVERVIEW -->
+        <section id="s0">
+            <div class="sec-head"><span class="sec-num">00</span>
+                <h2>What Are Behavioral Patterns?</h2>
+            </div>
+            <p class="sec-sub">Behavioral patterns are responsible for the <b style="color:var(--ink)">efficient and
+                    safe distribution of behaviors</b> among a program's objects — how responsibility and communication
+                are shared out at run time.</p>
+            <div class="mnemonic">Mnemonic — <b>I.O.</b> → "<b>I</b>terate, <b>O</b>bserve" — Iterator hands out a
+                standard way to <i>walk</i> a collection; Observer hands out a standard way to <i>watch</i> an object
+                for changes. Walking and watching: the two behaviors this lecture covers.</div>
+            <div class="grid-2">
+                <div class="card">
+                    <h3>Iterator</h3>
+                    <p>Gives clients one standard way to step through a collection — without ever revealing how that
+                        collection stores its elements internally.</p>
+                </div>
+                <div class="card">
+                    <h3>Observer</h3>
+                    <p>Sets up a one-to-many link so that when one object changes state, everything depending on it is
+                        notified and updated automatically.</p>
+                </div>
+            </div>
+            <div class="card" style="margin-top:22px;">
+                <h3>The rest of the family (named, not covered)</h3>
+                <p>The lecture lists these so you recognise them as behavioral if they appear in a question:
+                    <b style="color:var(--ink)">Command</b>, <b style="color:var(--ink)">Chain of Responsibility</b>,
+                    <b style="color:var(--ink)">Interpreter</b>, <b style="color:var(--ink)">Mediator</b>,
+                    <b style="color:var(--ink)">Memento</b>, <b style="color:var(--ink)">State</b>,
+                    <b style="color:var(--ink)">Strategy</b>, <b style="color:var(--ink)">Template Method</b> and
+                    <b style="color:var(--ink)">Visitor</b>. Only Iterator and Observer are examinable in detail here.</p>
+            </div>
+        </section>
+
+        <!-- 1. ITERATOR -->
+        <section id="s1">
+            <div class="sec-head"><span class="sec-num">01</span>
+                <h2>The Iterator Pattern</h2>
+            </div>
+            <span class="pattern-pill">Object Behavioral Pattern</span>
+            <p class="sec-sub">Provides a standardized way of accessing and traversing the objects held in a collection
+                data structure. <b style="color:var(--ink)">Intent:</b> provide a way to access the elements of a
+                collection object sequentially, without any need to know its underlying representation.</p>
+
+            <div class="mnemonic">Mnemonic — think of a <b>TV remote</b>: pressing <i>channel up</i> moves you to the
+                next channel, and you never learn whether the channels are stored in an array, a list, or a database.
+                The remote is the Iterator; the TV's channel store is the Aggregate.</div>
+
+            <div class="card">
+                <h3>The two words that matter</h3>
+                <ul style="color:var(--ink-dim); font-size:.92rem; padding-left:20px; margin:0;">
+                    <li><b style="color:var(--ink)">Sequentially</b> — one element after another, in a defined order.</li>
+                    <li><b style="color:var(--ink)">Without knowing the representation</b> — the client never learns
+                        whether it is walking an array, a linked list, or a tree. Change the storage, and no client
+                        breaks.</li>
+                </ul>
+            </div>
+
+            <div class="card" style="margin-top:22px;">
+                <h3>Structure — who refers to whom</h3>
+                <div class="uml-wrap">
+                    <div class="uml-col">
+                        <div class="uml-box">
+                            <div class="h">Client</div>
+                        </div>
+                        <div class="uml-arrow">→</div>
+                    </div>
+                    <div class="uml-col">
+                        <div class="uml-box">
+                            <div class="h abstract">Aggregate</div>
+                            <div class="b">
+                                <div>+createIterator()</div>
+                            </div>
+                        </div>
+                        <div class="uml-arrow">↑</div>
+                        <div class="uml-box">
+                            <div class="h">Aggregate1</div>
+                            <div class="b">
+                                <div>+createIterator()</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="uml-col">
+                        <div class="uml-label">creates ⤳<br>accesses ⤳</div>
+                    </div>
+                    <div class="uml-col">
+                        <div class="uml-box">
+                            <div class="h abstract">Iterator</div>
+                            <div class="b">
+                                <div>+next()</div>
+                                <div>+hasNext()</div>
+                            </div>
+                        </div>
+                        <div class="uml-arrow">↑</div>
+                        <div class="uml-box">
+                            <div class="h">Iterator1</div>
+                            <div class="b">
+                                <div>+next()</div>
+                                <div>+hasNext()</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="example-box"><b>READING THE DIAGRAM —</b> the Client refers to (1) the
+                    <b>Aggregate</b> interface to create an Iterator object via <code>createIterator()</code>, and
+                    (2) the <b>Iterator</b> interface to traverse the aggregate via <code>next()</code> and
+                    <code>hasNext()</code>. <code>Iterator1</code> implements the Iterator interface by accessing
+                    <code>Aggregate1</code>. Note the client talks to <i>interfaces</i> on both sides — that is what
+                    hides the representation.</div>
+            </div>
+
+            <div class="card" style="margin-top:22px;">
+                <h3>Worked Example — a name collection</h3>
+                <p><b style="color:var(--ink)">Setup:</b> a <code>NameRepository</code> stores names in a plain array,
+                    but the client should be able to walk it without knowing that. The concrete class implements
+                    <code>Container</code> and holds an <b style="color:var(--cyan)">inner class</b>
+                    <code>NameIterator</code> that implements <code>Iterator</code>.</p>
+                <pre class="code"><span class="c">// The Iterator interface — the traversal contract</span>
+<span class="k">public interface</span> <span class="f">Iterator</span> {
+  <span class="k">public boolean</span> hasNext();
+  <span class="k">public</span> Object next();
+}
+
+<span class="c">// The Aggregate / Container interface — the "give me an iterator" contract</span>
+<span class="k">public interface</span> <span class="f">Container</span> {
+  <span class="k">public</span> Iterator getIterator();
+}
+
+<span class="c">// Concrete collection + its concrete iterator as an inner class</span>
+<span class="k">public class</span> <span class="f">NameRepository</span> <span class="k">implements</span> Container {
+  <span class="k">public</span> String[] names = {<span class="s">"Robert"</span>, <span class="s">"John"</span>, <span class="s">"Julie"</span>, <span class="s">"Lora"</span>};
+
+  <span class="k">public</span> Iterator <span class="f">getIterator</span>() { <span class="k">return new</span> NameIterator(); }
+
+  <span class="k">private class</span> <span class="f">NameIterator</span> <span class="k">implements</span> Iterator {
+    <span class="k">int</span> index; <span class="c">// the iterator holds the position, NOT the collection</span>
+
+    <span class="k">public boolean</span> <span class="f">hasNext</span>() { <span class="k">return</span> index &lt; names.length; }
+
+    <span class="k">public</span> Object <span class="f">next</span>() {
+      <span class="k">if</span> (<span class="k">this</span>.hasNext()) <span class="k">return</span> names[index++];
+      <span class="k">return null</span>;
+    }
+  }
+}
+
+<span class="c">// Client — knows Container and Iterator, knows nothing about the array</span>
+NameRepository namesRepository = <span class="k">new</span> NameRepository();
+<span class="k">for</span> (Iterator iter = namesRepository.getIterator(); iter.hasNext(); ) {
+  String name = (String) iter.next();
+  System.out.println(<span class="s">"Name : "</span> + name);
+}
+<span class="c">// → Name : Robert / Name : John / Name : Julie / Name : Lora</span></pre>
+                <div class="example-box"><b>THE KEY DETAIL —</b> <code>index</code> lives on the
+                    <b>iterator</b>, not on the collection. That is why you can hand out two iterators over the same
+                    <code>NameRepository</code> and have them at different positions at the same time.</div>
+            </div>
+
+            <div class="card" style="margin-top:22px;">
+                <h3>Step-by-step: how to design one</h3>
+                <div class="mnemonic" style="margin-top:0;">Mnemonic — <b>I.C.C.A.</b> → <b>I</b>terator interface →
+                    <b>C</b>oncrete iterators → <b>C</b>ollection interface → <b>A</b>ggregate implementations.</div>
+                <ol style="color:var(--ink-dim); font-size:.92rem; padding-left:20px; margin:0;">
+                    <li>Identify and design the <b style="color:var(--ink)">Iterator interface</b>.</li>
+                    <li>For each class representing a collection data structure, design a
+                        <b style="color:var(--ink)">concrete Iterator</b> and associate it with that collection.
+                        Implement the concrete iterator's methods in terms of that data structure.</li>
+                    <li>Create the <b style="color:var(--ink)">Collection interface</b>, which includes the interface
+                        method that creates Iterators.</li>
+                    <li>For each collection class, <b style="color:var(--ink)">implement the Aggregate interface</b> to
+                        instantiate and return a concrete Iterator.</li>
+                </ol>
+            </div>
+
+            <div class="grid-2" style="margin-top:22px;">
+                <div class="card">
+                    <h3>Benefits</h3>
+                    <ul style="color:var(--ink-dim); font-size:.92rem; padding-left:20px; margin:0;">
+                        <li>A <b style="color:var(--ink)">consistent way</b> for clients to iterate over the objects in
+                            a collection.</li>
+                        <li><b style="color:var(--ink)">Abstracts the internals</b> — if the collection changes, clients
+                            do not have to change.</li>
+                        <li><b style="color:var(--ink)">Extensible</b> — many iterators can support different traversals
+                            over the same or different collection structures.</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>In-class exercise — The Company Directory</h3>
+                    <p>Build a corporate directory that stores employee records in <b style="color:var(--ink)">two
+                            different internal structures</b> (say an array and a list) but lets a client traverse both
+                        uniformly — and offer <b style="color:var(--ink)">two traversal methods</b>: standard and
+                        reverse. Then name the pattern, draw the class diagram, and generate the code.</p>
+                    <p style="margin-top:10px;"><b style="color:var(--cyan)">The answer:</b> Iterator. One
+                        <code>EmployeeIterator</code> interface; <code>ArrayDirectory</code> and
+                        <code>ListDirectory</code> both implement the Aggregate interface; and because traversal logic
+                        lives in the iterator, "reverse" is simply a <i>second</i> concrete iterator
+                        (<code>ReverseIterator</code>) over the same collection — no change to the collection classes at
+                        all. That last point is exactly benefit #3.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. OBSERVER -->
+        <section id="s2">
+            <div class="sec-head"><span class="sec-num">02</span>
+                <h2>The Observer Pattern</h2>
+            </div>
+            <span class="pattern-pill">Object Behavioral Pattern</span>
+            <p class="sec-sub">Standardizes the operations between objects that interoperate using a
+                <b style="color:var(--ink)">one-to-many</b> relationship. <b style="color:var(--ink)">Intent:</b> define
+                a one-to-many dependency between objects so that when one object changes state, all its dependents are
+                notified and updated automatically.</p>
+
+            <div class="mnemonic">Mnemonic — a <b>newsletter subscription</b>: you subscribe once, the publisher keeps
+                a list, and every new issue reaches everyone on it automatically. The publisher never learns who you
+                are beyond "someone with an inbox" — it just calls <code>update()</code>.</div>
+
+            <div class="card">
+                <h3>The three words that matter</h3>
+                <ul style="color:var(--ink-dim); font-size:.92rem; padding-left:20px; margin:0;">
+                    <li><b style="color:var(--ink)">One-to-many</b> — one Subject, many Observers.</li>
+                    <li><b style="color:var(--ink)">Dependency</b> — observers care about the subject's state; the
+                        subject does not care what they do with it.</li>
+                    <li><b style="color:var(--ink)">Automatically</b> — nobody polls. The subject pushes the
+                        notification the moment state changes.</li>
+                </ul>
+            </div>
+
+            <div class="card" style="margin-top:22px;">
+                <h3>Structure</h3>
+                <div class="uml-wrap">
+                    <div class="uml-col">
+                        <div class="uml-box">
+                            <div class="h">Subject</div>
+                            <div class="b">
+                                <div>−observers</div>
+                                <div>+attach(o)</div>
+                                <div>+detach(o)</div>
+                                <div>+notifyAll()</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="uml-col">
+                        <div class="uml-label">holds 0..* Observers ♦<br>calls update() on each</div>
+                        <div class="uml-arrow">→</div>
+                    </div>
+                    <div class="uml-col">
+                        <div class="uml-box">
+                            <div class="h abstract">Observer</div>
+                            <div class="b">
+                                <div>+update()</div>
+                            </div>
+                        </div>
+                        <div class="uml-arrow">↑</div>
+                        <div class="uml-box">
+                            <div class="h">ConcreteObserverA</div>
+                            <div class="b">
+                                <div>+update()</div>
+                            </div>
+                        </div>
+                        <div class="uml-box" style="margin-top:8px;">
+                            <div class="h">ConcreteObserverB</div>
+                            <div class="b">
+                                <div>+update()</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="example-box"><b>READING THE DIAGRAM —</b> the Subject holds a list of Observers and knows
+                    only the abstract <code>Observer</code> type. On a state change it walks its list and calls
+                    <code>update()</code> on each one. Adding a new kind of observer requires
+                    <b>no change to the Subject</b> — that is where the pattern's flexibility comes from.</div>
+            </div>
+
+            <div class="card" style="margin-top:22px;">
+                <h3>Worked Example — one integer, three displays</h3>
+                <p><b style="color:var(--ink)">Setup:</b> a <code>Subject</code> holds a single
+                    <code>state</code> integer. Three observers — <code>BinaryObserver</code>,
+                    <code>OctalObserver</code> and <code>HexaObserver</code> — each render that same number in their own
+                    base. Set the state once, and all three print.</p>
+                <pre class="code"><span class="c">// The Subject — keeps the list, owns the notification</span>
+<span class="k">public class</span> <span class="f">Subject</span> {
+  <span class="k">private</span> List&lt;Observer&gt; observers = <span class="k">new</span> ArrayList&lt;&gt;();
+  <span class="k">private int</span> state;
+
+  <span class="k">public int</span> <span class="f">getState</span>() { <span class="k">return</span> state; }
+
+  <span class="k">public void</span> <span class="f">setState</span>(<span class="k">int</span> state) {
+    <span class="k">this</span>.state = state;
+    notifyAllObservers(); <span class="c">// state changed → tell everyone, automatically</span>
+  }
+
+  <span class="k">public void</span> <span class="f">attach</span>(Observer observer) { observers.add(observer); }
+
+  <span class="k">public void</span> <span class="f">notifyAllObservers</span>() {
+    <span class="k">for</span> (Observer observer : observers) observer.update(); <span class="c">// iterate + update</span>
+  }
+}
+
+<span class="c">// The Observer abstraction — one abstract update() method</span>
+<span class="k">public abstract class</span> <span class="f">Observer</span> {
+  <span class="k">protected</span> Subject subject;
+  <span class="k">public abstract void</span> update();
+}
+
+<span class="c">// A concrete observer — registers itself with the subject in its constructor</span>
+<span class="k">public class</span> <span class="f">BinaryObserver</span> <span class="k">extends</span> Observer {
+  <span class="k">public</span> <span class="f">BinaryObserver</span>(Subject subject) {
+    <span class="k">this</span>.subject = subject;
+    <span class="k">this</span>.subject.attach(<span class="k">this</span>); <span class="c">// attach at construction time</span>
+  }
+  <span class="k">public void</span> <span class="f">update</span>() {
+    System.out.println(<span class="s">"Binary String: "</span> + Integer.toBinaryString(subject.getState()));
+  }
+}
+<span class="c">// OctalObserver and HexaObserver are identical apart from the conversion call.</span>
+
+<span class="c">// Client — attach once, then just change the state</span>
+Subject subject = <span class="k">new</span> Subject();
+<span class="k">new</span> HexaObserver(subject);
+<span class="k">new</span> OctalObserver(subject);
+<span class="k">new</span> BinaryObserver(subject);
+
+subject.setState(<span class="s">15</span>); <span class="c">// → Hex: F · Octal: 17 · Binary: 1111</span>
+subject.setState(<span class="s">10</span>); <span class="c">// → Hex: A · Octal: 12 · Binary: 1010</span></pre>
+                <div class="example-box"><b>THE KEY DETAIL —</b> the client never calls <code>update()</code> and never
+                    touches the observers after construction. It changes <i>one</i> value —
+                    <code>setState()</code> — and the fan-out happens inside the Subject. Delete an observer or add a
+                    fourth one, and not a single line of <code>Subject</code> changes.</div>
+            </div>
+
+            <div class="card" style="margin-top:22px;">
+                <h3>Step-by-step: how to apply it</h3>
+                <div class="mnemonic" style="margin-top:0;">Mnemonic — <b>S.I.O.I.R.</b> → <b>S</b>ubject interface →
+                    <b>I</b>nherit from it → <b>O</b>bserver interface → <b>I</b>mplement update() →
+                    <b>R</b>egister at run time.</div>
+                <ol style="color:var(--ink-dim); font-size:.92rem; padding-left:20px; margin:0;">
+                    <li>Design the <b style="color:var(--ink)">Subject interface</b> and implement the code for
+                        attaching, detaching and notifying observer objects. Keeping track of observers can be done with
+                        an existing linked-list data structure.</li>
+                    <li>For classes that manage information of interest to observers,
+                        <b style="color:var(--ink)">inherit from the Subject class</b> created in step 1.</li>
+                    <li>Design the <b style="color:var(--ink)">Observer interface</b>, which includes the abstract
+                        <code>update()</code> interface method.</li>
+                    <li>For all observers in the system, <b style="color:var(--ink)">implement the Observer
+                            interface</b> — which requires implementing <code>update()</code>.</li>
+                    <li><b style="color:var(--ink)">At run time</b>, create each observer and attach it to the subject.
+                        When changes occur, the subject iterates through its list of registered objects and calls their
+                        <code>update()</code> method.</li>
+                </ol>
+            </div>
+
+            <div class="grid-2" style="margin-top:22px;">
+                <div class="card">
+                    <h3>Benefits</h3>
+                    <ul style="color:var(--ink-dim); font-size:.92rem; padding-left:20px; margin:0;">
+                        <li><b style="color:var(--ink)">Flexibility</b> for adding new services to the system.</li>
+                        <li>Because specific services are <b style="color:var(--ink)">compartmentalized</b>, maintaining
+                            and modifying existing system services becomes easier.</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>In-class activity — Social Media Followers</h3>
+                    <p>A simplified Instagram or X. The <b style="color:var(--ink)">Subject</b> is an
+                        <code>Influencer</code> who posts a status update and does not want to message every follower by
+                        hand. The <b style="color:var(--ink)">Observers</b> are followers who subscribed and want to be
+                        notified the moment a post goes live.</p>
+                    <p style="margin-top:10px;"><b style="color:var(--cyan)">The task:</b> give
+                        <code>Influencer</code> a follower list plus <code>follow()</code>, <code>unfollow()</code> and
+                        <code>notifyFollowers()</code>; define a <code>Follower</code> interface with
+                        <code>update(String post)</code>; then implement <code>MobileAppUser</code> and
+                        <code>WebBrowserUser</code>, each printing something like
+                        <i>"Mobile User received notification: [Post Content]"</i>.</p>
+                    <p style="margin-top:10px;">Note the mapping: <code>follow</code>/<code>unfollow</code> are
+                        <code>attach</code>/<code>detach</code>, and <code>notifyFollowers()</code> is
+                        <code>notifyAllObservers()</code>. Same pattern, renamed for the domain.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. SIDE BY SIDE -->
+        <section id="s3">
+            <div class="sec-head"><span class="sec-num">03</span>
+                <h2>Both, Side by Side</h2>
+            </div>
+            <p class="sec-sub">Same exam trick as last lecture: ask "what is this pattern actually solving?"</p>
+            <div class="card">
+                <table class="cmp">
+                    <tr>
+                        <th>Pattern</th>
+                        <th>Solves</th>
+                        <th>Relationship</th>
+                        <th>Cue phrase</th>
+                    </tr>
+                    <tr>
+                        <td>Iterator</td>
+                        <td>A client needs to walk a collection without knowing how it stores its elements</td>
+                        <td>One client ↔ one traversal at a time</td>
+                        <td>"access the elements sequentially without exposing the representation"</td>
+                    </tr>
+                    <tr>
+                        <td>Observer</td>
+                        <td>Many objects need to react the moment one object's state changes</td>
+                        <td>One Subject → many Observers</td>
+                        <td>"one-to-many dependency, notified automatically"</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="card" style="margin-top:22px;">
+                <h3>Where they meet</h3>
+                <p>Look again at <code>notifyAllObservers()</code>: the Subject
+                    <b style="color:var(--ink)">iterates</b> over its observer list to notify it. Observer uses
+                    iteration internally — which is why these two land in the same lecture and why an exam question can
+                    legitimately involve both at once.</p>
+            </div>
+            <div class="card" style="margin-top:22px;">
+                <h3>Distinguishing them from the structural three</h3>
+                <table class="cmp">
+                    <tr>
+                        <th>Category</th>
+                        <th>Concerned with</th>
+                        <th>This course's patterns</th>
+                    </tr>
+                    <tr>
+                        <td>Creational</td>
+                        <td>How objects get <b style="color:var(--ink)">created</b></td>
+                        <td>Abstract Factory, Factory Method, Singleton, Builder, Prototype</td>
+                    </tr>
+                    <tr>
+                        <td>Structural</td>
+                        <td>How classes and objects are <b style="color:var(--ink)">composed</b> into larger structures</td>
+                        <td>Adapter, Composite, Facade</td>
+                    </tr>
+                    <tr>
+                        <td>Behavioral</td>
+                        <td>How <b style="color:var(--ink)">behavior and communication</b> are distributed among objects</td>
+                        <td>Iterator, Observer</td>
+                    </tr>
+                </table>
+            </div>
+        </section>
+
+        <!-- 4. FLASHCARDS -->
+        <section id="s4">
+            <div class="sec-head"><span class="sec-num">04</span>
+                <h2>Quick-Fire Flashcards</h2>
+            </div>
+            <p class="sec-sub">Tap a card to flip it.</p>
+            <div class="flash-grid" id="flashGrid"></div>
+        </section>
+
+        <!-- 5. QUIZ -->
+        <section id="s5">
+            <div class="sec-head"><span class="sec-num">05</span>
+                <h2>Practice Questions</h2>
+            </div>
+            <p class="sec-sub">Written from this lecture's content — self-check practice, not an official past paper.
+            </p>
+            <div id="quizContainer"></div>
+        </section>
+
+        <!-- 6. RECAP -->
+        <section id="s6">
+            <div class="sec-head"><span class="sec-num">06</span>
+                <h2>One-Screen Recap</h2>
+            </div>
+            <ul class="recap-list">
+                <li><b>Behavioral patterns</b> are responsible for the efficient and safe distribution of behaviors
+                    among a program's objects. Mnemonic: <b>I.O.</b> — Iterate, Observe.</li>
+                <li><b>Iterator</b> provides a standardized way to access and traverse the objects in a collection —
+                    sequentially, and without exposing the underlying representation.</li>
+                <li>Iterator roles: <b>Client → Aggregate</b> (createIterator) and <b>Client → Iterator</b>
+                    (next, hasNext); the concrete iterator accesses the concrete aggregate.</li>
+                <li>The traversal position lives on the <b>iterator</b>, not the collection — which is why several
+                    iterators can walk one collection independently.</li>
+                <li>Iterator build order: <b>I.C.C.A.</b> — Iterator interface, Concrete iterators, Collection
+                    interface, Aggregate implementations.</li>
+                <li>Iterator benefits: consistent traversal, internals abstracted away, and easy extension with extra
+                    traversals (standard, reverse, filtered).</li>
+                <li><b>Observer</b> defines a one-to-many dependency so that when one object changes state, all its
+                    dependents are notified and updated <b>automatically</b>.</li>
+                <li>Observer roles: <b>Subject</b> (attach, detach, notify + the observer list) and
+                    <b>Observer</b> (a single abstract update method), implemented by each concrete observer.</li>
+                <li>Observer build order: <b>S.I.O.I.R.</b> — Subject interface, Inherit from it, Observer interface,
+                    Implement update, Register at run time.</li>
+                <li>Observer benefits: flexibility to add new services, and easier maintenance because services are
+                    compartmentalized.</li>
+                <li>The Subject <b>iterates</b> its observer list to notify — the two patterns meet inside
+                    <code>notifyAllObservers()</code>.</li>
+                <li>Next up in the course: <b>Architecture and Design Evaluation</b>.</li>
+            </ul>
+        </section>
+
+        <footer>
+            <div>Software Design &amp; Architecture — Chapter 07, Lecture 02 · Prince Sultan University</div>
+            <div class="made">Made by Shoug Alomran</div>
+        </footer>
+
+    </div>
+
+    <script>
+        const themeButtons = document.querySelectorAll('.toggle button');
+        themeButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.documentElement.setAttribute('data-theme', btn.dataset.theme);
+                themeButtons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            });
+        });
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+            document.documentElement.setAttribute('data-theme', 'light');
+            themeButtons.forEach(b => b.classList.toggle('active', b.dataset.theme === 'light'));
+        }
+
+        const bar = document.getElementById('progressBar');
+        window.addEventListener('scroll', () => {
+            const h = document.documentElement;
+            bar.style.width = (h.scrollTop / (h.scrollHeight - h.clientHeight) * 100) + '%';
+        });
+
+        const flashData = [
+            ["Behavioral patterns (1-liner)", "Patterns responsible for the efficient and safe distribution of behaviors among the program's objects."],
+            ["I.O.", "Iterator = Iterate \u00b7 Observer = Observe."],
+            ["Iterator intent", "Provide a way to access the elements of a collection object sequentially, without needing to know its underlying representation."],
+            ["Iterator's four roles", "Client, Aggregate (createIterator), Iterator (next / hasNext), and the concrete Aggregate + concrete Iterator pair."],
+            ["Where does the position live?", "On the iterator \u2014 not the collection. That is why two iterators can walk one collection independently."],
+            ["Iterator build order \u2014 I.C.C.A.", "Iterator interface \u2192 Concrete iterators \u2192 Collection interface \u2192 Aggregate implementations."],
+            ["Observer intent", "Define a one-to-many dependency between objects so that when one object changes state, all its dependents are notified and updated automatically."],
+            ["Observer's two interfaces", "Subject (attach / detach / notify + the observer list) and Observer (one abstract update() method)."],
+            ["Observer build order \u2014 S.I.O.I.R.", "Subject interface \u2192 Inherit from it \u2192 Observer interface \u2192 Implement update() \u2192 Register at run time."],
+            ["Observer benefits", "Flexibility to add new services, and easier maintenance because services are compartmentalized."],
+            ["Behavioral patterns not covered", "Command, Chain of Responsibility, Interpreter, Mediator, Memento, State, Strategy, Template Method, Visitor."],
+            ["Where the two patterns meet", "The Subject iterates over its observer list in order to notify each one."],
+        ];
+        const flashGrid = document.getElementById('flashGrid');
+        flashData.forEach(([front, back]) => {
+            const card = document.createElement('div');
+            card.className = 'flash';
+            card.innerHTML = `<div class="flash-inner">
+      <div class="flash-face flash-front">${front}</div>
+      <div class="flash-face flash-back">${back}<span class="flash-hint">tap to flip back</span></div>
+    </div>`;
+            card.addEventListener('click', () => card.classList.toggle('flipped'));
+            flashGrid.appendChild(card);
+        });
+
+        const quizData = [
+            {
+                type: 'mcq', q: "1. Behavioral design patterns are primarily responsible for what?",
+                options: ["How objects are created and instantiated", "How classes and objects are composed into larger structures", "The efficient and safe distribution of behaviors among a program's objects", "How data is persisted to storage"], correct: 2
+            },
+            {
+                type: 'mcq', q: "2. What is the stated intent of the Iterator pattern?",
+                options: ["Access the elements of a collection sequentially without knowing its underlying representation", "Convert one interface into another that clients expect", "Notify dependent objects when a subject changes state", "Compose objects into whole-part tree hierarchies"], correct: 0
+            },
+            {
+                type: 'mcq', q: "3. In the Iterator structure, which two methods does the Client use to traverse an Aggregate?",
+                options: ["attach() and detach()", "next() and hasNext()", "createIterator() and update()", "add() and remove()"], correct: 1
+            },
+            {
+                type: 'mcq', q: "4. Which relationship does the Observer pattern define?",
+                options: ["One-to-one", "One-to-many", "Many-to-many", "None \u2014 observers poll the subject on a timer"], correct: 1
+            },
+            {
+                type: 'mcq', q: "5. In the Observer pattern, what happens the moment the Subject's state changes?",
+                options: ["Each observer must poll the subject to detect the change", "The subject iterates its list of registered observers and calls update() on each", "The client manually calls update() on every observer", "Only the most recently attached observer is notified"], correct: 1
+            },
+            {
+                type: 'mcq', q: "6. A stock-price service must push every price change to a web dashboard, a mobile app and an email alerter \u2014 with new consumer types added later without touching the service. Which pattern fits?",
+                options: ["Iterator", "Facade", "Observer", "Adapter"], correct: 2
+            },
+            {
+                type: 'short', q: "7. Short answer: The Company Directory exercise stores employee records in two different internal structures (an array and a list) and needs both standard and reverse traversal, all uniform to the client. Name the pattern and map its roles \u2014 then explain what makes 'reverse' cheap to add.",
+                answer: "This is the <b>Iterator</b> pattern. Roles: <b>Iterator</b> = an EmployeeIterator interface with hasNext()/next(); <b>Concrete Iterators</b> = ArrayIterator, ListIterator and ReverseIterator, each implementing traversal in terms of one storage structure; <b>Aggregate/Collection</b> = a Directory interface declaring createIterator(); <b>Concrete Aggregates</b> = ArrayDirectory and ListDirectory, each returning its own concrete iterator; <b>Client</b> = code that only ever holds Directory and EmployeeIterator references. Reverse traversal is cheap because <b>traversal logic lives in the iterator, not the collection</b> \u2014 adding ReverseIterator is a new class, with no change to either directory class or to the client loop. That is the third stated benefit: numerous iterators can support different traversals over the same or different collection structures."
+            },
+            {
+                type: 'short', q: "8. Short answer: Explain why the Observer pattern gives 'flexibility for adding new services to the system.' Use the Subject / BinaryObserver example to support your answer.",
+                answer: "The Subject holds its observers only through the abstract <b>Observer</b> type and does exactly one thing with them \u2014 call update(). It never knows which concrete classes are in its list. So adding a fourth display, say a RomanNumeralObserver, means writing one new class that extends Observer, implements update(), and attaches itself in its constructor. <b>No line of Subject, and no line of the existing BinaryObserver, OctalObserver or HexaObserver, changes.</b> The new service is compartmentalized in its own class, which is also why the second stated benefit \u2014 easier maintenance and modification of existing services \u2014 follows: each service's behavior is isolated in its own update() method."
+            }
+        ];
+
+        const quizContainer = document.getElementById('quizContainer');
+        quizData.forEach((item, idx) => {
+            const wrap = document.createElement('div');
+            wrap.className = 'quiz-item';
+            if (item.type === 'mcq') {
+                wrap.innerHTML = `<div class="quiz-q">${item.q}</div>
+        <div class="quiz-options" data-idx="${idx}">
+          ${item.options.map((opt, i) => `<div class="quiz-option" data-i="${i}">${String.fromCharCode(65 + i)}. ${opt}</div>`).join('')}
+        </div>`;
+                quizContainer.appendChild(wrap);
+                const optsEl = wrap.querySelectorAll('.quiz-option');
+                optsEl.forEach(optEl => {
+                    optEl.addEventListener('click', () => {
+                        if (wrap.dataset.answered) return;
+                        wrap.dataset.answered = 'true';
+                        const chosen = parseInt(optEl.dataset.i);
+                        optsEl.forEach((o, i) => {
+                            if (i === item.correct) o.classList.add('correct');
+                            else if (i === chosen) o.classList.add('wrong');
+                        });
+                    });
+                });
+            } else {
+                wrap.innerHTML = `<div class="quiz-q">${item.q}</div>
+        <button class="reveal-btn">Show model answer</button>
+        <div class="short-answer">${item.answer}</div>`;
+                quizContainer.appendChild(wrap);
+                const btn = wrap.querySelector('.reveal-btn');
+                const ans = wrap.querySelector('.short-answer');
+                btn.addEventListener('click', () => {
+                    ans.classList.toggle('show');
+                    btn.textContent = ans.classList.contains('show') ? 'Hide model answer' : 'Show model answer';
+                });
+            }
+        });
+    </script>
+
+</body>
+
+</html>
