@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="icon" type="image/png" sizes="256x256" href="/assets/shoug-favicon-v4.png">
+    <link rel="shortcut icon" type="image/png" href="/assets/shoug-favicon-v4.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/shoug-apple-touch-icon-v4.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SE322 — Chapter 05 Listing: Principles of Detailed Design</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --teal-950: #04211f;
+            --teal-900: #063330;
+            --teal-800: #0a4744;
+            --teal-700: #0e5f5a;
+            --teal-600: #137a73;
+            --teal-500: #18948c;
+            --teal-400: #3db3aa;
+            --amber: #d9a441;
+            --amber-soft: #f0d9a6;
+
+            --bg: #f6f4ee;
+            --bg-alt: #eeebe1;
+            --surface: #ffffff;
+            --surface-2: #fbfaf5;
+            --border: #dcd7c8;
+            --text: #1c2624;
+            --text-dim: #5b6a67;
+            --accent: var(--teal-600);
+            --accent-strong: var(--teal-800);
+            --star: #b6832a;
+            --shadow: 0 1px 2px rgba(20, 30, 28, .04), 0 8px 24px rgba(20, 30, 28, .06);
+            --radius: 14px;
+        }
+
+        html[data-theme="dark"] {
+            --bg: #0a1512;
+            --bg-alt: #0e1b17;
+            --surface: #122320;
+            --surface-2: #0e1b17;
+            --border: #1f3733;
+            --text: #e8f0ed;
+            --text-dim: #8fa8a2;
+            --accent: var(--teal-400);
+            --accent-strong: var(--teal-400);
+            --star: #e6b757;
+            --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 12px 32px rgba(0, 0, 0, .35);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', system-ui, sans-serif;
+            line-height: 1.55;
+            transition: background .25s ease, color .25s ease;
+            min-height: 100vh;
+        }
+
+        ::selection {
+            background: var(--amber-soft);
+            color: var(--teal-950);
+        }
+
+        /* ---------- top bar ---------- */
+        .topbar {
+            position: sticky;
+            top: 0;
+            z-index: 40;
+            backdrop-filter: blur(10px) saturate(1.4);
+            background: color-mix(in srgb, var(--bg) 82%, transparent);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .topbar-inner {
+            max-width: 1180px;
+            margin: 0 auto;
+            padding: 14px clamp(16px, 3vw, 32px);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .brand {
+            display: flex;
+            align-items: baseline;
+            gap: 10px;
+            flex: 1 1 auto;
+            min-width: 200px;
+        }
+
+        .brand .mark {
+            font-family: 'Fraunces', serif;
+            font-weight: 700;
+            font-size: 22px;
+            letter-spacing: -.01em;
+            color: var(--accent-strong);
+        }
+
+        .brand .sub {
+            font-size: 11.5px;
+            letter-spacing: .09em;
+            text-transform: uppercase;
+            color: var(--text-dim);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .search-wrap {
+            position: relative;
+            flex: 1 1 260px;
+            max-width: 420px;
+        }
+
+        .search-wrap input {
+            width: 100%;
+            padding: 9px 14px 9px 34px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            outline: none;
+            transition: border-color .2s, box-shadow .2s;
+        }
+
+        .search-wrap input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 20%, transparent);
+        }
+
+        .search-wrap svg {
+            position: absolute;
+            left: 11px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 15px;
+            height: 15px;
+            color: var(--text-dim);
+            pointer-events: none;
+        }
+
+        .search-count {
+            font-size: 11px;
+            color: var(--text-dim);
+            font-family: 'JetBrains Mono', monospace;
+            white-space: nowrap;
+        }
+
+        .theme-toggle {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            padding: 4px;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .theme-toggle button {
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            padding: 6px 9px;
+            border-radius: 999px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-dim);
+            transition: background .2s, color .2s;
+        }
+
+        .theme-toggle button.active {
+            background: var(--accent);
+            color: var(--bg);
+        }
+
+        .theme-toggle svg {
+            width: 15px;
+            height: 15px;
+        }
+
+        /* ---------- nav chips ---------- */
+        .chapnav {
+            max-width: 1180px;
+            margin: 0 auto;
+            padding: 0 clamp(16px, 3vw, 32px) 14px;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .chapnav a {
+            font-size: 12.5px;
+            font-family: 'JetBrains Mono', monospace;
+            text-decoration: none;
+            color: var(--text-dim);
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            padding: 6px 12px;
+            transition: all .2s;
+            white-space: nowrap;
+        }
+
+        .chapnav a:hover {
+            border-color: var(--accent);
+            color: var(--accent-strong);
+        }
+
+        .chapnav a .n {
+            color: var(--star);
+            margin-right: 4px;
+        }
+
+        /* ---------- layout ---------- */
+        .wrap {
+            max-width: 1180px;
+            margin: 0 auto;
+            padding: 8px clamp(16px, 3vw, 32px) 80px;
+        }
+
+        .hero {
+            padding: 28px 0 8px;
+        }
+
+        .hero h1 {
+            font-family: 'Fraunces', serif;
+            font-weight: 600;
+            font-size: clamp(26px, 4vw, 38px);
+            margin: 0 0 8px;
+            letter-spacing: -.01em;
+        }
+
+        .hero p {
+            color: var(--text-dim);
+            font-size: 14.5px;
+            max-width: 640px;
+            margin: 0;
+        }
+
+        .hero .stat-row {
+            display: flex;
+            gap: 22px;
+            margin-top: 18px;
+            flex-wrap: wrap;
+        }
+
+        .stat {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .stat b {
+            display: block;
+            font-size: 22px;
+            color: var(--accent-strong);
+            font-family: 'Fraunces', serif;
+            font-weight: 700;
+        }
+
+        .stat span {
+            font-size: 11px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: .07em;
+        }
+
+        /* ---------- chapter block ---------- */
+        .chapter {
+            margin-top: 44px;
+            scroll-margin-top: 130px;
+        }
+
+        .chapter-head {
+            display: flex;
+            align-items: baseline;
+            gap: 14px;
+            margin-bottom: 18px;
+            border-bottom: 2px solid var(--accent);
+            padding-bottom: 10px;
+        }
+
+        .chapter-head .num {
+            font-family: 'Fraunces', serif;
+            font-size: 15px;
+            color: var(--accent);
+            font-weight: 700;
+        }
+
+        .chapter-head h2 {
+            font-family: 'Fraunces', serif;
+            font-size: clamp(19px, 2.4vw, 25px);
+            font-weight: 600;
+            margin: 0;
+            flex: 1;
+        }
+
+        .chapter-head .tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10.5px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: .06em;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 16px;
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 18px 20px;
+            box-shadow: var(--shadow);
+            transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            border-color: var(--accent);
+        }
+
+        .card.full {
+            grid-column: 1/-1;
+        }
+
+        .card h3 {
+            margin: 0 0 4px;
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--accent-strong);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card .count-badge {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            font-weight: 500;
+            background: var(--bg-alt);
+            color: var(--text-dim);
+            border-radius: 6px;
+            padding: 2px 7px;
+            margin-left: auto;
+        }
+
+        .card .desc {
+            font-size: 12.5px;
+            color: var(--text-dim);
+            margin: 0 0 12px;
+        }
+
+        .card ol,
+        .card ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        .card li {
+            margin-bottom: 7px;
+            font-size: 14px;
+        }
+
+        .card li:last-child {
+            margin-bottom: 0;
+        }
+
+        .card li b {
+            color: var(--text);
+        }
+
+        .card li .hint {
+            color: var(--text-dim);
+            font-size: 12.5px;
+        }
+
+        .star {
+            color: var(--star);
+            font-size: 12px;
+            margin-right: 2px;
+        }
+
+        mark {
+            background: var(--amber-soft);
+            color: var(--teal-950);
+            border-radius: 3px;
+            padding: 0 2px;
+        }
+
+        html[data-theme="dark"] mark {
+            background: #4a3a12;
+            color: #ffe9b3;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .subgrid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 14px;
+            margin-top: 10px;
+        }
+
+        .subgrid .sub {
+            background: var(--surface-2);
+            border: 1px dashed var(--border);
+            border-radius: 10px;
+            padding: 12px 14px;
+        }
+
+        .subgrid .sub h4 {
+            margin: 0 0 6px;
+            font-size: 12.5px;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--accent-strong);
+            text-transform: uppercase;
+            letter-spacing: .04em;
+        }
+
+        .subgrid .sub ul {
+            margin: 0;
+            padding-left: 18px;
+        }
+
+        .subgrid .sub li {
+            font-size: 13px;
+            margin-bottom: 5px;
+        }
+
+        .examtable {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13.5px;
+            margin-top: 6px;
+        }
+
+        .examtable th {
+            text-align: left;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10.5px;
+            text-transform: uppercase;
+            letter-spacing: .05em;
+            color: var(--text-dim);
+            border-bottom: 1px solid var(--border);
+            padding: 6px 8px;
+        }
+
+        .examtable td {
+            padding: 8px;
+            border-bottom: 1px solid var(--border);
+            vertical-align: top;
+        }
+
+        .examtable tr:last-child td {
+            border-bottom: none;
+        }
+
+        .pill {
+            display: inline-block;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            background: var(--bg-alt);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 2px 7px;
+            margin: 2px 4px 2px 0;
+        }
+
+        .banner {
+            background: linear-gradient(135deg, var(--teal-800), var(--teal-600));
+            color: #fdf9ee;
+            border-radius: var(--radius);
+            padding: 16px 20px;
+            margin-bottom: 22px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            font-size: 13.5px;
+        }
+
+        html[data-theme="dark"] .banner {
+            background: linear-gradient(135deg, #0d2624, #144a44);
+        }
+
+        .banner svg {
+            flex-shrink: 0;
+            width: 22px;
+            height: 22px;
+            color: var(--amber-soft);
+        }
+
+        footer {
+            max-width: 1180px;
+            margin: 60px auto 0;
+            padding: 26px clamp(16px, 3vw, 32px) 30px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        footer .name {
+            font-family: 'Fraunces', serif;
+            font-weight: 600;
+            font-size: 15px;
+            color: var(--accent-strong);
+        }
+
+        footer .meta {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: var(--text-dim);
+        }
+
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 10px;
+        }
+
+        @media (max-width:640px) {
+            .chapnav {
+                overflow-x: auto;
+                flex-wrap: nowrap;
+                padding-bottom: 12px;
+            }
+
+            footer {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+    <style>
+        .grid {
+            align-items: start;
+        }
+
+        .chapnav a.active {
+            border-color: var(--accent);
+            color: var(--accent-strong);
+            background: color-mix(in srgb, var(--accent) 10%, transparent);
+        }
+
+        .card code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12.5px;
+            background: var(--bg-alt);
+            border-radius: 5px;
+            padding: 1px 5px;
+        }
+
+        .card .examtable td b {
+            color: var(--accent-strong);
+        }
+    </style>
+
+    <meta name="description" content="Every memorizable SE322 list for Chapter 5: Principles of Detailed Design. Searchable card vault from Shoug&#x27;s Digital Garden.">
+    <link rel="canonical" href="https://shoug-tech.com/academics/software-engineering/se322/extra-resources/listing-vault/05-principles-of-detailed-design/principles-of-detailed-design-listing.html">
+    <meta property="og:title" content="SE322 — Chapter 05 Listing: Principles of Detailed Design">
+    <meta property="og:description" content="Every memorizable SE322 list for Chapter 5: Principles of Detailed Design. Searchable card vault from Shoug&#x27;s Digital Garden.">
+    <meta property="og:url" content="https://shoug-tech.com/academics/software-engineering/se322/extra-resources/listing-vault/05-principles-of-detailed-design/principles-of-detailed-design-listing.html">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://shoug-tech.com/assets/og-banner.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="SE322 — Chapter 05 Listing: Principles of Detailed Design">
+    <meta name="twitter:description" content="Every memorizable SE322 list for Chapter 5: Principles of Detailed Design. Searchable card vault from Shoug&#x27;s Digital Garden.">
+    <meta name="twitter:image" content="https://shoug-tech.com/assets/og-banner.png">
+    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebPage", "url": "https://shoug-tech.com/academics/software-engineering/se322/extra-resources/listing-vault/05-principles-of-detailed-design/principles-of-detailed-design-listing.html", "name": "SE322 \u2014 Chapter 05 Listing: Principles of Detailed Design", "description": "Every memorizable SE322 list for Chapter 5: Principles of Detailed Design. Searchable card vault from Shoug's Digital Garden.", "isPartOf": {"@type": "WebSite", "name": "Shoug's Digital Garden", "url": "https://shoug-tech.com/"}}</script>
+
+    <link rel="alternate" hreflang="en" href="https://shoug-tech.com/academics/software-engineering/se322/extra-resources/listing-vault/05-principles-of-detailed-design/principles-of-detailed-design-listing.html">
+    <link rel="alternate" hreflang="ar" href="https://shoug-tech.com/academics/software-engineering/se322/extra-resources/listing-vault/05-principles-of-detailed-design/principles-of-detailed-design-listing.html?lang=ar">
+    <link rel="alternate" hreflang="x-default" href="https://shoug-tech.com/academics/software-engineering/se322/extra-resources/listing-vault/05-principles-of-detailed-design/principles-of-detailed-design-listing.html">
+    <!-- Microsoft Clarity tracking code for https://shoug-tech.com/ -->
+    <script type="text/javascript">
+        (function(c,l,a,r,i,t,y){
+            c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+            t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+            y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+        })(window, document, "clarity", "script", "xub0eqmvs9");
+    </script>
+    <link rel="stylesheet" href="/styles/a11y.css">
+</head>
+
+<body>
+
+    <div class="topbar">
+        <div class="topbar-inner">
+            <div class="brand">
+                <span class="mark">Listing Vault</span>
+                <span class="sub">SE322 &middot; chapter 05 &middot; Principles of Detailed Design</span>
+            </div>
+            <div class="search-wrap">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="7" />
+                    <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                </svg>
+                <input id="searchInput" type="text" placeholder="Search any list, term, or item…">
+            </div>
+            <span class="search-count" id="searchCount"></span>
+            <div class="theme-toggle" role="group" aria-label="Theme toggle">
+                <button id="lightBtn" title="Light mode" aria-label="Light mode">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="4" />
+                        <path
+                            d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
+                    </svg>
+                </button>
+                <button id="darkBtn" title="Dark mode" aria-label="Dark mode">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <nav class="chapnav">
+            <a href="/academics/software-engineering/se322/extra-resources/listing-vault/" target="_top"><span class="n">00</span>Vault Index</a>
+            <a href="/academics/software-engineering/se322/extra-resources/listing-vault/01-introduction-to-software-design-and-architecture/" target="_top"><span class="n">01</span>Introduction</a>
+            <a href="/academics/software-engineering/se322/extra-resources/listing-vault/02-software-architecture/" target="_top"><span class="n">02</span>Software Architecture</a>
+            <a href="/academics/software-engineering/se322/extra-resources/listing-vault/03-quality-attributes/" target="_top"><span class="n">03</span>Quality Attributes</a>
+            <a href="/academics/software-engineering/se322/extra-resources/listing-vault/04-architecture-patterns/" target="_top"><span class="n">04</span>Architecture Patterns</a>
+            <a href="/academics/software-engineering/se322/extra-resources/listing-vault/05-principles-of-detailed-design/" target="_top" class="active"><span class="n">05</span>Detailed Design</a>
+            <a href="/academics/software-engineering/se322/extra-resources/listing-vault/06-creational-design-patterns/" target="_top"><span class="n">06</span>Creational</a>
+            <a href="/academics/software-engineering/se322/extra-resources/listing-vault/07-structural-design-patterns/" target="_top"><span class="n">07</span>Structural</a>
+            <a href="/academics/software-engineering/se322/extra-resources/listing-vault/07-behavioral-design-patterns/" target="_top"><span class="n">07</span>Behavioral</a>
+            <a href="/academics/software-engineering/se322/extra-resources/listing-vault/08-architecture-evaluation/" target="_top"><span class="n">08</span>Evaluation</a>
+            <a href="/academics/software-engineering/se322/extra-resources/listing-vault/09-architecture-documentation/" target="_top"><span class="n">09</span>Documentation</a>
+        </nav>
+    </div>
+
+    <div class="wrap">
+
+        <div class="hero">
+            <h1>Chapter 05 — Principles of Detailed Design</h1>
+            <p>The detailed-design workflow, object-oriented modeling, cohesion and coupling ladders, SOLID, composition over inheritance and the named code smells.</p>
+            <div class="stat-row">
+                <div class="stat"><b>05</b><span>chapter</span></div>
+                <div class="stat"><b id="listCountStat">—</b><span>lists</span></div>
+                <div class="stat"><b id="itemCountStat">—</b><span>total items</span></div>
+            </div>
+        </div>
+
+        <div class="banner">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2l9 4.5v6c0 5-3.8 8.5-9 9.5-5.2-1-9-4.5-9-9.5v-6L12 2z" />
+                <path d="M9 12l2 2 4-4" />
+            </svg>
+            <span>Every enumerable list from this chapter, one card each. Search filters the cards live;
+                the chips above jump to any other chapter in the vault.</span>
+        </div>
+
+        <section class="chapter" id="ch05">
+            <div class="chapter-head">
+                <span class="num">05</span>
+                <h2>Principles of Detailed Design</h2>
+                <span class="tag">14 lists</span>
+            </div>
+            <div class="grid">
+                <div class="card full"><h3>Detailed-Design Tasks <span class="count-badge">8</span></h3><ol><li>Understand the architecture and the requirements</li><li>Design external interfaces</li><li>Design internal interfaces</li><li>Design the GUI</li><li>Design component structure and behavior</li><li>Design data and the database</li><li>Evaluate and document the design</li><li>Manage implementation of the design</li></ol></div>
+                <div class="card"><h3>Design Documentation Artifacts <span class="count-badge">3</span></h3><ol><li>Interface control documents</li><li>Data dictionaries</li><li>Version-controlled design records</li></ol></div>
+                <div class="card full"><h3>OO Relationships <span class="count-badge">5</span></h3><table class="examtable"><tr><th>Relationship</th><th>Meaning</th><th>Lifetime</th></tr><tr><td>Association</td><td>One class uses or refers to another</td><td>Independent</td></tr><tr><td>Aggregation</td><td>Has-a, shared parts</td><td>Part survives the whole</td></tr><tr><td>Composition</td><td>Has-a, exclusive parts</td><td>Part dies with the whole</td></tr><tr><td>Generalization</td><td>Is-a (inheritance)</td><td>&mdash;</td></tr><tr><td>Realization</td><td>A classifier implements an interface</td><td>&mdash;</td></tr></table></div>
+                <div class="card"><h3>Class Kinds <span class="count-badge">2</span></h3><ol><li><b>Abstract</b> — defers some implementation, cannot be instantiated</li><li><b>Concrete</b> — fully implemented, can be instantiated</li></ol></div>
+                <div class="card"><h3>Cohesion Ladder <span class="count-badge">7</span></h3><p class="desc">Weakest at the top, strongest at the bottom.</p><ol><li>Coincidental</li><li>Logical</li><li>Temporal</li><li>Procedural</li><li>Communicational</li><li>Sequential</li><li>Functional &larr; the goal</li></ol></div>
+                <div class="card"><h3>Coupling Ladder <span class="count-badge">5</span></h3><p class="desc">Worst at the top, preferred at the bottom.</p><ol><li>Content &larr; worst</li><li>Common</li><li>Control</li><li>Stamp</li><li>Data &larr; preferred</li></ol></div>
+                <div class="card"><h3>Ways to Reduce Coupling <span class="count-badge">3</span></h3><ol><li>Program to interfaces</li><li>Communicate through events</li><li>Invert dependencies</li></ol></div>
+                <div class="card"><h3>Abstraction &amp; Encapsulation Rules <span class="count-badge">4</span></h3><ol><li>Program to contracts, not concrete details</li><li>Information hiding localizes likely change</li><li>Encapsulation includes behavioral invariants, not only private fields</li><li>Parnas: modularize around the decisions most likely to change</li></ol></div>
+                <div class="card full"><h3>SOLID <span class="count-badge">5</span></h3><table class="examtable"><tr><th>Principle</th><th>Statement</th><th>Violation cue</th></tr><tr><td>S — Single Responsibility</td><td>One reason to change; aligned to one actor</td><td>A class serving finance and operations at once</td></tr><tr><td>O — Open/Closed</td><td>Open to extension, closed to modification</td><td>A growing switch statement edited for every new case</td></tr><tr><td>L — Liskov Substitution</td><td>Subtypes must preserve client expectations</td><td>An override that throws UnsupportedOperationException</td></tr><tr><td>I — Interface Segregation</td><td>No client depends on operations it does not use</td><td>Implementers stubbing out methods they never need</td></tr><tr><td>D — Dependency Inversion</td><td>Policy and detail both depend on abstractions</td><td>The domain importing the database driver</td></tr></table></div>
+                <div class="card"><h3>LSP Rules <span class="count-badge">2</span></h3><ol><li>A subtype may not strengthen preconditions</li><li>A subtype may not weaken postconditions</li></ol></div>
+                <div class="card"><h3>Dependency Inversion — The Detail <span class="count-badge">3</span></h3><ol><li>The abstraction is owned by the high-level module, so the detail conforms to policy</li><li>Dependency injection supplies collaborators from outside</li><li>DI is a mechanism; DIP is the goal — you can have one without the other</li></ol></div>
+                <div class="card"><h3>Composition over Inheritance <span class="count-badge">3</span></h3><ol><li>Inheritance binds subclass to superclass implementation at compile time</li><li>Composition can be reconfigured at run time</li><li>Composition avoids the fragile base class problem</li></ol></div>
+                <div class="card full"><h3>Named Code Smells &rarr; Refactoring <span class="count-badge">6</span></h3><table class="examtable"><tr><th>Smell</th><th>Usual refactoring</th></tr><tr><td>Long method</td><td>Extract method</td></tr><tr><td>Large class</td><td>Extract class</td></tr><tr><td>Long parameter list</td><td>Introduce parameter object</td></tr><tr><td>Shotgun surgery</td><td>Move method / move field to gather the change</td></tr><tr><td>Feature envy</td><td>Move method to the class it envies</td></tr><tr><td>Duplicated code</td><td>Extract method, pull up to a common place</td></tr></table></div>
+                <div class="card"><h3>Refactoring Ground Rules <span class="count-badge">3</span></h3><ol><li>Refactoring is behavior-preserving by definition</li><li>Automated tests make safe incremental refactoring possible</li><li>Smells indicate design pressure, not an automatic rewrite command</li></ol></div>
+            </div>
+        </section>
+
+    </div>
+
+    <footer>
+        <span class="name">Shoug Alomran</span>
+        <span class="meta">SE322 &middot; Listing Vault &middot; Chapter 05</span>
+    </footer>
+
+    <script>
+        // ---------- theme ----------
+        const root = document.documentElement;
+        const lightBtn = document.getElementById('lightBtn');
+        const darkBtn = document.getElementById('darkBtn');
+
+        function setTheme(t) {
+            root.setAttribute('data-theme', t);
+            lightBtn.classList.toggle('active', t === 'light');
+            darkBtn.classList.toggle('active', t === 'dark');
+            try { localStorage.setItem('listingVaultTheme', t); } catch (e) { }
+        }
+        let saved = 'dark';
+        try {
+            saved = localStorage.getItem('listingVaultTheme')
+                || (localStorage.getItem('shoug-theme') === 'light' ? 'light' : null)
+                || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+        } catch (e) { }
+        setTheme(saved);
+        lightBtn.addEventListener('click', () => setTheme('light'));
+        darkBtn.addEventListener('click', () => setTheme('dark'));
+
+        // ---------- search ----------
+        const input = document.getElementById('searchInput');
+        const countEl = document.getElementById('searchCount');
+        const cards = Array.from(document.querySelectorAll('.card'));
+        const chapters = Array.from(document.querySelectorAll('.chapter'));
+
+        function clearMarks(el) {
+            el.querySelectorAll('mark').forEach(m => {
+                m.replaceWith(document.createTextNode(m.textContent));
+            });
+        }
+
+        function highlight(el, term) {
+            const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null);
+            const nodes = [];
+            let n;
+            while (n = walker.nextNode()) nodes.push(n);
+            nodes.forEach(node => {
+                const text = node.textContent;
+                const idx = text.toLowerCase().indexOf(term);
+                if (idx === -1) return;
+                const before = text.slice(0, idx);
+                const match = text.slice(idx, idx + term.length);
+                const after = text.slice(idx + term.length);
+                const frag = document.createDocumentFragment();
+                frag.appendChild(document.createTextNode(before));
+                const markEl = document.createElement('mark');
+                markEl.textContent = match;
+                frag.appendChild(markEl);
+                frag.appendChild(document.createTextNode(after));
+                node.parentNode.replaceChild(frag, node);
+            });
+        }
+
+        function runSearch() {
+            const term = input.value.trim().toLowerCase();
+            let visibleCards = 0;
+
+            cards.forEach(card => {
+                clearMarks(card);
+                if (!term) {
+                    card.classList.remove('hidden');
+                    return;
+                }
+                const text = card.textContent.toLowerCase();
+                if (text.includes(term)) {
+                    card.classList.remove('hidden');
+                    highlight(card, term);
+                    visibleCards++;
+                } else {
+                    card.classList.add('hidden');
+                }
+            });
+
+            chapters.forEach(ch => {
+                const anyVisible = Array.from(ch.querySelectorAll('.card')).some(c => !c.classList.contains('hidden'));
+                ch.classList.toggle('hidden', term && !anyVisible);
+            });
+
+            countEl.textContent = term ? (visibleCards + ' match' + (visibleCards === 1 ? '' : 'es')) : '';
+        }
+        input.addEventListener('input', runSearch);
+
+        // ---------- stats ----------
+        let totalItems = 0;
+        document.querySelectorAll('.card ol, .card ul').forEach(list => {
+            totalItems += list.querySelectorAll(':scope > li').length;
+        });
+        document.querySelectorAll('.card .examtable tr').forEach(row => {
+            if (!row.querySelector('th')) totalItems += 1;
+        });
+        document.getElementById('listCountStat').textContent = document.querySelectorAll('.card h3').length;
+        document.getElementById('itemCountStat').textContent = totalItems;
+    </script>
+
+</body>
+
+</html>
