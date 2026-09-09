@@ -25,6 +25,7 @@
   var API = "https://firestore.googleapis.com/v1/projects/" + PROJECT + "/databases/(default)/documents/";
   var reactionKey = root.getAttribute("data-reaction-key");
   var pending = null;   // a vote clicked while signed out, applied after sign-in
+  var authReady = false;  // Firebase has reported an auth state at least once
   var myVote = 0;
   var counts = { up: 0, down: 0 };
 
@@ -32,6 +33,17 @@
     return String(s == null ? "" : s)
       .replace(/&/g, "&amp;").replace(/</g, "&lt;")
       .replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  }
+
+  /**
+   * Did this browser have a session last time? firebase-auth.js keeps this
+   * flag in step with sign-in/out, and it is readable immediately — long
+   * before the Firebase SDK finishes restoring the session. It lets us avoid
+   * asking someone who is already signed in to sign in.
+   */
+  function wasSignedIn() {
+    try { return localStorage.getItem("shoug-was-signed-in") === "1"; }
+    catch (e) { return false; }
   }
 
   function commentSlug() {
@@ -100,6 +112,12 @@
     var user = window.firebase && window.firebase.auth().currentUser;
     if (!user) {
       pending = dir;
+      if (!authReady && wasSignedIn()) {
+        // The session is still being restored. Hold the vote and let onAuth
+        // replay it rather than prompting an already signed-in person.
+        setHint("Signing you in\u2026");
+        return;
+      }
       setHint("Sign in to vote.");
       openAccount();
       return;
@@ -144,6 +162,10 @@
     }
     window.dispatchEvent(new CustomEvent("shoug:load-account", { detail: { open: true } }));
   }
+
+  // Hide the sign-in prompt before the first paint when a session is being
+  // restored; onAuth puts it back if it turns out there is no user after all.
+  if (prompt && wasSignedIn()) prompt.hidden = true;
 
   var signInBtn = root.querySelector("[data-discussion-signin]");
   if (signInBtn) signInBtn.addEventListener("click", openAccount);
@@ -222,9 +244,15 @@
   // ── Auth state ────────────────────────────────────────────────────────────
 
   function onAuth(user) {
+    authReady = true;
     watchMyVote(user);
     if (user) {
       setHint("");
+      // Signed in: the prompt has nothing left to ask. Don't wait for
+      // firebase-auth.js to build and inject the comment section — that takes
+      // a profile read, and until then the prompt would be telling someone who
+      // is already signed in to sign in.
+      if (prompt) prompt.hidden = true;
       if (pending) { var dir = pending; pending = null; applyVote(dir); }
     } else {
       myVote = 0;
@@ -233,6 +261,9 @@
       // firebase-auth.js pulls its comment section on sign-out; put the
       // read-only view and the prompt back.
       if (prompt) prompt.hidden = false;
+      // A vote held while the session was restoring, on a session that turned
+      // out to be gone: now the sign-in ask is the right one.
+      if (pending) { pending = null; setHint("Sign in to vote."); openAccount(); }
       renderPreview();
     }
   }
