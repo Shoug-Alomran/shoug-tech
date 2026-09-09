@@ -89,12 +89,12 @@
 
   function weakTopics() { try { return JSON.parse(localStorage.getItem("shoug-weak-topics") || "[]"); } catch (e) { return []; } }
   function addWeakButton(node, answer, sources) {
-    var button=document.createElement("button");button.type="button";button.className="sg-ai-weak";button.textContent="Mark as weak topic";
-    button.addEventListener("click",function(){var list=weakTopics();list.unshift({id:Date.now().toString(36),route:route,title:document.title,answer:String(answer||"").slice(0,500),sources:sources||[],savedAt:new Date().toISOString()});try{localStorage.setItem("shoug-weak-topics",JSON.stringify(list.slice(0,100)));}catch(e){}button.textContent="Saved for review";button.disabled=true;});
+    var button = document.createElement("button"); button.type = "button"; button.className = "sg-ai-weak"; button.textContent = "Mark as weak topic";
+    button.addEventListener("click", function () { var list = weakTopics(); list.unshift({ id: Date.now().toString(36), route: route, title: document.title, answer: String(answer || "").slice(0, 500), sources: sources || [], savedAt: new Date().toISOString() }); try { localStorage.setItem("shoug-weak-topics", JSON.stringify(list.slice(0, 100))); } catch (e) { } button.textContent = "Saved for review"; button.disabled = true; });
     node.appendChild(button);
   }
-  panel.querySelectorAll("[data-ai-prompt]").forEach(function(button){button.addEventListener("click",function(){input.value=button.dataset.aiPrompt;panel.querySelector("form").requestSubmit();});});
-  panel.querySelector("[data-ai-weak-review]").addEventListener("click",function(){var list=weakTopics().filter(function(x){return x.route===route;});input.value=list.length?"Review these weak areas from this page and quiz me on them: "+list.slice(0,5).map(function(x){return x.answer;}).join(" | "):"Identify the three concepts on this page that students are most likely to misunderstand, then quiz me on the first one.";panel.querySelector("form").requestSubmit();});
+  panel.querySelectorAll("[data-ai-prompt]").forEach(function (button) { button.addEventListener("click", function () { input.value = button.dataset.aiPrompt; panel.querySelector("form").requestSubmit(); }); });
+  panel.querySelector("[data-ai-weak-review]").addEventListener("click", function () { var list = weakTopics().filter(function (x) { return x.route === route; }); input.value = list.length ? "Review these weak areas from this page and quiz me on them: " + list.slice(0, 5).map(function (x) { return x.answer; }).join(" | ") : "Identify the three concepts on this page that students are most likely to misunderstand, then quiz me on the first one."; panel.querySelector("form").requestSubmit(); });
   panel.querySelector("form").addEventListener("submit", function (event) {
     event.preventDefault();
     var question = input.value.trim();
@@ -114,7 +114,7 @@
       });
     }).then(function (data) {
       pending.remove();
-      var answerNode=message("bot", data.answer || "I could not find that in this material.", data.sources || []);
+      var answerNode = message("bot", data.answer || "I could not find that in this material.", data.sources || []);
       addWeakButton(answerNode, data.answer || "", data.sources || []);
       history.push({ role: "user", content: question }, { role: "assistant", content: data.answer || "" });
     }).catch(function (error) {

@@ -24,7 +24,7 @@
     return { key: "core", label: "Software Engineering", icon: "SE" };
   }
   function readTheme() {
-    try { var saved = localStorage.getItem(storageKey) || localStorage.getItem("theme"); if (/^(light|dark)$/.test(saved)) return saved; } catch (e) {}
+    try { var saved = localStorage.getItem(storageKey) || localStorage.getItem("theme"); if (/^(light|dark)$/.test(saved)) return saved; } catch (e) { }
     return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
   }
   function themeIcon(theme) {
@@ -35,7 +35,7 @@
     if (body) { body.setAttribute("data-theme", theme); body.classList.toggle("shoug-light-mode", theme === "light"); body.classList.toggle("shoug-dark-mode", theme === "dark"); }
     var toggle = document.getElementById("se201-theme-toggle");
     if (toggle) { toggle.innerHTML = themeIcon(theme); toggle.setAttribute("aria-label", "Switch to " + (theme === "dark" ? "light" : "dark") + " mode"); }
-    if (persist) try { localStorage.setItem(storageKey, theme); localStorage.setItem("theme", theme); } catch (e) {}
+    if (persist) try { localStorage.setItem(storageKey, theme); localStorage.setItem("theme", theme); } catch (e) { }
   }
   applyTheme(readTheme(), false);
   function addBar(type, subject) {

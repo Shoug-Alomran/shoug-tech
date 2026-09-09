@@ -28,7 +28,7 @@
         if (theme !== "light" && theme !== "dark") return;
         root.setAttribute("data-theme", theme);
         root.style.colorScheme = theme;
-        if (persist) { try { localStorage.setItem(KEY, theme); } catch (e) {} }
+        if (persist) { try { localStorage.setItem(KEY, theme); } catch (e) { } }
         var btn = document.getElementById("bdThemeBtn");
         if (btn) {
             btn.innerHTML = theme === "dark" ? SUN + tip("Light mode") : MOON + tip("Dark mode");
@@ -90,7 +90,7 @@
                 if (window.parent && window.parent !== window) {
                     window.parent.postMessage({ type: "shoug-theme", theme: next }, "*");
                 }
-            } catch (e) {}
+            } catch (e) { }
         });
 
         var topBtn = document.createElement("button");

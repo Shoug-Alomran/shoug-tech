@@ -957,7 +957,7 @@
     catch (e) { return { pages: {}, syncedAt: 0 }; }
   }
   function writeAccountCache(uid, cache) {
-    try { localStorage.setItem(accountCacheKey(uid), JSON.stringify(cache)); } catch (e) {}
+    try { localStorage.setItem(accountCacheKey(uid), JSON.stringify(cache)); } catch (e) { }
   }
   function readPageCache(uid) {
     return readAccountCache(uid).pages[pageSlug()] || {};
@@ -984,7 +984,7 @@
         });
         writeAccountCache(user.uid, { pages: pages, syncedAt: Date.now() });
       })
-      .catch(function () {});
+      .catch(function () { });
   }
 
   function injectCompleteBtn(user) {

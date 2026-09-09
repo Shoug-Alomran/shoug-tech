@@ -294,8 +294,8 @@
       notice.innerHTML =
         '<div class="critical-path-notice__icon">⚠</div>' +
         '<div class="critical-path-notice__copy">' +
-          '<div class="critical-path-notice__title" data-ar-text="المسار الحرج · لا تؤجل">Critical path · do not delay</div>' +
-          '<div class="critical-path-notice__text" data-ar-text="المقررات المحددة مطلوبة في المستوى الموضح للحفاظ على تسلسل الخطة. تأجيلها قد يمنع مقررات المستوى التالي ويؤخر التخرج.">Highlighted courses must be taken in the level shown to stay on sequence. Delaying one can block next-level courses and delay graduation.</div>' +
+        '<div class="critical-path-notice__title" data-ar-text="المسار الحرج · لا تؤجل">Critical path · do not delay</div>' +
+        '<div class="critical-path-notice__text" data-ar-text="المقررات المحددة مطلوبة في المستوى الموضح للحفاظ على تسلسل الخطة. تأجيلها قد يمنع مقررات المستوى التالي ويؤخر التخرج.">Highlighted courses must be taken in the level shown to stay on sequence. Delaying one can block next-level courses and delay graduation.</div>' +
         '</div>' +
         '<div class="critical-path-notice__count">' + critical.size + ' COURSES</div>';
       anchor.parentNode.insertBefore(notice, anchor);
