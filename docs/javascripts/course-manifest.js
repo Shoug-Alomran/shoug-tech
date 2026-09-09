@@ -5249,6 +5249,177 @@ var COURSE_PAGES = [
     "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
   },
   {
+    "url": "/academics/other-courses/ethcs303/video-explanations/avoiding-social-engineering-fraud/",
+    "title": "ETHCS303 How to Avoid Social Engineering Fraud",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "video-explanations",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
+    "url": "/academics/other-courses/ethcs303/video-explanations/cyber-laws-in-saudi-arabia/",
+    "title": "ETHCS303 Cyber Laws in Saudi Arabia",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "video-explanations",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
+    "url": "/academics/other-courses/ethcs303/video-explanations/dumpster-diving/",
+    "title": "ETHCS303 Dumpster Diving",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "video-explanations",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
+    "url": "/academics/other-courses/ethcs303/video-explanations/ethical-issues-in-systems-analysis-and-software-engineering/",
+    "title": "ETHCS303 Ethical Issues in Systems Analysis and Software Engineering",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "video-explanations",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
+    "url": "/academics/other-courses/ethcs303/video-explanations/impersonation/",
+    "title": "ETHCS303 Impersonation",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "video-explanations",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
+    "url": "/academics/other-courses/ethcs303/video-explanations/intellectual-property-laws/",
+    "title": "ETHCS303 Intellectual Property Laws",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "video-explanations",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
+    "url": "/academics/other-courses/ethcs303/video-explanations/kantianism/",
+    "title": "ETHCS303 Kantianism",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "video-explanations",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
+    "url": "/academics/other-courses/ethcs303/video-explanations/moral-systems-and-ethical-theories/",
+    "title": "ETHCS303 Moral Systems, Ethical Concepts, and Theories",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "video-explanations",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
+    "url": "/academics/other-courses/ethcs303/video-explanations/patents-and-trademarks/",
+    "title": "ETHCS303 Patents and Trademarks",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "video-explanations",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
+    "url": "/academics/other-courses/ethcs303/video-explanations/phishing/",
+    "title": "ETHCS303 Phishing",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "video-explanations",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
+    "url": "/academics/other-courses/ethcs303/video-explanations/privacy-in-cyberspace-part-1/",
+    "title": "ETHCS303 Privacy in Cyberspace — Part 1",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "video-explanations",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
+    "url": "/academics/other-courses/ethcs303/video-explanations/privacy-in-cyberspace-part-2/",
+    "title": "ETHCS303 Privacy in Cyberspace — Part 2",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "video-explanations",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
+    "url": "/academics/other-courses/ethcs303/video-explanations/professional-ethics/",
+    "title": "ETHCS303 Professional Ethics",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "video-explanations",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
+    "url": "/academics/other-courses/ethcs303/video-explanations/smishing/",
+    "title": "ETHCS303 Smishing",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "video-explanations",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
+    "url": "/academics/other-courses/ethcs303/video-explanations/social-contract-theory/",
+    "title": "ETHCS303 Social Contract Theory",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "video-explanations",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
+    "url": "/academics/other-courses/ethcs303/video-explanations/social-engineering/",
+    "title": "ETHCS303 Social Engineering",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "video-explanations",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
+    "url": "/academics/other-courses/ethcs303/video-explanations/trade-secrets/",
+    "title": "ETHCS303 Trade Secrets",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "video-explanations",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
+    "url": "/academics/other-courses/ethcs303/video-explanations/utilitarianism/",
+    "title": "ETHCS303 Utilitarianism",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "video-explanations",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
+    "url": "/academics/other-courses/ethcs303/video-explanations/vishing/",
+    "title": "ETHCS303 Vishing",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "video-explanations",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
     "url": "/academics/other-courses/isc113/exams/01-exam-1/",
     "title": "ISC113 | Exam 1",
     "track": "other-courses",
@@ -5454,6 +5625,132 @@ var COURSE_PAGES = [
     "section": "slides",
     "courseUrl": "/academics/other-courses/isc113/",
     "courseTitle": "ISC113 // Islamic Economy"
+  },
+  {
+    "url": "/academics/other-courses/isc213/exams/01-exam-1/",
+    "title": "ISC213 | Exam 1",
+    "track": "other-courses",
+    "course": "isc213",
+    "section": "exams",
+    "courseUrl": "/academics/other-courses/isc213/",
+    "courseTitle": "ISC213 // Islamic Financial Transactions"
+  },
+  {
+    "url": "/academics/other-courses/isc213/exams/02-exam-2/",
+    "title": "ISC213 | Exam 2",
+    "track": "other-courses",
+    "course": "isc213",
+    "section": "exams",
+    "courseUrl": "/academics/other-courses/isc213/",
+    "courseTitle": "ISC213 // Islamic Financial Transactions"
+  },
+  {
+    "url": "/academics/other-courses/isc213/exams/03-final-exam/",
+    "title": "ISC213 | Final Exam",
+    "track": "other-courses",
+    "course": "isc213",
+    "section": "exams",
+    "courseUrl": "/academics/other-courses/isc213/",
+    "courseTitle": "ISC213 // Islamic Financial Transactions"
+  },
+  {
+    "url": "/academics/other-courses/isc213/extra-resources/01-cheat-sheet-1/",
+    "title": "ISC213 | Cheat Sheet 1",
+    "track": "other-courses",
+    "course": "isc213",
+    "section": "extra-resources",
+    "courseUrl": "/academics/other-courses/isc213/",
+    "courseTitle": "ISC213 // Islamic Financial Transactions"
+  },
+  {
+    "url": "/academics/other-courses/isc213/extra-resources/02-cheat-sheet-2/",
+    "title": "ISC213 | Cheat Sheet 2",
+    "track": "other-courses",
+    "course": "isc213",
+    "section": "extra-resources",
+    "courseUrl": "/academics/other-courses/isc213/",
+    "courseTitle": "ISC213 // Islamic Financial Transactions"
+  },
+  {
+    "url": "/academics/other-courses/isc213/extra-resources/03-mindmap/",
+    "title": "ISC213 | Mindmap",
+    "track": "other-courses",
+    "course": "isc213",
+    "section": "extra-resources",
+    "courseUrl": "/academics/other-courses/isc213/",
+    "courseTitle": "ISC213 // Islamic Financial Transactions"
+  },
+  {
+    "url": "/academics/other-courses/isc213/slide-breakdowns/01-lecture-1/",
+    "title": "ISC213 | Breakdown: Lecture 1",
+    "track": "other-courses",
+    "course": "isc213",
+    "section": "slide-breakdowns",
+    "courseUrl": "/academics/other-courses/isc213/",
+    "courseTitle": "ISC213 // Islamic Financial Transactions"
+  },
+  {
+    "url": "/academics/other-courses/isc213/slide-breakdowns/02-lecture-2/",
+    "title": "ISC213 | Breakdown: Lecture 2",
+    "track": "other-courses",
+    "course": "isc213",
+    "section": "slide-breakdowns",
+    "courseUrl": "/academics/other-courses/isc213/",
+    "courseTitle": "ISC213 // Islamic Financial Transactions"
+  },
+  {
+    "url": "/academics/other-courses/isc213/slide-breakdowns/03-lecture-3/",
+    "title": "ISC213 | Breakdown: Lecture 3",
+    "track": "other-courses",
+    "course": "isc213",
+    "section": "slide-breakdowns",
+    "courseUrl": "/academics/other-courses/isc213/",
+    "courseTitle": "ISC213 // Islamic Financial Transactions"
+  },
+  {
+    "url": "/academics/other-courses/isc213/slide-breakdowns/04-lecture-4/",
+    "title": "ISC213 | Breakdown: Lecture 4",
+    "track": "other-courses",
+    "course": "isc213",
+    "section": "slide-breakdowns",
+    "courseUrl": "/academics/other-courses/isc213/",
+    "courseTitle": "ISC213 // Islamic Financial Transactions"
+  },
+  {
+    "url": "/academics/other-courses/isc213/slides/lecture-1/",
+    "title": "ISC213 | Lecture 1",
+    "track": "other-courses",
+    "course": "isc213",
+    "section": "slides",
+    "courseUrl": "/academics/other-courses/isc213/",
+    "courseTitle": "ISC213 // Islamic Financial Transactions"
+  },
+  {
+    "url": "/academics/other-courses/isc213/slides/lecture-2/",
+    "title": "ISC213 | Lecture 2",
+    "track": "other-courses",
+    "course": "isc213",
+    "section": "slides",
+    "courseUrl": "/academics/other-courses/isc213/",
+    "courseTitle": "ISC213 // Islamic Financial Transactions"
+  },
+  {
+    "url": "/academics/other-courses/isc213/slides/lecture-3/",
+    "title": "ISC213 | Lecture 3",
+    "track": "other-courses",
+    "course": "isc213",
+    "section": "slides",
+    "courseUrl": "/academics/other-courses/isc213/",
+    "courseTitle": "ISC213 // Islamic Financial Transactions"
+  },
+  {
+    "url": "/academics/other-courses/isc213/slides/lecture-4/",
+    "title": "ISC213 | Lecture 4",
+    "track": "other-courses",
+    "course": "isc213",
+    "section": "slides",
+    "courseUrl": "/academics/other-courses/isc213/",
+    "courseTitle": "ISC213 // Islamic Financial Transactions"
   },
   {
     "url": "/academics/software-engineering/se201/exams/01-chapter-1-quiz/",
@@ -6221,6 +6518,96 @@ var COURSE_PAGES = [
     "courseTitle": "SE322 // Software Design and Architecture"
   },
   {
+    "url": "/academics/software-engineering/se322/extra-resources/listing-vault/01-introduction-to-software-design-and-architecture/",
+    "title": "SE322 · Chapter 01 Listing Vault — Introduction to Software Design and Architecture",
+    "track": "software-engineering",
+    "course": "se322",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se322/",
+    "courseTitle": "SE322 // Software Design and Architecture"
+  },
+  {
+    "url": "/academics/software-engineering/se322/extra-resources/listing-vault/02-software-architecture/",
+    "title": "SE322 · Chapter 02 Listing Vault — Software Architecture",
+    "track": "software-engineering",
+    "course": "se322",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se322/",
+    "courseTitle": "SE322 // Software Design and Architecture"
+  },
+  {
+    "url": "/academics/software-engineering/se322/extra-resources/listing-vault/03-quality-attributes/",
+    "title": "SE322 · Chapter 03 Listing Vault — Quality Attributes",
+    "track": "software-engineering",
+    "course": "se322",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se322/",
+    "courseTitle": "SE322 // Software Design and Architecture"
+  },
+  {
+    "url": "/academics/software-engineering/se322/extra-resources/listing-vault/04-architecture-patterns/",
+    "title": "SE322 · Chapter 04 Listing Vault — Architecture Patterns",
+    "track": "software-engineering",
+    "course": "se322",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se322/",
+    "courseTitle": "SE322 // Software Design and Architecture"
+  },
+  {
+    "url": "/academics/software-engineering/se322/extra-resources/listing-vault/05-principles-of-detailed-design/",
+    "title": "SE322 · Chapter 05 Listing Vault — Principles of Detailed Design",
+    "track": "software-engineering",
+    "course": "se322",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se322/",
+    "courseTitle": "SE322 // Software Design and Architecture"
+  },
+  {
+    "url": "/academics/software-engineering/se322/extra-resources/listing-vault/06-creational-design-patterns/",
+    "title": "SE322 · Chapter 06 Listing Vault — Creational Design Patterns",
+    "track": "software-engineering",
+    "course": "se322",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se322/",
+    "courseTitle": "SE322 // Software Design and Architecture"
+  },
+  {
+    "url": "/academics/software-engineering/se322/extra-resources/listing-vault/07-behavioral-design-patterns/",
+    "title": "SE322 · Chapter 07 Listing Vault — Behavioral Design Patterns",
+    "track": "software-engineering",
+    "course": "se322",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se322/",
+    "courseTitle": "SE322 // Software Design and Architecture"
+  },
+  {
+    "url": "/academics/software-engineering/se322/extra-resources/listing-vault/07-structural-design-patterns/",
+    "title": "SE322 · Chapter 07 Listing Vault — Structural Design Patterns",
+    "track": "software-engineering",
+    "course": "se322",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se322/",
+    "courseTitle": "SE322 // Software Design and Architecture"
+  },
+  {
+    "url": "/academics/software-engineering/se322/extra-resources/listing-vault/08-architecture-evaluation/",
+    "title": "SE322 · Chapter 08 Listing Vault — Architecture Evaluation",
+    "track": "software-engineering",
+    "course": "se322",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se322/",
+    "courseTitle": "SE322 // Software Design and Architecture"
+  },
+  {
+    "url": "/academics/software-engineering/se322/extra-resources/listing-vault/09-architecture-documentation/",
+    "title": "SE322 · Chapter 09 Listing Vault — Architecture Documentation",
+    "track": "software-engineering",
+    "course": "se322",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se322/",
+    "courseTitle": "SE322 // Software Design and Architecture"
+  },
+  {
     "url": "/academics/software-engineering/se322/extra-resources/mindmaps/01-introduction-to-software-design-and-architecture/",
     "title": "SE322 · Chapter 1 Mindmap — Introduction to Software Design and Architecture",
     "track": "software-engineering",
@@ -6268,6 +6655,15 @@ var COURSE_PAGES = [
   {
     "url": "/academics/software-engineering/se322/extra-resources/mindmaps/06-creational-design-patterns/",
     "title": "SE322 · Chapter 6 Mindmap — Creational Design Patterns",
+    "track": "software-engineering",
+    "course": "se322",
+    "section": "extra-resources",
+    "courseUrl": "/academics/software-engineering/se322/",
+    "courseTitle": "SE322 // Software Design and Architecture"
+  },
+  {
+    "url": "/academics/software-engineering/se322/extra-resources/mindmaps/07-behavioral-design-patterns/",
+    "title": "SE322 · Chapter 7 Mindmap — Behavioral Design Patterns",
     "track": "software-engineering",
     "course": "se322",
     "section": "extra-resources",
@@ -6455,7 +6851,16 @@ var COURSE_PAGES = [
     "courseTitle": "SE322 // Software Design and Architecture"
   },
   {
-    "url": "/academics/software-engineering/se322/slide-breakdowns/17-chapter-8-architecture-evaluation/",
+    "url": "/academics/software-engineering/se322/slide-breakdowns/17-chapter-7-behavioral-design-patterns-lecture-2/",
+    "title": "SE322 | Chapter 7 Behavioral Design Patterns Lecture 2",
+    "track": "software-engineering",
+    "course": "se322",
+    "section": "slide-breakdowns",
+    "courseUrl": "/academics/software-engineering/se322/",
+    "courseTitle": "SE322 // Software Design and Architecture"
+  },
+  {
+    "url": "/academics/software-engineering/se322/slide-breakdowns/18-chapter-8-architecture-evaluation/",
     "title": "SE322 | Chapter 8 Architecture Evaluation",
     "track": "software-engineering",
     "course": "se322",
@@ -6464,7 +6869,7 @@ var COURSE_PAGES = [
     "courseTitle": "SE322 // Software Design and Architecture"
   },
   {
-    "url": "/academics/software-engineering/se322/slide-breakdowns/18-chapter-9-documentation/",
+    "url": "/academics/software-engineering/se322/slide-breakdowns/19-chapter-9-documentation/",
     "title": "SE322 | Chapter 9 Documentation",
     "track": "software-engineering",
     "course": "se322",
@@ -6601,6 +7006,15 @@ var COURSE_PAGES = [
   {
     "url": "/academics/software-engineering/se322/slides/chapter-6-creational-design-patterns-iii/",
     "title": "SE322 | Chapter 6 Creational Design Patterns (Lecture 3)",
+    "track": "software-engineering",
+    "course": "se322",
+    "section": "slides",
+    "courseUrl": "/academics/software-engineering/se322/",
+    "courseTitle": "SE322 // Software Design and Architecture"
+  },
+  {
+    "url": "/academics/software-engineering/se322/slides/chapter-7-behavioral-design-patterns-lecture-2/",
+    "title": "SE322 | Chapter 7 Behavioral Design Patterns (Lecture 2)",
     "track": "software-engineering",
     "course": "se322",
     "section": "slides",
@@ -9416,8 +9830,8 @@ var COURSE_PAGES = [
     "courseTitle": "SE423 // Software Project Management"
   },
   {
-    "url": "/academics/software-engineering/se423/extra-resources/activity/solved/",
-    "title": "SE423 | Activity: Solved",
+    "url": "/academics/software-engineering/se423/extra-resources/activity/solved/activity-4/",
+    "title": "SE423 // Activity 4",
     "track": "software-engineering",
     "course": "se423",
     "section": "extra-resources",
@@ -9425,8 +9839,8 @@ var COURSE_PAGES = [
     "courseTitle": "SE423 // Software Project Management"
   },
   {
-    "url": "/academics/software-engineering/se423/extra-resources/activity/unsolved/",
-    "title": "SE423 | Activity: Unsolved",
+    "url": "/academics/software-engineering/se423/extra-resources/activity/unsolved/activity-2/",
+    "title": "SE423 | Activity 2: Unsolved",
     "track": "software-engineering",
     "course": "se423",
     "section": "extra-resources",
@@ -9831,11 +10245,12 @@ var COURSE_MANIFEST = {
   "com201": 40,
   "eng101": 37,
   "eng103": 7,
-  "ethcs303": 91,
+  "ethcs303": 110,
   "isc113": 23,
+  "isc213": 14,
   "se201": 41,
   "se311": 33,
-  "se322": 57,
+  "se322": 70,
   "se365": 44,
   "se371": 200,
   "se401": 53,
@@ -9860,11 +10275,12 @@ var COURSE_MANIFEST_BY_TRACK = {
   "other-courses/com201": 40,
   "other-courses/eng101": 37,
   "other-courses/eng103": 7,
-  "other-courses/ethcs303": 91,
+  "other-courses/ethcs303": 110,
   "other-courses/isc113": 23,
+  "other-courses/isc213": 14,
   "software-engineering/se201": 41,
   "software-engineering/se311": 33,
-  "software-engineering/se322": 57,
+  "software-engineering/se322": 70,
   "software-engineering/se365": 44,
   "software-engineering/se371": 200,
   "software-engineering/se401": 53,

@@ -265,15 +265,21 @@ def build_se423_activity():
     listing_page(
         base, 'se423', 'SE423', 'Activity',
         se423_trail(('Activity', None)),
-        rows([('Solved', './solved/', '1 FILE', 'available', True, False),
+        rows([('Solved', './solved/', '2 FILES', 'available', True, False),
               ('Unsolved', './unsolved/', '1 FILE, 1 FOLDER', 'available', True, False)]),
         'SE423 | Activity')
 
     listing_page(
         base + 'solved/', 'se423', 'SE423', 'Activity // Solved',
         se423_trail(('Activity', base), ('Solved', None)),
-        rows([('Activity 2', './activity-2.pdf', 'PDF', 'pdf', False, True)]),
+        rows([('Activity 2', './activity-2.pdf', 'PDF', 'pdf', False, True),
+              ('Activity 4', './activity-4/', 'PDF', 'pdf', False, False)]),
         'SE423 | Activity: Solved')
+
+    viewer_page(
+        base + 'solved/activity-4/', 'se423', 'ACTIVITY // SOLVED', 'Activity 4',
+        se423_trail(('Activity', base), ('Solved', base + 'solved/'), ('Activity 4', None)),
+        '../activity-4.pdf', base + 'solved/')
 
     listing_page(
         base + 'unsolved/', 'se423', 'SE423', 'Activity // Unsolved',
