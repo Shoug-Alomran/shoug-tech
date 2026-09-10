@@ -837,6 +837,25 @@ def chrome():
 LESSON_SCRIPT = '<script src="/javascripts/video-lesson.js" defer></script>'
 
 
+NAV_RE = re.compile(r'<nav class="[^"]*academic-sidebar[^"]*"[^>]*>.*?</nav>', re.S)
+
+
+def keep_existing_nav(rendered, target):
+    """Carry over the page's own sidebar rather than the section index's.
+
+    Every generated page starts from the section index's chrome, and that chrome
+    carries the index's sidebar — the wrong active item, and (after a site-wide
+    formatting pass) the wrong whitespace. Reusing what the page already has
+    keeps a rebuild from undoing build_academic_sidebar.py or a format run.
+    """
+    if not target.exists():
+        return rendered
+    current = NAV_RE.search(target.read_text(encoding='utf-8'))
+    if not current:
+        return rendered
+    return NAV_RE.sub(lambda _m: current.group(0), rendered, count=1)
+
+
 def render(template, *, url, title, description, body, crumb, image=BASE_IMAGE, scripts=''):
     out = template.replace(BASE_DESC, esc(description))
     out = out.replace(BASE_TITLE, esc(title))
@@ -969,6 +988,7 @@ def build_pages():
               'data-ar-text="شروحات الفيديو">Video Explanations</span>',
         body=index_body(),
     )
+    index = keep_existing_nav(index, SECTION / 'index.html')
     (SECTION / 'index.html').write_text(index, encoding='utf-8')
     print('index: %s' % SECTION_URL)
 
@@ -990,7 +1010,7 @@ def build_pages():
         )
         target = SECTION / video['slug'] / 'index.html'
         target.parent.mkdir(parents=True, exist_ok=True)
-        target.write_text(page, encoding='utf-8')
+        target.write_text(keep_existing_nav(page, target), encoding='utf-8')
         print('page:  %s' % page_url(video))
 
 

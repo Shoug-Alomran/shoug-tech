@@ -46,6 +46,16 @@
     catch (e) { return false; }
   }
 
+  /**
+   * The Firebase namespace firebase-auth.js actually signed in with. It stashes
+   * its own reference, which is the one to trust: reading the bare global can
+   * hand back a different instance if anything else ever loads the SDK.
+   */
+  function sdk() {
+    var fb = window.__shoug_fb || window.firebase;
+    return (fb && fb.auth) ? fb : null;
+  }
+
   function commentSlug() {
     return window.location.pathname.replace(/\//g, "|").replace(/^\|/, "");
   }
@@ -103,13 +113,14 @@
   }
 
   function voteDoc(uid) {
-    return window.firebase.firestore()
+    return sdk().firestore()
       .collection("pageReactions").doc(reactionKey)
       .collection("votes").doc(uid);
   }
 
   function applyVote(dir) {
-    var user = window.firebase && window.firebase.auth().currentUser;
+    var fb = sdk();
+    var user = fb && fb.auth().currentUser;
     if (!user) {
       pending = dir;
       if (!authReady && wasSignedIn()) {
@@ -134,7 +145,7 @@
     var write = next === 0 ? ref.delete() : ref.set({
       value: next,
       page: window.location.pathname,
-      updatedAt: window.firebase.firestore.FieldValue.serverTimestamp()
+      updatedAt: fb.firestore.FieldValue.serverTimestamp()
     });
     write.then(function () { setHint(""); }).catch(function () {
       setHint("Could not save your vote.");
@@ -269,16 +280,73 @@
   }
 
   function hookAuth() {
-    if (!window.firebase || !window.firebase.auth) return;
-    // Chain rather than replace: firebase-auth.js calls whatever is here.
-    var previous = window.__shoug_onAuth;
-    window.__shoug_onAuth = function (user) {
-      if (typeof previous === "function") previous(user);
-      onAuth(user);
-    };
-    window.firebase.auth().onAuthStateChanged(onAuth);
+    var fb = sdk();
+    if (!fb) return false;
+    if (!hookAuth.done) {
+      hookAuth.done = true;
+      // Chain rather than replace: firebase-auth.js calls whatever is here.
+      var previous = window.__shoug_onAuth;
+      window.__shoug_onAuth = function (user) {
+        if (typeof previous === "function") previous(user);
+        onAuth(user);
+      };
+      fb.auth().onAuthStateChanged(onAuth);
+    }
+    return true;
   }
 
-  if (window.firebase && window.firebase.auth) hookAuth();
-  else window.addEventListener("shoug:fb", hookAuth, { once: true });
+  if (!hookAuth()) window.addEventListener("shoug:fb", hookAuth, { once: true });
+
+  /**
+   * The SDK is loaded lazily and its events are easy to miss, so don't depend
+   * on them alone. The header button is the same thing the reader is looking at
+   * when they say they are signed in: firebase-auth.js only renders the avatar
+   * (never the "..." placeholder, which has no #shoug-user-avatar) once auth has
+   * resolved to a real user. Watching it keeps this page's answer to "are you
+   * signed in?" identical to the header's, whatever happens with SDK timing.
+   */
+  function headerSaysSignedIn() {
+    var btn = document.getElementById("shoug-fb-user");
+    return !!(btn && btn.querySelector("#shoug-user-avatar"));
+  }
+
+  function syncWithHeader() {
+    if (!headerSaysSignedIn()) return false;
+    if (prompt) prompt.hidden = true;
+    hookAuth();     // in case the SDK arrived without us noticing
+    return true;
+  }
+
+  if (!syncWithHeader()) {
+    var actions = document.querySelector(".shoug-header-actions");
+    if (actions) {
+      new MutationObserver(function () { syncWithHeader(); })
+        .observe(actions, { childList: true, subtree: true });
+    }
+    // Last resort for the case where even the header never re-renders: a few
+    // cheap checks over the first ten seconds, then stop.
+    var tries = 0;
+    var timer = setInterval(function () {
+      if (++tries > 10 || syncWithHeader()) clearInterval(timer);
+    }, 1000);
+  }
+
+  /** For debugging from the console: window.__videoLessonState(). */
+  window.__videoLessonState = function () {
+    var fb = sdk();
+    return {
+      reactionKey: reactionKey,
+      sdkLoaded: !!fb,
+      sdkIsGlobal: fb === window.firebase,
+      currentUser: !!(fb && fb.auth().currentUser),
+      authReady: authReady,
+      headerSaysSignedIn: headerSaysSignedIn(),
+      wasSignedIn: wasSignedIn(),
+      promptHidden: prompt ? prompt.hidden : "no prompt",
+      commentsAdopted: !!(slot && slot.querySelector("#shoug-page-comments")),
+      commentsAnywhere: !!document.getElementById("shoug-page-comments"),
+      myVote: myVote,
+      counts: counts
+    };
+  };
 })();
