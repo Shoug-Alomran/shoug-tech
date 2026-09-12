@@ -7,10 +7,10 @@ captions are Arabic and the pages mark the track srclang="ar".
 Captions land in docs/.../video-explanations/captions/<slug>.vtt, which is where
 build_ethics_video_pages.py looks when deciding whether a player gets a <track>.
 
-Transcription runs through whisper.cpp, which uses Metal on Apple Silicon and is
-roughly 2x faster than real time with the large-v3-turbo model. faster-whisper
-on CPU was measured at ~6x SLOWER than real time on the same machine, so it is
-not a practical fallback for the full set.
+Transcription runs locally through whisper.cpp with Metal on Apple Silicon.
+Text context resets between audio windows to avoid propagating a mistaken
+phrase through the recording. Review drafts with validate_video_captions.py
+before copying them into the site's caption directory.
 
 Build whisper.cpp once (no system install needed):
 
@@ -69,6 +69,8 @@ def main():
     parser.add_argument('--threads', type=int, default=8)
     parser.add_argument('--only', action='append', default=[], help='slug to transcribe; repeatable')
     parser.add_argument('--force', action='store_true', help='re-transcribe even if a .vtt exists')
+    parser.add_argument('--output-dir', type=Path, default=CAPTIONS,
+                        help='write drafts here before reviewing and publishing')
     args = parser.parse_args()
 
     cli = args.whisper / 'build/bin/whisper-cli'
@@ -81,13 +83,13 @@ def main():
     if not todo:
         parser.error('No recordings matched --only %s' % args.only)
 
-    CAPTIONS.mkdir(parents=True, exist_ok=True)
+    args.output_dir.mkdir(parents=True, exist_ok=True)
     total = sum(v['seconds'] for v in todo)
-    print('%d recording(s), %s of audio; expect roughly half that in compute'
+    print('%d recording(s), %s of audio'
           % (len(todo), pages.runtime(total)), flush=True)
 
     for video in todo:
-        target = CAPTIONS / (video['slug'] + '.vtt')
+        target = args.output_dir / (video['slug'] + '.vtt')
         if target.exists() and not args.force:
             print('exists, skipping: ' + target.name, flush=True)
             continue
@@ -102,6 +104,9 @@ def main():
             subprocess.run([
                 str(cli), '-m', str(model), '-f', str(audio),
                 '-l', args.language, '-t', str(args.threads),
+                # Reset text context between audio windows so a mistaken phrase
+                # cannot seed repetition across the rest of a recording.
+                '-mc', '0',
                 '-ovtt', '-of', str(target.with_suffix('')),
             ], check=True, stdout=subprocess.DEVNULL)
         annotate(target)

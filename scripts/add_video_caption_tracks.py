@@ -26,7 +26,7 @@ TRACK_RE = re.compile(r'<track\b[^>]*>')
 
 
 def track_for(video):
-    return ('<track kind="captions" srclang="ar" label="العربية" default '
+    return ('<track kind="captions" srclang="ar" label="العربية (تلقائية)" default '
             'src="%scaptions/%s.vtt">' % (pages.SECTION_URL, video['slug']))
 
 

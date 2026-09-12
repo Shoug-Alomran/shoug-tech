@@ -925,7 +925,7 @@ def detail_body(video, previous, following):
     if (SECTION / 'captions' / (video['slug'] + '.vtt')).exists():
         # The narration is Arabic; `default` turns the track on so the player
         # shows its captions control without the reader hunting for it.
-        track = ('<track kind="captions" srclang="ar" label="العربية" default '
+        track = ('<track kind="captions" srclang="ar" label="العربية (تلقائية)" default '
                  'src="%scaptions/%s.vtt">' % (SECTION_URL, video['slug']))
     parts = [
         '<section id="section-video-explanations" class="video-detail" data-video-lesson '
