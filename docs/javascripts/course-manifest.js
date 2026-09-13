@@ -5249,34 +5249,7 @@ var COURSE_PAGES = [
     "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
   },
   {
-    "url": "/academics/other-courses/ethcs303/video-explanations/avoiding-social-engineering-fraud/",
-    "title": "ETHCS303 How to Avoid Social Engineering Fraud",
-    "track": "other-courses",
-    "course": "ethcs303",
-    "section": "video-explanations",
-    "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
-  },
-  {
-    "url": "/academics/other-courses/ethcs303/video-explanations/cyber-laws-in-saudi-arabia/",
-    "title": "ETHCS303 Cyber Laws in Saudi Arabia",
-    "track": "other-courses",
-    "course": "ethcs303",
-    "section": "video-explanations",
-    "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
-  },
-  {
-    "url": "/academics/other-courses/ethcs303/video-explanations/dumpster-diving/",
-    "title": "ETHCS303 Dumpster Diving",
-    "track": "other-courses",
-    "course": "ethcs303",
-    "section": "video-explanations",
-    "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
-  },
-  {
-    "url": "/academics/other-courses/ethcs303/video-explanations/ethical-issues-in-systems-analysis-and-software-engineering/",
+    "url": "/academics/other-courses/ethcs303/video-explanations/slide-breakdowns/ethical-issues-in-systems-analysis-and-software-engineering/",
     "title": "ETHCS303 Ethical Issues in Systems Analysis and Software Engineering",
     "track": "other-courses",
     "course": "ethcs303",
@@ -5285,25 +5258,7 @@ var COURSE_PAGES = [
     "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
   },
   {
-    "url": "/academics/other-courses/ethcs303/video-explanations/impersonation/",
-    "title": "ETHCS303 Impersonation",
-    "track": "other-courses",
-    "course": "ethcs303",
-    "section": "video-explanations",
-    "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
-  },
-  {
-    "url": "/academics/other-courses/ethcs303/video-explanations/intellectual-property-laws/",
-    "title": "ETHCS303 Intellectual Property Laws",
-    "track": "other-courses",
-    "course": "ethcs303",
-    "section": "video-explanations",
-    "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
-  },
-  {
-    "url": "/academics/other-courses/ethcs303/video-explanations/kantianism/",
+    "url": "/academics/other-courses/ethcs303/video-explanations/slide-breakdowns/kantianism/",
     "title": "ETHCS303 Kantianism",
     "track": "other-courses",
     "course": "ethcs303",
@@ -5312,7 +5267,7 @@ var COURSE_PAGES = [
     "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
   },
   {
-    "url": "/academics/other-courses/ethcs303/video-explanations/moral-systems-and-ethical-theories/",
+    "url": "/academics/other-courses/ethcs303/video-explanations/slide-breakdowns/moral-systems-and-ethical-theories/",
     "title": "ETHCS303 Moral Systems, Ethical Concepts, and Theories",
     "track": "other-courses",
     "course": "ethcs303",
@@ -5321,25 +5276,7 @@ var COURSE_PAGES = [
     "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
   },
   {
-    "url": "/academics/other-courses/ethcs303/video-explanations/patents-and-trademarks/",
-    "title": "ETHCS303 Patents and Trademarks",
-    "track": "other-courses",
-    "course": "ethcs303",
-    "section": "video-explanations",
-    "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
-  },
-  {
-    "url": "/academics/other-courses/ethcs303/video-explanations/phishing/",
-    "title": "ETHCS303 Phishing",
-    "track": "other-courses",
-    "course": "ethcs303",
-    "section": "video-explanations",
-    "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
-  },
-  {
-    "url": "/academics/other-courses/ethcs303/video-explanations/privacy-in-cyberspace-part-1/",
+    "url": "/academics/other-courses/ethcs303/video-explanations/slide-breakdowns/privacy-in-cyberspace-part-1/",
     "title": "ETHCS303 Privacy in Cyberspace — Part 1",
     "track": "other-courses",
     "course": "ethcs303",
@@ -5348,7 +5285,7 @@ var COURSE_PAGES = [
     "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
   },
   {
-    "url": "/academics/other-courses/ethcs303/video-explanations/privacy-in-cyberspace-part-2/",
+    "url": "/academics/other-courses/ethcs303/video-explanations/slide-breakdowns/privacy-in-cyberspace-part-2/",
     "title": "ETHCS303 Privacy in Cyberspace — Part 2",
     "track": "other-courses",
     "course": "ethcs303",
@@ -5357,7 +5294,7 @@ var COURSE_PAGES = [
     "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
   },
   {
-    "url": "/academics/other-courses/ethcs303/video-explanations/professional-ethics/",
+    "url": "/academics/other-courses/ethcs303/video-explanations/slide-breakdowns/professional-ethics/",
     "title": "ETHCS303 Professional Ethics",
     "track": "other-courses",
     "course": "ethcs303",
@@ -5366,16 +5303,7 @@ var COURSE_PAGES = [
     "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
   },
   {
-    "url": "/academics/other-courses/ethcs303/video-explanations/smishing/",
-    "title": "ETHCS303 Smishing",
-    "track": "other-courses",
-    "course": "ethcs303",
-    "section": "video-explanations",
-    "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
-  },
-  {
-    "url": "/academics/other-courses/ethcs303/video-explanations/social-contract-theory/",
+    "url": "/academics/other-courses/ethcs303/video-explanations/slide-breakdowns/social-contract-theory/",
     "title": "ETHCS303 Social Contract Theory",
     "track": "other-courses",
     "course": "ethcs303",
@@ -5384,25 +5312,7 @@ var COURSE_PAGES = [
     "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
   },
   {
-    "url": "/academics/other-courses/ethcs303/video-explanations/social-engineering/",
-    "title": "ETHCS303 Social Engineering",
-    "track": "other-courses",
-    "course": "ethcs303",
-    "section": "video-explanations",
-    "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
-  },
-  {
-    "url": "/academics/other-courses/ethcs303/video-explanations/trade-secrets/",
-    "title": "ETHCS303 Trade Secrets",
-    "track": "other-courses",
-    "course": "ethcs303",
-    "section": "video-explanations",
-    "courseUrl": "/academics/other-courses/ethcs303/",
-    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
-  },
-  {
-    "url": "/academics/other-courses/ethcs303/video-explanations/utilitarianism/",
+    "url": "/academics/other-courses/ethcs303/video-explanations/slide-breakdowns/utilitarianism/",
     "title": "ETHCS303 Utilitarianism",
     "track": "other-courses",
     "course": "ethcs303",
@@ -5411,7 +5321,223 @@ var COURSE_PAGES = [
     "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
   },
   {
-    "url": "/academics/other-courses/ethcs303/video-explanations/vishing/",
+    "url": "/academics/other-courses/ethcs303/video-explanations/slides/avoiding-social-engineering-fraud/",
+    "title": "ETHCS303 How to Avoid Social Engineering Fraud",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "video-explanations",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
+    "url": "/academics/other-courses/ethcs303/video-explanations/slides/cyber-laws-in-saudi-arabia/",
+    "title": "ETHCS303 Cyber Laws in Saudi Arabia",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "video-explanations",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
+    "url": "/academics/other-courses/ethcs303/video-explanations/slides/divine-command-theory-new-explanation/",
+    "title": "ETHCS303 Divine Command Theory — New Explanation",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "video-explanations",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
+    "url": "/academics/other-courses/ethcs303/video-explanations/slides/dumpster-diving/",
+    "title": "ETHCS303 Dumpster Diving",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "video-explanations",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
+    "url": "/academics/other-courses/ethcs303/video-explanations/slides/impersonation/",
+    "title": "ETHCS303 Impersonation",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "video-explanations",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
+    "url": "/academics/other-courses/ethcs303/video-explanations/slides/intellectual-property-laws/",
+    "title": "ETHCS303 Intellectual Property Laws",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "video-explanations",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
+    "url": "/academics/other-courses/ethcs303/video-explanations/slides/kantianism-part-1/",
+    "title": "ETHCS303 Kantianism — Part 1",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "video-explanations",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
+    "url": "/academics/other-courses/ethcs303/video-explanations/slides/kantianism-part-2/",
+    "title": "ETHCS303 Kantianism — Part 2",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "video-explanations",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
+    "url": "/academics/other-courses/ethcs303/video-explanations/slides/kantianism-part-3/",
+    "title": "ETHCS303 Kantianism — Part 3",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "video-explanations",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
+    "url": "/academics/other-courses/ethcs303/video-explanations/slides/moral-systems-and-ethical-theories-part-1/",
+    "title": "ETHCS303 Moral Systems, Ethical Concepts, and Theories — Part 1",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "video-explanations",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
+    "url": "/academics/other-courses/ethcs303/video-explanations/slides/moral-systems-and-ethical-theories-part-2/",
+    "title": "ETHCS303 Moral Systems, Ethical Concepts, and Theories — Part 2",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "video-explanations",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
+    "url": "/academics/other-courses/ethcs303/video-explanations/slides/moral-systems-and-ethical-theories-part-3/",
+    "title": "ETHCS303 Moral Systems, Ethical Concepts, and Theories — Part 3",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "video-explanations",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
+    "url": "/academics/other-courses/ethcs303/video-explanations/slides/patents-and-trademarks/",
+    "title": "ETHCS303 Patents and Trademarks",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "video-explanations",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
+    "url": "/academics/other-courses/ethcs303/video-explanations/slides/phishing/",
+    "title": "ETHCS303 Phishing",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "video-explanations",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
+    "url": "/academics/other-courses/ethcs303/video-explanations/slides/professional-ethics-part-1/",
+    "title": "ETHCS303 Professional Ethics — Part 1",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "video-explanations",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
+    "url": "/academics/other-courses/ethcs303/video-explanations/slides/professional-ethics-part-2/",
+    "title": "ETHCS303 Professional Ethics — Part 2",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "video-explanations",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
+    "url": "/academics/other-courses/ethcs303/video-explanations/slides/professional-ethics-part-3/",
+    "title": "ETHCS303 Professional Ethics — Part 3",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "video-explanations",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
+    "url": "/academics/other-courses/ethcs303/video-explanations/slides/smishing/",
+    "title": "ETHCS303 Smishing",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "video-explanations",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
+    "url": "/academics/other-courses/ethcs303/video-explanations/slides/social-contract-theory-new-explanation/",
+    "title": "ETHCS303 Social Contract Theory — New Explanation",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "video-explanations",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
+    "url": "/academics/other-courses/ethcs303/video-explanations/slides/social-engineering/",
+    "title": "ETHCS303 Social Engineering",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "video-explanations",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
+    "url": "/academics/other-courses/ethcs303/video-explanations/slides/trade-secrets/",
+    "title": "ETHCS303 Trade Secrets",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "video-explanations",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
+    "url": "/academics/other-courses/ethcs303/video-explanations/slides/utilitarianism-part-1/",
+    "title": "ETHCS303 Utilitarianism — Part 1",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "video-explanations",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
+    "url": "/academics/other-courses/ethcs303/video-explanations/slides/utilitarianism-part-2/",
+    "title": "ETHCS303 Utilitarianism — Part 2",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "video-explanations",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
+    "url": "/academics/other-courses/ethcs303/video-explanations/slides/virtue-ethics-new-explanation/",
+    "title": "ETHCS303 Virtue Ethics — New Explanation",
+    "track": "other-courses",
+    "course": "ethcs303",
+    "section": "video-explanations",
+    "courseUrl": "/academics/other-courses/ethcs303/",
+    "courseTitle": "ETHCS303 // Ethics and Cybersecurity"
+  },
+  {
+    "url": "/academics/other-courses/ethcs303/video-explanations/slides/vishing/",
     "title": "ETHCS303 Vishing",
     "track": "other-courses",
     "course": "ethcs303",
@@ -10275,7 +10401,7 @@ var COURSE_MANIFEST_BY_TRACK = {
   "other-courses/com201": 40,
   "other-courses/eng101": 37,
   "other-courses/eng103": 7,
-  "other-courses/ethcs303": 110,
+  "other-courses/ethcs303": 124,
   "other-courses/isc113": 23,
   "other-courses/isc213": 14,
   "software-engineering/se201": 41,

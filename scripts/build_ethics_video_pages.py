@@ -2,8 +2,9 @@
 """Build the ETHCS303 video explanation pages.
 
 Each recording gets its own page with an embedded player, a poster thumbnail and
-a caption describing what the recording actually covers. The section index
-becomes a card grid linking to those pages.
+a caption describing what the recording actually covers. Pages live under
+slide-breakdowns/ or slides/ by what the recording explains; the section index
+links to those two indexes, each a card grid linking to the pages.
 
 The existing video-explanations/index.html supplies the page chrome (header,
 sidebar, tabs, footer, scripts) so the generated pages stay in sync with the
@@ -84,6 +85,7 @@ VIDEOS = [
         'title': 'Moral Systems, Ethical Concepts, and Theories',
         'title_ar': 'النظم الأخلاقية والمفاهيم والنظريات',
         'group': 'Ethical theories',
+        'kind': 'slide-breakdowns',
         'video': 'ethics/moral-systems-ethical-concepts-and-theories-mp4.mp4',
         'source': 'Moral Systems, Ethical Concepts, and Theories.mp4',
         'seconds': 1996,
@@ -109,6 +111,7 @@ VIDEOS = [
         'title': 'Kantianism',
         'title_ar': 'الكانطية',
         'group': 'Ethical theories',
+        'kind': 'slide-breakdowns',
         'video': 'ethics/kantianism-mp4.mp4',
         'source': 'Kantianism.mp4',
         'seconds': 1480,
@@ -132,6 +135,7 @@ VIDEOS = [
         'title': 'Utilitarianism',
         'title_ar': 'النفعية',
         'group': 'Ethical theories',
+        'kind': 'slide-breakdowns',
         'video': 'ethics/utilitarianism-mp4.mp4',
         'source': 'Utilitarianism.mp4',
         'seconds': 1245,
@@ -155,6 +159,7 @@ VIDEOS = [
         'title': 'Social Contract Theory',
         'title_ar': 'نظرية العقد الاجتماعي',
         'group': 'Ethical theories',
+        'kind': 'slide-breakdowns',
         'video': 'ethics/social-contract-mp4.mp4',
         'source': 'Social Contract.mp4',
         'seconds': 1371,
@@ -178,6 +183,7 @@ VIDEOS = [
         'title': 'Professional Ethics',
         'title_ar': 'أخلاقيات المهنة',
         'group': 'Professional practice',
+        'kind': 'slide-breakdowns',
         'video': 'ethics/professional-ethics-mp4.mp4',
         'source': 'Professional Ethics.mp4',
         'seconds': 2927,
@@ -202,6 +208,7 @@ VIDEOS = [
         'title': 'Ethical Issues in Systems Analysis and Software Engineering',
         'title_ar': 'القضايا الأخلاقية في تحليل النظم وهندسة البرمجيات',
         'group': 'Professional practice',
+        'kind': 'slide-breakdowns',
         'video': 'ethics/sa-se-mov.mp4',
         'source': 'SA:SE.mov',
         'seconds': 2829,
@@ -226,6 +233,7 @@ VIDEOS = [
         'title': 'Privacy in Cyberspace — Part 1',
         'title_ar': 'الخصوصية في الفضاء السيبراني — الجزء الأول',
         'group': 'Privacy in cyberspace',
+        'kind': 'slide-breakdowns',
         'video': 'ethics/cyberspace-part-1-mov.mp4',
         'source': 'cyberspace part 1.mov',
         'seconds': 720,
@@ -250,6 +258,7 @@ VIDEOS = [
         'title': 'Privacy in Cyberspace — Part 2',
         'title_ar': 'الخصوصية في الفضاء السيبراني — الجزء الثاني',
         'group': 'Privacy in cyberspace',
+        'kind': 'slide-breakdowns',
         'video': 'ethics/cyberspace-part-2-mov.mp4',
         'source': 'cyberspace part 2.mov',
         'seconds': 1385,
@@ -273,6 +282,7 @@ VIDEOS = [
         'title': 'Social Engineering',
         'title_ar': 'الهندسة الاجتماعية',
         'group': 'Social engineering',
+        'kind': 'slides',
         'video': 'ethics/social-engineering/social-engineering-mp4.mp4',
         'source': 'Social Engineering/Social Engineering.mp4',
         'seconds': 346,
@@ -294,6 +304,7 @@ VIDEOS = [
         'title': 'Phishing',
         'title_ar': 'التصيّد الإلكتروني',
         'group': 'Social engineering',
+        'kind': 'slides',
         'video': 'ethics/social-engineering/phishing-mp4.mp4',
         'source': 'Social Engineering/Phishing.mp4',
         'seconds': 647,
@@ -317,6 +328,7 @@ VIDEOS = [
         'title': 'Smishing',
         'title_ar': 'التصيّد عبر الرسائل النصية',
         'group': 'Social engineering',
+        'kind': 'slides',
         'video': 'ethics/social-engineering/smishing-mp4.mp4',
         'source': 'Social Engineering/Smishing.mp4',
         'seconds': 375,
@@ -339,6 +351,7 @@ VIDEOS = [
         'title': 'Vishing',
         'title_ar': 'التصيّد الصوتي',
         'group': 'Social engineering',
+        'kind': 'slides',
         'video': 'ethics/social-engineering/vishing-mp4.mp4',
         'source': 'Social Engineering/Vishing.mp4',
         'seconds': 284,
@@ -361,6 +374,7 @@ VIDEOS = [
         'title': 'Impersonation',
         'title_ar': 'انتحال الشخصية',
         'group': 'Social engineering',
+        'kind': 'slides',
         'video': 'ethics/social-engineering/impersenation-mp4.mp4',
         'source': 'Social Engineering/impersenation.mp4',
         'seconds': 266,
@@ -383,6 +397,7 @@ VIDEOS = [
         'title': 'Dumpster Diving',
         'title_ar': 'التنقيب في النفايات',
         'group': 'Social engineering',
+        'kind': 'slides',
         'video': 'ethics/social-engineering/dumpster-diving-mp4.mp4',
         'source': 'Social Engineering/Dumpster Diving.mp4',
         'seconds': 225,
@@ -406,6 +421,7 @@ VIDEOS = [
         'title': 'How to Avoid Social Engineering Fraud',
         'title_ar': 'كيفية تجنّب احتيال الهندسة الاجتماعية',
         'group': 'Social engineering',
+        'kind': 'slides',
         'video': 'ethics/social-engineering/how-to-avoid-se-fraud-mp4.mp4',
         'source': 'Social Engineering/How to avoid se fraud.mp4',
         'seconds': 494,
@@ -429,6 +445,7 @@ VIDEOS = [
         'title': 'Intellectual Property Laws',
         'title_ar': 'قوانين الملكية الفكرية',
         'group': 'Intellectual property',
+        'kind': 'slides',
         'video': 'ethics/intellectual-property/intellectual-property-intro-mp4.mp4',
         'source': 'Intellectual Property/Intellectual Property Intro.mp4',
         'seconds': 1685,
@@ -452,6 +469,7 @@ VIDEOS = [
         'title': 'Patents and Trademarks',
         'title_ar': 'براءات الاختراع والعلامات التجارية',
         'group': 'Intellectual property',
+        'kind': 'slides',
         'video': 'ethics/intellectual-property/patents-mp4.mp4',
         'source': 'Intellectual Property/Patents.mp4',
         'seconds': 1368,
@@ -475,6 +493,7 @@ VIDEOS = [
         'title': 'Trade Secrets',
         'title_ar': 'الأسرار التجارية',
         'group': 'Intellectual property',
+        'kind': 'slides',
         'video': 'ethics/intellectual-property/trade-secrets-mp4.mp4',
         'source': 'Intellectual Property/Trade Secrets.mp4',
         'seconds': 1934,
@@ -498,6 +517,7 @@ VIDEOS = [
         'title': 'Cyber Laws in Saudi Arabia',
         'title_ar': 'القوانين السيبرانية في السعودية',
         'group': 'Cyber law',
+        'kind': 'slides',
         'video': 'ethics/cyber-laws/cyber-laws-in-saudi-mp4.mp4',
         'source': 'Cyber Laws/Cyber Laws In Saudi.mp4',
         'seconds': 1786,
@@ -528,6 +548,21 @@ EXTRA_RECORDINGS = REPO / 'scripts' / 'ethics-new-recordings.json'
 if EXTRA_RECORDINGS.exists():
     VIDEOS.extend(v for v in json.loads(EXTRA_RECORDINGS.read_text()) if v.get('ready'))
 
+# The folder a recording's page lives in, by what is on screen: `slide-breakdowns`
+# when it walks through the HTML slide breakdown pages, `slides` when it
+# annotates the original lecture slides.
+KINDS = [
+    ('slide-breakdowns', 'Slide Breakdowns', 'تفكيك الشرائح',
+     'Recordings that walk through the HTML slide breakdown pages.',
+     'تسجيلات تشرح صفحات تفكيك الشرائح.'),
+    ('slides', 'Slides', 'الشرائح',
+     'Recordings that explain the original lecture slides.',
+     'تسجيلات تشرح شرائح المحاضرات الأصلية.'),
+]
+_untagged = [v['slug'] for v in VIDEOS if v.get('kind') not in [k[0] for k in KINDS]]
+if _untagged:
+    raise SystemExit('Recordings without a slides/slide-breakdowns kind: ' + ', '.join(_untagged))
+
 
 def runtime(seconds):
     return '%d:%02d' % divmod(seconds, 60)
@@ -537,8 +572,16 @@ def esc(text):
     return html.escape(text, quote=True)
 
 
+def kind_url(kind):
+    return SECTION_URL + kind + '/'
+
+
 def page_url(video):
-    return SECTION_URL + video['slug'] + '/'
+    return kind_url(video['kind']) + video['slug'] + '/'
+
+
+def page_path(video):
+    return SECTION / video['kind'] / video['slug'] / 'index.html'
 
 
 def thumb_url(video):
@@ -808,20 +851,8 @@ REACTIONS = (
 ) % (THUMB_UP, THUMB_DOWN)
 
 DISCUSSION = (
-    '<section class="video-discussion" aria-labelledby="video-discussion-heading">'
-    '<h3 id="video-discussion-heading" data-en-text="DISCUSSION" '
-    'data-ar-text="النقاش">DISCUSSION</h3>'
+    '<section class="video-discussion">'
     '<div class="video-discussion-preview" data-discussion-preview hidden></div>'
-    '<div class="video-discussion-prompt" data-discussion-prompt>'
-    '<p data-en-text="Ask about anything in this recording, or answer a classmate. '
-    'Sign in with your community profile to post." '
-    'data-ar-text="اسأل عن أي جزء في هذا التسجيل أو أجب زميلًا. '
-    'سجّل الدخول بحسابك في المجتمع للمشاركة.">'
-    'Ask about anything in this recording, or answer a classmate. '
-    'Sign in with your community profile to post.</p>'
-    '<button class="video-discussion-btn" type="button" data-discussion-signin '
-    'data-en-text="Sign in to join" data-ar-text="سجّل الدخول للمشاركة">Sign in to join</button>'
-    '</div>'
     '<div class="video-discussion-slot" data-discussion-slot></div>'
     '</section>'
 )
@@ -879,46 +910,89 @@ def render(template, *, url, title, description, body, crumb, image=BASE_IMAGE, 
 # bodies
 # --------------------------------------------------------------------------- #
 
-INTRO = ('Recorded walkthroughs of the ETHCS303 material. Each lesson has its own page '
-         'with the full recording, so pick a topic below.')
-INTRO_AR = ('شروحات مسجلة لمادة ETHCS303. لكل درس صفحة خاصة تحتوي التسجيل كاملًا، '
-            'فاختر الموضوع من الأسفل.')
+INTRO = ('Recorded walkthroughs of the ETHCS303 material, split by what each recording '
+         'explains: the HTML slide breakdowns or the original lecture slides.')
+INTRO_AR = ('شروحات مسجلة لمادة ETHCS303، مقسّمة حسب ما يشرحه كل تسجيل: '
+            'صفحات تفكيك الشرائح أو شرائح المحاضرات الأصلية.')
+
+KIND_NAMES = {kind: (name, name_ar) for kind, name, name_ar, _b, _ba in KINDS}
 
 
-def index_body():
+def videos_of(kind):
+    return [v for v in VIDEOS if v['kind'] == kind]
+
+
+def group_rank(video):
+    return [g[0] for g in GROUPS].index(video['group'])
+
+
+def count_label(n):
+    return '%d video%s' % (n, '' if n == 1 else 's')
+
+
+def card(url, title, title_ar, thumb, alt, badge, caption):
+    return ('<a class="video-card" href="%s" data-ar-title="%s">'
+            '<span class="video-card-thumb">'
+            '<img src="%s" alt="%s" width="640" height="360" loading="lazy" decoding="async">'
+            '<span class="video-card-play">%s</span>'
+            '<span class="video-card-duration">%s</span>'
+            '</span>'
+            '<span class="video-card-body">'
+            '<span class="video-card-title">%s</span>'
+            '<span class="video-card-caption">%s</span>'
+            '</span></a>'
+            % (url, esc(title_ar), thumb, esc(alt), PLAY_ICON, badge, esc(title), esc(caption)))
+
+
+def heading(name, name_ar):
+    return ('<h2 class="section-label" id="ethics-video-heading" data-en-text="%s" '
+            'data-ar-text="%s">%s</h2>' % (esc(name.upper()), esc(name_ar), esc(name.upper())))
+
+
+def text_block(en, ar):
+    return '<p class="text-block" data-en-text="%s" data-ar-text="%s">%s</p>' % (esc(en), esc(ar), esc(en))
+
+
+def hub_body():
     parts = [
         '<section id="section-video-explanations" aria-labelledby="ethics-video-heading">',
-        '<h2 class="section-label" id="ethics-video-heading" data-en-text="VIDEO EXPLANATIONS" '
-        'data-ar-text="شروحات الفيديو">VIDEO EXPLANATIONS</h2>',
-        '<p class="text-block" data-en-text="%s" data-ar-text="%s">%s</p>'
-        % (esc(INTRO), esc(INTRO_AR), esc(INTRO)),
+        heading('Video Explanations', 'شروحات الفيديو'),
+        text_block(INTRO, INTRO_AR),
+        '<div class="video-group"><div class="video-grid">',
     ]
-    for name, name_ar in GROUPS:
-        items = [v for v in VIDEOS if v['group'] == name]
+    for kind, name, name_ar, blurb, _blurb_ar in KINDS:
+        items = sorted(videos_of(kind), key=group_rank)
+        if items:
+            parts.append(card(kind_url(kind), name, name_ar, thumb_url(items[0]),
+                              'Preview of the %s recordings' % name, count_label(len(items)), blurb))
+    parts.append('</div></div></section>')
+    return ''.join(parts)
+
+
+def kind_index_body(kind):
+    name, name_ar = KIND_NAMES[kind]
+    blurb, blurb_ar = [(k[3], k[4]) for k in KINDS if k[0] == kind][0]
+    parts = [
+        '<section id="section-video-explanations" aria-labelledby="ethics-video-heading">',
+        '<a class="video-back" href="%s" data-en-text="Back to Video Explanations" '
+        'data-ar-text="العودة إلى شروحات الفيديو">Back to Video Explanations</a>' % SECTION_URL,
+        heading(name, name_ar),
+        text_block(blurb, blurb_ar),
+    ]
+    for group, group_name_ar in GROUPS:
+        items = [v for v in videos_of(kind) if v['group'] == group]
         if not items:
             continue
-        count = '%d video%s' % (len(items), '' if len(items) == 1 else 's')
         parts.append('<div class="video-group">')
         parts.append(
             '<h3 class="video-group-label" data-en-text="%s" data-ar-text="%s">%s'
             '<span class="video-group-count">%s</span></h3>'
-            % (esc(name), esc(name_ar), esc(name), count))
+            % (esc(group), esc(group_name_ar), esc(group), count_label(len(items))))
         parts.append('<div class="video-grid">')
         for video in items:
-            parts.append(
-                '<a class="video-card" href="%s" data-ar-title="%s">'
-                '<span class="video-card-thumb">'
-                '<img src="%s" alt="Slide from the %s recording" width="640" height="360" loading="lazy" decoding="async">'
-                '<span class="video-card-play">%s</span>'
-                '<span class="video-card-duration">%s</span>'
-                '</span>'
-                '<span class="video-card-body">'
-                '<span class="video-card-title">%s</span>'
-                '<span class="video-card-caption">%s</span>'
-                '</span></a>'
-                % (page_url(video), esc(video['title_ar']), thumb_url(video),
-                   esc(video['title']), PLAY_ICON, runtime(video['seconds']),
-                   esc(video['title']), esc(video['caption'])))
+            parts.append(card(page_url(video), video['title'], video['title_ar'], thumb_url(video),
+                              'Slide from the %s recording' % video['title'],
+                              runtime(video['seconds']), video['caption']))
         parts.append('</div></div>')
     parts.append('</section>')
     return ''.join(parts)
@@ -936,8 +1010,9 @@ def detail_body(video, previous, following):
         '<section id="section-video-explanations" class="video-detail" data-video-lesson '
         'data-reaction-key="ethcs303-%s" aria-labelledby="video-heading">' % video['slug'],
         '<div class="video-detail-head">',
-        '<a class="video-back" href="%s" data-en-text="Back to Video Explanations" '
-        'data-ar-text="العودة إلى شروحات الفيديو">Back to Video Explanations</a>' % SECTION_URL,
+        '<a class="video-back" href="%s" data-en-text="Back to %s" data-ar-text="العودة إلى %s">Back to %s</a>'
+        % (kind_url(video['kind']), KIND_NAMES[video['kind']][0], KIND_NAMES[video['kind']][1],
+           KIND_NAMES[video['kind']][0]),
         '<h2 class="video-title section-label" id="video-heading" data-en-text="%s" data-ar-text="%s">%s</h2>'
         % (esc(video['title']), esc(video['title_ar']), esc(video['title'])),
         '<div class="video-meta"><span class="video-meta-tag">%s</span>'
@@ -983,48 +1058,72 @@ def detail_body(video, previous, following):
 
 def build_pages():
     template = chrome()
-    ordered = sorted(VIDEOS, key=lambda v: [g[0] for g in GROUPS].index(v['group']))
 
-    index = render(
+    hub = render(
         template,
         url=SECTION_URL,
         title=BASE_TITLE,
-        description='Recorded ETHCS303 walkthroughs: ethical theories, professional ethics, '
-                    'privacy in cyberspace, social engineering, intellectual property and Saudi cyber law.',
+        description='Recorded ETHCS303 walkthroughs of the slide breakdowns and the lecture slides: '
+                    'ethical theories, professional ethics, privacy in cyberspace, social engineering, '
+                    'intellectual property and Saudi cyber law.',
         crumb='<span class="current" data-en-text="Video Explanations" '
               'data-ar-text="شروحات الفيديو">Video Explanations</span>',
-        body=index_body(),
+        body=hub_body(),
     )
-    index = keep_existing_nav(index, SECTION / 'index.html')
-    (SECTION / 'index.html').write_text(index, encoding='utf-8')
+    hub = keep_existing_nav(hub, SECTION / 'index.html')
+    (SECTION / 'index.html').write_text(hub, encoding='utf-8')
     print('index: %s' % SECTION_URL)
 
-    for position, video in enumerate(ordered):
-        previous = ordered[position - 1] if position else None
-        following = ordered[position + 1] if position + 1 < len(ordered) else None
-        crumb = ('<a class="breadcrumb-link" href="%s" data-en-text="Video Explanations" '
-                 'data-ar-text="شروحات الفيديو">Video Explanations</a> / '
-                 '<span class="current">%s</span>' % (SECTION_URL, esc(video['title'])))
-        page = render(
+    home_crumb = ('<a class="breadcrumb-link" href="%s" data-en-text="Video Explanations" '
+                  'data-ar-text="شروحات الفيديو">Video Explanations</a>' % SECTION_URL)
+    for kind, name, name_ar, blurb, _blurb_ar in KINDS:
+        index = render(
             template,
-            url=page_url(video),
-            title='SHOUG.TECH | ETHCS303 %s' % video['title'],
-            description=video['caption'],
-            crumb=crumb,
-            body=detail_body(video, previous, following),
-            image=SITE + thumb_url(video),
-            scripts=LESSON_SCRIPT,
+            url=kind_url(kind),
+            title='SHOUG.TECH | ETHCS303 %s Video Explanations' % name,
+            description=blurb,
+            crumb=home_crumb + ' / <span class="current" data-en-text="%s" data-ar-text="%s">%s</span>'
+                  % (esc(name), esc(name_ar), esc(name)),
+            body=kind_index_body(kind),
         )
-        target = SECTION / video['slug'] / 'index.html'
+        target = SECTION / kind / 'index.html'
         target.parent.mkdir(parents=True, exist_ok=True)
-        target.write_text(keep_existing_nav(page, target), encoding='utf-8')
-        print('page:  %s' % page_url(video))
+        target.write_text(keep_existing_nav(index, target), encoding='utf-8')
+        print('index: %s' % kind_url(kind))
+
+        kind_crumb = ('<a class="breadcrumb-link" href="%s" data-en-text="%s" data-ar-text="%s">%s</a>'
+                      % (kind_url(kind), esc(name), esc(name_ar), esc(name)))
+        ordered = sorted(videos_of(kind), key=group_rank)
+        for position, video in enumerate(ordered):
+            previous = ordered[position - 1] if position else None
+            following = ordered[position + 1] if position + 1 < len(ordered) else None
+            page = render(
+                template,
+                url=page_url(video),
+                title='SHOUG.TECH | ETHCS303 %s' % video['title'],
+                description=video['caption'],
+                crumb='%s / %s / <span class="current">%s</span>' % (home_crumb, kind_crumb, esc(video['title'])),
+                body=detail_body(video, previous, following),
+                image=SITE + thumb_url(video),
+                scripts=LESSON_SCRIPT,
+            )
+            target = page_path(video)
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_text(keep_existing_nav(page, target), encoding='utf-8')
+            print('page:  %s' % page_url(video))
 
 
 def sidebar_entries():
-    """The JSON fragment for scripts/academic-sidebar.json."""
-    ordered = sorted(VIDEOS, key=lambda v: [g[0] for g in GROUPS].index(v['group']))
-    return [{'url': page_url(v), 'attrs': '', 'label': v['title']} for v in ordered]
+    """The `children` lists for scripts/academic-sidebar.json, keyed by parent url."""
+    out = {SECTION_URL: []}
+    for kind, name, name_ar, _blurb, _blurb_ar in KINDS:
+        items = sorted(videos_of(kind), key=group_rank)
+        if not items:
+            continue
+        out[SECTION_URL].append({'url': kind_url(kind), 'label': name,
+                                 'attrs': 'data-en-text="%s" data-ar-text="%s"' % (name, name_ar)})
+        out[kind_url(kind)] = [{'url': page_url(v), 'attrs': '', 'label': v['title']} for v in items]
+    return out
 
 
 def main():

@@ -250,12 +250,12 @@ def chapters(cues, slug):
 def main():
     lessons=[];routes={}
     for v in p.VIDEOS:
-        if not (p.SECTION/v['slug']/'index.html').exists():continue
+        if not p.page_path(v).exists():continue
         f=p.SECTION/'captions'/(v['slug']+'.vtt')
         if not f.exists():continue
         _,cues=read_cues(f)
         data={'id':v['slug'],'title':v['title'],'url':p.R2+'/'+quote(v['video'],safe='/'),
-              'page':p.SECTION_URL+v['slug']+'/', 'caption':p.SECTION_URL+'captions/'+v['slug']+'.vtt',
+              'page':p.page_url(v), 'caption':p.SECTION_URL+'captions/'+v['slug']+'.vtt',
               'chapters':chapters(cues,v['slug']),'transcript':[{'start':seconds(a),'end':seconds(b),'text':t} for a,b,t in cues]}
         detail_dir=p.SECTION/'lesson-data'
         detail_dir.mkdir(exist_ok=True)
@@ -272,7 +272,7 @@ def main():
     out=ROOT/'docs/academics/other-courses/ethcs303/video-explanations/study-tools.json'
     out.write_text(json.dumps({'lessons':lessons,'routes':routes},ensure_ascii=False,separators=(',',':')))
     assets='<link rel="stylesheet" href="/styles/ethics-study-tools.css">\n<script src="/javascripts/ethics-study-tools.js" defer></script>\n'
-    paths={p.SECTION/v['slug']/'index.html' for v in p.VIDEOS}
+    paths={p.page_path(v) for v in p.VIDEOS}
     for route in routes:
         directory=ROOT/'docs'/route.strip('/')
         paths.update(directory.glob('*.html'))
