@@ -524,6 +524,11 @@ VIDEOS = [
 # helpers
 # --------------------------------------------------------------------------- #
 
+EXTRA_RECORDINGS = REPO / 'scripts' / 'ethics-new-recordings.json'
+if EXTRA_RECORDINGS.exists():
+    VIDEOS.extend(v for v in json.loads(EXTRA_RECORDINGS.read_text()) if v.get('ready'))
+
+
 def runtime(seconds):
     return '%d:%02d' % divmod(seconds, 60)
 
