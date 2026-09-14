@@ -459,7 +459,10 @@ class Build:
                '<div class="dir-num">%02d</div><div class="dir-title">%s<span class="dir-title-text">%s</span></div>'
                '<div class="dir-status"><span class="status-tag available">AVAILABLE</span></div>'
                '<div class="dir-arrow">-&gt;</div></a>') % (url_of(sec), len(rows) + 1, tpl.FOLDER, sec_title)
-        self.put(page, text[:end] + row + text[end:])
+        # Site-wide rule: folder rows sit above file rows, so never leave the new
+        # folder appended after a single-file row.
+        from sort_academic_folder_rows import sort_folder_rows
+        self.put(page, sort_folder_rows(text[:end] + row + text[end:])[0])
 
     # -- sidebar JSON --------------------------------------------------------- #
     def set_children(self, parent_url, entries, keep_labels=False, merge=False):
