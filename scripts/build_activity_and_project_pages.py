@@ -31,7 +31,7 @@ TPL_URL = ('https://shoug-tech.com/academics/other-courses/english/eng103/extra-
            'assignment-1-annotated-bibliography/')
 TPL_VIEW_TITLE = 'ENG103 // Group Work Log & Deadlines'
 TPL_VIEW_URL = TPL_URL + 'group-work-log/'
-TPL_VIEW_PDF = '../assignment-1-group-work-log-and-deadlines.pdf'
+TPL_VIEW_PDF = './assignment-1-group-work-log-and-deadlines.pdf'
 
 SITE = 'https://shoug-tech.com'
 ARROW = ('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" '
@@ -234,7 +234,7 @@ def build_se423_project():
     viewer_page(
         base + 'description/', 'se423', 'PROJECT // STUDY MATERIAL', 'Project Description',
         se423_trail(('Project', base), ('Project Description', None)),
-        '../project-description.pdf', base)
+        './project-description.pdf', base)
 
     entries, viewers = [], []
     for label, slug, kind in SCENARIOS:
@@ -253,7 +253,7 @@ def build_se423_project():
         viewer_page(
             base + 'scenario/' + slug + '/', 'se423', 'PROJECT // SCENARIO', label,
             se423_trail(('Project', base), ('Scenario', base + 'scenario/'), (label, None)),
-            '../%s.pdf' % slug, base + 'scenario/')
+            './%s.pdf' % slug, base + 'scenario/')
 
 
 def main():

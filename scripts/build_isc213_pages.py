@@ -54,11 +54,11 @@ SECTIONS = {
     'extra-resources': [
         ('01-cheat-sheet-1', 'Cheat Sheet 1', 'ورقة المراجعة ١'),
         ('02-cheat-sheet-2', 'Cheat Sheet 2', 'ورقة المراجعة ٢'),
-        ('03-mindmap', 'Mindmap', 'الخريطة الذهنية'),
+        ('03-mindmap', 'Mindmaps', 'الخرائط الذهنية'),
     ],
     'exams': [
-        ('01-exam-1', 'Exam 1', 'الاختبار الأول'),
-        ('02-exam-2', 'Exam 2', 'الاختبار الثاني'),
+        *[(f'lesson-{n}', f'Lecture {n} Comprehensive Exam', f'اختبار شامل للمحاضرة {n}') for n in range(1, 5)],
+        ('01-midterm-1', 'Midterm 1', 'الاختبار الفصلي الأول'),
         ('03-final-exam', 'Final Exam', 'الاختبار النهائي'),
     ],
 }
@@ -73,8 +73,8 @@ EMBED = {
         '03-mindmap': './mindmap.html',
     },
     'exams': {
-        '01-exam-1': './exam-1.html',
-        '02-exam-2': './exam-2.html',
+        '01-midterm-1': './midterm-1.html',
+        **{f'lesson-{n}': f'./lesson-{n}.html' for n in range(1, 5)},
         '03-final-exam': './final-exam.html',
     },
 }
@@ -196,14 +196,29 @@ def reorder_nav(html, nav_class, item_class):
     return html[:start] + indent + indent.join(sorted(links, key=rank)) + '\n            ' + html[end:]
 
 
+FOLDER_ICON = '<svg class="dir-folder-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-linejoin="square">\n                            <path d="M3 7a1 1 0 0 1 1-1h5l2 2h9a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7z" />\n                        </svg>'
+FOLDER_CSS = '        .dir-title:has(.dir-folder-icon) { display: flex; align-items: center; gap: 10px; }\n        .dir-folder-icon { width: 20px; height: 20px; flex-shrink: 0; color: var(--text-tertiary); transition: color 0.15s ease; }\n        .dir-row:hover .dir-folder-icon { color: var(--brand-purple); }\n'
+
+
+EXAM_GROUP_CSS = '        .dir-group {\n            font-family: var(--font-mono);\n            font-size: 0.65rem;\n            font-weight: 500;\n            text-transform: uppercase;\n            letter-spacing: 0.16em;\n            color: var(--text-purple-bright);\n            background-color: var(--bg-void);\n            padding: 22px 40px 10px;\n            border-bottom: 1px solid var(--border-purple);\n        }\n        @media (max-width: 768px) { .dir-group { padding: 16px 16px 6px; letter-spacing: 0.12em; } }\n'
+
+
 def dir_rows(section):
     rows = []
     for n, (slug, title, title_ar) in enumerate(SECTIONS[section], start=1):
+        if section == 'exams' and slug in ('lesson-1', '03-final-exam'):
+            en, ar = (('Midterm 1 scope — Lectures 1–4', 'نطاق الاختبار الفصلي الأول — المحاضرات 1–4')
+                      if slug == 'lesson-1' else
+                      ('Final exam scope — comprehensive review', 'نطاق الاختبار النهائي — مراجعة شاملة'))
+            rows.append(f'                <div class="dir-group" data-en-text="{en}" data-ar-text="{ar}">{en}</div>')
         attrs = f' data-en-text="{title}" data-ar-text="{title_ar}"' if title_ar else ''
+        title_html = f'<div class="dir-title"{attrs}>{title}</div>'
+        if section == 'extra-resources' and slug == '03-mindmap':
+            title_html = f'<div class="dir-title">{FOLDER_ICON}<span class="dir-title-text"{attrs}>{title}</span></div>'
         rows.append(
             f'                <a href="/academics/other-courses/isc213/{section}/{slug}/" class="dir-row">\n'
             f'                    <div class="dir-num">{n:02d}</div>\n'
-            f'                    <div class="dir-title"{attrs}>{title}</div>\n'
+            f'                    {title_html}\n'
             f'                    <div class="dir-status"><span class="status-tag available">AVAILABLE</span></div>\n'
             f'                    <div class="dir-arrow">{ARROW_SVG}</div>\n'
             f'                </a>'
@@ -217,6 +232,10 @@ def dir_rows(section):
 
 def build_section_index(section):
     html = recourse(read(section, 'index.html'))
+    if section == 'exams':
+        html = html.replace('</style>', EXAM_GROUP_CSS + '</style>', 1)
+    if section == 'extra-resources':
+        html = html.replace('</style>', FOLDER_CSS + '</style>', 1)
     rows = re.compile(
         r'(<div class="dir-header">.*?</div>\s*)'      # header row
         r'(?:<a href="[^"]*" class="dir-row">.*?</a>\s*)+',
@@ -277,13 +296,15 @@ def build_slide_wrapper(idx, slug, title):
 def build_embed_wrapper(section, idx, slug, title, title_ar):
     template_dir = {'slide-breakdowns': '01-midterm-1',
                     'extra-resources': '04-mindmap',
-                    'exams': '01-exam-1'}[section]
-    html = recourse(read(section, template_dir, 'index.html'))
+                    'exams': '01-exam-1', 'extra-resources/03-mindmap': '04-mindmap'}[section]
+    html = recourse(read('extra-resources' if section == 'extra-resources/03-mindmap' else section, template_dir, 'index.html'))
     old_slug = template_dir
     old_title = {'01-midterm-1': 'Midterm 1', '04-mindmap': 'Mindmap', '01-exam-1': 'Exam 1'}[old_slug]
     old_ar = {'01-midterm-1': '', '04-mindmap': 'الخريطة الذهنية', '01-exam-1': 'الاختبار الأول'}[old_slug]
 
     html = html.replace(f'/{old_slug}/', f'/{slug}/')
+    if section == 'extra-resources/03-mindmap':
+        html = html.replace(f'/extra-resources/{slug}/', f'/{section}/{slug}/')
     if old_ar:
         html = html.replace(old_ar, title_ar or title)
     html = html.replace(old_title, title)
@@ -372,6 +393,35 @@ def build_overview():
     write('index.html', html)
 
 
+
+def build_mindmap_directory():
+    section = 'extra-resources/03-mindmap'
+    SECTIONS[section] = [(f'0{n}-lecture-{n}', f'Lecture {n} Mindmap', f'خريطة المحاضرة {n}') for n in range(1, 5)]
+    EMBED[section] = {f'0{n}-lecture-{n}': f'./lecture-{n}.html' for n in range(1, 5)}
+    with open(os.path.join(DST, 'extra-resources/index.html'), encoding='utf-8') as fh:
+        page = fh.read()
+    page = re.sub(r'<a href="[^"]*" class="dir-row">.*?</a>\s*', '', page, flags=re.S)
+    # Insert the lesson rows immediately after the directory header.
+    page = re.sub(r'(<div class="dir-header">.*?</div>)', lambda m: m.group(1) + '\n' + dir_rows(section), page, count=1, flags=re.S)
+    page = page.replace('Extra Resources', 'Lesson Mindmaps').replace('الموارد الإضافية', 'الخرائط الذهنية للمحاضرات')
+    page = page.replace('https://shoug-tech.com/academics/other-courses/isc213/extra-resources/', 'https://shoug-tech.com/academics/other-courses/isc213/extra-resources/03-mindmap/')
+    write(section + '/index.html', '\n'.join(line.rstrip() for line in page.splitlines()) + '\n')
+    for idx, (slug, title, ar) in enumerate(SECTIONS[section]):
+        build_embed_wrapper(section, idx, slug, title, ar)
+
+
+def build_legacy_redirects():
+    for old, target in {
+        'exams/01-exam-1/index.html': 'exams/01-midterm-1/',
+        'exams/01-exam-1/exam-1.html': 'exams/01-midterm-1/',
+        'exams/02-exam-2/index.html': 'exams/01-midterm-1/',
+        'exams/02-exam-2/exam-2.html': 'exams/01-midterm-1/',
+        'extra-resources/03-mindmap/mindmap.html': 'extra-resources/03-mindmap/',
+    }.items():
+        url = '/academics/other-courses/isc213/' + target
+        write(old, f'<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>ISC213 — Resource moved</title><meta http-equiv="refresh" content="0;url={url}"><link rel="canonical" href="https://shoug-tech.com{url}"></head><body><p>This resource has moved. <a href="{url}">Open the updated resource</a>.</p></body></html>')
+
+
 def main():
     build_overview()
     for section in ('slide-breakdowns', 'slides', 'extra-resources', 'exams'):
@@ -380,7 +430,11 @@ def main():
         build_slide_wrapper(idx, slug, title)
     for section in ('slide-breakdowns', 'extra-resources', 'exams'):
         for idx, (slug, title, title_ar) in enumerate(SECTIONS[section]):
+            if section == 'extra-resources' and slug == '03-mindmap':
+                continue
             build_embed_wrapper(section, idx, slug, title, title_ar)
+    build_mindmap_directory()
+    build_legacy_redirects()
 
 
 if __name__ == '__main__':

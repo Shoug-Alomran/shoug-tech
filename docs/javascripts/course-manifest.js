@@ -1028,7 +1028,7 @@ var COURSE_PAGES = [
     "courseTitle": "CS331 // Data Communications and Computer Networks"
   },
   {
-    "url": "/academics/computer-science/cs331/extra-resources/summary/01-quiz-2-cheat-sheet/",
+    "url": "/academics/computer-science/cs331/extra-resources/quiz-2-cheat-sheet/",
     "title": "CS331 | Quiz 2 Cheat Sheet",
     "track": "computer-science",
     "course": "cs331",
@@ -1037,8 +1037,8 @@ var COURSE_PAGES = [
     "courseTitle": "CS331 // Data Communications and Computer Networks"
   },
   {
-    "url": "/academics/computer-science/cs331/extra-resources/summary/01-summary/",
-    "title": "CS331 | Summary",
+    "url": "/academics/computer-science/cs331/extra-resources/summary/",
+    "title": "CS331 | Course Summary",
     "track": "computer-science",
     "course": "cs331",
     "section": "extra-resources",

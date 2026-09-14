@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Render the ISC213 standalone study pages.
 
-Emits two cheat sheets, one mindmap, and three practice exams into
+Emits two cheat sheets, four lesson mindmaps, and six practice exams into
 docs/academics/other-courses/isc213/. Each page is a single self-contained file
 in the same visual language as the lecture slide-breakdowns, sharing
 docs/styles/isc213.css so the course reads as one design.
@@ -16,6 +16,7 @@ Usage:
 import html
 import json
 import os
+import re
 
 import isc213_content as C
 
@@ -31,9 +32,6 @@ OG_IMAGE = f'{SITE}/assets/og-banner.png'
 WRAPPER = {
     'extra-resources/01-cheat-sheet-1/cheat-sheet-1.html': 'extra-resources/01-cheat-sheet-1/',
     'extra-resources/02-cheat-sheet-2/cheat-sheet-2.html': 'extra-resources/02-cheat-sheet-2/',
-    'extra-resources/03-mindmap/mindmap.html': 'extra-resources/03-mindmap/',
-    'exams/01-exam-1/exam-1.html': 'exams/01-exam-1/',
-    'exams/02-exam-2/exam-2.html': 'exams/02-exam-2/',
     'exams/03-final-exam/final-exam.html': 'exams/03-final-exam/',
 }
 
@@ -180,7 +178,7 @@ MAP_JS = '''
 
 def head_meta(out_rel, page_title, description):
     """Favicons, canonical, social cards, hreflang and analytics for one page."""
-    url = SITE + '/academics/other-courses/isc213/' + WRAPPER[out_rel]
+    url = SITE + '/academics/other-courses/isc213/' + WRAPPER.get(out_rel, out_rel.rsplit('/', 1)[0] + '/')
     name = plain(page_title)
     jsonld = json.dumps({
         '@context': 'https://schema.org', '@type': 'WebPage', 'url': url,
@@ -341,34 +339,66 @@ def render_nodes(children, depth=0):
     return '<ul class="node-list">' + ''.join(items) + '</ul>'
 
 
-def build_mindmap(out_rel):
-    branches = []
-    toc = []
-    for n, (label, note, children) in enumerate(C.MINDMAP, start=1):
-        branch_id = f'b{n}'
-        toc.append({'id': branch_id, 'toc': label})
-        branches.append(f'''<details class="map-branch" id="{branch_id}" open>
-  <summary><span class="branch-num">{n:02d}</span> {label}
-    <span class="branch-count">{count_nodes(children)} nodes</span></summary>
-  <div class="map-body">
-    <p>{note}</p>
-    {render_nodes(children)}
-  </div>
-</details>''')
-
-    body = ('<div class="map-controls">'
-            '<button class="pill-btn" type="button" id="expandAll">Expand all</button>'
-            '<button class="pill-btn" type="button" id="collapseAll">Collapse all</button>'
-            '</div>\n' + '\n'.join(branches))
-
-    page = shell(
-        C.MINDMAP_META,
-        {'toc': toc, 'body': body},
-        THEME_JS + MAP_JS,
-        'ISC213 \u00b7 Course Mindmap',
-        'ISC213 Islamic Financial Transactions — a collapsible mindmap of Lectures 1 to 4.',
-        out_rel)
+def build_mindmap(n, out_rel):
+    """Reuse ETHCS303's interactive canvas, details panel and print layout."""
+    template = os.path.join(REPO, 'docs/academics/other-courses/ethcs303/extra-resources/mindmap/03-utilitarianism/utilitarianism.html')
+    with open(template, encoding='utf-8') as fh:
+        page = fh.read()
+    def node(item, key):
+        label, note, children = item
+        result = {'id': key, 'label': html.unescape(label),
+                  'desc': '<p>' + note + '</p>'}
+        if children:
+            result['children'] = [node(child, f'{key}-{i}') for i, child in enumerate(children)]
+        return result
+    data = node(C.MINDMAP[n - 1], 'root')
+    title = f'ISC213 — Lecture {n} Mindmap'
+    description = f'Interactive mindmap for ISC213 Lecture {n}: ' + html.unescape(C.MINDMAP[n - 1][1])
+    start = page.index('        const DATA = {')
+    end = page.index('\n        // ', start)
+    page = page[:start] + '        const DATA = ' + json.dumps(data, ensure_ascii=False) + ';\n' + page[end:]
+    start = page.index('    <meta name="description"')
+    end = page.index('</head>', start)
+    page = page[:start] + head_meta(out_rel, title, plain(description)) + '\n<meta name="description" content="' + plain(description) + '">\n' + page[end:]
+    page = page.replace('Utilitarianism — Mindmap', title)
+    page = page.replace('Moral Systems, Ethical Concepts & Theories — Utilitarianism', f'ISC213 — Lecture {n}')
     write(out_rel, page)
+
+
+def exam_meta(title, scope, mcq, written):
+    return {'title': title, 'h1': title, 'brand_sub': scope + ' · Practice exam',
+            'scope': scope,
+            'lede': f'{len(mcq)} multiple-choice questions and {len(written)} written questions covering {scope}. Try each question before revealing its explanation or model answer. Based on the course materials.',
+            'meta': [(str(len(mcq)), 'multiple choice'), (str(len(written)), 'written questions'), (scope, 'coverage')]}
+
+
+def lesson_questions(n):
+    # Every existing single-lesson question is retained, including final-bank items.
+    mcq = [q for q in C.EXAM_1_MCQ + C.EXAM_2_MCQ + C.FINAL_EXTRA_MCQ if re.match(rf'^L{n} ·', q[1])]
+    written = [q for q in C.EXAM_1_WRITTEN + C.EXAM_2_WRITTEN + C.FINAL_EXTRA_WRITTEN if re.match(rf'^L{n} ·', q[1])]
+    # A structured written question for every teaching block closes coverage gaps.
+    prompts = {
+        1: ['Define transactions, finance and contemporary, then classify sale, waqf, debt forgiveness and mortgage.',
+            'Explain all four cases included in contemporary financial transactions, with an example distinguishing a changed procedure from a changed name.',
+            'Name the four relevant terms used for newly emerged issues requiring a ruling.',
+            'Explain the four characteristics of financial transactions, their evidence, and the contrast with acts of worship.'],
+        2: ['Define ijtihad and explain all nine qualifications of a researcher, including character and practical knowledge.',
+            'List the eight steps to reaching a ruling in order. Explain when personal opinion is considered and what to do if no legitimate ruling is reached.',
+            'Define a right and reconstruct its classification from political and civil rights down to family and financial rights, giving examples.',
+            'Compare personal, material and incorporeal financial rights. Classify a debt owed, land ownership and an innovation, explaining each choice.'],
+        3: ['Define incorporeal rights and explain why they qualify as property in fiqh. Name the three forms and the dates given in the lecture.',
+            'Explain who counts as an author, the role of a publisher for anonymous work, and what counts as a creative contribution. Compare literary and financial rights and explain the four reasons for recognition.',
+            'Explain patent rights, disclosure, duration and registration. Distinguish all four certificate types and explain the three reasons for recognition.',
+            'Explain the components of a trade name, the functions of a trademark, the two owner rights and the reasons and condition for recognition.'],
+        4: ['Define insurance linguistically and technically and explain its original purpose and later development.',
+            'Explain collaborative insurance, its evidence, three historical forms and three modern systems, with the ruling for each.',
+            'Describe the emergence of commercial insurance, its five elements, all five risk conditions and its three types.',
+            'Explain gharar, gambling and both forms of riba in commercial insurance, then discuss each of the three exceptions with its limits.',
+            'Compare commercial and collaborative insurance in contract, purpose, risk, ownership of surplus and Shariah ruling.']}
+    sections = [s for s in C.CHEAT_1_SECTIONS + C.CHEAT_2_SECTIONS if s['tag'].startswith(f'Lecture {n} ·')]
+    assert len(sections) == len(prompts[n])
+    written += [(q, s['tag'].replace(f'Lecture {n}', f'L{n}'), s['body']) for q, s in zip(prompts[n], sections)]
+    return mcq, written
 
 
 # --------------------------------------------------------------------------- #
@@ -430,9 +460,15 @@ def main():
                       'extra-resources/01-cheat-sheet-1/cheat-sheet-1.html')
     build_cheat_sheet(C.CHEAT_2_META, C.CHEAT_2_SECTIONS, C.CHEAT_2_FLASH,
                       'extra-resources/02-cheat-sheet-2/cheat-sheet-2.html')
-    build_mindmap('extra-resources/03-mindmap/mindmap.html')
-    build_exam(C.EXAM_1_META, C.EXAM_1_MCQ, C.EXAM_1_WRITTEN, 'exams/01-exam-1/exam-1.html')
-    build_exam(C.EXAM_2_META, C.EXAM_2_MCQ, C.EXAM_2_WRITTEN, 'exams/02-exam-2/exam-2.html')
+    for n in range(1, 5):
+        build_mindmap(n, f'extra-resources/03-mindmap/0{n}-lecture-{n}/lecture-{n}.html')
+        mcq, written = lesson_questions(n)
+        build_exam(exam_meta(f'Lecture {n} Comprehensive Exam', f'Lecture {n}', mcq, written),
+                   mcq, written, f'exams/lesson-{n}/lesson-{n}.html')
+    mcq = C.EXAM_1_MCQ + C.EXAM_2_MCQ
+    written = C.EXAM_1_WRITTEN + C.EXAM_2_WRITTEN
+    build_exam(exam_meta('Midterm 1', 'Lectures 1–4', mcq, written), mcq, written,
+               'exams/01-midterm-1/midterm-1.html')
 
     # The final samples both halves evenly, then adds its own synthesis items.
     final_mcq = (C.EXAM_1_MCQ[::2] + C.EXAM_2_MCQ[::2] + C.FINAL_EXTRA_MCQ)

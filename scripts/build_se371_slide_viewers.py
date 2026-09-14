@@ -60,8 +60,8 @@ def build_viewer(template: str, number: str, title: str, pdf: str) -> str:
     page = page.replace('<div class="type-label" data-en-text="SLIDES" data-ar-text="الشرائح">SLIDES</div>', f'<div class="type-label">CHAPTER {number} // {html.escape(title)}</div>', 1)
     viewer = (
         f'<section class="slide-viewer-shell" aria-label="Chapter {number}: {html.escape(title)} slide viewer">{UNIVERSITY_CREDIT}'
-        f'<div class="slide-actions"><a class="slide-open-link" href="../{pdf}" target="_blank" rel="noopener">OPEN PDF ↗</a></div>'
-        f'<iframe class="pdf-frame" src="../{pdf}#view=FitH" title="Chapter {number}: {html.escape(title)} slides"></iframe></section>'
+        f'<div class="slide-actions"><a class="slide-open-link" href="./{pdf}" target="_blank" rel="noopener">OPEN PDF ↗</a></div>'
+        f'<iframe class="pdf-frame" src="./{pdf}#view=FitH" title="Chapter {number}: {html.escape(title)} slides"></iframe></section>'
     )
     return replace_page_content(page, viewer)
 
@@ -76,7 +76,7 @@ def main() -> None:
         template = template.replace("</head>", f"{EXTRA_STYLES}</head>")
     index_path.write_text(build_index(template), encoding="utf-8")
     for number, title, pdf in LECTURES:
-        if not (SLIDES / pdf).is_file():
+        if not (SLIDES / pdf.removesuffix(".pdf") / pdf).is_file():
             raise FileNotFoundError(SLIDES / pdf)
         folder = SLIDES / pdf.removesuffix(".pdf")
         folder.mkdir(exist_ok=True)

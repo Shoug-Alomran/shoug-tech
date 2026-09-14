@@ -397,6 +397,15 @@ class Build:
         """Listing page for solved/, unsolved/ or a nested folder, plus its viewers."""
         files, dirs = content_files(folder, self.allowed)
         url = url_of(folder)
+        # A dedicated viewer now owns its PDF; keep it a viewer on rebuild.
+        index = os.path.join(folder, 'index.html')
+        if os.path.isfile(index):
+            match = PDF_SRC_RE.search(read(index))
+            if match:
+                from urllib.parse import unquote
+                local_pdf = os.path.normpath(os.path.join(folder, unquote(match.group(1))))
+                if os.path.dirname(local_pdf) == os.path.normpath(folder) and os.path.isfile(local_pdf):
+                    return
         taken = {os.path.basename(d).lower() for d in dirs}
         rows, sidebar_rows, viewers = [], [], set()
 
