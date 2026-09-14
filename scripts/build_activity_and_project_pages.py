@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Render the SE322/SE423 Activity folders and the SE423 Project folder.
+"""Render the SE423 Project folder, and hold the shared ENG103 page templates.
 
-Both courses ship raw course files (docx/pdf/png) that need the standard
-directory pages around them: an "Activity" folder that opens into "Solved" and
-"Unsolved", and for SE423 a "Project" folder holding the project description and
-a "Scenario" sub-folder.
+Activity / Labs / Tutorials folders (anything with solved/ and unsolved/) are
+built from the files on disk by scripts/embed_resources.py, which imports the
+template helpers below. This script only renders the SE423 "Project" folder:
+the project description and its "Scenario" sub-folder.
 
 The pages are stamped from the ENG103 study-material templates, which are the
 smallest self-contained listing/viewer pages on the site. The sidebar stamped in
@@ -197,45 +197,6 @@ def se423_trail(*tail):
     return trail + list(tail)
 
 
-def build_se322():
-    base = SE322 + 'extra-resources/activity/'
-
-    listing_page(
-        base, 'se322', 'SE322', 'Activity',
-        se322_trail(('Activity', None)),
-        rows([('Solved', './solved/', '1 FOLDER', 'available', True, False),
-              ('Unsolved', './unsolved/', '2 FILES', 'available', True, False)]),
-        'SE322 | Activity')
-
-    # Solved keeps one folder per activity, so later solutions just drop in beside it.
-    listing_page(
-        base + 'solved/', 'se322', 'SE322', 'Activity // Solved',
-        se322_trail(('Activity', base), ('Solved', None)),
-        rows([('Activity 3', './activity-3/', '3 FILES', 'available', True, False)]),
-        'SE322 | Activity: Solved')
-
-    listing_page(
-        base + 'solved/activity-3/', 'se322', 'SE322', 'Activity // Solved // Activity 3',
-        se322_trail(('Activity', base), ('Solved', base + 'solved/'), ('Activity 3', None)),
-        rows([('UML and Tools Workshop', './uml-and-tools-workshop/', 'PDF', 'pdf', False, False),
-              ('Use Case Diagram', './activity-3-use-case-diagram.png', 'PNG', 'png', False, True),
-              ('Class Diagram', './activity-3-class-diagram.png', 'PNG', 'png', False, True)]),
-        'SE322 | Activity 3: Solved')
-
-    listing_page(
-        base + 'unsolved/', 'se322', 'SE322', 'Activity // Unsolved',
-        se322_trail(('Activity', base), ('Unsolved', None)),
-        rows([('Activity 2: Modularization', './activity-2.docx', 'DOCX', 'docx', False, True),
-              ('Activity 3: UML and Tools Workshop', './activity-3.docx', 'DOCX', 'docx', False, True)]),
-        'SE322 | Activity: Unsolved')
-
-    viewer_page(
-        base + 'solved/activity-3/uml-and-tools-workshop/', 'se322',
-        'SOLVED // ACTIVITY 3', 'UML and Tools Workshop',
-        se322_trail(('Activity', base), ('Solved', base + 'solved/'),
-                    ('Activity 3', base + 'solved/activity-3/'), ('UML and Tools Workshop', None)),
-        '../activity-3-uml-and-tools-workshop.pdf', base + 'solved/activity-3/')
-
 
 SCENARIOS = [
     ('Scenario 1: CRM Rewrite', 'scenario-01-crm-rewrite', 'pdf'),
@@ -258,49 +219,6 @@ SCENARIOS = [
      'scenario-11-national-employment-and-skill-matching-platform', 'docx'),
 ]
 
-
-def build_se423_activity():
-    base = SE423 + 'extra-resources/activity/'
-
-    listing_page(
-        base, 'se423', 'SE423', 'Activity',
-        se423_trail(('Activity', None)),
-        rows([('Solved', './solved/', '2 FILES', 'available', True, False),
-              ('Unsolved', './unsolved/', '1 FILE, 1 FOLDER', 'available', True, False)]),
-        'SE423 | Activity')
-
-    listing_page(
-        base + 'solved/', 'se423', 'SE423', 'Activity // Solved',
-        se423_trail(('Activity', base), ('Solved', None)),
-        rows([('Activity 2', './activity-2.pdf', 'PDF', 'pdf', False, True),
-              ('Activity 4', './activity-4/', 'PDF', 'pdf', False, False)]),
-        'SE423 | Activity: Solved')
-
-    viewer_page(
-        base + 'solved/activity-4/', 'se423', 'ACTIVITY // SOLVED', 'Activity 4',
-        se423_trail(('Activity', base), ('Solved', base + 'solved/'), ('Activity 4', None)),
-        '../activity-4.pdf', base + 'solved/')
-
-    listing_page(
-        base + 'unsolved/', 'se423', 'SE423', 'Activity // Unsolved',
-        se423_trail(('Activity', base), ('Unsolved', None)),
-        rows([('Activity 2', './activity-2/', '3 FILES', 'available', True, False),
-              ('Activity 1', './Activity%201.docx', 'DOCX', 'docx', False, True)]),
-        'SE423 | Activity: Unsolved')
-
-    listing_page(
-        base + 'unsolved/activity-2/', 'se423', 'SE423',
-        'Activity // Unsolved // Activity 2',
-        se423_trail(('Activity', base), ('Unsolved', base + 'unsolved/'),
-                    ('Activity 2', None)),
-        rows([('Classic Mistakes', './activity-2-classic-mistakes.docx',
-               'DOCX', 'docx', False, True),
-              ('Case Study - Giga Safe', './activity-2-case-study-giga-safe.docx',
-               'DOCX', 'docx', False, True),
-              ('Examples of Classic Mistakes',
-               './activity-2-examples-of-classic-mistakes.docx',
-               'DOCX', 'docx', False, True)]),
-        'SE423 | Activity 2: Unsolved')
 
 
 def build_se423_project():
@@ -339,8 +257,6 @@ def build_se423_project():
 
 
 def main():
-    build_se322()
-    build_se423_activity()
     build_se423_project()
 
 

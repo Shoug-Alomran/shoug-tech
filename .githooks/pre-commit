@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+# Auto-embed course resource files (activities, labs, tutorials) on commit.
+#
+# When the commit adds, removes or renames anything under an
+# extra-resources/<section>/{solved,unsolved}/ folder, rebuild that section's
+# listing pages, PDF viewers, Study Material row and sidebar entries, and add
+# exactly those generated files to the commit.
+#
+# Enable once per clone:   git config core.hooksPath .githooks
+# Skip for one commit:     git commit --no-verify
+set -euo pipefail
+
+cd "$(git rev-parse --show-toplevel)"
+
+touched=$(git diff --cached --name-only --diff-filter=ADR -- \
+    'docs/academics/*/*/extra-resources/*/solved/*' \
+    'docs/academics/*/*/extra-resources/*/unsolved/*' \
+    | grep -v -e '/index\.html$' -e '\.DS_Store$' || true)
+
+[ -z "$touched" ] && exit 0
+
+echo "pre-commit: new or removed resource files detected — embedding them"
+list=$(mktemp)
+trap 'rm -f "$list"' EXIT
+
+python3 scripts/embed_resources.py --from-index --changed-list "$list"
+
+if [ -s "$list" ]; then
+    # -A so removed viewer folders are staged as deletions too
+    tr '\n' '\0' < "$list" | xargs -0 git add -A --
+    echo "pre-commit: staged $(wc -l < "$list" | tr -d ' ') generated path(s)"
+fi

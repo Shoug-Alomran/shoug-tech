@@ -19,7 +19,7 @@
 
   function progressUrl() {
     var path = window.location.pathname;
-    if (path === "/academics/other-courses/stat101/viewer/" && window.location.search) {
+    if (path === "/academics/math/stat101/viewer/" && window.location.search) {
       return path + "?" + new URLSearchParams(window.location.search).toString();
     }
     return path;
@@ -55,7 +55,7 @@
     // For academics pages only show on actual leaf content pages, not listing/overview pages.
     // Content pages have 5+ segments: /academics/track/course/section/page/
     if (path.indexOf("/academics/") === 0) {
-      if (path === "/academics/other-courses/stat101/viewer/") {
+      if (path === "/academics/math/stat101/viewer/") {
         var viewerParams = new URLSearchParams(window.location.search);
         var viewerSection = (viewerParams.get("section") || "").toUpperCase();
         var viewerSource = viewerParams.get("src") || "";
@@ -1035,7 +1035,8 @@
         .then(function (snap) {
           var seen = {};
           snap.forEach(function (doc) {
-            var url = (doc.data().url || "").replace(/^\/+/, "");
+            var url = (doc.data().url || "").replace(/^\/+/, "")
+              .replace(/other-courses(\/|%2F)stat101/gi, "math$1stat101"); // moved 2026-07-30
             var parts = url.split("/").filter(Boolean);
             if (parts.length >= 3) seen[parts[0] + "/" + parts[1] + "/" + parts[2]] = true;
           });

@@ -311,6 +311,9 @@ def build(check_only=False):
                 fh.write(html[:match.start()] + nav + html[match.end():])
     verb = 'would update' if check_only else 'updated'
     print('%s %d page(s); %d page(s) have no sidebar' % (verb, len(changed), len(skipped)))
+    if check_only:
+        for path in changed:
+            print('stale: ' + path)
     return 1 if (check_only and changed) else 0
 
 

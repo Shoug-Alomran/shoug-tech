@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import os
 import subprocess
 import sys
 import re
@@ -195,6 +196,10 @@ def main() -> int:
         return 1
 
     tracked = git_tracked_paths()
+    # Pages created mid-session are uncommitted by design. The Claude Stop hook
+    # sets this so only real breaks block; CI leaves it unset and still checks.
+    if os.environ.get("SITE_LINKS_IGNORE_UNTRACKED"):
+        tracked = None
     parsed = {path: parse_html(path) for path in html_files()}
     anchors_by_file = {path: parser.anchors for path, parser in parsed.items()}
     failures: list[str] = []
