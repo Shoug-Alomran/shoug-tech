@@ -140,8 +140,74 @@ def viewer_page(ch, ref: str, hrefs: list[str], index: int) -> str:
 
 def section_html(number: int, kicker: str, title: str, body: str) -> str:
     grad = ["ga", "gb", "gc", "gd"][(number - 1) % 4]
-    return (f'      <section>\n        <div class="section-header">\n          <span class="sec-num">{number:02d} / {kicker}</span>\n'
+    return (f'      <section id="s-{number:02d}">\n        <div class="section-header">\n          <span class="sec-num">{number:02d} / {kicker}</span>\n'
             f'          <div class="sec-line"></div>\n        </div>\n        <h2 class="{grad}">{title}</h2>\n        {body}\n      </section>\n')
+
+
+def header_bar(ch, titles: list[str]) -> str:
+    """Sticky page header: contents menu, page search slot and theme toggle.
+
+    html-theme-sync.js mounts its page search into [data-page-search-host];
+    study-guide.js highlights the section in view in the contents menu.
+    """
+    from cys403_study.blocks import plain
+    links = "".join(f'<li><a href="#s-{i:02d}"><span class="bdx-toc-num">{i:02d}</span>{esc(plain(t))}</a></li>'
+                    for i, t in enumerate(titles, 1))
+    return ('    <header class="bdx-bar">\n      <div class="bdx-bar-inner">\n'
+            f'        <a class="bdx-bar-title" href="#top">CYS403 <span>Chapter {ch.NUMBER}</span></a>\n'
+            '        <nav class="bdx-toc" aria-label="Contents">\n'
+            '          <button type="button" class="bdx-toc-toggle" aria-expanded="false" aria-controls="bdx-toc-list">'
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">'
+            '<path d="M4 6h16M4 12h10M4 18h13"/></svg><span>Contents</span>'
+            f'<span class="bdx-toc-count">01 / {len(titles):02d}</span></button>\n'
+            f'          <ol class="bdx-toc-list" id="bdx-toc-list">{links}</ol>\n        </nav>\n'
+            '        <div class="bdx-bar-search" data-page-search-host></div>\n'
+            '        <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">'
+            '<span class="toggle-icon" id="toggle-icon"></span><span id="toggle-label">Light Mode</span></button>\n'
+            '      </div>\n    </header>\n')
+
+
+def figures_by_section(ch) -> dict[int, list[str]]:
+    """Slide diagrams from cys403_study/figures.py as figure blocks, keyed by section number."""
+    from PIL import Image
+    from cys403_study.blocks import figure
+    from cys403_study.figures import FIGURES, image_name
+    folder = BASE / "slide-breakdowns" / breakdown_folder(ch) / "figures"
+    out: dict[int, list[str]] = {}
+    for page, _box, section, caption in FIGURES.get(ch.NUMBER, []):
+        if not 1 <= section <= len(ch.SECTIONS):
+            raise SystemExit(f"figures.py: chapter {ch.NUMBER} slide {page} points at missing section {section}")
+        path = folder / image_name(page)
+        if not path.exists():
+            raise SystemExit(f"{path.relative_to(ROOT)} missing: run scripts/extract_cys403_figures.py")
+        with Image.open(path) as im:
+            width, height = im.size
+        out.setdefault(section, []).append(figure(f"figures/{image_name(page)}", caption, width, height, page))
+    return out
+
+
+def with_figures(blocks: list[str], figures: list[str]) -> list[str]:
+    """Place figures after a section's teaching content, ahead of its closing tips and memory tricks."""
+    at = len(blocks)
+    while at > 1 and blocks[at - 1].startswith(('<div class="tip ', '<div class="mnemonic')):
+        at -= 1
+    return blocks[:at] + figures + blocks[at:]
+
+
+def flashcard_deck(rows: list[list[str]]) -> str:
+    """Flip cards built from the quick-reference table: topic on the front, key point on the back."""
+    from cys403_study.blocks import plain
+    cards = "".join(
+        f'<button type="button" class="bdx-card" aria-pressed="false" style="--bdx-i:{i % 8}">'
+        f'<span class="bdx-card-inner"><span class="bdx-card-face bdx-front"><span class="bdx-card-kicker">Card {i + 1:02d}</span>'
+        f'<span class="bdx-card-topic">{esc(plain(topic))}</span><span class="bdx-card-hint">Tap to reveal</span></span>'
+        f'<span class="bdx-card-face bdx-back">{esc(plain(point))}</span></span></button>'
+        for i, (topic, point) in enumerate(rows))
+    return ('<p>Say the answer out loud, then flip the card to check. Shuffle the deck to test yourself in a new order.</p>'
+            '<div class="bdx-deck-bar"><button type="button" class="bdx-shuffle">'
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">'
+            '<path d="M16 3h5v5M4 20 21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg>Shuffle deck</button></div>'
+            f'<div class="bdx-deck">{cards}</div>')
 
 
 def breakdown_page(ch, ref: str) -> str:
@@ -167,20 +233,25 @@ def breakdown_page(ch, ref: str) -> str:
 
     chips = "".join(f'<span class="chip chip-{ACCENTS[i % 6]}">{c}</span>' for i, c in enumerate(ch.CHIPS))
     body = [
-        '  <body>\n    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">'
-        '<span class="toggle-icon" id="toggle-icon"></span><span id="toggle-label">Light Mode</span></button>\n',
+        '  <body id="top">\n',
         f'    <div class="hero">\n      <div class="hero-grid"></div>\n      <div class="hero-badge"><span class="badge-dot"></span>CYS403 · Chapter {ch.NUMBER}</div>\n'
         f'      <h1>{ch.HOOK}<br /><span class="gradient-word">{ch.GRADIENT}</span></h1>\n      <p class="hero-sub">{ch.SUB}</p>\n'
         f'      <div class="hero-chips">{chips}</div>\n      <div class="scroll-hint">scroll ↓</div>\n    </div>\n\n    <main>\n',
     ]
+    extra_titles = ["Exam Tips &amp; Tricks", "Flashcards — Test Yourself", "Quick Reference — Everything at a Glance"]
+    body.insert(1, header_bar(ch, [heading for _k, heading, _b in ch.SECTIONS] + extra_titles))
+    figures = figures_by_section(ch)
     number = 0
     for number, (kicker, heading, blocks) in enumerate(ch.SECTIONS, 1):
-        body.append(section_html(number, kicker, heading, "".join(blocks)))
+        body.append(section_html(number, kicker, heading, "".join(with_figures(list(blocks), figures.get(number, [])))))
     kinds = ["info", "good", "exam", "warn"]
     from cys403_study.blocks import tip, table
     tips = '<div class="grid2">' + "".join(tip(kinds[i % 4], t, d) for i, (t, d) in enumerate(ch.TIPS)) + "</div>"
-    body.append(section_html(number + 1, "Exam Prep", "Exam Tips &amp; Tricks", tips))
-    body.append(section_html(number + 2, "Cheat Sheet", "Quick Reference — Everything at a Glance", table(["Topic", "Key Point"], *ch.QUICK)))
+    body.append(section_html(number + 1, "Exam Prep", extra_titles[0], tips))
+    body.append(section_html(number + 2, "Self-Test", extra_titles[1], flashcard_deck(ch.QUICK)))
+    body.append(section_html(number + 3, "Cheat Sheet", extra_titles[2], table(["Topic", "Key Point"], *ch.QUICK)))
+    head += '    <link rel="stylesheet" href="/styles/study-guide.css" />\n  '
+    tail = swap(tail, "</body>", '    <script src="/javascripts/study-guide.js" defer></script>\n  </body>')
     body.append(f'    </main>\n\n    <footer>\n      <div class="footer-name">Made by Shoug Alomran</div>\n'
                 f'      <div class="footer-sub">CYS403 · Chapter {ch.NUMBER}: {esc(ch.TITLE)} · Study Guide</div>\n    </footer>\n\n    ')
     return head + "</head>\n\n" + "".join(body) + tail
@@ -326,12 +397,15 @@ def move_active_tab(text: str, old: str, new: str) -> str:
 
 
 def update_sidebar(groups: dict[str, list[dict]]) -> None:
+    # Nested item lists belong in "children"; build_academic_sidebar.py ignores them under "sections"
+    # (which only holds each course's own section list), so the chapters never showed in the sidebar.
     raw = SIDEBAR.read_text()
     data = json.loads(raw)
-    parent = maps_core.find_parent(data, f"{URL}/")
-    if parent is None:
+    if f"{URL}/" not in data["sections"]:
         raise SystemExit(f"{URL}/ not found in {SIDEBAR.name}")
-    parent.update(groups)
+    for key in groups:
+        data["sections"].pop(key, None)
+    data["children"].update(groups)
     indent = re.match(r"[{\[]\n( +)", raw)
     out = json.dumps(data, indent=len(indent.group(1)) if indent else 2, ensure_ascii="\\u0" in raw)
     SIDEBAR.write_text(out + ("\n" if raw.endswith("\n") else ""))
