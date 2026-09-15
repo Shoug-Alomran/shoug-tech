@@ -174,6 +174,8 @@ def build_course(code: str):
     from fix_academic_sidebar_links import fix_page
     for page in [maps / "index.html", exams / "index.html", *maps.glob("*/index.html"), *exams.glob("*/index.html")]:
         fix_page(page)
+    from apply_cyber_red_theme import apply_tree
+    apply_tree([base])
     print(code.upper(), len(chapters), "chapters")
 
 

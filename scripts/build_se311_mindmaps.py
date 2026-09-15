@@ -101,14 +101,16 @@ def chapter_data(ch) -> dict:
     return {"id": "root", "label": ch.TITLE, "children": branches}
 
 
-def map_page(ch, template: str) -> str:
-    title = f"{ch.TITLE} — SE311 Chapter {ch.NUMBER} Mindmap"
-    url = f"{SITE}{MAPS_URL}{folder(ch)}/{ch.SLUG}.html"
+def map_page(ch, template: str, url: str | None = None, kicker: str | None = None) -> str:
+    """`url` and `kicker` ("SE311 Chapter 3") let other courses reuse the SE311 page transform."""
+    kicker = kicker or f"SE311 Chapter {ch.NUMBER}"
+    title = f"{ch.TITLE} — {kicker} Mindmap"
+    url = url or f"{SITE}{MAPS_URL}{folder(ch)}/{ch.SLUG}.html"
     data = json.dumps(chapter_data(ch), indent=4, ensure_ascii=False)
     data = "\n".join((" " * 8 + line) if i else line for i, line in enumerate(data.splitlines()))
 
     t = swap(template, f"&nbsp;·&nbsp; {TEMPLATE_TITLE} Mindmap",
-             f"&nbsp;·&nbsp; SE311 Chapter {ch.NUMBER}: {html.escape(ch.TITLE)} Mindmap")
+             f"&nbsp;·&nbsp; {kicker}: {html.escape(ch.TITLE)} Mindmap")
     t = swap(t, TEMPLATE_DESC, html.escape(ch.SUMMARY), count=4)
     t = swap(t, f"{TEMPLATE_TITLE} — Mindmap", html.escape(title), count=4)
     t = swap(t, TEMPLATE_URL, url, count=6)

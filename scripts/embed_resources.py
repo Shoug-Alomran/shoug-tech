@@ -356,6 +356,9 @@ class Build:
     # -- file output ------------------------------------------------------- #
     def put(self, path, text):
         """Write unless only the (separately stamped) sidebar would differ."""
+        if os.sep + 'cybersecurity' + os.sep in path:
+            from apply_cyber_red_theme import recolor   # cyber track pages stay red
+            text = recolor(text)
         if os.path.exists(path):
             old = read(path)
             if NAV_RE.sub('', old) == NAV_RE.sub('', text):
