@@ -135,7 +135,7 @@ def page_description(document: str, title: str) -> str:
 
 def canonical_url(path: Path) -> str:
     rel = path.relative_to(SITE).as_posix()
-    if rel.endswith("/index.html"):
+    if rel == "index.html" or rel.endswith("/index.html"):
         rel = rel[: -len("index.html")]
     return SITE_URL + quote(rel, safe="/:.-_%")
 
@@ -362,20 +362,32 @@ def is_redirect(html: str) -> bool:
     return 'http-equiv="refresh"' in head or "location.replace(" in head
 
 
+def is_noindex(html: str) -> bool:
+    return bool(re.search(r'<meta[^>]+name=["\']robots["\'][^>]*noindex', html, re.IGNORECASE))
+
+
+def canonicalizes_elsewhere(path: Path, html: str) -> bool:
+    # Embedded inner files (e.g. lists.html iframed by its folder index) declare the folder as canonical;
+    # listing them too puts duplicate URLs in the sitemap.
+    for tag in re.findall(r"<link\b[^>]*>", html, re.IGNORECASE):
+        if re.search(r'rel=["\']canonical["\']', tag, re.IGNORECASE):
+            href = re.search(r'href=["\']([^"\']+)', tag, re.IGNORECASE)
+            return bool(href) and href.group(1) != canonical_url(path)
+    return False
+
+
 def is_indexable_standalone(path: Path, html: str) -> bool:
     if path.name == "index.html":
         return False
-    if path.name == "404.html":
-        return False
-    if is_redirect(html):
-        return False
-    return True
+    return is_indexable(path, html)
 
 
 def is_indexable(path: Path, html: str) -> bool:
     if path.name == "404.html":
         return False
-    if is_redirect(html):
+    if is_redirect(html) or is_noindex(html):
+        return False
+    if canonicalizes_elsewhere(path, html):
         return False
     return True
 

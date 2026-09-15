@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Render the ISC213 standalone study pages.
 
-Emits two cheat sheets, four lesson mindmaps, and six practice exams into
+Emits the midterm cheat sheet, four lesson mindmaps, and six practice exams into
 docs/academics/other-courses/isc213/. Each page is a single self-contained file
 in the same visual language as the lecture slide-breakdowns, sharing
 docs/styles/isc213.css so the course reads as one design.
@@ -30,8 +30,7 @@ OG_IMAGE = f'{SITE}/assets/og-banner.png'
 # canonical points at the wrapper — a self-canonical would compete with the page
 # readers are meant to land on. Same rule scripts/backfill_seo_metadata.py uses.
 WRAPPER = {
-    'extra-resources/01-cheat-sheet-1/cheat-sheet-1.html': 'extra-resources/01-cheat-sheet-1/',
-    'extra-resources/02-cheat-sheet-2/cheat-sheet-2.html': 'extra-resources/02-cheat-sheet-2/',
+    'extra-resources/01-cheat-sheet/cheat-sheet.html': 'extra-resources/01-cheat-sheet/',
     'exams/03-final-exam/final-exam.html': 'exams/03-final-exam/',
 }
 
@@ -456,10 +455,8 @@ def write(rel, page):
 
 
 def main():
-    build_cheat_sheet(C.CHEAT_1_META, C.CHEAT_1_SECTIONS, C.CHEAT_1_FLASH,
-                      'extra-resources/01-cheat-sheet-1/cheat-sheet-1.html')
-    build_cheat_sheet(C.CHEAT_2_META, C.CHEAT_2_SECTIONS, C.CHEAT_2_FLASH,
-                      'extra-resources/02-cheat-sheet-2/cheat-sheet-2.html')
+    build_cheat_sheet(C.CHEAT_META, C.CHEAT_SECTIONS, C.CHEAT_FLASH,
+                      'extra-resources/01-cheat-sheet/cheat-sheet.html')
     for n in range(1, 5):
         build_mindmap(n, f'extra-resources/03-mindmap/0{n}-lecture-{n}/lecture-{n}.html')
         mcq, written = lesson_questions(n)

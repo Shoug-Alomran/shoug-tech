@@ -14,17 +14,6 @@ Written = (question, source, model_answer_html).
 # Cheat sheet 1 — Lectures 1 & 2
 # --------------------------------------------------------------------------- #
 
-CHEAT_1_META = {
-    'slug': 'cheat-sheet-1',
-    'title': 'Cheat Sheet 1 — Lectures 1 &amp; 2',
-    'brand_sub': 'Concept, Characteristics, Ijtihad &amp; Rights — Lectures 1–2',
-    'h1': 'Cheat Sheet 1: Concept, Characteristics, Ijtihad &amp; Rights',
-    'lede': ('Everything from Lectures 1 and 2 compressed to what you would want on one page the hour '
-             'before Major 1 — definitions in their exam wording, every numbered list with its mnemonic, '
-             'and the traps that separate the categories students keep swapping.'),
-    'meta': [('2', 'lectures covered'), ('9', 'quick-reference blocks'), ('24', 'flashcards')],
-}
-
 CHEAT_1_SECTIONS = [
     {
         'id': 's1', 'tag': 'Lecture 1 · Block 1–3', 'num': '01',
@@ -252,17 +241,6 @@ CHEAT_1_FLASH = [
 # --------------------------------------------------------------------------- #
 # Cheat sheet 2 — Lectures 3 & 4
 # --------------------------------------------------------------------------- #
-
-CHEAT_2_META = {
-    'slug': 'cheat-sheet-2',
-    'title': 'Cheat Sheet 2 — Lectures 3 &amp; 4',
-    'brand_sub': 'Incorporeal Rights &amp; Insurance — Lectures 3–4',
-    'h1': 'Cheat Sheet 2: Incorporeal Rights &amp; Insurance',
-    'lede': ('Lectures 3 and 4 condensed for Major 2 — the three incorporeal rights with the exact count '
-             'of Shariah reasons behind each, and the two insurance systems kept on separate tracks so '
-             'their reasoning never blurs together.'),
-    'meta': [('2', 'lectures covered'), ('10', 'quick-reference blocks'), ('26', 'flashcards')],
-}
 
 CHEAT_2_SECTIONS = [
     {
@@ -573,6 +551,49 @@ CHEAT_2_FLASH = [
     ("D.N.F.", "Dependent, Necessity, Free — the three exceptions."),
     ("Surplus", "Belongs entirely to participants; the company administers but keeps none."),
 ]
+
+# --------------------------------------------------------------------------- #
+# Midterm cheat sheet — the two halves above on one page (Lectures 1–4)
+# --------------------------------------------------------------------------- #
+
+def _radar_rows(sections):
+    return sections[-1]['body'].split('<tbody>')[1].split('</tbody>')[0].strip()
+
+
+# Each half ends in its own exam radar; those merge into one radar at the end.
+CHEAT_SECTIONS = [
+    {**s, 'id': f's{i}', 'num': f'{i:02d}'}
+    for i, s in enumerate(CHEAT_1_SECTIONS[:-1] + CHEAT_2_SECTIONS[:-1], start=1)
+]
+CHEAT_SECTIONS.append({
+    'id': f's{len(CHEAT_SECTIONS) + 1}', 'tag': 'Exam radar', 'num': f'{len(CHEAT_SECTIONS) + 1:02d}',
+    'h2': 'Highest-yield items for the midterm',
+    'body': f'''
+<div class="table-scroll"><table class="rule-table">
+<caption>What to check last — Lectures 1–2 first, then Lectures 3–4</caption>
+<thead><tr><th>Item</th><th>Say it in one line</th></tr></thead>
+<tbody>
+{_radar_rows(CHEAT_1_SECTIONS)}
+{_radar_rows(CHEAT_2_SECTIONS)}
+</tbody></table></div>
+''',
+})
+
+CHEAT_FLASH = CHEAT_1_FLASH + CHEAT_2_FLASH
+
+CHEAT_META = {
+    'slug': 'cheat-sheet',
+    'title': 'Midterm Cheat Sheet — Lectures 1–4',
+    'brand_sub': 'Concept, Ijtihad, Rights &amp; Insurance — Lectures 1–4',
+    'h1': 'Midterm Cheat Sheet: Lectures 1–4',
+    'lede': ('All four midterm lectures on one page for the hour before the exam — definitions in their exam '
+             'wording, every numbered list with its mnemonic, the exact count of Shariah reasons behind each '
+             'incorporeal right, and the two insurance systems kept on separate tracks so their reasoning never '
+             'blurs together.'),
+    'meta': [('4', 'lectures covered'), (str(len(CHEAT_SECTIONS)), 'quick-reference blocks'),
+             (str(len(CHEAT_FLASH)), 'flashcards')],
+}
+
 
 # --------------------------------------------------------------------------- #
 # Mindmap

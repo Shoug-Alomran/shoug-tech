@@ -1,0 +1,973 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ISC213 · Hadith Vault</title>
+    <meta name="color-scheme" content="light dark" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=Amiri:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #f6f1e4;
+        --bg-panel: #fffdf7;
+        --ink: #1e2b22;
+        --ink-soft: #4a5a4f;
+        --line: #d8cfb4;
+        --emerald: #16423c;
+        --emerald-soft: #e4ede7;
+        --gold: #a9791e;
+        --gold-bright: #c99a2e;
+        --accent-fill: #16423c;
+        --accent-fill-ink: #fffdf7;
+        --card-shadow: 0 1px 0 rgba(30, 43, 34, 0.06);
+        --pattern-opacity: 0.05;
+        --purple: #6e5a96;
+        color-scheme: light;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        background: var(--bg);
+        color: var(--ink);
+      }
+
+      body {
+        margin: 0;
+        font-family: "Inter", sans-serif;
+        line-height: 1.55;
+      }
+
+      h1,
+      h2,
+      h3 {
+        font-family: "Fraunces", serif;
+      }
+
+      .arabic {
+        font-family: "Amiri", serif;
+        direction: rtl;
+      }
+
+      .motif-bg {
+        position: fixed;
+        inset: 0;
+        z-index: -1;
+        pointer-events: none;
+        background-image: radial-gradient(
+          circle at 1px 1px,
+          var(--gold) 1px,
+          transparent 1px
+        );
+        background-size: 28px 28px;
+        opacity: var(--pattern-opacity);
+      }
+
+      header.topbar {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        background: var(--bg-panel);
+        border-bottom: 1px solid var(--line);
+        padding: 14px 24px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .brand {
+        display: flex;
+        align-items: baseline;
+        gap: 10px;
+      }
+
+      .brand .mark {
+        color: var(--gold);
+        font-size: 1.3rem;
+      }
+
+      .brand-text {
+        font-family: "Fraunces", serif;
+        font-weight: 600;
+        font-size: 1.05rem;
+      }
+
+      .brand-sub {
+        color: var(--ink-soft);
+        font-size: 0.8rem;
+      }
+
+      #themeToggle {
+        border: 1px solid var(--line);
+        background: var(--bg);
+        color: var(--ink);
+        border-radius: 999px;
+        padding: 7px 14px;
+        font-family: "Inter", sans-serif;
+        font-size: 0.85rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      #themeToggle:active {
+        transform: scale(0.96);
+      }
+
+      .hero,
+      .controls,
+      main {
+        max-width: 880px;
+        margin: 0 auto;
+        padding-left: 24px;
+        padding-right: 24px;
+        background: var(--bg);
+      }
+
+      .hero {
+        padding-top: 56px;
+        padding-bottom: 28px;
+      }
+
+      .hero .bismillah {
+        color: var(--gold);
+        font-size: 1.1rem;
+        margin-bottom: 18px;
+      }
+
+      .hero h1 {
+        font-size: clamp(2rem, 5vw, 2.7rem);
+        line-height: 1.14;
+        margin: 0 0 10px;
+        font-weight: 600;
+      }
+
+      .hero p.lede {
+        color: var(--ink-soft);
+        font-size: 1.05rem;
+        max-width: 640px;
+        margin: 0;
+      }
+
+      .hero-meta {
+        display: flex;
+        gap: 22px;
+        margin-top: 22px;
+        flex-wrap: wrap;
+        font-size: 0.85rem;
+        color: var(--ink-soft);
+      }
+
+      .hero-meta strong {
+        color: var(--ink);
+        font-family: "Fraunces", serif;
+        font-size: 1.15rem;
+        display: block;
+      }
+
+      .controls {
+        position: sticky;
+        top: 61px;
+        z-index: 40;
+        padding-top: 12px;
+        padding-bottom: 12px;
+      }
+
+      .controls-inner {
+        background: var(--bg-panel);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 14px 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .chip-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+      }
+
+      .chip {
+        border: 1px solid var(--line);
+        background: var(--bg);
+        color: var(--ink);
+        border-radius: 999px;
+        padding: 6px 12px;
+        font-family: "Inter", sans-serif;
+        font-size: 0.82rem;
+        font-weight: 600;
+        cursor: pointer;
+      }
+
+      .chip .count {
+        color: var(--ink-soft);
+        font-weight: 500;
+        margin-left: 4px;
+      }
+
+      .chip[aria-pressed="true"] {
+        background: var(--accent-fill);
+        border-color: var(--accent-fill);
+        color: var(--accent-fill-ink);
+      }
+
+      .chip[aria-pressed="true"] .count {
+        color: var(--accent-fill-ink);
+        opacity: 0.8;
+      }
+
+      .chip[disabled] {
+        opacity: 0.45;
+        cursor: not-allowed;
+      }
+
+      .search-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
+      }
+
+      #search {
+        flex: 1 1 220px;
+        min-width: 0;
+        border: 1px solid var(--line);
+        background: var(--bg);
+        color: var(--ink);
+        border-radius: 8px;
+        padding: 8px 12px;
+        font-family: "Inter", sans-serif;
+        font-size: 0.9rem;
+      }
+
+      #search:focus {
+        outline: 2px solid var(--gold);
+        outline-offset: 1px;
+      }
+
+      .recall-toggle {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.85rem;
+        color: var(--ink-soft);
+        cursor: pointer;
+        user-select: none;
+      }
+
+      .recall-toggle input {
+        accent-color: var(--emerald);
+        width: 16px;
+        height: 16px;
+      }
+
+      .result-note {
+        font-size: 0.8rem;
+        color: var(--ink-soft);
+      }
+
+      main {
+        padding-top: 10px;
+        padding-bottom: 80px;
+      }
+
+      .hadith {
+        background: var(--bg-panel);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 26px 30px;
+        margin-bottom: 20px;
+        box-shadow: var(--card-shadow);
+      }
+
+      .hadith-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-bottom: 12px;
+      }
+
+      .hadith-num {
+        font-family: "Fraunces", serif;
+        color: var(--gold);
+        font-weight: 600;
+        font-size: 0.95rem;
+      }
+
+      .badges {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+      }
+
+      .badge {
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.03em;
+        border-radius: 999px;
+        padding: 3px 10px;
+        background: var(--emerald-soft);
+        color: var(--emerald);
+        border: 1px solid var(--line);
+      }
+
+      .hadith h2 {
+        font-size: 1.3rem;
+        margin: 0 0 12px;
+        font-weight: 600;
+      }
+
+      .matn {
+        font-family: "Fraunces", serif;
+        font-style: italic;
+        font-size: 1.08rem;
+        padding: 10px 0 10px 16px;
+        border-left: 3px solid var(--gold);
+        margin: 0 0 8px;
+        position: relative;
+      }
+
+      .narrator {
+        font-size: 0.82rem;
+        color: var(--ink-soft);
+        margin: 0 0 14px;
+      }
+
+      body.recall .matn {
+        filter: blur(7px);
+        cursor: pointer;
+        user-select: none;
+      }
+
+      body.recall .matn.revealed {
+        filter: none;
+        cursor: default;
+        user-select: auto;
+      }
+
+      .uses {
+        border-top: 1px dashed var(--line);
+        padding-top: 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .use {
+        display: grid;
+        grid-template-columns: 108px 1fr;
+        gap: 4px 14px;
+        font-size: 0.9rem;
+      }
+
+      .use-where {
+        font-weight: 700;
+        color: var(--emerald);
+        font-size: 0.8rem;
+      }
+
+      .use-where span {
+        display: block;
+        font-weight: 500;
+        color: var(--ink-soft);
+      }
+
+      .use p {
+        margin: 0;
+      }
+
+      .use .proves {
+        color: var(--ink-soft);
+        margin-top: 3px;
+      }
+
+      .use .proves strong {
+        color: var(--gold);
+        font-size: 0.72rem;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+        margin-right: 4px;
+      }
+
+      .empty {
+        text-align: center;
+        color: var(--ink-soft);
+        padding: 40px 0;
+      }
+
+      .by-lecture {
+        background: var(--bg-panel);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 26px 30px;
+        margin-top: 36px;
+      }
+
+      .by-lecture h2 {
+        font-size: 1.3rem;
+        margin: 0 0 6px;
+        font-weight: 600;
+      }
+
+      .by-lecture > p {
+        color: var(--ink-soft);
+        margin: 0 0 12px;
+        font-size: 0.9rem;
+      }
+
+      table.compare {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.88rem;
+      }
+
+      table.compare th,
+      table.compare td {
+        text-align: left;
+        padding: 10px;
+        border-bottom: 1px solid var(--line);
+        vertical-align: top;
+      }
+
+      table.compare th {
+        color: var(--gold);
+        font-weight: 700;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.02em;
+      }
+
+      table.compare tr:last-child td {
+        border-bottom: none;
+      }
+
+      table.compare td:first-child {
+        white-space: nowrap;
+        font-weight: 600;
+        color: var(--emerald);
+      }
+
+      table.compare a {
+        color: var(--ink);
+        border-bottom: 1px dotted var(--line);
+        text-decoration: none;
+      }
+
+      table.compare a:hover {
+        color: var(--gold);
+      }
+
+      .none {
+        color: var(--ink-soft);
+        font-style: italic;
+      }
+
+      footer {
+        text-align: center;
+        padding: 30px 24px 60px;
+        color: var(--ink-soft);
+        font-size: 0.82rem;
+        background: var(--bg);
+      }
+
+      @media (max-width: 600px) {
+        .hadith,
+        .by-lecture {
+          padding: 20px 18px;
+        }
+
+        .use {
+          grid-template-columns: 1fr;
+        }
+
+        .controls {
+          position: static;
+        }
+      }
+    </style>
+
+    <meta
+      name="description"
+      content="ISC213 · Hadith Vault — every hadith from the lecture slides, tagged by lecture, from Shoug&#x27;s Digital Garden."
+    />
+    <link
+      rel="canonical"
+      href="https://shoug-tech.com/academics/other-courses/isc213/extra-resources/04-hadith-vault/"
+    />
+    <meta property="og:title" content="ISC213 · Hadith Vault" />
+    <meta
+      property="og:description"
+      content="ISC213 · Hadith Vault — every hadith from the lecture slides, tagged by lecture, from Shoug&#x27;s Digital Garden."
+    />
+    <meta
+      property="og:url"
+      content="https://shoug-tech.com/academics/other-courses/isc213/extra-resources/04-hadith-vault/"
+    />
+    <meta property="og:type" content="article" />
+    <meta
+      property="og:image"
+      content="https://shoug-tech.com/assets/og-banner.png"
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="ISC213 · Hadith Vault" />
+    <meta
+      name="twitter:description"
+      content="ISC213 · Hadith Vault — every hadith from the lecture slides, tagged by lecture, from Shoug&#x27;s Digital Garden."
+    />
+    <meta
+      name="twitter:image"
+      content="https://shoug-tech.com/assets/og-banner.png"
+    />
+    <link rel="stylesheet" href="/styles/a11y.css" />
+  </head>
+
+  <body>
+    <a class="shoug-skip-link" href="#main-content">Skip to content</a>
+    <div class="motif-bg"></div>
+
+    <header class="topbar">
+      <div class="brand">
+        <span class="mark">۞</span>
+        <div>
+          <div class="brand-text">ISC213 · Hadith Vault</div>
+          <div class="brand-sub">Every hadith from Lectures 1–5</div>
+        </div>
+      </div>
+      <button id="themeToggle" aria-label="Toggle dark and light mode">
+        <span id="themeIcon">☀︎</span> <span id="themeLabel">Light</span>
+      </button>
+    </header>
+
+    <div class="hero">
+      <div class="bismillah arabic">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>
+      <h1>Hadith Vault</h1>
+      <p class="lede">
+        Every hadith quoted in the ISC213 slides, worded exactly as the slides
+        give it. Each card shows the lecture it came from, the topic it was
+        quoted under, and the point it proves. Some hadiths are quoted in more
+        than one place, so those cards list every place they appear.
+      </p>
+      <div class="hero-meta">
+        <div><strong id="statHadiths">8</strong>hadiths</div>
+        <div><strong id="statUses">12</strong>places cited</div>
+        <div><strong>3</strong>lectures with hadiths</div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <div class="controls-inner">
+        <div
+          class="chip-row"
+          id="chips"
+          role="group"
+          aria-label="Filter by lecture"
+        ></div>
+        <div class="search-row">
+          <input
+            id="search"
+            type="search"
+            placeholder="Search text, narrator, or topic (e.g. gharar, riba)"
+            aria-label="Search hadiths"
+          />
+          <label class="recall-toggle"
+            ><input type="checkbox" id="recall" /> Test yourself (hide the
+            text)</label
+          >
+        </div>
+        <div class="result-note" id="resultNote" aria-live="polite"></div>
+      </div>
+    </div>
+
+    <main id="main-content" tabindex="-1">
+      <div id="list"></div>
+
+      <section class="by-lecture" id="by-lecture">
+        <h2>By lecture</h2>
+        <p>Where each hadith is quoted. Lectures 2 and 5 don't quote any.</p>
+        <table class="compare" id="lectureTable"></table>
+      </section>
+    </main>
+
+    <footer>
+      Hadith text is quoted as it appears in the ISC213 lecture slides · Dr.
+      Amal Sharaf
+    </footer>
+
+    <script>
+      // ---------- Theme toggle (same approach as the ISC213 breakdowns) ----------
+      const palettes = {
+        light: {
+          "--bg": "#F6F1E4",
+          "--bg-panel": "#FFFDF7",
+          "--ink": "#1E2B22",
+          "--ink-soft": "#4A5A4F",
+          "--line": "#D8CFB4",
+          "--emerald": "#16423C",
+          "--emerald-soft": "#E4EDE7",
+          "--gold": "#A9791E",
+          "--gold-bright": "#C99A2E",
+          "--accent-fill": "#16423C",
+          "--accent-fill-ink": "#FFFDF7",
+          "--pattern-opacity": "0.05",
+          "--purple": "#6E5A96",
+          "color-scheme": "light",
+        },
+        dark: {
+          "--bg": "#10201B",
+          "--bg-panel": "#16281F",
+          "--ink": "#EDE6D3",
+          "--ink-soft": "#B7C2B4",
+          "--line": "#2C3F32",
+          "--emerald": "#7FC9AE",
+          "--emerald-soft": "#1B3128",
+          "--gold": "#E0B84C",
+          "--gold-bright": "#F0CB6A",
+          "--accent-fill": "#2E6B4F",
+          "--accent-fill-ink": "#F3FBF6",
+          "--pattern-opacity": "0.08",
+          "--purple": "#A796CE",
+          "color-scheme": "dark",
+        },
+      };
+
+      const root = document.documentElement;
+      const themeIcon = document.getElementById("themeIcon");
+      const themeLabel = document.getElementById("themeLabel");
+
+      function applyTheme(name) {
+        const palette = palettes[name];
+        Object.keys(palette).forEach((key) =>
+          root.style.setProperty(key, palette[key]),
+        );
+        root.setAttribute("data-theme", name);
+        document.body.style.backgroundColor = palette["--bg"];
+        document.body.style.color = palette["--ink"];
+        themeIcon.textContent = name === "dark" ? "☾" : "☀︎";
+        themeLabel.textContent = name === "dark" ? "Dark" : "Light";
+      }
+
+      applyTheme("light");
+      document.getElementById("themeToggle").addEventListener("click", () => {
+        applyTheme(
+          root.getAttribute("data-theme") === "light" ? "dark" : "light",
+        );
+      });
+
+      // ---------- Data: every hadith in the slides ----------
+      // text = wording from the slides. uses = every place it is quoted.
+      const hadiths = [
+        {
+          title: "Renaming something haram doesn't change its ruling",
+          text: "People among my Ummah will drink Khamr, calling it by another name.",
+          narrator: "The Prophet ﷺ",
+          uses: [
+            {
+              lecture: 1,
+              topic:
+                "Definition of contemporary financial transactions — new cases with new names",
+              proves:
+                "Changing a transaction's name doesn't change its ruling. Bank interest is still riba even under a new name.",
+            },
+          ],
+        },
+        {
+          title: "The prohibition of the Gharar sale",
+          text: "Prohibited the Gharar (uncertainty) sale.",
+          narrator: "Narrated by Ibn Omar, from the Prophet ﷺ",
+          uses: [
+            {
+              lecture: 1,
+              topic:
+                "Characteristic 1 — transactions are built on general principles (principle c)",
+              proves:
+                "Gharar is a transaction with a hidden end result, where delivery isn't guaranteed (a runaway slave, fish in the sea, a pregnant camel's fetus).",
+            },
+            {
+              lecture: 4,
+              topic:
+                "Commercial insurance — reason A for prohibition: excessive uncertainty",
+              proves:
+                "Commercial insurance is a deceptive contract with heavy uncertainty, and every compensation contract containing deception is corrupt. The slide refers to this hadith without quoting it.",
+            },
+          ],
+        },
+        {
+          title: "Innovations in worship are rejected",
+          text: "If anyone introduces in our matter something which does not belong to it, will be rejected.",
+          narrator: "The Messenger of Allah ﷺ",
+          uses: [
+            {
+              lecture: 1,
+              topic:
+                "Characteristic 2 — the original rule in transactions is permissibility",
+              proves:
+                "Acts of worship start from restriction: nothing is allowed without a text. Transactions are the opposite; they are allowed unless a text forbids them.",
+            },
+          ],
+        },
+        {
+          title: "Muslims are bound by their conditions",
+          text: "Muslims must keep to the conditions they have made, except for a condition which makes unlawful something which is lawful or makes lawful something which is unlawful.",
+          narrator: "The Messenger of Allah ﷺ",
+          uses: [
+            {
+              lecture: 1,
+              topic:
+                "Characteristic 2 — the original rule in transactions is permissibility",
+              proves:
+                'Together with the verse "It is Allah who subjected to you the sea…", this is one of the two texts scholars use to show that all financial transactions are permissible by default.',
+            },
+          ],
+        },
+        {
+          title: "Gold for gold, like for like",
+          text: "Do not sell gold for gold except like for like, and do not increase one part over another part. Do not sell silver for silver except like for like, and do not increase one part over another part. Do not sell silver for gold, one of them at hand and the other to be given later. If someone seeks to delay paying you until he has been to his house, do not leave him. I fear rema for you.",
+          narrator: 'The Prophet ﷺ — "rema" means usury',
+          uses: [
+            {
+              lecture: 1,
+              topic:
+                "Characteristic 3 — transaction rulings are based on reasons and benefits",
+              proves:
+                "An example of a hadith that states the reason behind a ruling: the fear of rema (usury, riba).",
+            },
+          ],
+        },
+        {
+          title: "Whoever lies upon me deliberately",
+          text: "Whoever lies upon me deliberately, let him take his seat in the Fire.",
+          narrator:
+            'The Prophet ﷺ — the patent section words it "Whoever intentionally lies about me, let him take his seat in Hellfire."',
+          uses: [
+            {
+              lecture: 3,
+              topic:
+                "Copyright — reason 3 it is legal: plagiarism is prohibited",
+              proves:
+                "Correct attribution is required, so an author gets credit for the good they produce or bears responsibility for the harm.",
+            },
+            {
+              lecture: 3,
+              topic: "Patent (invention certificate) — reason 2 it is legal",
+              proves:
+                "Islamic law forbids plagiarism and false attribution, so an inventor's work must carry their name.",
+            },
+            {
+              lecture: 3,
+              topic:
+                "Trade name — reason 3 it is legal: plagiarism is prohibited",
+              proves:
+                "The same attribution principle protects a trade name from being copied or misattributed.",
+            },
+          ],
+        },
+        {
+          title: "A single word can raise or sink a person",
+          text: "A man utters a word pleasing to Allah without considering it of any significance for which Allah exalts his ranks (in Jannah); another one speaks a word displeasing to Allah without considering it of any importance, and for this reason he will sink down into Hell.",
+          narrator: "Reported by Abu Hurairah, from the Prophet ﷺ",
+          uses: [
+            {
+              lecture: 3,
+              topic:
+                "Copyright — reason 4 it is legal: rights correspond to responsibilities",
+              proves:
+                '"The benefit runs with the burden." A person answers for what they produce, so they also have the exclusive right to its rewards.',
+            },
+            {
+              lecture: 3,
+              topic:
+                "Trade name — reason 4 it is legal: rights correspond to responsibilities",
+              proves:
+                "The owner is accountable for the name's impact, so they also hold the right to benefit from it.",
+            },
+          ],
+        },
+        {
+          title: "The Ash'arites: they are of me",
+          text: "May Allah have mercy on the Ash'arites; they are of me, and I am of them.",
+          narrator: "The Prophet ﷺ, praising the Ash'arites",
+          uses: [
+            {
+              lecture: 4,
+              topic:
+                "Collaborative insurance — form C: the social solidarity system",
+              proves:
+                "When their food ran low, the Ash'arites pooled everything and shared it equally. The Prophet ﷺ praised this, which makes it an early model of lawful collaborative insurance.",
+            },
+          ],
+        },
+      ];
+
+      const LECTURES = [
+        { n: 1, name: "Contemporary Financial Transactions" },
+        { n: 2, name: "Methodology & Incorporeal Rights" },
+        { n: 3, name: "Incorporeal Rights" },
+        { n: 4, name: "Insurance" },
+        { n: 5, name: "Securities & the Stock Market" },
+      ];
+
+      // ---------- Rendering ----------
+      const list = document.getElementById("list");
+      const chips = document.getElementById("chips");
+      const search = document.getElementById("search");
+      const resultNote = document.getElementById("resultNote");
+      let activeLecture = 0;
+
+      const escapeHtml = (s) =>
+        s.replace(
+          /[&<>"]/g,
+          (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c],
+        );
+      const lecturesOf = (h) => [...new Set(h.uses.map((u) => u.lecture))];
+      const countFor = (n) =>
+        hadiths.filter((h) => lecturesOf(h).includes(n)).length;
+
+      document.getElementById("statHadiths").textContent = hadiths.length;
+      document.getElementById("statUses").textContent = hadiths.reduce(
+        (sum, h) => sum + h.uses.length,
+        0,
+      );
+
+      function renderChips() {
+        const items = [
+          { n: 0, label: "All lectures", count: hadiths.length },
+        ].concat(
+          LECTURES.map((l) => ({
+            n: l.n,
+            label: "Lecture " + l.n,
+            count: countFor(l.n),
+          })),
+        );
+        chips.innerHTML = items
+          .map(
+            (i) =>
+              `<button class="chip" type="button" data-lecture="${i.n}" aria-pressed="${i.n === activeLecture}"${i.count ? "" : ' disabled title="No hadiths in this lecture"'}>${i.label}<span class="count">${i.count}</span></button>`,
+          )
+          .join("");
+      }
+
+      function render() {
+        const q = search.value.trim().toLowerCase();
+        let shown = 0;
+        list.innerHTML = hadiths
+          .map((h, i) => {
+            const lectures = lecturesOf(h);
+            if (activeLecture && !lectures.includes(activeLecture)) return "";
+            const haystack = [h.title, h.text, h.narrator]
+              .concat(h.uses.map((u) => u.topic + " " + u.proves))
+              .join(" ")
+              .toLowerCase();
+            if (q && !haystack.includes(q)) return "";
+            shown++;
+            const badges = lectures
+              .map((n) => `<span class="badge">Lecture ${n}</span>`)
+              .join("");
+            const uses = h.uses
+              .filter((u) => !activeLecture || u.lecture === activeLecture)
+              .map(
+                (u) => `
+                <div class="use">
+                    <div class="use-where">Lecture ${u.lecture}<span>${escapeHtml(LECTURES[u.lecture - 1].name)}</span></div>
+                    <div>
+                        <p>${escapeHtml(u.topic)}</p>
+                        <p class="proves"><strong>Proves</strong>${escapeHtml(u.proves)}</p>
+                    </div>
+                </div>`,
+              )
+              .join("");
+            return `
+            <article class="hadith" id="h${i + 1}">
+                <div class="hadith-head">
+                    <span class="hadith-num">Hadith ${String(i + 1).padStart(2, "0")}</span>
+                    <div class="badges">${badges}</div>
+                </div>
+                <h2>${escapeHtml(h.title)}</h2>
+                <blockquote class="matn" title="Click to reveal">"${escapeHtml(h.text)}"</blockquote>
+                <p class="narrator">${escapeHtml(h.narrator)}</p>
+                <div class="uses">${uses}</div>
+            </article>`;
+          })
+          .join("");
+        if (!shown)
+          list.innerHTML = '<p class="empty">No hadiths match that search.</p>';
+        const scope = activeLecture
+          ? `Lecture ${activeLecture}`
+          : "all lectures";
+        resultNote.textContent = `Showing ${shown} of ${hadiths.length} hadiths · ${scope}${q ? ` · matching "${search.value.trim()}"` : ""}`;
+      }
+
+      function renderLectureTable() {
+        const rows = LECTURES.map((l) => {
+          const cells = [];
+          hadiths.forEach((h, i) => {
+            h.uses
+              .filter((u) => u.lecture === l.n)
+              .forEach((u) => {
+                cells.push(
+                  `<a href="#h${i + 1}" data-jump="${l.n}">Hadith ${String(i + 1).padStart(2, "0")}</a> — ${escapeHtml(u.topic)}`,
+                );
+              });
+          });
+          const body = cells.length
+            ? cells.join("<br>")
+            : '<span class="none">No hadiths quoted</span>';
+          return `<tr><td>Lecture ${l.n}</td><td>${escapeHtml(l.name)}</td><td>${body}</td></tr>`;
+        }).join("");
+        document.getElementById("lectureTable").innerHTML =
+          "<tr><th>Lecture</th><th>Topic</th><th>Hadiths quoted</th></tr>" +
+          rows;
+      }
+
+      chips.addEventListener("click", (e) => {
+        const btn = e.target.closest(".chip");
+        if (!btn || btn.disabled) return;
+        activeLecture = Number(btn.dataset.lecture);
+        renderChips();
+        render();
+      });
+
+      search.addEventListener("input", render);
+
+      document.getElementById("recall").addEventListener("change", (e) => {
+        document.body.classList.toggle("recall", e.target.checked);
+        document
+          .querySelectorAll(".matn.revealed")
+          .forEach((m) => m.classList.remove("revealed"));
+      });
+
+      list.addEventListener("click", (e) => {
+        const matn = e.target.closest(".matn");
+        if (matn && document.body.classList.contains("recall"))
+          matn.classList.add("revealed");
+      });
+
+      // Jumping from the table clears filters so the target card exists.
+      document.getElementById("lectureTable").addEventListener("click", (e) => {
+        const link = e.target.closest("a[data-jump]");
+        if (!link) return;
+        activeLecture = 0;
+        search.value = "";
+        renderChips();
+        render();
+      });
+
+      renderChips();
+      render();
+      renderLectureTable();
+    </script>
+  </body>
+</html>

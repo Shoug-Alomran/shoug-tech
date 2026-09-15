@@ -127,6 +127,20 @@ def is_viewer_dir(path):
     return names == ['index.html'] and 'data-pdf-src=' in read(os.path.join(path, 'index.html'))
 
 
+def owned_pdf(path):
+    """The PDF a folder's own viewer shows when that PDF sits beside it, else None.
+
+    Such a folder is one file, not a folder: its parent lists it as a PDF row."""
+    index = os.path.join(path, 'index.html')
+    if not os.path.isdir(path) or not os.path.isfile(index):
+        return None
+    match = PDF_SRC_RE.search(read(index))
+    if not match:
+        return None
+    pdf = os.path.normpath(os.path.join(path, unquote(match.group(1))))
+    return pdf if os.path.dirname(pdf) == os.path.normpath(path) and os.path.isfile(pdf) else None
+
+
 # --------------------------------------------------------------------------- #
 # discovery
 # --------------------------------------------------------------------------- #
@@ -155,7 +169,11 @@ def content_files(folder, allowed):
         if name in IGNORED or name.startswith('.'):
             continue
         if os.path.isdir(path):
-            if not is_viewer_dir(path) and has_content(path, allowed):
+            pdf = owned_pdf(path)
+            if pdf:
+                if allowed is None or pdf in allowed:
+                    files.append(path)
+            elif not is_viewer_dir(path) and has_content(path, allowed):
                 dirs.append(path)
         elif allowed is None or path in allowed:
             files.append(path)
@@ -398,15 +416,9 @@ class Build:
         files, dirs = content_files(folder, self.allowed)
         url = url_of(folder)
         # A dedicated viewer now owns its PDF; keep it a viewer on rebuild.
-        index = os.path.join(folder, 'index.html')
-        if os.path.isfile(index):
-            match = PDF_SRC_RE.search(read(index))
-            if match:
-                from urllib.parse import unquote
-                local_pdf = os.path.normpath(os.path.join(folder, unquote(match.group(1))))
-                if os.path.dirname(local_pdf) == os.path.normpath(folder) and os.path.isfile(local_pdf):
-                    return
-        taken = {os.path.basename(d).lower() for d in dirs}
+        if owned_pdf(folder):
+            return
+        taken = {os.path.basename(p).lower() for p in dirs + files if os.path.isdir(p)}
         rows, sidebar_rows, viewers = [], [], set()
 
         for d in dirs:
@@ -418,6 +430,11 @@ class Build:
             self.folder(d, ctx, sec_title, labels + [t], trail[:-1] + [(trail[-1][0], url), (t, url_of(d))])
 
         for f in files:
+            if os.path.isdir(f):         # a viewer folder holding its own PDF is a file row
+                t = title_for(owned_pdf(f), folder, self.titles, self.notes)
+                rows.append((t, './%s/' % quote(os.path.basename(f)), 'PDF', 'pdf', False, False))
+                sidebar_rows.append((url_of(f), t))
+                continue
             t = title_for(f, folder, self.titles, self.notes)
             ext = os.path.splitext(f)[1].lstrip('.').lower()
             if ext == 'pdf':

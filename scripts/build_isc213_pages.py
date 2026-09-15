@@ -52,8 +52,7 @@ SECTIONS = {
         ('lecture-4', 'Lecture 4', ''),
     ],
     'extra-resources': [
-        ('01-cheat-sheet-1', 'Cheat Sheet 1', 'ورقة المراجعة ١'),
-        ('02-cheat-sheet-2', 'Cheat Sheet 2', 'ورقة المراجعة ٢'),
+        ('01-cheat-sheet', 'Midterm Cheat Sheet', 'ورقة مراجعة الاختبار الفصلي'),
         ('03-mindmap', 'Mindmaps', 'الخرائط الذهنية'),
     ],
     'exams': [
@@ -68,8 +67,7 @@ SECTIONS = {
 EMBED = {
     'slide-breakdowns': {f'0{n}-lecture-{n}': f'./lecture-{n}.html' for n in range(1, 5)},
     'extra-resources': {
-        '01-cheat-sheet-1': './cheat-sheet-1.html',
-        '02-cheat-sheet-2': './cheat-sheet-2.html',
+        '01-cheat-sheet': './cheat-sheet.html',
         '03-mindmap': './mindmap.html',
     },
     'exams': {
@@ -417,6 +415,10 @@ def build_legacy_redirects():
         'exams/02-exam-2/index.html': 'exams/01-midterm-1/',
         'exams/02-exam-2/exam-2.html': 'exams/01-midterm-1/',
         'extra-resources/03-mindmap/mindmap.html': 'extra-resources/03-mindmap/',
+        'extra-resources/01-cheat-sheet-1/index.html': 'extra-resources/01-cheat-sheet/',
+        'extra-resources/01-cheat-sheet-1/cheat-sheet-1.html': 'extra-resources/01-cheat-sheet/',
+        'extra-resources/02-cheat-sheet-2/index.html': 'extra-resources/01-cheat-sheet/',
+        'extra-resources/02-cheat-sheet-2/cheat-sheet-2.html': 'extra-resources/01-cheat-sheet/',
     }.items():
         url = '/academics/other-courses/isc213/' + target
         write(old, f'<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>ISC213 — Resource moved</title><meta http-equiv="refresh" content="0;url={url}"><link rel="canonical" href="https://shoug-tech.com{url}"></head><body><p>This resource has moved. <a href="{url}">Open the updated resource</a>.</p></body></html>')

@@ -11,16 +11,22 @@ ROOT = Path(__file__).resolve().parents[1]
 ACADEMICS = ROOT / "docs" / "academics"
 
 ROW_RE = re.compile(
-    r'(?P<indent>[ \t]*)<a\b(?=[^>]*\bclass="[^"]*\bdir-row\b[^"]*")[^>]*>.*?</a>',
+    r'(?P<indent>[ \t]*)<a\b(?=[^>]*\bclass="[^"]*\bdir-row\b[^"]*")[^>]*>.*?</a\s*>',
     re.DOTALL,
 )
+# Most listings use dir-folder-icon; some formatted pages (CYS401 Study Material) use folder-icon.
+FOLDER_RE = re.compile(r'class="[^"]*\b(?:dir-)?folder-icon\b')
+
+
+def is_folder(row: str) -> bool:
+    return bool(FOLDER_RE.search(row))
 NUMBER_RE = re.compile(r'(<div class="dir-num">)\d+(</div>)')
 
 
 def sort_folder_rows(text: str) -> tuple[str, bool]:
-    """Move rows carrying ``dir-folder-icon`` before all file rows."""
+    """Move rows carrying a folder icon before all file rows."""
     matches = list(ROW_RE.finditer(text))
-    if not matches or not any("dir-folder-icon" in match.group(0) for match in matches):
+    if not matches or not any(is_folder(match.group(0)) for match in matches):
         return text, False
 
     # Listings on these pages contain one contiguous group of dir-row anchors.
@@ -37,8 +43,8 @@ def sort_folder_rows(text: str) -> tuple[str, bool]:
     changed = False
     for group in reversed(groups):
         rows = [match.group(0) for match in group]
-        ordered = [row for row in rows if "dir-folder-icon" in row]
-        ordered.extend(row for row in rows if "dir-folder-icon" not in row)
+        ordered = [row for row in rows if is_folder(row)]
+        ordered.extend(row for row in rows if not is_folder(row))
         ordered = [
             NUMBER_RE.sub(rf"\g<1>{index:02d}\g<2>", row, count=1)
             for index, row in enumerate(ordered, start=1)
