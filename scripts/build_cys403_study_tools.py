@@ -18,6 +18,7 @@ Then run build_academic_sidebar.py to stamp the sidebars.
 """
 from __future__ import annotations
 
+import hashlib
 import html
 import importlib
 import json
@@ -210,6 +211,12 @@ def flashcard_deck(rows: list[list[str]]) -> str:
             f'<div class="bdx-deck">{cards}</div>')
 
 
+def versioned(url: str) -> str:
+    """Asset URL with a content hash, so browsers drop a cached copy whenever the file changes."""
+    digest = hashlib.sha1((ROOT / "docs" / url.lstrip("/")).read_bytes()).hexdigest()[:10]
+    return f"{url}?v={digest}"
+
+
 def breakdown_page(ch, ref: str) -> str:
     title = f"CYS403 - Chapter {ch.NUMBER}: {ch.TITLE}"
     url = f"{SITE}{URL}/slide-breakdowns/{breakdown_folder(ch)}/chapter-{ch.NUMBER}-{ch.SLUG}.html"
@@ -250,8 +257,8 @@ def breakdown_page(ch, ref: str) -> str:
     body.append(section_html(number + 1, "Exam Prep", extra_titles[0], tips))
     body.append(section_html(number + 2, "Self-Test", extra_titles[1], flashcard_deck(ch.QUICK)))
     body.append(section_html(number + 3, "Cheat Sheet", extra_titles[2], table(["Topic", "Key Point"], *ch.QUICK)))
-    head += '    <link rel="stylesheet" href="/styles/study-guide.css" />\n  '
-    tail = swap(tail, "</body>", '    <script src="/javascripts/study-guide.js" defer></script>\n  </body>')
+    head += f'    <link rel="stylesheet" href="{versioned("/styles/study-guide.css")}" />\n  '
+    tail = swap(tail, "</body>", f'    <script src="{versioned("/javascripts/study-guide.js")}" defer></script>\n  </body>')
     body.append(f'    </main>\n\n    <footer>\n      <div class="footer-name">Made by Shoug Alomran</div>\n'
                 f'      <div class="footer-sub">CYS403 · Chapter {ch.NUMBER}: {esc(ch.TITLE)} · Study Guide</div>\n    </footer>\n\n    ')
     return head + "</head>\n\n" + "".join(body) + tail

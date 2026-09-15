@@ -44,3 +44,40 @@ they are public configuration, not secrets. `CONTENT_ORIGIN` and
 - Questions, chat history, request size, output length, and requests per minute
   are capped.
 - The model is instructed to answer only from the selected source chunks.
+
+## Breakdown translation
+
+`POST /v1/breakdown-translation` accepts `{ "texts": ["English text", ...] }`
+and returns an ordered `translations` array in Modern Standard Arabic. It uses
+Gemma 4 through the existing Workers AI binding, validates complete responses,
+and caches successful batches at the edge for 30 days. The separate
+`TRANSLATION_RATE_LIMIT` binding allows 60 uncached batches per IP per minute.
+A batch is limited to 50 strings and 6,000 characters. This endpoint accepts
+page text from the browser; unlike the question-answering endpoint, it does not
+fetch the source context itself. Translation requests incur Workers AI usage.
+
+The static client is installed by `scripts/install_breakdown_language.py` on
+all slide-breakdown pages, including standalone iframe documents. It preserves
+English originals, syncs embedded pages, persists language preference, caches
+translations within the browser session, and keeps English visible with a retry
+message when translation fails. Code and original slide images are preserved.
+
+Deploy this Worker update **before** publishing the static pages; the old Worker
+does not expose the new endpoint. The static GitHub Pages workflow does not
+deploy this Worker. For local testing, set `window.SHOUG_TRANSLATION_ENDPOINT`
+to the development worker URL before the language controller loads.
+
+Validation:
+
+```sh
+node --test workers/slide-assistant/src/translation.test.js
+python3 -m http.server 8765 --bind 127.0.0.1 --directory docs
+# In a separate terminal, with Playwright available:
+node scripts/test_breakdown_language.cjs
+```
+
+The browser suite mocks translation responses to check switching, embedded
+pages, cancellation, retries, saved preferences, dynamic text, and mobile
+controls. It does not measure linguistic accuracy. Generic sentences were also
+tested with the real Workers AI development binding. Complete local course
+pages were not sent for remote testing.

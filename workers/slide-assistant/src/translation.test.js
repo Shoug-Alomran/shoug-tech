@@ -1,0 +1,34 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { webcrypto } from 'node:crypto';
+import worker from './index.js';
+import { validateTexts, parseTranslation } from './translation.js';
+if (!globalThis.crypto) globalThis.crypto = webcrypto;
+const endpoint = 'https://worker.test/v1/breakdown-translation';
+function request(body, origin = 'http://localhost:8000') {
+  return new Request(endpoint, { method: 'POST', headers: { origin, 'content-type': 'application/json' }, body: JSON.stringify(body) });
+}
+
+test('validates bounded non-empty text batches', () => {
+  assert.equal(validateTexts(['Information security', 'Risk assessment']), true);
+  for (const texts of [[], [''], [9], ['x'.repeat(4001)], Array(51).fill('hello'), ['a'.repeat(4000), 'b'.repeat(3000)]]) assert.equal(validateTexts(texts), false);
+});
+test('rejects missing, untranslated, or malformed model output', () => {
+  assert.deepEqual(parseTranslation('["أمن المعلومات"]', ['Information security']), ['أمن المعلومات']);
+  assert.deepEqual(parseTranslation('["CIA","TCP/IP"]', ['CIA', 'TCP/IP']), ['CIA', 'TCP/IP']);
+  for (const text of ['[]', '["Information security"]', '[null]', 'not json']) assert.throws(() => parseTranslation(text, ['Information security']));
+});
+test('translation route returns Arabic with site CORS', async () => {
+  const response = await worker.fetch(request({ texts: ['Information security'] }), {
+    AI: { run: async () => ({ response: '["أمن المعلومات"]' }) }
+  });
+  assert.equal(response.status, 200);
+  assert.equal(response.headers.get('access-control-allow-origin'), 'http://localhost:8000');
+  assert.deepEqual(await response.json(), { translations: ['أمن المعلومات'] });
+});
+test('bad input, untrusted origins, rate limits and incomplete output do not succeed', async () => {
+  assert.equal((await worker.fetch(request({ texts: [] }), {})).status, 400);
+  assert.equal((await worker.fetch(request({ texts: ['hello'] }, 'https://untrusted.test'), {})).status, 403);
+  assert.equal((await worker.fetch(request({ texts: ['hello'] }), { TRANSLATION_RATE_LIMIT: { limit: async () => ({ success: false }) } })).status, 429);
+  assert.equal((await worker.fetch(request({ texts: ['hello'] }), { AI: { run: async () => ({ response: '["hello"]' }) } })).status, 502);
+});

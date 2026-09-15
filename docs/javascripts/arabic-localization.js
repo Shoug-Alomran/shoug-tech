@@ -1,5 +1,7 @@
 (function () {
   "use strict";
+  // Slide breakdowns use full-sentence translation, not the navigation glossary.
+  if (window.__shougBreakdownLanguageLoaded) return;
   if (window.__shougArabicLocalizationLoaded) return;
   window.__shougArabicLocalizationLoaded = true;
 

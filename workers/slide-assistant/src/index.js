@@ -1,3 +1,4 @@
+import { translateRequest } from "./translation.js";
 const MODEL = "@cf/meta/llama-3.1-8b-instruct-fast";
 const MAX_QUESTION = 800;
 const MAX_CONTEXT = 26000;
@@ -443,10 +444,12 @@ export default {
     if (request.method === "OPTIONS") return new Response(null, { status: 204, headers: { "access-control-allow-origin": origin, "access-control-allow-methods": "POST, OPTIONS", "access-control-allow-headers": "content-type", "access-control-max-age": "86400", "vary": "Origin" } });
     if (request.method !== "POST") return json({ error: "Not found." }, 404, origin);
     const isCalendar = url.pathname === "/v1/calendar-assistant";
-    if (url.pathname !== "/v1/slide-assistant" && !isCalendar) return json({ error: "Not found." }, 404, origin);
+    const isTranslation = url.pathname === "/v1/breakdown-translation";
+    if (url.pathname !== "/v1/slide-assistant" && !isCalendar && !isTranslation) return json({ error: "Not found." }, 404, origin);
     const length = Number(request.headers.get("content-length") || 0);
-    if (length > (isCalendar ? 60000 : 12000)) return json({ error: "Request is too large." }, 413, origin);
+    if (length > (isCalendar ? 60000 : isTranslation ? 18000 : 12000)) return json({ error: "Request is too large." }, 413, origin);
     try {
+      if (isTranslation) return await translateRequest(request, env, origin, json, async (bindings, input) => aiText(await bindings.AI.run("@cf/google/gemma-4-26b-a4b-it", input)));
       return isCalendar ? await handleCalendar(request, env, origin) : await handle(request, env, origin);
     } catch (error) {
       console.error(error);
