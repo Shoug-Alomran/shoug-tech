@@ -1,0 +1,91 @@
+"""SE311 Chapter 6 mindmap content, built by scripts/build_se311_mindmaps.py."""
+
+NUMBER = 6
+TITLE = "Writing Excellent Requirements"
+AR_TITLE = "كتابة متطلبات ممتازة"
+SLUG = "writing-excellent-requirements"
+SUMMARY = "Interactive SE311 Chapter 6 mindmap: characteristics of excellent requirements and requirement collections, writing guidelines, avoiding ambiguity, and labeling requirements."
+
+BRANCHES = [
+    ("Why Writing Matters", "", [
+        ("Requirements Specification", "Definition",
+         "Documenting requirements in a well-organized way suitable for comprehension by their intended audiences. How requirements are written directly affects project success."),
+        ("Two Goals: SAME MATCH", "Memory Hook",
+         "Everyone reads a requirement the <strong>same</strong> way, and it <strong>matches</strong> what the author meant."),
+    ]),
+    ("Excellent Requirements (CCFNPUV)", "Complete, Correct, Feasible, Necessary, Prioritized, Unambiguous, Verifiable.", [
+        ("Complete", "Characteristic",
+         "Contains all the information a reader needs. Flag gaps with <strong>TBD</strong> and resolve every TBD before implementation."),
+        ("Correct", "Characteristic",
+         "Accurately describes a capability that meets stakeholder needs, conflicts with no other requirement, and is verified against its source."),
+        ("Feasible", "Characteristic",
+         "Possible to implement within technical limits, time, budget, and staff. Prototypes help evaluate feasibility."),
+        ("Necessary", "Characteristic",
+         "Provides business value, differentiates the product, or is required for compliance. Ask “why?” and there should be an answer."),
+        ("Prioritized", "Characteristic",
+         "Ranked collaboratively by importance, which helps manage limited resources and handle change."),
+        ("Unambiguous", "Characteristic",
+         "Has only one interpretation, so all readers understand it the same way. Verify clarity with peer reviews."),
+        ("Verifiable", "Characteristic",
+         "Testers can objectively determine whether it was implemented properly; it is not a matter of opinion."),
+        ("CCFNPUV Mnemonic", "Memory Hook",
+         "“<strong>C</strong>an <strong>C</strong>ustomers <strong>F</strong>ind <strong>N</strong>ew <strong>P</strong>roducts <strong>U</strong>sing <strong>V</strong>erification.”"),
+        ("Not a Good SRS Property", "Past Exam · Quiz 2",
+         "Options: Verifiable, Ambiguous, Complete, Traceable. Answer: <strong>Ambiguous</strong>."),
+    ]),
+    ("Requirement Collections", "Qualities of the set as a whole.", [
+        ("Complete", "Collection",
+         "All necessary requirements are present. Any specification containing TBDs is incomplete."),
+        ("Consistent", "Collection",
+         "Requirements don't conflict with each other or with higher-level requirements. Record each requirement's originator so conflicts can be taken back to the source."),
+        ("Modifiable", "Collection",
+         "Keep a change history, know the connections between requirements, give each a unique label, avoid redundancy, and cross-reference related items."),
+        ("Traceable", "Collection",
+         "Linked backward to its origin and forward to design, code, and tests. Needs unique identifiers and one requirement per statement."),
+    ]),
+    ("Writing Guidelines", "", [
+        ("The Requirement Formula", "Template",
+         "[optional precondition] [optional trigger event] the system shall [expected system response].",
+         "Example: “If the requested chemical is found in the stockroom, the system shall display a list of all containers of the chemical currently in the stockroom.”"),
+        ("Style Tips", "Tip",
+         "Put the functionality first, use complete short sentences, avoid jargon (define terms in a glossary), use “shall” consistently, and write in active voice."),
+        ("Active Voice", "Comparison",
+         "Passive: “Upon product upgrade shipment, the serial number will be updated on the contract line.” Who updates it?",
+         "Active: “When Fulfillment confirms it shipped a product upgrade, the system shall update the customer's contract with the new serial number.”"),
+        ("One Requirement Each", "Key Rule",
+         "Warning words that may combine requirements: <strong>and</strong>, <strong>or</strong>, <strong>and/or</strong> (avoid at all costs), <strong>unless</strong>, <strong>except</strong>, <strong>but</strong>."),
+        ("Splitting “unless”", "Example",
+         "“The Buyer's card on file shall be charged, unless the card has expired” never says what happens when it has expired.",
+         "Split it: charge an active card; if the card has expired, let the Buyer update it or enter a new one."),
+    ]),
+    ("Avoiding Ambiguity", "Three main sources of ambiguity.", [
+        ("Fuzzy Words", "Ambiguity",
+         "Reasonably, appropriately, generally, approximately, usually, systematically, quickly, user-friendly, flexible, robust. None of these is verifiable."),
+        ("Boundary Values", "Ambiguity",
+         "“Up to 5 days need no approval; 5 to 10 days need supervisor approval.” What happens at exactly 5 days?",
+         "Use through, inclusive, or exclusive: “5 or fewer days need no approval; longer than 5 days through 10 days need supervisor approval.”"),
+        ("Negative Requirements", "Ambiguity",
+         "“Prevent the user from activating the contract if the contract is not in balance” is a confusing double negative.",
+         "Positive: “The system shall allow the user to activate the contract only if the contract is in balance.”"),
+        ("Before and After: BTM", "Example",
+         "“Provide status messages at regular intervals not less than every 60 seconds” is not verifiable: which messages, how, and when?",
+         "After: display messages in a designated UI area, update every 60 ± 5 seconds, keep them visible, show percent complete, and show Done and stalled messages."),
+    ]),
+    ("Labeling Requirements", "", [
+        ("Sequence Numbers", "Method",
+         "UC-9, FR-26, NFR-15. Easy to keep unique when requirements move, but no logical grouping and the label says nothing about intent."),
+        ("Hierarchical Numbering", "Method",
+         "3.2.4.3 is a child of 3.2.4.",
+         "<strong>Trap</strong>: word processors don't keep labels persistent, so inserting, moving, merging, or deleting changes them. Mitigate with hierarchical sections plus a text code and sequence (ED-1, ED-2)."),
+        ("Hierarchical Textual Tags", "Method",
+         "Meaningful tags such as Print.ConfirmCopies: part of the print function, about the number of copies."),
+    ]),
+    ("Quick Reference", "", [
+        ("Do", "Checklist",
+         "Use “shall” consistently, active voice, split combined requirements, exact boundaries, measurable metrics, positive wording, unique IDs, and flag gaps with TBD."),
+        ("Don't", "Checklist",
+         "Mix should/may/might, use passive voice, write and/or, leave boundaries ambiguous, use fuzzy words, write negative requirements, rely on simple numbered lists, or leave gaps unmarked."),
+        ("Warning Words", "Exam Tip",
+         "and/or → split. unless/except/but → handle the exception separately. easily/quickly/user-friendly → not verifiable. if possible/should → weak; use “shall” for mandatory."),
+    ]),
+]
