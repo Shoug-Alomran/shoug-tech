@@ -131,7 +131,7 @@ PHONE = "(() => {" + HELPERS + r"""
       const cs = getComputedStyle(a), r = a.getBoundingClientRect();
       const side = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight);
       const margin = Math.max(parseFloat(cs.marginLeft), parseFloat(cs.marginRight));
-      if (r.width < vw - 40) continue;
+      if (r.width < vw * 0.8) continue;
       if (!(side > 8 || (margin > 16 && r.width < vw - 32))) continue;
       const sel = selectorOf(a);
       if (railSeen.has(sel)) continue;

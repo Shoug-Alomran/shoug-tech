@@ -80,13 +80,13 @@ def render_crop(pdf: Path, slide: int, box: list[float], out: Path, cache: dict)
     x0, y0, x1, y1 = box
     w, h = im.size
     out.parent.mkdir(parents=True, exist_ok=True)
-    trim(im.crop((int(x0 * w), int(y0 * h), int(x1 * w), int(y1 * h)))).save(out, "WEBP", quality=86, method=6)
+    trim(im.crop((int(x0 * w), int(y0 * h), int(x1 * w), int(y1 * h)))).save(out, "PNG", optimize=True)
 
 
 def image_name(entry: dict, fig: dict) -> str:
     if len(entry["decks"]) == 1:
-        return f"slide-{fig['slide']:02d}.webp"
-    return f"{deck_of(entry, fig)}-slide-{fig['slide']:02d}.webp"
+        return f"slide-{fig['slide']:02d}.png"
+    return f"{deck_of(entry, fig)}-slide-{fig['slide']:02d}.png"
 
 
 def deck_of(entry: dict, fig: dict) -> str:

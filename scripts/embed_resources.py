@@ -315,7 +315,7 @@ def viewer_html(url, ctx, item_label, title, trail, pdf_src, back_url):
                              '<a href="%s" class="nav-link prev">&lt;- BACK TO INDEX</a>\n'
                              '                <span class="nav-link next disabled">NEXT -&gt;</span>\n'
                              '            </div>' % back_url, page, count=1, flags=re.S)
-    page = page.replace(tpl.TPL_VIEW_PDF, pdf_src)
+    page = tpl.TPL_VIEW_PDF.sub(pdf_src, page)
     page = page.replace('ENG103 Group Work Log and Deadlines',
                         html.escape('%s %s' % (ctx['code'], title), quote=True))
     # the template's SEO copy (description, og/twitter, JSON-LD) names ENG103 too

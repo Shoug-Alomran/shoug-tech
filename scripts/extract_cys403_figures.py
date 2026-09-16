@@ -2,8 +2,8 @@
 """Render the diagrams listed in cys403_study/figures.py out of the slide PDFs.
 
 Each slide is rendered with pdftoppm (poppler), cropped to its box, trimmed of
-white margin and saved as WebP next to its breakdown:
-    slide-breakdowns/NN-chapter-N-<slug>/figures/slide-PP.webp
+white margin and saved as PNG next to its breakdown:
+    slide-breakdowns/NN-chapter-N-<slug>/figures/slide-PP.png
 Run build_cys403_study_tools.py afterwards to place them in the pages.
 """
 from __future__ import annotations
@@ -43,7 +43,7 @@ def main() -> None:
                 subprocess.run(["pdftoppm", "-r", str(DPI), "-png", "-singlefile", "-f", str(page), "-l", str(page), str(pdf), str(stem)], check=True)
                 im = Image.open(f"{stem}.png").convert("RGB")
                 w, h = im.size
-                trim(im.crop((int(x0 * w), int(y0 * h), int(x1 * w), int(y1 * h)))).save(out / image_name(page), "WEBP", quality=86, method=6)
+                trim(im.crop((int(x0 * w), int(y0 * h), int(x1 * w), int(y1 * h)))).save(out / image_name(page), "PNG", optimize=True)
                 count += 1
     print(f"Extracted {count} CYS403 slide figures.")
 

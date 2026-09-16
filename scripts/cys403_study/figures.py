@@ -82,4 +82,4 @@ FIGURES = {
 
 
 def image_name(page: int) -> str:
-    return f"slide-{page:02d}.webp"
+    return f"slide-{page:02d}.png"

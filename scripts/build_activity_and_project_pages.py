@@ -31,7 +31,7 @@ TPL_URL = ('https://shoug-tech.com/academics/other-courses/english/eng103/extra-
            'assignment-1-annotated-bibliography/')
 TPL_VIEW_TITLE = 'ENG103 // Group Work Log & Deadlines'
 TPL_VIEW_URL = TPL_URL + 'group-work-log/'
-TPL_VIEW_PDF = './assignment-1-group-work-log-and-deadlines.pdf'
+TPL_VIEW_PDF = re.compile(r'\./[^/"\']+\.pdf')
 
 SITE = 'https://shoug-tech.com'
 ARROW = ('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" '
@@ -172,7 +172,7 @@ def viewer_page(url, course, item_label, title, trail, pdf_src, back_url, prev_u
                   '<div class="nav-strip">\n                %s\n'
                   '                <span class="nav-link next disabled">NEXT -&gt;</span>\n'
                   '            </div>' % prev, html, count=1, flags=re.S)
-    html = html.replace(TPL_VIEW_PDF, pdf_src)
+    html = TPL_VIEW_PDF.sub(pdf_src, html)
     html = html.replace('ENG103 Group Work Log and Deadlines', '%s %s' % (course.upper(), title))
     write(url, html)
 
