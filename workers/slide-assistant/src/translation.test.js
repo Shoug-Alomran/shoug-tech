@@ -16,11 +16,15 @@ test('validates bounded non-empty text batches', () => {
 test('rejects missing, untranslated, or malformed model output', () => {
   assert.deepEqual(parseTranslation('["أمن المعلومات"]', ['Information security']), ['أمن المعلومات']);
   assert.deepEqual(parseTranslation('["CIA","TCP/IP"]', ['CIA', 'TCP/IP']), ['CIA', 'TCP/IP']);
+  assert.deepEqual(parseTranslation('["https://example.com","student@example.com","guide.pdf"]', ['https://example.com', 'student@example.com', 'guide.pdf']), ['https://example.com', 'student@example.com', 'guide.pdf']);
   for (const text of ['[]', '["Information security"]', '[null]', 'not json']) assert.throws(() => parseTranslation(text, ['Information security']));
 });
 test('translation route returns Arabic with site CORS', async () => {
   const response = await worker.fetch(request({ texts: ['Information security'] }), {
-    AI: { run: async () => ({ response: '["أمن المعلومات"]' }) }
+    AI: { run: async (_model, input) => {
+      assert.equal(input.chat_template_kwargs.enable_thinking, false);
+      return { response: '["أمن المعلومات"]' };
+    } }
   });
   assert.equal(response.status, 200);
   assert.equal(response.headers.get('access-control-allow-origin'), 'http://localhost:8000');
@@ -31,4 +35,23 @@ test('bad input, untrusted origins, rate limits and incomplete output do not suc
   assert.equal((await worker.fetch(request({ texts: ['hello'] }, 'https://untrusted.test'), {})).status, 403);
   assert.equal((await worker.fetch(request({ texts: ['hello'] }), { TRANSLATION_RATE_LIMIT: { limit: async () => ({ success: false }) } })).status, 429);
   assert.equal((await worker.fetch(request({ texts: ['hello'] }), { AI: { run: async () => ({ response: '["hello"]' }) } })).status, 502);
+});
+
+test('repairs only untranslated titles, names and mnemonics before returning a complete batch', async () => {
+  let calls = 0;
+  const response = await worker.fetch(request({ texts: ['Learning objectives', '4+1\n View Model', 'Kruchten, 1995', 'Lions Prefer Dark Pizza'] }), {
+    AI: { run: async (_model, input) => {
+      calls++;
+      const texts = JSON.parse(input.messages.at(-1).content);
+      if (calls === 1) {
+        assert.equal(texts[1], '4+1 View Model');
+        return { response: JSON.stringify(['أهداف التعلم', '4+1 View Model', 'Kruchten, 1995', 'Lions Prefer Dark Pizza']) };
+      }
+      assert.deepEqual(texts, ['4+1 View Model', 'Kruchten, 1995', 'Lions Prefer Dark Pizza']);
+      return { response: JSON.stringify(['نموذج الرؤى 4+1', 'كروشتن، 1995', 'الأسود تفضل البيتزا الداكنة']) };
+    } }
+  });
+  assert.equal(response.status, 200);
+  assert.equal(calls, 2);
+  assert.deepEqual((await response.json()).translations, ['أهداف التعلم', 'نموذج الرؤى 4+1', 'كروشتن، 1995', 'الأسود تفضل البيتزا الداكنة']);
 });

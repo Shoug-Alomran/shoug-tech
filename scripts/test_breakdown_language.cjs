@@ -12,6 +12,7 @@ async function main() {
     await context.route('**/*', async route => {
       if (route.request().url().includes('/v1/breakdown-translation')) {
         calls++;
+        assert.ok(!route.request().frame().url().endsWith('/index.html'));
         if (delay) await new Promise(resolve => setTimeout(resolve, delay));
         const { texts } = route.request().postDataJSON();
         assert.ok(!texts.some(text => text.includes('PRIVATE_TEST_TEXT')));
@@ -21,14 +22,53 @@ async function main() {
       return route.continue();
     });
     const page = await context.newPage();
+    // The site shell owns no lesson controls or translation requests.
+    for (const shell of [
+      '/academics/cybersecurity/cys403/slide-breakdowns/01-chapter-1-security-risk-management-governance-and-control/index.html',
+      '/academics/software-engineering/se322/slide-breakdowns/04-chapter-2-software-architecture-lecture-3-extra/index.html'
+    ]) {
+      await page.goto(base + shell);
+      const heading = await page.locator('h1').first().textContent();
+      const shellLang = await page.locator('html').getAttribute('lang');
+      const globalPreference = await page.evaluate(() => localStorage.getItem('shoug-lang'));
+      assert.equal(await page.locator('.bd-language').count(), 0);
+      assert.equal(await page.locator('[data-lang-toggle]:visible').count(), 0);
+      const embedded = page.locator('iframe').first();
+      await embedded.scrollIntoViewIfNeeded();
+      const lesson = await (await embedded.elementHandle()).contentFrame();
+      await lesson.locator('[data-bd-lang=ar]').click();
+      await lesson.waitForFunction(() => document.documentElement.lang === 'ar');
+      assert.equal(await page.locator('.bd-language').count(), 0);
+      assert.equal(await page.locator('h1').first().textContent(), heading);
+      assert.equal(await page.locator('html').getAttribute('lang'), shellLang);
+      assert.equal(await page.evaluate(() => localStorage.getItem('shoug-lang')), globalPreference);
+      await lesson.locator('[data-bd-lang=en]').click();
+      console.log('PASS controls and translation stay inside the lesson:', shell);
+    }
+    await page.goto(base + '/academics/software-engineering/se322/slide-breakdowns/index.html');
+    assert.equal(await page.locator('.bd-language').count(), 0);
     const samplePaths = [
-      'docs/academics/cybersecurity/cys403/slide-breakdowns/01-chapter-1-security-risk-management-governance-and-control/index.html',
+      'docs/academics/cybersecurity/cys403/slide-breakdowns/01-chapter-1-security-risk-management-governance-and-control/chapter-1-security-risk-management-governance-and-control.html',
       'docs/academics/cybersecurity/cys401/slide-breakdowns/01-chapter-1-introduction-to-cybersecurity/chapter-1.html',
       'docs/academics/software-engineering/se311/slide-breakdowns/01-chapter-1-basics-of-requirements-engineering/chapter-1/chapter-1.html'
     ];
     for (const file of samplePaths) {
       await page.goto(base + '/' + file.slice(5) + '?lang=en');
       await page.locator('.bd-language').waitFor();
+      assert.notEqual(await page.locator('.bd-language').evaluate(el => getComputedStyle(el).position), 'fixed');
+      if (await page.locator('.bdx-bar-inner').count()) {
+        assert.equal(await page.locator('.bdx-bar-inner > .bd-language').count(), 1);
+        for (const width of [1440, 375]) {
+          await page.setViewportSize({ width, height: 900 });
+          const control = await page.locator('.bd-language').boundingBox();
+          const header = await page.locator('.bdx-bar').boundingBox();
+          assert.ok(control.x >= 0 && control.x + control.width <= width);
+          assert.ok(control.y >= header.y && control.y + control.height <= header.y + header.height);
+        }
+        await page.screenshot({ path: '/private/tmp/breakdown-toolbar-mobile.png' });
+        await page.setViewportSize({ width: 1440, height: 900 });
+        await page.screenshot({ path: '/private/tmp/breakdown-toolbar-desktop.png' });
+      }
       const original = await page.locator('h1').first().textContent();
       await page.locator('[data-bd-lang=ar]').click();
       await page.waitForFunction(() => document.documentElement.lang === 'ar' && document.querySelector('.bd-language').getAttribute('aria-busy') === 'false');
@@ -49,6 +89,7 @@ async function main() {
     await page.locator('[data-bd-lang=ar]').click();
     await page.waitForFunction(() => document.querySelector('.bd-language-status').textContent.includes('Translation failed'));
     assert.equal(await page.locator('html').getAttribute('lang'), 'en');
+    assert.ok((await page.locator('.bd-language').boundingBox()).height < 60);
     fail = false;
     await page.locator('[data-bd-lang=ar]').click();
     await page.waitForFunction(() => document.documentElement.lang === 'ar');

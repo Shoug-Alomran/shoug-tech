@@ -57,8 +57,9 @@ page text from the browser; unlike the question-answering endpoint, it does not
 fetch the source context itself. Translation requests incur Workers AI usage.
 
 The static client is installed by `scripts/install_breakdown_language.py` on
-all slide-breakdown pages, including standalone iframe documents. It preserves
-English originals, syncs embedded pages, persists language preference, caches
+the 223 lesson documents, including lessons opened directly or inside an iframe.
+The surrounding site wrappers and course indexes do not run this controller. It preserves
+English originals, persists a lesson-only language preference (`shoug-breakdown-lang`), caches
 translations within the browser session, and keeps English visible with a retry
 message when translation fails. Code and original slide images are preserved.
 

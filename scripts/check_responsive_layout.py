@@ -51,6 +51,15 @@ PROBE = r"""(() => {
     const r = e.getBoundingClientRect(), cs = getComputedStyle(e);
     return r.width > 40 && r.height > 8 && cs.visibility !== 'hidden' && cs.display !== 'none';
   };
+  // A wide table inside a box that scrolls is deliberate, not overflow: the viewer
+  // scrolls the box, not the page. Only count it when nothing above it clips.
+  const clipped = e => {
+    for (let a = e.parentElement; a && a !== document.documentElement; a = a.parentElement) {
+      const cs = getComputedStyle(a);
+      if (/(auto|scroll|hidden|clip)/.test(cs.overflowX) && a.getBoundingClientRect().right <= vw + 1) return true;
+    }
+    return false;
+  };
   const blocks = [...document.querySelectorAll('p, li, h1, h2, h3, h4, table, pre, figure, img, blockquote')]
     .filter(e => !e.closest('header, nav, footer, dialog, aside, [role=dialog], [hidden]'))
     .filter(visible);
@@ -62,12 +71,21 @@ PROBE = r"""(() => {
     const left = lefts[Math.floor(lefts.length * 0.05)];
     const right = rights[Math.floor(rights.length * 0.95)];
     const used = right - left;
-    if (vw >= 700 && used / vw < 0.72)
-      found.push(['narrow', `content spans ${px(used)} of ${px(vw)} (${Math.round(100 * used / vw)}%), leaving ${px(left)} / ${px(vw - right)} empty at the sides`]);
+    // A persistent side rail (a tall nav/aside beside the text) is part of the design,
+    // so the column is judged against the room left over next to it.
+    let rail = 0;
+    for (const side of document.querySelectorAll('nav, aside, [class*="sidebar"], [class*="side-nav"]')) {
+      const r = side.getBoundingClientRect(), cs = getComputedStyle(side);
+      if (cs.display === 'none' || cs.visibility === 'hidden' || r.width < 80 || r.height < vh * 0.5) continue;
+      if (r.right <= left + 4 || r.left >= right - 4) rail = Math.max(rail, r.width);
+    }
+    const room = vw - rail;
+    if (vw >= 700 && used / room < 0.72)
+      found.push(['narrow', `content spans ${px(used)} of the ${px(room)} available${rail ? ` (beside a ${px(rail)} side rail)` : ''} (${Math.round(100 * used / room)}%), leaving ${px(left - rail)} / ${px(vw - right)} empty at the sides`]);
     if (vw <= 430 && (left > 24 || vw - right > 24))
       found.push(['gutter', `content sits ${px(left)} from the left and ${px(vw - right)} from the right edge of a ${px(vw)} phone`]);
     if (vw <= 430) {
-      const off = blocks.filter(e => e.getBoundingClientRect().right > vw + 1 && !e.closest('.sg-table-scroll, .tbl-wrap, [style*="overflow"]'));
+      const off = blocks.filter(e => e.getBoundingClientRect().right > vw + 1 && !clipped(e));
       if (off.length) found.push(['offscreen', `${off.length} element(s) run past the right edge, e.g. <${off[0].tagName.toLowerCase()} class="${off[0].className}">`]);
     }
   }
@@ -168,8 +186,10 @@ def main() -> int:
             for name, width, height in VIEWPORTS:
                 page = browser.new_page(viewport={"width": width, "height": height})
                 try:
-                    page.goto(origin + rel, wait_until="load", timeout=20000)
-                    page.wait_for_timeout(400)
+                    # domcontentloaded, not load: figure-heavy pages can keep the load
+                    # event pending well past the point where layout has settled.
+                    page.goto(origin + rel, wait_until="domcontentloaded", timeout=30000)
+                    page.wait_for_timeout(600)
                     page.evaluate("window.scrollTo(0, Math.min(1200, document.documentElement.scrollHeight / 3))")
                     page.wait_for_timeout(300)
                     report += [f"  {name} {width}px  {kind}: {text}" for kind, text in page.evaluate(PROBE)]

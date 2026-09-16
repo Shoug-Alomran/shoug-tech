@@ -1,9 +1,11 @@
 (function () {
   'use strict';
+  // Cached wrapper pages may still load this script. Only lesson files own it.
+  if (/\/(?:index\.html)?$/.test(location.pathname)) return;
   if (window.__shougBreakdownLanguageLoaded) return;
   window.__shougBreakdownLanguageLoaded = true;
   var desired = new URLSearchParams(location.search).get('lang');
-  try { desired = desired || localStorage.getItem('shoug-lang'); } catch (_) {}
+  try { desired = desired || localStorage.getItem('shoug-breakdown-lang'); } catch (_) {}
   desired = desired === 'ar' ? 'ar' : 'en';
 
   function start() {
@@ -19,9 +21,21 @@
     toolbar.className = 'bd-language';
     toolbar.setAttribute('role', 'group');
     toolbar.setAttribute('aria-label', 'Breakdown language / لغة الشرح');
-    toolbar.innerHTML = '<div><button type="button" data-bd-lang="en" lang="en">EN</button><button type="button" data-bd-lang="ar" lang="ar">AR <span>العربية</span></button></div><span class="bd-language-status" role="status" aria-live="polite"></span>';
-    document.body.appendChild(toolbar);
+    toolbar.innerHTML = '<div><button type="button" data-bd-lang="en" lang="en" aria-label="English">EN</button><button type="button" data-bd-lang="ar" lang="ar" aria-label="العربية">AR</button></div><span class="bd-language-status" role="status" aria-live="polite"></span>';
+    var host = document.querySelector('.bdx-bar-inner, .topbar-actions, .header-actions');
+    if (host) {
+      var themeButton = host.querySelector('.theme-toggle');
+      host.insertBefore(toolbar, themeButton);
+    } else {
+      toolbar.classList.add('bd-language--inline');
+      (document.querySelector('#main-content, main, .header, .topbar, header') || document.body).prepend(toolbar);
+    }
     var status = toolbar.querySelector('[role="status"]');
+    function report(message, error) {
+      status.textContent = message;
+      toolbar.classList.toggle('bd-language--error', Boolean(error));
+      toolbar.title = message;
+    }
     var skip = 'script,style,noscript,code,pre,kbd,samp,svg,math,textarea,input,[contenteditable],.bd-language,.sg-ai-panel,.sg-ai-launch,.sys-time,[translate="no"],#arabicContent,#shoug-fb-user,#shoug-auth-modal,#shoug-ue-modal,#shoug-page-comments,#shoug-notes-panel,#shoug-ob-card,.shoug-user-dropdown';
 
     // One controller owns the controls; legacy toggles only changed headings or
@@ -92,8 +106,12 @@
       });
     }
 
+    function isReference(text) {
+      return /^(?:(?:https?:\/\/|mailto:|www\.)\S+|[^\s@]+@[^\s@]+\.[^\s@]+|[A-Za-z0-9_-]+(?:\.[A-Za-z0-9_-]+)+(?:\/\S*)?)$/.test(text.trim());
+    }
+
     function validTranslation(value, original) {
-      return typeof value === 'string' && value.trim() && (/[\u0600-\u06ff]/.test(value) || /^[A-Z0-9][A-Z0-9\s/_.:+-]*$/.test(original.trim()));
+      return typeof value === 'string' && value.trim() && (/[\u0600-\u06ff]/.test(value) || isReference(original) || /^[A-Z0-9][A-Z0-9\s/_.:+-]*$/.test(original.trim()));
     }
 
     async function fetchBatch(texts, signal) {
@@ -116,7 +134,11 @@
         clearTimeout(timeout);
         signal.removeEventListener('abort', cancel);
       }
-      if (!response.ok) throw new Error('Translation unavailable');
+      if (!response.ok) {
+        var error = new Error('Translation unavailable');
+        error.status = response.status;
+        throw error;
+      }
       var data = await response.json();
       if (!Array.isArray(data.translations) || data.translations.length !== texts.length ||
           data.translations.some(function (text, i) { return !validTranslation(text, texts[i]); })) throw new Error('Incomplete translation');
@@ -136,8 +158,7 @@
       controller = new AbortController();
       var signal = controller.signal;
       if (persist) {
-        if (window.parent !== window) window.parent.postMessage({ type: 'shoug-breakdown-language', lang: desired }, location.origin);
-        try { localStorage.setItem('shoug-lang', desired); } catch (_) {}
+        try { localStorage.setItem('shoug-breakdown-lang', desired); } catch (_) {}
         var url = new URL(location.href);
         url.searchParams.set('lang', desired);
         history.replaceState(null, '', url);
@@ -146,13 +167,13 @@
       collect();
       busy = desired === 'ar';
       toolbar.setAttribute('aria-busy', String(busy));
-      if (desired === 'en') { render('en'); status.textContent = ''; return; }
-      status.textContent = 'جارٍ ترجمة الشرح إلى العربية…';
+      if (desired === 'en') { render('en'); report(''); return; }
+      report('جارٍ ترجمة الشرح إلى العربية…');
       try {
         var missing = new Set();
         records.forEach(function (slots) {
           slots.forEach(function (record) {
-            pieces(record.en).forEach(function (part) { if (!/[A-Za-z]{3}/.test(part)) translations.set(part, part);
+            pieces(record.en).forEach(function (part) { if (!/[A-Za-z]{3}/.test(part) || isReference(part)) translations.set(part, part);
               else if (!translations.has(part)) missing.add(part); });
           });
         });
@@ -169,18 +190,23 @@
           if (version !== revision) return;
           texts.forEach(function (text, i) { translations.set(text, values[i]); });
           done++;
-          status.textContent = 'جارٍ ترجمة الشرح… ' + done + '/' + batches.length;
+          report('جارٍ ترجمة الشرح… ' + done + '/' + batches.length);
         }
         if (version !== revision) return;
         records.forEach(function (slots) {
           slots.forEach(function (record) { record.ar = record.en.match(/^\s*/)[0] + pieces(record.en).map(function (part) { return translations.get(part); }).join(' ').trim() + record.en.match(/\s*$/)[0]; });
         });
         render('ar');
-        status.textContent = 'ترجمة آلية · الصور الأصلية بلغتها الأصلية';
+        report('ترجمة آلية · الصور الأصلية بلغتها الأصلية');
       } catch (error) {
         if (version !== revision) return;
         render('en');
-        status.textContent = 'تعذّرت الترجمة. اضغط AR لإعادة المحاولة. / Translation failed. Select AR to retry.';
+        var message = error.status === 404
+          ? 'Arabic translation service is not available yet. / خدمة الترجمة غير متاحة بعد.'
+          : error.status === 429
+            ? 'Please wait a minute, then select AR. / انتظر دقيقة ثم اضغط AR.'
+            : 'Translation failed. Select AR to retry. / تعذّرت الترجمة. اضغط AR لإعادة المحاولة.';
+        report(message, true);
       } finally {
         if (version === revision) { busy = false; toolbar.setAttribute('aria-busy', 'false'); }
       }
@@ -197,7 +223,7 @@
       if (event.data.lang === 'ar' || event.data.lang === 'en') setLanguage(event.data.lang, false);
     });
     window.addEventListener('storage', function (event) {
-      if (event.key === 'shoug-lang' && (event.newValue === 'ar' || event.newValue === 'en')) setLanguage(event.newValue, false);
+      if (event.key === 'shoug-breakdown-lang' && (event.newValue === 'ar' || event.newValue === 'en')) setLanguage(event.newValue, false);
     });
     document.querySelectorAll('iframe').forEach(function (frame) { frame.addEventListener('load', function () { notifyFrames(desired); }); });
     var timer;
