@@ -30,9 +30,17 @@ async function main() {
       await page.goto(base + shell);
       const heading = await page.locator('h1').first().textContent();
       const shellLang = await page.locator('html').getAttribute('lang');
-      const globalPreference = await page.evaluate(() => localStorage.getItem('shoug-lang'));
+      let globalPreference = await page.evaluate(() => localStorage.getItem('shoug-lang'));
       assert.equal(await page.locator('.bd-language').count(), 0);
-      assert.equal(await page.locator('[data-lang-toggle]:visible').count(), 0);
+      await page.locator('[data-lang-toggle]:visible').first().waitFor();
+      assert.equal(await page.locator('[data-lang-toggle]:visible').count(), 1);
+      // The original site control still changes the shell language.
+      const globalToggle = page.locator('[data-lang-toggle]:visible').first();
+      await globalToggle.click();
+      await page.waitForFunction(() => document.documentElement.lang.startsWith('ar'));
+      await globalToggle.click();
+      await page.waitForFunction(() => !document.documentElement.lang.startsWith('ar'));
+      globalPreference = await page.evaluate(() => localStorage.getItem('shoug-lang'));
       const embedded = page.locator('iframe').first();
       await embedded.scrollIntoViewIfNeeded();
       const lesson = await (await embedded.elementHandle()).contentFrame();

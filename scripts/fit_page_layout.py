@@ -125,8 +125,9 @@ PHONE = "(() => {" + HELPERS + r"""
   const rails = [];
   const railSeen = new Set();
   const probes = blocks.filter((_, i) => i % Math.max(1, Math.floor(blocks.length / 6)) === 0).slice(0, 6);
+  // body counts too: on some pages the whole gutter is body padding.
   for (const block of probes) {
-    for (let a = block.parentElement; a && a !== document.documentElement && a !== document.body; a = a.parentElement) {
+    for (let a = block.parentElement; a && a !== document.documentElement; a = a.parentElement) {
       const cs = getComputedStyle(a), r = a.getBoundingClientRect();
       const side = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight);
       const margin = Math.max(parseFloat(cs.marginLeft), parseFloat(cs.marginRight));
@@ -240,7 +241,17 @@ def fit(browser, origin: str, path: Path) -> dict:
         passes = [(DESKTOP, 1440, 900, None)] + [(PHONE, width, 1180 if width > 430 else 844, width) for width, _ in BREAKPOINTS]
         for script, width, height, bucket in passes:
             page = browser.new_page(viewport={"width": width, "height": height})
-            page.goto(origin + rel, wait_until="domcontentloaded", timeout=30000)
+            # A page carrying twenty figures can outrun the first navigation; retry once
+            # with more time, and skip the pass rather than abandoning the whole run.
+            try:
+                page.goto(origin + rel, wait_until="domcontentloaded", timeout=30000)
+            except Exception:
+                try:
+                    page.goto(origin + rel, wait_until="commit", timeout=60000)
+                except Exception as exc:
+                    print(f"  {rel} @{width}px: navigation failed, skipped ({str(exc).splitlines()[0]})")
+                    page.close()
+                    continue
             page.wait_for_timeout(400)
             for key, values in page.evaluate(script).items():
                 if bucket is None:

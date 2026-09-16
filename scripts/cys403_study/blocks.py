@@ -168,12 +168,18 @@ def formula(text: str) -> str:
     return f'<p class="mono bdx-formula"><span class="bdx-formula-label">Formula</span>{lines}</p>'
 
 
-def figure(src: str, caption: str, width: int, height: int, slide: int) -> str:
-    """A slide diagram; study-guide.js opens it full size when clicked."""
+def figure(src: str, caption: str, width: int, height: int, slide: int, source: str = "") -> str:
+    """A slide diagram; study-guide.js opens it full size when clicked.
+
+    The caption's tag links back to the page of the slide deck the diagram came from.
+    """
     alt = html.escape(plain(caption), quote=True)
+    label = f"Slide {slide}"
+    tag = (f'<a class="bdx-figure-tag" href="{html.escape(source, quote=True)}">{label}</a>' if source
+           else f'<span class="bdx-figure-tag">{label}</span>')
     return (f'<figure class="bdx-figure"><button type="button" class="bdx-figure-zoom" aria-label="Enlarge figure: {alt}">'
             f'<img src="{src}" alt="{alt}" width="{width}" height="{height}" loading="lazy" decoding="async" /></button>'
-            f'<figcaption><span class="bdx-figure-tag">Slide {slide}</span>{caption}</figcaption></figure>')
+            f'<figcaption>{tag}{caption}</figcaption></figure>')
 
 
 def plain(text: str) -> str:

@@ -170,10 +170,13 @@ def header_bar(ch, titles: list[str]) -> str:
 
 def figures_by_section(ch) -> dict[int, list[str]]:
     """Slide diagrams from cys403_study/figures.py as figure blocks, keyed by section number."""
+    import os
     from PIL import Image
     from cys403_study.blocks import figure
     from cys403_study.figures import FIGURES, image_name
-    folder = BASE / "slide-breakdowns" / breakdown_folder(ch) / "figures"
+    bd = BASE / "slide-breakdowns" / breakdown_folder(ch)
+    folder = bd / "figures"
+    deck = BASE / "slides" / slides_folder(ch) / f"{slides_folder(ch)}.pdf"
     out: dict[int, list[str]] = {}
     for page, _box, section, caption in FIGURES.get(ch.NUMBER, []):
         if not 1 <= section <= len(ch.SECTIONS):
@@ -183,7 +186,8 @@ def figures_by_section(ch) -> dict[int, list[str]]:
             raise SystemExit(f"{path.relative_to(ROOT)} missing: run scripts/extract_cys403_figures.py")
         with Image.open(path) as im:
             width, height = im.size
-        out.setdefault(section, []).append(figure(f"figures/{image_name(page)}", caption, width, height, page))
+        out.setdefault(section, []).append(figure(f"figures/{image_name(page)}", caption, width, height, page,
+                                                 f"{os.path.relpath(deck, bd)}#page={page}"))
     return out
 
 

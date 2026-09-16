@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Install translation only in lesson documents, never their site wrappers."""
 from pathlib import Path
+import hashlib
 import os
 import re
 
@@ -8,25 +9,28 @@ DOCS = Path(__file__).resolve().parents[1] / 'docs'
 
 
 def main():
+    js_version = hashlib.sha256((DOCS / 'javascripts/breakdown-language.js').read_bytes()).hexdigest()[:12]
+    css_version = hashlib.sha256((DOCS / 'styles/breakdown-language.css').read_bytes()).hexdigest()[:12]
     count = 0
     removed = 0
     for path in DOCS.glob('**/slide-breakdowns/**/*.html'):
         text = path.read_text()
         if path.name == 'index.html':
-            # Retain the stylesheet to suppress legacy site-level language
-            # buttons here, but never run lesson translation in the wrapper.
+            # Site wrappers keep their original global language controls.
             cleaned = re.sub(r'<script\b[^>]*src=[\"\'][^\"\']*breakdown-language\.js(?:\?[^\"\']*)?[\"\'][^>]*>\s*</script>\s*', '', text, flags=re.I)
-            if 'breakdown-language.css' not in cleaned:
-                css = os.path.relpath(DOCS / 'styles/breakdown-language.css', path.parent)
-                cleaned = cleaned.replace('</head>', f'<link rel="stylesheet" href="{css}">\n</head>', 1)
+            cleaned = re.sub(r'<link\b[^>]*href=[\"\'][^\"\']*breakdown-language\.css(?:\?[^\"\']*)?[\"\'][^>]*>\s*', '', cleaned, flags=re.I)
             if cleaned != text:
                 path.write_text(cleaned)
                 removed += 1
             continue
-        if 'breakdown-language.js' in text:
-            continue
         js = os.path.relpath(DOCS / 'javascripts/breakdown-language.js', path.parent)
         css = os.path.relpath(DOCS / 'styles/breakdown-language.css', path.parent)
+        js += '?v=' + js_version
+        css += '?v=' + css_version
+        if f'src="{js}"' in text and f'href="{css}"' in text:
+            continue
+        text = re.sub(r'<script\b[^>]*src=[\"\'][^\"\']*breakdown-language\.js(?:\?[^\"\']*)?[\"\'][^>]*>\s*</script>\s*', '', text, flags=re.I)
+        text = re.sub(r'<link\b[^>]*href=[\"\'][^\"\']*breakdown-language\.css(?:\?[^\"\']*)?[\"\'][^>]*>\s*', '', text, flags=re.I)
         # Load early to retain the saved choice before legacy startup writes EN.
         includes = f'\n<link rel="stylesheet" href="{css}">\n<script src="{js}"></script>\n'
         text, inserted = re.subn(r'<head\b[^>]*>', lambda match: match.group(0) + includes, text, count=1, flags=re.I)

@@ -42,7 +42,9 @@ test('repairs only untranslated titles, names and mnemonics before returning a c
   const response = await worker.fetch(request({ texts: ['Learning objectives', '4+1\n View Model', 'Kruchten, 1995', 'Lions Prefer Dark Pizza'] }), {
     AI: { run: async (_model, input) => {
       calls++;
-      const texts = JSON.parse(input.messages.at(-1).content);
+      const texts = Object.values(JSON.parse(input.messages.at(-1).content));
+      assert.equal(input.messages.filter(message => message.role === 'system').length, 1);
+      assert.equal(input.response_format.json_schema.schema.required.length, texts.length);
       if (calls === 1) {
         assert.equal(texts[1], '4+1 View Model');
         return { response: JSON.stringify(['أهداف التعلم', '4+1 View Model', 'Kruchten, 1995', 'Lions Prefer Dark Pizza']) };
@@ -54,4 +56,14 @@ test('repairs only untranslated titles, names and mnemonics before returning a c
   assert.equal(response.status, 200);
   assert.equal(calls, 2);
   assert.deepEqual((await response.json()).translations, ['أهداف التعلم', 'نموذج الرؤى 4+1', 'كروشتن، 1995', 'الأسود تفضل البيتزا الداكنة']);
+});
+
+ test('keyed model output keeps fragmented sentences aligned even if key order changes', () => {
+  assert.deepEqual(parseTranslation('{"item_002":"مع بعضها","item_000":"حافظ على","item_001":"الاتساق"}', ['keep', 'consistent', 'with each other']), ['حافظ على', 'الاتساق', 'مع بعضها']);
+  assert.throws(() => parseTranslation('{"item_000":"حافظ على الاتساق"}', ['keep', 'consistent']));
+});
+
+test('keeps mathematical expressions intact', () => {
+  assert.throws(() => parseTranslation('["نموذج الرؤى +1-4"]', ['The 4+1 View Model']));
+  assert.deepEqual(parseTranslation('["نموذج الرؤى 4+1"]', ['The 4+1 View Model']), ['نموذج الرؤى 4+1']);
 });

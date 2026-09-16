@@ -137,11 +137,20 @@ def children(mtext: str, start: int, end: int) -> tuple[list[tuple[str, int, int
 
 def section_insert_point(text: str, section_id: str, page: Path) -> int:
     mtext = masked(text)
-    opening = re.search(rf'<section\b[^>]*\bid="{re.escape(section_id)}"[^>]*>', mtext)
+    # Generated pages (the CYS405/CYS406 study tools) emit <section> without an id,
+    # so a manifest may address a section by its 1-based position instead.
+    if str(section_id).isdigit():
+        sections = list(re.finditer(r"<section\b[^>]*>", mtext))
+        index = int(section_id)
+        if not 1 <= index <= len(sections):
+            raise SystemExit(f"{page.relative_to(ROOT)}: section {index} of {len(sections)} does not exist")
+        opening = sections[index - 1]
+    else:
+        opening = re.search(rf'<section\b[^>]*\bid="{re.escape(section_id)}"[^>]*>', mtext)
     if not opening:
         # Older breakdowns use sibling heading blocks rather than sections.
         # Insert before the next heading block, or at the parent container's end.
-        anchor = re.search(rf'<(div|h2|h3)\b[^>]*\bid="{re.escape(section_id)}"[^>]*>', mtext)
+        anchor = re.search(rf'<(div|span|article|h2|h3)\b[^>]*\bid="{re.escape(section_id)}"[^>]*>', mtext)
         if anchor:
             stack = []
             for tag in TAG_RE.finditer(mtext, 0, anchor.start()):
@@ -153,7 +162,9 @@ def section_insert_point(text: str, section_id: str, page: Path) -> int:
                     stack.append((name, tag.end()))
             if stack:
                 parent, start = stack[-1]
-                depth = 1
+                # Default to the end of the document: a parent whose closing tag the
+                # scan never finds must not leave the bound unset.
+                depth, end = 1, len(mtext)
                 for tag in TAG_RE.finditer(mtext, start):
                     if tag.group(2).lower() == parent:
                         depth += -1 if tag.group(1) else 1

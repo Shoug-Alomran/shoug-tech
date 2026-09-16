@@ -10,6 +10,7 @@
 
   function start() {
     var root = document.documentElement;
+    root.setAttribute('data-breakdown-language', '');
     var endpoint = window.SHOUG_TRANSLATION_ENDPOINT || 'https://shoug-tech.shoug-alomran.workers.dev/v1/breakdown-translation';
     var records = new Map();
     var translations = new Map();
@@ -22,9 +23,9 @@
     toolbar.setAttribute('role', 'group');
     toolbar.setAttribute('aria-label', 'Breakdown language / لغة الشرح');
     toolbar.innerHTML = '<div><button type="button" data-bd-lang="en" lang="en" aria-label="English">EN</button><button type="button" data-bd-lang="ar" lang="ar" aria-label="العربية">AR</button></div><span class="bd-language-status" role="status" aria-live="polite"></span>';
-    var host = document.querySelector('.bdx-bar-inner, .topbar-actions, .header-actions');
+    var host = document.querySelector('.bdx-bar-inner, .topbar-actions, .header-actions, .topbar-inner');
     if (host) {
-      var themeButton = host.querySelector('.theme-toggle');
+      var themeButton = host.querySelector('.theme-toggle, #themeToggle');
       host.insertBefore(toolbar, themeButton);
     } else {
       toolbar.classList.add('bd-language--inline');
@@ -115,7 +116,7 @@
     }
 
     async function fetchBatch(texts, signal) {
-      var key = 'bd-ar-v2:' + JSON.stringify(texts);
+      var key = 'bd-ar-v5:' + JSON.stringify(texts);
       try {
         var cached = JSON.parse(sessionStorage.getItem(key));
         if (Array.isArray(cached) && cached.length === texts.length && cached.every(function (s, i) { return validTranslation(s, texts[i]); })) return cached;
@@ -194,7 +195,12 @@
         }
         if (version !== revision) return;
         records.forEach(function (slots) {
-          slots.forEach(function (record) { record.ar = record.en.match(/^\s*/)[0] + pieces(record.en).map(function (part) { return translations.get(part); }).join(' ').trim() + record.en.match(/\s*$/)[0]; });
+          slots.forEach(function (record) {
+            var translated = pieces(record.en).map(function (part) { return translations.get(part); }).join(' ').trim();
+            // Isolate arithmetic from surrounding RTL text without adding DOM nodes.
+            translated = translated.replace(/\d+(?:\s*[+*/]\s*\d+)+/g, '\u2066$&\u2069');
+            record.ar = record.en.match(/^\s*/)[0] + translated + record.en.match(/\s*$/)[0];
+          });
         });
         render('ar');
         report('ترجمة آلية · الصور الأصلية بلغتها الأصلية');

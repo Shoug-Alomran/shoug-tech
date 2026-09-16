@@ -49,7 +49,8 @@ they are public configuration, not secrets. `CONTENT_ORIGIN` and
 
 `POST /v1/breakdown-translation` accepts `{ "texts": ["English text", ...] }`
 and returns an ordered `translations` array in Modern Standard Arabic. It uses
-Gemma 4 through the existing Workers AI binding, validates complete responses,
+Gemma 4 through the existing Workers AI binding, uses keyed structured output
+to keep sentence fragments aligned, validates complete responses,
 and caches successful batches at the edge for 30 days. The separate
 `TRANSLATION_RATE_LIMIT` binding allows 60 uncached batches per IP per minute.
 A batch is limited to 50 strings and 6,000 characters. This endpoint accepts
@@ -58,7 +59,10 @@ fetch the source context itself. Translation requests incur Workers AI usage.
 
 The static client is installed by `scripts/install_breakdown_language.py` on
 the 223 lesson documents, including lessons opened directly or inside an iframe.
-The surrounding site wrappers and course indexes do not run this controller. It preserves
+The surrounding site wrappers and course indexes do not load this controller or
+its stylesheet; their original site-wide EN/AR toggle remains independent.
+Lesson controls sit inside the lesson toolbar or normal document flow. The installer
+versions both assets by content hash to avoid stale browser caches. It preserves
 English originals, persists a lesson-only language preference (`shoug-breakdown-lang`), caches
 translations within the browser session, and keeps English visible with a retry
 message when translation fails. Code and original slide images are preserved.
@@ -79,6 +83,16 @@ node scripts/test_breakdown_language.cjs
 
 The browser suite mocks translation responses to check switching, embedded
 pages, cancellation, retries, saved preferences, dynamic text, and mobile
-controls. It does not measure linguistic accuracy. Generic sentences were also
-tested with the real Workers AI development binding. Complete local course
-pages were not sent for remote testing.
+controls. It does not measure linguistic accuracy. To test a complete already-public
+lesson against the real deployed service in a fresh, signed-out browser:
+
+```sh
+node scripts/test_breakdown_translation_live.cjs https://shoug-tech.com/academics/software-engineering/se322/slide-breakdowns/04-chapter-2-software-architecture-lecture-3-extra/chapter-2-software-architecture-lecture-3-extra.html
+```
+
+The live check verifies Arabic prose, the model name in the title, successful
+requests, and restoration of the original English heading. It accepts only public
+lesson URLs on shoug-tech.com. First-time translation of a long lesson can take
+one to three minutes; successful batches are cached. Reasoning is disabled to
+keep individual batches within the browser deadline, and missed entries receive
+one targeted repair attempt.

@@ -27,6 +27,7 @@ import socketserver
 import subprocess
 import sys
 import threading
+import time
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -148,11 +149,23 @@ def start_server() -> tuple[socketserver.ThreadingTCPServer, str]:
 
 
 def launch_browser(pw):
-    """Installed Chrome when available, else Playwright's bundled Chromium."""
+    """Installed Chrome when available, else Playwright's bundled Chromium.
+
+    Chrome occasionally refuses the first launch when another run is still shutting
+    down, so retry before falling back; the bundled browser may not be installed.
+    """
+    last = None
+    for attempt in range(3):
+        try:
+            return pw.chromium.launch(channel="chrome")
+        except Exception as exc:
+            last = exc
+            time.sleep(2 * (attempt + 1))
     try:
-        return pw.chromium.launch(channel="chrome")
-    except Exception:
         return pw.chromium.launch()
+    except Exception as exc:
+        raise SystemExit(f"could not start a browser: Chrome failed ({str(last).splitlines()[0]}) and the bundled "
+                         f"Chromium is unavailable ({str(exc).splitlines()[0]}). Run: .venv/bin/playwright install chromium")
 
 
 def main() -> int:
@@ -187,9 +200,13 @@ def main() -> int:
                 page = browser.new_page(viewport={"width": width, "height": height})
                 try:
                     # domcontentloaded, not load: figure-heavy pages can keep the load
-                    # event pending well past the point where layout has settled.
-                    page.goto(origin + rel, wait_until="domcontentloaded", timeout=30000)
-                    page.wait_for_timeout(600)
+                    # event pending well past the point where layout has settled, and a
+                    # page carrying twenty figures can still outrun the first attempt.
+                    try:
+                        page.goto(origin + rel, wait_until="domcontentloaded", timeout=30000)
+                    except Exception:
+                        page.goto(origin + rel, wait_until="commit", timeout=60000)
+                    page.wait_for_timeout(900)
                     page.evaluate("window.scrollTo(0, Math.min(1200, document.documentElement.scrollHeight / 3))")
                     page.wait_for_timeout(300)
                     report += [f"  {name} {width}px  {kind}: {text}" for kind, text in page.evaluate(PROBE)]
