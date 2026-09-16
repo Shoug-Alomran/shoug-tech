@@ -132,13 +132,27 @@ def owned_pdf(path):
 
     Such a folder is one file, not a folder: its parent lists it as a PDF row."""
     index = os.path.join(path, 'index.html')
-    if not os.path.isdir(path) or not os.path.isfile(index):
+    if not os.path.isdir(path):
         return None
-    match = PDF_SRC_RE.search(read(index))
-    if not match:
-        return None
-    pdf = os.path.normpath(os.path.join(path, unquote(match.group(1))))
-    return pdf if os.path.dirname(pdf) == os.path.normpath(path) and os.path.isfile(pdf) else None
+    match = PDF_SRC_RE.search(read(index)) if os.path.isfile(index) else None
+    pdf = os.path.normpath(os.path.join(path, unquote(match.group(1)))) if match else None
+    if pdf and os.path.dirname(pdf) == os.path.normpath(path) and os.path.isfile(pdf):
+        return pdf
+    return lone_pdf(path)
+
+
+def is_own_viewer(path):
+    index = os.path.join(path, 'index.html')
+    match = os.path.isfile(index) and PDF_SRC_RE.search(read(index))
+    return bool(match) and os.path.normpath(os.path.join(path, unquote(match.group(1)))) == lone_pdf(path)
+
+
+def lone_pdf(path):
+    """<name>/<name>.pdf with nothing else beside it but its (listing) page and generated viewers."""
+    names = [n for n in os.listdir(path) if n not in IGNORED and not n.startswith('.')
+             and not is_viewer_dir(os.path.join(path, n))]
+    pdf = os.path.join(path, os.path.basename(path) + '.pdf')
+    return pdf if names == [os.path.basename(pdf)] and os.path.isfile(pdf) else None
 
 
 # --------------------------------------------------------------------------- #
@@ -435,6 +449,17 @@ class Build:
         for f in files:
             if os.path.isdir(f):         # a viewer folder holding its own PDF is a file row
                 t = title_for(owned_pdf(f), folder, self.titles, self.notes)
+                if lone_pdf(f) and not is_own_viewer(f):
+                    # a PDF just moved into its own folder: that folder becomes its viewer
+                    for name in os.listdir(f):
+                        if is_viewer_dir(os.path.join(f, name)):
+                            self.remove_dir(os.path.join(f, name))
+                            self.drop_children(url_of(os.path.join(f, name)))
+                    self.put(os.path.join(f, 'index.html'), viewer_html(
+                        url_of(f), ctx, '%s // %s' % (sec_title.upper(), labels[0].upper()), t,
+                        trail[:-1] + [(trail[-1][0], url), (t, None)],
+                        quote(os.path.basename(lone_pdf(f))), url))
+                    self.drop_children(url_of(f))
                 rows.append((t, './%s/' % quote(os.path.basename(f)), 'PDF', 'pdf', False, False))
                 sidebar_rows.append((url_of(f), t))
                 continue

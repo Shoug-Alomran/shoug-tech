@@ -31,7 +31,7 @@ TPL_URL = ('https://shoug-tech.com/academics/other-courses/english/eng103/extra-
            'assignment-1-annotated-bibliography/')
 TPL_VIEW_TITLE = 'ENG103 // Group Work Log & Deadlines'
 TPL_VIEW_URL = TPL_URL + 'group-work-log/'
-TPL_VIEW_PDF = re.compile(r'\./[^/"\']+\.pdf')
+TPL_VIEW_PDF = re.compile(r'(?<=")(?:\./)?[^/"\'\s]+\.pdf(?=")')  # template link, with or without ./
 
 SITE = 'https://shoug-tech.com'
 ARROW = ('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" '
