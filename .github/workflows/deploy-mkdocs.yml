@@ -32,21 +32,16 @@ jobs:
       - name: Embed new resource files
         run: python3 scripts/embed_resources.py
 
-      # Repair slide-breakdown viewers from the files that actually exist.
-      # This prevents legacy path assumptions or stale generated shells from
-      # showing COMING SOON when a sibling breakdown HTML file is present.
+      # Establish valid viewers before scripts that enhance those viewers.
       - name: Repair slide breakdown viewers
         run: python3 scripts/repair_slide_breakdown_viewers.py
-
-      - name: Validate slide breakdown viewers
-        run: python3 scripts/validate_slide_breakdown_viewers.py
 
       # Safety net: keep the cybersecurity track red (no purple) for pages that
       # were generated or uploaded without running a course builder.
       - name: Apply cybersecurity red theme
         run: python3 scripts/apply_cyber_red_theme.py
 
-      - name: Validate static site
+      - name: Build and optimize static site
         run: |
           python3 scripts/install_breakdown_language.py
           node scripts/build-course-manifest.js
@@ -55,6 +50,18 @@ jobs:
           sudo apt-get install -y poppler-utils
           python3 scripts/build_ai_slide_contexts.py
           python3 scripts/optimize_site_html.py
+
+      # FINAL authority for slide viewers. Earlier build/optimization scripts
+      # are allowed to mutate HTML; after all of them finish, rebuild viewers
+      # from filesystem truth and validate the exact files that will deploy.
+      - name: Finalize slide breakdown viewers
+        run: python3 scripts/repair_slide_breakdown_viewers.py
+
+      - name: Validate final slide breakdown viewers
+        run: python3 scripts/validate_slide_breakdown_viewers.py
+
+      - name: Validate final static site
+        run: |
           python3 scripts/verify_site_routes.py
           python3 scripts/check_site_links.py
           python3 scripts/check_seo_metadata.py
