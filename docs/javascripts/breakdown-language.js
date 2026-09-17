@@ -25,8 +25,10 @@
     toolbar.innerHTML = '<div><button type="button" data-bd-lang="en" lang="en" aria-label="English">EN</button><button type="button" data-bd-lang="ar" lang="ar" aria-label="العربية">AR</button></div><span class="bd-language-status" role="status" aria-live="polite"></span>';
     var host = document.querySelector('.bdx-bar-inner, .topbar-actions, .header-actions, .topbar-inner');
     if (host) {
+      // The theme button may sit inside a wrapper, not directly in the host.
       var themeButton = host.querySelector('.theme-toggle, #themeToggle');
-      host.insertBefore(toolbar, themeButton);
+      if (themeButton) themeButton.parentNode.insertBefore(toolbar, themeButton);
+      else host.appendChild(toolbar);
     } else {
       toolbar.classList.add('bd-language--inline');
       (document.querySelector('#main-content, main, .header, .topbar, header') || document.body).prepend(toolbar);
