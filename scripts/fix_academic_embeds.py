@@ -541,6 +541,10 @@ def main() -> None:
         content = add_pdf_link_targets(content)
         content = show_embeds_without_intro(content, allow_pdf_embed="/slide-breakdowns/" not in path.as_posix())
         content = repair_malformed_bilingual_embed_wrappers(content)
+        content = content.replace(
+            ".body.sidebar-collapsed .academic-sidebar .file-tree",
+            "body.sidebar-collapsed .academic-sidebar .file-tree",
+        )
         content = normalize_empty_section(content)
         if "/slide-breakdowns/" in path.as_posix() and path.name == "index.html":
             if path.parent.name == "slide-breakdowns":
