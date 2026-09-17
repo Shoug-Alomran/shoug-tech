@@ -26,18 +26,12 @@ jobs:
         with:
           python-version: "3.x"
 
-      # Safety net for files committed without the local pre-commit hook (e.g.
-      # uploaded through github.com): embed any new activity/lab/tutorial files
-      # into the deployed site. Pages generated here are not committed back.
       - name: Embed new resource files
         run: python3 scripts/embed_resources.py
 
-      # Establish valid viewers before scripts that enhance those viewers.
       - name: Repair slide breakdown viewers
         run: python3 scripts/repair_slide_breakdown_viewers.py
 
-      # Safety net: keep the cybersecurity track red (no purple) for pages that
-      # were generated or uploaded without running a course builder.
       - name: Apply cybersecurity red theme
         run: python3 scripts/apply_cyber_red_theme.py
 
@@ -51,9 +45,12 @@ jobs:
           python3 scripts/build_ai_slide_contexts.py
           python3 scripts/optimize_site_html.py
 
-      # FINAL authority for slide viewers. Earlier build/optimization scripts
-      # are allowed to mutate HTML; after all of them finish, rebuild viewers
-      # from filesystem truth and validate the exact files that will deploy.
+      # Generated pages sometimes inherit canonical/OG/hreflang URLs from the
+      # template page. The filesystem route is authoritative, so normalize all
+      # folder-page URLs after every HTML generator/optimizer has finished.
+      - name: Normalize canonical page URLs
+        run: python3 scripts/normalize_page_urls.py
+
       - name: Finalize slide breakdown viewers
         run: python3 scripts/repair_slide_breakdown_viewers.py
 
